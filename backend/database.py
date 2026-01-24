@@ -50,8 +50,7 @@ async def init_db():
     """Initialize database (create tables if needed)."""
     async with engine.begin() as conn:
         # In production, use Alembic migrations instead
-        # await conn.run_sync(Base.
-metadata.create_all)
+        # await conn.run_sync(Base.metadata.create_all)
         pass
 
 
