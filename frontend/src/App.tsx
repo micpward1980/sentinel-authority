@@ -1,45 +1,30 @@
-import React, { useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useAuthStore } from './stores/authStore';
-
-// Layout
 import { DashboardLayout } from './components/Layout';
+import LoginPage from './pages/Login';
+import DashboardPage from './pages/Dashboard';
+import AccountsPage from './pages/Accounts';
+import {
+  AccountDetailPage,
+  SystemsPage,
+  SystemDetailPage,
+  CAT72Page,
+  CAT72DetailPage,
+  ConformanceRecordsPage,
+  VerifyPage,
+  SettingsPage,
+} from './pages/index';
 
-// Pages
-import { LoginPage } from './pages/Login';
-import { DashboardPage } from './pages/Dashboard';
-import { AccountsPage } from './pages/Accounts';
-import { AccountDetailPage } from './pages/AccountDetail';
-import { SystemsPage } from './pages/Systems';
-import { SystemDetailPage } from './pages/SystemDetail';
-import { CAT72Page } from './pages/CAT72';
-import { CAT72DetailPage } from './pages/CAT72Detail';
-import { ConformanceRecordsPage } from './pages/ConformanceRecords';
-import { VerifyPage } from './pages/Verify';
-import { SettingsPage } from './pages/Settings';
+const queryClient = new QueryClient();
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 30000,
-      retry: 1,
-    },
-  },
-});
-
-// Protected route wrapper
-function ProtectedRoute() {
-  const { isAuthenticated, isLoading, loadUser } = useAuthStore();
-
-  useEffect(() => {
-    loadUser();
-  }, [loadUser]);
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated, isLoading } = useAuthStore();
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
+      <div className="min-h-screen bg-[#0a0c10] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-2 border-indigo-500 border-t-transparent" />
       </div>
     );
   }
@@ -48,43 +33,31 @@ function ProtectedRoute() {
     return <Navigate to="/login" replace />;
   }
 
-  return (
-    <DashboardLayout>
-      <Outlet />
-    </DashboardLayout>
-  );
+  return <DashboardLayout>{children}</DashboardLayout>;
 }
 
-function App() {
+export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <Routes>
-          {/* Public routes */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/verify" element={<VerifyPage />} />
           <Route path="/verify/:recordNumber" element={<VerifyPage />} />
-
-          {/* Protected routes */}
-          <Route element={<ProtectedRoute />}>
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
-            <Route path="/dashboard" element={<DashboardPage />} />
-            <Route path="/accounts" element={<AccountsPage />} />
-            <Route path="/accounts/:id" element={<AccountDetailPage />} />
-            <Route path="/systems" element={<SystemsPage />} />
-            <Route path="/systems/:id" element={<SystemDetailPage />} />
-            <Route path="/cat72" element={<CAT72Page />} />
-            <Route path="/cat72/:id" element={<CAT72DetailPage />} />
-            <Route path="/conformance" element={<ConformanceRecordsPage />} />
-            <Route path="/settings" element={<SettingsPage />} />
-          </Route>
-
-          {/* Catch all */}
-          <Route path="*" element={<Navigate to="/" replace />} />
+          
+          <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+          <Route path="/accounts" element={<ProtectedRoute><AccountsPage /></ProtectedRoute>} />
+          <Route path="/accounts/:id" element={<ProtectedRoute><AccountDetailPage /></ProtectedRoute>} />
+          <Route path="/systems" element={<ProtectedRoute><SystemsPage /></ProtectedRoute>} />
+          <Route path="/systems/:id" element={<ProtectedRoute><SystemDetailPage /></ProtectedRoute>} />
+          <Route path="/cat72" element={<ProtectedRoute><CAT72Page /></ProtectedRoute>} />
+          <Route path="/cat72/:id" element={<ProtectedRoute><CAT72DetailPage /></ProtectedRoute>} />
+          <Route path="/conformance" element={<ProtectedRoute><ConformanceRecordsPage /></ProtectedRoute>} />
+          <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
+          
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
         </Routes>
       </BrowserRouter>
     </QueryClientProvider>
   );
 }
-
-export default App;
