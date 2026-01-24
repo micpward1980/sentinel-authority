@@ -5,7 +5,11 @@ FROM node:20-alpine as build
 
 WORKDIR /app
 
-# Copy all files first
+# Set build-time env variable
+ARG VITE_API_URL=https://sentinel-authority-production.up.railway.app
+ENV VITE_API_URL=$VITE_API_URL
+
+# Copy all files
 COPY . .
 
 # Install dependencies
@@ -20,7 +24,7 @@ FROM nginx:alpine
 # Copy built assets
 COPY --from=build /app/dist /usr/share/nginx/html
 
-# Copy nginx configuration
+# Copy nginx configuration  
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Expose port
