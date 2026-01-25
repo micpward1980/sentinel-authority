@@ -1,6 +1,6 @@
 import React, { useState, useEffect, createContext, useContext } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, Link, useNavigate, useLocation } from 'react-router-dom';
-import { FileText, Activity, Award, Users, Home, LogOut, Menu, X, CheckCircle, AlertTriangle, Clock, Search, Plus, ArrowLeft, ExternalLink } from 'lucide-react';
+import { Shield, FileText, Activity, Award, Users, Home, LogOut, Menu, X, CheckCircle, AlertTriangle, Clock, Search, Plus, ArrowLeft } from 'lucide-react';
 import axios from 'axios';
 
 // API Configuration
@@ -63,56 +63,14 @@ function useAuth() {
   return useContext(AuthContext);
 }
 
-// Brand Mark Component - matches website exactly
-function BrandMark({ size = 24 }) {
-  return (
-    <div 
-      className="flex items-center justify-center flex-shrink-0"
-      style={{
-        width: size,
-        height: size,
-        background: '#5B4B8A',
-        border: '2px solid #9d8ccf',
-        borderRadius: 6,
-      }}
-    >
-      <div 
-        className="rounded-full animate-pulse"
-        style={{
-          width: size * 0.33,
-          height: size * 0.33,
-          background: '#c4b8e8',
-          boxShadow: '0 0 10px rgba(157,140,207,0.5)',
-        }}
-      />
-    </div>
-  );
-}
-
 // Protected Route
 function ProtectedRoute({ children, roles }) {
   const { user, loading } = useAuth();
-  if (loading) return <div className="flex items-center justify-center h-screen" style={{background: '#2a2f3d', color: 'rgba(255,255,255,0.94)'}}>Loading...</div>;
+  if (loading) return <div className="flex items-center justify-center h-screen">Loading...</div>;
   if (!user) return <Navigate to="/login" />;
   if (roles && !roles.includes(user.role)) return <Navigate to="/dashboard" />;
   return children;
 }
-
-// Custom styles to match website
-const styles = {
-  bgDeep: '#2a2f3d',
-  bgPanel: 'rgba(255,255,255,0.05)',
-  purplePrimary: '#5B4B8A',
-  purpleBright: '#9d8ccf',
-  purpleGlow: 'rgba(157,140,207,0.20)',
-  accentGreen: '#5CD685',
-  accentAmber: '#D6A05C',
-  accentRed: '#D65C5C',
-  textPrimary: 'rgba(255,255,255,0.94)',
-  textSecondary: 'rgba(255,255,255,0.75)',
-  textTertiary: 'rgba(255,255,255,0.50)',
-  borderGlass: 'rgba(255,255,255,0.10)',
-};
 
 // Layout
 function Layout({ children }) {
@@ -131,78 +89,59 @@ function Layout({ children }) {
   const filteredNav = navigation.filter(item => item.roles.includes(user?.role || ''));
 
   return (
-    <div className="min-h-screen" style={{background: `radial-gradient(1200px 700px at 15% 10%, rgba(91,75,138,0.15), transparent 55%), radial-gradient(900px 600px at 85% 80%, rgba(92,214,133,0.06), transparent 55%), ${styles.bgDeep}`, color: styles.textPrimary, fontFamily: "'Inter', system-ui, -apple-system, sans-serif"}}>
-      {/* Grid overlay */}
-      <div className="fixed inset-0 pointer-events-none z-0" style={{
-        backgroundImage: 'linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px)',
-        backgroundSize: '120px 120px',
-        opacity: 0.15,
-        maskImage: 'radial-gradient(ellipse at center, rgba(0,0,0,0.95) 20%, transparent 70%)',
-        WebkitMaskImage: 'radial-gradient(ellipse at center, rgba(0,0,0,0.95) 20%, transparent 70%)',
-      }} />
-
+    <div className="min-h-screen bg-gray-900 text-gray-100">
       {/* Sidebar */}
-      <div className={`fixed inset-y-0 left-0 z-50 w-64 transform transition-transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0`} style={{background: 'rgba(42,47,61,0.95)', backdropFilter: 'blur(18px)', borderRight: `1px solid ${styles.borderGlass}`}}>
-        <div className="flex items-center justify-between h-16 px-4" style={{borderBottom: `1px solid ${styles.borderGlass}`}}>
-          <Link to="/dashboard" className="flex items-center gap-3 no-underline">
-            <BrandMark size={24} />
-            <span style={{fontFamily: "'Inter', sans-serif", fontWeight: 400, color: styles.textPrimary}}>Sentinel Authority</span>
-          </Link>
-          <button onClick={() => setSidebarOpen(false)} className="lg:hidden" style={{color: styles.textSecondary}}>
+      <div className={`fixed inset-y-0 left-0 z-50 w-64 bg-gray-800 transform transition-transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0`}>
+        <div className="flex items-center justify-between h-16 px-4 border-b border-gray-700">
+          <div className="flex items-center gap-2">
+            <Shield className="w-8 h-8 text-purple-400" />
+            <span className="font-bold text-lg">ODDC</span><span className="text-gray-400 text-sm ml-1">// Sentinel Authority</span>
+          </div>
+          <button onClick={() => setSidebarOpen(false)} className="lg:hidden">
             <X className="w-6 h-6" />
           </button>
         </div>
-        <nav className="p-4 space-y-1">
+        <nav className="p-4 space-y-2">
           {filteredNav.map((item) => (
             <Link
               key={item.name}
               to={item.href}
-              className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all no-underline"
-              style={{
-                background: location.pathname.startsWith(item.href) ? styles.purplePrimary : 'transparent',
-                color: location.pathname.startsWith(item.href) ? '#fff' : styles.textTertiary,
-                fontFamily: "'IBM Plex Mono', monospace",
-                fontSize: '11px',
-                letterSpacing: '1px',
-                textTransform: 'uppercase',
-              }}
+              className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+                location.pathname.startsWith(item.href) ? 'bg-purple-500 text-white' : 'text-gray-400 hover:bg-gray-700 hover:text-white'
+              }`}
             >
-              <item.icon className="w-4 h-4" />
+              <item.icon className="w-5 h-5" />
               {item.name}
             </Link>
           ))}
         </nav>
-        <div className="absolute bottom-0 left-0 right-0 p-4" style={{borderTop: `1px solid ${styles.borderGlass}`}}>
+        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-700">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{background: styles.purplePrimary, border: `1px solid ${styles.purpleBright}`}}>
-              <span style={{color: '#fff', fontWeight: 500}}>{user?.full_name?.[0] || 'U'}</span>
+            <div className="w-10 h-10 rounded-full bg-purple-500 flex items-center justify-center">
+              {user?.full_name?.[0] || 'U'}
             </div>
             <div>
-              <div style={{fontWeight: 500, color: styles.textPrimary}}>{user?.full_name}</div>
-              <div style={{fontSize: '11px', fontFamily: "'IBM Plex Mono', monospace", color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px'}}>{user?.role}</div>
+              <div className="font-medium">{user?.full_name}</div>
+              <div className="text-sm text-gray-400 capitalize">{user?.role}</div>
             </div>
           </div>
-          <button onClick={logout} className="flex items-center gap-2 w-full transition-colors" style={{color: styles.textTertiary, fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', background: 'none', border: 'none', cursor: 'pointer'}}>
-            <LogOut className="w-4 h-4" />
+          <button onClick={logout} className="flex items-center gap-2 text-gray-400 hover:text-white w-full">
+            <LogOut className="w-5 h-5" />
             Sign Out
           </button>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className={`${sidebarOpen ? 'lg:ml-64' : ''} relative z-10`}>
-        <header className="h-16 flex items-center px-6 gap-4" style={{borderBottom: `1px solid ${styles.borderGlass}`, background: 'rgba(42,47,61,0.5)', backdropFilter: 'blur(12px)'}}>
-          <button onClick={() => setSidebarOpen(!sidebarOpen)} className="lg:hidden" style={{color: styles.textSecondary, background: 'none', border: 'none'}}>
+      <div className={`${sidebarOpen ? 'lg:ml-64' : ''}`}>
+        <header className="h-16 border-b border-gray-700 flex items-center px-4 gap-4">
+          <button onClick={() => setSidebarOpen(!sidebarOpen)} className="lg:hidden">
             <Menu className="w-6 h-6" />
           </button>
           <div className="flex-1" />
-          <a href="https://sentinelauthority.org" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 transition-colors no-underline" style={{color: styles.textTertiary, fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1.5px', textTransform: 'uppercase'}}>
-            <ExternalLink className="w-4 h-4" />
-            Main Site
-          </a>
-          <Link to="/verify" className="flex items-center gap-2 transition-colors no-underline" style={{color: styles.textTertiary, fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1.5px', textTransform: 'uppercase'}}>
-            <Search className="w-4 h-4" />
-            Verify
+          <Link to="/verify" className="flex items-center gap-2 text-gray-400 hover:text-white">
+            <Search className="w-5 h-5" />
+            Verify Certificate
           </Link>
         </header>
         <main className="p-6">{children}</main>
@@ -211,31 +150,25 @@ function Layout({ children }) {
   );
 }
 
-// Panel Component
-function Panel({ children, className = '' }) {
-  return (
-    <div className={`rounded-xl p-6 ${className}`} style={{background: styles.bgPanel, border: `1px solid ${styles.borderGlass}`, backdropFilter: 'blur(12px)'}}>
-      {children}
-    </div>
-  );
-}
-
 // Login Page
 function LoginPage() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [isRegister, setIsRegister] = useState(false);
+  const [fullName, setFullName] = useState('');
+  const [organization, setOrganization] = useState('');
   const { login, register } = useAuth();
   const navigate = useNavigate();
-  const [isRegister, setIsRegister] = useState(false);
-  const [error, setError] = useState('');
-  const [formData, setFormData] = useState({ email: '', password: '', full_name: '', organization_name: '' });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     try {
       if (isRegister) {
-        await register(formData);
+        await register({ email, password, full_name: fullName, organization });
       } else {
-        await login(formData.email, formData.password);
+        await login(email, password);
       }
       navigate('/dashboard');
     } catch (err) {
@@ -244,673 +177,838 @@ function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4" style={{background: `radial-gradient(1200px 700px at 15% 10%, rgba(91,75,138,0.15), transparent 55%), radial-gradient(900px 600px at 85% 80%, rgba(92,214,133,0.06), transparent 55%), ${styles.bgDeep}`}}>
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <div className="flex justify-center mb-4">
-            <BrandMark size={48} />
+    <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
+      <div className="max-w-md w-full bg-gray-800 rounded-xl p-8">
+        <div className="flex items-center justify-center gap-3 mb-8">
+          <Shield className="w-12 h-12 text-purple-400" />
+          <div>
+            <h1 className="text-2xl font-bold text-white">ODDC</h1>
+            <p className="text-gray-400 text-sm">Sentinel Authority</p>
           </div>
-          <h1 style={{fontFamily: "'Source Serif 4', serif", fontSize: '32px', fontWeight: 200, color: styles.textPrimary, margin: 0}}>ODDC Platform</h1>
-          <p style={{color: styles.textTertiary, fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', marginTop: '8px'}}>Sentinel Authority</p>
         </div>
-        
-        <Panel>
-          {error && <div className="mb-4 p-3 rounded-lg text-sm" style={{background: 'rgba(214,92,92,0.15)', border: '1px solid rgba(214,92,92,0.3)', color: styles.accentRed}}>{error}</div>}
-          
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {isRegister && (
-              <>
-                <input
-                  type="text"
-                  placeholder="Full Name"
-                  value={formData.full_name}
-                  onChange={(e) => setFormData({...formData, full_name: e.target.value})}
-                  className="w-full px-4 py-3 rounded-lg outline-none transition-colors"
-                  style={{background: 'rgba(255,255,255,0.05)', border: `1px solid ${styles.borderGlass}`, color: styles.textPrimary, fontFamily: "'Inter', sans-serif"}}
-                  required
-                />
-                <input
-                  type="text"
-                  placeholder="Organization Name"
-                  value={formData.organization_name}
-                  onChange={(e) => setFormData({...formData, organization_name: e.target.value})}
-                  className="w-full px-4 py-3 rounded-lg outline-none transition-colors"
-                  style={{background: 'rgba(255,255,255,0.05)', border: `1px solid ${styles.borderGlass}`, color: styles.textPrimary, fontFamily: "'Inter', sans-serif"}}
-                  required
-                />
-              </>
-            )}
-            <input
-              type="email"
-              placeholder="Email"
-              value={formData.email}
-              onChange={(e) => setFormData({...formData, email: e.target.value})}
-              className="w-full px-4 py-3 rounded-lg outline-none transition-colors"
-              style={{background: 'rgba(255,255,255,0.05)', border: `1px solid ${styles.borderGlass}`, color: styles.textPrimary, fontFamily: "'Inter', sans-serif"}}
-              required
-            />
-            <input
-              type="password"
-              placeholder="Password"
-              value={formData.password}
-              onChange={(e) => setFormData({...formData, password: e.target.value})}
-              className="w-full px-4 py-3 rounded-lg outline-none transition-colors"
-              style={{background: 'rgba(255,255,255,0.05)', border: `1px solid ${styles.borderGlass}`, color: styles.textPrimary, fontFamily: "'Inter', sans-serif"}}
-              required
-            />
-            <button 
-              type="submit" 
-              className="w-full py-3 rounded-lg font-medium transition-all"
-              style={{background: styles.purplePrimary, border: `1px solid ${styles.purpleBright}`, color: '#fff', fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', cursor: 'pointer'}}
-            >
-              {isRegister ? 'Create Account' : 'Sign In'}
-            </button>
-          </form>
-          
-          <div className="mt-6 text-center">
-            <button 
-              onClick={() => setIsRegister(!isRegister)} 
-              style={{color: styles.purpleBright, background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'Inter', sans-serif", fontSize: '14px'}}
-            >
-              {isRegister ? 'Already have an account? Sign in' : "Don't have an account? Register"}
-            </button>
-          </div>
-        </Panel>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {isRegister && (
+            <>
+              <input
+                type="text"
+                placeholder="Full Name"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-purple-400"
+                required
+              />
+              <input
+                type="text"
+                placeholder="Organization"
+                value={organization}
+                onChange={(e) => setOrganization(e.target.value)}
+                className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-purple-400"
+              />
+            </>
+          )}
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-purple-400"
+            required
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-purple-400"
+            required
+          />
+          {error && <div className="text-red-400 text-sm">{error}</div>}
+          <button type="submit" className="w-full py-3 bg-purple-500 hover:bg-purple-600 text-white rounded-lg font-medium transition-colors">
+            {isRegister ? 'Create Account' : 'Sign In'}
+          </button>
+        </form>
+        <div className="mt-4 text-center">
+          <button onClick={() => setIsRegister(!isRegister)} className="text-purple-400 hover:text-purple-300">
+            {isRegister ? 'Already have an account? Sign in' : "Don't have an account? Register"}
+          </button>
+        </div>
       </div>
     </div>
   );
 }
 
-// Dashboard
-function Dashboard() {
+// Dashboard Page
+function DashboardPage() {
   const [stats, setStats] = useState(null);
   const [recentApps, setRecentApps] = useState([]);
   const [activeTests, setActiveTests] = useState([]);
 
   useEffect(() => {
-    api.get('/api/dashboard/stats').then(res => setStats(res.data)).catch(console.error);
-    api.get('/api/dashboard/recent-applications').then(res => setRecentApps(res.data)).catch(console.error);
-    api.get('/api/dashboard/active-tests').then(res => setActiveTests(res.data)).catch(console.error);
+    const fetchData = async () => {
+      try {
+        const [statsRes, appsRes, testsRes] = await Promise.all([
+          api.get('/api/dashboard/stats'),
+          api.get('/api/dashboard/recent-applications'),
+          api.get('/api/dashboard/active-tests'),
+        ]);
+        setStats(statsRes.data);
+        setRecentApps(appsRes.data);
+        setActiveTests(testsRes.data);
+      } catch (err) {
+        console.error('Failed to fetch dashboard data', err);
+      }
+    };
+    fetchData();
   }, []);
 
   const statCards = [
-    { label: 'Total Applications', value: stats?.total_applications || 0, color: styles.purpleBright },
-    { label: 'Active Tests', value: stats?.active_tests || 0, color: styles.accentAmber },
-    { label: 'Certificates Issued', value: stats?.certificates_issued || 0, color: styles.accentGreen },
+    { label: 'Total Applications', value: stats?.total_applications || 0, icon: FileText, color: 'blue' },
+    { label: 'Pending Review', value: stats?.pending_applications || 0, icon: Clock, color: 'yellow' },
+    { label: 'Active Tests', value: stats?.active_tests || 0, icon: Activity, color: 'purple' },
+    { label: 'Certificates Issued', value: stats?.certificates_issued || 0, icon: Award, color: 'green' },
   ];
 
   return (
     <div className="space-y-6">
-      <div>
-        <p style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', color: styles.purpleBright, marginBottom: '8px'}}>Overview</p>
-        <h1 style={{fontFamily: "'Source Serif 4', serif", fontSize: '36px', fontWeight: 200, margin: 0}}>Dashboard</h1>
-      </div>
-
-      {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {statCards.map((stat, i) => (
-          <Panel key={i}>
-            <p style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '8px'}}>{stat.label}</p>
-            <p style={{fontFamily: "'Source Serif 4', serif", fontSize: '42px', fontWeight: 200, color: stat.color, margin: 0}}>{stat.value}</p>
-          </Panel>
+      <h1 className="text-2xl font-bold">Dashboard</h1>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {statCards.map((card) => (
+          <div key={card.label} className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+            <div className="flex items-center justify-between mb-4">
+              <card.icon className={`w-8 h-8 text-${card.color}-500`} />
+              <span className={`text-3xl font-bold text-${card.color}-400`}>{card.value}</span>
+            </div>
+            <div className="text-gray-400">{card.label}</div>
+          </div>
         ))}
       </div>
 
-      {/* Active Tests */}
-      {activeTests.length > 0 && (
-        <Panel>
-          <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Active CAT-72 Tests</h2>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+          <h2 className="text-lg font-semibold mb-4">Recent Applications</h2>
+          <div className="space-y-3">
+            {recentApps.slice(0, 5).map((app) => (
+              <div key={app.id} className="flex items-center justify-between p-3 bg-gray-700/50 rounded-lg">
+                <div>
+                  <div className="font-medium">{app.system_name}</div>
+                  <div className="text-sm text-gray-400">{app.organization_name}</div>
+                </div>
+                <span className={`px-2 py-1 rounded text-xs font-medium ${
+                  app.state === 'conformant' ? 'bg-green-500/20 text-green-400' :
+                  app.state === 'pending' ? 'bg-yellow-500/20 text-yellow-400' :
+                  'bg-gray-500/20 text-gray-400'
+                }`}>
+                  {app.state}
+                </span>
+              </div>
+            ))}
+            {recentApps.length === 0 && <div className="text-gray-500 text-center py-4">No applications yet</div>}
+          </div>
+        </div>
+
+        <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+          <h2 className="text-lg font-semibold mb-4">Active CAT-72 Tests</h2>
           <div className="space-y-3">
             {activeTests.map((test) => (
-              <div key={test.id} className="p-4 rounded-lg" style={{background: 'rgba(255,255,255,0.03)', border: `1px solid ${styles.borderGlass}`}}>
-                <div className="flex justify-between items-center mb-2">
-                  <span style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '12px', color: styles.purpleBright}}>{test.test_id}</span>
-                  <span style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', color: styles.accentAmber}}>
-                    {Math.round((test.elapsed_seconds / (test.duration_hours * 3600)) * 100)}%
-                  </span>
+              <div key={test.id} className="p-3 bg-gray-700/50 rounded-lg">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="font-mono text-sm">{test.test_id}</span>
+                  <span className="text-purple-400">{Math.round((test.elapsed_seconds / (test.duration_hours * 3600)) * 100)}%</span>
                 </div>
-                <div className="w-full h-1 rounded-full overflow-hidden" style={{background: 'rgba(255,255,255,0.1)'}}>
+                <div className="w-full bg-gray-600 rounded-full h-2">
                   <div 
-                    className="h-full rounded-full transition-all"
-                    style={{width: `${(test.elapsed_seconds / (test.duration_hours * 3600)) * 100}%`, background: styles.purpleBright}}
+                    className="bg-purple-400 h-2 rounded-full transition-all" 
+                    style={{ width: `${(test.elapsed_seconds / (test.duration_hours * 3600)) * 100}%` }}
                   />
+                </div>
+                <div className="mt-2 text-xs text-gray-400">
+                  Convergence: {(test.convergence_score * 100 || 0).toFixed(1)}% | Interlocks: {test.interlock_activations}
                 </div>
               </div>
             ))}
+            {activeTests.length === 0 && <div className="text-gray-500 text-center py-4">No active tests</div>}
           </div>
-        </Panel>
-      )}
-
-      {/* Recent Applications */}
-      <Panel>
-        <div className="flex justify-between items-center mb-4">
-          <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary}}>Recent Applications</h2>
-          <Link to="/applications/new" className="flex items-center gap-2 px-4 py-2 rounded-lg transition-colors no-underline" style={{background: styles.purplePrimary, border: `1px solid ${styles.purpleBright}`, color: '#fff', fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase'}}>
-            <Plus className="w-4 h-4" />
-            New Application
-          </Link>
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr style={{borderBottom: `1px solid ${styles.borderGlass}`}}>
-                <th className="px-4 py-3 text-left" style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>System</th>
-                <th className="px-4 py-3 text-left" style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>Organization</th>
-                <th className="px-4 py-3 text-left" style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>State</th>
-                <th className="px-4 py-3 text-left" style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>Submitted</th>
-              </tr>
-            </thead>
-            <tbody>
-              {recentApps.map((app) => (
-                <tr key={app.id} style={{borderBottom: `1px solid ${styles.borderGlass}`}}>
-                  <td className="px-4 py-3" style={{color: styles.textPrimary}}>{app.system_name}</td>
-                  <td className="px-4 py-3" style={{color: styles.textSecondary}}>{app.organization_name}</td>
-                  <td className="px-4 py-3">
-                    <span className="px-2 py-1 rounded text-xs" style={{
-                      background: app.state === 'conformant' ? 'rgba(92,214,133,0.15)' : app.state === 'observe' ? 'rgba(157,140,207,0.15)' : 'rgba(214,160,92,0.15)',
-                      color: app.state === 'conformant' ? styles.accentGreen : app.state === 'observe' ? styles.purpleBright : styles.accentAmber,
-                      fontFamily: "'IBM Plex Mono', monospace",
-                      fontSize: '10px',
-                      letterSpacing: '1px',
-                      textTransform: 'uppercase',
-                    }}>
-                      {app.state}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3" style={{color: styles.textTertiary, fontSize: '14px'}}>{new Date(app.created_at).toLocaleDateString()}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </Panel>
+      </div>
     </div>
   );
 }
 
-// Applications List
-function ApplicationsList() {
+// Applications Page
+function ApplicationsPage() {
   const [applications, setApplications] = useState([]);
 
   useEffect(() => {
-    api.get('/api/applications/').then(res => setApplications(res.data)).catch(console.error);
+    api.get('/api/applicants').then(res => setApplications(res.data)).catch(console.error);
   }, []);
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-start">
-        <div>
-          <p style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', color: styles.purpleBright, marginBottom: '8px'}}>Conformance</p>
-          <h1 style={{fontFamily: "'Source Serif 4', serif", fontSize: '36px', fontWeight: 200, margin: 0}}>Applications</h1>
-        </div>
-        <Link to="/applications/new" className="flex items-center gap-2 px-4 py-2 rounded-lg transition-colors no-underline" style={{background: styles.purplePrimary, border: `1px solid ${styles.purpleBright}`, color: '#fff', fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase'}}>
-          <Plus className="w-4 h-4" />
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold">Applications</h1>
+        <Link to="/applications/new" className="flex items-center gap-2 px-4 py-2 bg-purple-500 hover:bg-purple-600 rounded-lg transition-colors">
+          <Plus className="w-5 h-5" />
           New Application
         </Link>
       </div>
-
-      <Panel>
+      
+      <div className="bg-gray-800 rounded-xl border border-gray-700 overflow-hidden">
         <table className="w-full">
-          <thead>
-            <tr style={{borderBottom: `1px solid ${styles.borderGlass}`}}>
-              <th className="px-4 py-3 text-left" style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>System Name</th>
-              <th className="px-4 py-3 text-left" style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>Organization</th>
-              <th className="px-4 py-3 text-left" style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>State</th>
-              <th className="px-4 py-3 text-left" style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>Submitted</th>
+          <thead className="bg-gray-700/50">
+            <tr>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">Application #</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">System</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">Organization</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">Status</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">Submitted</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-gray-700">
             {applications.map((app) => (
-              <tr key={app.id} className="transition-colors" style={{borderBottom: `1px solid ${styles.borderGlass}`}}>
-                <td className="px-4 py-4">
-                  <Link to={`/applications/${app.id}`} style={{color: styles.purpleBright, textDecoration: 'none'}}>{app.system_name}</Link>
-                </td>
-                <td className="px-4 py-4" style={{color: styles.textSecondary}}>{app.organization_name}</td>
-                <td className="px-4 py-4">
-                  <span className="px-2 py-1 rounded" style={{
-                    background: app.state === 'conformant' ? 'rgba(92,214,133,0.15)' : app.state === 'observe' ? 'rgba(157,140,207,0.15)' : app.state === 'revoked' ? 'rgba(214,92,92,0.15)' : 'rgba(214,160,92,0.15)',
-                    color: app.state === 'conformant' ? styles.accentGreen : app.state === 'observe' ? styles.purpleBright : app.state === 'revoked' ? styles.accentRed : styles.accentAmber,
-                    fontFamily: "'IBM Plex Mono', monospace",
-                    fontSize: '10px',
-                    letterSpacing: '1px',
-                    textTransform: 'uppercase',
-                  }}>
+              <tr key={app.id} className="hover:bg-gray-700/30 cursor-pointer">
+                <td className="px-6 py-4 font-mono text-sm">{app.application_number}</td>
+                <td className="px-6 py-4">{app.system_name}</td>
+                <td className="px-6 py-4 text-gray-400">{app.organization_name}</td>
+                <td className="px-6 py-4">
+                  <span className={`px-2 py-1 rounded text-xs font-medium ${
+                    app.state === 'conformant' ? 'bg-green-500/20 text-green-400' :
+                    app.state === 'pending' ? 'bg-yellow-500/20 text-yellow-400' :
+                    app.state === 'bounded' ? 'bg-purple-400/20 text-purple-400' :
+                    'bg-gray-500/20 text-gray-400'
+                  }`}>
                     {app.state}
                   </span>
                 </td>
-                <td className="px-4 py-4" style={{color: styles.textTertiary, fontSize: '14px'}}>{new Date(app.created_at).toLocaleDateString()}</td>
+                <td className="px-6 py-4 text-gray-400 text-sm">
+                  {app.submitted_at ? new Date(app.submitted_at).toLocaleDateString() : '-'}
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
         {applications.length === 0 && (
-          <div className="text-center py-12" style={{color: styles.textTertiary}}>No applications yet</div>
+          <div className="text-center py-12 text-gray-500">No applications found</div>
         )}
-      </Panel>
+      </div>
     </div>
   );
 }
 
 // New Application Form
-function NewApplication() {
+function NewApplicationPage() {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    organization_name: '', system_name: '', system_description: '',
-    odd_specification: '', contact_email: '', contact_phone: ''
-  });
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [formData, setFormData] = useState({
+    organization_name: '',
+    contact_name: '',
+    contact_email: '',
+    contact_phone: '',
+    system_name: '',
+    system_description: '',
+    system_version: '',
+    manufacturer: '',
+    environment_type: 'urban',
+    notes: '',
+  });
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setError('');
+
     try {
-      await api.post('/api/applications/', formData);
+      const payload = {
+        organization_name: formData.organization_name,
+        contact_name: formData.contact_name,
+        contact_email: formData.contact_email,
+        contact_phone: formData.contact_phone || null,
+        system_name: formData.system_name,
+        system_description: formData.system_description,
+        system_version: formData.system_version,
+        manufacturer: formData.manufacturer,
+        odd_specification: {
+          environment_type: formData.environment_type,
+        },
+        envelope_definition: {
+          state_variables: ["x", "y", "velocity", "heading"],
+          boundaries: {
+            x: { min: -100, max: 100 },
+            y: { min: -100, max: 100 },
+            velocity: { min: 0, max: 30 },
+            heading: { min: 0, max: 360 }
+          }
+        },
+        notes: formData.notes || null,
+      };
+
+      await api.post('/api/applicants/', payload);
       navigate('/applications');
     } catch (err) {
       setError(err.response?.data?.detail || 'Failed to submit application');
+    } finally {
+      setLoading(false);
     }
   };
 
-  const inputStyle = {
-    background: 'rgba(255,255,255,0.05)',
-    border: `1px solid ${styles.borderGlass}`,
-    color: styles.textPrimary,
-    fontFamily: "'Inter', sans-serif",
-  };
-
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
-      <div>
-        <Link to="/applications" className="flex items-center gap-2 mb-4 no-underline" style={{color: styles.textTertiary, fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase'}}>
-          <ArrowLeft className="w-4 h-4" />
-          Back to Applications
-        </Link>
-        <p style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', color: styles.purpleBright, marginBottom: '8px'}}>New Submission</p>
-        <h1 style={{fontFamily: "'Source Serif 4', serif", fontSize: '36px', fontWeight: 200, margin: 0}}>ODDC Application</h1>
-        <p style={{color: styles.textSecondary, marginTop: '8px'}}>Submit your autonomous system for conformance determination</p>
+    <div className="max-w-3xl mx-auto space-y-6">
+      <div className="flex items-center gap-4">
+        <button onClick={() => navigate('/applications')} className="p-2 hover:bg-gray-700 rounded-lg">
+          <ArrowLeft className="w-5 h-5" />
+        </button>
+        <h1 className="text-2xl font-bold">New Certification Application</h1>
       </div>
 
-      <Panel>
-        {error && <div className="mb-4 p-3 rounded-lg" style={{background: 'rgba(214,92,92,0.15)', border: '1px solid rgba(214,92,92,0.3)', color: styles.accentRed}}>{error}</div>}
-        
-        <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Organization Info */}
+        <div className="bg-gray-800 rounded-xl p-6 border border-gray-700 space-y-4">
+          <h2 className="text-lg font-semibold text-purple-400">Organization Information</h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm text-gray-400 mb-1">Organization Name *</label>
+              <input
+                type="text"
+                name="organization_name"
+                value={formData.organization_name}
+                onChange={handleChange}
+                required
+                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-400"
+              />
+            </div>
+            <div>
+              <label className="block text-sm text-gray-400 mb-1">Contact Name *</label>
+              <input
+                type="text"
+                name="contact_name"
+                value={formData.contact_name}
+                onChange={handleChange}
+                required
+                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-400"
+              />
+            </div>
+            <div>
+              <label className="block text-sm text-gray-400 mb-1">Contact Email *</label>
+              <input
+                type="email"
+                name="contact_email"
+                value={formData.contact_email}
+                onChange={handleChange}
+                required
+                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-400"
+              />
+            </div>
+            <div>
+              <label className="block text-sm text-gray-400 mb-1">Contact Phone</label>
+              <input
+                type="tel"
+                name="contact_phone"
+                value={formData.contact_phone}
+                onChange={handleChange}
+                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-400"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* System Info */}
+        <div className="bg-gray-800 rounded-xl p-6 border border-gray-700 space-y-4">
+          <h2 className="text-lg font-semibold text-purple-400">System Under Test</h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm text-gray-400 mb-1">System Name *</label>
+              <input
+                type="text"
+                name="system_name"
+                value={formData.system_name}
+                onChange={handleChange}
+                required
+                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-400"
+              />
+            </div>
+            <div>
+              <label className="block text-sm text-gray-400 mb-1">System Version *</label>
+              <input
+                type="text"
+                name="system_version"
+                value={formData.system_version}
+                onChange={handleChange}
+                required
+                placeholder="e.g., 1.0.0"
+                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-400"
+              />
+            </div>
+            <div>
+              <label className="block text-sm text-gray-400 mb-1">Manufacturer *</label>
+              <input
+                type="text"
+                name="manufacturer"
+                value={formData.manufacturer}
+                onChange={handleChange}
+                required
+                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-400"
+              />
+            </div>
+            <div>
+              <label className="block text-sm text-gray-400 mb-1">Environment Type *</label>
+              <select
+                name="environment_type"
+                value={formData.environment_type}
+                onChange={handleChange}
+                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-400"
+              >
+                <option value="urban">Urban</option>
+                <option value="highway">Highway</option>
+                <option value="indoor">Indoor</option>
+                <option value="marine">Marine</option>
+                <option value="aerial">Aerial</option>
+              </select>
+            </div>
+          </div>
+
           <div>
-            <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.purpleBright, marginBottom: '16px'}}>Organization Information</h2>
-            <div className="space-y-4">
-              <div>
-                <label style={{display: 'block', marginBottom: '8px', color: styles.textSecondary, fontSize: '14px'}}>Organization Name</label>
-                <input type="text" value={formData.organization_name} onChange={(e) => setFormData({...formData, organization_name: e.target.value})} className="w-full px-4 py-3 rounded-lg outline-none" style={inputStyle} required />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label style={{display: 'block', marginBottom: '8px', color: styles.textSecondary, fontSize: '14px'}}>Contact Email</label>
-                  <input type="email" value={formData.contact_email} onChange={(e) => setFormData({...formData, contact_email: e.target.value})} className="w-full px-4 py-3 rounded-lg outline-none" style={inputStyle} required />
-                </div>
-                <div>
-                  <label style={{display: 'block', marginBottom: '8px', color: styles.textSecondary, fontSize: '14px'}}>Contact Phone</label>
-                  <input type="tel" value={formData.contact_phone} onChange={(e) => setFormData({...formData, contact_phone: e.target.value})} className="w-full px-4 py-3 rounded-lg outline-none" style={inputStyle} />
-                </div>
-              </div>
-            </div>
+            <label className="block text-sm text-gray-400 mb-1">System Description *</label>
+            <textarea
+              name="system_description"
+              value={formData.system_description}
+              onChange={handleChange}
+              required
+              rows={4}
+              placeholder="Describe the autonomous system, its capabilities, and intended use case..."
+              className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-400"
+            />
           </div>
+        </div>
 
-          <div style={{borderTop: `1px solid ${styles.borderGlass}`, paddingTop: '24px'}}>
-            <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.purpleBright, marginBottom: '16px'}}>System Information</h2>
-            <div className="space-y-4">
-              <div>
-                <label style={{display: 'block', marginBottom: '8px', color: styles.textSecondary, fontSize: '14px'}}>System Name</label>
-                <input type="text" value={formData.system_name} onChange={(e) => setFormData({...formData, system_name: e.target.value})} className="w-full px-4 py-3 rounded-lg outline-none" style={inputStyle} required />
-              </div>
-              <div>
-                <label style={{display: 'block', marginBottom: '8px', color: styles.textSecondary, fontSize: '14px'}}>System Description</label>
-                <textarea value={formData.system_description} onChange={(e) => setFormData({...formData, system_description: e.target.value})} rows={4} className="w-full px-4 py-3 rounded-lg outline-none resize-none" style={inputStyle} required />
-              </div>
-              <div>
-                <label style={{display: 'block', marginBottom: '8px', color: styles.textSecondary, fontSize: '14px'}}>ODD Specification</label>
-                <textarea value={formData.odd_specification} onChange={(e) => setFormData({...formData, odd_specification: e.target.value})} rows={6} className="w-full px-4 py-3 rounded-lg outline-none resize-none" style={inputStyle} placeholder="Describe the Operational Design Domain including environment type, speed limits, geographic constraints, weather conditions, etc." required />
-              </div>
-            </div>
+        {/* Additional Notes */}
+        <div className="bg-gray-800 rounded-xl p-6 border border-gray-700 space-y-4">
+          <h2 className="text-lg font-semibold text-purple-400">Additional Information</h2>
+          
+          <div>
+            <label className="block text-sm text-gray-400 mb-1">Notes</label>
+            <textarea
+              name="notes"
+              value={formData.notes}
+              onChange={handleChange}
+              rows={3}
+              placeholder="Any additional information or special requirements..."
+              className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-400"
+            />
           </div>
+        </div>
 
-          <button type="submit" className="w-full py-3 rounded-lg transition-all" style={{background: styles.purplePrimary, border: `1px solid ${styles.purpleBright}`, color: '#fff', fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', cursor: 'pointer'}}>
-            Submit Application
+        {error && (
+          <div className="bg-red-500/20 border border-red-500 text-red-400 px-4 py-3 rounded-lg">
+            {error}
+          </div>
+        )}
+
+        <div className="flex gap-4">
+          <button
+            type="button"
+            onClick={() => navigate('/applications')}
+            className="px-6 py-3 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors"
+          >
+            Cancel
           </button>
-        </form>
-      </Panel>
+          <button
+            type="submit"
+            disabled={loading}
+            className="flex-1 px-6 py-3 bg-purple-500 hover:bg-purple-600 rounded-lg font-medium transition-colors disabled:opacity-50"
+          >
+            {loading ? 'Submitting...' : 'Submit Application'}
+          </button>
+        </div>
+      </form>
     </div>
   );
 }
 
-// Application Detail
-function ApplicationDetail() {
-  const { id } = useLocation().pathname.match(/\/applications\/(\d+)/)?.slice(1) || [];
-  const [app, setApp] = useState(null);
-
-  useEffect(() => {
-    if (id) {
-      api.get(`/api/applications/${id}`).then(res => setApp(res.data)).catch(console.error);
-    }
-  }, [id]);
-
-  if (!app) return <div style={{color: styles.textTertiary}}>Loading...</div>;
-
-  return (
-    <div className="space-y-6">
-      <Link to="/applications" className="flex items-center gap-2 no-underline" style={{color: styles.textTertiary, fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase'}}>
-        <ArrowLeft className="w-4 h-4" />
-        Back to Applications
-      </Link>
-      
-      <div>
-        <p style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', color: styles.purpleBright, marginBottom: '8px'}}>Application Detail</p>
-        <h1 style={{fontFamily: "'Source Serif 4', serif", fontSize: '36px', fontWeight: 200, margin: 0}}>{app.system_name}</h1>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Panel>
-          <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Organization</h2>
-          <p style={{color: styles.textPrimary, fontSize: '18px', marginBottom: '8px'}}>{app.organization_name}</p>
-          <p style={{color: styles.textSecondary}}>{app.contact_email}</p>
-        </Panel>
-        <Panel>
-          <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Status</h2>
-          <span className="px-3 py-1 rounded" style={{
-            background: app.state === 'conformant' ? 'rgba(92,214,133,0.15)' : 'rgba(214,160,92,0.15)',
-            color: app.state === 'conformant' ? styles.accentGreen : styles.accentAmber,
-            fontFamily: "'IBM Plex Mono', monospace",
-            fontSize: '12px',
-            letterSpacing: '1px',
-            textTransform: 'uppercase',
-          }}>
-            {app.state}
-          </span>
-        </Panel>
-      </div>
-
-      <Panel>
-        <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>ODD Specification</h2>
-        <p style={{color: styles.textSecondary, lineHeight: 1.7, whiteSpace: 'pre-wrap'}}>{app.odd_specification}</p>
-      </Panel>
-    </div>
-  );
-}
-
-// CAT-72 Console
-function CAT72Console() {
+// CAT-72 Console Page
+function CAT72Page() {
   const [tests, setTests] = useState([]);
+  const [selectedTest, setSelectedTest] = useState(null);
+  const [metrics, setMetrics] = useState(null);
 
   useEffect(() => {
     api.get('/api/cat72/tests').then(res => setTests(res.data)).catch(console.error);
   }, []);
 
+  useEffect(() => {
+    if (selectedTest && selectedTest.state === 'running') {
+      const interval = setInterval(() => {
+        api.get(`/api/cat72/tests/${selectedTest.test_id}/metrics`)
+          .then(res => setMetrics(res.data))
+          .catch(console.error);
+      }, 1000);
+      return () => clearInterval(interval);
+    }
+  }, [selectedTest]);
+
+  const formatTime = (seconds) => {
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = seconds % 60;
+    return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  };
+
   return (
     <div className="space-y-6">
-      <div>
-        <p style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', color: styles.purpleBright, marginBottom: '8px'}}>Testing</p>
-        <h1 style={{fontFamily: "'Source Serif 4', serif", fontSize: '36px', fontWeight: 200, margin: 0}}>CAT-72 Console</h1>
-        <p style={{color: styles.textSecondary, marginTop: '8px'}}>72-hour Convergence Authorization Tests</p>
-      </div>
-
-      <Panel>
-        <table className="w-full">
-          <thead>
-            <tr style={{borderBottom: `1px solid ${styles.borderGlass}`}}>
-              <th className="px-4 py-3 text-left" style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>Test ID</th>
-              <th className="px-4 py-3 text-left" style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>State</th>
-              <th className="px-4 py-3 text-left" style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>Progress</th>
-              <th className="px-4 py-3 text-left" style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>Result</th>
-            </tr>
-          </thead>
-          <tbody>
+      <h1 className="text-2xl font-bold">CAT-72 Console</h1>
+      
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Test List */}
+        <div className="bg-gray-800 rounded-xl p-4 border border-gray-700">
+          <h2 className="text-lg font-semibold mb-4">Tests</h2>
+          <div className="space-y-2">
             {tests.map((test) => (
-              <tr key={test.id} style={{borderBottom: `1px solid ${styles.borderGlass}`}}>
-                <td className="px-4 py-4" style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '12px', color: styles.purpleBright}}>{test.test_id}</td>
-                <td className="px-4 py-4">
-                  <span className="px-2 py-1 rounded" style={{
-                    background: test.state === 'running' ? 'rgba(214,160,92,0.15)' : test.state === 'completed' ? 'rgba(92,214,133,0.15)' : 'rgba(157,140,207,0.15)',
-                    color: test.state === 'running' ? styles.accentAmber : test.state === 'completed' ? styles.accentGreen : styles.purpleBright,
-                    fontFamily: "'IBM Plex Mono', monospace",
-                    fontSize: '10px',
-                    letterSpacing: '1px',
-                    textTransform: 'uppercase',
-                  }}>
+              <button
+                key={test.id}
+                onClick={() => setSelectedTest(test)}
+                className={`w-full text-left p-3 rounded-lg transition-colors ${
+                  selectedTest?.id === test.id ? 'bg-purple-500' : 'bg-gray-700/50 hover:bg-gray-700'
+                }`}
+              >
+                <div className="font-mono text-sm">{test.test_id}</div>
+                <div className="flex items-center justify-between mt-1">
+                  <span className={`text-xs ${
+                    test.state === 'running' ? 'text-green-400' :
+                    test.state === 'completed' ? 'text-blue-400' :
+                    'text-gray-400'
+                  }`}>
                     {test.state}
                   </span>
-                </td>
-                <td className="px-4 py-4">
-                  <div className="flex items-center gap-2">
-                    <div className="w-24 h-1 rounded-full overflow-hidden" style={{background: 'rgba(255,255,255,0.1)'}}>
-                      <div className="h-full rounded-full" style={{width: `${test.state === 'completed' ? 100 : (test.elapsed_seconds / (test.duration_hours * 3600)) * 100}%`, background: styles.purpleBright}} />
-                    </div>
-                    <span style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', color: styles.textTertiary}}>
-                      {test.state === 'completed' ? '100%' : `${Math.round((test.elapsed_seconds / (test.duration_hours * 3600)) * 100)}%`}
-                    </span>
-                  </div>
-                </td>
-                <td className="px-4 py-4">
-                  {test.result && (
-                    <span style={{
-                      color: test.result === 'PASS' ? styles.accentGreen : styles.accentRed,
-                      fontFamily: "'IBM Plex Mono', monospace",
-                      fontSize: '11px',
-                      fontWeight: 500,
-                    }}>
-                      {test.result}
-                    </span>
-                  )}
-                </td>
-              </tr>
+                  {test.result && <span className={test.result === 'PASS' ? 'text-green-400' : 'text-red-400'}>{test.result}</span>}
+                </div>
+              </button>
             ))}
-          </tbody>
-        </table>
-        {tests.length === 0 && (
-          <div className="text-center py-12" style={{color: styles.textTertiary}}>No tests yet</div>
-        )}
-      </Panel>
+            {tests.length === 0 && <div className="text-gray-500 text-center py-4">No tests</div>}
+          </div>
+        </div>
+
+        {/* Metrics Panel */}
+        <div className="lg:col-span-2 bg-gray-800 rounded-xl p-6 border border-gray-700">
+          {selectedTest ? (
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl font-mono">{selectedTest.test_id}</h2>
+                <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                  selectedTest.state === 'running' ? 'bg-green-500/20 text-green-400' :
+                  selectedTest.state === 'completed' ? 'bg-blue-500/20 text-blue-400' :
+                  'bg-gray-500/20 text-gray-400'
+                }`}>
+                  {selectedTest.state}
+                </span>
+              </div>
+
+              {/* Timer */}
+              <div className="text-center py-8 bg-gray-900 rounded-xl">
+                <div className="text-5xl font-mono text-purple-400">
+                  {formatTime(metrics?.elapsed_seconds || selectedTest.elapsed_seconds || 0)}
+                </div>
+                <div className="text-gray-500 mt-2">
+                  / {formatTime(selectedTest.duration_hours * 3600)}
+                </div>
+                <div className="w-full max-w-md mx-auto mt-4 bg-gray-700 rounded-full h-3">
+                  <div 
+                    className="bg-purple-400 h-3 rounded-full transition-all"
+                    style={{ width: `${metrics?.progress_percent || 0}%` }}
+                  />
+                </div>
+              </div>
+
+              {/* Metrics Grid */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="bg-gray-900 rounded-lg p-4 text-center">
+                  <div className="text-2xl font-bold text-green-400">
+                    {((metrics?.conformance_rate || selectedTest.convergence_score || 0) * 100).toFixed(1)}%
+                  </div>
+                  <div className="text-xs text-gray-500 mt-1">Convergence</div>
+                </div>
+                <div className="bg-gray-900 rounded-lg p-4 text-center">
+                  <div className="text-2xl font-bold text-blue-400">
+                    {(metrics?.current_drift || selectedTest.drift_rate || 0).toFixed(4)}
+                  </div>
+                  <div className="text-xs text-gray-500 mt-1">Drift Rate</div>
+                </div>
+                <div className="bg-gray-900 rounded-lg p-4 text-center">
+                  <div className="text-2xl font-bold text-purple-400">
+                    {((metrics?.current_stability || selectedTest.stability_index || 0) * 100).toFixed(1)}%
+                  </div>
+                  <div className="text-xs text-gray-500 mt-1">Stability</div>
+                </div>
+                <div className="bg-gray-900 rounded-lg p-4 text-center">
+                  <div className="text-2xl font-bold text-yellow-400">
+                    {metrics?.interlock_activations || selectedTest.interlock_activations || 0}
+                  </div>
+                  <div className="text-xs text-gray-500 mt-1">Interlocks</div>
+                </div>
+              </div>
+
+              {/* Evidence Hash */}
+              <div className="bg-gray-900 rounded-lg p-4">
+                <div className="text-xs text-gray-500 mb-1">Evidence Hash</div>
+                <div className="font-mono text-xs text-green-400 break-all">
+                  {metrics?.evidence_hash || selectedTest.evidence_hash || 'N/A'}
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="text-center py-12 text-gray-500">
+              Select a test to view details
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
 
-// Certificates
+// Certificates Page
 function CertificatesPage() {
   const [certificates, setCertificates] = useState([]);
 
   useEffect(() => {
-    api.get('/api/certificates/').then(res => setCertificates(res.data)).catch(console.error);
+    api.get('/api/certificates').then(res => setCertificates(res.data)).catch(console.error);
   }, []);
 
   return (
     <div className="space-y-6">
-      <div>
-        <p style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', color: styles.purpleBright, marginBottom: '8px'}}>Records</p>
-        <h1 style={{fontFamily: "'Source Serif 4', serif", fontSize: '36px', fontWeight: 200, margin: 0}}>Certificates</h1>
-        <p style={{color: styles.textSecondary, marginTop: '8px'}}>Issued ODDC conformance determinations</p>
-      </div>
-
-      <Panel>
+      <h1 className="text-2xl font-bold">Certificates</h1>
+      
+      <div className="bg-gray-800 rounded-xl border border-gray-700 overflow-hidden">
         <table className="w-full">
-          <thead>
-            <tr style={{borderBottom: `1px solid ${styles.borderGlass}`}}>
-              <th className="px-4 py-3 text-left" style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>Certificate #</th>
-              <th className="px-4 py-3 text-left" style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>System</th>
-              <th className="px-4 py-3 text-left" style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>Organization</th>
-              <th className="px-4 py-3 text-left" style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>Status</th>
-              <th className="px-4 py-3 text-left" style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>Expires</th>
-              <th className="px-4 py-3 text-left" style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>Actions</th>
+          <thead className="bg-gray-700/50">
+            <tr>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">Certificate #</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">System</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">Organization</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">Status</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">Convergence</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">Expires</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">Actions</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-gray-700">
             {certificates.map((cert) => (
-              <tr key={cert.id} style={{borderBottom: `1px solid ${styles.borderGlass}`}}>
-                <td className="px-4 py-4" style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '12px', color: styles.purpleBright}}>{cert.certificate_number}</td>
-                <td className="px-4 py-4" style={{color: styles.textPrimary}}>{cert.system_name}</td>
-                <td className="px-4 py-4" style={{color: styles.textSecondary}}>{cert.organization_name}</td>
-                <td className="px-4 py-4">
-                  <span className="px-2 py-1 rounded" style={{
-                    background: cert.state === 'conformant' ? 'rgba(92,214,133,0.15)' : cert.state === 'suspended' ? 'rgba(214,160,92,0.15)' : 'rgba(214,92,92,0.15)',
-                    color: cert.state === 'conformant' ? styles.accentGreen : cert.state === 'suspended' ? styles.accentAmber : styles.accentRed,
-                    fontFamily: "'IBM Plex Mono', monospace",
-                    fontSize: '10px',
-                    letterSpacing: '1px',
-                    textTransform: 'uppercase',
-                  }}>
+              <tr key={cert.id} className="hover:bg-gray-700/30">
+                <td className="px-6 py-4 font-mono text-sm text-purple-400">{cert.certificate_number}</td>
+                <td className="px-6 py-4">{cert.system_name}</td>
+                <td className="px-6 py-4 text-gray-400">{cert.organization_name}</td>
+                <td className="px-6 py-4">
+                  <span className={`px-2 py-1 rounded text-xs font-medium ${
+                    cert.state === 'conformant' ? 'bg-green-500/20 text-green-400' :
+                    cert.state === 'suspended' ? 'bg-yellow-500/20 text-yellow-400' :
+                    cert.state === 'revoked' ? 'bg-red-500/20 text-red-400' :
+                    'bg-gray-500/20 text-gray-400'
+                  }`}>
                     {cert.state}
                   </span>
                 </td>
-                <td className="px-4 py-4" style={{color: styles.textTertiary, fontSize: '14px'}}>{cert.expires_at ? new Date(cert.expires_at).toLocaleDateString() : '-'}</td>
-                <td className="px-4 py-4">
-                  <a 
-                    href={`https://sentinel-authority-production.up.railway.app/api/certificates/${cert.certificate_number}/pdf`} 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    className="px-3 py-1 rounded transition-colors no-underline"
-                    style={{background: styles.purplePrimary, border: `1px solid ${styles.purpleBright}`, color: '#fff', fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase'}}
-                  >
-                    Download PDF
-                  </a>
+                <td className="px-6 py-4 font-mono text-sm text-green-400">
+                  {(cert.convergence_score * 100).toFixed(1)}%
+                </td>
+                <td className="px-6 py-4 text-gray-400 text-sm">
+                  {cert.expires_at ? new Date(cert.expires_at).toLocaleDateString() : '-'}
+                </td>
+                <td className="px-6 py-4">
+                  <a href={`https://sentinel-authority-production.up.railway.app/api/certificates/${cert.certificate_number}/pdf`} target="_blank" rel="noopener noreferrer" className="px-3 py-1 bg-purple-500 hover:bg-purple-600 rounded text-sm font-medium">Download PDF</a>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
         {certificates.length === 0 && (
-          <div className="text-center py-12" style={{color: styles.textTertiary}}>No certificates issued</div>
+          <div className="text-center py-12 text-gray-500">No certificates issued</div>
         )}
-      </Panel>
+      </div>
     </div>
   );
 }
 
-// Licensees
+// Licensees Page
 function LicenseesPage() {
   const [licensees, setLicensees] = useState([]);
+  const { user } = useAuth();
 
   useEffect(() => {
-    api.get('/api/licensees/').then(res => setLicensees(res.data)).catch(console.error);
-  }, []);
+    if (user?.role === 'admin') {
+      api.get('/api/licensees').then(res => setLicensees(res.data)).catch(console.error);
+    }
+  }, [user]);
+
+  if (user?.role === 'licensee') {
+    return (
+      <div className="space-y-6">
+        <h1 className="text-2xl font-bold">Licensee Portal</h1>
+        <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+          <h2 className="text-lg font-semibold mb-4">ENVELO Documentation</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <a href="#" className="block p-4 bg-gray-700/50 rounded-lg hover:bg-gray-700 transition-colors">
+              <h3 className="font-medium">Architecture Overview</h3>
+              <p className="text-sm text-gray-400 mt-1">Non-bypassable interlock architecture</p>
+            </a>
+            <a href="#" className="block p-4 bg-gray-700/50 rounded-lg hover:bg-gray-700 transition-colors">
+              <h3 className="font-medium">Envelope Definition</h3>
+              <p className="text-sm text-gray-400 mt-1">How to define operational boundaries</p>
+            </a>
+            <a href="#" className="block p-4 bg-gray-700/50 rounded-lg hover:bg-gray-700 transition-colors">
+              <h3 className="font-medium">Integration API</h3>
+              <p className="text-sm text-gray-400 mt-1">Runtime API for ENVELO enforcement</p>
+            </a>
+            <a href="#" className="block p-4 bg-gray-700/50 rounded-lg hover:bg-gray-700 transition-colors">
+              <h3 className="font-medium">Certification Requirements</h3>
+              <p className="text-sm text-gray-400 mt-1">What you need for ODDC certification</p>
+            </a>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
-      <div>
-        <p style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', color: styles.purpleBright, marginBottom: '8px'}}>Partners</p>
-        <h1 style={{fontFamily: "'Source Serif 4', serif", fontSize: '36px', fontWeight: 200, margin: 0}}>Licensed Implementers</h1>
-        <p style={{color: styles.textSecondary, marginTop: '8px'}}>Authorized ENVELO integrators</p>
-      </div>
-
-      <Panel>
+      <h1 className="text-2xl font-bold">Licensees</h1>
+      
+      <div className="bg-gray-800 rounded-xl border border-gray-700 overflow-hidden">
         <table className="w-full">
-          <thead>
-            <tr style={{borderBottom: `1px solid ${styles.borderGlass}`}}>
-              <th className="px-4 py-3 text-left" style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>Company</th>
-              <th className="px-4 py-3 text-left" style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>Contact</th>
-              <th className="px-4 py-3 text-left" style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>Status</th>
+          <thead className="bg-gray-700/50">
+            <tr>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">License #</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">Organization</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">Type</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">Status</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">Expires</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-gray-700">
             {licensees.map((lic) => (
-              <tr key={lic.id} style={{borderBottom: `1px solid ${styles.borderGlass}`}}>
-                <td className="px-4 py-4" style={{color: styles.textPrimary}}>{lic.company_name}</td>
-                <td className="px-4 py-4" style={{color: styles.textSecondary}}>{lic.contact_email}</td>
-                <td className="px-4 py-4">
-                  <span className="px-2 py-1 rounded" style={{
-                    background: lic.status === 'active' ? 'rgba(92,214,133,0.15)' : 'rgba(214,160,92,0.15)',
-                    color: lic.status === 'active' ? styles.accentGreen : styles.accentAmber,
-                    fontFamily: "'IBM Plex Mono', monospace",
-                    fontSize: '10px',
-                    letterSpacing: '1px',
-                    textTransform: 'uppercase',
-                  }}>
-                    {lic.status}
+              <tr key={lic.id} className="hover:bg-gray-700/30">
+                <td className="px-6 py-4 font-mono text-sm">{lic.license_number}</td>
+                <td className="px-6 py-4">{lic.organization_name}</td>
+                <td className="px-6 py-4 text-gray-400 capitalize">{lic.license_type}</td>
+                <td className="px-6 py-4">
+                  <span className={`px-2 py-1 rounded text-xs font-medium ${
+                    lic.is_active ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
+                  }`}>
+                    {lic.is_active ? 'Active' : 'Inactive'}
                   </span>
+                </td>
+                <td className="px-6 py-4 text-gray-400 text-sm">
+                  {lic.expires_at ? new Date(lic.expires_at).toLocaleDateString() : '-'}
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
         {licensees.length === 0 && (
-          <div className="text-center py-12" style={{color: styles.textTertiary}}>No licensees yet</div>
+          <div className="text-center py-12 text-gray-500">No licensees registered</div>
         )}
-      </Panel>
+      </div>
     </div>
   );
 }
 
-// Verify Page (Public)
+// Public Verification Page
 function VerifyPage() {
   const [certNumber, setCertNumber] = useState('');
   const [result, setResult] = useState(null);
-  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleVerify = async (e) => {
     e.preventDefault();
-    setError('');
-    setResult(null);
+    setLoading(true);
     try {
-      const res = await api.get(`/api/certificates/verify/${certNumber}`);
+      const res = await api.get(`/api/verify/${certNumber}`);
       setResult(res.data);
     } catch (err) {
-      setError('Certificate not found');
+      setResult({ valid: false, message: 'Certificate not found' });
     }
+    setLoading(false);
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4" style={{background: `radial-gradient(1200px 700px at 15% 10%, rgba(91,75,138,0.15), transparent 55%), radial-gradient(900px 600px at 85% 80%, rgba(92,214,133,0.06), transparent 55%), ${styles.bgDeep}`}}>
-      <div className="w-full max-w-md">
+    <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
+      <div className="max-w-lg w-full">
         <div className="text-center mb-8">
-          <div className="flex justify-center mb-4">
-            <BrandMark size={48} />
-          </div>
-          <h1 style={{fontFamily: "'Source Serif 4', serif", fontSize: '32px', fontWeight: 200, color: styles.textPrimary, margin: 0}}>Verify Certificate</h1>
-          <p style={{color: styles.textTertiary, marginTop: '8px'}}>Enter a certificate number to verify its status</p>
+          <Shield className="w-16 h-16 text-purple-400 mx-auto mb-4" />
+          <h1 className="text-3xl font-bold text-white">Verify Certificate</h1>
+          <p className="text-gray-400 mt-2">Enter a certificate number to verify its status</p>
         </div>
 
-        <Panel>
-          <form onSubmit={handleVerify} className="space-y-4">
-            <input
-              type="text"
-              placeholder="e.g., ODDC-2026-00001"
-              value={certNumber}
-              onChange={(e) => setCertNumber(e.target.value)}
-              className="w-full px-4 py-3 rounded-lg outline-none"
-              style={{background: 'rgba(255,255,255,0.05)', border: `1px solid ${styles.borderGlass}`, color: styles.textPrimary, fontFamily: "'IBM Plex Mono', monospace", textAlign: 'center'}}
-            />
-            <button type="submit" className="w-full py-3 rounded-lg transition-all" style={{background: styles.purplePrimary, border: `1px solid ${styles.purpleBright}`, color: '#fff', fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', cursor: 'pointer'}}>
-              Verify
-            </button>
-          </form>
+        <form onSubmit={handleVerify} className="bg-gray-800 rounded-xl p-6 mb-6">
+          <input
+            type="text"
+            placeholder="e.g., ODDC-2026-00015"
+            value={certNumber}
+            onChange={(e) => setCertNumber(e.target.value)}
+            className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-purple-400 font-mono"
+          />
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full mt-4 py-3 bg-purple-500 hover:bg-purple-600 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
+          >
+            {loading ? 'Verifying...' : 'Verify'}
+          </button>
+        </form>
 
-          {error && <div className="mt-4 p-4 rounded-lg text-center" style={{background: 'rgba(214,92,92,0.15)', border: '1px solid rgba(214,92,92,0.3)', color: styles.accentRed}}>{error}</div>}
-
-          {result && (
-            <div className="mt-6 p-4 rounded-lg" style={{background: 'rgba(92,214,133,0.1)', border: '1px solid rgba(92,214,133,0.3)'}}>
-              <div className="flex items-center gap-2 mb-4">
-                <CheckCircle className="w-5 h-5" style={{color: styles.accentGreen}} />
-                <span style={{color: styles.accentGreen, fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase'}}>Valid Certificate</span>
-              </div>
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span style={{color: styles.textTertiary, fontSize: '14px'}}>Organization</span>
-                  <span style={{color: styles.textPrimary}}>{result.organization_name}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span style={{color: styles.textTertiary, fontSize: '14px'}}>System</span>
-                  <span style={{color: styles.textPrimary}}>{result.system_name}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span style={{color: styles.textTertiary, fontSize: '14px'}}>Status</span>
-                  <span style={{color: styles.accentGreen, textTransform: 'uppercase'}}>{result.state}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span style={{color: styles.textTertiary, fontSize: '14px'}}>Expires</span>
-                  <span style={{color: styles.textPrimary}}>{new Date(result.expires_at).toLocaleDateString()}</span>
-                </div>
-              </div>
+        {result && (
+          <div className={`bg-gray-800 rounded-xl p-6 border ${result.valid ? 'border-green-500' : 'border-red-500'}`}>
+            <div className="flex items-center gap-3 mb-4">
+              {result.valid ? (
+                <CheckCircle className="w-8 h-8 text-green-500" />
+              ) : (
+                <AlertTriangle className="w-8 h-8 text-red-500" />
+              )}
+              <span className={`text-xl font-bold ${result.valid ? 'text-green-400' : 'text-red-400'}`}>
+                {result.valid ? 'Valid Certificate' : 'Invalid Certificate'}
+              </span>
             </div>
-          )}
-        </Panel>
+            
+            {result.valid && (
+              <div className="space-y-3 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Organization</span>
+                  <span>{result.organization_name}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-400">System</span>
+                  <span>{result.system_name}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Convergence</span>
+                  <span className="text-green-400">{(result.convergence_score * 100).toFixed(1)}%</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Issued</span>
+                  <span>{new Date(result.issued_at).toLocaleDateString()}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Expires</span>
+                  <span>{new Date(result.expires_at).toLocaleDateString()}</span>
+                </div>
+                <div className="pt-3 border-t border-gray-700">
+                  <div className="text-gray-400 text-xs mb-1">Evidence Hash</div>
+                  <div className="font-mono text-xs text-green-400 break-all">{result.evidence_hash}</div>
+                </div>
+              </div>
+            )}
+            
+            <div className="mt-4 text-sm text-gray-400">{result.message}</div>
+          </div>
+        )}
 
-        <div className="mt-6 text-center">
-          <Link to="/login" style={{color: styles.purpleBright, fontFamily: "'Inter', sans-serif", fontSize: '14px'}}>
-            Back to Platform
+        <div className="text-center mt-6">
+          <Link to="/login" className="text-purple-400 hover:text-purple-300">
+            ← Back to Platform
           </Link>
         </div>
       </div>
@@ -919,25 +1017,46 @@ function VerifyPage() {
 }
 
 // Main App
-function App() {
+export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/verify" element={<VerifyPage />} />
-          <Route path="/dashboard" element={<ProtectedRoute><Layout><Dashboard /></Layout></ProtectedRoute>} />
-          <Route path="/applications" element={<ProtectedRoute><Layout><ApplicationsList /></Layout></ProtectedRoute>} />
-          <Route path="/applications/new" element={<ProtectedRoute><Layout><NewApplication /></Layout></ProtectedRoute>} />
-          <Route path="/applications/:id" element={<ProtectedRoute><Layout><ApplicationDetail /></Layout></ProtectedRoute>} />
-          <Route path="/cat72" element={<ProtectedRoute roles={['admin', 'operator']}><Layout><CAT72Console /></Layout></ProtectedRoute>} />
-          <Route path="/certificates" element={<ProtectedRoute><Layout><CertificatesPage /></Layout></ProtectedRoute>} />
-          <Route path="/licensees" element={<ProtectedRoute><Layout><LicenseesPage /></Layout></ProtectedRoute>} />
-          <Route path="/" element={<Navigate to="/dashboard" />} />
+          <Route path="/dashboard" element={
+            <ProtectedRoute>
+              <Layout><DashboardPage /></Layout>
+            </ProtectedRoute>
+          } />
+          <Route path="/applications" element={
+            <ProtectedRoute>
+              <Layout><ApplicationsPage /></Layout>
+            </ProtectedRoute>
+          } />
+          <Route path="/applications/new" element={
+            <ProtectedRoute>
+              <Layout><NewApplicationPage /></Layout>
+            </ProtectedRoute>
+          } />
+          <Route path="/cat72" element={
+            <ProtectedRoute roles={['admin', 'operator']}>
+              <Layout><CAT72Page /></Layout>
+            </ProtectedRoute>
+          } />
+          <Route path="/certificates" element={
+            <ProtectedRoute>
+              <Layout><CertificatesPage /></Layout>
+            </ProtectedRoute>
+          } />
+          <Route path="/licensees" element={
+            <ProtectedRoute roles={['admin', 'licensee']}>
+              <Layout><LicenseesPage /></Layout>
+            </ProtectedRoute>
+          } />
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
         </Routes>
       </AuthProvider>
     </BrowserRouter>
   );
 }
-
-export default App;
