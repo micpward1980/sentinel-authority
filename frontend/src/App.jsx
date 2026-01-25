@@ -849,7 +849,7 @@ function LicenseesPage() {
       <div className="space-y-6">
         <h1 className="text-2xl font-bold">Licensee Portal</h1>
         <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
-          <h2 className="text-lg font-semibold mb-4">ENVELO™ Documentation</h2>
+          <h2 className="text-lg font-semibold mb-4">ENVELO Documentation</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <a href="#" className="block p-4 bg-gray-700/50 rounded-lg hover:bg-gray-700 transition-colors">
               <h3 className="font-medium">Architecture Overview</h3>
@@ -886,7 +886,6 @@ function LicenseesPage() {
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">Type</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">Status</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">Expires</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-700">
