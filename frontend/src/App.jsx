@@ -252,6 +252,7 @@ function LoginPage() {
           </div>
           <h1 style={{fontFamily: "'Source Serif 4', serif", fontSize: '32px', fontWeight: 200, color: styles.textPrimary, margin: 0}}>ODDC Platform</h1>
           <p style={{color: styles.textTertiary, fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', marginTop: '8px'}}>Sentinel Authority</p>
+          <a href="https://sentinelauthority.org" className="mt-4 inline-block" style={{color: styles.purpleBright, fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px'}}>← MAIN SITE</a>
         </div>
         
         <Panel>
