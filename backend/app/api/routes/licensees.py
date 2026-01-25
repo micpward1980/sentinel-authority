@@ -127,7 +127,7 @@ async def get_documentation(
         raise HTTPException(status_code=403, detail="Licensee access required")
     
     return {
-        "title": "ENVELO™ Implementation Guide",
+        "title": "ENVELO Implementation Guide",
         "version": "1.0",
         "sections": [
             {

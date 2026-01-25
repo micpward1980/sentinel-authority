@@ -1,7 +1,7 @@
 """
 Sentinel Authority Platform
 ===========================
-Unified certification platform for autonomous systems operating under ENVELO™
+Unified certification platform for autonomous systems operating under ENVELO
 (Enforcer for Non-Violable Execution & Limit Oversight)
 
 Copyright 2026 Wemby Corporation. All rights reserved.
@@ -42,7 +42,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title="Sentinel Authority API",
-    description="Certification platform for autonomous systems under ENVELO™ framework",
+    description="Certification platform for autonomous systems under ENVELO framework",
     version="1.0.0",
     lifespan=lifespan,
     docs_url="/docs",
@@ -77,6 +77,6 @@ async def root():
     return {
         "name": "Sentinel Authority Platform",
         "version": "1.0.0",
-        "framework": "ENVELO™",
+        "framework": "ENVELO",
         "docs": "/docs"
     }
