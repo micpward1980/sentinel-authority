@@ -1,0 +1,192 @@
+"""Database models."""
+
+import enum
+from datetime import datetime
+from sqlalchemy import Column, Integer, String, Text, DateTime, Float, Boolean, ForeignKey, Enum, JSON, LargeBinary
+from sqlalchemy.orm import relationship
+from app.core.database import Base
+
+
+class UserRole(str, enum.Enum):
+    ADMIN = "admin"
+    OPERATOR = "operator"
+    APPLICANT = "applicant"
+    LICENSEE = "licensee"
+
+
+class CertificationState(str, enum.Enum):
+    PENDING = "pending"
+    UNDER_REVIEW = "under_review"
+    OBSERVE = "observe"
+    BOUNDED = "bounded"
+    CONFORMANT = "conformant"
+    SUSPENDED = "suspended"
+    REVOKED = "revoked"
+    EXPIRED = "expired"
+
+
+class TestState(str, enum.Enum):
+    SCHEDULED = "scheduled"
+    RUNNING = "running"
+    PAUSED = "paused"
+    COMPLETED = "completed"
+    FAILED = "failed"
+    ABORTED = "aborted"
+
+
+class User(Base):
+    __tablename__ = "users"
+    id = Column(Integer, primary_key=True, index=True)
+    email = Column(String(255), unique=True, index=True, nullable=False)
+    hashed_password = Column(String(255), nullable=False)
+    full_name = Column(String(255))
+    organization = Column(String(255))
+    role = Column(Enum(UserRole), default=UserRole.APPLICANT)
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    applications = relationship("Application", back_populates="applicant")
+
+
+class Application(Base):
+    __tablename__ = "applications"
+    id = Column(Integer, primary_key=True, index=True)
+    application_number = Column(String(50), unique=True, index=True)
+    applicant_id = Column(Integer, ForeignKey("users.id"))
+    organization_name = Column(String(255), nullable=False)
+    contact_name = Column(String(255))
+    contact_email = Column(String(255))
+    contact_phone = Column(String(50))
+    system_name = Column(String(255), nullable=False)
+    system_description = Column(Text)
+    system_version = Column(String(50))
+    manufacturer = Column(String(255))
+    odd_specification = Column(JSON)
+    envelope_definition = Column(JSON)
+    state = Column(Enum(CertificationState), default=CertificationState.PENDING)
+    submitted_at = Column(DateTime, default=datetime.utcnow)
+    reviewed_at = Column(DateTime)
+    preferred_test_date = Column(DateTime)
+    facility_location = Column(String(255))
+    notes = Column(Text)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    applicant = relationship("User", back_populates="applications")
+    tests = relationship("CAT72Test", back_populates="application")
+    certificate = relationship("Certificate", back_populates="application", uselist=False)
+
+
+class CAT72Test(Base):
+    __tablename__ = "cat72_tests"
+    id = Column(Integer, primary_key=True, index=True)
+    test_id = Column(String(50), unique=True, index=True)
+    application_id = Column(Integer, ForeignKey("applications.id"))
+    duration_hours = Column(Integer, default=72)
+    envelope_definition = Column(JSON)
+    state = Column(Enum(TestState), default=TestState.SCHEDULED)
+    started_at = Column(DateTime)
+    ended_at = Column(DateTime)
+    elapsed_seconds = Column(Integer, default=0)
+    operator_id = Column(Integer, ForeignKey("users.id"))
+    total_samples = Column(Integer, default=0)
+    conformant_samples = Column(Integer, default=0)
+    interlock_activations = Column(Integer, default=0)
+    max_drift_observed = Column(Float, default=0.0)
+    convergence_score = Column(Float)
+    drift_rate = Column(Float)
+    stability_index = Column(Float)
+    envelope_margin = Column(Float)
+    evidence_hash = Column(String(64))
+    evidence_chain = Column(JSON)
+    result = Column(String(50))
+    result_notes = Column(Text)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    application = relationship("Application", back_populates="tests")
+    telemetry = relationship("Telemetry", back_populates="test")
+    interlock_events = relationship("InterlockEvent", back_populates="test")
+
+
+class Telemetry(Base):
+    __tablename__ = "telemetry"
+    id = Column(Integer, primary_key=True, index=True)
+    test_id = Column(Integer, ForeignKey("cat72_tests.id"), index=True)
+    timestamp = Column(DateTime, nullable=False, index=True)
+    elapsed_seconds = Column(Integer)
+    state_vector = Column(JSON)
+    in_envelope = Column(Boolean)
+    envelope_distance = Column(Float)
+    convergence_score = Column(Float)
+    drift_rate = Column(Float)
+    stability_index = Column(Float)
+    sample_hash = Column(String(64))
+    prev_hash = Column(String(64))
+    test = relationship("CAT72Test", back_populates="telemetry")
+
+
+class InterlockEvent(Base):
+    __tablename__ = "interlock_events"
+    id = Column(Integer, primary_key=True, index=True)
+    test_id = Column(Integer, ForeignKey("cat72_tests.id"), index=True)
+    timestamp = Column(DateTime, nullable=False)
+    elapsed_seconds = Column(Integer)
+    trigger_type = Column(String(50))
+    trigger_parameter = Column(String(100))
+    trigger_value = Column(Float)
+    threshold_value = Column(Float)
+    action_type = Column(String(50))
+    action_details = Column(JSON)
+    state_before = Column(JSON)
+    state_after = Column(JSON)
+    event_hash = Column(String(64))
+    test = relationship("CAT72Test", back_populates="interlock_events")
+
+
+class Certificate(Base):
+    __tablename__ = "certificates"
+    id = Column(Integer, primary_key=True, index=True)
+    certificate_number = Column(String(50), unique=True, index=True)
+    application_id = Column(Integer, ForeignKey("applications.id"))
+    organization_name = Column(String(255))
+    system_name = Column(String(255))
+    system_version = Column(String(50))
+    odd_specification = Column(JSON)
+    envelope_definition = Column(JSON)
+    state = Column(Enum(CertificationState), default=CertificationState.CONFORMANT)
+    issued_at = Column(DateTime, default=datetime.utcnow)
+    expires_at = Column(DateTime)
+    issued_by = Column(Integer, ForeignKey("users.id"))
+    test_id = Column(Integer, ForeignKey("cat72_tests.id"))
+    convergence_score = Column(Float)
+    evidence_hash = Column(String(64))
+    certificate_pdf = Column(LargeBinary)
+    verification_url = Column(String(255))
+    history = Column(JSON)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    application = relationship("Application", back_populates="certificate")
+
+
+class Licensee(Base):
+    __tablename__ = "licensees"
+    id = Column(Integer, primary_key=True, index=True)
+    license_number = Column(String(50), unique=True, index=True)
+    organization_name = Column(String(255), nullable=False)
+    contact_name = Column(String(255))
+    contact_email = Column(String(255))
+    license_type = Column(String(50))
+    licensed_at = Column(DateTime, default=datetime.utcnow)
+    expires_at = Column(DateTime)
+    is_active = Column(Boolean, default=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    api_key = Column(String(255))
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+
+class AuditLog(Base):
+    __tablename__ = "audit_log"
+    id = Column(Integer, primary_key=True, index=True)
+    timestamp = Column(DateTime, default=datetime.utcnow, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    user_email = Column(String(255))
+    action = Column(String(100), index=True)
+    resource_type = Column(String(50))
+    resource_id = Column(Integer)
+    details = Column(JSON)
+    log_hash = Column(String(64))

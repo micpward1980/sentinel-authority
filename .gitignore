@@ -1,26 +1,30 @@
-# Dependencies
-node_modules/
-__pycache__/
-*.pyc
-.venv/
-venv/
-env/
-
-# Environment files
+# Environment
 .env
 .env.local
-.env.production
+.env.*.local
 
-# Build outputs
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+.venv/
+ENV/
+
+# Node
+node_modules/
 dist/
-build/
-*.egg-info/
+.cache/
 
 # IDE
 .idea/
 .vscode/
 *.swp
 *.swo
+*~
 
 # OS
 .DS_Store
@@ -30,11 +34,14 @@ Thumbs.db
 *.log
 logs/
 
-# Testing
+# Test
 .coverage
 htmlcov/
 .pytest_cache/
 
-# Local development
-*.db
-*.sqlite
+# Build
+build/
+*.egg-info/
+
+# Docker
+*.pid

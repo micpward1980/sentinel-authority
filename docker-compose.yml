@@ -6,38 +6,31 @@ services:
     image: postgres:15-alpine
     container_name: sentinel-db
     environment:
-      POSTGRES_DB: sentinel_authority
       POSTGRES_USER: sentinel
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-sentinel_dev_password}
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+      POSTGRES_PASSWORD: sentinel_dev_password
+      POSTGRES_DB: sentinel_authority
     ports:
       - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U sentinel -d sentinel_authority"]
-      interval: 10s
+      interval: 5s
       timeout: 5s
       retries: 5
-    networks:
-      - sentinel-network
 
-  # Redis (for caching and rate limiting)
+  # Redis for real-time telemetry
   redis:
     image: redis:7-alpine
     container_name: sentinel-redis
-    command: redis-server --appendonly yes
-    volumes:
-      - redis_data:/data
     ports:
       - "6379:6379"
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
+      interval: 5s
       timeout: 5s
       retries: 5
-    networks:
-      - sentinel-network
 
   # Backend API
   api:
@@ -45,26 +38,23 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     container_name: sentinel-api
-    environment:
-      - DATABASE_URL=postgresql+asyncpg://sentinel:${DB_PASSWORD:-sentinel_dev_password}@db:5432/sentinel_authority
-      - REDIS_URL=redis://redis:6379/0
-      - SECRET_KEY=${SECRET_KEY:-change-me-in-production}
-      - ENVIRONMENT=${ENVIRONMENT:-development}
-      - CORS_ORIGINS=http://localhost:3000,http://localhost:5173,https://app.sentinelauthority.org
     ports:
       - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://sentinel:sentinel_dev_password@db:5432/sentinel_authority
+      REDIS_URL: redis://redis:6379
+      SECRET_KEY: dev-secret-key-change-in-production
+      ENVIRONMENT: development
+      DEBUG: "true"
+      CORS_ORIGINS: '["http://localhost:3000", "http://localhost:5173"]'
     depends_on:
       db:
         condition: service_healthy
       redis:
         condition: service_healthy
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    networks:
-      - sentinel-network
+    volumes:
+      - ./backend:/app
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 
   # Frontend
   frontend:
@@ -72,37 +62,16 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     container_name: sentinel-frontend
+    ports:
+      - "3000:3000"
     environment:
-      - VITE_API_URL=http://localhost:8000
-    ports:
-      - "3000:80"
+      VITE_API_URL: http://localhost:8000
     depends_on:
       - api
-    networks:
-      - sentinel-network
-
-  # Nginx Reverse Proxy (for production)
-  nginx:
-    image: nginx:alpine
-    container_name: sentinel-nginx
-    ports:
-      - "80:80"
-      - "443:443"
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./nginx/ssl:/etc/nginx/ssl:ro
-    depends_on:
-      - api
-      - frontend
-    networks:
-      - sentinel-network
-    profiles:
-      - production
+      - ./frontend:/app
+      - /app/node_modules
+    command: npm run dev -- --host
 
 volumes:
   postgres_data:
-  redis_data:
-
-networks:
-  sentinel-network:
-    driver: bridge

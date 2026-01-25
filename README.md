@@ -1,226 +1,245 @@
-# Sentinel Authority Certification Platform
+# Sentinel Authority Platform
 
-**ENVELO™ Certification Management System**
+**The Certification Authority for Autonomous Systems**
 
-A complete platform for managing autonomous system certifications under the ENVELO (Enforcer for Non-Violable Execution & Limit Oversight) framework.
+Unified platform for ODDC (Operational Design Domain Conformance) certification under the ENVELO™ framework (Enforcer for Non-Violable Execution & Limit Oversight).
 
-## Overview
+© 2026 Wemby Corporation. All rights reserved.
 
-Sentinel Authority provides:
+---
 
-- **Account Management** — Onboard and manage applicants, certified operators, licensed implementers, insurers, and regulators
-- **System Registration** — Register autonomous systems with Operational Design Domain (ODD) classification
-- **Envelope Definition** — Define versioned operational envelopes with physics-derived constraints
-- **CAT-72 Testing** — Schedule and monitor 72-hour Convergence Authorization Tests
-- **Conformance Records** — Issue cryptographically signed ODDC attestations
-- **Public Verification** — Allow third parties to verify certification status
+## Platform Modules
 
-## Architecture
+| Module | Description | Users |
+|--------|-------------|-------|
+| **Applicant Portal** | Submit ODD specs, book assessments, track status | Customers |
+| **CAT-72 Console** | Run 72-hour conformance tests, monitor telemetry | Operators |
+| **Certification Registry** | Issue, manage, suspend/revoke certificates | Admin/Operators |
+| **Public Verification API** | Third-party certificate verification | Anyone |
+| **Licensee Portal** | ENVELO technical documentation | Licensed implementers |
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                        Frontend (React)                          │
-│                   app.sentinelauthority.org                      │
-└─────────────────────────────────────────────────────────────────┘
-                                │
-                                ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                     API Gateway (Nginx)                          │
-│                   api.sentinelauthority.org                      │
-└─────────────────────────────────────────────────────────────────┘
-                                │
-                                ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                   Backend API (FastAPI)                          │
-│    ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐         │
-│    │ Accounts │ │ Systems  │ │  CAT-72  │ │Conformance│         │
-│    └──────────┘ └──────────┘ └──────────┘ └──────────┘         │
-└─────────────────────────────────────────────────────────────────┘
-                                │
-                ┌───────────────┼───────────────┐
-                ▼               ▼               ▼
-         ┌──────────┐    ┌──────────┐    ┌──────────┐
-         │PostgreSQL│    │  Redis   │    │    S3    │
-         │ Database │    │  Cache   │    │ Storage  │
-         └──────────┘    └──────────┘    └──────────┘
-```
+---
 
 ## Quick Start
 
-### Prerequisites
-
-- Docker & Docker Compose
-- Node.js 20+ (for local frontend development)
-- Python 3.11+ (for local backend development)
-
-### Running with Docker
+### Local Development (Docker)
 
 ```bash
-# Clone the repository
-git clone https://github.com/sentinel-authority/platform.git
-cd platform
-
-# Start all services
+# Clone and start
+git clone https://github.com/your-org/sentinel-authority.git
+cd sentinel-authority
+cp .env.example .env
 docker-compose up -d
 
-# View logs
-docker-compose logs -f
-
-# Access the platform
+# Access
 # Frontend: http://localhost:3000
-# API: http://localhost:8000
 # API Docs: http://localhost:8000/docs
+# API: http://localhost:8000
 ```
 
-### Local Development
+### Default Credentials (Development Only)
 
-**Backend:**
+| Role | Email | Password |
+|------|-------|----------|
+| Admin | admin@sentinelauthority.org | admin123 |
+| Operator | operator@sentinelauthority.org | operator123 |
+
+⚠️ **Change these immediately in production!**
+
+---
+
+## Deployment
+
+### Railway (Recommended)
+
+1. Push to GitHub
+2. Connect Railway to your repo
+3. Add PostgreSQL and Redis services
+4. Set environment variables:
+   - `DATABASE_URL` (from Railway Postgres)
+   - `REDIS_URL` (from Railway Redis)
+   - `SECRET_KEY` (generate secure key)
+   - `ENVIRONMENT=production`
+   - `CORS_ORIGINS` (your frontend URL)
+
+### Manual Deployment
 
 ```bash
+# Backend
 cd backend
-
-# Create virtual environment
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-
-# Install dependencies
 pip install -r requirements.txt
+uvicorn main:app --host 0.0.0.0 --port 8000
 
-# Set environment variables
-export DATABASE_URL="postgresql+asyncpg://sentinel:password@localhost:5432/sentinel_authority"
-export SECRET_KEY="your-secret-key"
-
-# Run database migrations (or execute schema.sql)
-psql -U sentinel -d sentinel_authority -f ../database/schema.sql
-
-# Start the server
-uvicorn main:app --reload --port 8000
-```
-
-**Frontend:**
-
-```bash
+# Frontend
 cd frontend
-
-# Install dependencies
 npm install
-
-# Start development server
-npm run dev
-
-# Build for production
 npm run build
+# Serve 'dist' folder with any static server
 ```
 
-## API Reference
+---
 
-### Authentication
+## API Documentation
 
-All API endpoints (except `/verify/*`) require authentication via Bearer token.
-
-```bash
-# Get access token
-curl -X POST http://localhost:8000/auth/token \
-  -H "Content-Type: application/json" \
-  -d '{"email": "user@example.com", "password": "password"}'
-
-# Use token in requests
-curl http://localhost:8000/accounts \
-  -H "Authorization: Bearer <token>"
-```
+Once running, access:
+- **Swagger UI**: `/docs`
+- **ReDoc**: `/redoc`
 
 ### Key Endpoints
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
-| `/accounts` | GET, POST | List/create accounts |
-| `/accounts/{id}` | GET, PATCH, DELETE | Manage account |
-| `/systems` | GET, POST | List/create systems |
-| `/systems/{id}` | GET, PATCH, DELETE | Manage system |
-| `/systems/{id}/state` | POST | Update certification state |
-| `/envelopes` | GET, POST | List/create envelopes |
-| `/envelopes/{id}/approve` | POST | Approve envelope |
-| `/cat72` | GET, POST | List/schedule CAT-72 tests |
-| `/cat72/{id}/start` | POST | Start test |
-| `/cat72/{id}/events` | GET, POST | List/ingest telemetry |
-| `/cat72/{id}/complete` | POST | Complete test |
-| `/conformance` | GET, POST | List/issue conformance records |
-| `/conformance/{id}/revoke` | POST | Revoke record |
-| `/verify` | POST | Verify conformance record (public) |
-| `/verify/{record_number}` | GET | Quick verify (public) |
+| `/api/auth/login` | POST | Authenticate user |
+| `/api/auth/register` | POST | Register new user |
+| `/api/applicants` | GET/POST | List/create applications |
+| `/api/cat72/tests` | GET/POST | List/create CAT-72 tests |
+| `/api/cat72/tests/{id}/start` | POST | Start a test |
+| `/api/cat72/tests/{id}/telemetry` | POST | Ingest telemetry |
+| `/api/certificates` | GET | List certificates |
+| `/api/certificates/issue/{test_id}` | POST | Issue certificate |
+| `/api/verify/{cert_number}` | GET | Public verification (no auth) |
 
-### Certification States
+---
 
-| State | Description |
-|-------|-------------|
-| `observe` | Telemetry only; autonomous actuation prohibited |
-| `bounded` | Restricted autonomy under elevated supervision |
-| `certified` | Full autonomy within operational envelope |
-| `suspended` | Autonomy disabled pending remediation |
-| `revoked` | Terminal state; certification cancelled |
+## CAT-72 Test Flow
 
-### CAT-72 Test Status
-
-| Status | Description |
-|--------|-------------|
-| `scheduled` | Test scheduled, not yet started |
-| `initializing` | Test initialization in progress |
-| `in_progress` | Test actively running |
-| `passed` | 72-hour convergence demonstrated |
-| `failed` | Test failed due to violations |
-| `aborted` | Test manually aborted |
-
-## Configuration
-
-### Environment Variables
-
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `DATABASE_URL` | PostgreSQL connection string | Required |
-| `REDIS_URL` | Redis connection string | `redis://localhost:6379/0` |
-| `SECRET_KEY` | JWT signing key | Required |
-| `ENVIRONMENT` | `development`, `testing`, `production` | `development` |
-| `CORS_ORIGINS` | Allowed CORS origins | `http://localhost:3000` |
-| `SIGNING_KEY_PATH` | Path to ECDSA private key | `/etc/sentinel/keys/signing_key.pem` |
-
-## Telemetry Ingestion
-
-Systems under CAT-72 testing should submit telemetry events to the `/cat72/{test_id}/events` endpoint.
-
-```bash
-curl -X POST http://localhost:8000/cat72/{test_id}/events \
-  -H "Authorization: Bearer <token>" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "event_time": "2026-01-23T10:30:00Z",
-    "event_type": "position_update",
-    "severity": "info",
-    "position_lat": 30.4515,
-    "position_lon": -97.8231,
-    "velocity_mps": 5.2,
-    "heading_deg": 180.5,
-    "envelope_evaluation": {
-      "velocity_check": "pass",
-      "position_check": "pass"
-    }
-  }'
+```
+1. Application Submitted → PENDING
+2. Review Approved → UNDER_REVIEW
+3. Test Scheduled → OBSERVE
+4. Test Started → BOUNDED (72-hour timer begins)
+5. Telemetry Ingested → Real-time envelope monitoring
+6. Test Completed → PASS/FAIL determination
+7. Certificate Issued → CONFORMANT
 ```
 
-For high-volume telemetry, use batch ingestion:
+### Certification Criteria
 
-```bash
-curl -X POST http://localhost:8000/cat72/{test_id}/events/batch \
-  -H "Authorization: Bearer <token>" \
-  -H "Content-Type: application/json" \
-  -d '[{"event_time": "...", ...}, {"event_time": "...", ...}]'
+| Metric | Threshold | Description |
+|--------|-----------|-------------|
+| Convergence | ≥ 95% | % of samples within envelope |
+| Drift Rate | ≤ 0.02 | Rate of boundary approach |
+| Stability | ≥ 90% | Variance in conformance |
+
+---
+
+## Evidence Chain
+
+Every CAT-72 test generates a cryptographic evidence chain:
+
+```
+Genesis Block (test start)
+    ↓
+Sample Blocks (each telemetry point)
+    ↓
+Interlock Blocks (boundary events)
+    ↓
+Final Block (test completion + results)
 ```
 
-## License
+Each block contains:
+- SHA-256 hash of content
+- Reference to previous block's hash
+- Timestamp and data
 
-Proprietary — Sentinel Authority LLC
+This provides tamper-evident certification records.
+
+---
+
+## Architecture
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                     Frontend (React)                     │
+│  ┌──────────┬──────────┬──────────┬──────────┬────────┐ │
+│  │Dashboard │Applicant │ CAT-72   │  Certs   │Licensee│ │
+│  │          │ Portal   │ Console  │ Registry │ Portal │ │
+│  └──────────┴──────────┴──────────┴──────────┴────────┘ │
+└─────────────────────────────────────────────────────────┘
+                            │
+                      HTTPS/REST API
+                            │
+┌─────────────────────────────────────────────────────────┐
+│                   Backend (FastAPI)                      │
+│  ┌──────────┬──────────┬──────────┬──────────┬────────┐ │
+│  │   Auth   │Applicants│  CAT-72  │  Certs   │Licensee│ │
+│  │  Routes  │  Routes  │  Routes  │  Routes  │ Routes │ │
+│  └──────────┴──────────┴──────────┴──────────┴────────┘ │
+│                          │                               │
+│  ┌───────────────────────┴───────────────────────────┐  │
+│  │              Core Services                         │  │
+│  │  • Security (JWT, RBAC)                           │  │
+│  │  • Evidence Chain (SHA-256)                       │  │
+│  │  • Envelope Validation                            │  │
+│  │  • Metrics Computation                            │  │
+│  └───────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────┘
+                            │
+              ┌─────────────┴─────────────┐
+              │                           │
+       ┌──────┴──────┐            ┌───────┴───────┐
+       │ PostgreSQL  │            │     Redis     │
+       │ (Data)      │            │ (Real-time)   │
+       └─────────────┘            └───────────────┘
+```
+
+---
+
+## Project Structure
+
+```
+sentinel-authority/
+├── backend/
+│   ├── app/
+│   │   ├── api/routes/      # API endpoints
+│   │   ├── core/            # Config, DB, Security
+│   │   ├── models/          # SQLAlchemy models
+│   │   ├── services/        # Business logic
+│   │   └── utils/           # Helpers
+│   ├── main.py              # FastAPI app
+│   ├── requirements.txt
+│   └── Dockerfile
+├── frontend/
+│   ├── src/
+│   │   ├── components/      # Reusable components
+│   │   ├── pages/           # Page components
+│   │   ├── hooks/           # Custom hooks
+│   │   ├── utils/           # Utilities
+│   │   └── App.jsx          # Main app
+│   ├── package.json
+│   └── Dockerfile
+├── database/
+│   └── init.sql             # DB initialization
+├── docker-compose.yml
+├── railway.toml
+└── README.md
+```
+
+---
+
+## Environment Variables
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `DATABASE_URL` | Yes | PostgreSQL connection string |
+| `REDIS_URL` | Yes | Redis connection string |
+| `SECRET_KEY` | Yes | JWT signing key (generate securely) |
+| `ENVIRONMENT` | No | `development` or `production` |
+| `CORS_ORIGINS` | No | Allowed origins for CORS |
+| `CAT72_CONVERGENCE_THRESHOLD` | No | Pass threshold (default: 0.95) |
+
+---
 
 ## Support
 
-- Documentation: https://docs.sentinelauthority.org
-- Email: support@sentinelauthority.org
-- Website: https://sentinelauthority.org
+- **Documentation**: https://docs.sentinelauthority.org
+- **Technical Support**: support@sentinelauthority.org
+- **Licensee Support**: licensee-support@sentinelauthority.org
+
+---
+
+## License
+
+Proprietary. © 2026 Wemby Corporation. All rights reserved.
+
+ENVELO™ is a trademark of Wemby Corporation.

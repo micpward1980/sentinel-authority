@@ -1,8 +1,6 @@
-# Railway Project Configuration
-# Deploy at: https://railway.app
-
 [build]
-builder = "nixpacks"
+builder = "dockerfile"
+dockerfilePath = "backend/Dockerfile"
 
 [deploy]
 startCommand = "uvicorn main:app --host 0.0.0.0 --port $PORT"
@@ -10,19 +8,3 @@ healthcheckPath = "/health"
 healthcheckTimeout = 100
 restartPolicyType = "on_failure"
 restartPolicyMaxRetries = 3
-
-[[services]]
-name = "api"
-source = "backend"
-
-[[services]]
-name = "frontend"  
-source = "frontend"
-
-[[services]]
-name = "postgres"
-plugin = "postgresql"
-
-[[services]]
-name = "redis"
-plugin = "redis"
