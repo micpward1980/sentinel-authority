@@ -776,7 +776,7 @@ function CertificatesPage() {
   const [certificates, setCertificates] = useState([]);
 
   useEffect(() => {
-    api.get('/api/certificates').then(res => setCertificates(res.data)).catch(console.error);
+    api.get('/api/certificates/').then(res => setCertificates(res.data)).catch(console.error);
   }, []);
 
   return (
