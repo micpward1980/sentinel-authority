@@ -1,96 +1,101 @@
 """ODDC Certificate PDF Generator - Matching sentinelauthority.org branding"""
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.units import inch
-from reportlab.lib.colors import HexColor, white, black
+from reportlab.lib.colors import HexColor, white
 from reportlab.pdfgen import canvas
 from io import BytesIO
 from datetime import datetime
 
-# Colors matching sentinelauthority.org
-DARK_BG = HexColor('#0a0a0a')
-CYAN = HexColor('#00d4d4')
-LIGHT_GRAY = HexColor('#888888')
-WHITE = white
-BORDER_GRAY = HexColor('#333333')
+# Colors matching sentinelauthority.org exactly
+PURPLE_PRIMARY = HexColor('#5B4B8A')
+PURPLE_BRIGHT = HexColor('#9d8ccf')
+BG_DEEP = HexColor('#2a2f3d')
+ACCENT_GREEN = HexColor('#5CD685')
+TEXT_PRIMARY = HexColor('#f0f0f0')
+TEXT_SECONDARY = HexColor('#bfbfbf')
+TEXT_TERTIARY = HexColor('#808080')
+BORDER_GLASS = HexColor('#333844')
 
 def generate_certificate_pdf(certificate_id, organization_name, system_name, odd_specification, issued_date, expiry_date, test_id, convergence_score, stability_index, drift_rate, evidence_hash):
     buffer = BytesIO()
     c = canvas.Canvas(buffer, pagesize=letter)
     width, height = letter
     
-    # Dark background
-    c.setFillColor(DARK_BG)
+    # Dark background matching website
+    c.setFillColor(BG_DEEP)
     c.rect(0, 0, width, height, fill=True, stroke=False)
     
-    # Outer border
-    c.setStrokeColor(BORDER_GRAY)
+    # Outer border - subtle
+    c.setStrokeColor(BORDER_GLASS)
     c.setLineWidth(1)
     c.rect(0.5*inch, 0.5*inch, width - inch, height - inch)
     
-    # Inner border with cyan accent
-    c.setStrokeColor(CYAN)
+    # Inner border with purple accent
+    c.setStrokeColor(PURPLE_BRIGHT)
     c.setLineWidth(0.5)
     c.rect(0.6*inch, 0.6*inch, width - 1.2*inch, height - 1.2*inch)
     
-    # ODDC Mark box at top
+    # ODDC Mark box at top (matching website badge style)
     mark_width = 2.5*inch
     mark_height = 1.2*inch
     mark_x = (width - mark_width) / 2
     mark_y = height - 2*inch
     
-    c.setStrokeColor(CYAN)
+    # Badge background
+    c.setFillColor(PURPLE_PRIMARY)
+    c.setStrokeColor(PURPLE_BRIGHT)
     c.setLineWidth(2)
-    c.roundRect(mark_x, mark_y, mark_width, mark_height, 10, fill=False, stroke=True)
+    c.roundRect(mark_x, mark_y, mark_width, mark_height, 10, fill=True, stroke=True)
     
     # ODDC text
-    c.setFillColor(CYAN)
+    c.setFillColor(white)
     c.setFont("Helvetica-Bold", 36)
-    c.drawCentredString(width/2, mark_y + 0.7*inch, "ODDC")
+    c.drawCentredString(width/2, mark_y + 0.65*inch, "ODDC")
     
     # SENTINEL AUTHORITY text
-    c.setFillColor(WHITE)
-    c.setFont("Helvetica", 10)
-    c.drawCentredString(width/2, mark_y + 0.3*inch, "SENTINEL AUTHORITY")
+    c.setFillColor(PURPLE_BRIGHT)
+    c.setFont("Helvetica", 9)
+    c.drawCentredString(width/2, mark_y + 0.25*inch, "SENTINEL AUTHORITY")
     
     # Certificate ID below mark
-    c.setFillColor(LIGHT_GRAY)
+    c.setFillColor(TEXT_TERTIARY)
     c.setFont("Courier", 9)
-    c.drawCentredString(width/2, mark_y - 0.3*inch, certificate_id)
+    c.drawCentredString(width/2, mark_y - 0.35*inch, certificate_id)
     
     # Title
-    y = height - 3*inch
-    c.setFillColor(WHITE)
+    y = height - 3.1*inch
+    c.setFillColor(TEXT_PRIMARY)
     c.setFont("Helvetica-Bold", 18)
     c.drawCentredString(width/2, y, "CONFORMANCE DETERMINATION")
     
-    # Cyan line
-    c.setStrokeColor(CYAN)
+    # Purple line
+    c.setStrokeColor(PURPLE_BRIGHT)
     c.setLineWidth(1)
     c.line(2*inch, y - 0.2*inch, width - 2*inch, y - 0.2*inch)
     
     # Main content
     y -= 0.7*inch
-    c.setFillColor(LIGHT_GRAY)
+    c.setFillColor(TEXT_SECONDARY)
     c.setFont("Helvetica", 11)
     c.drawCentredString(width/2, y, "This record attests that")
     
     y -= 0.4*inch
-    c.setFillColor(WHITE)
+    c.setFillColor(TEXT_PRIMARY)
     c.setFont("Helvetica-Bold", 16)
     c.drawCentredString(width/2, y, organization_name)
     
     y -= 0.35*inch
-    c.setFillColor(LIGHT_GRAY)
+    c.setFillColor(TEXT_SECONDARY)
     c.setFont("Helvetica", 11)
     c.drawCentredString(width/2, y, "has demonstrated conformance for the autonomous system")
     
     y -= 0.4*inch
-    c.setFillColor(CYAN)
+    c.setFillColor(PURPLE_BRIGHT)
     c.setFont("Helvetica-Bold", 14)
     c.drawCentredString(width/2, y, system_name)
     
     y -= 0.35*inch
-    c.setFillColor(LIGHT_GRAY)
+    c.setFillColor(TEXT_SECONDARY)
     c.setFont("Helvetica", 10)
     c.drawCentredString(width/2, y, f"Operational Design Domain: {odd_specification}")
     
@@ -100,12 +105,13 @@ def generate_certificate_pdf(certificate_id, organization_name, system_name, odd
     box_w = 5*inch
     box_x = (width - box_w) / 2
     
-    c.setStrokeColor(BORDER_GRAY)
+    c.setFillColor(HexColor('#363d4d'))
+    c.setStrokeColor(BORDER_GLASS)
     c.setLineWidth(1)
-    c.roundRect(box_x, y - box_h, box_w, box_h, 5, fill=False, stroke=True)
+    c.roundRect(box_x, y - box_h, box_w, box_h, 5, fill=True, stroke=True)
     
     # Box header
-    c.setFillColor(CYAN)
+    c.setFillColor(PURPLE_BRIGHT)
     c.setFont("Helvetica-Bold", 10)
     c.drawCentredString(width/2, y - 0.25*inch, f"CAT-72 EVIDENCE — {test_id}")
     
@@ -116,64 +122,64 @@ def generate_certificate_pdf(certificate_id, organization_name, system_name, odd
     
     row1_y = y - 0.55*inch
     row2_y = y - 0.85*inch
-    row3_y = y - 1.15*inch
     
-    c.setFillColor(LIGHT_GRAY)
+    c.setFillColor(TEXT_TERTIARY)
     c.drawString(col1_x, row1_y, "Convergence Score")
     c.drawString(col2_x, row1_y, "Stability Index")
     c.drawString(col1_x, row2_y, "Drift Rate")
     c.drawString(col2_x, row2_y, "Determination")
     
-    c.setFillColor(WHITE)
+    c.setFillColor(TEXT_PRIMARY)
     c.setFont("Helvetica-Bold", 11)
     c.drawString(col1_x + 1.3*inch, row1_y, f"{convergence_score:.1%}")
     c.drawString(col2_x + 1.1*inch, row1_y, f"{stability_index:.1%}")
     c.drawString(col1_x + 1.3*inch, row2_y, f"{drift_rate:.4f}")
     
-    c.setFillColor(CYAN)
+    c.setFillColor(ACCENT_GREEN)
     c.drawString(col2_x + 1.1*inch, row2_y, "CONFORMANT")
     
     # Validity period
     y -= 1.8*inch
-    c.setFillColor(LIGHT_GRAY)
+    c.setFillColor(TEXT_TERTIARY)
     c.setFont("Helvetica", 9)
     c.drawCentredString(width/2, y, "VALIDITY PERIOD")
     
     y -= 0.25*inch
-    c.setFillColor(WHITE)
+    c.setFillColor(TEXT_PRIMARY)
     c.setFont("Helvetica", 10)
     c.drawCentredString(width/2, y, f"{issued_date.strftime('%Y-%m-%d')}  →  {expiry_date.strftime('%Y-%m-%d')}")
     
     # ENVELO statement
     y -= 0.5*inch
-    c.setFillColor(LIGHT_GRAY)
+    c.setFillColor(TEXT_SECONDARY)
     c.setFont("Helvetica", 8)
     c.drawCentredString(width/2, y, "ENVELO enforcement requirements verified present and auditable.")
     
     y -= 0.2*inch
     c.setFont("Helvetica-Oblique", 7)
+    c.setFillColor(TEXT_TERTIARY)
     c.drawCentredString(width/2, y, "Enforcer for Non-Violable Execution & Limit Oversight")
     
     # Evidence hash
     y = 1.5*inch
-    c.setFillColor(LIGHT_GRAY)
+    c.setFillColor(TEXT_TERTIARY)
     c.setFont("Helvetica", 7)
     c.drawCentredString(width/2, y, "EVIDENCE HASH")
     
     y -= 0.2*inch
-    c.setFillColor(WHITE)
+    c.setFillColor(TEXT_PRIMARY)
     c.setFont("Courier", 6)
     c.drawCentredString(width/2, y, evidence_hash)
     
     # Verification URL
     y -= 0.3*inch
-    c.setFillColor(CYAN)
+    c.setFillColor(PURPLE_BRIGHT)
     c.setFont("Helvetica", 8)
     c.drawCentredString(width/2, y, "Verify: sentinelauthority.org/verify")
     
     # Footer disclaimer
     y -= 0.4*inch
-    c.setFillColor(LIGHT_GRAY)
+    c.setFillColor(TEXT_TERTIARY)
     c.setFont("Helvetica-Oblique", 6)
     c.drawCentredString(width/2, y, "ODDC attests conformance within declared ODD. Does not attest safety, regulatory compliance, or fitness for purpose.")
     
