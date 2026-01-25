@@ -45,7 +45,7 @@ app = FastAPI(
     description="Certification platform for autonomous systems under ENVELO framework",
     version="1.0.0",
     lifespan=lifespan,
-    docs_url="/docs",
+    docs_url=None,
     redoc_url="/redoc",
 )
 
@@ -80,3 +80,20 @@ async def root():
         "framework": "ENVELO",
         "docs": "/docs"
     }
+
+# Custom Swagger UI with dark theme
+from fastapi.openapi.docs import get_swagger_ui_html
+
+@app.get("/docs", include_in_schema=False)
+async def custom_swagger_ui():
+    return get_swagger_ui_html(
+        openapi_url="/openapi.json",
+        title="Sentinel Authority API",
+        swagger_css_url="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css",
+        swagger_ui_parameters={
+            "syntaxHighlight.theme": "monokai",
+            "docExpansion": "list",
+            "filter": True,
+        },
+        swagger_favicon_url="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect x='6' y='6' width='20' height='20' rx='5' fill='%235B4B8A' stroke='%239d8ccf' stroke-width='2'/><circle cx='16' cy='16' r='4' fill='%239d8ccf'/></svg>",
+    )
