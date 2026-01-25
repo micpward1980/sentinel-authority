@@ -793,6 +793,7 @@ function CertificatesPage() {
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">Status</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">Convergence</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">Expires</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-700">
@@ -816,6 +817,9 @@ function CertificatesPage() {
                 </td>
                 <td className="px-6 py-4 text-gray-400 text-sm">
                   {cert.expires_at ? new Date(cert.expires_at).toLocaleDateString() : '-'}
+                </td>
+                <td className="px-6 py-4">
+                  <a href={`https://sentinel-authority-production.up.railway.app/api/certificates/${cert.certificate_number}/pdf`} target="_blank" rel="noopener noreferrer" className="px-3 py-1 bg-purple-600 hover:bg-purple-700 rounded text-sm font-medium">Download PDF</a>
                 </td>
               </tr>
             ))}
@@ -882,6 +886,7 @@ function LicenseesPage() {
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">Type</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">Status</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">Expires</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-700">
