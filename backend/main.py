@@ -78,22 +78,61 @@ async def root():
         "name": "Sentinel Authority Platform",
         "version": "1.0.0",
         "framework": "ENVELO",
-        "docs": "/docs"
-    }
-
 # Custom Swagger UI with dark theme
-from fastapi.openapi.docs import get_swagger_ui_html
+from fastapi.responses import HTMLResponse
 
 @app.get("/docs", include_in_schema=False)
 async def custom_swagger_ui():
-    return get_swagger_ui_html(
-        openapi_url="/openapi.json",
-        title="Sentinel Authority API",
-        swagger_css_url="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css",
-        swagger_ui_parameters={
-            "syntaxHighlight.theme": "monokai",
-            "docExpansion": "list",
-            "filter": True,
-        },
-        swagger_favicon_url="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect x='6' y='6' width='20' height='20' rx='5' fill='%235B4B8A' stroke='%239d8ccf' stroke-width='2'/><circle cx='16' cy='16' r='4' fill='%239d8ccf'/></svg>",
-    )
+    return HTMLResponse(content='''<!DOCTYPE html>
+<html>
+<head>
+    <title>Sentinel Authority API</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect x='6' y='6' width='20' height='20' rx='5' fill='%235B4B8A' stroke='%239d8ccf' stroke-width='2'/><circle cx='16' cy='16' r='4' fill='%239d8ccf'/></svg>" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css" />
+    <style>
+        body { background: #2a2f3d; margin: 0; }
+        .swagger-ui { background: #2a2f3d; }
+        .swagger-ui .topbar { background: #1e222b; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .swagger-ui .info .title { color: #fff; }
+        .swagger-ui .info .description { color: rgba(255,255,255,0.75); }
+        .swagger-ui .scheme-container { background: #1e222b; box-shadow: none; }
+        .swagger-ui .opblock-tag { color: #9d8ccf; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .swagger-ui .opblock { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); }
+        .swagger-ui .opblock .opblock-summary-method { background: #5B4B8A; }
+        .swagger-ui .opblock.opblock-post .opblock-summary-method { background: #5CD685; }
+        .swagger-ui .opblock.opblock-delete .opblock-summary-method { background: #D65C5C; }
+        .swagger-ui .opblock.opblock-put .opblock-summary-method { background: #D6A05C; }
+        .swagger-ui .opblock .opblock-summary-description { color: rgba(255,255,255,0.75); }
+        .swagger-ui .opblock .opblock-summary-path { color: #fff; }
+        .swagger-ui .btn { background: #5B4B8A; color: #fff; border: 1px solid #9d8ccf; }
+        .swagger-ui select { background: #1e222b; color: #fff; border: 1px solid rgba(255,255,255,0.2); }
+        .swagger-ui input { background: #1e222b; color: #fff; border: 1px solid rgba(255,255,255,0.2); }
+        .swagger-ui textarea { background: #1e222b; color: #fff; border: 1px solid rgba(255,255,255,0.2); }
+        .swagger-ui .parameter__name { color: #9d8ccf; }
+        .swagger-ui .parameter__type { color: rgba(255,255,255,0.5); }
+        .swagger-ui table tbody tr td { color: rgba(255,255,255,0.75); }
+        .swagger-ui .response-col_status { color: #5CD685; }
+        .swagger-ui .model-box { background: rgba(255,255,255,0.05); }
+        .swagger-ui .model { color: rgba(255,255,255,0.75); }
+        .swagger-ui section.models { border: 1px solid rgba(255,255,255,0.1); }
+        .swagger-ui section.models h4 { color: #fff; }
+        .swagger-ui .opblock-body pre { background: #1e222b; color: #fff; }
+        .swagger-ui .markdown p { color: rgba(255,255,255,0.75); }
+        .swagger-ui .response-col_links { color: rgba(255,255,255,0.5); }
+    </style>
+</head>
+<body>
+    <div id="swagger-ui"></div>
+    <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
+    <script>
+        SwaggerUIBundle({
+            url: "/openapi.json",
+            dom_id: "#swagger-ui",
+            presets: [SwaggerUIBundle.presets.apis, SwaggerUIBundle.SwaggerUIStandalonePreset],
+            layout: "BaseLayout",
+            docExpansion: "list",
+            filter: true,
+        });
+    </script>
+</body>
+</html>''')
