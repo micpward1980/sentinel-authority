@@ -161,32 +161,32 @@ def generate_certificate_pdf(certificate_id, organization_name, system_name, odd
     c.drawCentredString(width/2, y, "Enforcer for Non-Violable Execution & Limit Oversight")
     
     # Evidence hash
-    y = 1.5*inch
+    y = 1.9*inch
     c.setFillColor(TEXT_TERTIARY)
     c.setFont("Helvetica", 7)
     c.drawCentredString(width/2, y, "EVIDENCE HASH")
     
-    y -= 0.2*inch
+    y -= 0.18*inch
     c.setFillColor(TEXT_PRIMARY)
     c.setFont("Courier", 6)
     c.drawCentredString(width/2, y, evidence_hash)
     
     # Verification URL
-    y -= 0.3*inch
+    y -= 0.25*inch
     c.setFillColor(PURPLE_BRIGHT)
     c.setFont("Helvetica", 8)
     c.drawCentredString(width/2, y, "Verify: sentinelauthority.org/verify")
     
     # Footer disclaimer
-    y -= 0.4*inch
+    y -= 0.3*inch
     c.setFillColor(TEXT_TERTIARY)
     c.setFont("Helvetica-Oblique", 6)
     c.drawCentredString(width/2, y, "ODDC attests conformance within declared ODD. Does not attest safety, regulatory compliance, or fitness for purpose.")
     
-    y -= 0.15*inch
+    y -= 0.12*inch
     c.drawCentredString(width/2, y, "Independent conformance determination. Not a regulator. Not legal advice.")
     
-    y -= 0.2*inch
+    y -= 0.15*inch
     c.setFont("Helvetica", 6)
     c.drawCentredString(width/2, y, "© 2026 Sentinel Authority")
     
