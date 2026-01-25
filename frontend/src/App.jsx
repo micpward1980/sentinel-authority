@@ -1,6 +1,6 @@
 import React, { useState, useEffect, createContext, useContext } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, Link, useNavigate, useLocation } from 'react-router-dom';
-import { Shield, FileText, Activity, Award, Users, Home, LogOut, Menu, X, CheckCircle, AlertTriangle, Clock, Search } from 'lucide-react';
+import { Shield, FileText, Activity, Award, Users, Home, LogOut, Menu, X, CheckCircle, AlertTriangle, Clock, Search, Plus, ArrowLeft } from 'lucide-react';
 import axios from 'axios';
 
 // API Configuration
@@ -107,7 +107,7 @@ function Layout({ children }) {
               key={item.name}
               to={item.href}
               className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                location.pathname === item.href ? 'bg-purple-600 text-white' : 'text-gray-400 hover:bg-gray-700 hover:text-white'
+                location.pathname.startsWith(item.href) ? 'bg-purple-600 text-white' : 'text-gray-400 hover:bg-gray-700 hover:text-white'
               }`}
             >
               <item.icon className="w-5 h-5" />
@@ -338,7 +338,6 @@ function DashboardPage() {
 // Applications Page
 function ApplicationsPage() {
   const [applications, setApplications] = useState([]);
-  const { user } = useAuth();
 
   useEffect(() => {
     api.get('/api/applicants').then(res => setApplications(res.data)).catch(console.error);
@@ -348,11 +347,10 @@ function ApplicationsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Applications</h1>
-        {user?.role === 'applicant' && (
-          <Link to="/applications/new" className="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg transition-colors">
-            New Application
-          </Link>
-        )}
+        <Link to="/applications/new" className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg transition-colors">
+          <Plus className="w-5 h-5" />
+          New Application
+        </Link>
       </div>
       
       <div className="bg-gray-800 rounded-xl border border-gray-700 overflow-hidden">
@@ -393,6 +391,242 @@ function ApplicationsPage() {
           <div className="text-center py-12 text-gray-500">No applications found</div>
         )}
       </div>
+    </div>
+  );
+}
+
+// New Application Form
+function NewApplicationPage() {
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [formData, setFormData] = useState({
+    organization_name: '',
+    contact_name: '',
+    contact_email: '',
+    contact_phone: '',
+    system_name: '',
+    system_description: '',
+    system_version: '',
+    manufacturer: '',
+    environment_type: 'urban',
+    notes: '',
+  });
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+
+    try {
+      const payload = {
+        organization_name: formData.organization_name,
+        contact_name: formData.contact_name,
+        contact_email: formData.contact_email,
+        contact_phone: formData.contact_phone || null,
+        system_name: formData.system_name,
+        system_description: formData.system_description,
+        system_version: formData.system_version,
+        manufacturer: formData.manufacturer,
+        odd_specification: {
+          environment_type: formData.environment_type,
+        },
+        envelope_definition: {
+          state_variables: ["x", "y", "velocity", "heading"],
+          boundaries: {
+            x: { min: -100, max: 100 },
+            y: { min: -100, max: 100 },
+            velocity: { min: 0, max: 30 },
+            heading: { min: 0, max: 360 }
+          }
+        },
+        notes: formData.notes || null,
+      };
+
+      await api.post('/api/applicants/', payload);
+      navigate('/applications');
+    } catch (err) {
+      setError(err.response?.data?.detail || 'Failed to submit application');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="max-w-3xl mx-auto space-y-6">
+      <div className="flex items-center gap-4">
+        <button onClick={() => navigate('/applications')} className="p-2 hover:bg-gray-700 rounded-lg">
+          <ArrowLeft className="w-5 h-5" />
+        </button>
+        <h1 className="text-2xl font-bold">New Certification Application</h1>
+      </div>
+
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Organization Info */}
+        <div className="bg-gray-800 rounded-xl p-6 border border-gray-700 space-y-4">
+          <h2 className="text-lg font-semibold text-purple-400">Organization Information</h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm text-gray-400 mb-1">Organization Name *</label>
+              <input
+                type="text"
+                name="organization_name"
+                value={formData.organization_name}
+                onChange={handleChange}
+                required
+                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm text-gray-400 mb-1">Contact Name *</label>
+              <input
+                type="text"
+                name="contact_name"
+                value={formData.contact_name}
+                onChange={handleChange}
+                required
+                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm text-gray-400 mb-1">Contact Email *</label>
+              <input
+                type="email"
+                name="contact_email"
+                value={formData.contact_email}
+                onChange={handleChange}
+                required
+                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm text-gray-400 mb-1">Contact Phone</label>
+              <input
+                type="tel"
+                name="contact_phone"
+                value={formData.contact_phone}
+                onChange={handleChange}
+                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* System Info */}
+        <div className="bg-gray-800 rounded-xl p-6 border border-gray-700 space-y-4">
+          <h2 className="text-lg font-semibold text-purple-400">System Under Test</h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm text-gray-400 mb-1">System Name *</label>
+              <input
+                type="text"
+                name="system_name"
+                value={formData.system_name}
+                onChange={handleChange}
+                required
+                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm text-gray-400 mb-1">System Version *</label>
+              <input
+                type="text"
+                name="system_version"
+                value={formData.system_version}
+                onChange={handleChange}
+                required
+                placeholder="e.g., 1.0.0"
+                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm text-gray-400 mb-1">Manufacturer *</label>
+              <input
+                type="text"
+                name="manufacturer"
+                value={formData.manufacturer}
+                onChange={handleChange}
+                required
+                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm text-gray-400 mb-1">Environment Type *</label>
+              <select
+                name="environment_type"
+                value={formData.environment_type}
+                onChange={handleChange}
+                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
+              >
+                <option value="urban">Urban</option>
+                <option value="highway">Highway</option>
+                <option value="indoor">Indoor</option>
+                <option value="marine">Marine</option>
+                <option value="aerial">Aerial</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm text-gray-400 mb-1">System Description *</label>
+            <textarea
+              name="system_description"
+              value={formData.system_description}
+              onChange={handleChange}
+              required
+              rows={4}
+              placeholder="Describe the autonomous system, its capabilities, and intended use case..."
+              className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
+            />
+          </div>
+        </div>
+
+        {/* Additional Notes */}
+        <div className="bg-gray-800 rounded-xl p-6 border border-gray-700 space-y-4">
+          <h2 className="text-lg font-semibold text-purple-400">Additional Information</h2>
+          
+          <div>
+            <label className="block text-sm text-gray-400 mb-1">Notes</label>
+            <textarea
+              name="notes"
+              value={formData.notes}
+              onChange={handleChange}
+              rows={3}
+              placeholder="Any additional information or special requirements..."
+              className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
+            />
+          </div>
+        </div>
+
+        {error && (
+          <div className="bg-red-500/20 border border-red-500 text-red-400 px-4 py-3 rounded-lg">
+            {error}
+          </div>
+        )}
+
+        <div className="flex gap-4">
+          <button
+            type="button"
+            onClick={() => navigate('/applications')}
+            className="px-6 py-3 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            disabled={loading}
+            className="flex-1 px-6 py-3 bg-purple-600 hover:bg-purple-700 rounded-lg font-medium transition-colors disabled:opacity-50"
+          >
+            {loading ? 'Submitting...' : 'Submit Application'}
+          </button>
+        </div>
+      </form>
     </div>
   );
 }
@@ -794,6 +1028,11 @@ export default function App() {
           <Route path="/applications" element={
             <ProtectedRoute>
               <Layout><ApplicationsPage /></Layout>
+            </ProtectedRoute>
+          } />
+          <Route path="/applications/new" element={
+            <ProtectedRoute>
+              <Layout><NewApplicationPage /></Layout>
             </ProtectedRoute>
           } />
           <Route path="/cat72" element={
