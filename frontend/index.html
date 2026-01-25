@@ -1,13 +1,1376 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sentinel Authority Platform</title>
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Sentinel Authority — ODDC Certification</title>
+
+  <meta
+    name="description"
+    content="Sentinel Authority governs ODDC (Operational Design Domain Conformance) certification: autonomous systems certified to operate within defined boundaries, enforced at runtime by ENVELO with auditable evidence."
+  />
+
+  <!-- Open Graph / LinkedIn / Slack -->
+  <meta property="og:title" content="Sentinel Authority — ODDC Certification" />
+  <meta property="og:description" content="Operational Design Domain Conformance certification for autonomous systems, enforced at runtime with auditable evidence." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://sentinelauthority.com/" />
+  <meta property="og:image" content="https://sentinelauthority.com/og.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Sentinel Authority — ODDC Certification" />
+  <meta name="twitter:description" content="Operational Design Domain Conformance certification for autonomous systems." />
+
+  <!-- Favicon (purple diamond) -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect x='6' y='6' width='20' height='20' rx='5' fill='%235B4B8A' stroke='%239d8ccf' stroke-width='2'/><rect x='12' y='12' width='8' height='8' rx='2' fill='%239d8ccf'/></svg>" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,200;0,400;1,200&family=Inter:wght@200;400;600&family=IBM+Plex+Mono:wght@400;500&display=swap"
+    rel="stylesheet"
+  />
+
+  <style>
+    :root{
+      --purple-primary:#5B4B8A;
+      --purple-bright:#9d8ccf;
+      --purple-glow:rgba(157,140,207,.18);
+      --bg-deep:#05060A;
+      --bg-panel:rgba(255,255,255,.02);
+      --bg-panel-2:rgba(255,255,255,.035);
+      --accent-green:#5CD685;
+      --accent-amber:#D6A05C;
+      --accent-red:#D65C5C;
+
+      --text-primary:rgba(255,255,255,.92);
+      --text-secondary:rgba(255,255,255,.72);
+      --text-tertiary:rgba(255,255,255,.42);
+
+      --border-glass:rgba(255,255,255,.07);
+      --border-active:rgba(255,255,255,.16);
+
+      --serif:'Source Serif 4',serif;
+      --mono:'IBM Plex Mono',monospace;
+      --sans:'Inter',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
+      --max: 1200px;
+    }
+
+    *{ box-sizing:border-box; }
+    
+    /* Skip link for accessibility */
+    .skip-link{
+      position:absolute;
+      left:-9999px;
+      top:auto;
+      width:1px;
+      height:1px;
+      overflow:hidden;
+      z-index:999;
+    }
+    .skip-link:focus{
+      position:fixed;
+      top:10px;
+      left:10px;
+      width:auto;
+      height:auto;
+      padding:12px 18px;
+      background:var(--bg-deep);
+      border:1px solid var(--purple-bright);
+      border-radius:8px;
+      color:var(--text-primary);
+      font-family:var(--mono);
+      font-size:11px;
+      letter-spacing:2px;
+      text-transform:uppercase;
+      text-decoration:none;
+    }
+    
+    html{ scroll-behavior:smooth; background:var(--bg-deep); }
+    body{
+      margin:0;
+      font-family:var(--sans);
+      background: radial-gradient(1200px 700px at 15% 10%, rgba(91,75,138,.18), transparent 55%),
+                  radial-gradient(900px 600px at 85% 80%, rgba(92,214,133,.06), transparent 55%),
+                  var(--bg-deep);
+      color:var(--text-primary);
+      overflow-x:hidden;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+    a{ color:inherit; text-decoration:none; }
+    a:hover{ text-decoration:underline; text-underline-offset:4px; }
+    ::selection{ background:var(--purple-primary); color:#fff; }
+
+    /* Subtle grid only (authority vibe) */
+    .grid-overlay{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      z-index:0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
+      background-size: 120px 120px;
+      opacity:.12;
+      mask-image: radial-gradient(ellipse at center, rgba(0,0,0,.95) 20%, transparent 70%);
+    }
+
+    /* Navigation */
+    nav{
+      position:fixed;
+      top:0;
+      width:100%;
+      z-index:50;
+      padding:18px 22px;
+      border-bottom:1px solid var(--border-glass);
+      backdrop-filter: blur(18px);
+      background: rgba(5,6,10,.62);
+    }
+    .nav-inner{
+      max-width: var(--max);
+      margin:0 auto;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:18px;
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      min-width: 220px;
+    }
+    .brand-icon{
+      width:26px;height:26px;
+      filter: drop-shadow(0 0 12px rgba(157,140,207,.25)) drop-shadow(0 18px 40px rgba(0,0,0,.35));
+    }
+    .brand-name{
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.86);
+      white-space: nowrap;
+    }
+
+    .nav-links{
+      display:flex;
+      align-items:center;
+      gap: 26px;
+      flex-wrap: wrap;
+      justify-content:center;
+    }
+    .nav-links a{
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: var(--text-tertiary);
+      padding: 8px 6px;
+      position: relative;
+      transition: color .25s ease;
+    }
+    .nav-links a:hover{ color: var(--text-primary); text-decoration:none; }
+    .nav-links a::after{
+      content:"";
+      position:absolute;
+      left:6px; right:6px; bottom:4px;
+      height:1px;
+      background: var(--purple-bright);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform .35s var(--ease);
+      opacity:.9;
+    }
+    .nav-links a:hover::after{ transform: scaleX(1); }
+
+    .nav-badge{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: rgba(92,214,133,.92);
+      border: 1px solid rgba(92,214,133,.18);
+      background: rgba(92,214,133,.06);
+      padding: 8px 10px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+    @keyframes pulse-glow {
+      0% { box-shadow: 0 0 0 0 rgba(92,214,133,0.4); }
+      70% { box-shadow: 0 0 0 8px rgba(92,214,133,0); }
+      100% { box-shadow: 0 0 0 0 rgba(92,214,133,0); }
+    }
+    .badge-dot{
+      width:6px;height:6px;border-radius:50%;
+      background: var(--accent-green);
+      box-shadow: 0 0 0 6px rgba(92,214,133,.10);
+      animation: pulse-glow 2s infinite;
+    }
+
+    @media (max-width: 860px){
+      .nav-links{ display:none; }
+      .brand{ min-width: auto; }
+    }
+
+    main{
+      position: relative;
+      z-index: 1;
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 0 22px;
+    }
+
+    /* Hero */
+    .hero{
+      min-height: 100vh;
+      padding: 160px 0 70px;
+      display:flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 22px;
+    }
+    @media (max-width: 860px){
+      .hero{
+        padding-top: 120px;
+        justify-content: flex-start;
+      }
+    }
+    .hero-kicker{
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 6px;
+      text-transform: uppercase;
+      color: var(--purple-bright);
+      display:flex;
+      align-items:center;
+      gap:14px;
+    }
+    .hero-kicker::before{
+      content:"";
+      width:40px;height:1px;
+      background: var(--purple-bright);
+      opacity:.95;
+    }
+    h1{
+      font-family: var(--serif);
+      font-size: clamp(44px, 7vw, 92px);
+      font-weight: 200;
+      line-height: .95;
+      margin: 0;
+      letter-spacing: -0.04em;
+    }
+    h1 .accent{
+      font-style: italic;
+      color: var(--purple-bright);
+      position: relative;
+      text-shadow: 
+        -1px 0 rgba(255,100,100,0.10), 
+        1px 0 rgba(100,255,255,0.10),
+        0 0 20px var(--purple-glow);
+    }
+    .hero-desc{
+      max-width: 62ch;
+      font-size: 18px;
+      font-weight: 200;
+      line-height: 1.75;
+      color: var(--text-secondary);
+      border-left: 2px solid rgba(91,75,138,.65);
+      padding-left: 18px;
+      margin: 0;
+    }
+
+    .hero-actions{
+      display:flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+    .btn{
+      appearance:none;
+      border:1px solid rgba(255,255,255,.18);
+      background: transparent;
+      color: var(--text-primary);
+      padding: 14px 18px;
+      border-radius: 14px;
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: transform .2s var(--ease), border-color .2s ease, background .2s ease, color .2s ease;
+      position: relative;
+      overflow:hidden;
+    }
+    .btn:hover{
+      transform: translateY(-1px);
+      border-color: rgba(255,255,255,.28);
+      background: rgba(255,255,255,.04);
+    }
+    .btn.primary{
+      border-color: rgba(157,140,207,.55);
+      background: rgba(91,75,138,.18);
+      box-shadow: 0 22px 60px rgba(0,0,0,.35);
+    }
+    .btn.primary:hover{
+      border-color: rgba(157,140,207,.85);
+      background: rgba(91,75,138,.26);
+    }
+
+    /* Sections */
+    .section{
+      padding: 110px 0;
+      border-top: 1px solid var(--border-glass);
+    }
+    .section-head{
+      display:flex;
+      align-items:flex-end;
+      justify-content: space-between;
+      gap: 18px;
+      flex-wrap: wrap;
+      margin-bottom: 38px;
+    }
+    .section-label{
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 5px;
+      text-transform: uppercase;
+      color: var(--purple-bright);
+      display:block;
+      margin-bottom: 12px;
+    }
+    .section-title{
+      font-family: var(--serif);
+      font-size: clamp(30px, 4vw, 50px);
+      font-weight: 200;
+      line-height: 1.1;
+      margin: 0;
+      letter-spacing: -0.03em;
+    }
+    .section-lead{
+      max-width: 70ch;
+      color: var(--text-secondary);
+      font-weight: 200;
+      line-height: 1.85;
+      margin: 18px 0 0;
+      font-size: 16px;
+    }
+
+    .grid-2{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 26px;
+      align-items: start;
+    }
+    @media (max-width: 980px){
+      .grid-2{ grid-template-columns: 1fr; }
+    }
+
+    /* Panels */
+    .panel{
+      background: var(--bg-panel);
+      border: 1px solid var(--border-glass);
+      border-radius: 18px;
+      padding: 34px 28px;
+      backdrop-filter: blur(18px);
+      position: relative;
+      overflow:hidden;
+    }
+    .panel::before{
+      content:"";
+      position:absolute;
+      inset:-20%;
+      background: radial-gradient(circle at 20% 20%, rgba(157,140,207,.12), transparent 55%);
+      pointer-events:none;
+      transform: rotate(-8deg);
+      opacity:.8;
+    }
+    .panel > *{ position: relative; z-index: 1; }
+
+    .panel h3{
+      margin: 0 0 14px;
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.85);
+    }
+    .panel p{
+      margin: 0 0 16px;
+      color: var(--text-secondary);
+      font-weight: 200;
+      line-height: 1.85;
+    }
+    .list{
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      border-top: 1px solid var(--border-glass);
+    }
+    .list li{
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border-glass);
+      color: var(--text-secondary);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .list li:last-child{ border-bottom:none; }
+    .list b{ color: var(--text-primary); font-weight: 600; }
+
+    .tag{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.03);
+      color: rgba(255,255,255,.82);
+      width: fit-content;
+    }
+    .tag .dot{
+      width:6px;height:6px;border-radius:50%;
+      background: var(--accent-green);
+      box-shadow: 0 0 0 6px rgba(92,214,133,.10);
+    }
+
+    /* Criteria checklist */
+    .checklist{
+      display:grid;
+      gap: 12px;
+      margin-top: 18px;
+    }
+    .check{
+      display:flex;
+      gap: 12px;
+      padding: 14px 14px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.025);
+      align-items:flex-start;
+    }
+    .check svg{ flex:0 0 auto; margin-top: 2px; }
+    .check-title{
+      font-weight: 600;
+      color: var(--text-primary);
+      font-size: 14px;
+      margin-bottom: 2px;
+    }
+    .check-desc{
+      color: var(--text-secondary);
+      font-size: 13px;
+      line-height: 1.6;
+      font-weight: 200;
+    }
+
+    /* Mechanism diagram */
+    .mechanism{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+    @media (max-width: 980px){
+      .mechanism{ grid-template-columns: 1fr; }
+    }
+    .node{
+      border: 1px solid var(--border-glass);
+      background: rgba(255,255,255,.02);
+      border-radius: 18px;
+      padding: 28px 22px;
+      position: relative;
+      overflow:hidden;
+      min-height: 165px;
+    }
+    .node::before{
+      content:"";
+      position:absolute;
+      inset:-30%;
+      background: radial-gradient(circle at 30% 20%, rgba(157,140,207,.10), transparent 55%);
+      opacity:.85;
+      pointer-events:none;
+    }
+    .node > *{ position: relative; z-index: 1; }
+    .node-num{
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 4px;
+      color: var(--purple-bright);
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .node-title{
+      font-family: var(--serif);
+      font-size: 22px;
+      font-weight: 200;
+      margin: 0 0 10px;
+      letter-spacing: -0.02em;
+    }
+    .node-desc{
+      color: var(--text-tertiary);
+      line-height: 1.65;
+      font-size: 13px;
+      font-weight: 200;
+      margin: 0;
+    }
+
+    /* Record block */
+    .record{
+      background: rgba(0,0,0,.35);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 18px;
+      overflow:hidden;
+    }
+    .record-head{
+      display:flex;
+      justify-content: space-between;
+      align-items:center;
+      padding: 16px 18px;
+      background: rgba(91,75,138,.12);
+      border-bottom: 1px solid rgba(255,255,255,.10);
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .record-title{
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.88);
+    }
+    .record-status{
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: rgba(92,214,133,.92);
+      border: 1px solid rgba(92,214,133,.20);
+      background: rgba(92,214,133,.06);
+      padding: 6px 10px;
+      border-radius: 999px;
+      display:flex; align-items:center; gap: 8px;
+    }
+    .record-status .s-dot{
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--accent-green);
+    }
+    .record-body{
+      padding: 18px;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: rgba(255,255,255,.86);
+    }
+    .kv{
+      display:grid;
+      grid-template-columns: 150px 1fr;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+    }
+    .kv:last-child{ border-bottom:none; }
+    .k{
+      color: rgba(255,255,255,.42);
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+    .v{
+      color: rgba(255,255,255,.90);
+      word-break: break-word;
+    }
+    .v.good{ color: rgba(92,214,133,.92); }
+    .hash-row{
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+    .copy-btn{
+      appearance:none;
+      border:1px solid rgba(255,255,255,.18);
+      background:rgba(255,255,255,.04);
+      color:rgba(255,255,255,.65);
+      padding:4px 8px;
+      border-radius:6px;
+      font-family:var(--mono);
+      font-size:9px;
+      letter-spacing:1px;
+      text-transform:uppercase;
+      cursor:pointer;
+      transition:all .2s ease;
+    }
+    .copy-btn:hover{
+      border-color:rgba(157,140,207,.55);
+      background:rgba(91,75,138,.18);
+      color:rgba(255,255,255,.90);
+    }
+    .copy-btn.copied{
+      border-color:rgba(92,214,133,.35);
+      background:rgba(92,214,133,.12);
+      color:rgba(92,214,133,.95);
+    }
+    .note{
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(255,255,255,.10);
+      color: rgba(255,255,255,.62);
+      font-size: 11.5px;
+      line-height: 1.7;
+      font-weight: 200;
+      font-family: var(--sans);
+    }
+
+    /* States */
+    .states{
+      display:grid;
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .state{
+      padding: 14px 14px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.02);
+      border-radius: 16px;
+      display:flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items:flex-start;
+    }
+    .state-left{
+      display:flex; flex-direction: column; gap: 2px;
+    }
+    .state-name{
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.86);
+    }
+    .state-desc{
+      color: var(--text-secondary);
+      font-size: 13px;
+      line-height: 1.6;
+      font-weight: 200;
+      margin:0;
+    }
+    .badge{
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 6px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.03);
+      color: rgba(255,255,255,.80);
+      white-space: nowrap;
+    }
+    .badge.green{ border-color: rgba(92,214,133,.22); color: rgba(92,214,133,.90); background: rgba(92,214,133,.06); }
+    .badge.amber{ border-color: rgba(214,160,92,.22); color: rgba(214,160,92,.95); background: rgba(214,160,92,.06); }
+    .badge.red{ border-color: rgba(214,92,92,.22); color: rgba(214,92,92,.95); background: rgba(214,92,92,.06); }
+
+    /* Footer */
+    footer{
+      border-top: 1px solid var(--border-glass);
+      padding: 70px 0 44px;
+      margin-top: 40px;
+      color: rgba(255,255,255,.45);
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 1px;
+    }
+    .footer-inner{
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 0 22px;
+      display:flex;
+      justify-content: space-between;
+      align-items:flex-start;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+    .foot-links{
+      display:flex; gap: 16px; flex-wrap: wrap;
+    }
+    .foot-links a{ color: rgba(255,255,255,.48); }
+    .foot-links a:hover{ color: rgba(255,255,255,.82); text-decoration:none; }
+
+    /* Enforcement Diagram */
+    .diagram-container{
+      display:flex;
+      justify-content:center;
+      margin: 30px 0 50px;
+    }
+    .enforcement-diagram{
+      max-width: 400px;
+      width: 100%;
+      height: auto;
+    }
+    
+    /* Contact */
+    .contact-card{
+      max-width: 540px;
+      background: var(--bg-panel);
+      border: 1px solid var(--border-glass);
+      border-radius: 18px;
+      padding: 8px 0;
+      backdrop-filter: blur(18px);
+    }
+    .contact-row{
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 28px;
+      border-bottom: 1px solid var(--border-glass);
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .contact-row:last-child{ border-bottom: none; }
+    .contact-label{
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-tertiary);
+    }
+    .contact-link{
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--purple-bright);
+      transition: color .2s ease;
+    }
+    .contact-link:hover{
+      color: var(--text-primary);
+      text-decoration: none;
+    }
+    
+    /* Subtle interlock pulse */
+    @keyframes interlock-pulse {
+      0%, 100% { 
+        stroke: rgba(157,140,207,0.65);
+        filter: drop-shadow(0 0 0 rgba(157,140,207,0));
+      }
+      50% { 
+        stroke: rgba(157,140,207,0.85);
+        filter: drop-shadow(0 0 8px rgba(157,140,207,0.25));
+      }
+    }
+    .interlock-bg{
+      animation: interlock-pulse 3s ease-in-out infinite;
+    }
+    
+    /* Respect reduced motion */
+    @media (prefers-reduced-motion: reduce){
+      .interlock-bg{
+        animation: none;
+      }
+    }
+
+    /* Reveal */
+    .reveal{ opacity: 0; transform: translateY(26px); transition: opacity .9s var(--ease), transform .9s var(--ease); }
+    .reveal.active{ opacity: 1; transform: translateY(0); }
+    @media (prefers-reduced-motion: reduce){
+      .reveal{ opacity: 1; transform: none; transition: none; }
+    }
+
+    /* Definition callout */
+    .definition-callout{
+      background: rgba(91,75,138,.08);
+      border: 1px solid rgba(157,140,207,.25);
+      border-radius: 12px;
+      padding: 16px 18px;
+      margin-top: 18px;
+    }
+    .definition-term{
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--purple-bright);
+      margin-bottom: 6px;
+    }
+    .definition-text{
+      color: var(--text-secondary);
+      font-size: 13px;
+      line-height: 1.65;
+      font-weight: 200;
+      margin: 0;
+    }
+  </style>
+</head>
+
+<body>
+  <a href="#main" class="skip-link">Skip to content</a>
+  <div class="grid-overlay" aria-hidden="true"></div>
+
+  <nav>
+    <div class="nav-inner">
+      <div class="brand">
+        <svg class="brand-icon" width="26" height="26" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect x="6" y="6" width="20" height="20" rx="5" fill="#5B4B8A" stroke="#9d8ccf" stroke-width="2"/>
+          <rect x="12" y="12" width="8" height="8" rx="2" fill="#c4b8e8"/>
+        </svg>
+        <div class="brand-name">Sentinel Authority</div>
+      </div>
+
+      <div class="nav-links" role="navigation" aria-label="Primary navigation">
+        <a href="#envelo">01 FRAMEWORK</a>
+        <a href="#criteria">02 CRITERIA</a>
+        <a href="#cat72">03 CAT-72</a>
+        <a href="#grant">04 GRANT</a>
+        <a href="#mechanism">05 MECHANISM</a>
+        <a href="#record">06 RECORD</a>
+        <a href="#contact">07 CONTACT</a>
+      </div>
+
+      <div class="nav-badge" title="Informational site; examples are illustrative and non-normative">
+        <span class="badge-dot" aria-hidden="true"></span>
+        <span>SYSTEM NOMINAL</span>
+      </div>
+    </div>
+  </nav>
+
+  <main id="main">
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-kicker">Authorization Standard // Sentinel Authority</div>
+      <h1>The <span class="accent">Physics</span> of Permission.</h1>
+      <p class="hero-desc">
+        <b>ODDC</b> — <i>Operational Design Domain Conformance</i> — certifies that autonomous systems operate <b>only within their defined operational envelope</b>,
+        enforced at runtime by <b>ENVELO</b> (Enforced Non-bypassable Verified Envelope Limit Operation) with <b>auditable evidence</b>.
+        Sentinel Authority governs the standard.
+      </p>
+      <p style="font-size:15px; color:var(--text-secondary); margin-top:8px; font-weight:200;">
+        Certification for autonomous actuation within bounded operational design domains.
+      </p>
+      <div class="hero-actions">
+        <a class="btn primary" href="#contact">Request Certification Review</a>
+        <a class="btn" href="#criteria">View criteria</a>
+        <a class="btn" href="#mechanism">How enforcement works</a>
+        <a class="btn" href="#record">See a record</a>
+      </div>
+      <p style="font-family: var(--mono); font-size: 9px; color: var(--text-tertiary); margin-top: 18px; letter-spacing: 1px;">
+        Requests are reviewed for critical infrastructure operators, insurers, regulators, and licensed implementers.
+      </p>
+    </section>
+
+    <!-- ENVELO -->
+    <section id="envelo" class="section">
+      <div class="section-head reveal">
+        <div>
+          <span class="section-label">THE FRAMEWORK</span>
+          <h2 class="section-title">ODDC + ENVELO</h2>
+          <p class="section-lead">
+            <b>ODDC</b> (<i>Operational Design Domain Conformance</i>) is the certification. 
+            <b>ENVELO</b> (<i>Enforced Non-bypassable Verified Envelope Limit Operation</i>) is the runtime enforcement mechanism.
+            Together, they ensure autonomous systems operate only within defined boundaries—with proof.
+          </p>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel reveal">
+          <h3>ODDC Certification</h3>
+          <ul class="list">
+            <li><b>Operational Design Domain</b> — the formally specified boundary of permitted autonomous action.</li>
+            <li><b>Conformance verification</b> — evidence that the system respects its ODD at runtime.</li>
+            <li><b>Auditable record</b> — signed certification artifact for regulators, insurers, and counterparties.</li>
+            <li><b>Revocable</b> — certification suspended upon material deviation or drift.</li>
+          </ul>
+        </div>
+
+        <div class="panel reveal">
+          <h3>ENVELO Enforcement</h3>
+          <ul class="list">
+            <li><b>Non-bypassable interlock</b> — validates every action before execution.</li>
+            <li><b>Fail-closed behavior</b> — out-of-domain actions are blocked or overridden.</li>
+            <li><b>Continuous monitoring</b> — runtime state compared against ODD constraints.</li>
+            <li><b>Tamper-evident logging</b> — all boundary interactions recorded for audit.</li>
+          </ul>
+          <div style="margin-top:18px">
+            <span class="tag"><span class="dot" aria-hidden="true"></span> ENFORCEMENT, NOT TRUST</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CRITERIA -->
+    <section id="criteria" class="section">
+      <div class="section-head reveal">
+        <div>
+          <span class="section-label">CERTIFICATION CRITERIA</span>
+          <h2 class="section-title">What ODDC Certification requires</h2>
+          <p class="section-lead">
+            ODDC certification is granted only when the Operational Design Domain is formally defined, evidence supports stable operation within it, and ENVELO runtime enforcement is present and auditable.
+          </p>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel reveal">
+          <h3>Minimum criteria</h3>
+
+          <div class="checklist">
+            <div class="check">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M20 6L9 17l-5-5" stroke="rgba(92,214,133,.95)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <div>
+                <div class="check-title">ODD formally specified</div>
+                <div class="check-desc">Operational Design Domain defined with objective constraints and tolerances.</div>
+              </div>
+            </div>
+
+            <div class="check">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M20 6L9 17l-5-5" stroke="rgba(92,214,133,.95)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <div>
+                <div class="check-title">Evidence of stable behavior within ODD</div>
+                <div class="check-desc">Convergence/stability thresholds satisfied across relevant operational regimes.</div>
+              </div>
+            </div>
+
+            <div class="check">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M20 6L9 17l-5-5" stroke="rgba(92,214,133,.95)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <div>
+                <div class="check-title">ENVELO enforcement present</div>
+                <div class="check-desc">Non-bypassable interlock validates actions before execution; fail-closed behavior defined.</div>
+              </div>
+            </div>
+
+            <div class="check">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M20 6L9 17l-5-5" stroke="rgba(92,214,133,.95)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <div>
+                <div class="check-title">Auditability & traceability</div>
+                <div class="check-desc">Signed authorization record + tamper-evident audit log reference.</div>
+              </div>
+            </div>
+
+            <div class="check">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M20 6L9 17l-5-5" stroke="rgba(92,214,133,.95)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <div>
+                <div class="check-title">Revocation & drift handling</div>
+                <div class="check-desc">Clear rules for suspension/revocation upon ODD violation, drift, or audit failure.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="definition-callout">
+            <div class="definition-term">Material Deviation</div>
+            <p class="definition-text">Any state, trajectory, or enforcement failure that exceeds certified tolerances or violates defined invariants.</p>
+          </div>
+        </div>
+
+        <div class="panel reveal">
+          <h3>Certification states</h3>
+          <p>Enterprise-native states for operational governance.</p>
+
+          <div class="states">
+            <div class="state">
+              <div class="state-left">
+                <div class="state-name">Observe</div>
+                <p class="state-desc">Telemetry only; autonomy prohibited.</p>
+              </div>
+              <span class="badge">NO ACTUATION</span>
+            </div>
+
+            <div class="state">
+              <div class="state-left">
+                <div class="state-name">Bounded</div>
+                <p class="state-desc">Constrained autonomy; elevated overrides and review.</p>
+              </div>
+              <span class="badge amber">LIMITED</span>
+            </div>
+
+            <div class="state">
+              <div class="state-left">
+                <div class="state-name">Certified</div>
+                <p class="state-desc">Autonomy permitted within certified ODD; continuous ENVELO enforcement.</p>
+              </div>
+              <span class="badge green">ODDC CERTIFIED</span>
+            </div>
+
+            <div class="state">
+              <div class="state-left">
+                <div class="state-name">Revoked</div>
+                <p class="state-desc">Autonomy suspended pending remediation and re-evaluation.</p>
+              </div>
+              <span class="badge red">SUSPENDED</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CAT-72 -->
+    <section id="cat72" class="section">
+      <div class="section-head reveal">
+        <div>
+          <span class="section-label">CERTIFICATION PROCEDURE</span>
+          <h2 class="section-title">Convergence Authorization Test (CAT-72)</h2>
+          <p class="section-lead">
+            ODDC certification is issued only after successful completion of the Convergence Authorization Test (CAT-72), 
+            a formal validation event establishing bounded autonomous behavior across operational regimes.
+          </p>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel reveal">
+          <h3>Validation Requirements</h3>
+          <ul class="list">
+            <li><b>72-hour continuous convergence validation</b> — sustained operation within ODD bounds.</li>
+            <li><b>Multi-regime operational stress testing</b> — performance across edge conditions and transitions.</li>
+            <li><b>Fail-closed ENVELO enforcement on material deviation</b> — verified halt behavior outside ODD.</li>
+            <li><b>Cryptographically verifiable certification evidence</b> — tamper-evident validation record.</li>
+          </ul>
+        </div>
+
+        <div class="panel reveal">
+          <h3>Issuance & Renewal</h3>
+          <p>CAT-72 completion is required for both initial ODDC certification and periodic renewal. Waivers are not issued.</p>
+          <div style="margin-top:18px">
+            <span class="tag"><span class="dot" aria-hidden="true"></span> REQUIRED FOR CERTIFICATION</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- GRANT -->
+    <section id="grant" class="section">
+      <div class="section-head reveal">
+        <div>
+          <span class="section-label">GRANT INSTRUMENT</span>
+          <h2 class="section-title">What ODDC Certification confers</h2>
+          <p class="section-lead">
+            ODDC certification is structured to support underwriting review as a first-class risk control for autonomous infrastructure.
+          </p>
+        </div>
+      </div>
+
+      <div class="panel reveal" style="max-width: 680px;">
+        <h3>Certification Rights</h3>
+        <ul class="list">
+          <li><b>Certified Operational Design Domain</b> — facility + domain scope definition.</li>
+          <li><b>Bounded autonomous actuation rights</b> — permitted actions within certified ODD.</li>
+          <li><b>Signed evidence artifact</b> — for regulators, insurers, and counterparties.</li>
+          <li><b>Defined validity term</b> — time-bounded certification window.</li>
+          <li><b>Revocable upon material deviation or drift</b> — continuous conformance requirement.</li>
+        </ul>
+        <p style="font-size: 11px; color: var(--text-tertiary); margin-top: 20px; font-family: var(--mono); letter-spacing: 1px;">
+          Certification terms are issued based on operational scope, ODD complexity, and domain risk profile.
+        </p>
+      </div>
+    </section>
+
+    <!-- MECHANISM -->
+    <section id="mechanism" class="section">
+      <div class="section-head reveal">
+        <div>
+          <span class="section-label">RUNTIME ENFORCEMENT</span>
+          <h2 class="section-title">How enforcement works</h2>
+          <p class="section-lead">
+            ENVELO is enforced as a non-bypassable control boundary: <b>predict → evaluate → execute</b>. Unsafe actions are blocked or overridden before actuation.
+          </p>
+        </div>
+      </div>
+
+      <!-- Enforcement Flow Diagram -->
+      <div class="diagram-container reveal">
+        <svg class="enforcement-diagram" viewBox="0 0 400 340" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Diagram showing AI model output flowing through ENVELO interlock before reaching actuator">
+          <!-- Flow nodes -->
+          <g class="flow-node">
+            <rect x="140" y="20" width="120" height="40" rx="8" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.18)"/>
+            <text x="200" y="45" text-anchor="middle" fill="rgba(255,255,255,0.85)" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="2">AI MODEL</text>
+          </g>
+          
+          <!-- Arrow 1 -->
+          <g class="flow-arrow">
+            <line x1="200" y1="60" x2="200" y2="85" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/>
+            <polygon points="200,95 195,85 205,85" fill="rgba(255,255,255,0.25)"/>
+          </g>
+          
+          <g class="flow-node">
+            <rect x="125" y="95" width="150" height="40" rx="8" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.18)"/>
+            <text x="200" y="120" text-anchor="middle" fill="rgba(255,255,255,0.85)" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="2">PROPOSED ACTION</text>
+          </g>
+          
+          <!-- Arrow 2 -->
+          <g class="flow-arrow">
+            <line x1="200" y1="135" x2="200" y2="160" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/>
+            <polygon points="200,170 195,160 205,160" fill="rgba(255,255,255,0.25)"/>
+          </g>
+          
+          <!-- Envelo Boundary Box -->
+          <rect class="envelo-boundary" x="70" y="165" width="260" height="90" rx="12" fill="rgba(91,75,138,0.08)" stroke="rgba(157,140,207,0.45)" stroke-width="1.5" stroke-dasharray="none"/>
+          <text x="85" y="183" fill="rgba(157,140,207,0.8)" font-family="IBM Plex Mono, monospace" font-size="8" letter-spacing="3">ENVELO</text>
+          
+          <!-- Interlock node (inside boundary) -->
+          <g class="interlock-node">
+            <rect class="interlock-bg" x="115" y="195" width="170" height="44" rx="10" fill="rgba(91,75,138,0.15)" stroke="rgba(157,140,207,0.65)" stroke-width="1.5"/>
+            <text x="200" y="222" text-anchor="middle" fill="rgba(255,255,255,0.92)" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="2">INTERLOCK</text>
+          </g>
+          
+          <!-- Arrow 3 -->
+          <g class="flow-arrow">
+            <line x1="200" y1="255" x2="200" y2="280" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/>
+            <polygon points="200,290 195,280 205,280" fill="rgba(255,255,255,0.25)"/>
+          </g>
+          
+          <g class="flow-node">
+            <rect x="140" y="290" width="120" height="40" rx="8" fill="rgba(92,214,133,0.06)" stroke="rgba(92,214,133,0.35)"/>
+            <text x="200" y="315" text-anchor="middle" fill="rgba(92,214,133,0.92)" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="2">ACTUATOR</text>
+          </g>
+          
+          <!-- Block/Override indicator (side) -->
+          <g class="block-indicator">
+            <line x1="285" y1="217" x2="340" y2="217" stroke="rgba(214,92,92,0.4)" stroke-width="1" stroke-dasharray="4,3"/>
+            <text x="345" y="212" fill="rgba(214,92,92,0.7)" font-family="IBM Plex Mono, monospace" font-size="8" letter-spacing="1">BLOCK</text>
+            <text x="345" y="224" fill="rgba(214,160,92,0.7)" font-family="IBM Plex Mono, monospace" font-size="8" letter-spacing="1">OVERRIDE</text>
+          </g>
+          
+          <!-- Audit indicator (side) -->
+          <g class="audit-indicator">
+            <line x1="115" y1="217" x2="60" y2="217" stroke="rgba(255,255,255,0.2)" stroke-width="1" stroke-dasharray="4,3"/>
+            <text x="55" y="221" text-anchor="end" fill="rgba(255,255,255,0.45)" font-family="IBM Plex Mono, monospace" font-size="8" letter-spacing="1">AUDIT</text>
+          </g>
+        </svg>
+      </div>
+
+      <div class="mechanism">
+        <div class="node reveal">
+          <div class="node-num">Phase 01</div>
+          <div class="node-title">Signal interception</div>
+          <p class="node-desc">Model outputs are routed through the interlock before reaching actuator interfaces.</p>
+        </div>
+        <div class="node reveal">
+          <div class="node-num">Phase 02</div>
+          <div class="node-title">ODD validation</div>
+          <p class="node-desc">Proposed actions are evaluated against the certified ODD and trajectory limits.</p>
+        </div>
+        <div class="node reveal">
+          <div class="node-num">Phase 03</div>
+          <div class="node-title">Fail-closed enforcement</div>
+          <p class="node-desc">Out-of-domain actions are blocked or overridden; events are logged for auditability.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- RECORD -->
+    <section id="record" class="section">
+      <div class="section-head reveal">
+        <div>
+          <span class="section-label">AUDITABLE EVIDENCE</span>
+          <h2 class="section-title">Certification record</h2>
+          <p class="section-lead">
+            An ODDC certification record binds scope, criteria satisfaction, and certification state. It is designed to be tamper-evident and independently verifiable.
+          </p>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="record reveal">
+          <div class="record-head">
+            <div class="record-title">ODDC CERTIFICATION RECORD — EXAMPLE</div>
+            <div class="record-status"><span class="s-dot" aria-hidden="true"></span> CERTIFIED</div>
+          </div>
+
+          <div class="record-body">
+            <div class="kv">
+              <div class="k">Authority</div>
+              <div class="v">Sentinel Authority</div>
+            </div>
+            <div class="kv">
+              <div class="k">Certification ID</div>
+              <div class="v">SA-ODDC-2026-0001</div>
+            </div>
+            <div class="kv">
+              <div class="k">Issued (UTC)</div>
+              <div class="v">2026-01-04T00:00:00Z</div>
+            </div>
+            <div class="kv">
+              <div class="k">Validity</div>
+              <div class="v">2026-01-04T00:00:00Z → 2027-01-04T00:00:00Z</div>
+            </div>
+            <div class="kv">
+              <div class="k">Scope</div>
+              <div class="v">Autonomous control permitted within certified ODD only</div>
+            </div>
+            <div class="kv">
+              <div class="k">Evidence</div>
+              <div class="v good">CAT-72 convergence + stability across regimes — PASS</div>
+            </div>
+            <div class="kv">
+              <div class="k">Enforcement</div>
+              <div class="v">ENVELO fail-closed interlock; block/override + audit</div>
+            </div>
+            <div class="kv">
+              <div class="k">Record hash</div>
+              <div class="v hash-row"><span id="hash-value">8f2a…c91d</span><button class="copy-btn" onclick="copyHash()" title="Copy full hash">Copy</button></div>
+            </div>
+            <div class="kv">
+              <div class="k">Signature</div>
+              <div class="v">SA-SIG-1</div>
+            </div>
+            <div class="kv">
+              <div class="k">Audit log ref</div>
+              <div class="v">SA-LOG-2026-0001</div>
+            </div>
+
+            <div class="note">
+              This is an illustrative example for format only. Production deployments should populate domain-specific envelope parameters, validity window, and audit log reference.
+            </div>
+          </div>
+        </div>
+
+        <div class="panel reveal">
+          <h3>What the record proves</h3>
+          <ul class="list">
+            <li><b>Scope</b> — what autonomous actions are permitted within the certified ODD.</li>
+            <li><b>Criteria</b> — what evidence was satisfied at certification time.</li>
+            <li><b>Enforcement</b> — how ENVELO enforces the ODD at runtime.</li>
+            <li><b>Auditability</b> — how third parties verify integrity and traceability.</li>
+            <li><b>Revocation</b> — how certification can be suspended when conditions change.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact" class="section">
+      <div class="section-head reveal">
+        <div>
+          <span class="section-label">INQUIRIES</span>
+          <h2 class="section-title">Contact</h2>
+          <p class="section-lead">
+            For certification inquiries, licensing discussions, or partnership opportunities.
+          </p>
+        </div>
+      </div>
+
+      <div class="contact-card reveal">
+        <div class="contact-row">
+          <div class="contact-label">General inquiries</div>
+          <a href="mailto:info@sentinelauthority.com" class="contact-link">info@sentinelauthority.com</a>
+        </div>
+        <div class="contact-row">
+          <div class="contact-label">Certification & licensing</div>
+          <a href="mailto:licensing@sentinelauthority.com" class="contact-link">licensing@sentinelauthority.com</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- GOVERNANCE ARTIFACTS -->
+    <section id="artifacts" class="section">
+      <div class="section-head reveal">
+        <div>
+          <span class="section-label">GOVERNANCE ARTIFACTS</span>
+          <h2 class="section-title">Published documents</h2>
+          <p class="section-lead">
+            Sentinel Authority maintains normative documents governing the ODDC certification program.
+          </p>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel reveal">
+          <h3>Public Documents</h3>
+          <ul class="list">
+            <li><b>ODDC Overview</b> — conceptual introduction to Operational Design Domain Conformance.</li>
+            <li><b>ENVELO Enforcement Specification</b> — runtime enforcement mechanism overview.</li>
+            <li><b>CAT-72 Procedure Summary</b> — convergence test requirements and format.</li>
+            <li><b>Change Log & Errata</b> — version history and corrections.</li>
+          </ul>
+        </div>
+
+        <div class="panel reveal">
+          <h3>Restricted Documents</h3>
+          <ul class="list">
+            <li><b>Normative Technical Specification</b> — full implementation requirements.</li>
+            <li><b>Evidence Schema & Audit Format</b> — record structure and verification procedures.</li>
+            <li><b>ODD Definition Templates</b> — domain-specific operational design domain guides.</li>
+          </ul>
+          <div style="margin-top:18px">
+            <span class="tag">LICENSED IMPLEMENTERS ONLY</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="footer-inner">
+        <div>
+          <div>© <span id="year"></span> SENTINEL AUTHORITY — ODDC CERTIFICATION</div>
+          <div style="margin-top:12px;color:rgba(255,255,255,.42);font-size:10px;max-width:420px;line-height:1.7;">
+            ODDC certifies conformance to defined operational boundaries. Implementations remain the responsibility of operators and licensed implementers.
+          </div>
+        </div>
+        <div class="foot-links">
+          <a href="#envelo">ODDC</a>
+          <a href="#criteria">Criteria</a>
+          <a href="#cat72">CAT-72</a>
+          <a href="#mechanism">ENVELO</a>
+          <a href="#record">Record</a>
+          <a href="#artifacts">Artifacts</a>
+          <a href="#contact">Contact</a>
+        </div>
+      </div>
+    </footer>
+  </main>
+
+  <script>
+    // Year
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    // Full hash for copy functionality
+    const FULL_HASH = "8f2a7b3c4d5e6f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3c91d";
+    
+    function copyHash() {
+      navigator.clipboard.writeText(FULL_HASH).then(() => {
+        const btn = document.querySelector('.copy-btn');
+        btn.textContent = 'Copied';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = 'Copy';
+          btn.classList.remove('copied');
+        }, 1500);
+      });
+    }
+
+    // Reveal on scroll
+    const reveals = document.querySelectorAll('.reveal');
+    
+    function checkReveal() {
+      const windowHeight = window.innerHeight;
+      const revealPoint = 120;
+      
+      reveals.forEach(el => {
+        const revealTop = el.getBoundingClientRect().top;
+        if (revealTop < windowHeight - revealPoint) {
+          el.classList.add('active');
+        }
+      });
+    }
+    
+    // Check on load and scroll
+    window.addEventListener('scroll', checkReveal);
+    window.addEventListener('load', checkReveal);
+    
+    // Initial check
+    checkReveal();
+  </script>
+</body>
 </html>
