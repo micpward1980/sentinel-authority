@@ -289,7 +289,7 @@ async def ingest_telemetry(
     if test.state != TestState.RUNNING:
         raise HTTPException(status_code=400, detail="Test is not running")
     
-    timestamp = data.timestamp or datetime.utcnow()
+    timestamp = (data.timestamp.replace(tzinfo=None) if data.timestamp else datetime.utcnow())
     elapsed = int((timestamp.replace(tzinfo=None) - test.started_at).total_seconds()) if test.started_at else 0
     
     # Check if test duration exceeded
