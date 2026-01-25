@@ -850,7 +850,7 @@ function VerifyPage() {
     setError('');
     setResult(null);
     try {
-      const res = await api.get(`/api/certificates/verify/${certNumber}`);
+      const res = await api.get(`/api/verify/${certNumber}`);
       setResult(res.data);
     } catch (err) {
       setError('Certificate not found');
