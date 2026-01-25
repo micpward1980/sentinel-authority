@@ -120,14 +120,30 @@ async def custom_swagger_ui():
         .swagger-ui table tbody tr td { color: rgba(255,255,255,0.9); border-bottom: 1px solid rgba(255,255,255,0.05); }
         .swagger-ui .response-col_status { color: #5CD685; }
         .swagger-ui .response-col_description { color: rgba(255,255,255,0.75); }
-        .swagger-ui .model-box { background: rgba(255,255,255,0.03); }
-        .swagger-ui .model { color: rgba(255,255,255,0.9); }
-        .swagger-ui .model-title { color: #c4b8e8; }
-        .swagger-ui section.models { border: 1px solid rgba(255,255,255,0.1); }
-        .swagger-ui section.models h4 { color: #fff; }
-        .swagger-ui section.models .model-container { background: rgba(255,255,255,0.03); }
+        .swagger-ui .model-box { background: rgba(255,255,255,0.08); }
+        .swagger-ui .model { color: #fff; }
+        .swagger-ui .model span { color: #fff !important; }
+        .swagger-ui .model .prop { color: #fff; }
+        .swagger-ui .model .prop-name { color: #c4b8e8 !important; font-weight: 500; }
+        .swagger-ui .model .prop-type { color: #5CD685 !important; }
+        .swagger-ui .model .prop-format { color: rgba(255,255,255,0.6); }
+        .swagger-ui .model-title { color: #c4b8e8; font-weight: 600; }
+        .swagger-ui .model-title__text { color: #c4b8e8 !important; }
+        .swagger-ui section.models { border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.03); }
+        .swagger-ui section.models h4 { color: #fff !important; }
+        .swagger-ui section.models h4 span { color: #fff !important; }
+        .swagger-ui section.models .model-container { background: rgba(255,255,255,0.05); margin: 8px 0; padding: 12px; }
+        .swagger-ui .model-toggle { background: rgba(255,255,255,0.1); }
+        .swagger-ui .model-toggle::after { color: #fff; }
+        .swagger-ui .brace-open, .swagger-ui .brace-close { color: #fff !important; }
+        .swagger-ui .inner-object { color: #fff; }
+        .swagger-ui .renderedMarkdown p { color: rgba(255,255,255,0.85); }
         .swagger-ui .highlight-code { background: #1e222b; }
-        .swagger-ui .highlight-code .microlight { color: #fff; }
+        .swagger-ui .highlight-code .microlight { color: #fff !important; }
+        .swagger-ui pre { color: #fff !important; }
+        .swagger-ui code { color: #fff !important; }
+        .swagger-ui .microlight { color: #fff !important; }
+        .swagger-ui .response .microlight { color: #fff !important; }
         .swagger-ui .markdown p, .swagger-ui .markdown li { color: rgba(255,255,255,0.9); }
         .swagger-ui .markdown code { background: rgba(255,255,255,0.15); color: #c4b8e8; }
         .swagger-ui .response-col_links { color: rgba(255,255,255,0.5); }
