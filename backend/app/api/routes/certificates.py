@@ -32,7 +32,13 @@ async def issue_certificate(test_id: str, db: AsyncSession = Depends(get_db), us
     if existing.scalar_one_or_none(): raise HTTPException(status_code=400, detail="Certificate already issued")
     cert_number = await generate_certificate_number(db)
     now = datetime.utcnow()
-    certificate = Certificate(certificate_number=cert_number, application_id=application.id, organization_name=application.organization_name, system_name=application.system_name, system_version=application.system_version, odd_specification=application.odd_specification, envelope_definition=application.envelope_definition, state=CertificationState.CONFORMANT, issued_at=now, expires_at=now + timedelta(days=365), issued_by=int(user["sub"]), test_id=test.id, convergence_score=test.convergence_score, evidence_hash=test.evidence_hash, verification_url=f"https://sentinel-authority.vercel.app/verify/{cert_number}", history=[{"action": "issued", "timestamp": now.isoformat(), "by": user["email"]}])
+    # Generate signature and audit log reference
+    sig_count = await db.execute(select(func.count(Certificate.id)))
+    sig_num = (sig_count.scalar() or 0) + 1
+    signature = f"SA-SIG-{sig_num}"
+    audit_log_ref = f"SA-LOG-{now.year}-{sig_num:04d}"
+    
+    certificate = Certificate(certificate_number=cert_number, application_id=application.id, organization_name=application.organization_name, system_name=application.system_name, system_version=application.system_version, odd_specification=application.odd_specification, envelope_definition=application.envelope_definition, state=CertificationState.CONFORMANT, issued_at=now, expires_at=now + timedelta(days=365), issued_by=int(user["sub"]), test_id=test.id, convergence_score=test.convergence_score, evidence_hash=test.evidence_hash, signature=signature, audit_log_ref=audit_log_ref, verification_url=f"https://sentinelauthority.org/verify.html?cert={cert_number}", history=[{"action": "issued", "timestamp": now.isoformat(), "by": user["email"]}])
     db.add(certificate)
     application.state = CertificationState.CONFORMANT
     await db.commit()
