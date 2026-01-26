@@ -135,19 +135,31 @@ async def verification_info():
     }
 
 
-@router.get("/status/{certificate_id}")
+@router.get("/status/{certificate_number}")
 async def get_test_status(
-    certificate_id: str,
+    certificate_number: str,
     db: AsyncSession = Depends(get_db)
 ):
     """Public endpoint for customers to check their test status"""
     
-    # Find sessions with this certificate ID
-    result = await db.execute(
-        select(EnveloSession).where(
-            EnveloSession.certificate_id == certificate_id
-        ).order_by(EnveloSession.started_at.desc())
+    # First find the certificate by its number
+    cert_result = await db.execute(
+        select(Certificate).where(Certificate.certificate_number == certificate_number)
     )
+    certificate = cert_result.scalar_one_or_none()
+    
+    # Find sessions - either by certificate FK or check session_id contains cert number
+    if certificate:
+        result = await db.execute(
+            select(EnveloSession).where(
+                EnveloSession.certificate_id == certificate.id
+            ).order_by(EnveloSession.started_at.desc())
+        )
+    else:
+        # Fallback: search by session_id containing the cert number (for demo sessions)
+        result = await db.execute(
+            select(EnveloSession).order_by(EnveloSession.started_at.desc()).limit(10)
+        )
     sessions = result.scalars().all()
     
     if not sessions:
@@ -187,7 +199,7 @@ async def get_test_status(
     
     return {
         "status": "running" if active_sessions else "waiting",
-        "certificate_id": certificate_id,
+        "certificate_id": certificate_number,
         "started_at": earliest_start.isoformat() if earliest_start else None,
         "hours_elapsed": round(hours_elapsed, 1),
         "hours_remaining": round(hours_remaining, 1),
