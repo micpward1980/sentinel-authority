@@ -1853,11 +1853,12 @@ function EnveloPage() {
   const [activeApiKey, setActiveApiKey] = useState(null);
   const [stats, setStats] = useState(null);
   const [sessions, setSessions] = useState([]);
+  const [selectedSession, setSelectedSession] = useState(null);
   const { user } = useAuth();
 
   useEffect(() => {
     api.get('/api/envelo/stats').then(res => setStats(res.data)).catch(console.error);
-    api.get('/api/envelo/sessions').then(res => setSessions(res.data.sessions || [])).catch(console.error);
+    api.get('/api/envelo/admin/sessions').then(res => setSessions(res.data.sessions || [])).catch(console.error);
   }, []);
 
   const apiKey = `sa_live_${user?.sub || 'XXXXX'}_${Date.now().toString(36)}`;

@@ -14,6 +14,7 @@ from typing import Optional, Dict, Any, List
 from app.core.database import get_db
 from app.models.models import EnveloSession, TelemetryRecord, Violation, APIKey, Certificate
 from app.api.routes.apikeys import validate_api_key, hash_key
+from app.core.security import get_current_user
 
 router = APIRouter()
 
@@ -399,4 +400,105 @@ async def get_global_stats(db: AsyncSession = Depends(get_db)):
         "active_sessions": active_sessions or 0,
         "total_telemetry_records": total_telemetry or 0,
         "total_violations": total_violations or 0
+    }
+
+
+@router.get("/admin/sessions")
+async def list_all_sessions(
+    db: AsyncSession = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    """List all ENVELO sessions (admin view)"""
+    
+    # Only allow admin users
+    if current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    result = await db.execute(
+        select(EnveloSession).order_by(EnveloSession.started_at.desc()).limit(100)
+    )
+    sessions = result.scalars().all()
+    
+    return {
+        "sessions": [
+            {
+                "id": s.id,
+                "session_id": s.session_id,
+                "certificate_id": s.certificate_id,
+                "started_at": s.started_at.isoformat() if s.started_at else None,
+                "ended_at": s.ended_at.isoformat() if s.ended_at else None,
+                "agent_version": s.agent_version,
+                "status": s.status,
+                "pass_count": s.pass_count,
+                "block_count": s.block_count
+            }
+            for s in sessions
+        ]
+    }
+
+
+@router.get("/admin/sessions/{session_id}/telemetry")
+async def get_session_telemetry_admin(
+    session_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    """Get telemetry for a session (admin view)"""
+    
+    if current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    result = await db.execute(
+        select(TelemetryRecord).where(
+            TelemetryRecord.session_id == session_id
+        ).order_by(TelemetryRecord.timestamp.desc()).limit(1000)
+    )
+    records = result.scalars().all()
+    
+    return {
+        "records": [
+            {
+                "id": r.id,
+                "timestamp": r.timestamp.isoformat() if r.timestamp else None,
+                "action_id": r.action_id,
+                "action_type": r.action_type,
+                "result": r.result,
+                "execution_time_ms": r.execution_time_ms,
+                "parameters": r.parameters,
+                "boundary_evaluations": r.boundary_evaluations
+            }
+            for r in records
+        ]
+    }
+
+
+@router.get("/admin/sessions/{session_id}/violations")
+async def get_session_violations_admin(
+    session_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    """Get violations for a session (admin view)"""
+    
+    if current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    result = await db.execute(
+        select(Violation).where(
+            Violation.session_id == session_id
+        ).order_by(Violation.timestamp.desc())
+    )
+    violations = result.scalars().all()
+    
+    return {
+        "violations": [
+            {
+                "id": v.id,
+                "timestamp": v.timestamp.isoformat() if v.timestamp else None,
+                "boundary_name": v.boundary_name,
+                "violation_message": v.violation_message,
+                "parameters": v.parameters
+            }
+            for v in violations
+        ]
     }
