@@ -10,6 +10,7 @@ from typing import Optional, Dict, Any
 from app.core.database import get_db
 from app.core.security import get_current_user
 from app.models.models import Application, User, CertificationState
+from app.services.email_service import notify_admin_new_application
 
 router = APIRouter()
 
@@ -72,6 +73,13 @@ async def create_application(
     await db.commit()
     await db.refresh(application)
     
+    # Notify admin of new application
+    notify_admin_new_application(
+        app_data.organization_name,
+        app_data.system_name,
+        app_data.contact_email
+    )
+    
     return {
         "id": application.id,
         "application_number": application.application_number,
@@ -86,7 +94,6 @@ async def list_applications(
     db: AsyncSession = Depends(get_db),
     user: dict = Depends(get_current_user)
 ):
-    # Admins see all, applicants see their own
     if user.get("role") in ["admin", "operator"]:
         result = await db.execute(select(Application).order_by(Application.created_at.desc()))
     else:
@@ -123,7 +130,6 @@ async def get_application(
     if not app:
         raise HTTPException(status_code=404, detail="Application not found")
     
-    # Check access
     if user.get("role") not in ["admin", "operator"] and app.applicant_id != int(user["sub"]):
         raise HTTPException(status_code=403, detail="Access denied")
     
