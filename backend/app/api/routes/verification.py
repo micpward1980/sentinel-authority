@@ -24,6 +24,8 @@ class VerificationResponse(BaseModel):
     expires_at: str = None
     convergence_score: float = None
     evidence_hash: str = None
+    signature: str = None
+    audit_log_ref: str = None
     message: str
 
 
@@ -78,6 +80,8 @@ async def verify_certificate(
         expires_at=cert.expires_at.isoformat() if cert.expires_at else None,
         convergence_score=cert.convergence_score,
         evidence_hash=cert.evidence_hash,
+        signature=cert.signature,
+        audit_log_ref=cert.audit_log_ref,
         message=status_messages.get(cert.state, "Unknown status")
     )
 
