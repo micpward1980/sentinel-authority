@@ -1,4 +1,3 @@
-from datetime import datetime
 """Public Verification API - No authentication required."""
 
 from datetime import datetime
@@ -178,7 +177,8 @@ async def get_test_status(
     pass_rate = (total_pass / total_actions * 100) if total_actions > 0 else 0
     
     # Get earliest start time
-    earliest_start = min(s.started_at for s in sessions if s.started_at)
+    sessions_with_start = [s.started_at for s in sessions if s.started_at]
+    earliest_start = min(sessions_with_start) if sessions_with_start else None
     hours_elapsed = (datetime.utcnow() - earliest_start).total_seconds() / 3600 if earliest_start else 0
     hours_remaining = max(0, 72 - hours_elapsed)
     
