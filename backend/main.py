@@ -12,7 +12,7 @@ from fastapi.responses import HTMLResponse
 
 from app.core.config import settings
 from app.core.database import init_db
-from app.api.routes import auth, dashboard, applicants, cat72, certificates, verification, licensees
+from app.api.routes import auth, dashboard, applicants, cat72, certificates, verification, licensees, envelo
 
 # Logging setup
 logging.basicConfig(level=logging.INFO)
@@ -53,6 +53,7 @@ app.include_router(cat72.router, prefix="/api/cat72", tags=["CAT-72 Console"])
 app.include_router(certificates.router, prefix="/api/certificates", tags=["Certification Registry"])
 app.include_router(verification.router, prefix="/api/verify", tags=["Public Verification"])
 app.include_router(licensees.router, prefix="/api/licensees", tags=["Licensee Portal"])
+app.include_router(envelo.router, prefix="/api/envelo", tags=["ENVELO Agent"])
 
 
 @app.get("/health")
