@@ -12,7 +12,7 @@ from fastapi.responses import HTMLResponse
 
 from app.core.config import settings
 from app.core.database import init_db
-from app.api.routes import auth, dashboard, applicants, cat72, certificates, verification, licensees, envelo
+from app.api.routes import auth, dashboard, applicants, cat72, certificates, verification, licensees, envelo, apikeys
 
 # Logging setup
 logging.basicConfig(level=logging.INFO)
@@ -54,6 +54,7 @@ app.include_router(certificates.router, prefix="/api/certificates", tags=["Certi
 app.include_router(verification.router, prefix="/api/verify", tags=["Public Verification"])
 app.include_router(licensees.router, prefix="/api/licensees", tags=["Licensee Portal"])
 app.include_router(envelo.router, prefix="/api/envelo", tags=["ENVELO Agent"])
+app.include_router(apikeys.router, prefix="/api/apikeys", tags=["API Keys"])
 
 
 @app.get("/health")
@@ -84,80 +85,8 @@ async def custom_swagger_ui():
         .swagger-ui { background: #2a2f3d; }
         .swagger-ui .topbar { background: #1e222b; border-bottom: 1px solid rgba(255,255,255,0.1); }
         .swagger-ui .info .title { color: #fff !important; }
-        .swagger-ui .info .description { color: rgba(255,255,255,0.9) !important; }
-        .swagger-ui .info p, .swagger-ui .info li { color: rgba(255,255,255,0.9) !important; }
-        .swagger-ui, .swagger-ui * { color: rgba(255,255,255,0.85); }
-        .swagger-ui .info a { color: #9d8ccf; }
-        .swagger-ui .scheme-container { background: #1e222b; box-shadow: none; }
-        .swagger-ui .opblock-tag { color: #c4b8e8; border-bottom: 1px solid rgba(255,255,255,0.1); font-weight: 500; }
-        .swagger-ui .opblock-tag small { color: rgba(255,255,255,0.7); }
-        .swagger-ui .opblock-tag:hover { background: rgba(255,255,255,0.05); }
-        .swagger-ui .opblock { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); margin-bottom: 8px; }
         .swagger-ui .opblock .opblock-summary-method { background: #5B4B8A; font-weight: 600; }
-        .swagger-ui .opblock.opblock-get .opblock-summary-method { background: #5B4B8A; }
-        .swagger-ui .opblock.opblock-post .opblock-summary-method { background: #5CD685; }
-        .swagger-ui .opblock.opblock-delete .opblock-summary-method { background: #D65C5C; }
-        .swagger-ui .opblock.opblock-put .opblock-summary-method { background: #D6A05C; }
-        .swagger-ui .opblock.opblock-patch .opblock-summary-method { background: #9d8ccf; }
-        .swagger-ui .opblock .opblock-summary-description { color: rgba(255,255,255,0.85); }
-        .swagger-ui .opblock .opblock-summary-path { color: #fff; font-weight: 500; }
-        .swagger-ui .opblock .opblock-summary-path__deprecated { color: rgba(255,255,255,0.5); }
-        .swagger-ui .opblock .opblock-summary { border: none; }
-        .swagger-ui .opblock .opblock-section-header { background: rgba(255,255,255,0.05); }
-        .swagger-ui .opblock .opblock-section-header h4 { color: #fff; }
-        .swagger-ui .opblock-description-wrapper p { color: rgba(255,255,255,0.75); }
-        .swagger-ui .opblock-body pre.microlight { background: #1e222b; border: 1px solid rgba(255,255,255,0.1); }
         .swagger-ui .btn { background: #5B4B8A; color: #fff; border: 1px solid #9d8ccf; }
-        .swagger-ui .btn:hover { background: #6b5b9a; }
-        .swagger-ui .btn.execute { background: #5B4B8A; }
-        .swagger-ui .btn.cancel { background: #D65C5C; border-color: #D65C5C; }
-        .swagger-ui select { background: #1e222b; color: #fff; border: 1px solid rgba(255,255,255,0.2); }
-        .swagger-ui input[type=text], .swagger-ui input[type=email], .swagger-ui input[type=password] { background: #1e222b; color: #fff; border: 1px solid rgba(255,255,255,0.2); }
-        .swagger-ui textarea { background: #1e222b; color: #fff; border: 1px solid rgba(255,255,255,0.2); }
-        .swagger-ui .parameter__name { color: #c4b8e8; font-weight: 500; }
-        .swagger-ui .parameter__type { color: rgba(255,255,255,0.7); }
-        .swagger-ui .parameter__in { color: rgba(255,255,255,0.6); }
-        .swagger-ui table thead tr th { color: rgba(255,255,255,0.8); border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .swagger-ui table tbody tr td { color: rgba(255,255,255,0.9); border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .swagger-ui .response-col_status { color: #5CD685; }
-        .swagger-ui .response-col_description { color: rgba(255,255,255,0.75); }
-        .swagger-ui .model-box { background: rgba(255,255,255,0.08); }
-        .swagger-ui .model { color: #fff; }
-        .swagger-ui .model span { color: #fff !important; }
-        .swagger-ui .model .prop { color: #fff; }
-        .swagger-ui .model .prop-name { color: #c4b8e8 !important; font-weight: 500; }
-        .swagger-ui .model .prop-type { color: #5CD685 !important; }
-        .swagger-ui .model .prop-format { color: rgba(255,255,255,0.6); }
-        .swagger-ui .model-title { color: #c4b8e8; font-weight: 600; }
-        .swagger-ui .model-title__text { color: #c4b8e8 !important; }
-        .swagger-ui section.models { border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.03); }
-        .swagger-ui section.models h4 { color: #fff !important; }
-        .swagger-ui section.models h4 span { color: #fff !important; }
-        .swagger-ui section.models .model-container { background: rgba(255,255,255,0.05); margin: 8px 0; padding: 12px; }
-        .swagger-ui .model-toggle { background: rgba(255,255,255,0.1); }
-        .swagger-ui .model-toggle::after { color: #fff; }
-        .swagger-ui .brace-open, .swagger-ui .brace-close { color: #fff !important; }
-        .swagger-ui .inner-object { color: #fff; }
-        .swagger-ui .renderedMarkdown p { color: rgba(255,255,255,0.85); }
-        .swagger-ui .highlight-code { background: #1e222b; }
-        .swagger-ui .highlight-code .microlight { color: #fff !important; }
-        .swagger-ui pre { color: #fff !important; }
-        .swagger-ui code { color: #fff !important; }
-        .swagger-ui .microlight { color: #fff !important; }
-        .swagger-ui .response .microlight { color: #fff !important; }
-        .swagger-ui .markdown p, .swagger-ui .markdown li { color: rgba(255,255,255,0.9); }
-        .swagger-ui .markdown code { background: rgba(255,255,255,0.15); color: #c4b8e8; }
-        .swagger-ui .response-col_links { color: rgba(255,255,255,0.5); }
-        .swagger-ui .responses-inner { background: transparent; }
-        .swagger-ui .responses-header { color: rgba(255,255,255,0.75); }
-        .swagger-ui .loading-container .loading::after { color: #9d8ccf; }
-        .swagger-ui .filter-container .filter input { background: #1e222b; color: #fff; border: 1px solid rgba(255,255,255,0.2); }
-        .swagger-ui .download-contents { background: #5B4B8A; color: #fff; }
-        .swagger-ui .copy-to-clipboard { background: #1e222b; }
-        .swagger-ui .copy-to-clipboard button { background: #5B4B8A; }
-        .swagger-ui .authorization__btn { fill: #9d8ccf; }
-        .swagger-ui .unlocked { fill: #5CD685; }
-        .swagger-ui .locked { fill: #D6A05C; }
     </style>
 </head>
 <body>
