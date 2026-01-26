@@ -145,7 +145,7 @@ async def revoke_key(
         raise HTTPException(status_code=404, detail="API key not found")
     
     api_key.is_active = False
-    api_key.revoked_at = datetime.now(timezone.utc)
+    api_key.revoked_at = datetime.utcnow()
     
     await db.commit()
     
@@ -167,7 +167,7 @@ async def validate_api_key(key: str, db: AsyncSession) -> Optional[APIKey]:
     api_key = result.scalar_one_or_none()
     
     if api_key:
-        api_key.last_used_at = datetime.now(timezone.utc)
+        api_key.last_used_at = datetime.utcnow()
         await db.commit()
     
     return api_key
