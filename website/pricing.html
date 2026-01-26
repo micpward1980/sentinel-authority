@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pricing | Sentinel Authority</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect x='6' y='6' width='20' height='20' rx='5' fill='%235B4B8A' stroke='%239d8ccf' stroke-width='2'/><circle cx='16' cy='16' r='4' fill='%239d8ccf'/></svg>" />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@300;400;500&family=Source+Serif+4:wght@200;400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-deep: #0a0a0f;
+      --purple-primary: #5B4B8A;
+      --purple-bright: #9d8ccf;
+      --text-primary: rgba(255,255,255,0.95);
+      --text-secondary: rgba(255,255,255,0.7);
+      --text-tertiary: rgba(255,255,255,0.4);
+      --border-glass: rgba(255,255,255,0.1);
+      --accent-green: #5cd685;
+      --accent-amber: #d6a05c;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-deep);
+      color: var(--text-primary);
+      min-height: 100vh;
+      background-image: radial-gradient(1200px 700px at 15% 10%, rgba(91,75,138,0.15), transparent 55%);
+    }
+    .container { max-width: 1100px; margin: 0 auto; padding: 60px 24px; }
+    .back-link {
+      display: inline-flex; align-items: center; gap: 8px;
+      color: var(--text-tertiary); text-decoration: none;
+      font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+      letter-spacing: 1px; text-transform: uppercase;
+      margin-bottom: 40px;
+    }
+    .back-link:hover { color: var(--purple-bright); }
+    .header { margin-bottom: 48px; text-align: center; }
+    .header .label {
+      font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+      letter-spacing: 4px; text-transform: uppercase;
+      color: var(--purple-bright); margin-bottom: 12px;
+    }
+    .header h1 {
+      font-family: 'Source Serif 4', serif; font-size: 48px;
+      font-weight: 200; margin-bottom: 16px;
+    }
+    .header p { color: var(--text-secondary); font-size: 18px; line-height: 1.6; max-width: 600px; margin: 0 auto; }
+    
+    /* Pricing Cards */
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+      margin-bottom: 60px;
+    }
+    .pricing-card {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--border-glass);
+      border-radius: 16px;
+      padding: 32px;
+      position: relative;
+      transition: all 0.3s;
+    }
+    .pricing-card:hover {
+      border-color: var(--purple-bright);
+      transform: translateY(-4px);
+    }
+    .pricing-card.featured {
+      background: linear-gradient(135deg, rgba(91,75,138,0.15), rgba(91,75,138,0.05));
+      border-color: var(--purple-bright);
+    }
+    .pricing-card.featured::before {
+      content: 'MOST POPULAR';
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--purple-bright);
+      color: #0a0a0f;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 1px;
+      padding: 4px 12px;
+      border-radius: 4px;
+    }
+    .tier-name {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 12px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--purple-bright);
+      margin-bottom: 8px;
+    }
+    .tier-price {
+      font-family: 'Source Serif 4', serif;
+      font-size: 48px;
+      font-weight: 200;
+      margin-bottom: 4px;
+    }
+    .tier-price span {
+      font-size: 18px;
+      color: var(--text-tertiary);
+    }
+    .tier-period {
+      color: var(--text-tertiary);
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+    .tier-setup {
+      color: var(--accent-amber);
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 12px;
+      margin-bottom: 24px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--border-glass);
+    }
+    .tier-features {
+      list-style: none;
+      margin-bottom: 24px;
+    }
+    .tier-features li {
+      color: var(--text-secondary);
+      font-size: 14px;
+      padding: 8px 0;
+      padding-left: 24px;
+      position: relative;
+    }
+    .tier-features li::before {
+      content: '✓';
+      position: absolute;
+      left: 0;
+      color: var(--accent-green);
+    }
+    .tier-btn {
+      display: block;
+      width: 100%;
+      padding: 14px;
+      border-radius: 8px;
+      text-align: center;
+      text-decoration: none;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 12px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      transition: all 0.2s;
+    }
+    .tier-btn.primary {
+      background: var(--purple-primary);
+      border: 1px solid var(--purple-bright);
+      color: #fff;
+    }
+    .tier-btn.primary:hover {
+      background: var(--purple-bright);
+    }
+    .tier-btn.secondary {
+      background: transparent;
+      border: 1px solid var(--border-glass);
+      color: var(--text-secondary);
+    }
+    .tier-btn.secondary:hover {
+      border-color: var(--purple-bright);
+      color: var(--purple-bright);
+    }
+    
+    /* Calculator */
+    .calculator {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--border-glass);
+      border-radius: 16px;
+      padding: 40px;
+      margin-bottom: 60px;
+    }
+    .calculator h2 {
+      font-family: 'Source Serif 4', serif;
+      font-size: 32px;
+      font-weight: 200;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+    .calculator > p {
+      color: var(--text-secondary);
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    .calc-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+    }
+    @media (max-width: 768px) {
+      .calc-grid { grid-template-columns: 1fr; }
+    }
+    .calc-questions { }
+    .calc-question {
+      margin-bottom: 24px;
+    }
+    .calc-question label {
+      display: block;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--text-tertiary);
+      margin-bottom: 8px;
+    }
+    .calc-question select,
+    .calc-question input {
+      width: 100%;
+      padding: 12px 16px;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid var(--border-glass);
+      border-radius: 8px;
+      color: var(--text-primary);
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+    }
+    .calc-question select:focus,
+    .calc-question input:focus {
+      outline: none;
+      border-color: var(--purple-bright);
+    }
+    .calc-question select option {
+      background: #1a1a24;
+    }
+    .calc-result {
+      background: rgba(91,75,138,0.1);
+      border: 1px solid var(--purple-bright);
+      border-radius: 12px;
+      padding: 32px;
+      text-align: center;
+    }
+    .calc-result-tier {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 12px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--purple-bright);
+      margin-bottom: 8px;
+    }
+    .calc-result-name {
+      font-family: 'Source Serif 4', serif;
+      font-size: 36px;
+      font-weight: 200;
+      margin-bottom: 24px;
+    }
+    .calc-result-breakdown {
+      text-align: left;
+      margin-bottom: 24px;
+    }
+    .calc-result-line {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      font-size: 14px;
+    }
+    .calc-result-line:last-child {
+      border-bottom: none;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+    .calc-result-line span:first-child {
+      color: var(--text-secondary);
+    }
+    .calc-result-total {
+      font-family: 'Source Serif 4', serif;
+      font-size: 28px;
+      color: var(--accent-green);
+      margin-bottom: 24px;
+    }
+    .calc-result-note {
+      font-size: 12px;
+      color: var(--text-tertiary);
+      margin-bottom: 24px;
+    }
+    
+    /* FAQ */
+    .faq {
+      margin-bottom: 60px;
+    }
+    .faq h2 {
+      font-family: 'Source Serif 4', serif;
+      font-size: 32px;
+      font-weight: 200;
+      margin-bottom: 32px;
+      text-align: center;
+    }
+    .faq-item {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--border-glass);
+      border-radius: 8px;
+      margin-bottom: 12px;
+      overflow: hidden;
+    }
+    .faq-question {
+      padding: 20px 24px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 500;
+    }
+    .faq-question:hover {
+      background: rgba(255,255,255,0.02);
+    }
+    .faq-question::after {
+      content: '+';
+      font-size: 20px;
+      color: var(--purple-bright);
+    }
+    .faq-item.open .faq-question::after {
+      content: '−';
+    }
+    .faq-answer {
+      display: none;
+      padding: 0 24px 20px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+    .faq-item.open .faq-answer {
+      display: block;
+    }
+    
+    .footer-note {
+      text-align: center;
+      color: var(--text-tertiary);
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="/" class="back-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+      </svg>
+      Back to Home
+    </a>
+
+    <div class="header">
+      <p class="label">ODDC Certification</p>
+      <h1>Simple, Transparent Pricing</h1>
+      <p>Choose the plan that fits your autonomous system deployment. All plans include the ENVELO Agent, real-time monitoring, and ODDC certification.</p>
+    </div>
+
+    <!-- Pricing Cards -->
+    <div class="pricing-grid">
+      <div class="pricing-card">
+        <div class="tier-name">Starter</div>
+        <div class="tier-price">$500<span>/mo</span></div>
+        <div class="tier-period">billed annually ($5,000/year)</div>
+        <div class="tier-setup">+ $5,000 one-time setup</div>
+        <ul class="tier-features">
+          <li>1 autonomous system</li>
+          <li>ENVELO Agent license</li>
+          <li>Up to 10K telemetry events/day</li>
+          <li>Real-time monitoring dashboard</li>
+          <li>Monthly compliance reports</li>
+          <li>Email support (48hr response)</li>
+          <li>Annual certificate renewal</li>
+        </ul>
+        <a href="https://app.sentinelauthority.org/applications/new" class="tier-btn secondary">Get Started</a>
+      </div>
+
+      <div class="pricing-card featured">
+        <div class="tier-name">Professional</div>
+        <div class="tier-price">$1,500<span>/mo</span></div>
+        <div class="tier-period">billed annually ($15,000/year)</div>
+        <div class="tier-setup">+ $15,000 one-time setup</div>
+        <ul class="tier-features">
+          <li>Up to 10 autonomous systems</li>
+          <li>ENVELO Agent licenses</li>
+          <li>Up to 100K telemetry events/day</li>
+          <li>Real-time monitoring dashboard</li>
+          <li>Weekly compliance reports</li>
+          <li>Priority support (24hr response)</li>
+          <li>Custom boundary templates</li>
+          <li>API access for integrations</li>
+        </ul>
+        <a href="https://app.sentinelauthority.org/applications/new" class="tier-btn primary">Get Started</a>
+      </div>
+
+      <div class="pricing-card">
+        <div class="tier-name">Enterprise</div>
+        <div class="tier-price">Custom</div>
+        <div class="tier-period">tailored to your needs</div>
+        <div class="tier-setup">Contact for quote</div>
+        <ul class="tier-features">
+          <li>Unlimited autonomous systems</li>
+          <li>Unlimited telemetry</li>
+          <li>Real-time compliance dashboard</li>
+          <li>Custom ODD definitions</li>
+          <li>Dedicated account manager</li>
+          <li>SLA guarantees</li>
+          <li>On-site CAT-72 witnessing</li>
+          <li>Custom integrations</li>
+        </ul>
+        <a href="mailto:conformance@sentinelauthority.org" class="tier-btn secondary">Contact Sales</a>
+      </div>
+    </div>
+
+    <!-- Calculator -->
+    <div class="calculator">
+      <h2>Pricing Calculator</h2>
+      <p>Answer a few questions to get your recommended plan and estimate.</p>
+      
+      <div class="calc-grid">
+        <div class="calc-questions">
+          <div class="calc-question">
+            <label>How many autonomous systems?</label>
+            <select id="calc-systems" onchange="calculatePrice()">
+              <option value="1">1 system</option>
+              <option value="2">2-5 systems</option>
+              <option value="6">6-10 systems</option>
+              <option value="11">11+ systems</option>
+            </select>
+          </div>
+          
+          <div class="calc-question">
+            <label>Industry / Use Case</label>
+            <select id="calc-industry" onchange="calculatePrice()">
+              <option value="research">Research / Pilot Program</option>
+              <option value="commercial">Commercial Deployment</option>
+              <option value="safety">Safety-Critical (Medical, Transport, Industrial)</option>
+            </select>
+          </div>
+          
+          <div class="calc-question">
+            <label>ODD Complexity</label>
+            <select id="calc-complexity" onchange="calculatePrice()">
+              <option value="simple">Simple (single zone, few parameters)</option>
+              <option value="moderate">Moderate (multiple zones, 10-20 parameters)</option>
+              <option value="complex">Complex (dynamic ODDs, 50+ parameters)</option>
+            </select>
+          </div>
+          
+          <div class="calc-question">
+            <label>Expected Telemetry Volume</label>
+            <select id="calc-telemetry" onchange="calculatePrice()">
+              <option value="low">Low (< 10K events/day)</option>
+              <option value="medium">Medium (10K - 100K events/day)</option>
+              <option value="high">High (> 100K events/day)</option>
+            </select>
+          </div>
+          
+          <div class="calc-question">
+            <label>Support Requirements</label>
+            <select id="calc-support" onchange="calculatePrice()">
+              <option value="standard">Standard (email, 48hr)</option>
+              <option value="priority">Priority (24hr response)</option>
+              <option value="dedicated">Dedicated Account Manager</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="calc-result">
+          <div class="calc-result-tier">Recommended Plan</div>
+          <div class="calc-result-name" id="result-tier">Professional</div>
+          
+          <div class="calc-result-breakdown">
+            <div class="calc-result-line">
+              <span>Setup Fee (one-time)</span>
+              <span id="result-setup">$15,000</span>
+            </div>
+            <div class="calc-result-line">
+              <span>Annual Monitoring</span>
+              <span id="result-annual">$15,000</span>
+            </div>
+            <div class="calc-result-line">
+              <span>First Year Total</span>
+              <span id="result-total">$30,000</span>
+            </div>
+          </div>
+          
+          <div class="calc-result-total" id="result-monthly">$1,500/month after year 1</div>
+          
+          <div class="calc-result-note">
+            Includes ENVELO Agent, CAT-72 certification, real-time monitoring, and compliance reporting.
+          </div>
+          
+          <a href="https://app.sentinelauthority.org/applications/new" class="tier-btn primary">Start Application</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQ -->
+    <div class="faq">
+      <h2>Frequently Asked Questions</h2>
+      
+      <div class="faq-item">
+        <div class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+          What's included in the setup fee?
+        </div>
+        <div class="faq-answer">
+          The one-time setup fee covers your initial ODDC certification process: application review, ODD documentation analysis, ENVELO Agent configuration, CAT-72 test coordination, and certificate issuance. This is a one-time cost when you first certify a system.
+        </div>
+      </div>
+      
+      <div class="faq-item">
+        <div class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+          What happens if my system fails CAT-72?
+        </div>
+        <div class="faq-answer">
+          If your system fails the initial CAT-72 test, we'll provide detailed analysis of the violations and work with you to address them. You can re-run CAT-72 at no additional cost within 90 days of your initial setup.
+        </div>
+      </div>
+      
+      <div class="faq-item">
+        <div class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+          Can I add more systems later?
+        </div>
+        <div class="faq-answer">
+          Yes! You can add additional systems at any time. Each additional system requires its own CAT-72 certification ($5,000 per system) and increases your monitoring tier if you exceed your plan's system limit.
+        </div>
+      </div>
+      
+      <div class="faq-item">
+        <div class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+          What if the ENVELO Agent detects a violation?
+        </div>
+        <div class="faq-answer">
+          The ENVELO Agent blocks any action that violates your declared ODD boundaries in real-time. Violations are logged and reported to your dashboard. Repeated or severe violations may trigger a certification review to ensure your system remains conformant.
+        </div>
+      </div>
+      
+      <div class="faq-item">
+        <div class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+          How long does certification take?
+        </div>
+        <div class="faq-answer">
+          Typical timeline is 2-4 weeks: 1 week for application review and setup, then 72 hours for the CAT-72 test, followed by certificate issuance within 48 hours of a passing test.
+        </div>
+      </div>
+      
+      <div class="faq-item">
+        <div class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+          What's the contract term?
+        </div>
+        <div class="faq-answer">
+          Monitoring plans are billed annually. You can cancel at renewal, but note that your ODDC certification requires active ENVELO Agent monitoring — if monitoring lapses, your certification is suspended until monitoring resumes.
+        </div>
+      </div>
+    </div>
+
+    <p class="footer-note">
+      Questions? Contact us at <a href="mailto:conformance@sentinelauthority.org" style="color: var(--purple-bright);">conformance@sentinelauthority.org</a>
+      <br><br>
+      © <span id="year"></span> Sentinel Authority. All rights reserved.
+    </p>
+  </div>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+    
+    function calculatePrice() {
+      const systems = parseInt(document.getElementById('calc-systems').value);
+      const industry = document.getElementById('calc-industry').value;
+      const complexity = document.getElementById('calc-complexity').value;
+      const telemetry = document.getElementById('calc-telemetry').value;
+      const support = document.getElementById('calc-support').value;
+      
+      let tier = 'Starter';
+      let setup = 5000;
+      let annual = 5000;
+      let monthly = 500;
+      
+      // Determine tier based on inputs
+      let score = 0;
+      
+      // Systems
+      if (systems >= 11) score += 3;
+      else if (systems >= 6) score += 2;
+      else if (systems >= 2) score += 1;
+      
+      // Industry
+      if (industry === 'safety') score += 2;
+      else if (industry === 'commercial') score += 1;
+      
+      // Complexity
+      if (complexity === 'complex') score += 2;
+      else if (complexity === 'moderate') score += 1;
+      
+      // Telemetry
+      if (telemetry === 'high') score += 2;
+      else if (telemetry === 'medium') score += 1;
+      
+      // Support
+      if (support === 'dedicated') score += 2;
+      else if (support === 'priority') score += 1;
+      
+      // Assign tier
+      if (score >= 7) {
+        tier = 'Enterprise';
+        setup = 50000;
+        annual = 50000;
+        monthly = 5000;
+      } else if (score >= 3) {
+        tier = 'Professional';
+        setup = 15000;
+        annual = 15000;
+        monthly = 1500;
+      } else {
+        tier = 'Starter';
+        setup = 5000;
+        annual = 5000;
+        monthly = 500;
+      }
+      
+      // Update display
+      document.getElementById('result-tier').textContent = tier;
+      document.getElementById('result-setup').textContent = tier === 'Enterprise' ? 'Custom' : '$' + setup.toLocaleString();
+      document.getElementById('result-annual').textContent = tier === 'Enterprise' ? 'Custom' : '$' + annual.toLocaleString();
+      document.getElementById('result-total').textContent = tier === 'Enterprise' ? 'Contact for quote' : '$' + (setup + annual).toLocaleString();
+      document.getElementById('result-monthly').textContent = tier === 'Enterprise' ? 'Custom pricing' : '$' + monthly.toLocaleString() + '/month after year 1';
+    }
+    
+    // Initial calculation
+    calculatePrice();
+  </script>
+</body>
+</html>
