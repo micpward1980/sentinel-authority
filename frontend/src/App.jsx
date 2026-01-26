@@ -1344,6 +1344,65 @@ function AgentSimulator({ apiKey }) {
 }
 
 // API Key Manager Component
+
+function SessionReport({ session }) {
+  if (!session) return null;
+  const passRate = session.pass_count + session.block_count > 0 
+    ? ((session.pass_count / (session.pass_count + session.block_count)) * 100).toFixed(1)
+    : 0;
+  return (
+    <div>
+      <div style={{display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '24px'}}>
+        <div style={{padding: '16px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px', textAlign: 'center'}}>
+          <div style={{fontSize: '28px', fontWeight: 700, color: '#fff'}}>{(session.pass_count || 0) + (session.block_count || 0)}</div>
+          <div style={{fontSize: '11px', color: '#888', textTransform: 'uppercase'}}>Total Actions</div>
+        </div>
+        <div style={{padding: '16px', background: 'rgba(92,214,133,0.1)', borderRadius: '8px', textAlign: 'center'}}>
+          <div style={{fontSize: '28px', fontWeight: 700, color: '#5CD685'}}>{session.pass_count || 0}</div>
+          <div style={{fontSize: '11px', color: '#888', textTransform: 'uppercase'}}>Passed</div>
+        </div>
+        <div style={{padding: '16px', background: 'rgba(214,92,92,0.1)', borderRadius: '8px', textAlign: 'center'}}>
+          <div style={{fontSize: '28px', fontWeight: 700, color: '#D65C5C'}}>{session.block_count || 0}</div>
+          <div style={{fontSize: '11px', color: '#888', textTransform: 'uppercase'}}>Blocked</div>
+        </div>
+        <div style={{padding: '16px', background: passRate >= 95 ? 'rgba(92,214,133,0.1)' : 'rgba(214,92,92,0.1)', borderRadius: '8px', textAlign: 'center'}}>
+          <div style={{fontSize: '28px', fontWeight: 700, color: passRate >= 95 ? '#5CD685' : '#D65C5C'}}>{passRate}%</div>
+          <div style={{fontSize: '11px', color: '#888', textTransform: 'uppercase'}}>Pass Rate</div>
+        </div>
+      </div>
+      <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px'}}>
+        <div><div style={{fontSize: '11px', color: '#888', marginBottom: '4px'}}>SESSION ID</div><div style={{fontFamily: 'monospace', color: '#ccc'}}>{session.session_id}</div></div>
+        <div><div style={{fontSize: '11px', color: '#888', marginBottom: '4px'}}>CERTIFICATE</div><div style={{color: '#ccc'}}>{session.certificate_id || 'N/A'}</div></div>
+        <div><div style={{fontSize: '11px', color: '#888', marginBottom: '4px'}}>STARTED</div><div style={{color: '#ccc'}}>{session.started_at ? new Date(session.started_at).toLocaleString() : 'N/A'}</div></div>
+        <div><div style={{fontSize: '11px', color: '#888', marginBottom: '4px'}}>STATUS</div><span style={{padding: '4px 12px', borderRadius: '4px', fontSize: '12px', background: session.status === 'active' ? 'rgba(92,214,133,0.2)' : 'rgba(255,255,255,0.1)', color: session.status === 'active' ? '#5CD685' : '#888'}}>{session.status?.toUpperCase()}</span></div>
+      </div>
+    </div>
+  );
+}
+
+function TelemetryLog({ sessionId }) {
+  const [records, setRecords] = useState([]);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    if (sessionId) {
+      api.get(`/api/envelo/admin/sessions/${sessionId}/telemetry`)
+        .then(res => setRecords(res.data.records || []))
+        .catch(console.error)
+        .finally(() => setLoading(false));
+    }
+  }, [sessionId]);
+  if (loading) return <div style={{color: '#888', padding: '12px'}}>Loading...</div>;
+  if (!records.length) return <div style={{color: '#888', padding: '12px'}}>No telemetry records</div>;
+  return (
+    <div style={{maxHeight: '300px', overflowY: 'auto'}}>
+      <table style={{width: '100%', borderCollapse: 'collapse', fontSize: '12px'}}>
+        <thead><tr style={{borderBottom: '1px solid rgba(255,255,255,0.1)'}}><th style={{padding: '8px', textAlign: 'left', color: '#888'}}>Time</th><th style={{padding: '8px', textAlign: 'left', color: '#888'}}>Action</th><th style={{padding: '8px', textAlign: 'left', color: '#888'}}>Result</th><th style={{padding: '8px', textAlign: 'left', color: '#888'}}>Params</th></tr></thead>
+        <tbody>{records.map((r, i) => (<tr key={i} style={{borderBottom: '1px solid rgba(255,255,255,0.05)'}}><td style={{padding: '8px', fontFamily: 'monospace', fontSize: '11px', color: '#aaa'}}>{r.timestamp ? new Date(r.timestamp).toLocaleTimeString() : '-'}</td><td style={{padding: '8px', color: '#fff'}}>{r.action_type}</td><td style={{padding: '8px'}}><span style={{padding: '2px 8px', borderRadius: '4px', fontSize: '10px', fontWeight: 600, background: r.result === 'PASS' ? 'rgba(92,214,133,0.2)' : 'rgba(214,92,92,0.2)', color: r.result === 'PASS' ? '#5CD685' : '#D65C5C'}}>{r.result}</span></td><td style={{padding: '8px', color: '#666', fontFamily: 'monospace', fontSize: '10px'}}>{JSON.stringify(r.parameters || {})}</td></tr>))}</tbody>
+      </table>
+    </div>
+  );
+}
+
 function APIKeyManager({ onKeyGenerated }) {
   const [keys, setKeys] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -1929,6 +1988,19 @@ function EnveloPage() {
         <p style={{color: styles.textTertiary, fontSize: '12px', marginTop: '12px'}}>Replace YOUR-CERTIFICATE-ID with your actual ODDC certificate number after certification.</p>
       </Panel>
 
+      
+      {selectedSession && (
+        <Panel>
+          <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px'}}>
+            <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary}}>Session Report</h2>
+            <button onClick={() => setSelectedSession(null)} style={{padding: '6px 12px', background: 'transparent', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '4px', color: '#888', cursor: 'pointer', fontSize: '12px'}}>✕ Close</button>
+          </div>
+          <SessionReport session={selectedSession} />
+          <h3 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginTop: '24px', marginBottom: '12px'}}>Telemetry Log</h3>
+          <TelemetryLog sessionId={selectedSession.id} />
+        </Panel>
+      )}
+
       <Panel>
         <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Active Agent Sessions</h2>
         {sessions.length > 0 ? (
@@ -1943,7 +2015,7 @@ function EnveloPage() {
             </thead>
             <tbody>
               {sessions.map((s, i) => (
-                <tr key={i} style={{borderBottom: `1px solid ${styles.borderGlass}`}}>
+                <tr key={i} onClick={() => setSelectedSession(s)} style={{borderBottom: `1px solid ${styles.borderGlass}`, cursor: 'pointer'}}>
                   <td className="px-4 py-4" style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '12px', color: styles.purpleBright}}>{s.session_id}</td>
                   <td className="px-4 py-4" style={{color: styles.textSecondary}}>{s.certificate_id}</td>
                   <td className="px-4 py-4">
