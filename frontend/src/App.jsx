@@ -708,17 +708,41 @@ function ApplicationDetail() {
         </Panel>
         <Panel>
           <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Status</h2>
-          <span className="px-3 py-1 rounded" style={{
-            background: app.state === 'conformant' ? 'rgba(92,214,133,0.15)' : 'rgba(214,160,92,0.15)',
-            color: app.state === 'conformant' ? styles.accentGreen : styles.accentAmber,
-            fontFamily: "'IBM Plex Mono', monospace",
-            fontSize: '12px',
-            letterSpacing: '1px',
-            textTransform: 'uppercase',
-          }}>
-            {app.state}
-          </span>
-          <p style={{color: styles.textSecondary, marginTop: '16px'}}><strong>Submitted:</strong> {app.submitted_at ? new Date(app.submitted_at).toLocaleString() : 'N/A'}</p>
+          <div className="flex items-center gap-4 mb-4">
+            <span className="px-3 py-1 rounded" style={{
+              background: app.state === 'conformant' ? 'rgba(92,214,133,0.15)' : app.state === 'revoked' ? 'rgba(214,92,92,0.15)' : 'rgba(214,160,92,0.15)',
+              color: app.state === 'conformant' ? styles.accentGreen : app.state === 'revoked' ? styles.accentRed : styles.accentAmber,
+              fontFamily: "'IBM Plex Mono', monospace",
+              fontSize: '12px',
+              letterSpacing: '1px',
+              textTransform: 'uppercase',
+            }}>
+              {app.state}
+            </span>
+            <select 
+              value={app.state}
+              onChange={async (e) => {
+                const newState = e.target.value;
+                if (!window.confirm(`Change status to ${newState.toUpperCase()}?`)) return;
+                try {
+                  await api.patch(`/api/applications/${id}/state?new_state=${newState}`);
+                  setApp({...app, state: newState});
+                } catch (err) {
+                  alert('Failed to update state: ' + (err.response?.data?.detail || err.message));
+                }
+              }}
+              className="px-3 py-2 rounded-lg"
+              style={{background: 'rgba(255,255,255,0.05)', border: `1px solid ${styles.borderGlass}`, color: styles.textPrimary, fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px'}}
+            >
+              <option value="pending">Pending</option>
+              <option value="under_review">Under Review</option>
+              <option value="observe">Observe</option>
+              <option value="bounded">Bounded</option>
+              <option value="conformant">Conformant</option>
+              <option value="revoked">Revoked</option>
+            </select>
+          </div>
+          <p style={{color: styles.textSecondary}}><strong>Submitted:</strong> {app.submitted_at ? new Date(app.submitted_at).toLocaleString() : 'N/A'}</p>
         </Panel>
       </div>
 
