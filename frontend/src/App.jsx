@@ -1850,6 +1850,7 @@ def your_action(**params):
 
 // ENVELO Agent Page
 function EnveloPage() {
+  const [activeApiKey, setActiveApiKey] = useState(null);
   const [stats, setStats] = useState(null);
   const [sessions, setSessions] = useState([]);
   const { user } = useAuth();
