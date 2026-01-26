@@ -602,8 +602,8 @@ function NewApplication() {
                 <textarea value={formData.odd_specification} onChange={(e) => setFormData({...formData, odd_specification: e.target.value})} rows={6} className="w-full px-4 py-3 rounded-lg outline-none resize-none" style={inputStyle} placeholder="Describe the Operational Design Domain including environment type, speed limits, geographic constraints, weather conditions, etc." required />
               </div>
               <div>
-                <label style={{display: 'block', marginBottom: '8px', color: styles.textSecondary, fontSize: '14px'}}>Envelope Definition</label>
-                <textarea value={formData.envelope_definition} onChange={(e) => setFormData({...formData, envelope_definition: e.target.value})} rows={4} className="w-full px-4 py-3 rounded-lg outline-none resize-none" style={inputStyle} placeholder="Define the operational envelope boundaries and constraints" />
+                <label style={{display: 'block', marginBottom: '8px', color: styles.textSecondary, fontSize: '14px'}}>Safety Boundaries & Operational Limits</label>
+                <textarea value={formData.envelope_definition} onChange={(e) => setFormData({...formData, envelope_definition: e.target.value})} rows={4} className="w-full px-4 py-3 rounded-lg outline-none resize-none" style={inputStyle} placeholder="Define the specific constraints your system must operate within (e.g., speed limits, geographic boundaries, environmental conditions, time restrictions)" />
               </div>
             </div>
           </div>
@@ -696,7 +696,7 @@ function ApplicationDetail() {
           {app.preferred_test_date && <p style={{color: styles.textSecondary}}><strong>Preferred Test Date:</strong> {new Date(app.preferred_test_date).toLocaleDateString()}</p>}
         </Panel>
         <Panel>
-          <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Envelope Definition</h2>
+          <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Safety Boundaries & Operational Limits</h2>
           <p style={{color: styles.textSecondary, lineHeight: 1.7, whiteSpace: 'pre-wrap'}}>{typeof app.envelope_definition === 'object' ? JSON.stringify(app.envelope_definition, null, 2) : (app.envelope_definition || 'Not specified')}</p>
         </Panel>
       </div>
