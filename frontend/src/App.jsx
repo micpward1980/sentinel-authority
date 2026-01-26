@@ -308,7 +308,7 @@ function LoginPage() {
               className="w-full py-3 rounded-lg font-medium transition-all"
               style={{background: styles.purplePrimary, border: `1px solid ${styles.purpleBright}`, color: '#fff', fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', cursor: 'pointer'}}
             >
-              {isRegister ? 'Create Account' : 'Sign In'}
+              {isRegister ? 'Create Account' : '1'}
             </button>
           </form>
           
@@ -1608,7 +1608,7 @@ if __name__ == "__main__":
   const revokeKey = async (keyId) => {
     if (!window.confirm('Revoke this API key? This cannot be undone.')) return;
     try {
-      await api.delete(`/api/apikeys/${keyId}`);
+     await api.delete(`/api/apikeys/${keyId}`);
       loadKeys();
     } catch (err) {
       console.error('Failed to revoke key:', err);
