@@ -41,7 +41,26 @@ async def issue_certificate(test_id: str, db: AsyncSession = Depends(get_db), us
 
 @router.get("/")
 async def list_certificates(db: AsyncSession = Depends(get_db), user: dict = Depends(get_current_user)):
-    result = await db.execute(select(Certificate).order_by(Certificate.issued_at.desc()))
+    # Admins see all, applicants see only their organization's certificates
+    if user.get("role") in ["admin", "operator"]:
+        result = await db.execute(select(Certificate).order_by(Certificate.issued_at.desc()))
+    else:
+        # Get user's applications to find their organization
+        app_result = await db.execute(
+            select(Application).where(Application.applicant_id == int(user["sub"]))
+        )
+        user_apps = app_result.scalars().all()
+        app_ids = [a.id for a in user_apps]
+        
+        if app_ids:
+            result = await db.execute(
+                select(Certificate)
+                .where(Certificate.application_id.in_(app_ids))
+                .order_by(Certificate.issued_at.desc())
+            )
+        else:
+            return []
+    
     return [{"id": c.id, "certificate_number": c.certificate_number, "organization_name": c.organization_name, "system_name": c.system_name, "state": c.state.value, "issued_at": c.issued_at.isoformat() if c.issued_at else None, "expires_at": c.expires_at.isoformat() if c.expires_at else None} for c in result.scalars().all()]
 
 @router.get("/{certificate_number}")
