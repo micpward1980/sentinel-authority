@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ENVELO Agent | Sentinel Authority</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect x='6' y='6' width='20' height='20' rx='5' fill='%235B4B8A' stroke='%239d8ccf' stroke-width='2'/><circle cx='16' cy='16' r='4' fill='%239d8ccf'/></svg>" />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@300;400;500&family=Source+Serif+4:wght@200;400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-deep: #0a0a0f;
+      --purple-primary: #5B4B8A;
+      --purple-bright: #9d8ccf;
+      --text-primary: rgba(255,255,255,0.95);
+      --text-secondary: rgba(255,255,255,0.7);
+      --text-tertiary: rgba(255,255,255,0.4);
+      --border-glass: rgba(255,255,255,0.1);
+      --accent-green: #5cd685;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-deep);
+      color: var(--text-primary);
+      min-height: 100vh;
+      background-image: radial-gradient(1200px 700px at 15% 10%, rgba(91,75,138,0.15), transparent 55%);
+    }
+    .container { max-width: 900px; margin: 0 auto; padding: 60px 24px; }
+    .back-link {
+      display: inline-flex; align-items: center; gap: 8px;
+      color: var(--text-tertiary); text-decoration: none;
+      font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+      letter-spacing: 1px; text-transform: uppercase;
+      margin-bottom: 40px;
+    }
+    .back-link:hover { color: var(--purple-bright); }
+    .header { margin-bottom: 48px; }
+    .header .label {
+      font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+      letter-spacing: 4px; text-transform: uppercase;
+      color: var(--purple-bright); margin-bottom: 12px;
+    }
+    .header h1 {
+      font-family: 'Source Serif 4', serif; font-size: 42px;
+      font-weight: 200; margin-bottom: 16px;
+    }
+    .header p { color: var(--text-secondary); font-size: 18px; line-height: 1.6; }
+    .panel {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--border-glass);
+      border-radius: 12px; padding: 32px;
+      margin-bottom: 24px;
+    }
+    .panel h2 {
+      font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+      letter-spacing: 2px; text-transform: uppercase;
+      color: var(--text-tertiary); margin-bottom: 20px;
+    }
+    .download-btn {
+      display: inline-flex; align-items: center; gap: 12px;
+      background: var(--purple-primary); border: 1px solid var(--purple-bright);
+      color: #fff; padding: 16px 32px; border-radius: 8px;
+      font-family: 'IBM Plex Mono', monospace; font-size: 13px;
+      letter-spacing: 1px; text-transform: uppercase;
+      text-decoration: none; transition: all 0.2s;
+    }
+    .download-btn:hover { background: var(--purple-bright); }
+    .download-btn svg { width: 20px; height: 20px; }
+    .version { color: var(--text-tertiary); font-size: 14px; margin-top: 12px; }
+    .code-block {
+      background: rgba(0,0,0,0.3); border: 1px solid var(--border-glass);
+      border-radius: 8px; padding: 20px; overflow-x: auto;
+      font-family: 'IBM Plex Mono', monospace; font-size: 13px;
+      line-height: 1.6; color: var(--text-secondary);
+    }
+    .code-block .comment { color: var(--text-tertiary); }
+    .code-block .keyword { color: var(--purple-bright); }
+    .code-block .string { color: var(--accent-green); }
+    .steps { list-style: none; counter-reset: step; }
+    .steps li {
+      counter-increment: step; padding-left: 48px; position: relative;
+      margin-bottom: 24px; color: var(--text-secondary); line-height: 1.6;
+    }
+    .steps li::before {
+      content: counter(step);
+      position: absolute; left: 0; top: 0;
+      width: 32px; height: 32px; border-radius: 50%;
+      background: var(--purple-primary); border: 1px solid var(--purple-bright);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'IBM Plex Mono', monospace; font-size: 14px;
+      color: #fff;
+    }
+    .steps li strong { color: var(--text-primary); }
+    .features {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px; margin-top: 20px;
+    }
+    .feature {
+      background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass);
+      border-radius: 8px; padding: 16px;
+    }
+    .feature h3 {
+      font-family: 'IBM Plex Mono', monospace; font-size: 12px;
+      color: var(--purple-bright); margin-bottom: 8px;
+    }
+    .feature p { font-size: 13px; color: var(--text-secondary); }
+    .requirements {
+      display: flex; gap: 24px; flex-wrap: wrap; margin-top: 16px;
+    }
+    .req {
+      font-family: 'IBM Plex Mono', monospace; font-size: 12px;
+      color: var(--text-tertiary);
+    }
+    .req span { color: var(--text-secondary); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="/" class="back-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+      </svg>
+      Back to Home
+    </a>
+
+    <div class="header">
+      <p class="label">Runtime Enforcement</p>
+      <h1>ENVELO Agent</h1>
+      <p>The official enforcement layer for ODDC-certified autonomous systems. Install the agent to enable non-bypassable boundary enforcement with real-time monitoring.</p>
+    </div>
+
+    <div class="panel">
+      <h2>Download</h2>
+      <a href="downloads/envelo-agent-v1.0.0.zip" class="download-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+        </svg>
+        Download ENVELO Agent
+      </a>
+      <p class="version">Version 1.0.0 • Python 3.9+ • ~15 KB</p>
+      <div class="requirements">
+        <span class="req">Requires: <span>Python 3.9+</span></span>
+        <span class="req">Dependencies: <span>httpx</span></span>
+        <span class="req">License: <span>Proprietary (ODDC certified users)</span></span>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Installation</h2>
+      <ol class="steps">
+        <li><strong>Extract the ZIP</strong> and navigate to the folder</li>
+        <li><strong>Install the package:</strong>
+          <div class="code-block" style="margin-top: 12px;">pip install -e .</div>
+        </li>
+        <li><strong>Get your API key</strong> from the Sentinel Authority portal after certification</li>
+        <li><strong>Configure the agent</strong> in your application (see example below)</li>
+      </ol>
+    </div>
+
+    <div class="panel">
+      <h2>Quick Start</h2>
+      <div class="code-block">
+<span class="keyword">from</span> envelo <span class="keyword">import</span> EnveloAgent, EnveloConfig, NumericBoundary
+
+<span class="comment"># Configure with your ODDC certificate</span>
+agent = EnveloAgent(EnveloConfig(
+    certificate_id=<span class="string">"ODDC-2026-XXXXX"</span>,  <span class="comment"># Your certificate</span>
+    api_key=<span class="string">"your-api-key"</span>             <span class="comment"># From portal</span>
+))
+
+<span class="comment"># Define your ODD boundaries</span>
+agent.add_boundary(NumericBoundary(<span class="string">"speed"</span>, max=100, unit=<span class="string">"km/h"</span>))
+agent.add_boundary(NumericBoundary(<span class="string">"temperature"</span>, min=-20, max=50))
+
+<span class="comment"># Wrap autonomous functions - enforcement is automatic</span>
+<span class="keyword">@agent.enforce</span>
+<span class="keyword">def</span> move_robot(speed, direction):
+    robot.move(speed, direction)
+
+move_robot(speed=50, direction=<span class="string">"forward"</span>)   <span class="comment"># ✅ Allowed</span>
+move_robot(speed=150, direction=<span class="string">"forward"</span>)  <span class="comment"># ❌ Blocked</span>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Features</h2>
+      <div class="features">
+        <div class="feature">
+          <h3>Non-Bypassable</h3>
+          <p>Every action must pass through the agent. No exceptions.</p>
+        </div>
+        <div class="feature">
+          <h3>Fail-Closed</h3>
+          <p>If the agent fails, all autonomous actions are blocked.</p>
+        </div>
+        <div class="feature">
+          <h3>Real-Time Telemetry</h3>
+          <p>All decisions streamed to Sentinel Authority.</p>
+        </div>
+        <div class="feature">
+          <h3>Tamper-Evident</h3>
+          <p>Cryptographically signed audit trail.</p>
+        </div>
+        <div class="feature">
+          <h3>Multiple Boundaries</h3>
+          <p>Numeric, geographic, rate limits, state checks.</p>
+        </div>
+        <div class="feature">
+          <h3>Safe State Callbacks</h3>
+          <p>Trigger emergency procedures on violations.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Support</h2>
+      <p style="color: var(--text-secondary); line-height: 1.7;">
+        For integration support or questions about the ENVELO Agent, contact us at 
+        <a href="mailto:conformance@sentinelauthority.org" style="color: var(--purple-bright);">conformance@sentinelauthority.org</a>
+      </p>
+    </div>
+
+    <p style="text-align: center; color: var(--text-tertiary); margin-top: 48px; font-size: 13px;">
+      © <span id="year"></span> Sentinel Authority. All rights reserved.
+    </p>
+  </div>
+  <script>document.getElementById("year").textContent = new Date().getFullYear();</script>
+</body>
+</html>
