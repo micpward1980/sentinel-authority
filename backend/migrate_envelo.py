@@ -11,8 +11,14 @@ from sqlalchemy.ext.asyncio import create_async_engine
 DATABASE_URL = os.environ.get("DATABASE_URL", "")
 if DATABASE_URL.startswith("postgres://"):
     DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql+asyncpg://", 1)
+elif DATABASE_URL.startswith("postgresql://") and "asyncpg" not in DATABASE_URL:
+    DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+asyncpg://", 1)
 
 async def migrate():
+    if not DATABASE_URL:
+        print("No DATABASE_URL found, skipping migration")
+        return
+        
     engine = create_async_engine(DATABASE_URL)
     
     async with engine.begin() as conn:
@@ -37,7 +43,7 @@ async def migrate():
         await conn.execute(text("""
             CREATE TABLE IF NOT EXISTS envelo_sessions (
                 id SERIAL PRIMARY KEY,
-                session_id VARCHAR(32) UNIQUE NOT NULL,
+                session_id VARCHAR(64) UNIQUE NOT NULL,
                 certificate_id INTEGER REFERENCES certificates(id),
                 api_key_id INTEGER REFERENCES api_keys(id),
                 started_at TIMESTAMP DEFAULT NOW(),
