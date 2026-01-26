@@ -422,7 +422,7 @@ function Dashboard() {
                       {app.state}
                     </span>
                   </td>
-                  <td className="px-4 py-3" style={{color: styles.textTertiary, fontSize: '14px'}}>{new Date(app.created_at).toLocaleDateString()}</td>
+                  <td className="px-4 py-3" style={{color: styles.textTertiary, fontSize: '14px'}}>{app.submitted_at ? new Date(app.submitted_at).toLocaleDateString() : "N/A"}</td>
                 </tr>
               ))}
             </tbody>
@@ -483,7 +483,7 @@ function ApplicationsList() {
                     {app.state}
                   </span>
                 </td>
-                <td className="px-4 py-4" style={{color: styles.textTertiary, fontSize: '14px'}}>{new Date(app.created_at).toLocaleDateString()}</td>
+                <td className="px-4 py-4" style={{color: styles.textTertiary, fontSize: '14px'}}>{app.submitted_at ? new Date(app.submitted_at).toLocaleDateString() : "N/A"}</td>
               </tr>
             ))}
           </tbody>
