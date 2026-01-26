@@ -156,6 +156,8 @@ class Certificate(Base):
     test_id = Column(Integer, ForeignKey("cat72_tests.id"))
     convergence_score = Column(Float)
     evidence_hash = Column(String(64))
+    signature = Column(String(50))  # Authority signature e.g., SA-SIG-1
+    audit_log_ref = Column(String(50))  # Audit trail reference e.g., SA-LOG-2026-0001
     certificate_pdf = Column(LargeBinary)
     verification_url = Column(String(255))
     history = Column(JSON)
