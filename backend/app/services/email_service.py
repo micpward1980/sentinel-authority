@@ -160,3 +160,21 @@ async def send_test_failed(to: str, app_name: str, reason: str, pass_rate: float
     </div>
     """
     await send_email(to, f"CAT-72 Test Results - {app_name}", html)
+
+
+async def notify_admin_new_registration(email: str, name: str = None):
+    """Notify admin of new user registration"""
+    html = f"""
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <div style="background: #5B4B8A; padding: 20px; text-align: center;">
+            <h1 style="color: white; margin: 0;">SENTINEL AUTHORITY</h1>
+        </div>
+        <div style="padding: 30px; background: #f9f9f9;">
+            <h2 style="color: #333;">New User Registration</h2>
+            <p>A new user has registered:</p>
+            <p><strong>Email:</strong> {email}<br>
+            <strong>Name:</strong> {name or 'Not provided'}</p>
+        </div>
+    </div>
+    """
+    await send_email("info@sentinelauthority.org", f"New Registration: {email}", html)
