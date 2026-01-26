@@ -500,8 +500,10 @@ function ApplicationsList() {
 function NewApplication() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    organization_name: '', system_name: '', system_description: '',
-    odd_specification: '', contact_email: '', contact_phone: ''
+    organization_name: '', contact_name: '', contact_email: '', contact_phone: '',
+    system_name: '', system_description: '', system_version: '', manufacturer: '',
+    odd_specification: '', envelope_definition: '',
+    facility_location: '', preferred_test_date: '', notes: ''
   });
   const [error, setError] = useState('');
 
@@ -542,12 +544,16 @@ function NewApplication() {
             <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.purpleBright, marginBottom: '16px'}}>Organization Information</h2>
             <div className="space-y-4">
               <div>
-                <label style={{display: 'block', marginBottom: '8px', color: styles.textSecondary, fontSize: '14px'}}>Organization Name</label>
+                <label style={{display: 'block', marginBottom: '8px', color: styles.textSecondary, fontSize: '14px'}}>Organization Name *</label>
                 <input type="text" value={formData.organization_name} onChange={(e) => setFormData({...formData, organization_name: e.target.value})} className="w-full px-4 py-3 rounded-lg outline-none" style={inputStyle} required />
+              </div>
+              <div>
+                <label style={{display: 'block', marginBottom: '8px', color: styles.textSecondary, fontSize: '14px'}}>Contact Name</label>
+                <input type="text" value={formData.contact_name} onChange={(e) => setFormData({...formData, contact_name: e.target.value})} className="w-full px-4 py-3 rounded-lg outline-none" style={inputStyle} />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label style={{display: 'block', marginBottom: '8px', color: styles.textSecondary, fontSize: '14px'}}>Contact Email</label>
+                  <label style={{display: 'block', marginBottom: '8px', color: styles.textSecondary, fontSize: '14px'}}>Contact Email *</label>
                   <input type="email" value={formData.contact_email} onChange={(e) => setFormData({...formData, contact_email: e.target.value})} className="w-full px-4 py-3 rounded-lg outline-none" style={inputStyle} required />
                 </div>
                 <div>
@@ -561,17 +567,57 @@ function NewApplication() {
           <div style={{borderTop: `1px solid ${styles.borderGlass}`, paddingTop: '24px'}}>
             <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.purpleBright, marginBottom: '16px'}}>System Information</h2>
             <div className="space-y-4">
-              <div>
-                <label style={{display: 'block', marginBottom: '8px', color: styles.textSecondary, fontSize: '14px'}}>System Name</label>
-                <input type="text" value={formData.system_name} onChange={(e) => setFormData({...formData, system_name: e.target.value})} className="w-full px-4 py-3 rounded-lg outline-none" style={inputStyle} required />
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label style={{display: 'block', marginBottom: '8px', color: styles.textSecondary, fontSize: '14px'}}>System Name *</label>
+                  <input type="text" value={formData.system_name} onChange={(e) => setFormData({...formData, system_name: e.target.value})} className="w-full px-4 py-3 rounded-lg outline-none" style={inputStyle} required />
+                </div>
+                <div>
+                  <label style={{display: 'block', marginBottom: '8px', color: styles.textSecondary, fontSize: '14px'}}>System Version</label>
+                  <input type="text" value={formData.system_version} onChange={(e) => setFormData({...formData, system_version: e.target.value})} className="w-full px-4 py-3 rounded-lg outline-none" style={inputStyle} placeholder="e.g., 1.0.0" />
+                </div>
               </div>
               <div>
-                <label style={{display: 'block', marginBottom: '8px', color: styles.textSecondary, fontSize: '14px'}}>System Description</label>
+                <label style={{display: 'block', marginBottom: '8px', color: styles.textSecondary, fontSize: '14px'}}>Manufacturer</label>
+                <input type="text" value={formData.manufacturer} onChange={(e) => setFormData({...formData, manufacturer: e.target.value})} className="w-full px-4 py-3 rounded-lg outline-none" style={inputStyle} />
+              </div>
+              <div>
+                <label style={{display: 'block', marginBottom: '8px', color: styles.textSecondary, fontSize: '14px'}}>System Description *</label>
                 <textarea value={formData.system_description} onChange={(e) => setFormData({...formData, system_description: e.target.value})} rows={4} className="w-full px-4 py-3 rounded-lg outline-none resize-none" style={inputStyle} required />
               </div>
+            </div>
+          </div>
+
+          <div style={{borderTop: `1px solid ${styles.borderGlass}`, paddingTop: '24px'}}>
+            <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.purpleBright, marginBottom: '16px'}}>Operational Domain</h2>
+            <div className="space-y-4">
               <div>
-                <label style={{display: 'block', marginBottom: '8px', color: styles.textSecondary, fontSize: '14px'}}>ODD Specification</label>
+                <label style={{display: 'block', marginBottom: '8px', color: styles.textSecondary, fontSize: '14px'}}>ODD Specification *</label>
                 <textarea value={formData.odd_specification} onChange={(e) => setFormData({...formData, odd_specification: e.target.value})} rows={6} className="w-full px-4 py-3 rounded-lg outline-none resize-none" style={inputStyle} placeholder="Describe the Operational Design Domain including environment type, speed limits, geographic constraints, weather conditions, etc." required />
+              </div>
+              <div>
+                <label style={{display: 'block', marginBottom: '8px', color: styles.textSecondary, fontSize: '14px'}}>Envelope Definition</label>
+                <textarea value={formData.envelope_definition} onChange={(e) => setFormData({...formData, envelope_definition: e.target.value})} rows={4} className="w-full px-4 py-3 rounded-lg outline-none resize-none" style={inputStyle} placeholder="Define the operational envelope boundaries and constraints" />
+              </div>
+            </div>
+          </div>
+
+          <div style={{borderTop: `1px solid ${styles.borderGlass}`, paddingTop: '24px'}}>
+            <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.purpleBright, marginBottom: '16px'}}>Testing Details</h2>
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label style={{display: 'block', marginBottom: '8px', color: styles.textSecondary, fontSize: '14px'}}>Facility Location</label>
+                  <input type="text" value={formData.facility_location} onChange={(e) => setFormData({...formData, facility_location: e.target.value})} className="w-full px-4 py-3 rounded-lg outline-none" style={inputStyle} placeholder="Testing facility address" />
+                </div>
+                <div>
+                  <label style={{display: 'block', marginBottom: '8px', color: styles.textSecondary, fontSize: '14px'}}>Preferred Test Date</label>
+                  <input type="date" value={formData.preferred_test_date} onChange={(e) => setFormData({...formData, preferred_test_date: e.target.value})} className="w-full px-4 py-3 rounded-lg outline-none" style={inputStyle} />
+                </div>
+              </div>
+              <div>
+                <label style={{display: 'block', marginBottom: '8px', color: styles.textSecondary, fontSize: '14px'}}>Additional Notes</label>
+                <textarea value={formData.notes} onChange={(e) => setFormData({...formData, notes: e.target.value})} rows={3} className="w-full px-4 py-3 rounded-lg outline-none resize-none" style={inputStyle} placeholder="Any additional information relevant to your application" />
               </div>
             </div>
           </div>
