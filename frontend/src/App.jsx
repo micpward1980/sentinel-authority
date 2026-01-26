@@ -1160,6 +1160,229 @@ function APIKeyManager() {
     loadKeys();
   }, []);
 
+  const downloadConfiguredAgent = (apiKey) => {
+    // Create a configured Python script
+    const configScript = `#!/usr/bin/env python3
+"""
+ENVELO Agent - Pre-configured for your system
+Sentinel Authority - https://sentinelauthority.org
+
+QUICK START:
+1. Install dependencies: pip install httpx
+2. Run this file: python envelo_agent.py
+3. Check your dashboard: https://app.sentinelauthority.org/envelo
+"""
+
+import os
+import sys
+import time
+import json
+import uuid
+import httpx
+from datetime import datetime
+from functools import wraps
+
+# ═══════════════════════════════════════════════════════════════════
+# YOUR CREDENTIALS (pre-configured)
+# ═══════════════════════════════════════════════════════════════════
+CERTIFICATE_ID = "ODDC-2026-PENDING"
+API_KEY = "${apiKey}"
+API_ENDPOINT = "https://sentinel-authority-production.up.railway.app"
+
+# ═══════════════════════════════════════════════════════════════════
+# ENVELO AGENT
+# ═══════════════════════════════════════════════════════════════════
+
+class NumericBoundary:
+    def __init__(self, name, min=None, max=None, unit=""):
+        self.name = name
+        self.min = min
+        self.max = max
+        self.unit = unit
+    
+    def check(self, value):
+        if self.min is not None and value < self.min:
+            return False, f"{self.name} ({value}) below minimum ({self.min})"
+        if self.max is not None and value > self.max:
+            return False, f"{self.name} ({value}) above maximum ({self.max})"
+        return True, None
+
+class EnveloAgent:
+    def __init__(self):
+        self.boundaries = []
+        self.session_id = uuid.uuid4().hex[:16]
+        self.telemetry = []
+        self.pass_count = 0
+        self.block_count = 0
+        self._register_session()
+    
+    def _register_session(self):
+        try:
+            httpx.post(
+                f"{API_ENDPOINT}/api/envelo/sessions",
+                json={
+                    "certificate_id": CERTIFICATE_ID,
+                    "session_id": self.session_id,
+                    "started_at": datetime.utcnow().isoformat() + "Z",
+                    "agent_version": "1.0.0",
+                    "boundaries": [{"name": b.name} for b in self.boundaries]
+                },
+                headers={"Authorization": f"Bearer {API_KEY}"},
+                timeout=10
+            )
+            print(f"✓ Session registered: {self.session_id}")
+        except Exception as e:
+            print(f"⚠ Could not register session: {e}")
+    
+    def add_boundary(self, boundary):
+        self.boundaries.append(boundary)
+        print(f"  + Boundary: {boundary.name} ({boundary.min} to {boundary.max} {boundary.unit})")
+    
+    def enforce(self, func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            start = time.time()
+            action_id = uuid.uuid4().hex[:8]
+            
+            # Check all boundaries
+            violations = []
+            for boundary in self.boundaries:
+                if boundary.name in kwargs:
+                    passed, msg = boundary.check(kwargs[boundary.name])
+                    if not passed:
+                        violations.append({"boundary": boundary.name, "message": msg})
+            
+            result = "PASS" if not violations else "BLOCK"
+            exec_time = (time.time() - start) * 1000
+            
+            # Record telemetry
+            record = {
+                "timestamp": datetime.utcnow().isoformat() + "Z",
+                "action_id": action_id,
+                "action_type": func.__name__,
+                "result": result,
+                "execution_time_ms": exec_time,
+                "parameters": kwargs,
+                "boundary_evaluations": [{"boundary": b.name, "passed": b.name not in [v["boundary"] for v in violations]} for b in self.boundaries]
+            }
+            self.telemetry.append(record)
+            
+            if result == "PASS":
+                self.pass_count += 1
+                return func(*args, **kwargs)
+            else:
+                self.block_count += 1
+                raise Exception(f"ENVELO BLOCK: {violations[0]['message']}")
+        
+        return wrapper
+    
+    def send_telemetry(self):
+        if not self.telemetry:
+            return
+        try:
+            httpx.post(
+                f"{API_ENDPOINT}/api/envelo/telemetry",
+                json={
+                    "certificate_id": CERTIFICATE_ID,
+                    "session_id": self.session_id,
+                    "records": self.telemetry,
+                    "stats": {"pass_count": self.pass_count, "block_count": self.block_count}
+                },
+                headers={"Authorization": f"Bearer {API_KEY}"},
+                timeout=10
+            )
+            print(f"✓ Sent {len(self.telemetry)} telemetry records")
+            self.telemetry = []
+        except Exception as e:
+            print(f"⚠ Could not send telemetry: {e}")
+    
+    def shutdown(self):
+        self.send_telemetry()
+        try:
+            httpx.post(
+                f"{API_ENDPOINT}/api/envelo/sessions/{self.session_id}/end",
+                json={
+                    "ended_at": datetime.utcnow().isoformat() + "Z",
+                    "final_stats": {"pass_count": self.pass_count, "block_count": self.block_count}
+                },
+                headers={"Authorization": f"Bearer {API_KEY}"},
+                timeout=10
+            )
+            print(f"✓ Session ended")
+        except Exception as e:
+            print(f"⚠ Could not end session: {e}")
+
+# ═══════════════════════════════════════════════════════════════════
+# EXAMPLE USAGE - MODIFY FOR YOUR SYSTEM
+# ═══════════════════════════════════════════════════════════════════
+
+if __name__ == "__main__":
+    print("")
+    print("╔═══════════════════════════════════════════════════════════╗")
+    print("║           ENVELO Agent - Sentinel Authority               ║")
+    print("╚═══════════════════════════════════════════════════════════╝")
+    print("")
+    print(f"Certificate: {CERTIFICATE_ID}")
+    print(f"API Key:     {API_KEY[:12]}...")
+    print("")
+    
+    # Initialize agent
+    agent = EnveloAgent()
+    print("")
+    
+    # Define YOUR boundaries (modify these for your system)
+    print("Defining ODD boundaries:")
+    agent.add_boundary(NumericBoundary("speed", min=0, max=100, unit="km/h"))
+    agent.add_boundary(NumericBoundary("temperature", min=-20, max=50, unit="celsius"))
+    print("")
+    
+    # Example protected function (replace with your actual function)
+    @agent.enforce
+    def autonomous_action(speed, temperature):
+        print(f"    Executing action: speed={speed}, temp={temperature}")
+        return True
+    
+    # Test 1: Within boundaries (should PASS)
+    print("─" * 50)
+    print("Test 1: speed=50, temperature=25 (within bounds)")
+    try:
+        autonomous_action(speed=50, temperature=25)
+        print("    ✓ PASSED - Action executed")
+    except Exception as e:
+        print(f"    ✗ BLOCKED - {e}")
+    print("")
+    
+    # Test 2: Outside boundaries (should BLOCK)
+    print("Test 2: speed=150, temperature=25 (speed exceeds limit)")
+    try:
+        autonomous_action(speed=150, temperature=25)
+        print("    ✓ PASSED - Action executed")
+    except Exception as e:
+        print(f"    ✗ BLOCKED - {e}")
+    print("")
+    
+    # Send telemetry and shutdown
+    print("─" * 50)
+    agent.shutdown()
+    print("")
+    print("═" * 50)
+    print("Check your dashboard: https://app.sentinelauthority.org/envelo")
+    print("═" * 50)
+    print("")
+`;
+    
+    // Create and download the file
+    const blob = new Blob([configScript], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'envelo_agent.py';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   const loadKeys = async () => {
     try {
       const res = await api.get('/api/apikeys/');
@@ -1213,6 +1436,16 @@ function APIKeyManager() {
             <button onClick={() => setGeneratedKey(null)} style={{padding: '8px 16px', background: 'transparent', border: `1px solid ${styles.borderGlass}`, borderRadius: '6px', color: styles.textSecondary, fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', cursor: 'pointer'}}>Dismiss</button>
           </div>
           <p style={{color: styles.textTertiary, fontSize: '12px', marginTop: '12px'}}>⚠️ Save this key now. You won't be able to see it again.</p>
+          <div style={{marginTop: '16px', padding: '16px', background: 'rgba(91,75,138,0.2)', border: '1px solid rgba(91,75,138,0.3)', borderRadius: '8px'}}>
+            <div style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', color: styles.purpleBright, marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '1px'}}>Next Step</div>
+            <p style={{color: styles.textSecondary, fontSize: '13px', marginBottom: '12px'}}>Download the ENVELO Agent pre-configured with your credentials:</p>
+            <button 
+              onClick={() => downloadConfiguredAgent(generatedKey.key)}
+              style={{padding: '12px 24px', background: styles.purplePrimary, border: `1px solid ${styles.purpleBright}`, borderRadius: '6px', color: '#fff', fontFamily: "'IBM Plex Mono', monospace", fontSize: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px'}}
+            >
+              <Download size={16} /> Download ENVELO Agent
+            </button>
+          </div>
         </div>
       )}
 
