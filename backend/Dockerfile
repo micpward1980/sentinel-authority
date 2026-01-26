@@ -3,18 +3,15 @@ FROM python:3.11-slim
 WORKDIR /app
 
 # Install dependencies
-COPY requirements.txt .
+COPY backend/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application
-COPY . .
+# Copy application code
+COPY backend/ .
 
 # Create non-root user
 RUN useradd -m -u 1000 sentinel && chown -R sentinel:sentinel /app
 USER sentinel
 
-# Expose port
+# Default port (Railway overrides via startCommand)
 EXPOSE 8000
-
-# Run application
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
