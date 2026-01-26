@@ -502,3 +502,111 @@ async def get_session_violations_admin(
             for v in violations
         ]
     }
+
+
+@router.get("/admin/sessions/{session_id}/report")
+async def download_session_report(
+    session_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    """Download CAT-72 report PDF for a session"""
+    from fastapi.responses import Response
+    from app.services.cat72_report_generator import generate_cat72_report
+    
+    if current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    # Get session
+    result = await db.execute(select(EnveloSession).where(EnveloSession.id == session_id))
+    session = result.scalar_one_or_none()
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+    
+    # Get violations
+    result = await db.execute(
+        select(Violation).where(Violation.session_id == session_id).order_by(Violation.timestamp)
+    )
+    violations = result.scalars().all()
+    
+    violation_list = [
+        {"timestamp": v.timestamp.isoformat() if v.timestamp else None, 
+         "boundary_name": v.boundary_name, 
+         "violation_message": v.violation_message}
+        for v in violations
+    ]
+    
+    # Generate PDF
+    pdf_bytes = generate_cat72_report(
+        test_id=session.session_id,
+        system_name=session.certificate_id or "Unknown System",
+        organization="Customer",
+        started_at=session.started_at,
+        ended_at=session.ended_at or datetime.utcnow(),
+        total_actions=(session.pass_count or 0) + (session.block_count or 0),
+        pass_count=session.pass_count or 0,
+        block_count=session.block_count or 0,
+        pass_rate=((session.pass_count or 0) / max((session.pass_count or 0) + (session.block_count or 0), 1)) * 100,
+        result="PASS" if session.status == "passed" else "IN PROGRESS",
+        violations=violation_list
+    )
+    
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f"attachment; filename=CAT72-Report-{session.session_id}.pdf"}
+    )
+
+
+@router.get("/admin/sessions/{session_id}/report")
+async def download_session_report(
+    session_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    """Download CAT-72 report PDF for a session"""
+    from fastapi.responses import Response
+    from app.services.cat72_report_generator import generate_cat72_report
+    
+    if current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    # Get session
+    result = await db.execute(select(EnveloSession).where(EnveloSession.id == session_id))
+    session = result.scalar_one_or_none()
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+    
+    # Get violations
+    result = await db.execute(
+        select(Violation).where(Violation.session_id == session_id).order_by(Violation.timestamp)
+    )
+    violations = result.scalars().all()
+    
+    violation_list = [
+        {"timestamp": v.timestamp.isoformat() if v.timestamp else None, 
+         "boundary_name": v.boundary_name, 
+         "violation_message": v.violation_message}
+        for v in violations
+    ]
+    
+    # Generate PDF
+    pdf_bytes = generate_cat72_report(
+        test_id=session.session_id,
+        system_name=session.certificate_id or "Unknown System",
+        organization="Customer",
+        started_at=session.started_at,
+        ended_at=session.ended_at or datetime.utcnow(),
+        total_actions=(session.pass_count or 0) + (session.block_count or 0),
+        pass_count=session.pass_count or 0,
+        block_count=session.block_count or 0,
+        pass_rate=((session.pass_count or 0) / max((session.pass_count or 0) + (session.block_count or 0), 1)) * 100,
+        result="PASS" if session.status == "passed" else "IN PROGRESS",
+        violations=violation_list
+    )
+    
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f"attachment; filename=CAT72-Report-{session.session_id}.pdf"}
+    )
