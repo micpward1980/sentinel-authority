@@ -80,7 +80,7 @@ async def register_session(
         session_id=data.session_id,
         certificate_id=certificate.id if certificate else None,
         api_key_id=api_key.id,
-        started_at=datetime.fromisoformat(data.started_at.replace('Z', '+00:00')),
+        started_at=datetime.fromisoformat(data.started_at.replace('Z', '').replace('+00:00', '')),
         agent_version=data.agent_version,
         status="active"
     )
@@ -123,7 +123,7 @@ async def receive_telemetry(
     for record in data.records:
         telemetry = TelemetryRecord(
             session_id=session.id,
-            timestamp=datetime.fromisoformat(record['timestamp'].replace('Z', '+00:00')),
+            timestamp=datetime.fromisoformat(record['timestamp'].replace('Z', '').replace('+00:00', '')),
             action_id=record.get('action_id', ''),
             action_type=record.get('action_type', ''),
             result=record.get('result', ''),
@@ -148,7 +148,7 @@ async def receive_telemetry(
                     db.add(violation)
     
     # Update session stats
-    session.last_telemetry_at = datetime.now(timezone.utc)
+    session.last_telemetry_at = datetime.utcnow()
     session.pass_count = (session.pass_count or 0) + data.stats.get('pass_count', 0)
     session.block_count = (session.block_count or 0) + data.stats.get('block_count', 0)
     
@@ -176,7 +176,7 @@ async def end_session(
     
     if session:
         session.status = "ended"
-        session.ended_at = datetime.fromisoformat(data.ended_at.replace('Z', '+00:00'))
+        session.ended_at = datetime.fromisoformat(data.ended_at.replace('Z', '').replace('+00:00', ''))
         session.pass_count = data.final_stats.get('pass_count', session.pass_count)
         session.block_count = data.final_stats.get('block_count', session.block_count)
         await db.commit()
