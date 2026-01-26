@@ -2215,7 +2215,7 @@
         <button class="download-modal-close" onclick="closeDownloadModal()" aria-label="Close">&times;</button>
         <h3 id="downloadModalTitle">Download Document</h3>
         <p>Please provide your contact information to access this document.</p>
-        <form id="downloadForm" action="https://api.web3forms.com/submit" method="POST" onsubmit="handleDownloadSubmit(event)">
+        <form id="downloadForm" action="https://api.sentinelauthority.org/api/applications/document-download" method="POST" onsubmit="handleDownloadSubmit(event)">
           <input type="hidden" name="access_key" value="3e7e3ac5-9b32-46a0-b901-d36f8723879c">
           <input type="hidden" name="subject" value="New Document Download">
           <input type="hidden" name="from_name" value="Sentinel Authority Website">
@@ -2406,14 +2406,21 @@
     function handleDownloadSubmit(e) {
       e.preventDefault();
       const form = e.target;
-      const formData = new FormData(form);
       
-      fetch('https://api.web3forms.com/submit', {
+      const data = {
+        email: document.getElementById('download-email').value,
+        organization: document.getElementById('download-org').value,
+        role: document.getElementById('download-role').value,
+        document: document.getElementById('documentName').value
+      };
+      
+      fetch('https://api.sentinelauthority.org/api/applications/document-download', {
         method: 'POST',
-        body: formData
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
       })
       .then(response => response.json())
-      .then(data => {
+      .then(result => {
         closeDownloadModal();
         window.open(currentPdfPath, '_blank');
         form.reset();

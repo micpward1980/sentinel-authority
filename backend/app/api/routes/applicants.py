@@ -184,3 +184,50 @@ async def update_application_state(
         return {"message": f"State updated to {new_state}", "state": new_state}
     except ValueError:
         raise HTTPException(status_code=400, detail=f"Invalid state: {new_state}")
+
+
+@router.post("/document-download")
+async def document_download(
+    request: Request,
+    db: AsyncSession = Depends(get_db)
+):
+    """Track document downloads and notify admin"""
+    from app.services.email_service import send_email
+    import os
+    
+    data = await request.json()
+    email = data.get("email", "")
+    organization = data.get("organization", "")
+    role = data.get("role", "")
+    document = data.get("document", "")
+    
+    # Send notification email to admin
+    ADMIN_EMAIL = os.getenv("ADMIN_EMAIL", "info@sentinelauthority.org")
+    
+    subject = f"Document Download: {document}"
+    html = f"""
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <div style="background: #5B4B8A; padding: 20px; text-align: center;">
+            <h1 style="color: white; margin: 0;">Document Download</h1>
+        </div>
+        <div style="padding: 20px; background: #f9f9f9;">
+            <h2 style="color: #5B4B8A;">Someone downloaded a document</h2>
+            <table style="width: 100%; border-collapse: collapse;">
+                <tr><td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>Document:</strong></td><td style="padding: 8px; border-bottom: 1px solid #ddd;">{document}</td></tr>
+                <tr><td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>Email:</strong></td><td style="padding: 8px; border-bottom: 1px solid #ddd;">{email}</td></tr>
+                <tr><td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>Organization:</strong></td><td style="padding: 8px; border-bottom: 1px solid #ddd;">{organization or 'Not provided'}</td></tr>
+                <tr><td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>Role:</strong></td><td style="padding: 8px; border-bottom: 1px solid #ddd;">{role or 'Not provided'}</td></tr>
+            </table>
+        </div>
+        <div style="padding: 15px; background: #5B4B8A; text-align: center;">
+            <span style="color: rgba(255,255,255,0.7); font-size: 12px;">Sentinel Authority</span>
+        </div>
+    </div>
+    """
+    
+    try:
+        send_email(ADMIN_EMAIL, subject, html)
+        return {"success": True, "message": "Download tracked"}
+    except Exception as e:
+        print(f"Email error: {e}")
+        return {"success": True, "message": "Download tracked (email failed)"}
