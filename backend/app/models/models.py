@@ -11,6 +11,7 @@ class UserRole(str, enum.Enum):
     ADMIN = "admin"
     OPERATOR = "operator"
     APPLICANT = "applicant"
+    SUBSCRIBER = "subscriber"
     LICENSEE = "licensee"
 
 
@@ -41,7 +42,7 @@ class User(Base):
     hashed_password = Column(String(255), nullable=False)
     full_name = Column(String(255))
     organization = Column(String(255))
-    role = Column(Enum(UserRole), default=UserRole.APPLICANT)
+    role = Column(Enum(UserRole), default=UserRole.SUBSCRIBER)
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     applications = relationship("Application", back_populates="applicant")

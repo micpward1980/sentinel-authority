@@ -118,17 +118,29 @@ const styles = {
 function Layout({ children }) {
   const { user, logout } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [userCerts, setUserCerts] = useState([]);
   const location = useLocation();
 
+  useEffect(() => {
+    if (user) {
+      api.get('/api/certificates/').then(res => setUserCerts(res.data || [])).catch(() => setUserCerts([]));
+    }
+  }, [user]);
+
   const navigation = [
-    { name: 'Dashboard', href: '/dashboard', icon: Home, roles: ['admin', 'operator', 'applicant', 'licensee'] },
-    { name: 'Applications', href: '/applications', icon: FileText, roles: ['admin', 'operator'] },
-    { name: 'CAT-72 Console', href: '/cat72', icon: Activity, roles: ['admin', 'operator'] },
-    { name: 'Certificates', href: '/certificates', icon: Award, roles: ['admin', 'operator', 'applicant'] },
-    { name: 'ENVELO Agent', href: '/envelo', icon: 'brand', roles: ['admin', 'operator'] },
+    { name: 'Dashboard', href: '/dashboard', icon: Home, roles: ['admin', 'subscriber'] },
+    { name: 'Applications', href: '/applications', icon: FileText, roles: ['admin', 'subscriber'] },
+    { name: 'CAT-72 Console', href: '/cat72', icon: Activity, roles: ['admin'] },
+    { name: 'Certificates', href: '/certificates', icon: Award, roles: ['admin', 'subscriber'] },
+    { name: 'ENVELO Agent', href: '/envelo', icon: 'brand', roles: ['admin', 'subscriber'], requiresCert: true },
   ];
 
-  const filteredNav = navigation.filter(item => item.roles.includes(user?.role || ''));
+  const hasCert = userCerts.some(c => c.status === 'issued' || c.status === 'active');
+  const filteredNav = navigation.filter(item => {
+    if (!item.roles.includes(user?.role || '')) return false;
+    if (item.requiresCert && user?.role !== 'admin' && !hasCert) return false;
+    return true;
+  });
 
   return (
     <div className="min-h-screen" style={{background: `radial-gradient(1200px 700px at 15% 10%, rgba(91,75,138,0.15), transparent 55%), radial-gradient(900px 600px at 85% 80%, rgba(92,214,133,0.06), transparent 55%), ${styles.bgDeep}`, color: styles.textPrimary, fontFamily: "'Inter', system-ui, -apple-system, sans-serif"}}>
@@ -432,10 +444,12 @@ function CustomerDashboard() {
       <Panel>
         <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Need Help?</h2>
         <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px'}}>
+          {certificates.some(c => c.status === 'issued' || c.status === 'active') && (
           <a href="https://sentinelauthority.org/agent.html" target="_blank" style={{padding: '16px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px', textDecoration: 'none', color: styles.textSecondary}}>
             <div style={{fontWeight: 500, marginBottom: '4px', color: styles.textPrimary}}>ENVELO Agent Setup</div>
             <div style={{fontSize: '12px'}}>Installation and configuration guide</div>
           </a>
+          )}
           <a href="mailto:info@sentinelauthority.org" style={{padding: '16px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px', textDecoration: 'none', color: styles.textSecondary}}>
             <div style={{fontWeight: 500, marginBottom: '4px', color: styles.textPrimary}}>Contact Support</div>
             <div style={{fontSize: '12px'}}>info@sentinelauthority.org</div>
@@ -1786,7 +1800,7 @@ if __name__ == "__main__":
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'envelo_agent.py';
+    a.download = `envelo_agent_${cert.certificate_number}.py`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -2064,14 +2078,166 @@ function EnveloPage() {
   const [stats, setStats] = useState(null);
   const [sessions, setSessions] = useState([]);
   const [selectedSession, setSelectedSession] = useState(null);
+  const [userCerts, setUserCerts] = useState([]);
+  const [loading, setLoading] = useState(true);
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    api.get('/api/envelo/stats').then(res => setStats(res.data)).catch(console.error);
-    api.get('/api/envelo/admin/sessions').then(res => setSessions(res.data.sessions || [])).catch(console.error);
+    const loadData = async () => {
+      try {
+        const [statsRes, sessionsRes, certsRes] = await Promise.all([
+          api.get('/api/envelo/stats').catch(() => ({ data: null })),
+          api.get('/api/envelo/admin/sessions').catch(() => ({ data: { sessions: [] } })),
+          api.get('/api/certificates/').catch(() => ({ data: [] }))
+        ]);
+        setStats(statsRes.data);
+        setSessions(sessionsRes.data.sessions || []);
+        setUserCerts(certsRes.data || []);
+      } catch (err) {
+        console.error(err);
+      }
+      setLoading(false);
+    };
+    loadData();
   }, []);
 
-  const apiKey = `sa_live_${user?.sub || 'XXXXX'}_${Date.now().toString(36)}`;
+  const hasCert = user?.role === 'admin' || userCerts.some(c => c.status === 'issued' || c.status === 'active');
+
+  if (loading) {
+    return <div style={{color: styles.textTertiary, padding: '40px', textAlign: 'center'}}>Loading...</div>;
+  }
+
+  if (!hasCert) {
+    return (
+      <div className="space-y-6">
+        <Panel>
+          <div style={{textAlign: 'center', padding: '40px'}}>
+            <Award size={48} style={{color: styles.textTertiary, margin: '0 auto 16px'}} />
+            <h2 style={{fontFamily: "'Source Serif 4', serif", fontSize: '24px', fontWeight: 200, marginBottom: '12px'}}>Certification Required</h2>
+            <p style={{color: styles.textSecondary, marginBottom: '24px'}}>You must have an active ODDC certificate to download and use the ENVELO Agent.</p>
+            <p style={{color: styles.textTertiary, fontSize: '13px'}}>Complete the CAT-72 certification process to gain access.</p>
+          </div>
+        </Panel>
+      </div>
+    );
+  }
+
+  const certifiedSystems = userCerts.filter(c => c.status === 'issued' || c.status === 'active');
+
+  const downloadAgentForSystem = (cert) => {
+    const agentCode = `#!/usr/bin/env python3
+"""
+ENVELO Agent - Sentinel Authority
+System: ${cert.system_name || 'Unknown'}
+Certificate: ${cert.certificate_number}
+Generated: ${new Date().toISOString()}
+
+This agent is pre-configured for your certified system.
+"""
+
+import os
+import json
+import time
+import hashlib
+import requests
+from datetime import datetime
+from functools import wraps
+
+# Configuration - DO NOT MODIFY
+SENTINEL_API = "https://api.sentinelauthority.org"
+CERTIFICATE_NUMBER = "${cert.certificate_number}"
+SYSTEM_NAME = "${cert.system_name || 'Unknown'}"
+
+class EnveloAgent:
+    def __init__(self, api_key):
+        self.api_key = api_key
+        self.session_id = None
+        self.boundaries = {}
+        self.violations = []
+        
+    def start_session(self):
+        try:
+            res = requests.post(f"{SENTINEL_API}/api/envelo/session/start", 
+                headers={"X-API-Key": self.api_key},
+                json={"certificate_number": CERTIFICATE_NUMBER, "system_name": SYSTEM_NAME})
+            if res.ok:
+                self.session_id = res.json().get("session_id")
+                print(f"[ENVELO] Session started: {self.session_id}")
+                return True
+        except Exception as e:
+            print(f"[ENVELO] Failed to start session: {e}")
+        return False
+    
+    def add_boundary(self, name, min_val=None, max_val=None, allowed_values=None):
+        self.boundaries[name] = {"min": min_val, "max": max_val, "allowed": allowed_values}
+    
+    def check(self, name, value):
+        if name not in self.boundaries:
+            return True
+        b = self.boundaries[name]
+        if b["min"] is not None and value < b["min"]:
+            self._report_violation(name, value, f"Below minimum {b['min']}")
+            return False
+        if b["max"] is not None and value > b["max"]:
+            self._report_violation(name, value, f"Above maximum {b['max']}")
+            return False
+        if b["allowed"] is not None and value not in b["allowed"]:
+            self._report_violation(name, value, f"Not in allowed values")
+            return False
+        return True
+    
+    def _report_violation(self, name, value, reason):
+        violation = {"parameter": name, "value": value, "reason": reason, "timestamp": datetime.utcnow().isoformat()}
+        self.violations.append(violation)
+        try:
+            requests.post(f"{SENTINEL_API}/api/envelo/violation",
+                headers={"X-API-Key": self.api_key},
+                json={"session_id": self.session_id, **violation})
+        except:
+            pass
+        print(f"[ENVELO] VIOLATION: {name}={value} - {reason}")
+    
+    def enforce(self, func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            return func(*args, **kwargs)
+        return wrapper
+    
+    def shutdown(self):
+        if self.session_id:
+            try:
+                requests.post(f"{SENTINEL_API}/api/envelo/session/end",
+                    headers={"X-API-Key": self.api_key},
+                    json={"session_id": self.session_id})
+            except:
+                pass
+        print(f"[ENVELO] Session ended. Violations: {len(self.violations)}")
+
+if __name__ == "__main__":
+    print("=" * 60)
+    print("  ENVELO Agent - Sentinel Authority")
+    print(f"  System: {SYSTEM_NAME}")
+    print(f"  Certificate: {CERTIFICATE_NUMBER}")
+    print("=" * 60)
+    print()
+    print("To use this agent, set your API key:")
+    print("  agent = EnveloAgent('your-api-key-here')")
+    print("  agent.start_session()")
+    print("  agent.add_boundary('speed', min_val=0, max_val=100)")
+    print("  agent.check('speed', 75)  # Returns True")
+    print("  agent.check('speed', 150) # Returns False, reports violation")
+`;
+    const blob = new Blob([agentCode], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `envelo_agent_${cert.certificate_number}.py`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
 
   return (
     <div className="space-y-6">
@@ -2081,32 +2247,57 @@ function EnveloPage() {
         <p style={{color: styles.textSecondary, marginTop: '8px'}}>Download and configure the enforcement agent for your certified systems</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Panel>
-          <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Active Sessions</h2>
-          <p style={{fontSize: '32px', fontWeight: 200, color: styles.purpleBright}}>{stats?.active_sessions || 0}</p>
-        </Panel>
-        <Panel>
-          <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Total Telemetry</h2>
-          <p style={{fontSize: '32px', fontWeight: 200, color: styles.textPrimary}}>{stats?.total_telemetry_records || 0}</p>
-        </Panel>
-        <Panel>
-          <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Violations Blocked</h2>
-          <p style={{fontSize: '32px', fontWeight: 200, color: styles.accentRed}}>{stats?.total_violations || 0}</p>
-        </Panel>
-      </div>
+      {user?.role === 'admin' && (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <Panel>
+            <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Active Sessions</h2>
+            <p style={{fontSize: '32px', fontWeight: 200, color: styles.purpleBright}}>{stats?.active_sessions || 0}</p>
+          </Panel>
+          <Panel>
+            <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Total Telemetry</h2>
+            <p style={{fontSize: '32px', fontWeight: 200, color: styles.textPrimary}}>{stats?.total_telemetry_records || 0}</p>
+          </Panel>
+          <Panel>
+            <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Violations Blocked</h2>
+            <p style={{fontSize: '32px', fontWeight: 200, color: styles.accentRed}}>{stats?.total_violations || 0}</p>
+          </Panel>
+        </div>
+      )}
 
       <Panel>
-        <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Download Agent</h2>
-        <p style={{color: styles.textSecondary, marginBottom: '16px'}}>Install the ENVELO Agent in your autonomous system to enable runtime enforcement.</p>
-        <a 
-          href="https://www.sentinelauthority.org/downloads/envelo-agent-v1.0.0.zip" 
-          className="px-4 py-3 rounded-lg inline-flex items-center gap-2"
-          style={{background: styles.purplePrimary, border: `1px solid ${styles.purpleBright}`, color: '#fff', fontFamily: "'IBM Plex Mono', monospace", fontSize: '12px', letterSpacing: '1px', textTransform: 'uppercase', textDecoration: 'none'}}
-        >
-          <Download className="w-4 h-4" /> Download v1.0.0
-        </a>
-        <p style={{color: styles.textTertiary, fontSize: '13px', marginTop: '12px'}}>Python 3.9+ required • ~15 KB</p>
+        <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Your Certified Systems</h2>
+        <p style={{color: styles.textSecondary, marginBottom: '20px'}}>Download the ENVELO Agent pre-configured for each certified system. The agent must remain running to maintain certification compliance.</p>
+        
+        {certifiedSystems.length > 0 ? (
+          <div className="space-y-4">
+            {certifiedSystems.map(cert => (
+              <div key={cert.id} style={{padding: '20px', background: 'rgba(0,0,0,0.2)', border: `1px solid ${styles.borderGlass}`, borderRadius: '8px'}}>
+                <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px'}}>
+                  <div>
+                    <h3 style={{fontFamily: "'Inter', sans-serif", fontSize: '16px', fontWeight: 500, color: styles.textPrimary, margin: '0 0 8px 0'}}>{cert.system_name || 'Unnamed System'}</h3>
+                    <div style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '12px', color: styles.purpleBright, marginBottom: '4px'}}>{cert.certificate_number}</div>
+                    <div style={{fontSize: '12px', color: styles.textTertiary}}>
+                      Expires: {cert.expires_at ? new Date(cert.expires_at).toLocaleDateString() : 'N/A'}
+                    </div>
+                  </div>
+                  <div style={{display: 'flex', alignItems: 'center', gap: '12px'}}>
+                    <span style={{padding: '4px 12px', background: 'rgba(92,214,133,0.15)', border: '1px solid rgba(92,214,133,0.3)', borderRadius: '20px', fontSize: '11px', color: styles.accentGreen, fontFamily: "'IBM Plex Mono', monospace", textTransform: 'uppercase'}}>
+                      {cert.status}
+                    </span>
+                    <button
+                      onClick={() => downloadAgentForSystem(cert)}
+                      style={{padding: '10px 20px', background: styles.purplePrimary, border: `1px solid ${styles.purpleBright}`, borderRadius: '6px', color: '#fff', fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px'}}
+                    >
+                      <Download size={14} /> Download Agent
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p style={{color: styles.textTertiary, fontSize: '14px'}}>No certified systems found.</p>
+        )}
       </Panel>
 
       <Panel>
