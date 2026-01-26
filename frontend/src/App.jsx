@@ -663,6 +663,19 @@ function ApplicationDetail() {
     setScheduling(false);
   };
 
+  const navigate = useNavigate();
+  
+  const handleDeleteApplication = async () => {
+    if (!window.confirm('Are you sure you want to delete this application? This cannot be undone.')) return;
+    try {
+      await api.delete(`/api/applications/${id}`);
+      alert('Application deleted');
+      navigate('/applications');
+    } catch (err) {
+      alert('Failed to delete: ' + (err.response?.data?.detail || err.message));
+    }
+  };
+
   if (!app) return <div style={{color: styles.textTertiary}}>Loading...</div>;
 
   return (
@@ -672,16 +685,25 @@ function ApplicationDetail() {
           <ArrowLeft className="w-4 h-4" />
           Back to Applications
         </Link>
-        {app.state !== 'conformant' && (
+        <div style={{display: 'flex', gap: '12px'}}>
+          {app.state !== 'conformant' && (
+            <button
+              onClick={handleScheduleTest}
+              disabled={scheduling}
+              className="px-4 py-2 rounded-lg transition-all"
+              style={{background: styles.purplePrimary, border: `1px solid ${styles.purpleBright}`, color: '#fff', fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: scheduling ? 'wait' : 'pointer', opacity: scheduling ? 0.7 : 1}}
+            >
+              {scheduling ? 'Scheduling...' : 'Schedule CAT-72 Test'}
+            </button>
+          )}
           <button
-            onClick={handleScheduleTest}
-            disabled={scheduling}
+            onClick={handleDeleteApplication}
             className="px-4 py-2 rounded-lg transition-all"
-            style={{background: styles.purplePrimary, border: `1px solid ${styles.purpleBright}`, color: '#fff', fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: scheduling ? 'wait' : 'pointer', opacity: scheduling ? 0.7 : 1}}
+            style={{background: 'rgba(214,92,92,0.1)', border: '1px solid rgba(214,92,92,0.3)', color: '#D65C5C', fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}
           >
-            {scheduling ? 'Scheduling...' : 'Schedule CAT-72 Test'}
+            Delete
           </button>
-        )}
+        </div>
       </div>
       
       {testCreated && (

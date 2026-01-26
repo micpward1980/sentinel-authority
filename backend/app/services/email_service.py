@@ -198,3 +198,66 @@ async def notify_admin_new_application(app_name: str, org: str, email: str):
     </div>
     """
     await send_email("info@sentinelauthority.org", f"New Application: {app_name}", html)
+
+
+async def send_test_setup_instructions(
+    to: str,
+    system_name: str,
+    certificate_id: str,
+    api_key: str,
+    test_id: str
+):
+    """Send setup instructions when CAT-72 test is scheduled"""
+    html = f"""
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <div style="background: #5B4B8A; padding: 20px; text-align: center;">
+            <h1 style="color: white; margin: 0;">SENTINEL AUTHORITY</h1>
+        </div>
+        <div style="padding: 30px; background: #f9f9f9;">
+            <h2 style="color: #333;">Your CAT-72 Test is Ready</h2>
+            <p>Your ODDC certification test for <strong>{system_name}</strong> has been scheduled.</p>
+            
+            <div style="background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin: 20px 0;">
+                <h3 style="color: #5B4B8A; margin-top: 0;">Your Credentials</h3>
+                <p style="margin: 8px 0;"><strong>Certificate ID:</strong></p>
+                <code style="display: block; background: #f5f5f5; padding: 10px; border-radius: 4px; font-size: 14px;">{certificate_id}</code>
+                <p style="margin: 8px 0; margin-top: 16px;"><strong>API Key:</strong></p>
+                <code style="display: block; background: #f5f5f5; padding: 10px; border-radius: 4px; font-size: 14px; word-break: break-all;">{api_key}</code>
+                <p style="font-size: 12px; color: #666; margin-top: 8px;">⚠️ Save this API key securely. It won't be shown again.</p>
+            </div>
+            
+            <h3 style="color: #5B4B8A;">Installation Steps</h3>
+            <ol style="line-height: 1.8;">
+                <li>Install the ENVELO Agent:<br>
+                    <code style="background: #f5f5f5; padding: 4px 8px; border-radius: 4px;">pip install httpx</code>
+                </li>
+                <li>Download the agent from:<br>
+                    <a href="https://www.sentinelauthority.org/agent.html" style="color: #5B4B8A;">sentinelauthority.org/agent.html</a>
+                </li>
+                <li>Configure with your credentials above</li>
+                <li>Start your system - the agent will automatically begin sending telemetry</li>
+            </ol>
+            
+            <div style="background: #e8f5e9; border: 1px solid #4caf50; border-radius: 8px; padding: 16px; margin: 20px 0;">
+                <h4 style="color: #2e7d32; margin: 0 0 8px 0;">Test Requirements</h4>
+                <ul style="margin: 0; padding-left: 20px; color: #333;">
+                    <li>72 continuous hours of operation</li>
+                    <li>Minimum 100 actions evaluated</li>
+                    <li>≥95% pass rate required</li>
+                    <li>At least 1 boundary violation must be blocked (proves enforcement works)</li>
+                </ul>
+            </div>
+            
+            <h3 style="color: #5B4B8A;">Monitor Your Progress</h3>
+            <p>Check your test status anytime at:</p>
+            <p><a href="https://www.sentinelauthority.org/status?cert={certificate_id}" style="color: #5B4B8A; font-weight: bold;">sentinelauthority.org/status?cert={certificate_id}</a></p>
+            
+            <hr style="border: none; border-top: 1px solid #ddd; margin: 30px 0;">
+            <p style="font-size: 12px; color: #666;">
+                Questions? Contact us at info@sentinelauthority.org<br>
+                Test ID: {test_id}
+            </p>
+        </div>
+    </div>
+    """
+    await send_email(to, f"CAT-72 Test Ready - Setup Instructions for {system_name}", html)

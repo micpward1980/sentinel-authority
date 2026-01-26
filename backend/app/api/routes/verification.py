@@ -1,3 +1,4 @@
+from datetime import datetime
 """Public Verification API - No authentication required."""
 
 from datetime import datetime
@@ -8,7 +9,7 @@ from pydantic import BaseModel
 
 from app.core.database import get_db
 from fastapi import Depends
-from app.models.models import Certificate, CertificationState
+from app.models.models import Certificate, EnveloSession, CertificationState
 
 router = APIRouter()
 
@@ -132,4 +133,73 @@ async def verification_info():
             "evidence": "GET /api/verify/{certificate_number}/evidence",
         },
         "contact": "https://sentinelauthority.org",
+    }
+
+
+@router.get("/status/{certificate_id}")
+async def get_test_status(
+    certificate_id: str,
+    db: AsyncSession = Depends(get_db)
+):
+    """Public endpoint for customers to check their test status"""
+    
+    # Find sessions with this certificate ID
+    result = await db.execute(
+        select(EnveloSession).where(
+            EnveloSession.certificate_id == certificate_id
+        ).order_by(EnveloSession.started_at.desc())
+    )
+    sessions = result.scalars().all()
+    
+    if not sessions:
+        # Check if certificate exists
+        result = await db.execute(
+            select(Certificate).where(Certificate.certificate_number == certificate_id)
+        )
+        cert = result.scalar_one_or_none()
+        
+        if cert:
+            return {
+                "status": "certified",
+                "certificate_number": cert.certificate_number,
+                "issued_at": cert.issued_at.isoformat() if cert.issued_at else None,
+                "expires_at": cert.expires_at.isoformat() if cert.expires_at else None,
+            }
+        
+        return {
+            "status": "not_found",
+            "message": "No test data found for this certificate ID. Make sure your ENVELO Agent is configured and running."
+        }
+    
+    # Calculate totals
+    total_pass = sum(s.pass_count or 0 for s in sessions)
+    total_block = sum(s.block_count or 0 for s in sessions)
+    total_actions = total_pass + total_block
+    pass_rate = (total_pass / total_actions * 100) if total_actions > 0 else 0
+    
+    # Get earliest start time
+    earliest_start = min(s.started_at for s in sessions if s.started_at)
+    hours_elapsed = (datetime.utcnow() - earliest_start).total_seconds() / 3600 if earliest_start else 0
+    hours_remaining = max(0, 72 - hours_elapsed)
+    
+    # Determine status
+    active_sessions = [s for s in sessions if s.status == 'active']
+    
+    return {
+        "status": "running" if active_sessions else "waiting",
+        "certificate_id": certificate_id,
+        "started_at": earliest_start.isoformat() if earliest_start else None,
+        "hours_elapsed": round(hours_elapsed, 1),
+        "hours_remaining": round(hours_remaining, 1),
+        "total_actions": total_actions,
+        "pass_count": total_pass,
+        "block_count": total_block,
+        "pass_rate": round(pass_rate, 1),
+        "active_sessions": len(active_sessions),
+        "criteria": {
+            "duration_met": hours_elapsed >= 72,
+            "actions_met": total_actions >= 100,
+            "pass_rate_met": pass_rate >= 95,
+            "blocking_verified": total_block > 0
+        }
     }

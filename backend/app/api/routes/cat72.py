@@ -12,6 +12,7 @@ from pydantic import BaseModel
 from app.core.database import get_db
 from app.core.security import get_current_user, require_role
 from app.core.config import settings
+from app.services.email_service import send_test_setup_instructions
 from app.models.models import (
     CAT72Test, Application, Telemetry, InterlockEvent, 
     TestState, CertificationState, UserRole

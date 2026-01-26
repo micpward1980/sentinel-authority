@@ -105,3 +105,12 @@ async def custom_swagger_ui():
     </script>
 </body>
 </html>""")
+
+
+# Start auto-evaluator background task
+@app.on_event("startup")
+async def start_auto_evaluator():
+    import asyncio
+    from app.services.auto_evaluator import run_auto_evaluator
+    asyncio.create_task(run_auto_evaluator())
+    logger.info("Auto-evaluator background task started")
