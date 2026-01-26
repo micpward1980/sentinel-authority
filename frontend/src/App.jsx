@@ -126,6 +126,7 @@ function Layout({ children }) {
     { name: 'CAT-72 Console', href: '/cat72', icon: Activity, roles: ['admin', 'operator'] },
     { name: 'Certificates', href: '/certificates', icon: Award, roles: ['admin', 'operator', 'applicant'] },
     { name: 'Licensees', href: '/licensees', icon: Users, roles: ['admin', 'licensee'] },
+    { name: 'ENVELO Agent', href: '/envelo', icon: Shield, roles: ['admin', 'operator', 'applicant'] },
   ];
 
   const filteredNav = navigation.filter(item => item.roles.includes(user?.role || ''));
@@ -1146,6 +1147,105 @@ function VerifyPage() {
   );
 }
 
+
+// ENVELO Agent Page
+function EnveloPage() {
+  const [stats, setStats] = useState(null);
+  const [sessions, setSessions] = useState([]);
+  const { user } = useAuth();
+
+  useEffect(() => {
+    api.get('/api/envelo/stats').then(res => setStats(res.data)).catch(console.error);
+    api.get('/api/envelo/sessions').then(res => setSessions(res.data.sessions || [])).catch(console.error);
+  }, []);
+
+  const apiKey = `sa_live_${user?.sub || 'XXXXX'}_${Date.now().toString(36)}`;
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <p style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', color: styles.purpleBright, marginBottom: '8px'}}>Runtime Enforcement</p>
+        <h1 style={{fontFamily: "'Source Serif 4', serif", fontSize: '36px', fontWeight: 200, margin: 0}}>ENVELO Agent</h1>
+        <p style={{color: styles.textSecondary, marginTop: '8px'}}>Download and configure the enforcement agent for your certified systems</p>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <Panel>
+          <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Active Sessions</h2>
+          <p style={{fontSize: '32px', fontWeight: 200, color: styles.purpleBright}}>{stats?.active_sessions || 0}</p>
+        </Panel>
+        <Panel>
+          <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Total Telemetry</h2>
+          <p style={{fontSize: '32px', fontWeight: 200, color: styles.textPrimary}}>{stats?.total_telemetry_records || 0}</p>
+        </Panel>
+        <Panel>
+          <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Violations Blocked</h2>
+          <p style={{fontSize: '32px', fontWeight: 200, color: styles.accentRed}}>{stats?.total_violations || 0}</p>
+        </Panel>
+      </div>
+
+      <Panel>
+        <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Download Agent</h2>
+        <p style={{color: styles.textSecondary, marginBottom: '16px'}}>Install the ENVELO Agent in your autonomous system to enable runtime enforcement.</p>
+        <a 
+          href="https://www.sentinelauthority.org/downloads/envelo-agent-v1.0.0.zip" 
+          className="px-4 py-3 rounded-lg inline-flex items-center gap-2"
+          style={{background: styles.purplePrimary, border: `1px solid ${styles.purpleBright}`, color: '#fff', fontFamily: "'IBM Plex Mono', monospace", fontSize: '12px', letterSpacing: '1px', textTransform: 'uppercase', textDecoration: 'none'}}
+        >
+          <Download className="w-4 h-4" /> Download v1.0.0
+        </a>
+        <p style={{color: styles.textTertiary, fontSize: '13px', marginTop: '12px'}}>Python 3.9+ required • ~15 KB</p>
+      </Panel>
+
+      <Panel>
+        <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Your Configuration</h2>
+        <p style={{color: styles.textSecondary, marginBottom: '16px'}}>Use these values when initializing the ENVELO Agent:</p>
+        <div style={{background: 'rgba(0,0,0,0.3)', border: `1px solid ${styles.borderGlass}`, borderRadius: '8px', padding: '16px', fontFamily: "'IBM Plex Mono', monospace", fontSize: '13px'}}>
+          <p style={{color: styles.textTertiary, marginBottom: '8px'}}># Your ENVELO configuration</p>
+          <p style={{color: styles.textSecondary}}>certificate_id = <span style={{color: styles.accentGreen}}>"YOUR-CERTIFICATE-ID"</span></p>
+          <p style={{color: styles.textSecondary}}>api_key = <span style={{color: styles.accentGreen}}>"{apiKey}"</span></p>
+          <p style={{color: styles.textSecondary}}>api_endpoint = <span style={{color: styles.accentGreen}}>"https://api.sentinelauthority.org"</span></p>
+        </div>
+        <p style={{color: styles.textTertiary, fontSize: '12px', marginTop: '12px'}}>Replace YOUR-CERTIFICATE-ID with your actual ODDC certificate number after certification.</p>
+      </Panel>
+
+      <Panel>
+        <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Active Agent Sessions</h2>
+        {sessions.length > 0 ? (
+          <table className="w-full">
+            <thead>
+              <tr style={{borderBottom: `1px solid ${styles.borderGlass}`}}>
+                <th className="px-4 py-3 text-left" style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>Session ID</th>
+                <th className="px-4 py-3 text-left" style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>Certificate</th>
+                <th className="px-4 py-3 text-left" style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>Status</th>
+                <th className="px-4 py-3 text-left" style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>Records</th>
+              </tr>
+            </thead>
+            <tbody>
+              {sessions.map((s, i) => (
+                <tr key={i} style={{borderBottom: `1px solid ${styles.borderGlass}`}}>
+                  <td className="px-4 py-4" style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '12px', color: styles.purpleBright}}>{s.session_id}</td>
+                  <td className="px-4 py-4" style={{color: styles.textSecondary}}>{s.certificate_id}</td>
+                  <td className="px-4 py-4">
+                    <span className="px-2 py-1 rounded" style={{
+                      background: s.status === 'active' ? 'rgba(92,214,133,0.15)' : 'rgba(157,140,207,0.15)',
+                      color: s.status === 'active' ? styles.accentGreen : styles.textTertiary,
+                      fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', textTransform: 'uppercase'
+                    }}>{s.status}</span>
+                  </td>
+                  <td className="px-4 py-4" style={{color: styles.textTertiary}}>{s.record_count || 0}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <p style={{color: styles.textTertiary, textAlign: 'center', padding: '24px'}}>No active sessions. Install and run the ENVELO Agent to see sessions here.</p>
+        )}
+      </Panel>
+    </div>
+  );
+}
+
 // Main App
 function App() {
   return (
@@ -1161,6 +1261,7 @@ function App() {
           <Route path="/cat72" element={<ProtectedRoute roles={['admin', 'operator']}><Layout><CAT72Console /></Layout></ProtectedRoute>} />
           <Route path="/certificates" element={<ProtectedRoute><Layout><CertificatesPage /></Layout></ProtectedRoute>} />
           <Route path="/licensees" element={<ProtectedRoute><Layout><LicenseesPage /></Layout></ProtectedRoute>} />
+          <Route path="/envelo" element={<ProtectedRoute><Layout><EnveloPage /></Layout></ProtectedRoute>} />
           <Route path="/" element={<Navigate to="/dashboard" />} />
         </Routes>
       </AuthProvider>
