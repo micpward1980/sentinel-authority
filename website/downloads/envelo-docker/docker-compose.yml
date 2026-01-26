@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  envelo:
+    build: .
+    environment:
+      - ENVELO_CERTIFICATE_ID=${ENVELO_CERTIFICATE_ID}
+      - ENVELO_API_KEY=${ENVELO_API_KEY}
+      - ENVELO_API_ENDPOINT=https://api.sentinelauthority.org
+    volumes:
+      - ./your-app:/app/your-app  # Mount your application here
+    restart: unless-stopped
