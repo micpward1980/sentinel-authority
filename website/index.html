@@ -1,0 +1,2431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Sentinel Authority — ODDC Conformance</title>
+
+  <meta
+    name="description"
+    content="Sentinel Authority publishes ODDC (ODD Conformance Determination): a voluntary conformance and evidence framework attesting that evidence supports operation within a declared ODD, with ENVELO-compliant enforcement present and auditable."
+  />
+
+  <!-- Open Graph / LinkedIn / Slack -->
+  <meta property="og:title" content="Sentinel Authority — ODDC Conformance" />
+  <meta property="og:description" content="ODD Conformance Determination for autonomous systems. A voluntary conformance and evidence framework." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://sentinelauthority.org/" />
+  <meta property="og:image" content="https://sentinelauthority.org/og.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Sentinel Authority — ODDC Conformance" />
+  <meta name="twitter:description" content="ODD Conformance Determination for autonomous systems." />
+
+  <!-- Canonical URL -->
+  <link rel="canonical" href="https://sentinelauthority.org/" />
+
+  <!-- Favicon (purple diamond) -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect x='6' y='6' width='20' height='20' rx='5' fill='%235B4B8A' stroke='%239d8ccf' stroke-width='2'/><circle cx='16' cy='16' r='4' fill='%239d8ccf'/></svg>" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,200;0,300;0,400;1,200;1,300&family=Inter:wght@200;400;600&family=IBM+Plex+Mono:wght@400;500&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Sentinel Authority",
+    "url": "https://sentinelauthority.org/",
+    "email": "info@sentinelauthority.org",
+    "description": "Independent conformance determination for autonomous systems. ODD Conformance Determination (ODDC) with ENVELO enforcement requirements."
+  }
+  </script>
+
+  <style>
+    :root{
+      color-scheme: dark;
+      
+      /* Core palette */
+      --purple-primary:#5B4B8A;
+      --purple-bright:#9d8ccf;
+      --purple-glow:rgba(157,140,207,.20);
+      --bg-deep:#2a2f3d;
+      --bg-panel:rgba(255,255,255,.05);
+      --accent-green:#5CD685;
+      --accent-amber:#D6A05C;
+      --accent-red:#D65C5C;
+
+      /* Text hierarchy */
+      --text-primary:rgba(255,255,255,.94);
+      --text-secondary:rgba(255,255,255,.75);
+      --text-tertiary:rgba(255,255,255,.50);
+
+      /* Borders */
+      --border-glass:rgba(255,255,255,.10);
+      --border-subtle:rgba(255,255,255,.06);
+
+      /* Typography */
+      --serif:'Source Serif 4',serif;
+      --mono:'IBM Plex Mono',monospace;
+      --sans:'Inter',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+
+      /* Timing */
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-out: cubic-bezier(0.33, 1, 0.68, 1);
+      
+      /* Spacing scale (10px base) */
+      --space-1: 10px;
+      --space-2: 20px;
+      --space-3: 30px;
+      --space-4: 40px;
+      --space-5: 50px;
+      --space-6: 60px;
+      --space-8: 80px;
+      --space-10: 100px;
+      --space-12: 120px;
+      
+      /* Layout */
+      --max: 1200px;
+      --nav-height: 72px;
+    }
+
+    *{ box-sizing:border-box; }
+    
+    /* Skip link for accessibility */
+    .skip-link{
+      position:absolute;
+      left:-9999px;
+      top:auto;
+      width:1px;
+      height:1px;
+      overflow:hidden;
+      z-index:999;
+    }
+    .skip-link:focus{
+      position:fixed;
+      top:var(--space-1);
+      left:var(--space-1);
+      width:auto;
+      height:auto;
+      padding:12px 18px;
+      background:var(--bg-deep);
+      border:1px solid var(--purple-bright);
+      border-radius:8px;
+      color:var(--text-primary);
+      font-family:var(--mono);
+      font-size:11px;
+      letter-spacing:2px;
+      text-transform:uppercase;
+      text-decoration:none;
+    }
+    
+    /* Screen reader only */
+    .sr-only{
+      position:absolute;
+      width:1px;
+      height:1px;
+      padding:0;
+      margin:-1px;
+      overflow:hidden;
+      clip:rect(0,0,0,0);
+      white-space:nowrap;
+      border:0;
+    }
+    
+    /* Focus styles for accessibility */
+    a:focus-visible, button:focus-visible {
+      outline: 2px solid rgba(157,140,207,.75);
+      outline-offset: 3px;
+      border-radius: 10px;
+    }
+    
+    html{ scroll-behavior:smooth; background:var(--bg-deep); }
+    body{
+      margin:0;
+      font-family:var(--sans);
+      background: radial-gradient(1200px 700px at 15% 10%, rgba(91,75,138,.15), transparent 55%),
+                  radial-gradient(900px 600px at 85% 80%, rgba(92,214,133,.06), transparent 55%),
+                  var(--bg-deep);
+      color:var(--text-primary);
+      overflow-x:hidden;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+    a{ color:inherit; text-decoration:none; }
+    a:hover{ text-decoration:underline; text-underline-offset:4px; }
+    ::selection{ background:var(--purple-primary); color:#fff; }
+
+    /* Subtle grid overlay */
+    .grid-overlay{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      z-index:0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+      background-size: var(--space-12) var(--space-12);
+      opacity:.15;
+      mask-image: radial-gradient(ellipse at center, rgba(0,0,0,.95) 20%, transparent 70%);
+    }
+
+    /* ============================================
+       NAVIGATION
+       ============================================ */
+    .site-header{
+      position:fixed;
+      top:0;
+      width:100%;
+      z-index:50;
+      padding:0 var(--space-2, 20px);
+      height: var(--nav-height, 72px);
+      border-bottom:1px solid rgba(255,255,255,.10);
+      background: rgba(42,47,61,.88);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      display: flex;
+      align-items: center;
+    }
+    .nav-inner{
+      max-width: var(--max, 1200px);
+      margin:0 auto;
+      width: 100%;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: var(--space-2, 20px);
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      gap: var(--space-1, 10px);
+      flex-shrink: 0;
+      text-decoration: none;
+      visibility: visible;
+      opacity: 1;
+    }
+    .brand:hover{ text-decoration: none; }
+    .brand-mark{
+      width: 24px;
+      height: 24px;
+      background: #5B4B8A;
+      background: var(--purple-primary, #5B4B8A);
+      border: 2px solid #9d8ccf;
+      border: 2px solid var(--purple-bright, #9d8ccf);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .brand-mark-inner{
+      width: 8px;
+      height: 8px;
+      background: #c4b8e8;
+      border-radius: 50%;
+      animation: eye-pulse 7s ease-in-out infinite;
+      will-change: transform, opacity, box-shadow;
+    }
+    @keyframes eye-pulse {
+      0%, 100% {
+        opacity: .75;
+        transform: scale(.98);
+        box-shadow: 0 0 0 rgba(196,184,232,0);
+      }
+      50% {
+        opacity: 1;
+        transform: scale(1.02);
+        box-shadow: 0 0 10px rgba(157,140,207,.22);
+      }
+    }
+    @media (prefers-reduced-motion: reduce){
+      .brand-mark-inner{ animation: none; opacity: .9; }
+    }
+    .brand-name{
+      font-family: 'IBM Plex Mono', monospace;
+      font-family: var(--mono, 'IBM Plex Mono', monospace);
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #dbdbdb;
+      color: rgba(255,255,255,.86);
+      white-space: nowrap;
+    }
+
+    .nav-links{
+      display:flex;
+      align-items:center;
+      gap: 14px;
+      flex-wrap: nowrap;
+      justify-content:center;
+    }
+    .nav-links a{
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 1.5px;
+      color: var(--text-tertiary);
+      padding: 8px 4px;
+      position: relative;
+      transition: color .25s ease;
+      white-space: nowrap;
+    }
+    .nav-links a:hover{ color: var(--text-primary); text-decoration:none; }
+    .nav-links a::after{
+      content:"";
+      position:absolute;
+      left:4px; right:4px; bottom:4px;
+      height:1px;
+      background: var(--purple-bright);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform .35s var(--ease);
+      opacity:.9;
+    }
+    .nav-links a:hover::after{ transform: scaleX(1); }
+    
+    /* Active section indicator */
+    .nav-links a.active{
+      color: var(--text-primary);
+    }
+    .nav-links a.active::after{
+      transform: scaleX(1);
+      opacity: .6;
+    }
+
+    .nav-badge{
+      display:flex;
+      align-items:center;
+      gap:6px;
+      font-family: var(--mono);
+      font-size: 8px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: rgba(214,160,92,.95);
+      border: 1px solid rgba(214,160,92,.25);
+      background: rgba(214,160,92,.08);
+      padding: 6px 8px;
+      border-radius: 999px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    /* Mobile nav toggle */
+    .nav-toggle{
+      display: none;
+      appearance: none;
+      border: 1px solid var(--border-glass);
+      background: rgba(255,255,255,.03);
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      cursor: pointer;
+      position: relative;
+      transition: border-color .2s ease, background .2s ease;
+    }
+    .nav-toggle:hover{
+      border-color: rgba(255,255,255,.18);
+      background: rgba(255,255,255,.05);
+    }
+    .nav-toggle span{
+      position: absolute;
+      left: 50%;
+      width: 16px;
+      height: 1px;
+      background: var(--text-secondary);
+      transform: translateX(-50%);
+      transition: all .18s var(--ease-out);
+    }
+    .nav-toggle span:nth-child(1){ top: 14px; }
+    .nav-toggle span:nth-child(2){ top: 19px; }
+    .nav-toggle span:nth-child(3){ top: 24px; }
+    
+    .nav-toggle[aria-expanded="true"] span:nth-child(1){
+      top: 19px;
+      transform: translateX(-50%) rotate(45deg);
+    }
+    .nav-toggle[aria-expanded="true"] span:nth-child(2){
+      opacity: 0;
+      transform: translateX(-50%) scaleX(0);
+    }
+    .nav-toggle[aria-expanded="true"] span:nth-child(3){
+      top: 19px;
+      transform: translateX(-50%) rotate(-45deg);
+    }
+
+    /* Mobile drawer */
+    .nav-drawer{
+      display: none;
+      position: fixed;
+      top: var(--nav-height);
+      right: 0;
+      width: 280px;
+      max-width: calc(100vw - var(--space-4));
+      height: calc(100vh - var(--nav-height));
+      background: rgba(42,47,61,.96);
+      backdrop-filter: blur(24px);
+      border-left: 1px solid var(--border-glass);
+      transform: translateX(100%);
+      transition: transform .18s var(--ease-out);
+      z-index: 49;
+      padding: var(--space-3) var(--space-2);
+      overflow-y: auto;
+    }
+    .nav-drawer.open{
+      transform: translateX(0);
+    }
+    .nav-drawer a{
+      display: flex;
+      align-items: center;
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border-subtle);
+      transition: color .2s ease;
+    }
+    .nav-drawer a:hover{
+      color: var(--text-primary);
+      text-decoration: none;
+    }
+    .nav-drawer a.active{
+      color: var(--purple-bright);
+    }
+    
+    .drawer-overlay{
+      display: none;
+      position: fixed;
+      inset: 0;
+      top: var(--nav-height);
+      background: rgba(0,0,0,.4);
+      z-index: 48;
+      opacity: 0;
+      transition: opacity .18s ease;
+      pointer-events: none;
+    }
+    .drawer-overlay.open{
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    @media (max-width: 860px){
+      .nav-links{ display:none; }
+      .nav-toggle{ display: block; }
+      .nav-drawer{ display: block; }
+      .drawer-overlay{ display: block; }
+    }
+
+    /* ============================================
+       MAIN CONTENT
+       ============================================ */
+    main{
+      position: relative;
+      z-index: 1;
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 0 var(--space-2);
+    }
+
+    /* ============================================
+       HERO
+       ============================================ */
+    .hero{
+      min-height: 100vh;
+      padding: calc(var(--nav-height) + var(--space-8)) 0 var(--space-6);
+      display:flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: var(--space-2);
+      position: relative;
+    }
+    
+    /* Hero anchor line */
+    .hero::before{
+      content: "";
+      position: absolute;
+      left: 0;
+      top: calc(var(--nav-height) + var(--space-6));
+      bottom: var(--space-6);
+      width: 1px;
+      background: linear-gradient(
+        to bottom,
+        transparent 0%,
+        rgba(157,140,207,.15) 10%,
+        rgba(157,140,207,.15) 90%,
+        transparent 100%
+      );
+    }
+    
+    @media (max-width: 860px){
+      .hero{
+        padding-top: calc(var(--nav-height) + var(--space-4));
+        justify-content: flex-start;
+      }
+      .hero::before{ display: none; }
+    }
+    
+    .hero-kicker{
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 6px;
+      text-transform: uppercase;
+      color: var(--purple-bright);
+      display:flex;
+      align-items:center;
+      gap:14px;
+    }
+    .hero-kicker::before{
+      content:"";
+      width:var(--space-4);
+      height:1px;
+      background: var(--purple-bright);
+      opacity:.95;
+    }
+    
+    h1{
+      font-family: var(--serif);
+      font-size: clamp(44px, 7vw, 92px);
+      font-weight: 200;
+      line-height: .95;
+      margin: 0;
+      letter-spacing: -0.04em;
+    }
+    h1 .accent{
+      font-style: italic;
+      color: var(--purple-bright);
+      position: relative;
+      text-shadow: 
+        -1px 0 rgba(255,100,100,0.08), 
+        1px 0 rgba(100,255,255,0.08),
+        0 0 20px var(--purple-glow);
+    }
+    
+    /* Hero stamp line */
+    .hero-stamp{
+      width: 60px;
+      height: 1px;
+      background: var(--purple-bright);
+      opacity: .15;
+      margin: var(--space-1) 0;
+    }
+    
+    .hero-notice{
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 1px;
+      color: var(--purple-bright);
+      border: 1px solid rgba(157,140,207,.22);
+      background: rgba(91,75,138,.05);
+      padding: 8px 12px;
+      border-radius: 8px;
+      width: fit-content;
+      margin: var(--space-1) 0 var(--space-2);
+    }
+    
+    .hero-desc{
+      max-width: 62ch;
+      font-size: 18px;
+      font-weight: 200;
+      line-height: 1.75;
+      color: var(--text-secondary);
+      border-left: 2px solid rgba(91,75,138,.65);
+      padding-left: var(--space-2);
+      margin: 0;
+    }
+    
+    .hero-disclaimer{
+      font-size: 11px;
+      color: var(--text-tertiary);
+      font-weight: 200;
+      font-family: var(--mono);
+      letter-spacing: 0.5px;
+      margin: 0;
+      line-height: 1.7;
+    }
+    .hero-disclaimer + .hero-disclaimer{
+      margin-top: 6px;
+    }
+    
+    .hero-subline{
+      font-size: 15px;
+      color: var(--text-secondary);
+      font-weight: 200;
+      margin: var(--space-1) 0 0;
+    }
+
+    .hero-actions{
+      display:flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-top: var(--space-1);
+    }
+    
+    .hero-footnote{
+      font-family: var(--mono);
+      font-size: 9px;
+      color: var(--text-tertiary);
+      letter-spacing: 1px;
+      margin-top: var(--space-2);
+    }
+    
+    @media (max-width: 600px){
+      h1{ font-weight: 300; line-height: 1.0; }
+    }
+    
+    /* ============================================
+       BUTTONS
+       ============================================ */
+    .btn{
+      appearance:none;
+      border:1px solid rgba(255,255,255,.18);
+      background: transparent;
+      color: var(--text-primary);
+      padding: 14px 18px;
+      border-radius: 14px;
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: transform .2s var(--ease), border-color .2s ease, background .2s ease;
+      position: relative;
+      overflow:hidden;
+    }
+    .btn:hover{
+      transform: translateY(-1px);
+      border-color: rgba(255,255,255,.28);
+      background: rgba(255,255,255,.04);
+      text-decoration: none;
+    }
+    .btn.primary{
+      border-color: rgba(157,140,207,.55);
+      background: rgba(91,75,138,.18);
+      box-shadow: 0 18px 50px rgba(0,0,0,.30);
+    }
+    .btn.primary:hover{
+      border-color: rgba(157,140,207,.85);
+      background: rgba(91,75,138,.26);
+    }
+
+    /* ============================================
+       SECTIONS
+       ============================================ */
+    .section{
+      padding: var(--space-10) 0;
+      border-top: 1px solid var(--border-glass);
+      scroll-margin-top: calc(var(--nav-height) + 24px);
+    }
+    .section-head{
+      display:flex;
+      align-items:flex-end;
+      justify-content: space-between;
+      gap: var(--space-2);
+      flex-wrap: wrap;
+      margin-bottom: var(--space-4);
+    }
+    .section-label{
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 5px;
+      text-transform: uppercase;
+      color: var(--purple-bright);
+      display:block;
+      margin-bottom: 12px;
+    }
+    .section-title{
+      font-family: var(--serif);
+      font-size: clamp(30px, 4vw, 50px);
+      font-weight: 200;
+      line-height: 1.1;
+      margin: 0;
+      letter-spacing: -0.03em;
+    }
+    @media (max-width: 600px){
+      .section-title{ font-weight: 300; }
+    }
+    .section-lead{
+      max-width: 70ch;
+      color: var(--text-secondary);
+      font-weight: 200;
+      line-height: 1.85;
+      margin: var(--space-2) 0 0;
+      font-size: 16px;
+    }
+
+    .grid-2{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-3);
+      align-items: start;
+    }
+    @media (max-width: 980px){
+      .grid-2{ grid-template-columns: 1fr; }
+    }
+
+    /* ============================================
+       PANELS
+       ============================================ */
+    .panel{
+      background: var(--bg-panel);
+      border: 1px solid var(--border-glass);
+      border-radius: 18px;
+      padding: var(--space-3) 28px;
+      backdrop-filter: blur(18px);
+      position: relative;
+      overflow:hidden;
+    }
+    .panel::before{
+      content:"";
+      position:absolute;
+      inset:-20%;
+      background: radial-gradient(circle at 20% 20%, rgba(157,140,207,.10), transparent 55%);
+      pointer-events:none;
+      transform: rotate(-8deg);
+      opacity:.8;
+    }
+    .panel > *{ position: relative; z-index: 1; }
+
+    .panel h3{
+      margin: 0 0 14px;
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.85);
+    }
+    .panel p{
+      margin: 0 0 var(--space-2);
+      color: var(--text-secondary);
+      font-weight: 200;
+      line-height: 1.85;
+    }
+    
+    .panel-note{
+      font-size: 12px;
+      color: var(--text-tertiary);
+      font-weight: 400;
+      font-family: var(--mono);
+      letter-spacing: 0.5px;
+      margin-bottom: 14px;
+    }
+    .panel-detail{
+      font-size: 13px;
+      color: var(--text-secondary);
+      font-weight: 200;
+      margin-bottom: 8px;
+    }
+    .panel-fine{
+      font-size: 11px;
+      color: var(--text-tertiary);
+      font-weight: 200;
+      margin-bottom: 14px;
+    }
+    
+    .list{
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      border-top: 1px solid var(--border-glass);
+    }
+    .list li{
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border-glass);
+      color: var(--text-secondary);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .list li:last-child{ border-bottom:none; }
+    .list b{ color: var(--text-primary); font-weight: 600; }
+
+    .tag{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.03);
+      color: rgba(255,255,255,.82);
+      width: fit-content;
+    }
+
+    /* Document download links */
+    .doc-links {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+    .doc-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      background: rgba(91, 75, 138, 0.15);
+      border: 1px solid rgba(157, 140, 207, 0.25);
+      border-radius: 4px;
+      color: var(--purple-bright);
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.5px;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+    .doc-link:hover {
+      background: rgba(91, 75, 138, 0.3);
+      border-color: rgba(157, 140, 207, 0.5);
+      color: #fff;
+      text-decoration: none;
+    }
+    .doc-icon {
+      padding: 2px 5px;
+      background: rgba(157, 140, 207, 0.2);
+      border-radius: 2px;
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+    .tag .dot{
+      width:6px;height:6px;border-radius:50%;
+      background: var(--accent-green);
+      box-shadow: 0 0 0 6px rgba(92,214,133,.10);
+    }
+
+    /* ============================================
+       CRITERIA CHECKLIST
+       ============================================ */
+    .checklist{
+      display:grid;
+      gap: 12px;
+      margin-top: var(--space-2);
+    }
+    .check{
+      display:flex;
+      gap: 12px;
+      padding: 14px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.025);
+      align-items:flex-start;
+    }
+    .check svg{ flex:0 0 auto; margin-top: 2px; }
+    .check-title{
+      font-weight: 600;
+      color: var(--text-primary);
+      font-size: 14px;
+      margin-bottom: 2px;
+    }
+    .check-desc{
+      color: var(--text-secondary);
+      font-size: 13px;
+      line-height: 1.6;
+      font-weight: 200;
+    }
+
+    /* ============================================
+       MECHANISM NODES
+       ============================================ */
+    .mechanism{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-1);
+    }
+    @media (max-width: 980px){
+      .mechanism{ grid-template-columns: 1fr; }
+    }
+    .node{
+      border: 1px solid var(--border-glass);
+      background: rgba(255,255,255,.02);
+      border-radius: 18px;
+      padding: 28px 22px;
+      position: relative;
+      overflow:hidden;
+      min-height: 165px;
+    }
+    .node::before{
+      content:"";
+      position:absolute;
+      inset:-30%;
+      background: radial-gradient(circle at 30% 20%, rgba(157,140,207,.08), transparent 55%);
+      opacity:.85;
+      pointer-events:none;
+    }
+    .node > *{ position: relative; z-index: 1; }
+    .node-num{
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 4px;
+      color: var(--purple-bright);
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .node-title{
+      font-family: var(--serif);
+      font-size: 22px;
+      font-weight: 200;
+      margin: 0 0 var(--space-1);
+      letter-spacing: -0.02em;
+    }
+    @media (max-width: 600px){
+      .node-title{ font-weight: 300; }
+    }
+    .node-desc{
+      color: var(--text-tertiary);
+      line-height: 1.65;
+      font-size: 13px;
+      font-weight: 200;
+      margin: 0;
+    }
+
+    /* ============================================
+       RECORD BLOCK
+       ============================================ */
+    .record{
+      background: rgba(0,0,0,.20);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 18px;
+      overflow:hidden;
+    }
+    .record-head{
+      display:flex;
+      justify-content: space-between;
+      align-items:center;
+      padding: var(--space-2) 18px;
+      background: rgba(91,75,138,.12);
+      border-bottom: 1px solid rgba(255,255,255,.10);
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .record-title{
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.88);
+    }
+    .record-status{
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: rgba(92,214,133,.92);
+      border: 1px solid rgba(92,214,133,.20);
+      background: rgba(92,214,133,.06);
+      padding: 6px 10px;
+      border-radius: 999px;
+      display:flex; align-items:center; gap: 8px;
+    }
+    .record-status .s-dot{
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--accent-green);
+    }
+    .record-status.illustrative{
+      color: rgba(214,160,92,.95);
+      border-color: rgba(214,160,92,.25);
+      background: rgba(214,160,92,.08);
+    }
+    .record-status.illustrative .s-dot{
+      background: var(--accent-amber);
+    }
+    .record-head-right{
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 6px;
+    }
+    .verify-link{
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--purple-bright);
+      border: 1px solid rgba(157,140,207,.35);
+      background: rgba(91,75,138,.08);
+      padding: 6px 10px;
+      border-radius: 6px;
+      transition: all .2s ease;
+    }
+    .verify-link:hover{
+      border-color: rgba(157,140,207,.55);
+      background: rgba(91,75,138,.15);
+      text-decoration: none;
+    }
+    .record-body{
+      padding: 18px;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: rgba(255,255,255,.86);
+    }
+    .kv{
+      display:grid;
+      grid-template-columns: 150px 1fr;
+      gap: 12px;
+      padding: var(--space-1) 0;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+    }
+    .kv:last-child{ border-bottom:none; }
+    .k{
+      color: rgba(255,255,255,.42);
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+    .v{
+      color: rgba(255,255,255,.90);
+      word-break: break-word;
+    }
+    .hash-row{
+      display:flex;
+      align-items:center;
+      gap:var(--space-1);
+    }
+    .copy-btn{
+      appearance:none;
+      border:1px solid rgba(255,255,255,.18);
+      background:rgba(255,255,255,.04);
+      color:rgba(255,255,255,.65);
+      padding:4px 8px;
+      border-radius:6px;
+      font-family:var(--mono);
+      font-size:9px;
+      letter-spacing:1px;
+      text-transform:uppercase;
+      cursor:pointer;
+      transition:all .2s ease;
+    }
+    .copy-btn:hover{
+      border-color:rgba(157,140,207,.55);
+      background:rgba(91,75,138,.18);
+      color:rgba(255,255,255,.90);
+    }
+    .copy-btn.copied{
+      border-color:rgba(92,214,133,.35);
+      background:rgba(92,214,133,.12);
+      color:rgba(92,214,133,.95);
+    }
+    .record-note{
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(255,255,255,.10);
+      color: rgba(255,255,255,.62);
+      font-size: 11.5px;
+      line-height: 1.7;
+      font-weight: 200;
+      font-family: var(--sans);
+    }
+    
+    /* Copy toast */
+    .copy-toast{
+      position: fixed;
+      bottom: var(--space-3);
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: rgba(92,214,133,.12);
+      border: 1px solid rgba(92,214,133,.35);
+      color: rgba(92,214,133,.95);
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 12px 18px;
+      border-radius: 10px;
+      backdrop-filter: blur(12px);
+      opacity: 0;
+      transition: opacity .18s ease, transform .18s var(--ease-out);
+      pointer-events: none;
+      z-index: 100;
+    }
+    .copy-toast.show{
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ============================================
+       STATES
+       ============================================ */
+    .states{
+      display:grid;
+      gap: var(--space-1);
+      margin-top: var(--space-2);
+    }
+    .state{
+      padding: 14px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.02);
+      border-radius: 16px;
+      display:flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items:flex-start;
+    }
+    .state-left{
+      display:flex; flex-direction: column; gap: 2px;
+    }
+    .state-name{
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.86);
+    }
+    .state-desc{
+      color: var(--text-secondary);
+      font-size: 13px;
+      line-height: 1.6;
+      font-weight: 200;
+      margin:0;
+    }
+    .badge{
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 6px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.03);
+      color: rgba(255,255,255,.80);
+      white-space: nowrap;
+    }
+    .badge.green{ border-color: rgba(92,214,133,.22); color: rgba(92,214,133,.90); background: rgba(92,214,133,.06); }
+    .badge.amber{ border-color: rgba(214,160,92,.22); color: rgba(214,160,92,.95); background: rgba(214,160,92,.06); }
+    .badge.red{ border-color: rgba(214,92,92,.22); color: rgba(214,92,92,.95); background: rgba(214,92,92,.06); }
+
+    /* ============================================
+       ENFORCEMENT DIAGRAM
+       ============================================ */
+    .diagram-container{
+      display:flex;
+      flex-direction: column;
+      align-items: center;
+      margin: var(--space-3) 0 var(--space-5);
+    }
+    .enforcement-diagram{
+      max-width: 400px;
+      width: 100%;
+      height: auto;
+    }
+    .diagram-caption{
+      font-size: 11px;
+      color: var(--text-tertiary);
+      text-align: center;
+      margin-top: var(--space-2);
+      font-family: var(--mono);
+      letter-spacing: 0.5px;
+    }
+    
+    /* Subtle interlock pulse */
+    @keyframes interlock-pulse {
+      0%, 100% { 
+        stroke: rgba(157,140,207,0.65);
+        filter: drop-shadow(0 0 0 rgba(157,140,207,0));
+      }
+      50% { 
+        stroke: rgba(157,140,207,0.85);
+        filter: drop-shadow(0 0 8px rgba(157,140,207,0.25));
+      }
+    }
+    .interlock-bg{
+      animation: interlock-pulse 3s ease-in-out infinite;
+    }
+    
+    @media (prefers-reduced-motion: reduce){
+      .interlock-bg{ animation: none; }
+    }
+    
+    /* ============================================
+       CONTACT
+       ============================================ */
+    /* Process Timeline */
+    .process-timeline{ display: flex; flex-direction: column; gap: 0; }
+    .process-step{ display: flex; gap: 16px; padding: 16px 0; border-bottom: 1px solid var(--border-glass); }
+    .process-step:last-child{ border-bottom: none; }
+    .process-step-num{ 
+      width: 28px; height: 28px; flex-shrink: 0;
+      background: rgba(91,75,138,.18); border: 1px solid rgba(157,140,207,.35);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-family: var(--mono); font-size: 11px; color: var(--purple-bright);
+    }
+    .process-step-content b{ display: block; margin-bottom: 4px; }
+    .process-step-content p{ color: var(--text-secondary); font-size: 13px; line-height: 1.6; margin: 0; }
+
+    .contact-card{
+      max-width: 540px;
+      background: var(--bg-panel);
+      border: 1px solid var(--border-glass);
+      border-radius: 18px;
+      padding: 8px 0;
+      backdrop-filter: blur(18px);
+    }
+    .contact-row{
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 28px;
+      border-bottom: 1px solid var(--border-glass);
+      gap: var(--space-2);
+      flex-wrap: wrap;
+    }
+    .contact-row:last-child{ border-bottom: none; }
+    .contact-label{
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-tertiary);
+    }
+    .contact-link{
+      font-family: var(--sans);
+      font-size: 14px;
+      color: var(--purple-bright);
+      transition: color .2s ease;
+    }
+    .contact-link:hover{
+      color: var(--text-primary);
+      text-decoration: none;
+    }
+
+    /* ============================================
+       DEFINITION CALLOUT
+       ============================================ */
+    .definition-callout{
+      background: rgba(91,75,138,.08);
+      border: 1px solid rgba(157,140,207,.25);
+      border-radius: 12px;
+      padding: var(--space-2) 18px;
+      margin-top: var(--space-2);
+    }
+    .definition-term{
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--purple-bright);
+      margin-bottom: 6px;
+    }
+    .definition-text{
+      color: var(--text-secondary);
+      font-size: 13px;
+      line-height: 1.65;
+      font-weight: 200;
+      margin: 0;
+    }
+    
+    /* ============================================
+       PROGRAM IDENTITY
+       ============================================ */
+    .program-grid{
+      display: grid;
+      gap: 8px;
+      font-size: 13px;
+    }
+    .program-row{
+      display: flex;
+      justify-content: space-between;
+      gap: var(--space-2);
+      flex-wrap: wrap;
+      padding: 6px 0;
+      border-bottom: 1px solid var(--border-glass);
+    }
+    .program-row:last-child{ border-bottom: none; }
+    .program-label{
+      color: var(--text-tertiary);
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .program-value{
+      color: var(--text-primary);
+    }
+    .program-value.amber{
+      color: var(--accent-amber);
+    }
+    .program-value a{
+      color: var(--purple-bright);
+    }
+    
+    /* ============================================
+       FOOTER
+       ============================================ */
+    footer{
+      border-top: 1px solid var(--border-glass);
+      padding: var(--space-6) 0 var(--space-4);
+      margin-top: var(--space-4);
+      color: rgba(255,255,255,.45);
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 1px;
+    }
+    .footer-inner{
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 0 var(--space-2);
+      display:flex;
+      justify-content: space-between;
+      align-items:flex-start;
+      gap: var(--space-2);
+      flex-wrap: wrap;
+    }
+    .footer-spec{
+      margin-top: 8px;
+      color: rgba(255,255,255,.38);
+      font-size: 9px;
+      letter-spacing: 1px;
+    }
+    .footer-disclaimer{
+      margin-top: 12px;
+      color: rgba(255,255,255,.42);
+      font-size: 10px;
+      max-width: 480px;
+      line-height: 1.7;
+    }
+    .foot-links{ display:flex; gap: var(--space-4); flex-wrap: wrap; }
+    .foot-col{ display:flex; flex-direction:column; gap:8px; min-width:120px; }
+    .foot-col-title{ font-family:var(--mono); font-size:9px; letter-spacing:2px; color:var(--purple-bright); margin-bottom:4px; }
+    .foot-links a{ color: rgba(255,255,255,.48); font-size:13px; }
+    .foot-links a:hover{ color: rgba(255,255,255,.82); text-decoration:none; }
+    .old-foot-links{
+      display:flex; gap: var(--space-2); flex-wrap: wrap;
+    }
+    .foot-links a{ color: rgba(255,255,255,.48); }
+    .foot-links a:hover{ color: rgba(255,255,255,.82); text-decoration:none; }
+
+    /* ============================================
+       REVEAL ANIMATION
+       ============================================ */
+    .reveal{ 
+      opacity: 0; 
+      transform: translateY(var(--space-3)); 
+      transition: opacity .9s var(--ease), transform .9s var(--ease); 
+    }
+    .reveal.active{ opacity: 1; transform: translateY(0); }
+    
+    @media (prefers-reduced-motion: reduce){
+      .reveal{ opacity: 1; transform: none; transition: none; }
+    }
+
+    /* Download Modal */
+    .download-modal{
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: rgba(0,0,0,.6);
+      backdrop-filter: blur(6px);
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-2);
+    }
+    .download-modal.open{ display: flex; }
+    .download-modal-card{
+      background: var(--bg-deep);
+      border: 1px solid var(--border-glass);
+      border-radius: 18px;
+      padding: var(--space-3);
+      max-width: 420px;
+      width: 100%;
+      position: relative;
+    }
+    .download-modal-close{
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      appearance: none;
+      border: none;
+      background: none;
+      color: var(--text-tertiary);
+      font-size: 24px;
+      cursor: pointer;
+      line-height: 1;
+    }
+    .download-modal-close:hover{ color: var(--text-primary); }
+    .download-modal-card h3{
+      font-family: var(--serif);
+      font-size: 22px;
+      font-weight: 200;
+      margin: 0 0 8px;
+    }
+    .download-modal-card > p{
+      color: var(--text-secondary);
+      font-size: 13px;
+      line-height: 1.7;
+      margin: 0 0 var(--space-2);
+    }
+    .download-form-group{ margin-bottom: 14px; }
+    .download-form-label{
+      display: block;
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--text-tertiary);
+      margin-bottom: 6px;
+    }
+    .download-form-input, .download-form-select{
+      width: 100%;
+      padding: 12px 14px;
+      background: rgba(255,255,255,.04);
+      border: 1px solid var(--border-glass);
+      border-radius: 8px;
+      color: var(--text-primary);
+      font-family: var(--sans);
+      font-size: 14px;
+    }
+    .download-form-input:focus, .download-form-select:focus{
+      outline: none;
+      border-color: rgba(157,140,207,.55);
+    }
+    .download-form-select{
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.5)' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+    }
+    .download-form-btn{
+      appearance: none;
+      width: 100%;
+      border: 1px solid rgba(157,140,207,.55);
+      background: rgba(91,75,138,.18);
+      color: var(--text-primary);
+      padding: 14px 24px;
+      border-radius: 12px;
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: transform .2s var(--ease), border-color .2s ease, background .2s ease;
+    }
+    .download-form-btn:hover{
+      transform: translateY(-1px);
+      border-color: rgba(157,140,207,.85);
+      background: rgba(91,75,138,.26);
+    }
+    .download-form-fine{
+      font-size: 11px;
+      color: var(--text-tertiary);
+      margin-top: var(--space-2);
+      line-height: 1.6;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+  <a href="#main" class="skip-link">Skip to content</a>
+  <div class="grid-overlay" aria-hidden="true"></div>
+
+  <header class="site-header">
+    <div class="nav-inner">
+      <a href="#main" class="brand">
+        <div class="brand-mark" aria-hidden="true">
+          <div class="brand-mark-inner"></div>
+        </div>
+        <div class="brand-name">Sentinel Authority</div>
+      </a>
+
+      <nav class="nav-links" aria-label="Section navigation">
+        <a href="#envelo" data-section="envelo">FRAMEWORK</a>
+        <a href="#criteria" data-section="criteria">CRITERIA</a>
+        <a href="#artifacts" data-section="artifacts">ARTIFACTS</a>
+        <a href="verify.html">VERIFY</a>
+        <a href="#contact" data-section="contact">CONTACT</a>
+        <a href="https://app.sentinelauthority.org">SIGN IN</a>
+      </nav>
+      <a href="status.html" class="nav-badge" title="Draft v1.0 — examples are illustrative and non-normative" aria-describedby="draft-note">
+        <span>DRAFT v1.0</span>
+      </a>
+      <span id="draft-note" class="sr-only">
+        Specification status: Draft v1.0. Examples are illustrative and non-normative.
+      </span>
+      
+      <button class="nav-toggle" aria-label="Open navigation menu" aria-expanded="false" aria-controls="nav-drawer">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </header>
+  
+  <div class="drawer-overlay" aria-hidden="true"></div>
+  <div id="nav-drawer" class="nav-drawer" role="navigation" aria-label="Mobile navigation">
+    <a href="#envelo" data-section="envelo">FRAMEWORK</a>
+    <a href="#criteria" data-section="criteria">CRITERIA</a>
+    <a href="#artifacts" data-section="artifacts">ARTIFACTS</a>
+    <a href="verify.html">VERIFY</a>
+    <a href="#contact" data-section="contact">CONTACT</a>
+    <a href="https://app.sentinelauthority.org">SIGN IN</a>
+  </div>
+  <!-- Copy toast -->
+  <div class="copy-toast" role="status" aria-live="polite">Hash copied to clipboard</div>
+
+  <main id="main">
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-kicker">ODDC Conformance // Sentinel Authority</div>
+      <h1>The <span class="accent">Physics</span> of Permission.</h1>
+      <div class="hero-stamp" aria-hidden="true"></div>
+      <p class="hero-notice">
+        A voluntary conformance and evidence framework for autonomous systems.
+      </p>
+      <p class="hero-desc">
+        <b>ODD Conformance Determination (ODDC)</b> is Sentinel Authority's conformance determination against a declared <b>Operational Design Domain (ODD)</b> plus <b>ENVELO</b> enforcement requirements.
+        ODDC attests that evidence supports operation within the declared ODD, with ENVELO-compliant enforcement present and auditable.
+      </p>
+      <p class="hero-disclaimer">
+        Independent conformance determination. Not a regulator. Not legal advice. Implementations remain the operator's responsibility.
+      </p>
+      <p class="hero-disclaimer">
+        ODDC does not attest safety, compliance, cybersecurity, or performance.
+      </p>
+      <p class="hero-subline">
+        Conformance determination for autonomous actuation within bounded operational design domains.
+      </p>
+      <div class="hero-actions">
+        <a class="btn primary" href="mailto:conformance@sentinelauthority.org">Request Conformance Review</a>
+        <a class="btn" href="#criteria">View criteria</a>
+        <a class="btn" href="#mechanism">How enforcement works</a>
+        <a class="btn" href="#record">See a record</a>
+      </div>
+      <p class="hero-footnote">
+        Requests are evaluated for critical infrastructure operators, insurers, and licensed implementers. Determinations may support underwriting and regulatory review.
+      </p>
+    </section>
+
+    <!-- ENVELO -->
+    <section id="envelo" class="section">
+      <div class="section-head reveal">
+        <div>
+          <span class="section-label">THE FRAMEWORK</span>
+          <h2 class="section-title">ODDC + ENVELO</h2>
+          <p class="section-lead">
+            <b>ODDC</b> answers: <i>"Where is this autonomous system allowed to operate?"</i><br>
+            <b>ENVELO</b> answers: <i>"What prevents it from operating outside that boundary?"</i><br>
+            Without ENVELO, ODDC would be paperwork. With ENVELO, ODDC becomes enforceable.
+          </p>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel reveal">
+          <h3>ODDC Conformance</h3>
+          <ul class="list">
+            <li><b>Operational Design Domain</b> — the formally specified boundary of permitted autonomous action.</li>
+            <li><b>Conformance verification</b> — evidence that the system respects its ODD at runtime.</li>
+            <li><b>Auditable record</b> — signed conformance artifact for regulators, insurers, and counterparties.</li>
+            <li><b>Revocable</b> — conformance determination subject to suspension upon evidence of material deviation, drift, or enforcement failure.</li>
+          </ul>
+        </div>
+
+        <div class="panel reveal">
+          <h3>ENVELO Requirements</h3>
+          <p class="panel-note">
+            ENVELO defines enforcement requirements. Sentinel Authority does not implement, operate, or monitor runtime systems.
+          </p>
+          <p class="panel-detail">
+            <i>Enforcer for Non-Violable Execution & Limit Oversight</i> — the runtime enforcement layer that makes a declared operating boundary real. <strong>A non-bypassable interlock.</strong>
+          </p>
+          <p class="panel-fine">
+            ENVELO is a method designation describing non-bypassable enforcement requirements, not a product or platform.
+          </p>
+          <ul class="list">
+            <li><b>Non-bypassable interlock (required)</b> — enforcement mechanism must validate actions before execution.</li>
+            <li><b>Fail-closed behavior (required)</b> — out-of-domain actions must be blocked or overridden.</li>
+            <li><b>Runtime comparison (required)</b> — operator must demonstrate state evaluation against ODD constraints.</li>
+            <li><b>Tamper-evident logging (required)</b> — boundary interactions must be recorded for audit.</li>
+          </ul>
+          <div style="margin-top:var(--space-2)">
+            <span class="tag"><span class="dot" aria-hidden="true"></span> REQUIREMENTS, NOT SOFTWARE</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CRITERIA -->
+    <section id="criteria" class="section">
+      <div class="section-head reveal">
+        <div>
+          <span class="section-label">CONFORMANCE CRITERIA</span>
+          <h2 class="section-title">What ODDC Conformance requires</h2>
+          <p class="section-lead">
+            ODDC conformance is determined only when the Operational Design Domain is formally defined, evidence supports stable operation within it, and ENVELO-compliant runtime enforcement is present and auditable.
+          </p>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel reveal">
+          <h3>Minimum criteria</h3>
+
+          <div class="checklist">
+            <div class="check">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M20 6L9 17l-5-5" stroke="rgba(92,214,133,.95)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <div>
+                <div class="check-title">ODD formally specified</div>
+                <div class="check-desc">Operational Design Domain defined with objective constraints and tolerances.</div>
+              </div>
+            </div>
+
+            <div class="check">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M20 6L9 17l-5-5" stroke="rgba(92,214,133,.95)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <div>
+                <div class="check-title">Evidence of stable behavior within ODD</div>
+                <div class="check-desc">Convergence/stability thresholds satisfied across relevant operational regimes.</div>
+              </div>
+            </div>
+
+            <div class="check">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M20 6L9 17l-5-5" stroke="rgba(92,214,133,.95)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <div>
+                <div class="check-title">ENVELO enforcement present</div>
+                <div class="check-desc">Non-bypassable interlock validates actions before execution; fail-closed behavior defined.</div>
+              </div>
+            </div>
+
+            <div class="check">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M20 6L9 17l-5-5" stroke="rgba(92,214,133,.95)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <div>
+                <div class="check-title">Auditability & traceability</div>
+                <div class="check-desc">Signed authorization record + tamper-evident audit log reference.</div>
+              </div>
+            </div>
+
+            <div class="check">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M20 6L9 17l-5-5" stroke="rgba(92,214,133,.95)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <div>
+                <div class="check-title">Revocation & drift handling</div>
+                <div class="check-desc">Clear rules for suspension/revocation upon ODD violation, drift, or audit failure.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="definition-callout">
+            <div class="definition-term">Material Deviation</div>
+            <p class="definition-text">Any state, trajectory, or enforcement failure that exceeds attested tolerances or violates defined invariants.</p>
+          </div>
+        </div>
+
+        <div class="panel reveal">
+          <h3>Conformance states</h3>
+          <p>Enterprise-native states for operational governance.</p>
+
+          <div class="states">
+            <div class="state">
+              <div class="state-left">
+                <div class="state-name">Observe</div>
+                <p class="state-desc">Telemetry only; autonomy prohibited.</p>
+              </div>
+              <span class="badge">NO ACTUATION</span>
+            </div>
+
+            <div class="state">
+              <div class="state-left">
+                <div class="state-name">Bounded</div>
+                <p class="state-desc">Constrained autonomy; elevated overrides and review.</p>
+              </div>
+              <span class="badge amber">LIMITED</span>
+            </div>
+
+            <div class="state">
+              <div class="state-left">
+                <div class="state-name">Conformant</div>
+                <p class="state-desc">Autonomy permitted within declared ODD; continuous ENVELO-compliant enforcement.</p>
+              </div>
+              <span class="badge green">ODDC CONFORMANT</span>
+            </div>
+
+            <div class="state">
+              <div class="state-left">
+                <div class="state-name">Revoked</div>
+                <p class="state-desc">Autonomy suspended pending remediation and re-evaluation.</p>
+              </div>
+              <span class="badge red">SUSPENDED</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-2" style="margin-top: var(--space-2);">
+        <div class="panel reveal">
+          <h3>What ODDC Attests</h3>
+          <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: var(--space-2);">ODDC conformance attests that, at the time of determination:</p>
+          <ul class="list">
+            <li>The applicant has formally specified an Operational Design Domain</li>
+            <li>Evidence demonstrates stable system operation within the declared ODD</li>
+            <li>ENVELO-compliant runtime enforcement is architecturally present</li>
+            <li>Enforcement mechanisms have been verified through CAT-72</li>
+            <li>Tamper-evident audit records exist and are available for inspection</li>
+          </ul>
+        </div>
+
+        <div class="panel reveal">
+          <h3>What ODDC Does Not Attest</h3>
+          <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: var(--space-2);">ODDC does not determine, certify, or attest:</p>
+          <ul class="list">
+            <li>Functional safety of the underlying system</li>
+            <li>Regulatory compliance (safety, environmental, or otherwise)</li>
+            <li>Cybersecurity posture or resilience</li>
+            <li>System performance, accuracy, or reliability</li>
+            <li>AI model correctness or fitness for purpose</li>
+            <li>Compliance with any jurisdiction's legal requirements</li>
+          </ul>
+          <p class="hero-footnote" style="margin-top: var(--space-2);">
+            ODDC conformance does not transfer liability from the operator to Sentinel Authority. Applicants remain solely responsible for implementation quality, operational compliance, and all regulatory obligations.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- CAT-72 -->
+    <section id="cat72" class="section">
+      <div class="section-head reveal">
+        <div>
+          <span class="section-label">CONFORMANCE PROCEDURE</span>
+          <h2 class="section-title">Convergence Authorization Test (CAT-72)</h2>
+          <p class="section-lead">
+            ODDC conformance is issued only after successful completion of the Convergence Authorization Test (CAT-72), 
+            a formal evidentiary procedure establishing bounded autonomous behavior across operational regimes.
+          </p>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel reveal">
+          <h3>Demonstration Requirements</h3>
+          <ul class="list">
+            <li><b>72-hour continuous convergence demonstration</b> — sustained operation within declared ODD bounds.</li>
+            <li><b>Multi-regime operational stress testing</b> — performance across edge conditions and transitions.</li>
+            <li><b>Fail-closed ENVELO enforcement on material deviation</b> — verified halt behavior outside ODD.</li>
+            <li><b>Cryptographically verifiable evidentiary record</b> — tamper-evident demonstration log.</li>
+          </ul>
+        </div>
+
+        <div class="panel reveal">
+          <h3>Issuance & Renewal</h3>
+          <p>CAT-72 completion is required for both initial ODDC conformance determination and periodic renewal. Waivers are not issued.</p>
+          <div style="margin-top:var(--space-2)">
+            <span class="tag"><span class="dot" aria-hidden="true"></span> REQUIRED FOR CONFORMANCE</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel reveal" style="max-width: 680px; margin-top: var(--space-2);">
+        <h3>Tolerance Declaration</h3>
+        <p>Applicants declare operational tolerances as part of their ODD specification prior to CAT-72 commencement. Sentinel Authority does not prescribe universal tolerances; tolerances are domain-specific and determined by the applicant based on:</p>
+        <ul class="list">
+          <li>Equipment manufacturer specifications</li>
+          <li>Regulatory requirements applicable to the operational domain</li>
+          <li>Risk profile and consequence severity</li>
+          <li>Industry standards and best practices</li>
+        </ul>
+        <p style="margin-top: var(--space-2);">CAT-72 verifies that the system operates within the applicant's declared tolerances throughout the test period. Declared tolerances must be quantitative, bounded, and documented. Tolerance declarations cannot be modified during the CAT-72 test period.</p>
+      </div>
+    </section>
+
+    <!-- GRANT -->
+    <section id="grant" class="section">
+      <div class="section-head reveal">
+        <div>
+          <span class="section-label">GRANT INSTRUMENT</span>
+          <h2 class="section-title">What ODDC Conformance confers</h2>
+          <p class="section-lead">
+            ODDC conformance is structured to support underwriting review as a first-class risk control for autonomous infrastructure.
+          </p>
+        </div>
+      </div>
+
+      <div class="panel reveal" style="max-width: 680px;">
+        <h3>Conformance Rights</h3>
+        <ul class="list">
+          <li><b>Declared Operational Design Domain</b> — facility + domain scope definition.</li>
+          <li><b>Bounded autonomous actuation rights</b> — permitted actions within declared ODD.</li>
+          <li><b>Signed evidence artifact</b> — for regulators, insurers, and counterparties.</li>
+          <li><b>Defined validity term</b> — time-bounded conformance window.</li>
+          <li><b>Revocable upon evidence of deviation or drift</b> — continuous conformance requirement.</li>
+        </ul>
+        <p class="hero-footnote" style="margin-top: var(--space-2);">
+          Conformance terms are issued based on operational scope, ODD complexity, and domain risk profile.
+        </p>
+      </div>
+
+      <div class="panel reveal" style="max-width: 680px; margin-top: var(--space-2);">
+        <h3>Scope Exclusions</h3>
+        <p class="panel-detail" style="margin-bottom: 0; line-height: 1.7;">
+          ODDC does <b>not</b> determine or attest: functional safety, regulatory compliance, cybersecurity posture, 
+          system performance, AI model accuracy, or fitness for any particular use. ODDC attests only that 
+          evidence supports operation within declared ODD bounds with ENVELO-compliant enforcement present and auditable.
+          All other determinations remain the responsibility of operators, regulators, and qualified assessors.
+        </p>
+      </div>
+    </section>
+
+    <!-- MECHANISM -->
+    <section id="mechanism" class="section">
+      <div class="section-head reveal">
+        <div>
+          <span class="section-label">RUNTIME ENFORCEMENT</span>
+          <h2 class="section-title">How ENVELO enforcement works</h2>
+          <p class="section-lead">
+            ENVELO requires a non-bypassable control boundary between decision logic and action: <b>predict → evaluate → execute</b>. 
+            The system is architected such that out-of-domain actions are prevented, even under autonomous decision pressure. Sentinel Authority defines the requirement; operators implement it.
+          </p>
+        </div>
+      </div>
+
+      <!-- Enforcement Flow Diagram -->
+      <div class="diagram-container reveal">
+        <svg class="enforcement-diagram" viewBox="0 0 400 340" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Diagram showing AI model output flowing through ENVELO interlock before reaching actuator">
+          <!-- Flow nodes -->
+          <g class="flow-node">
+            <rect x="140" y="20" width="120" height="40" rx="8" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.18)"/>
+            <text x="200" y="45" text-anchor="middle" fill="rgba(255,255,255,0.85)" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="2">AI MODEL</text>
+          </g>
+          
+          <!-- Arrow 1 -->
+          <g class="flow-arrow">
+            <line x1="200" y1="60" x2="200" y2="85" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/>
+            <polygon points="200,95 195,85 205,85" fill="rgba(255,255,255,0.25)"/>
+          </g>
+          
+          <g class="flow-node">
+            <rect x="125" y="95" width="150" height="40" rx="8" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.18)"/>
+            <text x="200" y="120" text-anchor="middle" fill="rgba(255,255,255,0.85)" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="2">PROPOSED ACTION</text>
+          </g>
+          
+          <!-- Arrow 2 -->
+          <g class="flow-arrow">
+            <line x1="200" y1="135" x2="200" y2="160" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/>
+            <polygon points="200,170 195,160 205,160" fill="rgba(255,255,255,0.25)"/>
+          </g>
+          
+          <!-- Envelo Boundary Box -->
+          <rect class="envelo-boundary" x="70" y="165" width="260" height="90" rx="12" fill="rgba(91,75,138,0.08)" stroke="rgba(157,140,207,0.45)" stroke-width="1.5"/>
+          <text x="85" y="183" fill="rgba(157,140,207,0.8)" font-family="IBM Plex Mono, monospace" font-size="8" letter-spacing="3">ENVELO</text>
+          
+          <!-- Interlock node (inside boundary) -->
+          <g class="interlock-node">
+            <rect class="interlock-bg" x="115" y="195" width="170" height="44" rx="10" fill="rgba(91,75,138,0.15)" stroke="rgba(157,140,207,0.65)" stroke-width="1.5"/>
+            <text x="200" y="222" text-anchor="middle" fill="rgba(255,255,255,0.92)" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="2">INTERLOCK</text>
+          </g>
+          
+          <!-- Arrow 3 -->
+          <g class="flow-arrow">
+            <line x1="200" y1="255" x2="200" y2="280" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/>
+            <polygon points="200,290 195,280 205,280" fill="rgba(255,255,255,0.25)"/>
+          </g>
+          
+          <g class="flow-node">
+            <rect x="140" y="290" width="120" height="40" rx="8" fill="rgba(92,214,133,0.06)" stroke="rgba(92,214,133,0.35)"/>
+            <text x="200" y="315" text-anchor="middle" fill="rgba(92,214,133,0.92)" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="2">ACTUATOR</text>
+          </g>
+          
+          <!-- Block/Override indicator (side) -->
+          <g class="block-indicator">
+            <line x1="285" y1="217" x2="340" y2="217" stroke="rgba(214,92,92,0.4)" stroke-width="1" stroke-dasharray="4,3"/>
+            <text x="345" y="212" fill="rgba(214,92,92,0.7)" font-family="IBM Plex Mono, monospace" font-size="8" letter-spacing="1">BLOCK</text>
+            <text x="345" y="224" fill="rgba(214,160,92,0.7)" font-family="IBM Plex Mono, monospace" font-size="8" letter-spacing="1">OVERRIDE</text>
+          </g>
+          
+          <!-- Audit indicator (side) -->
+          <g class="audit-indicator">
+            <line x1="115" y1="217" x2="60" y2="217" stroke="rgba(255,255,255,0.2)" stroke-width="1" stroke-dasharray="4,3"/>
+            <text x="55" y="221" text-anchor="end" fill="rgba(255,255,255,0.45)" font-family="IBM Plex Mono, monospace" font-size="8" letter-spacing="1">AUDIT</text>
+          </g>
+        </svg>
+        <p class="diagram-caption">
+          Illustrative enforcement flow. Actual implementations are designed, deployed, and operated by system owners and licensed implementers.
+        </p>
+      </div>
+
+      <div class="mechanism">
+        <div class="node reveal">
+          <div class="node-num">Phase 01</div>
+          <div class="node-title">Signal interception</div>
+          <p class="node-desc">Model outputs are routed through the interlock before reaching actuator interfaces.</p>
+        </div>
+        <div class="node reveal">
+          <div class="node-num">Phase 02</div>
+          <div class="node-title">ODD validation</div>
+          <p class="node-desc">Proposed actions are evaluated against the declared ODD and trajectory limits.</p>
+        </div>
+        <div class="node reveal">
+          <div class="node-num">Phase 03</div>
+          <div class="node-title">Fail-closed enforcement</div>
+          <p class="node-desc">Out-of-domain actions are blocked or overridden; events are logged for auditability.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- RECORD -->
+    <section id="record" class="section">
+      <div class="section-head reveal">
+        <div>
+          <span class="section-label">AUDITABLE EVIDENCE</span>
+          <h2 class="section-title">Conformance record</h2>
+          <p class="section-lead">
+            An ODDC conformance record binds scope, criteria satisfaction, and conformance state. It is designed to be tamper-evident, independently verifiable, and structured for post-incident evidentiary clarity.
+          </p>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="record reveal">
+          <div class="record-head">
+            <div class="record-title">ODDC CONFORMANCE RECORD — NON-NORMATIVE EXAMPLE</div>
+            <div class="record-head-right">
+              <div class="record-status illustrative"><span class="s-dot" aria-hidden="true"></span> ILLUSTRATIVE</div>
+              <a href="verify.html" class="verify-link">Verify via Protocol →</a>
+            </div>
+          </div>
+
+          <div class="record-body">
+            <div class="kv">
+              <div class="k">Authority</div>
+              <div class="v">Sentinel Authority</div>
+            </div>
+            <div class="kv">
+              <div class="k">Conformance ID</div>
+              <div class="v">SA-ODDC-2026-0001</div>
+            </div>
+            <div class="kv">
+              <div class="k">Issued (UTC)</div>
+              <div class="v">2026-01-04T00:00:00Z</div>
+            </div>
+            <div class="kv">
+              <div class="k">Validity</div>
+              <div class="v">2026-01-04T00:00:00Z → 2027-01-04T00:00:00Z</div>
+            </div>
+            <div class="kv">
+              <div class="k">Scope</div>
+              <div class="v">Autonomous control permitted within declared ODD only</div>
+            </div>
+            <div class="kv">
+              <div class="k">Evidence</div>
+              <div class="v">CAT-72 convergence + stability across regimes — PASS (illustrative)</div>
+            </div>
+            <div class="kv">
+              <div class="k">Enforcement</div>
+              <div class="v">ENVELO fail-closed interlock; block/override + audit</div>
+            </div>
+            <div class="kv">
+              <div class="k">Record hash</div>
+              <div class="v hash-row"><span class="hash-value">8f2a…c91d</span><button class="copy-btn" onclick="copyHash()" title="Copy full hash">Copy</button></div>
+            </div>
+            <div class="kv">
+              <div class="k">Signature</div>
+              <div class="v">SA-SIG-1</div>
+            </div>
+            <div class="kv">
+              <div class="k">Audit log ref</div>
+              <div class="v">SA-LOG-2026-0001</div>
+            </div>
+
+            <div class="record-note">
+              This is an illustrative example for format only. Production deployments should populate domain-specific envelope parameters, validity window, and audit log reference.
+              Record hash is computed over the record fields in canonical order; verification instructions appear in the Evidence Schema & Audit Format specification.
+            </div>
+          </div>
+        </div>
+
+        <div class="panel reveal">
+          <h3>What the record proves</h3>
+          <ul class="list">
+            <li><b>Scope</b> — what autonomous actions are permitted within the declared ODD.</li>
+            <li><b>Criteria</b> — what evidence was satisfied at conformance determination time.</li>
+            <li><b>Enforcement</b> — how ENVELO-compliant mechanisms enforce the ODD at runtime.</li>
+            <li><b>Auditability</b> — how third parties verify integrity and traceability.</li>
+            <li><b>Revocation</b> — how conformance can be suspended upon evidence of changed conditions.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROCESS -->
+    <section id="process" class="section">
+      <div class="section-head reveal">
+        <div>
+          <span class="section-label">CONFORMANCE PROCESS</span>
+          <h2 class="section-title">Process & Fees</h2>
+          <p class="section-lead">
+            From initial inquiry to conformance determination: timeline, requirements, and fee structure.
+          </p>
+        </div>
+      </div>
+
+      <div class="panel reveal" style="max-width: 780px;">
+        <h3>Conformance Timeline</h3>
+        <div class="process-timeline">
+          <div class="process-step">
+            <div class="process-step-num">1</div>
+            <div class="process-step-content">
+              <b>Initial Inquiry</b>
+              <p>Submit conformance review request via email. Response within 5 business days.</p>
+            </div>
+          </div>
+          <div class="process-step">
+            <div class="process-step-num">2</div>
+            <div class="process-step-content">
+              <b>Scope Assessment</b>
+              <p>Sentinel Authority evaluates operational scope, ODD complexity, and domain risk profile. Deliverable: scope assessment and fee estimate. Timeline: 10 business days.</p>
+            </div>
+          </div>
+          <div class="process-step">
+            <div class="process-step-num">3</div>
+            <div class="process-step-content">
+              <b>Documentation Review</b>
+              <p>Applicant submits ODD specification and ENVELO implementation documentation. Review for completeness and requirement alignment. Timeline: 15-30 business days.</p>
+            </div>
+          </div>
+          <div class="process-step">
+            <div class="process-step-num">4</div>
+            <div class="process-step-content">
+              <b>CAT-72 Scheduling</b>
+              <p>Test window coordination and pre-test configuration verification. Scheduled within 30 days of documentation approval.</p>
+            </div>
+          </div>
+          <div class="process-step">
+            <div class="process-step-num">5</div>
+            <div class="process-step-content">
+              <b>CAT-72 Execution</b>
+              <p>72-hour minimum continuous test period. Real-time monitoring by applicant; evidentiary record generation.</p>
+            </div>
+          </div>
+          <div class="process-step">
+            <div class="process-step-num">6</div>
+            <div class="process-step-content">
+              <b>Conformance Determination</b>
+              <p>Evidentiary record review and analysis. Pass/fail determination against published criteria. Timeline: 10 business days from test completion.</p>
+            </div>
+          </div>
+          <div class="process-step">
+            <div class="process-step-num">7</div>
+            <div class="process-step-content">
+              <b>Issuance</b>
+              <p>Conformance record issued with validity period. Listing in Sentinel Authority conformance registry. ODDC mark authorization granted.</p>
+            </div>
+          </div>
+        </div>
+        <p class="hero-footnote" style="margin-top: var(--space-2);">
+          Total timeline: 60-90 days from initial inquiry to conformance determination (assumes no deficiencies).
+        </p>
+      </div>
+
+      <div class="grid-2" style="margin-top: var(--space-2);">
+        <div class="panel reveal">
+          <h3>Fee Schedule</h3>
+          <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: var(--space-2);">Fees determined by operational scope, ODD complexity, and domain risk profile.</p>
+          <ul class="list">
+            <li><b>Scope Assessment</b> — $2,500 (standard) / $5,000 (complex systems). Applied toward conformance fees if proceeding.</li>
+            <li><b>Single-ODD Conformance</b> — $15,000 - $35,000</li>
+            <li><b>Multi-ODD System</b> — $35,000 - $75,000</li>
+            <li><b>Enterprise/Fleet</b> — Custom quotation</li>
+            <li><b>On-site Witness Testing</b> — $5,000 + travel (optional)</li>
+            <li><b>Annual Maintenance</b> — $2,500/year (registry listing, mark authorization, mid-cycle review)</li>
+            <li><b>Renewal</b> — 50% of original fee (required per renewal schedule: 6-24 months based on risk)</li>
+          </ul>
+          <p class="hero-footnote" style="margin-top: var(--space-2);">
+            Payment terms: 50% upon documentation submission, 50% upon determination. Fees non-refundable upon failed determination.
+          </p>
+        </div>
+
+        <div class="panel reveal">
+          <h3>Evidence Schema</h3>
+          <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: var(--space-2);">CAT-72 evidentiary records must contain the following sections:</p>
+          <ul class="list">
+            <li><b>Header Block</b> — Conformance ID, applicant/facility identification, ODD reference, test timestamps</li>
+            <li><b>ODD Specification</b> — Declared boundaries, tolerance specifications, constraint definitions, safe states</li>
+            <li><b>Telemetry Log</b> — Continuous state recordings (min 1 Hz critical variables), hash-chain linked</li>
+            <li><b>Interlock Event Log</b> — All activations with timestamp, trigger, action, outcome</li>
+            <li><b>Fail-Closed Record</b> — Deviation events, interlock response timing, safe state confirmation</li>
+            <li><b>Convergence Metrics</b> — Mean values, variance, boundary proximity, regime transitions</li>
+            <li><b>Integrity Block</b> — SHA-256 hash, signing authority, timestamp, public key reference</li>
+          </ul>
+          <p class="hero-footnote" style="margin-top: var(--space-2);">
+            Format: JSON preferred. All timestamps UTC ISO 8601. Maximum 10 GB uncompressed.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact" class="section">
+      <div class="section-head reveal">
+        <div>
+          <span class="section-label">INQUIRIES</span>
+          <h2 class="section-title">Contact</h2>
+          <p class="section-lead">
+            For conformance inquiries, licensing discussions, or partnership opportunities.
+          </p>
+        </div>
+      </div>
+
+      <div class="contact-card reveal">
+        <div class="contact-row">
+          <div class="contact-label">General inquiries</div>
+          <a href="mailto:info@sentinelauthority.org" class="contact-link">info@sentinelauthority.org</a>
+        </div>
+        <div class="contact-row">
+          <div class="contact-label">Conformance & licensing</div>
+          <a href="mailto:conformance@sentinelauthority.org" class="contact-link">conformance@sentinelauthority.org</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- GOVERNANCE ARTIFACTS -->
+    <section id="artifacts" class="section">
+      <div class="section-head reveal">
+        <div>
+          <span class="section-label">GOVERNANCE ARTIFACTS</span>
+          <h2 class="section-title">Published documents</h2>
+          <p class="section-lead">
+            Sentinel Authority maintains the normative documents defining the ODDC conformance program.
+          </p>
+        </div>
+      </div>
+
+      <!-- Program Identity Block -->
+      <div class="panel reveal" style="max-width: 680px; margin-bottom: var(--space-3);">
+        <h3>Program Identity</h3>
+        <div class="program-grid">
+          <div class="program-row">
+            <span class="program-label">Program</span>
+            <span class="program-value">ODDC Conformance</span>
+          </div>
+          <div class="program-row">
+            <span class="program-label">Spec Version</span>
+            <span class="program-value">v1.0 (Jan 2026)</span>
+          </div>
+          <div class="program-row">
+            <span class="program-label">Status</span>
+            <span class="program-value amber">Draft</span>
+          </div>
+          <div class="program-row">
+            <span class="program-label">Change Control</span>
+            <span class="program-value">Errata + versioning</span>
+          </div>
+          <div class="program-row">
+            <span class="program-label">Contact</span>
+            <span class="program-value"><a href="mailto:conformance@sentinelauthority.org">conformance@sentinelauthority.org</a></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel reveal">
+          <h3>Public Documents</h3>
+          <ul class="list">
+            <li>
+              <b>ODDC Overview v1.0</b> <span style="color:var(--text-tertiary);font-size:11px;">(Jan 2026)</span> — conceptual introduction to ODD Conformance Determination.
+              <div class="doc-links">
+                <a href="#" onclick="openDownloadModal('docs/ODDC_Overview_v1.0.pdf', 'ODDC Overview v1.0'); return false;" class="doc-link"><span class="doc-icon">PDF</span> View</a>
+              </div>
+            </li>
+            <li>
+              <b>ENVELO Requirements v1.0</b> <span style="color:var(--text-tertiary);font-size:11px;">(Jan 2026)</span> — runtime enforcement requirements for implementers.
+              <div class="doc-links">
+                <a href="#" onclick="openDownloadModal('docs/ENVELO_Requirements_v1.0.pdf', 'ENVELO Requirements v1.0'); return false;" class="doc-link"><span class="doc-icon">PDF</span> View</a>
+              </div>
+            </li>
+            <li>
+              <b>CAT-72 Procedure v1.0</b> <span style="color:var(--text-tertiary);font-size:11px;">(Jan 2026)</span> — convergence test requirements and format.
+              <div class="doc-links">
+                <a href="#" onclick="openDownloadModal('docs/CAT-72_Procedure_v1.0.pdf', 'CAT-72 Procedure v1.0'); return false;" class="doc-link"><span class="doc-icon">PDF</span> View</a>
+              </div>
+            </li>
+            <li><a href="status.html" style="color:var(--purple-bright);"><b>Errata Log</b></a> — version history and corrections.</li>
+          </ul>
+        </div>
+
+        <div class="panel reveal">
+          <h3>Restricted Documents</h3>
+          <ul class="list">
+            <li><b>Normative Technical Specification v1.0</b> — full implementation requirements.</li>
+            <li><b>Evidence Schema & Audit Format v1.0</b> — record structure and verification procedures.</li>
+            <li><b>ODD Definition Templates</b> — domain-specific operational design domain guides.</li>
+          </ul>
+          <div style="margin-top:var(--space-2)">
+            <span class="tag">LICENSED IMPLEMENTERS ONLY</span>
+          </div>
+          <p class="panel-fine" style="margin-top: 14px; margin-bottom: 0; line-height: 1.6;">
+            Licensed implementers are third-party system integrators authorized to implement ENVELO-compliant enforcement architectures.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="footer-inner">
+        <div>
+          <div>© <span id="year"></span> SENTINEL AUTHORITY — ODDC CONFORMANCE</div>
+          <div class="footer-spec">ODDC v1.0 — Draft. Specifications subject to revision. Examples are non-normative.</div>
+          <div class="footer-disclaimer">
+            Independent conformance determination. Not a regulator. Not legal advice. Implementations remain the responsibility of operators and licensed implementers.
+          </div>
+        </div>
+        <div class="foot-links">
+          <div class="foot-col">
+            <div class="foot-col-title">FRAMEWORK</div>
+            <a href="#criteria">Criteria</a>
+            <a href="#cat72">CAT-72</a>
+            <a href="#grant">Grant</a>
+            <a href="#mechanism">Mechanism</a>
+            <a href="#record">Record</a>
+            <a href="#process">Process</a>
+          </div>
+          <div class="foot-col">
+            <div class="foot-col-title">RESOURCES</div>
+            <a href="#artifacts">Artifacts</a>
+            <a href="scenarios.html">Scenarios</a>
+            <a href="verify.html">Verify</a>
+            
+          </div>
+          <div class="foot-col">
+            <div class="foot-col-title">CONNECT</div>
+            <a href="#contact">Contact</a>
+            <a href="https://app.sentinelauthority.org">Sign In</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Download Modal -->
+    <div id="downloadModal" class="download-modal" aria-hidden="true">
+      <div class="download-modal-card">
+        <button class="download-modal-close" onclick="closeDownloadModal()" aria-label="Close">&times;</button>
+        <h3 id="downloadModalTitle">Download Document</h3>
+        <p>Please provide your contact information to access this document.</p>
+        <form id="downloadForm" action="https://api.web3forms.com/submit" method="POST" onsubmit="handleDownloadSubmit(event)">
+          <input type="hidden" name="access_key" value="3e7e3ac5-9b32-46a0-b901-d36f8723879c">
+          <input type="hidden" name="subject" value="New Document Download">
+          <input type="hidden" name="from_name" value="Sentinel Authority Website">
+          <input type="hidden" id="documentName" name="document" value="">
+          <div class="download-form-group">
+            <label class="download-form-label" for="download-email">Email (required)</label>
+            <input type="email" id="download-email" name="email" class="download-form-input" required>
+          </div>
+          <div class="download-form-group">
+            <label class="download-form-label" for="download-org">Organization (optional)</label>
+            <input type="text" id="download-org" name="org" class="download-form-input">
+          </div>
+          <div class="download-form-group">
+            <label class="download-form-label" for="download-role">Role (optional)</label>
+            <select id="download-role" name="role" class="download-form-select">
+              <option value="">Select…</option>
+              <option value="engineering">Engineering</option>
+              <option value="risk">Risk & Insurance</option>
+              <option value="regulatory">Regulatory</option>
+              <option value="legal">Legal</option>
+              <option value="operations">Operations</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <button type="submit" class="download-form-btn">View Document</button>
+          <p class="download-form-fine">Contact information is used for document delivery and technical correspondence only.</p>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Year
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    // Full hash for copy functionality
+    const FULL_HASH = "8f2a7b3c4d5e6f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3c91d";
+    const toast = document.querySelector('.copy-toast');
+    
+    function copyHash() {
+      const text = FULL_HASH;
+      if (navigator.clipboard?.writeText) {
+        navigator.clipboard.writeText(text).then(showCopied).catch(fallbackCopy);
+      } else {
+        fallbackCopy();
+      }
+      function fallbackCopy() {
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        ta.style.position = "fixed";
+        ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand("copy"); showCopied(); } finally { ta.remove(); }
+      }
+      function showCopied() {
+        const btn = document.querySelector('.copy-btn');
+        btn.textContent = 'Copied';
+        btn.classList.add('copied');
+        
+        // Show toast
+        toast.classList.add('show');
+        
+        setTimeout(() => { 
+          btn.textContent = 'Copy'; 
+          btn.classList.remove('copied'); 
+          toast.classList.remove('show');
+        }, 1800);
+      }
+    }
+
+    // Mobile nav
+    const navToggle = document.querySelector('.nav-toggle');
+    const navDrawer = document.querySelector('.nav-drawer');
+    const drawerOverlay = document.querySelector('.drawer-overlay');
+    const drawerLinks = navDrawer.querySelectorAll('a');
+    
+    function openDrawer() {
+      navToggle.setAttribute('aria-expanded', 'true');
+      navDrawer.classList.add('open');
+      drawerOverlay.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeDrawer() {
+      navToggle.setAttribute('aria-expanded', 'false');
+      navDrawer.classList.remove('open');
+      drawerOverlay.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    
+    navToggle.addEventListener('click', () => {
+      const isOpen = navToggle.getAttribute('aria-expanded') === 'true';
+      isOpen ? closeDrawer() : openDrawer();
+    });
+    
+    drawerOverlay.addEventListener('click', closeDrawer);
+    
+    drawerLinks.forEach(link => {
+      link.addEventListener('click', closeDrawer);
+    });
+    
+    // Close on escape (only if open, return focus)
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && navToggle.getAttribute('aria-expanded') === 'true') {
+        closeDrawer();
+        navToggle.focus();
+      }
+    });
+
+    // Active section tracking
+    const sections = document.querySelectorAll('.section[id]');
+    const navLinksDesktop = document.querySelectorAll('.nav-links a[data-section]');
+    const navLinksMobile = document.querySelectorAll('.nav-drawer a[data-section]');
+    
+    function updateActiveSection() {
+      const navHeight = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--nav-height')) || 72;
+      const scrollPos = window.scrollY + navHeight + 40;
+      
+      let currentSection = '';
+      sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        const sectionHeight = section.offsetHeight;
+        if (scrollPos >= sectionTop && scrollPos < sectionTop + sectionHeight) {
+          currentSection = section.getAttribute('id');
+        }
+      });
+      
+      [...navLinksDesktop, ...navLinksMobile].forEach(link => {
+        link.classList.remove('active');
+        if (link.dataset.section === currentSection) {
+          link.classList.add('active');
+        }
+      });
+    }
+    
+    window.addEventListener('scroll', updateActiveSection, { passive: true });
+    updateActiveSection();
+
+    // Reveal animations on scroll
+    const revealElements = document.querySelectorAll('.reveal');
+    
+    function checkReveal() {
+      const windowHeight = window.innerHeight;
+      const revealPoint = 120;
+      
+      revealElements.forEach(el => {
+        const elementTop = el.getBoundingClientRect().top;
+        if (elementTop < windowHeight - revealPoint) {
+          el.classList.add('active');
+        }
+      });
+    }
+    
+    window.addEventListener('scroll', checkReveal, { passive: true });
+    window.addEventListener('load', checkReveal);
+    checkReveal();
+
+    // Download Modal
+    let currentPdfPath = '';
+    const downloadModal = document.getElementById('downloadModal');
+    const downloadModalTitle = document.getElementById('downloadModalTitle');
+    const documentNameInput = document.getElementById('documentName');
+    
+    function openDownloadModal(pdfPath, docName) {
+      currentPdfPath = pdfPath;
+      downloadModalTitle.textContent = 'Download ' + docName;
+      documentNameInput.value = docName;
+      downloadModal.classList.add('open');
+      downloadModal.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeDownloadModal() {
+      downloadModal.classList.remove('open');
+      downloadModal.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+    }
+    
+    downloadModal.addEventListener('click', (e) => {
+      if (e.target === downloadModal) closeDownloadModal();
+    });
+    
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && downloadModal.classList.contains('open')) closeDownloadModal();
+    })
+    
+    function handleDownloadSubmit(e) {
+      e.preventDefault();
+      const form = e.target;
+      const formData = new FormData(form);
+      
+      fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        closeDownloadModal();
+        window.open(currentPdfPath, '_blank');
+        form.reset();
+      })
+      .catch(error => {
+        console.error('Form error:', error);
+        closeDownloadModal();
+        window.open(currentPdfPath, '_blank');
+        form.reset();
+      });
+    }
+  </script>
+</body>
+</html>
+
