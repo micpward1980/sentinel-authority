@@ -915,7 +915,7 @@ function CAT72Console() {
                       </button>
                     )}
                     {test.certificate_issued && (
-                      <span style={{color: styles.accentGreen, fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px'}}>✓ Cert Issued</span>
+                      <><span style={{color: styles.accentGreen, fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px'}}>✓ Certified</span><a href={`${API_BASE}/api/applications/${test.application_id}/certificate/download`} target="_blank" style={{marginLeft: '8px', padding: '2px 8px', background: styles.purplePrimary, borderRadius: '4px', color: '#fff', fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', textDecoration: 'none'}}>Download PDF</a></>
                     )}
                   </div>
                 </td>
