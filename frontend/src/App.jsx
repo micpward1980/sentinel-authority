@@ -510,7 +510,13 @@ function NewApplication() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await api.post('/api/applications/', formData);
+      const payload = {
+        ...formData,
+        odd_specification: formData.odd_specification ? { description: formData.odd_specification } : null,
+        envelope_definition: formData.envelope_definition ? { description: formData.envelope_definition } : null,
+        preferred_test_date: formData.preferred_test_date || null,
+      };
+      await api.post('/api/applications/', payload);
       navigate('/applications');
     } catch (err) {
       setError(err.response?.data?.detail || 'Failed to submit application');
