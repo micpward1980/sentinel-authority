@@ -1147,6 +1147,166 @@ function VerifyPage() {
 }
 
 
+
+// Boundary Configurator Component
+function BoundaryConfigurator() {
+  const [boundaries, setBoundaries] = useState([]);
+  const [newBoundary, setNewBoundary] = useState({ type: 'numeric', name: '', parameter: '', min: '', max: '', unit: '' });
+
+  const addBoundary = () => {
+    if (!newBoundary.name) return;
+    setBoundaries([...boundaries, { ...newBoundary, id: Date.now() }]);
+    setNewBoundary({ type: 'numeric', name: '', parameter: '', min: '', max: '', unit: '' });
+  };
+
+  const removeBoundary = (id) => {
+    setBoundaries(boundaries.filter(b => b.id !== id));
+  };
+
+  const generateCode = () => {
+    let code = `from envelo import EnveloAgent, EnveloConfig, NumericBoundary, GeoBoundary, RateLimitBoundary
+
+config = EnveloConfig(
+    certificate_id="YOUR-CERTIFICATE-ID",
+    api_key="YOUR-API-KEY"
+)
+
+agent = EnveloAgent(config)
+
+# Your ODD Boundaries
+`;
+    boundaries.forEach(b => {
+      if (b.type === 'numeric') {
+        code += `agent.add_boundary(NumericBoundary("${b.name}", parameter="${b.parameter || b.name}", min=${b.min || 'None'}, max=${b.max || 'None'}, unit="${b.unit || ''}"))
+`;
+      } else if (b.type === 'rate') {
+        code += `agent.add_boundary(RateLimitBoundary("${b.name}", max_per_${b.rateUnit || 'second'}=${b.rateLimit || 10}))
+`;
+      }
+    });
+    code += `
+# Wrap your autonomous functions
+@agent.enforce
+def your_action(**params):
+    # Your code here
+    pass
+`;
+    return code;
+  };
+
+  const downloadConfig = () => {
+    const code = generateCode();
+    const blob = new Blob([code], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'envelo_config.py';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  return (
+    <div>
+      <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '12px', marginBottom: '16px'}}>
+        <select
+          value={newBoundary.type}
+          onChange={(e) => setNewBoundary({...newBoundary, type: e.target.value})}
+          style={{padding: '10px', background: 'rgba(0,0,0,0.3)', border: `1px solid ${styles.borderGlass}`, borderRadius: '6px', color: styles.textPrimary, fontFamily: "'IBM Plex Mono', monospace", fontSize: '12px'}}
+        >
+          <option value="numeric">Numeric Limit</option>
+          <option value="rate">Rate Limit</option>
+        </select>
+        <input
+          type="text"
+          placeholder="Name (e.g., speed)"
+          value={newBoundary.name}
+          onChange={(e) => setNewBoundary({...newBoundary, name: e.target.value, parameter: e.target.value})}
+          style={{padding: '10px', background: 'rgba(0,0,0,0.3)', border: `1px solid ${styles.borderGlass}`, borderRadius: '6px', color: styles.textPrimary, fontFamily: "'IBM Plex Mono', monospace", fontSize: '12px'}}
+        />
+        {newBoundary.type === 'numeric' && (
+          <>
+            <input
+              type="number"
+              placeholder="Min"
+              value={newBoundary.min}
+              onChange={(e) => setNewBoundary({...newBoundary, min: e.target.value})}
+              style={{padding: '10px', background: 'rgba(0,0,0,0.3)', border: `1px solid ${styles.borderGlass}`, borderRadius: '6px', color: styles.textPrimary, fontFamily: "'IBM Plex Mono', monospace", fontSize: '12px'}}
+            />
+            <input
+              type="number"
+              placeholder="Max"
+              value={newBoundary.max}
+              onChange={(e) => setNewBoundary({...newBoundary, max: e.target.value})}
+              style={{padding: '10px', background: 'rgba(0,0,0,0.3)', border: `1px solid ${styles.borderGlass}`, borderRadius: '6px', color: styles.textPrimary, fontFamily: "'IBM Plex Mono', monospace", fontSize: '12px'}}
+            />
+            <input
+              type="text"
+              placeholder="Unit (e.g., km/h)"
+              value={newBoundary.unit}
+              onChange={(e) => setNewBoundary({...newBoundary, unit: e.target.value})}
+              style={{padding: '10px', background: 'rgba(0,0,0,0.3)', border: `1px solid ${styles.borderGlass}`, borderRadius: '6px', color: styles.textPrimary, fontFamily: "'IBM Plex Mono', monospace", fontSize: '12px'}}
+            />
+          </>
+        )}
+        {newBoundary.type === 'rate' && (
+          <>
+            <input
+              type="number"
+              placeholder="Limit"
+              value={newBoundary.rateLimit}
+              onChange={(e) => setNewBoundary({...newBoundary, rateLimit: e.target.value})}
+              style={{padding: '10px', background: 'rgba(0,0,0,0.3)', border: `1px solid ${styles.borderGlass}`, borderRadius: '6px', color: styles.textPrimary, fontFamily: "'IBM Plex Mono', monospace", fontSize: '12px'}}
+            />
+            <select
+              value={newBoundary.rateUnit || 'second'}
+              onChange={(e) => setNewBoundary({...newBoundary, rateUnit: e.target.value})}
+              style={{padding: '10px', background: 'rgba(0,0,0,0.3)', border: `1px solid ${styles.borderGlass}`, borderRadius: '6px', color: styles.textPrimary, fontFamily: "'IBM Plex Mono', monospace", fontSize: '12px'}}
+            >
+              <option value="second">per second</option>
+              <option value="minute">per minute</option>
+              <option value="hour">per hour</option>
+            </select>
+          </>
+        )}
+        <button
+          onClick={addBoundary}
+          style={{padding: '10px', background: styles.purplePrimary, border: `1px solid ${styles.purpleBright}`, borderRadius: '6px', color: '#fff', fontFamily: "'IBM Plex Mono', monospace", fontSize: '12px', cursor: 'pointer'}}
+        >
+          + Add
+        </button>
+      </div>
+
+      {boundaries.length > 0 && (
+        <div style={{marginBottom: '16px'}}>
+          <div style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary, marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '1px'}}>Defined Boundaries</div>
+          {boundaries.map((b) => (
+            <div key={b.id} style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', background: 'rgba(92,214,133,0.1)', border: '1px solid rgba(92,214,133,0.2)', borderRadius: '6px', marginBottom: '8px'}}>
+              <span style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '12px', color: styles.accentGreen}}>
+                {b.type === 'numeric' ? `${b.name}: ${b.min || '−∞'} to ${b.max || '∞'} ${b.unit}` : `${b.name}: ${b.rateLimit}/${b.rateUnit}`}
+              </span>
+              <button onClick={() => removeBoundary(b.id)} style={{background: 'none', border: 'none', color: styles.textTertiary, cursor: 'pointer', fontSize: '16px'}}>×</button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {boundaries.length > 0 && (
+        <div>
+          <div style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary, marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '1px'}}>Generated Configuration</div>
+          <pre style={{background: 'rgba(0,0,0,0.3)', border: `1px solid ${styles.borderGlass}`, borderRadius: '8px', padding: '16px', fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', color: styles.textSecondary, overflow: 'auto', maxHeight: '200px', whiteSpace: 'pre-wrap'}}>{generateCode()}</pre>
+          <button
+            onClick={downloadConfig}
+            className="mt-3 px-4 py-2 rounded-lg"
+            style={{marginTop: '12px', background: styles.purplePrimary, border: `1px solid ${styles.purpleBright}`, color: '#fff', fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}
+          >
+            Download Config
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ENVELO Agent Page
 function EnveloPage() {
   const [stats, setStats] = useState(null);
@@ -1194,6 +1354,12 @@ function EnveloPage() {
           <Download className="w-4 h-4" /> Download v1.0.0
         </a>
         <p style={{color: styles.textTertiary, fontSize: '13px', marginTop: '12px'}}>Python 3.9+ required • ~15 KB</p>
+      </Panel>
+
+      <Panel>
+        <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Configure Boundaries</h2>
+        <p style={{color: styles.textSecondary, marginBottom: '16px'}}>Define your ODD boundaries. These will be included in your agent configuration.</p>
+        <BoundaryConfigurator />
       </Panel>
 
       <Panel>
