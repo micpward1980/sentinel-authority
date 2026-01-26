@@ -67,6 +67,7 @@ async def create_application(
         facility_location=app_data.facility_location,
         notes=app_data.notes,
         state=CertificationState.PENDING,
+        submitted_at=datetime.utcnow(),
     )
     
     db.add(application)
