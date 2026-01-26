@@ -128,11 +128,11 @@ function Layout({ children }) {
   }, [user]);
 
   const navigation = [
-    { name: 'Dashboard', href: '/dashboard', icon: Home, roles: ['admin', 'subscriber'] },
-    { name: 'Applications', href: '/applications', icon: FileText, roles: ['admin', 'subscriber'] },
+    { name: 'Dashboard', href: '/dashboard', icon: Home, roles: ['admin', 'applicant'] },
+    { name: 'Applications', href: '/applications', icon: FileText, roles: ['admin', 'applicant'] },
     { name: 'CAT-72 Console', href: '/cat72', icon: Activity, roles: ['admin'] },
-    { name: 'Certificates', href: '/certificates', icon: Award, roles: ['admin', 'subscriber'] },
-    { name: 'ENVELO Agent', href: '/envelo', icon: 'brand', roles: ['admin', 'subscriber'], requiresCert: true },
+    { name: 'Certificates', href: '/certificates', icon: Award, roles: ['admin', 'applicant'] },
+    { name: 'ENVELO Agent', href: '/envelo', icon: 'brand', roles: ['admin', 'applicant'], requiresCert: true },
   ];
 
   const hasCert = userCerts.some(c => c.status === 'issued' || c.status === 'active');

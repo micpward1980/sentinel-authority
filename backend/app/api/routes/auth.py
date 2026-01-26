@@ -43,7 +43,7 @@ async def register(user_data: UserCreate, db: AsyncSession = Depends(get_db)):
         hashed_password=get_password_hash(user_data.password),
         full_name=user_data.full_name,
         organization=user_data.organization,
-        role=UserRole.SUBSCRIBER,
+        role=UserRole.APPLICANT,
     )
     db.add(user)
     await db.commit()
