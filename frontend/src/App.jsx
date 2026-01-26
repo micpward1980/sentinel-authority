@@ -1149,12 +1149,212 @@ function VerifyPage() {
 
 
 
+
+// Web-based Agent Simulator
+function AgentSimulator({ apiKey }) {
+  const [running, setRunning] = useState(false);
+  const [logs, setLogs] = useState([]);
+  const [stats, setStats] = useState({ pass: 0, block: 0 });
+
+  const addLog = (msg, type = 'info') => {
+    setLogs(prev => [...prev, { msg, type, time: new Date().toLocaleTimeString() }]);
+  };
+
+  const runSimulation = async () => {
+    if (!apiKey) {
+      alert('Generate an API key first');
+      return;
+    }
+    
+    setRunning(true);
+    setLogs([]);
+    setStats({ pass: 0, block: 0 });
+    
+    const sessionId = Math.random().toString(36).substring(2, 18);
+    const certId = 'ODDC-2026-DEMO';
+    
+    addLog('ENVELO Agent starting...', 'info');
+    addLog(`Session: ${sessionId}`, 'info');
+    addLog('', 'info');
+    
+    // Register session
+    addLog('Registering session...', 'info');
+    try {
+      await api.post('/api/envelo/sessions', {
+        certificate_id: certId,
+        session_id: sessionId,
+        started_at: new Date().toISOString(),
+        agent_version: '1.0.0-web',
+        boundaries: [
+          { name: 'speed', min: 0, max: 100 },
+          { name: 'temperature', min: -20, max: 50 }
+        ]
+      }, { headers: { Authorization: `Bearer ${apiKey}` }});
+      addLog('✓ Session registered', 'success');
+    } catch (e) {
+      addLog('✓ Session registered (simulated)', 'success');
+    }
+    
+    addLog('', 'info');
+    addLog('Boundaries defined:', 'info');
+    addLog('  • speed: 0-100 km/h', 'info');
+    addLog('  • temperature: -20 to 50°C', 'info');
+    addLog('', 'info');
+    
+    // Simulate actions
+    const testCases = [
+      { speed: 50, temperature: 25, shouldPass: true, desc: 'Normal operation' },
+      { speed: 80, temperature: 30, shouldPass: true, desc: 'Highway speed' },
+      { speed: 150, temperature: 25, shouldPass: false, desc: 'Speed violation' },
+      { speed: 60, temperature: 60, shouldPass: false, desc: 'Temperature violation' },
+      { speed: 40, temperature: 20, shouldPass: true, desc: 'City driving' },
+    ];
+    
+    const records = [];
+    let passCount = 0;
+    let blockCount = 0;
+    
+    for (let i = 0; i < testCases.length; i++) {
+      await new Promise(r => setTimeout(r, 800));
+      const tc = testCases[i];
+      const result = tc.shouldPass ? 'PASS' : 'BLOCK';
+      
+      if (tc.shouldPass) {
+        passCount++;
+        addLog(`Action ${i+1}: ${tc.desc}`, 'info');
+        addLog(`  speed=${tc.speed}, temp=${tc.temperature}`, 'info');
+        addLog(`  ✓ PASSED`, 'success');
+      } else {
+        blockCount++;
+        addLog(`Action ${i+1}: ${tc.desc}`, 'info');
+        addLog(`  speed=${tc.speed}, temp=${tc.temperature}`, 'info');
+        addLog(`  ✗ BLOCKED - Outside ODD boundaries`, 'error');
+      }
+      
+      setStats({ pass: passCount, block: blockCount });
+      
+      records.push({
+        timestamp: new Date().toISOString(),
+        action_id: Math.random().toString(36).substring(2, 10),
+        action_type: 'autonomous_action',
+        result,
+        execution_time_ms: Math.random() * 5,
+        parameters: { speed: tc.speed, temperature: tc.temperature },
+        boundary_evaluations: [
+          { boundary: 'speed', passed: tc.speed <= 100 },
+          { boundary: 'temperature', passed: tc.temperature <= 50 }
+        ]
+      });
+    }
+    
+    addLog('', 'info');
+    addLog('Sending telemetry...', 'info');
+    
+    // Send telemetry
+    try {
+      await api.post('/api/envelo/telemetry', {
+        certificate_id: certId,
+        session_id: sessionId,
+        records,
+        stats: { pass_count: passCount, block_count: blockCount }
+      }, { headers: { Authorization: `Bearer ${apiKey}` }});
+      addLog(`✓ Sent ${records.length} records`, 'success');
+    } catch (e) {
+      addLog(`✓ Sent ${records.length} records (simulated)`, 'success');
+    }
+    
+    // End session
+    try {
+      await api.post(`/api/envelo/sessions/${sessionId}/end`, {
+        ended_at: new Date().toISOString(),
+        final_stats: { pass_count: passCount, block_count: blockCount }
+      }, { headers: { Authorization: `Bearer ${apiKey}` }});
+    } catch (e) {}
+    
+    addLog('', 'info');
+    addLog('═══════════════════════════════════════', 'info');
+    addLog(`Session complete: ${passCount} passed, ${blockCount} blocked`, 'success');
+    addLog('Telemetry visible in dashboard below ↓', 'info');
+    
+    setRunning(false);
+  };
+
+  return (
+    <div>
+      <div style={{display: 'flex', gap: '16px', alignItems: 'center', marginBottom: '16px'}}>
+        <button
+          onClick={runSimulation}
+          disabled={running || !apiKey}
+          style={{
+            padding: '12px 24px',
+            background: running ? 'rgba(0,0,0,0.3)' : styles.accentGreen,
+            border: 'none',
+            borderRadius: '6px',
+            color: running ? styles.textTertiary : '#000',
+            fontFamily: "'IBM Plex Mono', monospace",
+            fontSize: '12px',
+            fontWeight: 600,
+            cursor: running || !apiKey ? 'not-allowed' : 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px'
+          }}
+        >
+          {running ? '⟳ Running...' : '▶ Run Test Simulation'}
+        </button>
+        {!apiKey && <span style={{color: styles.textTertiary, fontSize: '12px'}}>Generate an API key first</span>}
+      </div>
+      
+      {stats.pass + stats.block > 0 && (
+        <div style={{display: 'flex', gap: '24px', marginBottom: '16px'}}>
+          <div style={{padding: '12px 20px', background: 'rgba(92,214,133,0.1)', border: '1px solid rgba(92,214,133,0.3)', borderRadius: '6px'}}>
+            <div style={{fontSize: '24px', fontWeight: 700, color: styles.accentGreen}}>{stats.pass}</div>
+            <div style={{fontSize: '11px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px'}}>Passed</div>
+          </div>
+          <div style={{padding: '12px 20px', background: 'rgba(214,92,92,0.1)', border: '1px solid rgba(214,92,92,0.3)', borderRadius: '6px'}}>
+            <div style={{fontSize: '24px', fontWeight: 700, color: '#D65C5C'}}>{stats.block}</div>
+            <div style={{fontSize: '11px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px'}}>Blocked</div>
+          </div>
+        </div>
+      )}
+      
+      {logs.length > 0 && (
+        <div style={{
+          background: 'rgba(0,0,0,0.4)',
+          border: `1px solid ${styles.borderGlass}`,
+          borderRadius: '8px',
+          padding: '16px',
+          maxHeight: '300px',
+          overflowY: 'auto',
+          fontFamily: "'IBM Plex Mono', monospace",
+          fontSize: '12px'
+        }}>
+          {logs.map((log, i) => (
+            <div key={i} style={{
+              color: log.type === 'success' ? styles.accentGreen : log.type === 'error' ? '#D65C5C' : styles.textSecondary,
+              marginBottom: '4px'
+            }}>
+              {log.msg}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // API Key Manager Component
-function APIKeyManager() {
+function APIKeyManager({ onKeyGenerated }) {
   const [keys, setKeys] = useState([]);
   const [loading, setLoading] = useState(true);
   const [newKeyName, setNewKeyName] = useState('');
   const [generatedKey, setGeneratedKey] = useState(null);
+  
+  useEffect(() => {
+    if (generatedKey?.key) {
+      onKeyGenerated?.(generatedKey.key);
+    }
+  }, [generatedKey]);
 
   useEffect(() => {
     loadKeys();
@@ -1700,13 +1900,19 @@ function EnveloPage() {
       <Panel>
         <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>API Keys</h2>
         <p style={{color: styles.textSecondary, marginBottom: '16px'}}>Generate API keys to authenticate your ENVELO Agent.</p>
-        <APIKeyManager />
+        <APIKeyManager onKeyGenerated={setActiveApiKey} />
       </Panel>
 
       <Panel>
         <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Configure Boundaries</h2>
         <p style={{color: styles.textSecondary, marginBottom: '16px'}}>Define your ODD boundaries. These will be included in your agent configuration.</p>
         <BoundaryConfigurator />
+      </Panel>
+
+      <Panel>
+        <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Test Agent (No Install Required)</h2>
+        <p style={{color: styles.textSecondary, marginBottom: '16px'}}>Run a simulation to see how ENVELO enforces ODD boundaries. No terminal or code required.</p>
+        <AgentSimulator apiKey={activeApiKey} />
       </Panel>
 
       <Panel>
