@@ -8,8 +8,8 @@ from typing import Optional
 logger = logging.getLogger(__name__)
 
 RESEND_API_KEY = os.getenv("RESEND_API_KEY", "")
-ADMIN_EMAIL = os.getenv("ADMIN_EMAIL", "info@sentinelauthority.com")
-FROM_EMAIL = "notifications@sentinelauthority.com"
+ADMIN_EMAIL = os.getenv("ADMIN_EMAIL", "info@sentinelauthority.org")
+FROM_EMAIL = "notifications@sentinelauthority.org"
 
 try:
     import resend
