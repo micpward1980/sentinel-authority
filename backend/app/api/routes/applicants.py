@@ -17,15 +17,15 @@ router = APIRouter()
 
 class ApplicationCreate(BaseModel):
     organization_name: str
-    contact_name: str
+    contact_name: Optional[str] = None
     contact_email: EmailStr
     contact_phone: Optional[str] = None
     system_name: str
     system_description: str
-    system_version: str
-    manufacturer: str
-    odd_specification: Dict[str, Any]
-    envelope_definition: Dict[str, Any]
+    system_version: Optional[str] = None
+    manufacturer: Optional[str] = None
+    odd_specification: Optional[Any] = None
+    envelope_definition: Optional[Dict[str, Any]] = None
     preferred_test_date: Optional[datetime] = None
     facility_location: Optional[str] = None
     notes: Optional[str] = None
@@ -50,19 +50,26 @@ async def create_application(
 ):
     app_number = await generate_application_number(db)
     
+    # Handle odd_specification - convert string to dict if needed
+    odd_spec = app_data.odd_specification
+    if isinstance(odd_spec, str):
+        odd_spec = {"description": odd_spec}
+    elif odd_spec is None:
+        odd_spec = {}
+    
     application = Application(
         application_number=app_number,
         applicant_id=int(user["sub"]),
         organization_name=app_data.organization_name,
-        contact_name=app_data.contact_name,
+        contact_name=app_data.contact_name or user.get("full_name", ""),
         contact_email=app_data.contact_email,
         contact_phone=app_data.contact_phone,
         system_name=app_data.system_name,
         system_description=app_data.system_description,
-        system_version=app_data.system_version,
-        manufacturer=app_data.manufacturer,
-        odd_specification=app_data.odd_specification,
-        envelope_definition=app_data.envelope_definition,
+        system_version=app_data.system_version or "1.0",
+        manufacturer=app_data.manufacturer or app_data.organization_name,
+        odd_specification=odd_spec,
+        envelope_definition=app_data.envelope_definition or {},
         preferred_test_date=app_data.preferred_test_date,
         facility_location=app_data.facility_location,
         notes=app_data.notes,
@@ -74,7 +81,6 @@ async def create_application(
     await db.commit()
     await db.refresh(application)
     
-    # Notify admin of new application
     notify_admin_new_application(
         app_data.organization_name,
         app_data.system_name,
