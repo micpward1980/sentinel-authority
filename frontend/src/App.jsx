@@ -1,5 +1,5 @@
 import React, { useState, useEffect, createContext, useContext } from 'react';
-import { BrowserRouter, Routes, Route, Navigate, Link, useNavigate, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, Link, useNavigate, useLocation, useParams } from 'react-router-dom';
 import { FileText, Activity, Award, Users, Home, LogOut, Menu, X, CheckCircle, AlertTriangle, Clock, Search, Plus, ArrowLeft, ExternalLink } from 'lucide-react';
 import axios from 'axios';
 
@@ -587,7 +587,7 @@ function NewApplication() {
 
 // Application Detail
 function ApplicationDetail() {
-  const { id } = useLocation().pathname.match(/\/applications\/(\d+)/)?.slice(1) || [];
+  const { id } = useParams();
   const [app, setApp] = useState(null);
 
   useEffect(() => {
