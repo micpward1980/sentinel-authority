@@ -48,7 +48,7 @@ app.add_middleware(
 # API Routes
 app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
 app.include_router(dashboard.router, prefix="/api/dashboard", tags=["Dashboard"])
-app.include_router(applicants.router, prefix="/api/applicants", tags=["Applicant Portal"])
+app.include_router(applicants.router, prefix="/api/applications", tags=["Applicant Portal"])
 app.include_router(cat72.router, prefix="/api/cat72", tags=["CAT-72 Console"])
 app.include_router(certificates.router, prefix="/api/certificates", tags=["Certification Registry"])
 app.include_router(verification.router, prefix="/api/verify", tags=["Public Verification"])
