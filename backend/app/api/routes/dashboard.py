@@ -23,17 +23,19 @@ class DashboardStats(BaseModel):
 
 @router.get("/stats")
 async def get_stats(db: AsyncSession = Depends(get_db), user: dict = Depends(get_current_user)):
-    total_apps = await db.execute(select(func.count(Application.id)))
-    pending_apps = await db.execute(
-        select(func.count(Application.id)).where(Application.state == CertificationState.PENDING)
-    )
-    active_tests = await db.execute(
-        select(func.count(CAT72Test.id)).where(CAT72Test.state == TestState.RUNNING)
-    )
-    total_certs = await db.execute(select(func.count(Certificate.id)))
-    active_certs = await db.execute(
-        select(func.count(Certificate.id)).where(Certificate.state == CertificationState.CONFORMANT)
-    )
+    if user.get("role") == "applicant":
+        org = user.get("organization")
+        total_apps = await db.execute(select(func.count(Application.id)).where(Application.organization_name == org))
+        pending_apps = await db.execute(select(func.count(Application.id)).where(Application.state == CertificationState.PENDING, Application.organization_name == org))
+        active_tests = await db.execute(select(func.count(CAT72Test.id)).where(CAT72Test.state == TestState.RUNNING))
+        total_certs = await db.execute(select(func.count(Certificate.id)).where(Certificate.organization_name == org))
+        active_certs = await db.execute(select(func.count(Certificate.id)).where(Certificate.state == CertificationState.CONFORMANT, Certificate.organization_name == org))
+    else:
+        total_apps = await db.execute(select(func.count(Application.id)))
+        pending_apps = await db.execute(select(func.count(Application.id)).where(Application.state == CertificationState.PENDING))
+        active_tests = await db.execute(select(func.count(CAT72Test.id)).where(CAT72Test.state == TestState.RUNNING))
+        total_certs = await db.execute(select(func.count(Certificate.id)))
+        active_certs = await db.execute(select(func.count(Certificate.id)).where(Certificate.state == CertificationState.CONFORMANT))
     
     return {
         "total_applications": total_apps.scalar() or 0,
