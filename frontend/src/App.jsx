@@ -962,7 +962,14 @@ function VerifyPage() {
 
           {error && <div className="mt-4 p-4 rounded-lg text-center" style={{background: 'rgba(214,92,92,0.15)', border: '1px solid rgba(214,92,92,0.3)', color: styles.accentRed}}>{error}</div>}
 
-          {result && (
+          {result && (result.status === 'NOT_FOUND' || result.state === 'NOT_FOUND') && (
+            <div className="mt-6 p-4 rounded-lg text-center" style={{background: 'rgba(214,92,92,0.1)', border: '1px solid rgba(214,92,92,0.3)'}}>
+              <span style={{color: styles.accentRed, fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase'}}>Certificate Not Found</span>
+              <p style={{color: styles.textSecondary, marginTop: '8px', fontSize: '14px'}}>No certificate exists with number: {result.certificate_number}</p>
+            </div>
+          )}
+
+          {result && result.status !== 'NOT_FOUND' && result.state !== 'NOT_FOUND' && (
             <div className="mt-6 p-4 rounded-lg" style={{background: 'rgba(92,214,133,0.1)', border: '1px solid rgba(92,214,133,0.3)'}}>
               <div className="flex items-center gap-2 mb-4">
                 <CheckCircle className="w-5 h-5" style={{color: styles.accentGreen}} />
