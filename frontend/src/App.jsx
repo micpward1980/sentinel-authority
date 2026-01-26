@@ -641,6 +641,8 @@ function NewApplication() {
 function ApplicationDetail() {
   const { id } = useParams();
   const [app, setApp] = useState(null);
+  const [scheduling, setScheduling] = useState(false);
+  const [testCreated, setTestCreated] = useState(null);
 
   useEffect(() => {
     if (id) {
@@ -648,14 +650,47 @@ function ApplicationDetail() {
     }
   }, [id]);
 
+  const handleScheduleTest = async () => {
+    if (!window.confirm('Schedule a CAT-72 test for this application? The test will need to be started manually.')) return;
+    setScheduling(true);
+    try {
+      const res = await api.post('/api/cat72/tests', { application_id: parseInt(id) });
+      setTestCreated(res.data);
+      alert(`CAT-72 Test created: ${res.data.test_id}\nGo to CAT-72 Console to start the test.`);
+    } catch (err) {
+      alert('Failed to create test: ' + (err.response?.data?.detail || err.message));
+    }
+    setScheduling(false);
+  };
+
   if (!app) return <div style={{color: styles.textTertiary}}>Loading...</div>;
 
   return (
     <div className="space-y-6">
-      <Link to="/applications" className="flex items-center gap-2 no-underline" style={{color: styles.textTertiary, fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase'}}>
-        <ArrowLeft className="w-4 h-4" />
-        Back to Applications
-      </Link>
+      <div className="flex items-center justify-between">
+        <Link to="/applications" className="flex items-center gap-2 no-underline" style={{color: styles.textTertiary, fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase'}}>
+          <ArrowLeft className="w-4 h-4" />
+          Back to Applications
+        </Link>
+        {app.state !== 'conformant' && (
+          <button
+            onClick={handleScheduleTest}
+            disabled={scheduling}
+            className="px-4 py-2 rounded-lg transition-all"
+            style={{background: styles.purplePrimary, border: `1px solid ${styles.purpleBright}`, color: '#fff', fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: scheduling ? 'wait' : 'pointer', opacity: scheduling ? 0.7 : 1}}
+          >
+            {scheduling ? 'Scheduling...' : 'Schedule CAT-72 Test'}
+          </button>
+        )}
+      </div>
+      
+      {testCreated && (
+        <div className="p-4 rounded-lg" style={{background: 'rgba(92,214,133,0.1)', border: '1px solid rgba(92,214,133,0.3)'}}>
+          <p style={{color: styles.accentGreen, fontFamily: "'IBM Plex Mono', monospace", fontSize: '12px'}}>
+            Test Created: {testCreated.test_id} — <Link to="/cat72" style={{color: styles.purpleBright}}>Go to CAT-72 Console</Link>
+          </p>
+        </div>
+      )}
       
       <div>
         <p style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', color: styles.purpleBright, marginBottom: '8px'}}>Application {app.application_number}</p>
@@ -719,10 +754,52 @@ function ApplicationDetail() {
 // CAT-72 Console
 function CAT72Console() {
   const [tests, setTests] = useState([]);
+  const [loading, setLoading] = useState({});
+
+  const loadTests = () => {
+    api.get('/api/cat72/tests').then(res => setTests(res.data)).catch(console.error);
+  };
 
   useEffect(() => {
-    api.get('/api/cat72/tests').then(res => setTests(res.data)).catch(console.error);
+    loadTests();
   }, []);
+
+  const handleStart = async (testId) => {
+    if (!window.confirm('Start this CAT-72 test? The 72-hour timer will begin.')) return;
+    setLoading(prev => ({...prev, [testId]: 'starting'}));
+    try {
+      await api.post(`/api/cat72/tests/${testId}/start`);
+      loadTests();
+    } catch (err) {
+      alert('Failed to start test: ' + (err.response?.data?.detail || err.message));
+    }
+    setLoading(prev => ({...prev, [testId]: null}));
+  };
+
+  const handleStop = async (testId) => {
+    if (!window.confirm('Stop this CAT-72 test and evaluate results?')) return;
+    setLoading(prev => ({...prev, [testId]: 'stopping'}));
+    try {
+      await api.post(`/api/cat72/tests/${testId}/stop`);
+      loadTests();
+    } catch (err) {
+      alert('Failed to stop test: ' + (err.response?.data?.detail || err.message));
+    }
+    setLoading(prev => ({...prev, [testId]: null}));
+  };
+
+  const handleIssueCertificate = async (testId) => {
+    if (!window.confirm('Issue ODDC certificate for this passed test?')) return;
+    setLoading(prev => ({...prev, [testId]: 'issuing'}));
+    try {
+      const res = await api.post(`/api/certificates/issue/${testId}`);
+      alert(`Certificate issued: ${res.data.certificate_number}\nVerification URL: ${res.data.verification_url}`);
+      loadTests();
+    } catch (err) {
+      alert('Failed to issue certificate: ' + (err.response?.data?.detail || err.message));
+    }
+    setLoading(prev => ({...prev, [testId]: null}));
+  };
 
   return (
     <div className="space-y-6">
@@ -740,6 +817,7 @@ function CAT72Console() {
               <th className="px-4 py-3 text-left" style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>State</th>
               <th className="px-4 py-3 text-left" style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>Progress</th>
               <th className="px-4 py-3 text-left" style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>Result</th>
+              <th className="px-4 py-3 text-left" style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -779,6 +857,43 @@ function CAT72Console() {
                       {test.result}
                     </span>
                   )}
+                </td>
+                <td className="px-4 py-4">
+                  <div className="flex gap-2">
+                    {test.state === 'scheduled' && (
+                      <button
+                        onClick={() => handleStart(test.test_id)}
+                        disabled={loading[test.test_id]}
+                        className="px-3 py-1 rounded transition-colors"
+                        style={{background: 'rgba(92,214,133,0.15)', border: '1px solid rgba(92,214,133,0.3)', color: styles.accentGreen, fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}
+                      >
+                        {loading[test.test_id] === 'starting' ? '...' : 'Start'}
+                      </button>
+                    )}
+                    {test.state === 'running' && (
+                      <button
+                        onClick={() => handleStop(test.test_id)}
+                        disabled={loading[test.test_id]}
+                        className="px-3 py-1 rounded transition-colors"
+                        style={{background: 'rgba(214,160,92,0.15)', border: '1px solid rgba(214,160,92,0.3)', color: styles.accentAmber, fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}
+                      >
+                        {loading[test.test_id] === 'stopping' ? '...' : 'Stop & Evaluate'}
+                      </button>
+                    )}
+                    {test.state === 'completed' && test.result === 'PASS' && !test.certificate_issued && (
+                      <button
+                        onClick={() => handleIssueCertificate(test.test_id)}
+                        disabled={loading[test.test_id]}
+                        className="px-3 py-1 rounded transition-colors"
+                        style={{background: styles.purplePrimary, border: `1px solid ${styles.purpleBright}`, color: '#fff', fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}
+                      >
+                        {loading[test.test_id] === 'issuing' ? '...' : 'Issue Certificate'}
+                      </button>
+                    )}
+                    {test.certificate_issued && (
+                      <span style={{color: styles.accentGreen, fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px'}}>✓ Cert Issued</span>
+                    )}
+                  </div>
                 </td>
               </tr>
             ))}
