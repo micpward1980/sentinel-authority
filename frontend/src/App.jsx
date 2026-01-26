@@ -126,7 +126,7 @@ function Layout({ children }) {
     { name: 'CAT-72 Console', href: '/cat72', icon: Activity, roles: ['admin', 'operator'] },
     { name: 'Certificates', href: '/certificates', icon: Award, roles: ['admin', 'operator', 'applicant'] },
     { name: 'Licensees', href: '/licensees', icon: Users, roles: ['admin', 'licensee'] },
-    { name: 'ENVELO Agent', href: '/envelo', icon: Shield, roles: ['admin', 'operator', 'applicant'] },
+    { name: 'ENVELO Agent', href: '/envelo', icon: 'brand', roles: ['admin', 'operator', 'applicant'] },
   ];
 
   const filteredNav = navigation.filter(item => item.roles.includes(user?.role || ''));
@@ -168,7 +168,7 @@ function Layout({ children }) {
                 textTransform: 'uppercase',
               }}
             >
-              <item.icon className="w-4 h-4" />
+              {item.icon === 'brand' ? <BrandMark size={16} /> : <item.icon className="w-4 h-4" />}
               {item.name}
             </Link>
           ))}
