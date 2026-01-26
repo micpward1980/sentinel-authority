@@ -91,7 +91,7 @@ async def create_application(
         "id": application.id,
         "application_number": application.application_number,
         "state": application.state.value,
-        "submitted_at": application.submitted_at.isoformat(),
+        "submitted_at": application.submitted_at.isoformat() + "Z",
         "message": "Application submitted successfully"
     }
 
@@ -119,7 +119,7 @@ async def list_applications(
             "system_name": a.system_name,
             "system_version": a.system_version,
             "state": a.state.value,
-            "submitted_at": a.submitted_at.isoformat() if a.submitted_at else None,
+            "submitted_at": a.submitted_at.isoformat() + "Z" if a.submitted_at else None,
         }
         for a in apps
     ]
@@ -154,8 +154,8 @@ async def get_application(
         "odd_specification": app.odd_specification,
         "envelope_definition": app.envelope_definition,
         "state": app.state.value,
-        "submitted_at": app.submitted_at.isoformat() if app.submitted_at else None,
-        "preferred_test_date": app.preferred_test_date.isoformat() if app.preferred_test_date else None,
+        "submitted_at": app.submitted_at.isoformat() + "Z" if app.submitted_at else None,
+        "preferred_test_date": app.preferred_test_date.isoformat() + "Z" if app.preferred_test_date else None,
         "facility_location": app.facility_location,
         "notes": app.notes,
     }
