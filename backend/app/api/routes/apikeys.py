@@ -43,9 +43,10 @@ async def generate_new_key(
 ):
     """Generate a new API key for the user"""
     
-    user_id = int(current_user.get("sub"))
-    if not user_id:
+    sub = current_user.get("sub")
+    if not sub:
         raise HTTPException(status_code=401, detail="Invalid user token")
+    user_id = int(sub)
     
     # Generate the key
     raw_key = generate_api_key()
@@ -92,9 +93,10 @@ async def list_keys(
 ):
     """List all API keys for the current user"""
     
-    user_id = int(current_user.get("sub"))
-    if not user_id:
+    sub = current_user.get("sub")
+    if not sub:
         raise HTTPException(status_code=401, detail="Invalid user token")
+    user_id = int(sub)
     
     result = await db.execute(
         select(APIKey).where(
@@ -126,9 +128,10 @@ async def revoke_key(
 ):
     """Revoke an API key"""
     
-    user_id = int(current_user.get("sub"))
-    if not user_id:
+    sub = current_user.get("sub")
+    if not sub:
         raise HTTPException(status_code=401, detail="Invalid user token")
+    user_id = int(sub)
     
     result = await db.execute(
         select(APIKey).where(
