@@ -125,7 +125,6 @@ function Layout({ children }) {
     { name: 'Applications', href: '/applications', icon: FileText, roles: ['admin', 'operator', 'applicant'] },
     { name: 'CAT-72 Console', href: '/cat72', icon: Activity, roles: ['admin', 'operator'] },
     { name: 'Certificates', href: '/certificates', icon: Award, roles: ['admin', 'operator', 'applicant'] },
-    { name: 'Licensees', href: '/licensees', icon: Users, roles: ['admin', 'licensee'] },
     { name: 'ENVELO Agent', href: '/envelo', icon: 'brand', roles: ['admin', 'operator', 'applicant'] },
   ];
 
@@ -1260,7 +1259,6 @@ function App() {
           <Route path="/applications/:id" element={<ProtectedRoute><Layout><ApplicationDetail /></Layout></ProtectedRoute>} />
           <Route path="/cat72" element={<ProtectedRoute roles={['admin', 'operator']}><Layout><CAT72Console /></Layout></ProtectedRoute>} />
           <Route path="/certificates" element={<ProtectedRoute><Layout><CertificatesPage /></Layout></ProtectedRoute>} />
-          <Route path="/licensees" element={<ProtectedRoute><Layout><LicenseesPage /></Layout></ProtectedRoute>} />
           <Route path="/envelo" element={<ProtectedRoute><Layout><EnveloPage /></Layout></ProtectedRoute>} />
           <Route path="/" element={<Navigate to="/dashboard" />} />
         </Routes>
