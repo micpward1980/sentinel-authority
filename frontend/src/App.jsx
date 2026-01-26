@@ -122,10 +122,10 @@ function Layout({ children }) {
 
   const navigation = [
     { name: 'Dashboard', href: '/dashboard', icon: Home, roles: ['admin', 'operator', 'applicant', 'licensee'] },
-    { name: 'Applications', href: '/applications', icon: FileText, roles: ['admin', 'operator', 'applicant'] },
+    { name: 'Applications', href: '/applications', icon: FileText, roles: ['admin', 'operator'] },
     { name: 'CAT-72 Console', href: '/cat72', icon: Activity, roles: ['admin', 'operator'] },
     { name: 'Certificates', href: '/certificates', icon: Award, roles: ['admin', 'operator', 'applicant'] },
-    { name: 'ENVELO Agent', href: '/envelo', icon: 'brand', roles: ['admin', 'operator', 'applicant'] },
+    { name: 'ENVELO Agent', href: '/envelo', icon: 'brand', roles: ['admin', 'operator'] },
   ];
 
   const filteredNav = navigation.filter(item => item.roles.includes(user?.role || ''));
@@ -308,7 +308,7 @@ function LoginPage() {
               className="w-full py-3 rounded-lg font-medium transition-all"
               style={{background: styles.purplePrimary, border: `1px solid ${styles.purpleBright}`, color: '#fff', fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', cursor: 'pointer'}}
             >
-              {isRegister ? 'Create Account' : '1'}
+              {isRegister ? 'Create Account' : 'Sign In'}
             </button>
           </form>
           
@@ -1288,8 +1288,8 @@ function VerifyPage() {
         </Panel>
 
         <div className="mt-6 text-center">
-          <Link to="/login" style={{color: styles.purpleBright, fontFamily: "'Inter', sans-serif", fontSize: '14px'}}>
-            Back to Platform
+          <Link to="/dashboard" style={{color: styles.purpleBright, fontFamily: "'Inter', sans-serif", fontSize: '14px'}}>
+            Back to Dashboard
           </Link>
         </div>
       </div>
@@ -2209,7 +2209,7 @@ function App() {
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/verify" element={<VerifyPage />} />
-          <Route path="/dashboard" element={<ProtectedRoute><Layout><Dashboard /></Layout></ProtectedRoute>} />
+          <Route path="/dashboard" element={<ProtectedRoute><Layout><RoleBasedDashboard /></Layout></ProtectedRoute>} />
           <Route path="/applications" element={<ProtectedRoute><Layout><ApplicationsList /></Layout></ProtectedRoute>} />
           <Route path="/applications/new" element={<ProtectedRoute><Layout><NewApplication /></Layout></ProtectedRoute>} />
           <Route path="/applications/:id" element={<ProtectedRoute><Layout><ApplicationDetail /></Layout></ProtectedRoute>} />
