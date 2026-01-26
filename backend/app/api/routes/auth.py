@@ -1,4 +1,6 @@
 """Authentication routes."""
+from app.services.email_service import notify_admin_new_registration
+from app.services.email_service import notify_admin_new_registration
 
 from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -49,6 +51,9 @@ async def register(user_data: UserCreate, db: AsyncSession = Depends(get_db)):
     db.add(user)
     await db.commit()
     await db.refresh(user)
+    
+    # Notify admin
+    notify_admin_new_registration(user.email, user.full_name, user.organization or "")
     
     # Generate token
     token = create_access_token({"sub": str(user.id), "email": user.email, "role": user.role.value})
