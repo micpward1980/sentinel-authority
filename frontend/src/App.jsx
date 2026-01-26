@@ -1912,7 +1912,7 @@ function EnveloPage() {
 
       <Panel>
         <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Test Agent (No Install Required)</h2>
-        <p style={{color: styles.textSecondary, marginBottom: '16px'}}>Run a simulation to see how ENVELO enforces ODD boundaries. No terminal or code required.</p>
+        <p style={{color: styles.textSecondary, marginBottom: '16px'}}>Run a live simulation to see ENVELO enforce ODD boundaries in real-time.</p>
         <AgentSimulator apiKey={activeApiKey} />
       </Panel>
 
