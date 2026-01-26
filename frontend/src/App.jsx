@@ -1148,6 +1148,114 @@ function VerifyPage() {
 
 
 
+
+// API Key Manager Component
+function APIKeyManager() {
+  const [keys, setKeys] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [newKeyName, setNewKeyName] = useState('');
+  const [generatedKey, setGeneratedKey] = useState(null);
+
+  useEffect(() => {
+    loadKeys();
+  }, []);
+
+  const loadKeys = async () => {
+    try {
+      const res = await api.get('/api/apikeys/');
+      setKeys(res.data);
+    } catch (err) {
+      console.error('Failed to load API keys:', err);
+    }
+    setLoading(false);
+  };
+
+  const generateKey = async () => {
+    if (!newKeyName.trim()) return;
+    try {
+      const res = await api.post('/api/apikeys/generate', { name: newKeyName });
+      setGeneratedKey(res.data);
+      setNewKeyName('');
+      loadKeys();
+    } catch (err) {
+      console.error('Failed to generate key:', err);
+    }
+  };
+
+  const revokeKey = async (keyId) => {
+    if (!window.confirm('Revoke this API key? This cannot be undone.')) return;
+    try {
+      await api.delete(`/api/apikeys/${keyId}`);
+      loadKeys();
+    } catch (err) {
+      console.error('Failed to revoke key:', err);
+    }
+  };
+
+  const copyKey = () => {
+    if (generatedKey?.key) {
+      navigator.clipboard.writeText(generatedKey.key);
+    }
+  };
+
+  if (loading) return <div style={{color: styles.textTertiary}}>Loading...</div>;
+
+  return (
+    <div>
+      {generatedKey && (
+        <div style={{background: 'rgba(92,214,133,0.1)', border: '1px solid rgba(92,214,133,0.3)', borderRadius: '8px', padding: '16px', marginBottom: '20px'}}>
+          <div style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', color: styles.accentGreen, marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '1px'}}>✓ New API Key Generated</div>
+          <div style={{background: 'rgba(0,0,0,0.3)', padding: '12px', borderRadius: '6px', fontFamily: "'IBM Plex Mono', monospace", fontSize: '13px', color: styles.textPrimary, wordBreak: 'break-all', marginBottom: '12px'}}>
+            {generatedKey.key}
+          </div>
+          <div style={{display: 'flex', gap: '12px'}}>
+            <button onClick={copyKey} style={{padding: '8px 16px', background: styles.purplePrimary, border: `1px solid ${styles.purpleBright}`, borderRadius: '6px', color: '#fff', fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', cursor: 'pointer'}}>Copy to Clipboard</button>
+            <button onClick={() => setGeneratedKey(null)} style={{padding: '8px 16px', background: 'transparent', border: `1px solid ${styles.borderGlass}`, borderRadius: '6px', color: styles.textSecondary, fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', cursor: 'pointer'}}>Dismiss</button>
+          </div>
+          <p style={{color: styles.textTertiary, fontSize: '12px', marginTop: '12px'}}>⚠️ Save this key now. You won't be able to see it again.</p>
+        </div>
+      )}
+
+      <div style={{display: 'flex', gap: '12px', marginBottom: '20px'}}>
+        <input
+          type="text"
+          placeholder="Key name (e.g., Production)"
+          value={newKeyName}
+          onChange={(e) => setNewKeyName(e.target.value)}
+          style={{flex: 1, padding: '10px 14px', background: 'rgba(0,0,0,0.3)', border: `1px solid ${styles.borderGlass}`, borderRadius: '6px', color: styles.textPrimary, fontFamily: "'IBM Plex Mono', monospace", fontSize: '13px'}}
+        />
+        <button
+          onClick={generateKey}
+          disabled={!newKeyName.trim()}
+          style={{padding: '10px 20px', background: newKeyName.trim() ? styles.purplePrimary : 'rgba(0,0,0,0.2)', border: `1px solid ${newKeyName.trim() ? styles.purpleBright : styles.borderGlass}`, borderRadius: '6px', color: newKeyName.trim() ? '#fff' : styles.textTertiary, fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: newKeyName.trim() ? 'pointer' : 'not-allowed'}}
+        >
+          Generate Key
+        </button>
+      </div>
+
+      {keys.length > 0 ? (
+        <div>
+          <div style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary, marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '1px'}}>Your API Keys</div>
+          {keys.map((k) => (
+            <div key={k.id} style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'rgba(0,0,0,0.2)', border: `1px solid ${styles.borderGlass}`, borderRadius: '6px', marginBottom: '8px'}}>
+              <div>
+                <div style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '13px', color: styles.textPrimary}}>{k.name}</div>
+                <div style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', color: styles.textTertiary, marginTop: '4px'}}>{k.key_prefix}••••••••</div>
+              </div>
+              <div style={{display: 'flex', alignItems: 'center', gap: '16px'}}>
+                <span style={{fontSize: '11px', color: styles.textTertiary}}>{k.last_used_at ? `Last used: ${new Date(k.last_used_at).toLocaleDateString()}` : 'Never used'}</span>
+                <button onClick={() => revokeKey(k.id)} style={{padding: '6px 12px', background: 'rgba(255,100,100,0.1)', border: '1px solid rgba(255,100,100,0.3)', borderRadius: '4px', color: '#ff6464', fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', cursor: 'pointer'}}>Revoke</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p style={{color: styles.textTertiary, fontSize: '14px'}}>No API keys yet. Generate one to connect the ENVELO Agent.</p>
+      )}
+    </div>
+  );
+}
+
 // Boundary Configurator Component
 function BoundaryConfigurator() {
   const [boundaries, setBoundaries] = useState([]);
@@ -1354,6 +1462,12 @@ function EnveloPage() {
           <Download className="w-4 h-4" /> Download v1.0.0
         </a>
         <p style={{color: styles.textTertiary, fontSize: '13px', marginTop: '12px'}}>Python 3.9+ required • ~15 KB</p>
+      </Panel>
+
+      <Panel>
+        <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>API Keys</h2>
+        <p style={{color: styles.textSecondary, marginBottom: '16px'}}>Generate API keys to authenticate your ENVELO Agent.</p>
+        <APIKeyManager />
       </Panel>
 
       <Panel>
