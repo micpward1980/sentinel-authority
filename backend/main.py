@@ -22,7 +22,7 @@ logger = logging.getLogger("main")
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info("Starting Sentinel Authority Platform...")
-    init_db()
+    await init_db()
     logger.info("Database initialized")
     yield
     logger.info("Shutting down...")
