@@ -1996,7 +1996,16 @@ function EnveloPage() {
             <button onClick={() => setSelectedSession(null)} style={{padding: '6px 12px', background: 'transparent', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '4px', color: '#888', cursor: 'pointer', fontSize: '12px'}}>✕ Close</button>
           </div>
           <SessionReport session={selectedSession} />
-          <h3 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginTop: '24px', marginBottom: '12px'}}>Telemetry Log</h3>
+          <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '24px', marginBottom: '12px'}}><h3 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, margin: 0}}>Telemetry Log</h3><button onClick={async () => {
+              try {
+                const res = await api.get(`/api/envelo/admin/sessions/${selectedSession.id}/report`, {responseType: 'blob'});
+                const url = window.URL.createObjectURL(new Blob([res.data]));
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `CAT72-Report-${selectedSession.session_id}.pdf`;
+                link.click();
+              } catch(e) { alert('Failed to download: ' + e.message); }
+            }} style={{padding: '6px 12px', background: styles.purplePrimary, border: 'none', borderRadius: '4px', color: '#fff', fontSize: '11px', cursor: 'pointer'}}>Download Report PDF</button></div>
           <TelemetryLog sessionId={selectedSession.id} />
         </Panel>
       )}

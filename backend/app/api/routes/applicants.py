@@ -231,3 +231,25 @@ async def document_download(
     except Exception as e:
         print(f"Email error: {e}")
         return {"success": True, "message": "Download tracked (email failed)"}
+
+
+@router.delete("/{app_id}")
+async def delete_application(
+    app_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    """Delete an application (admin only)"""
+    if current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    result = await db.execute(select(Application).where(Application.id == app_id))
+    application = result.scalar_one_or_none()
+    
+    if not application:
+        raise HTTPException(status_code=404, detail="Application not found")
+    
+    await db.delete(application)
+    await db.commit()
+    
+    return {"message": "Application deleted"}
