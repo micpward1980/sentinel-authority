@@ -1,160 +1,347 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test Status - Sentinel Authority</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Source+Serif+4:wght@200;400;600&display=swap" rel="stylesheet">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Source Serif 4', serif; background: #0a0a0f; color: #e8e6f0; min-height: 100vh; }
-        .container { max-width: 800px; margin: 0 auto; padding: 40px 20px; }
-        h1 { font-size: 32px; font-weight: 200; margin-bottom: 8px; }
-        .subtitle { color: #9d8ccf; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 40px; }
-        .search-box { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 24px; margin-bottom: 32px; }
-        .search-box input { width: 100%; padding: 14px 18px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; font-size: 16px; font-family: 'IBM Plex Mono', monospace; }
-        .search-box input:focus { outline: none; border-color: #9d8ccf; }
-        .search-box button { margin-top: 16px; padding: 12px 32px; background: #5B4B8A; border: 1px solid #9d8ccf; border-radius: 8px; color: #fff; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; }
-        .search-box button:hover { background: #6B5B9A; }
-        .result { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 32px; display: none; }
-        .result.show { display: block; }
-        .status-badge { display: inline-block; padding: 6px 16px; border-radius: 20px; font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 24px; }
-        .status-running { background: rgba(92,214,133,0.15); color: #5CD685; }
-        .status-waiting { background: rgba(214,160,92,0.15); color: #D6A05C; }
-        .status-certified { background: rgba(91,75,138,0.3); color: #9d8ccf; }
-        .status-not_found { background: rgba(214,92,92,0.15); color: #D65C5C; }
-        .metrics { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin: 24px 0; }
-        .metric { background: rgba(0,0,0,0.2); border-radius: 8px; padding: 16px; text-align: center; }
-        .metric-value { font-size: 32px; font-weight: 600; color: #fff; }
-        .metric-label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; font-family: 'IBM Plex Mono', monospace; }
-        .criteria { margin-top: 24px; }
-        .criteria h3 { font-size: 14px; color: #9d8ccf; margin-bottom: 12px; font-family: 'IBM Plex Mono', monospace; text-transform: uppercase; letter-spacing: 1px; }
-        .criteria-item { display: flex; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .criteria-icon { width: 20px; text-align: center; }
-        .criteria-met { color: #5CD685; }
-        .criteria-pending { color: #D6A05C; }
-        .progress-bar { height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; margin: 16px 0; overflow: hidden; }
-        .progress-fill { height: 100%; background: linear-gradient(90deg, #5B4B8A, #9d8ccf); border-radius: 4px; transition: width 0.5s; }
-        .time-remaining { text-align: center; margin: 16px 0; }
-        .time-remaining .big { font-size: 48px; font-weight: 200; color: #fff; }
-        .time-remaining .label { font-size: 12px; color: #888; text-transform: uppercase; letter-spacing: 1px; }
-        a { color: #9d8ccf; }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Test Status — Sentinel Authority</title>
+  <meta name="description" content="Check your CAT-72 conformance test status" />
+
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect x='6' y='6' width='20' height='20' rx='5' fill='%235B4B8A' stroke='%239d8ccf' stroke-width='2'/><circle cx='16' cy='16' r='4' fill='%239d8ccf'/></svg>" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@200;300;400&family=Inter:wght@200;400;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --purple-primary:#5B4B8A;
+      --purple-bright:#9d8ccf;
+      --bg-deep:#2a2f3d;
+      --bg-panel:rgba(255,255,255,.05);
+      --accent-green:#5CD685;
+      --accent-amber:#D6A05C;
+      --accent-red:#D65C5C;
+      --text-primary:rgba(255,255,255,.94);
+      --text-secondary:rgba(255,255,255,.75);
+      --text-tertiary:rgba(255,255,255,.50);
+      --border-glass:rgba(255,255,255,.10);
+      --serif:'Source Serif 4',serif;
+      --mono:'IBM Plex Mono',monospace;
+      --sans:'Inter',system-ui,sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { background: var(--bg-deep); }
+    body {
+      font-family: var(--sans);
+      background: radial-gradient(1200px 700px at 15% 10%, rgba(91,75,138,.15), transparent 55%),
+                  radial-gradient(900px 600px at 85% 80%, rgba(92,214,133,.06), transparent 55%),
+                  var(--bg-deep);
+      color: var(--text-primary);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; text-decoration: none; }
+    ::selection { background: var(--purple-primary); color: #fff; }
+
+    /* Grid overlay */
+    .grid-overlay {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      background-image: linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+      background-size: 120px 120px; opacity: .15;
+      mask-image: radial-gradient(ellipse at center, rgba(0,0,0,.95) 20%, transparent 70%);
+    }
+
+    /* Header */
+    .site-header {
+      position: fixed; top: 0; width: 100%; z-index: 50;
+      padding: 0 20px; height: 72px;
+      border-bottom: 1px solid var(--border-glass);
+      background: rgba(42,47,61,.88);
+      backdrop-filter: blur(18px);
+      display: flex; align-items: center;
+    }
+    .nav-inner {
+      max-width: 1200px; margin: 0 auto; width: 100%;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .brand {
+      display: flex; align-items: center; gap: 12px;
+      text-decoration: none;
+    }
+    .brand-mark {
+      width: 24px; height: 24px;
+      background: var(--purple-primary);
+      border: 2px solid var(--purple-bright);
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .brand-mark-inner {
+      width: 8px; height: 8px;
+      background: #c4b8e8;
+      border-radius: 50%;
+    }
+    .brand-name {
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-primary);
+    }
+    .back-link {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 1px;
+      color: var(--purple-bright);
+    }
+    .back-link:hover { text-decoration: underline; }
+
+    /* Main content */
+    main {
+      max-width: 600px; margin: 0 auto;
+      padding: 132px 20px 80px;
+      position: relative; z-index: 1;
+    }
+
+    h1 {
+      font-family: var(--serif); font-size: 36px; font-weight: 200;
+      text-align: center; margin-bottom: 12px;
+    }
+    .page-desc {
+      color: var(--text-secondary); font-size: 15px;
+      text-align: center; margin-bottom: 40px;
+    }
+
+    /* Search box */
+    .search-panel {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-glass);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+    .search-row { display: flex; gap: 12px; }
+    .search-panel input {
+      flex: 1; padding: 14px 18px;
+      background: rgba(0,0,0,.25); border: 1px solid var(--border-glass);
+      border-radius: 8px; color: var(--text-primary);
+      font-family: var(--mono); font-size: 14px;
+    }
+    .search-panel input:focus { outline: none; border-color: var(--purple-bright); }
+    .search-panel input::placeholder { color: var(--text-tertiary); }
+    .btn-primary {
+      padding: 14px 24px;
+      background: var(--purple-primary); border: 1px solid var(--purple-bright);
+      border-radius: 8px; color: #fff;
+      font-family: var(--mono); font-size: 11px; font-weight: 500;
+      letter-spacing: 1px; text-transform: uppercase;
+      cursor: pointer; white-space: nowrap;
+    }
+    .btn-primary:hover { background: #6B5B9A; }
+
+    /* Results */
+    .result-panel {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-glass);
+      border-radius: 16px;
+      padding: 28px;
+      display: none;
+    }
+    .result-panel.show { display: block; }
+
+    .status-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 8px 16px; border-radius: 24px;
+      font-family: var(--mono); font-size: 11px; font-weight: 500;
+      letter-spacing: 1px; text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+    .status-badge .dot { width: 8px; height: 8px; border-radius: 50%; }
+    .status-running { background: rgba(92,214,133,.12); color: var(--accent-green); }
+    .status-running .dot { background: var(--accent-green); animation: pulse 2s infinite; }
+    .status-waiting { background: rgba(214,160,92,.12); color: var(--accent-amber); }
+    .status-waiting .dot { background: var(--accent-amber); }
+    .status-certified { background: rgba(157,140,207,.15); color: var(--purple-bright); }
+    .status-certified .dot { background: var(--purple-bright); }
+    .status-not_found { background: rgba(214,92,92,.12); color: var(--accent-red); }
+    .status-not_found .dot { background: var(--accent-red); }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+    .time-display { text-align: center; padding: 20px 0; }
+    .time-display .big { font-family: var(--serif); font-size: 56px; font-weight: 200; }
+    .time-display .label {
+      font-family: var(--mono); font-size: 10px; letter-spacing: 2px;
+      text-transform: uppercase; color: var(--text-tertiary); margin-top: 4px;
+    }
+
+    .progress-bar {
+      height: 6px; background: rgba(255,255,255,.08);
+      border-radius: 3px; overflow: hidden; margin: 16px 0 8px;
+    }
+    .progress-fill {
+      height: 100%; border-radius: 3px;
+      background: linear-gradient(90deg, var(--purple-primary), var(--purple-bright));
+    }
+    .progress-label {
+      font-family: var(--mono); font-size: 11px;
+      color: var(--text-tertiary); text-align: center;
+    }
+
+    .metrics-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 10px; margin: 24px 0;
+    }
+    .metric-card {
+      background: rgba(0,0,0,.2); border-radius: 10px;
+      padding: 14px 8px; text-align: center;
+    }
+    .metric-value { font-family: var(--serif); font-size: 24px; font-weight: 300; }
+    .metric-value.green { color: var(--accent-green); }
+    .metric-value.red { color: var(--accent-red); }
+    .metric-label {
+      font-family: var(--mono); font-size: 8px; letter-spacing: 1px;
+      text-transform: uppercase; color: var(--text-tertiary); margin-top: 4px;
+    }
+
+    .criteria-section { margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border-glass); }
+    .criteria-title {
+      font-family: var(--mono); font-size: 10px; letter-spacing: 2px;
+      text-transform: uppercase; color: var(--purple-bright); margin-bottom: 12px;
+    }
+    .criteria-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 0; font-size: 13px; color: var(--text-secondary);
+    }
+    .criteria-icon { font-size: 14px; width: 20px; }
+    .criteria-met { color: var(--accent-green); }
+    .criteria-pending { color: var(--text-tertiary); }
+
+    .message {
+      margin-top: 20px; padding: 14px;
+      background: rgba(0,0,0,.2); border-radius: 8px;
+      font-size: 13px; color: var(--text-tertiary); line-height: 1.5;
+    }
+
+    .certified-content h2 { font-family: var(--serif); font-size: 24px; font-weight: 300; margin: 12px 0; }
+    .cert-details { margin: 16px 0; font-size: 14px; color: var(--text-secondary); line-height: 1.7; }
+    .cert-details strong { color: var(--text-primary); }
+    .not-found-content p { color: var(--text-secondary); line-height: 1.6; margin-bottom: 10px; font-size: 14px; }
+
+    @media (max-width: 500px) {
+      .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+      .search-row { flex-direction: column; }
+      h1 { font-size: 28px; }
+      .time-display .big { font-size: 42px; }
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <p class="subtitle">Sentinel Authority</p>
-        <h1>CAT-72 Test Status</h1>
-        
-        <div class="search-box">
-            <input type="text" id="certId" placeholder="Enter your Certificate ID (e.g., ODDC-2026-0001)">
-            <button onclick="checkStatus()">Check Status</button>
-        </div>
-        
-        <div class="result" id="result"></div>
+  <div class="grid-overlay"></div>
+
+  <header class="site-header">
+    <div class="nav-inner">
+      <a href="https://sentinelauthority.org" class="brand">
+        <div class="brand-mark"><div class="brand-mark-inner"></div></div>
+        <div class="brand-name">Sentinel Authority</div>
+      </a>
+      <a href="https://app.sentinelauthority.org" class="back-link">← Dashboard</a>
     </div>
-    
-    <script>
-        // Check URL params
-        const params = new URLSearchParams(window.location.search);
-        const certParam = params.get('cert');
-        if (certParam) {
-            document.getElementById('certId').value = certParam;
-            checkStatus();
+  </header>
+
+  <main>
+    <h1>CAT-72 Test Status</h1>
+    <p class="page-desc">Enter your Certificate ID to check your test progress</p>
+
+    <div class="search-panel">
+      <div class="search-row">
+        <input type="text" id="certId" placeholder="Certificate ID (e.g., ODDC-2026-0001)">
+        <button class="btn-primary" onclick="checkStatus()">Check</button>
+      </div>
+    </div>
+
+    <div class="result-panel" id="result"></div>
+  </main>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const certParam = params.get('cert');
+    if (certParam) {
+      document.getElementById('certId').value = certParam;
+      checkStatus();
+    }
+
+    async function checkStatus() {
+      const certId = document.getElementById('certId').value.trim();
+      if (!certId) return alert('Please enter a Certificate ID');
+
+      const resultDiv = document.getElementById('result');
+      resultDiv.innerHTML = '<p style="color: var(--text-tertiary); text-align: center;">Loading...</p>';
+      resultDiv.classList.add('show');
+
+      try {
+        const res = await fetch(`https://sentinel-authority-production.up.railway.app/api/verify/status/${encodeURIComponent(certId)}`);
+        const data = await res.json();
+
+        if (data.status === 'not_found') {
+          resultDiv.innerHTML = `
+            <span class="status-badge status-not_found"><span class="dot"></span>Not Found</span>
+            <div class="not-found-content">
+              <p>${data.message}</p>
+              <p>Make sure your ENVELO Agent is running with the correct Certificate ID.</p>
+            </div>
+          `;
+        } else if (data.status === 'certified') {
+          resultDiv.innerHTML = `
+            <span class="status-badge status-certified"><span class="dot"></span>Certified</span>
+            <div class="certified-content">
+              <h2>🎉 Congratulations!</h2>
+              <p>Your system passed CAT-72 certification.</p>
+              <div class="cert-details">
+                <p><strong>Certificate:</strong> ${data.certificate_number}</p>
+                <p><strong>Issued:</strong> ${new Date(data.issued_at).toLocaleDateString()}</p>
+                <p><strong>Expires:</strong> ${new Date(data.expires_at).toLocaleDateString()}</p>
+              </div>
+              <a href="https://app.sentinelauthority.org" class="btn-primary" style="display: inline-block; text-decoration: none; margin-top: 12px;">Go to Dashboard</a>
+            </div>
+          `;
+        } else {
+          const progressPercent = Math.min(100, (data.hours_elapsed / 72) * 100);
+          resultDiv.innerHTML = `
+            <span class="status-badge status-${data.status}">
+              <span class="dot"></span>${data.status === 'running' ? 'Test Running' : 'Waiting for Agent'}
+            </span>
+
+            <div class="time-display">
+              <div class="big">${data.hours_remaining.toFixed(1)}h</div>
+              <div class="label">Remaining</div>
+            </div>
+
+            <div class="progress-bar"><div class="progress-fill" style="width: ${progressPercent}%"></div></div>
+            <p class="progress-label">${data.hours_elapsed.toFixed(1)} / 72 hours</p>
+
+            <div class="metrics-grid">
+              <div class="metric-card"><div class="metric-value">${data.total_actions}</div><div class="metric-label">Actions</div></div>
+              <div class="metric-card"><div class="metric-value green">${data.pass_count}</div><div class="metric-label">Passed</div></div>
+              <div class="metric-card"><div class="metric-value ${data.block_count > 0 ? 'red' : ''}">${data.block_count}</div><div class="metric-label">Blocked</div></div>
+              <div class="metric-card"><div class="metric-value ${data.pass_rate >= 95 ? 'green' : ''}">${data.pass_rate}%</div><div class="metric-label">Pass Rate</div></div>
+            </div>
+
+            <div class="criteria-section">
+              <h3 class="criteria-title">Certification Criteria</h3>
+              <div class="criteria-item"><span class="criteria-icon ${data.criteria.duration_met ? 'criteria-met' : 'criteria-pending'}">${data.criteria.duration_met ? '✓' : '○'}</span>72 hours continuous operation</div>
+              <div class="criteria-item"><span class="criteria-icon ${data.criteria.actions_met ? 'criteria-met' : 'criteria-pending'}">${data.criteria.actions_met ? '✓' : '○'}</span>Minimum 100 actions</div>
+              <div class="criteria-item"><span class="criteria-icon ${data.criteria.pass_rate_met ? 'criteria-met' : 'criteria-pending'}">${data.criteria.pass_rate_met ? '✓' : '○'}</span>≥95% pass rate</div>
+              <div class="criteria-item"><span class="criteria-icon ${data.criteria.blocking_verified ? 'criteria-met' : 'criteria-pending'}">${data.criteria.blocking_verified ? '✓' : '○'}</span>Blocking verified</div>
+            </div>
+
+            <div class="message">${data.status === 'waiting' ? 'Your ENVELO Agent is not connected. Make sure it is running.' : 'Test in progress. Keep your system running.'}</div>
+          `;
         }
-        
-        async function checkStatus() {
-            const certId = document.getElementById('certId').value.trim();
-            if (!certId) return alert('Please enter a Certificate ID');
-            
-            const resultDiv = document.getElementById('result');
-            resultDiv.innerHTML = '<p style="color: #888;">Loading...</p>';
-            resultDiv.classList.add('show');
-            
-            try {
-                const res = await fetch(`https://sentinel-authority-production.up.railway.app/api/verify/status/${encodeURIComponent(certId)}`);
-                const data = await res.json();
-                
-                if (data.status === 'not_found') {
-                    resultDiv.innerHTML = `
-                        <span class="status-badge status-not_found">Not Found</span>
-                        <p>${data.message}</p>
-                        <p style="margin-top: 16px; color: #888;">Make sure your ENVELO Agent is configured with the correct Certificate ID and is actively running.</p>
-                    `;
-                } else if (data.status === 'certified') {
-                    resultDiv.innerHTML = `
-                        <span class="status-badge status-certified">✓ Certified</span>
-                        <h2 style="margin: 16px 0;">Congratulations!</h2>
-                        <p>Your system has been certified.</p>
-                        <p style="margin-top: 16px;"><strong>Certificate:</strong> ${data.certificate_number}</p>
-                        <p><strong>Issued:</strong> ${new Date(data.issued_at).toLocaleDateString()}</p>
-                        <p><strong>Expires:</strong> ${new Date(data.expires_at).toLocaleDateString()}</p>
-                        <p style="margin-top: 24px;"><a href="https://app.sentinelauthority.org">Download your certificate →</a></p>
-                    `;
-                } else {
-                    const progressPercent = Math.min(100, (data.hours_elapsed / 72) * 100);
-                    resultDiv.innerHTML = `
-                        <span class="status-badge status-${data.status}">${data.status === 'running' ? '● Running' : '○ Waiting for Agent'}</span>
-                        
-                        <div class="time-remaining">
-                            <div class="big">${data.hours_remaining.toFixed(1)}h</div>
-                            <div class="label">Remaining</div>
-                        </div>
-                        
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: ${progressPercent}%"></div>
-                        </div>
-                        <p style="text-align: center; color: #888; font-size: 12px;">${data.hours_elapsed.toFixed(1)} of 72 hours completed</p>
-                        
-                        <div class="metrics">
-                            <div class="metric">
-                                <div class="metric-value">${data.total_actions}</div>
-                                <div class="metric-label">Total Actions</div>
-                            </div>
-                            <div class="metric">
-                                <div class="metric-value" style="color: #5CD685;">${data.pass_count}</div>
-                                <div class="metric-label">Passed</div>
-                            </div>
-                            <div class="metric">
-                                <div class="metric-value" style="color: ${data.block_count > 0 ? '#D65C5C' : '#888'};">${data.block_count}</div>
-                                <div class="metric-label">Blocked</div>
-                            </div>
-                            <div class="metric">
-                                <div class="metric-value" style="color: ${data.pass_rate >= 95 ? '#5CD685' : '#D65C5C'};">${data.pass_rate}%</div>
-                                <div class="metric-label">Pass Rate</div>
-                            </div>
-                        </div>
-                        
-                        <div class="criteria">
-                            <h3>Certification Criteria</h3>
-                            <div class="criteria-item">
-                                <span class="criteria-icon ${data.criteria.duration_met ? 'criteria-met' : 'criteria-pending'}">${data.criteria.duration_met ? '✓' : '○'}</span>
-                                <span>72 hours continuous operation</span>
-                            </div>
-                            <div class="criteria-item">
-                                <span class="criteria-icon ${data.criteria.actions_met ? 'criteria-met' : 'criteria-pending'}">${data.criteria.actions_met ? '✓' : '○'}</span>
-                                <span>Minimum 100 actions evaluated</span>
-                            </div>
-                            <div class="criteria-item">
-                                <span class="criteria-icon ${data.criteria.pass_rate_met ? 'criteria-met' : 'criteria-pending'}">${data.criteria.pass_rate_met ? '✓' : '○'}</span>
-                                <span>≥95% pass rate</span>
-                            </div>
-                            <div class="criteria-item">
-                                <span class="criteria-icon ${data.criteria.blocking_verified ? 'criteria-met' : 'criteria-pending'}">${data.criteria.blocking_verified ? '✓' : '○'}</span>
-                                <span>Blocking enforcement verified</span>
-                            </div>
-                        </div>
-                        
-                        <p style="margin-top: 24px; color: #888; font-size: 13px;">
-                            ${data.status === 'waiting' ? 'Your ENVELO Agent is not currently connected. Make sure it is running.' : 'Your test is in progress. Keep your system running.'}
-                        </p>
-                    `;
-                }
-            } catch (err) {
-                resultDiv.innerHTML = `<p style="color: #D65C5C;">Error: ${err.message}</p>`;
-            }
-        }
-    </script>
+      } catch (err) {
+        resultDiv.innerHTML = `<p style="color: var(--accent-red);">Error: ${err.message}</p>`;
+      }
+    }
+  </script>
 </body>
 </html>

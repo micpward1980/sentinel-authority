@@ -327,6 +327,135 @@ function LoginPage() {
 }
 
 // Dashboard
+
+// Customer Dashboard - simplified view for customers
+function CustomerDashboard() {
+  const { user } = useAuth();
+  const [applications, setApplications] = useState([]);
+  const [certificates, setCertificates] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    Promise.all([
+      api.get('/api/applications/').catch(() => ({ data: [] })),
+      api.get('/api/certificates/').catch(() => ({ data: [] }))
+    ]).then(([appsRes, certsRes]) => {
+      setApplications(appsRes.data || []);
+      setCertificates(certsRes.data || []);
+      setLoading(false);
+    });
+  }, []);
+
+  if (loading) return <div style={{color: styles.textTertiary, padding: '40px', textAlign: 'center'}}>Loading...</div>;
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <p style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', color: styles.purpleBright, marginBottom: '8px'}}>Welcome</p>
+        <h1 style={{fontFamily: "'Source Serif 4', serif", fontSize: '36px', fontWeight: 200, margin: 0}}>Your Dashboard</h1>
+        <p style={{color: styles.textSecondary, marginTop: '8px'}}>Track your ODDC certification progress</p>
+      </div>
+
+      {/* Quick Stats */}
+      <div style={{display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px'}}>
+        <Panel>
+          <div style={{textAlign: 'center', padding: '12px'}}>
+            <div style={{fontSize: '36px', fontWeight: 200, color: styles.purpleBright}}>{applications.length}</div>
+            <div style={{fontSize: '11px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px', marginTop: '4px'}}>Applications</div>
+          </div>
+        </Panel>
+        <Panel>
+          <div style={{textAlign: 'center', padding: '12px'}}>
+            <div style={{fontSize: '36px', fontWeight: 200, color: styles.accentGreen}}>{certificates.length}</div>
+            <div style={{fontSize: '11px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px', marginTop: '4px'}}>Certificates</div>
+          </div>
+        </Panel>
+        <Panel>
+          <div style={{textAlign: 'center', padding: '12px'}}>
+            <a href="https://sentinel-website-eta.vercel.app/status.html" target="_blank" style={{display: 'block', textDecoration: 'none'}}>
+              <div style={{fontSize: '24px', marginBottom: '8px'}}>📊</div>
+              <div style={{fontSize: '11px', color: styles.purpleBright, textTransform: 'uppercase', letterSpacing: '1px'}}>Check Test Status</div>
+            </a>
+          </div>
+        </Panel>
+      </div>
+
+      {/* Applications */}
+      <Panel>
+        <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Your Applications</h2>
+        {applications.length === 0 ? (
+          <div style={{textAlign: 'center', padding: '40px', color: styles.textTertiary}}>
+            <p style={{marginBottom: '16px'}}>No applications yet</p>
+            <a href="https://sentinelauthority.org/apply.html" style={{color: styles.purpleBright}}>Apply for Certification →</a>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {applications.map(app => (
+              <div key={app.id} style={{padding: '16px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                <div>
+                  <div style={{fontWeight: 500, marginBottom: '4px'}}>{app.system_name}</div>
+                  <div style={{fontSize: '12px', color: styles.textTertiary}}>{app.application_number}</div>
+                </div>
+                <span style={{padding: '4px 12px', borderRadius: '4px', fontSize: '11px', fontFamily: "'IBM Plex Mono', monospace", textTransform: 'uppercase',
+                  background: app.status === 'certified' ? 'rgba(92,214,133,0.15)' : app.status === 'testing' ? 'rgba(157,140,207,0.15)' : 'rgba(214,160,92,0.15)',
+                  color: app.status === 'certified' ? styles.accentGreen : app.status === 'testing' ? styles.purpleBright : styles.accentAmber
+                }}>{app.status || 'pending'}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </Panel>
+
+      {/* Certificates */}
+      {certificates.length > 0 && (
+        <Panel>
+          <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Your Certificates</h2>
+          <div className="space-y-3">
+            {certificates.map(cert => (
+              <div key={cert.id} style={{padding: '16px', background: 'rgba(92,214,133,0.1)', border: '1px solid rgba(92,214,133,0.2)', borderRadius: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                <div>
+                  <div style={{fontWeight: 500, color: styles.accentGreen, marginBottom: '4px'}}>{cert.certificate_number}</div>
+                  <div style={{fontSize: '12px', color: styles.textTertiary}}>Issued: {new Date(cert.issued_at).toLocaleDateString()}</div>
+                </div>
+                <a href={`https://sentinel-authority-production.up.railway.app/api/applications/${cert.application_id}/certificate/download`} 
+                   target="_blank"
+                   style={{padding: '8px 16px', background: styles.purplePrimary, borderRadius: '6px', color: '#fff', fontSize: '11px', fontFamily: "'IBM Plex Mono', monospace", textDecoration: 'none'}}>
+                  Download PDF
+                </a>
+              </div>
+            ))}
+          </div>
+        </Panel>
+      )}
+
+      {/* Help */}
+      <Panel>
+        <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Need Help?</h2>
+        <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px'}}>
+          <a href="https://sentinelauthority.org/agent.html" target="_blank" style={{padding: '16px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px', textDecoration: 'none', color: styles.textSecondary}}>
+            <div style={{fontWeight: 500, marginBottom: '4px', color: styles.textPrimary}}>ENVELO Agent Setup</div>
+            <div style={{fontSize: '12px'}}>Installation and configuration guide</div>
+          </a>
+          <a href="mailto:info@sentinelauthority.org" style={{padding: '16px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px', textDecoration: 'none', color: styles.textSecondary}}>
+            <div style={{fontWeight: 500, marginBottom: '4px', color: styles.textPrimary}}>Contact Support</div>
+            <div style={{fontSize: '12px'}}>info@sentinelauthority.org</div>
+          </a>
+        </div>
+      </Panel>
+    </div>
+  );
+}
+
+
+// Role-based dashboard routing
+function RoleBasedDashboard() {
+  const { user } = useAuth();
+  if (user?.role === 'admin') {
+    return <Dashboard />;
+  }
+  return <CustomerDashboard />;
+}
+
 function Dashboard() {
   const [stats, setStats] = useState(null);
   const [recentApps, setRecentApps] = useState([]);
@@ -2008,6 +2137,9 @@ function EnveloPage() {
           <p style={{color: styles.textSecondary}}>api_endpoint = <span style={{color: styles.accentGreen}}>"https://api.sentinelauthority.org"</span></p>
         </div>
         <p style={{color: styles.textTertiary, fontSize: '12px', marginTop: '12px'}}>Replace YOUR-CERTIFICATE-ID with your actual ODDC certificate number after certification.</p>
+        <div style={{marginTop: '20px', paddingTop: '20px', borderTop: `1px solid ${styles.borderGlass}`}}>
+          <a href="https://sentinel-website-eta.vercel.app/status.html" target="_blank" style={{display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '10px 16px', background: 'rgba(157,140,207,0.1)', border: '1px solid rgba(157,140,207,0.3)', borderRadius: '8px', color: styles.purpleBright, fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textDecoration: 'none'}}>Check Test Status →</a>
+        </div>
       </Panel>
 
       
