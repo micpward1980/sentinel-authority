@@ -23,7 +23,6 @@ class DashboardStats(BaseModel):
 
 @router.get("/stats")
 async def get_stats(db: AsyncSession = Depends(get_db), user: dict = Depends(get_current_user)):
-    # Total applications
     total_apps = await db.execute(select(func.count(Application.id)))
     pending_apps = await db.execute(
         select(func.count(Application.id)).where(Application.state == CertificationState.PENDING)
@@ -47,10 +46,14 @@ async def get_stats(db: AsyncSession = Depends(get_db), user: dict = Depends(get
 
 @router.get("/recent-applications")
 async def get_recent_applications(db: AsyncSession = Depends(get_db), user: dict = Depends(get_current_user)):
-    result = await db.execute(
-        select(Application).order_by(Application.created_at.desc()).limit(10)
-    )
-    apps = result.scalars().all()
+    if user.get("role") == "applicant":
+        result = await db.execute(
+            select(Application).where(Application.organization_name == user.get("organization")).order_by(Application.created_at.desc()).limit(10)
+        )
+    else:
+        result = await db.execute(
+            select(Application).order_by(Application.created_at.desc()).limit(10)
+        )
     return [
         {
             "id": a.id,
@@ -60,7 +63,7 @@ async def get_recent_applications(db: AsyncSession = Depends(get_db), user: dict
             "state": a.state.value,
             "submitted_at": a.submitted_at.isoformat() if a.submitted_at else None,
         }
-        for a in apps
+        for a in result.scalars().all()
     ]
 
 
@@ -86,10 +89,14 @@ async def get_active_tests(db: AsyncSession = Depends(get_db), user: dict = Depe
 
 @router.get("/recent-certificates")
 async def get_recent_certificates(db: AsyncSession = Depends(get_db), user: dict = Depends(get_current_user)):
-    result = await db.execute(
-        select(Certificate).order_by(Certificate.issued_at.desc()).limit(10)
-    )
-    certs = result.scalars().all()
+    if user.get("role") == "applicant":
+        result = await db.execute(
+            select(Certificate).where(Certificate.organization_name == user.get("organization")).order_by(Certificate.issued_at.desc()).limit(10)
+        )
+    else:
+        result = await db.execute(
+            select(Certificate).order_by(Certificate.issued_at.desc()).limit(10)
+        )
     return [
         {
             "id": c.id,
@@ -100,5 +107,5 @@ async def get_recent_certificates(db: AsyncSession = Depends(get_db), user: dict
             "issued_at": c.issued_at.isoformat() if c.issued_at else None,
             "expires_at": c.expires_at.isoformat() if c.expires_at else None,
         }
-        for c in certs
+        for c in result.scalars().all()
     ]

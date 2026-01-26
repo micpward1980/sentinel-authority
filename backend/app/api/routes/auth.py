@@ -1,6 +1,5 @@
 """Authentication routes."""
 from app.services.email_service import notify_admin_new_registration
-from app.services.email_service import notify_admin_new_registration
 
 from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -35,12 +34,10 @@ class TokenResponse(BaseModel):
 
 @router.post("/register", response_model=TokenResponse)
 async def register(user_data: UserCreate, db: AsyncSession = Depends(get_db)):
-    # Check if user exists
     result = await db.execute(select(User).where(User.email == user_data.email))
     if result.scalar_one_or_none():
         raise HTTPException(status_code=400, detail="Email already registered")
     
-    # Create user
     user = User(
         email=user_data.email,
         hashed_password=get_password_hash(user_data.password),
@@ -52,15 +49,13 @@ async def register(user_data: UserCreate, db: AsyncSession = Depends(get_db)):
     await db.commit()
     await db.refresh(user)
     
-    # Notify admin
     notify_admin_new_registration(user.email, user.full_name, user.organization or "")
     
-    # Generate token
-    token = create_access_token({"sub": str(user.id), "email": user.email, "role": user.role.value})
+    token = create_access_token({"sub": str(user.id), "email": user.email, "role": user.role.value, "organization": user.organization})
     return {
         "access_token": token,
         "token_type": "bearer",
-        "user": {"id": user.id, "email": user.email, "full_name": user.full_name, "role": user.role.value}
+        "user": {"id": user.id, "email": user.email, "full_name": user.full_name, "role": user.role.value, "organization": user.organization}
     }
 
 
@@ -75,11 +70,11 @@ async def login(credentials: UserLogin, db: AsyncSession = Depends(get_db)):
     if not user.is_active:
         raise HTTPException(status_code=401, detail="Account disabled")
     
-    token = create_access_token({"sub": str(user.id), "email": user.email, "role": user.role.value})
+    token = create_access_token({"sub": str(user.id), "email": user.email, "role": user.role.value, "organization": user.organization})
     return {
         "access_token": token,
         "token_type": "bearer",
-        "user": {"id": user.id, "email": user.email, "full_name": user.full_name, "role": user.role.value}
+        "user": {"id": user.id, "email": user.email, "full_name": user.full_name, "role": user.role.value, "organization": user.organization}
     }
 
 
