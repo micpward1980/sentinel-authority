@@ -192,3 +192,75 @@ class AuditLog(Base):
     resource_id = Column(Integer)
     details = Column(JSON)
     log_hash = Column(String(64))
+
+
+# ENVELO API Keys
+class APIKey(Base):
+    __tablename__ = "api_keys"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    key_hash = Column(String(64), unique=True, index=True)  # SHA-256 hash of the key
+    key_prefix = Column(String(12))  # First 8 chars for identification (sa_live_xxxx)
+    certificate_id = Column(Integer, ForeignKey("certificates.id"), nullable=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    name = Column(String(100))  # Friendly name like "Production Key"
+    created_at = Column(DateTime, default=datetime.utcnow)
+    last_used_at = Column(DateTime, nullable=True)
+    revoked_at = Column(DateTime, nullable=True)
+    is_active = Column(Boolean, default=True)
+    
+    certificate = relationship("Certificate", backref="api_keys")
+    user = relationship("User", backref="api_keys")
+
+
+# ENVELO Sessions
+class EnveloSession(Base):
+    __tablename__ = "envelo_sessions"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    session_id = Column(String(32), unique=True, index=True)
+    certificate_id = Column(Integer, ForeignKey("certificates.id"))
+    api_key_id = Column(Integer, ForeignKey("api_keys.id"))
+    started_at = Column(DateTime, default=datetime.utcnow)
+    ended_at = Column(DateTime, nullable=True)
+    agent_version = Column(String(20))
+    status = Column(String(20), default="active")  # active, ended, disconnected
+    last_telemetry_at = Column(DateTime, nullable=True)
+    pass_count = Column(Integer, default=0)
+    block_count = Column(Integer, default=0)
+    
+    certificate = relationship("Certificate", backref="envelo_sessions")
+    api_key = relationship("APIKey", backref="sessions")
+
+
+# ENVELO Telemetry Records
+class TelemetryRecord(Base):
+    __tablename__ = "telemetry_records"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    session_id = Column(Integer, ForeignKey("envelo_sessions.id"), index=True)
+    timestamp = Column(DateTime, index=True)
+    action_id = Column(String(50))
+    action_type = Column(String(100))
+    result = Column(String(10))  # PASS or BLOCK
+    execution_time_ms = Column(Float)
+    parameters = Column(Text)  # JSON
+    boundary_evaluations = Column(Text)  # JSON
+    system_state = Column(Text)  # JSON
+    
+    session = relationship("EnveloSession", backref="telemetry_records")
+
+
+# ENVELO Violations (for quick access to blocks)
+class Violation(Base):
+    __tablename__ = "violations"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    session_id = Column(Integer, ForeignKey("envelo_sessions.id"), index=True)
+    telemetry_id = Column(Integer, ForeignKey("telemetry_records.id"))
+    timestamp = Column(DateTime, index=True)
+    boundary_name = Column(String(100))
+    violation_message = Column(Text)
+    parameters = Column(Text)  # JSON
+    
+    session = relationship("EnveloSession", backref="violations")
