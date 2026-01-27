@@ -96,7 +96,6 @@ async def register_session(
         "status": "received",
         "records_stored": len(data.records)
     }
-    await db.refresh(session)
     
     print(f"[ENVELO] Session registered: {data.session_id} for cert {data.certificate_id}")
     
@@ -127,14 +126,6 @@ async def receive_telemetry(
         db.add(session)
         await db.commit()
 
-    # Check for high violations
-    await check_and_notify_violations(session, api_key, db)
-
-    return {
-        "status": "received",
-        "records_stored": len(data.records)
-    }
-        await db.refresh(session)
     
     # Store telemetry records
     for record in data.records:
@@ -1062,13 +1053,6 @@ async def check_and_notify_violations(session: EnveloSession, api_key: APIKey, d
         session.last_violation_alert_at = datetime.utcnow()
         await db.commit()
 
-    # Check for high violations
-    await check_and_notify_violations(session, api_key, db)
-
-    return {
-        "status": "received",
-        "records_stored": len(data.records)
-    }
         print(f"[ENVELO] Sent violation alert for {org_name} - {system_name}")
     except Exception as e:
         print(f"[ENVELO] Failed to send violation alert: {e}")
