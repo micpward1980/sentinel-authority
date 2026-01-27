@@ -12,7 +12,7 @@ from datetime import datetime
 
 from app.core.database import get_db
 from app.models.models import Certificate, Application, APIKey, CertificationState
-from app.api.deps import get_api_key_from_header
+from app.api.routes.envelo import get_api_key_from_header
 
 router = APIRouter()
 

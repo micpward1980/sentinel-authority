@@ -1,4 +1,5 @@
 import React, { useState, useEffect, createContext, useContext } from 'react';
+import BoundaryEditor from './components/BoundaryEditor';
 import { BrowserRouter, Routes, Route, Navigate, Link, useNavigate, useLocation, useParams } from 'react-router-dom';
 import { FileText, Activity, Award, Users, Home, LogOut, Menu, X, CheckCircle, AlertTriangle, Clock, Search, Plus, ArrowLeft, ExternalLink, Shield, Download, RefreshCw } from 'lucide-react';
 import axios from 'axios';
@@ -1313,6 +1314,21 @@ function ApplicationDetail() {
           <p style={{color: styles.textSecondary, lineHeight: 1.7, whiteSpace: 'pre-wrap'}}>{typeof app.envelope_definition === 'object' ? JSON.stringify(app.envelope_definition, null, 2) : (app.envelope_definition || 'Not specified')}</p>
         </Panel>
       </div>
+
+      {/* Boundary Editor - Admin Only */}
+      <BoundaryEditor
+        applicationId={app.id}
+        initialBoundaries={app.envelope_definition || {}}
+        onSave={async (boundaries) => {
+          try {
+            await api.patch(`/api/applicants/${app.id}`, { envelope_definition: boundaries });
+            alert("Boundaries saved!");
+            setApp({...app, envelope_definition: boundaries});
+          } catch (e) {
+            alert("Failed to save: " + e.message);
+          }
+        }}
+      />
 
       <Panel>
         <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>ODD Specification</h2>
