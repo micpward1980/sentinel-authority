@@ -2475,6 +2475,8 @@ function MonitoringPage() {
   const [timeline, setTimeline] = useState([]);
   const [loading, setLoading] = useState(true);
   const [autoRefresh, setAutoRefresh] = useState(true);
+  const [customerFilter, setCustomerFilter] = useState("");
+  const [onlineOnly, setOnlineOnly] = useState(false);
   const { user } = useAuth();
 
   const fetchData = async () => {
@@ -2526,6 +2528,11 @@ function MonitoringPage() {
 
   const summary = overview?.summary || {};
   const sessions = overview?.sessions || [];
+  const filteredSessions = sessions.filter(s => {
+    if (customerFilter && s.organization_name !== customerFilter) return false;
+    if (onlineOnly && !s.is_online) return false;
+    return true;
+  });
 
   return (
     <div style={{maxWidth: '1400px', margin: '0 auto'}}>
@@ -2647,13 +2654,20 @@ function MonitoringPage() {
 
       {/* Sessions Table */}
       <div style={{background: styles.bgPanel, border: `1px solid ${styles.borderGlass}`, borderRadius: '12px', overflow: 'hidden'}}>
-        <div style={{padding: '16px 20px', borderBottom: `1px solid ${styles.borderSubtle}`}}>
-          <h2 style={{margin: 0, fontSize: '14px', fontFamily: "'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '2px', color: styles.textTertiary}}>
-            Agent Sessions
-          </h2>
-        </div>
-        
-        {sessions.length === 0 ? (
+        <div style={{padding: '16px 20px', borderBottom: `1px solid ${styles.borderSubtle}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+          <h2 style={{margin: 0, fontSize: '14px', fontFamily: "'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '2px', color: styles.textTertiary}}>Agent Sessions</h2>
+          <div style={{display: 'flex', gap: '12px', alignItems: 'center'}}>
+            <select value={customerFilter} onChange={(e) => setCustomerFilter(e.target.value)} style={{background: styles.bgDeep, border: `1px solid ${styles.borderGlass}`, borderRadius: '6px', padding: '6px 10px', color: styles.textPrimary, fontSize: '12px'}}>
+              <option value="">All Customers</option>
+              {[...new Set(sessions.map(s => s.organization_name).filter(Boolean))].map(org => <option key={org} value={org}>{org}</option>)}
+            </select>
+            <label style={{display: 'flex', alignItems: 'center', gap: '6px', color: styles.textSecondary, fontSize: '12px', cursor: 'pointer'}}>
+              <input type="checkbox" checked={onlineOnly} onChange={(e) => setOnlineOnly(e.target.checked)} style={{accentColor: styles.purpleBright}} />
+              Online only
+            </label>
+          </div>
+        </div>        
+        {filteredSessions.length === 0 ? (
           <div style={{padding: '40px', textAlign: 'center', color: styles.textSecondary}}>
             No ENVELO sessions found. Deploy an agent to begin monitoring.
           </div>
@@ -2671,7 +2685,7 @@ function MonitoringPage() {
                 </tr>
               </thead>
               <tbody>
-                {sessions.map((session) => {
+                {filteredSessions.map((session) => {
                   const total = session.pass_count + session.block_count;
                   const passRate = total > 0 ? (session.pass_count / total * 100) : 0;
                   const isSelected = selectedSession?.id === session.id;

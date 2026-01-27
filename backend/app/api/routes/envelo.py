@@ -840,3 +840,69 @@ async def get_alerts(
                 })
     
     return {"alerts": alerts, "total": len(alerts)}
+
+
+@router.post("/check-offline")
+async def check_offline_agents(
+    db: AsyncSession = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    """Check for offline agents and send notifications (admin only)"""
+    from app.services.email_service import notify_agent_offline, notify_admin_agent_offline
+    from app.models.models import User, Certificate
+    
+    if current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    now = datetime.utcnow()
+    notifications_sent = 0
+    
+    # Get all active sessions
+    result = await db.execute(
+        select(EnveloSession).where(EnveloSession.status == "active")
+    )
+    sessions = result.scalars().all()
+    
+    for session in sessions:
+        last_activity = session.last_heartbeat_at or session.last_telemetry_at
+        if not last_activity:
+            continue
+            
+        minutes_offline = int((now - last_activity).total_seconds() / 60)
+        
+        # Only alert if offline for more than 5 minutes and hasn't been notified recently
+        if minutes_offline >= 5:
+            # Get the API key owner
+            api_key_result = await db.execute(
+                select(APIKey).where(APIKey.id == session.api_key_id)
+            )
+            api_key = api_key_result.scalar_one_or_none()
+            
+            if api_key:
+                user_result = await db.execute(
+                    select(User).where(User.id == api_key.user_id)
+                )
+                user = user_result.scalar_one_or_none()
+                
+                if user:
+                    # Get certificate info for system name
+                    cert_result = await db.execute(
+                        select(Certificate).where(Certificate.id == session.certificate_id)
+                    )
+                    cert = cert_result.scalar_one_or_none()
+                    
+                    system_name = cert.system_name if cert else "Unknown System"
+                    org_name = cert.organization_name if cert else user.organization or "Unknown"
+                    
+                    try:
+                        await notify_agent_offline(
+                            user.email, system_name, session.session_id, org_name, minutes_offline
+                        )
+                        await notify_admin_agent_offline(
+                            system_name, org_name, session.session_id, minutes_offline, user.email
+                        )
+                        notifications_sent += 1
+                    except Exception as e:
+                        print(f"Failed to send offline notification: {e}")
+    
+    return {"notifications_sent": notifications_sent}

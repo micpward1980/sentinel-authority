@@ -297,3 +297,64 @@ async def notify_certificate_issued(to: str, system_name: str, cert_number: str,
     await send_email(to, f"ODDC Certificate Issued: {system_name}", html)
     # Also notify admin
     await send_email("info@sentinelauthority.org", f"Certificate Issued: {cert_number} - {system_name}", html)
+
+
+async def notify_agent_offline(to: str, system_name: str, session_id: str, org_name: str, minutes_offline: int):
+    """Notify customer that their ENVELO agent has gone offline"""
+    subject = f"⚠️ ENVELO Agent Offline: {system_name}"
+    
+    html = f"""
+    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 20px;">
+        <div style="text-align: center; margin-bottom: 32px;">
+            <div style="display: inline-block; width: 40px; height: 40px; background: #5B4B8A; border-radius: 8px; margin-bottom: 16px;"></div>
+            <h1 style="font-size: 24px; font-weight: 300; color: #1a1a2e; margin: 0;">Agent Offline Alert</h1>
+        </div>
+        
+        <div style="background: #FFF3CD; border: 1px solid #FFECB5; border-radius: 8px; padding: 16px; margin-bottom: 24px;">
+            <p style="margin: 0; color: #856404;"><strong>Warning:</strong> Your ENVELO agent has been offline for {minutes_offline} minutes.</p>
+        </div>
+        
+        <div style="background: #f8f9fa; border-radius: 8px; padding: 24px; margin-bottom: 24px;">
+            <p style="margin: 0 0 12px 0;"><strong>Organization:</strong> {org_name}</p>
+            <p style="margin: 0 0 12px 0;"><strong>System:</strong> {system_name}</p>
+            <p style="margin: 0;"><strong>Session ID:</strong> <code style="background: #e9ecef; padding: 2px 6px; border-radius: 4px;">{session_id}</code></p>
+        </div>
+        
+        <p style="color: #666; line-height: 1.6;">
+            Your ODDC certification requires continuous ENVELO agent operation. Please check your system and restart the agent if necessary.
+        </p>
+        
+        <p style="color: #666; line-height: 1.6;">
+            If the agent remains offline for an extended period, your certification may be subject to review.
+        </p>
+        
+        <div style="margin-top: 32px; padding-top: 24px; border-top: 1px solid #e9ecef; text-align: center;">
+            <p style="margin: 0; font-size: 12px; color: #999;">Sentinel Authority — ODDC Certification</p>
+        </div>
+    </div>
+    """
+    
+    await send_email(to, subject, html)
+
+
+async def notify_admin_agent_offline(system_name: str, org_name: str, session_id: str, minutes_offline: int, customer_email: str):
+    """Notify admin that a customer's agent has gone offline"""
+    subject = f"⚠️ Customer Agent Offline: {org_name} - {system_name}"
+    
+    html = f"""
+    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 20px;">
+        <h2 style="color: #1a1a2e;">Agent Offline Alert</h2>
+        
+        <div style="background: #f8f9fa; border-radius: 8px; padding: 24px; margin-bottom: 24px;">
+            <p style="margin: 0 0 12px 0;"><strong>Organization:</strong> {org_name}</p>
+            <p style="margin: 0 0 12px 0;"><strong>System:</strong> {system_name}</p>
+            <p style="margin: 0 0 12px 0;"><strong>Session ID:</strong> {session_id}</p>
+            <p style="margin: 0 0 12px 0;"><strong>Offline Duration:</strong> {minutes_offline} minutes</p>
+            <p style="margin: 0;"><strong>Customer Email:</strong> {customer_email}</p>
+        </div>
+        
+        <p style="color: #666;">Customer has been notified.</p>
+    </div>
+    """
+    
+    await send_email(ADMIN_EMAIL, subject, html)
