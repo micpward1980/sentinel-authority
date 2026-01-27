@@ -826,6 +826,7 @@ function RoleBasedDashboard() {
 }
 
 function Dashboard() {
+  const { user } = useAuth();
   const [stats, setStats] = useState(null);
   const [recentApps, setRecentApps] = useState([]);
   const [activeTests, setActiveTests] = useState([]);
