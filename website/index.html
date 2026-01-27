@@ -2397,31 +2397,9 @@
     function handleDownloadSubmit(e) {
       e.preventDefault();
       const form = e.target;
-      
-      const data = {
-        email: document.getElementById('download-email').value,
-        organization: document.getElementById('download-org').value,
-        role: document.getElementById('download-role').value,
-        document: document.getElementById('documentName').value
-      };
-      
-      fetch('https://api.sentinelauthority.org/api/applications/document-download', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      })
-      .then(response => response.json())
-      .then(result => {
-        closeDownloadModal();
-        window.open(currentPdfPath, '_blank');
-        form.reset();
-      })
-      .catch(error => {
-        console.error('Form error:', error);
-        closeDownloadModal();
-        window.open(currentPdfPath, '_blank');
-        form.reset();
-      });
+      closeDownloadModal();
+      window.open(currentPdfPath, '_blank');
+      form.reset();
     }
   </script>
 </body>
