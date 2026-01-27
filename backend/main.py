@@ -113,4 +113,10 @@ async def start_auto_evaluator():
     import asyncio
     from app.services.auto_evaluator import run_auto_evaluator
     asyncio.create_task(run_auto_evaluator())
+    
+    # Start offline agent monitor
+    from app.services.background_tasks import check_offline_agents_task
+    from app.core.database import get_db
+    asyncio.create_task(check_offline_agents_task(get_db))
+    logger.info("Offline agent monitor started")
     logger.info("Auto-evaluator background task started")
