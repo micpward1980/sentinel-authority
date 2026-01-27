@@ -88,6 +88,14 @@ async def register_session(
     
     db.add(session)
     await db.commit()
+
+    # Check for high violations
+    await check_and_notify_violations(session, api_key, db)
+
+    return {
+        "status": "received",
+        "records_stored": len(data.records)
+    }
     await db.refresh(session)
     
     print(f"[ENVELO] Session registered: {data.session_id} for cert {data.certificate_id}")
@@ -118,6 +126,14 @@ async def receive_telemetry(
         )
         db.add(session)
         await db.commit()
+
+    # Check for high violations
+    await check_and_notify_violations(session, api_key, db)
+
+    return {
+        "status": "received",
+        "records_stored": len(data.records)
+    }
         await db.refresh(session)
     
     # Store telemetry records
@@ -154,11 +170,15 @@ async def receive_telemetry(
     session.block_count = (session.block_count or 0) + data.stats.get('block_count', 0)
     
     await db.commit()
-    
+
+    # Check for high violations
+    await check_and_notify_violations(session, api_key, db)
+
     return {
         "status": "received",
         "records_stored": len(data.records)
     }
+    
 
 
 @router.post("/sessions/{session_id}/end")
@@ -181,6 +201,14 @@ async def end_session(
         session.pass_count = data.final_stats.get('pass_count', session.pass_count)
         session.block_count = data.final_stats.get('block_count', session.block_count)
         await db.commit()
+
+    # Check for high violations
+    await check_and_notify_violations(session, api_key, db)
+
+    return {
+        "status": "received",
+        "records_stored": len(data.records)
+    }
     
     return {"status": "ended", "session_id": session_id}
 
@@ -634,6 +662,14 @@ async def receive_heartbeat(
         session.last_heartbeat_at = now
     
     await db.commit()
+
+    # Check for high violations
+    await check_and_notify_violations(session, api_key, db)
+
+    return {
+        "status": "received",
+        "records_stored": len(data.records)
+    }
     
     return {"status": "ok", "timestamp": now.isoformat(), "sessions_updated": len(sessions)}
 
@@ -988,3 +1024,51 @@ async def check_violation_rates(
                             print(f"Failed to send violation notification: {e}")
     
     return {"notifications_sent": notifications_sent}
+
+
+async def check_and_notify_violations(session: EnveloSession, api_key: APIKey, db: AsyncSession):
+    """Check violation rate and send notifications if needed"""
+    from app.services.email_service import notify_high_violation_rate, notify_admin_high_violations
+    from app.models.models import User, Certificate
+    
+    total = (session.pass_count or 0) + (session.block_count or 0)
+    if total < 100:
+        return
+    
+    block_rate = (session.block_count or 0) / total * 100
+    if block_rate <= 10:
+        return
+    
+    # Only alert if haven't alerted in last hour
+    last_alert = getattr(session, 'last_violation_alert_at', None)
+    if last_alert and (datetime.utcnow() - last_alert).total_seconds() < 3600:
+        return
+    
+    try:
+        user_result = await db.execute(select(User).where(User.id == api_key.user_id))
+        user = user_result.scalar_one_or_none()
+        if not user:
+            return
+        
+        cert_result = await db.execute(select(Certificate).where(Certificate.id == session.certificate_id))
+        cert = cert_result.scalar_one_or_none()
+        
+        system_name = cert.system_name if cert else "Unknown"
+        org_name = cert.organization_name if cert else user.organization or "Unknown"
+        
+        await notify_high_violation_rate(user.email, system_name, org_name, session.block_count, block_rate)
+        await notify_admin_high_violations(system_name, org_name, session.block_count, block_rate, user.email)
+        
+        session.last_violation_alert_at = datetime.utcnow()
+        await db.commit()
+
+    # Check for high violations
+    await check_and_notify_violations(session, api_key, db)
+
+    return {
+        "status": "received",
+        "records_stored": len(data.records)
+    }
+        print(f"[ENVELO] Sent violation alert for {org_name} - {system_name}")
+    except Exception as e:
+        print(f"[ENVELO] Failed to send violation alert: {e}")

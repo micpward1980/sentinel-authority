@@ -228,6 +228,7 @@ class EnveloSession(Base):
     status = Column(String(20), default="active")  # active, ended, disconnected
     last_telemetry_at = Column(DateTime, nullable=True)
     last_heartbeat_at = Column(DateTime, nullable=True)
+    last_violation_alert_at = Column(DateTime, nullable=True)
     pass_count = Column(Integer, default=0)
     block_count = Column(Integer, default=0)
     
