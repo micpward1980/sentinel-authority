@@ -175,13 +175,15 @@ async def list_tests(
     user: dict = Depends(get_current_user)
 ):
     """List all tests."""
-    result = await db.execute(select(CAT72Test).order_by(CAT72Test.created_at.desc()))
-    tests = result.scalars().all()
+    result = await db.execute(select(CAT72Test, Application).join(Application, CAT72Test.application_id == Application.id).order_by(CAT72Test.created_at.desc()))
+    rows = result.all()
     
     return [
         {
             "id": t.id,
             "test_id": t.test_id,
+            "organization_name": a.organization_name,
+            "system_name": a.system_name,
             "application_id": t.application_id,
             "state": t.state.value,
             "duration_hours": t.duration_hours,

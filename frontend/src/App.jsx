@@ -520,7 +520,7 @@ function Dashboard() {
             {activeTests.map((test) => (
               <div key={test.id} className="p-4 rounded-lg" style={{background: 'rgba(255,255,255,0.03)', border: `1px solid ${styles.borderGlass}`}}>
                 <div className="flex justify-between items-center mb-2">
-                  <span style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '12px', color: styles.purpleBright}}>{test.test_id}</span>
+                  <span style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '12px', color: styles.purpleBright}}>{test.organization_name} - {test.system_name}</span>
                   <span style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', color: styles.accentAmber}}>
                     {Math.round((test.elapsed_seconds / (test.duration_hours * 3600)) * 100)}%
                   </span>
@@ -1044,7 +1044,7 @@ function CAT72Console() {
           <tbody>
             {tests.map((test) => (
               <tr key={test.id} style={{borderBottom: `1px solid ${styles.borderGlass}`}}>
-                <td className="px-4 py-4" style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '12px', color: styles.purpleBright}}>{test.test_id}</td>
+                <td className="px-4 py-4" style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '12px', color: styles.purpleBright}}>{test.organization_name} - {test.system_name}</td>
                 <td className="px-4 py-4">
                   <span className="px-2 py-1 rounded" style={{
                     background: test.state === 'running' ? 'rgba(214,160,92,0.15)' : test.state === 'completed' ? 'rgba(92,214,133,0.15)' : 'rgba(157,140,207,0.15)',
