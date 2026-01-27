@@ -128,7 +128,6 @@ function Layout({ children }) {
   const [userApps, setUserApps] = useState([]);
   const location = useLocation();
 
-
   useEffect(() => {
     if (user) {
       api.get('/api/certificates/').then(res => setUserCerts(res.data || [])).catch(() => setUserCerts([]));
@@ -155,18 +154,48 @@ function Layout({ children }) {
   });
 
   return (
-    <div className="min-h-screen" style={{background: `radial-gradient(1200px 700px at 15% 10%, rgba(91,75,138,0.15), transparent 55%), radial-gradient(900px 600px at 85% 80%, rgba(92,214,133,0.06), transparent 55%), ${styles.bgDeep}`, color: styles.textPrimary, fontFamily: "'Inter', system-ui, -apple-system, sans-serif"}}>
+    <div className="min-h-screen" style={{background: styles.bgDeep, color: styles.textPrimary, fontFamily: "'Inter', system-ui, -apple-system, sans-serif"}}>
+      {/* Animated background gradients */}
+      <div style={{
+        position: 'fixed', top: '-10%', left: '5%', width: '500px', height: '500px',
+        background: 'radial-gradient(circle, rgba(91,75,138,0.25) 0%, transparent 70%)',
+        animation: 'float1 20s ease-in-out infinite', pointerEvents: 'none', zIndex: 0,
+      }} />
+      <div style={{
+        position: 'fixed', bottom: '-20%', right: '0%', width: '700px', height: '700px',
+        background: 'radial-gradient(circle, rgba(92,214,133,0.12) 0%, transparent 70%)',
+        animation: 'float2 25s ease-in-out infinite', pointerEvents: 'none', zIndex: 0,
+      }} />
+      <div style={{
+        position: 'fixed', top: '50%', right: '20%', width: '400px', height: '400px',
+        background: 'radial-gradient(circle, rgba(157,140,207,0.15) 0%, transparent 70%)',
+        animation: 'float3 15s ease-in-out infinite', pointerEvents: 'none', zIndex: 0,
+      }} />
+      
+      <style>{`
+        @keyframes float1 { 0%, 100% { transform: translate(0, 0) scale(1); } 33% { transform: translate(40px, -40px) scale(1.05); } 66% { transform: translate(-30px, 30px) scale(0.95); } }
+        @keyframes float2 { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(-50px, -50px) scale(1.1); } }
+        @keyframes float3 { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(30px, 40px); } }
+        .sexy-panel { transition: all 0.3s ease; }
+        .sexy-panel:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(0,0,0,0.3); }
+        .sexy-btn { transition: all 0.3s ease; }
+        .sexy-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(91,75,138,0.4); }
+        .sexy-input { transition: all 0.3s ease; }
+        .sexy-input:focus { border-color: rgba(157,140,207,0.6) !important; box-shadow: 0 0 0 3px rgba(157,140,207,0.1); transform: translateY(-1px); }
+        .sexy-row { transition: all 0.2s ease; }
+        .sexy-row:hover { background: rgba(157,140,207,0.08) !important; }
+      `}</style>
+      
       {/* Grid overlay */}
-      <div className="fixed inset-0 pointer-events-none z-0" style={{
-        backgroundImage: 'linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px)',
-        backgroundSize: '120px 120px',
-        opacity: 0.15,
-        maskImage: 'radial-gradient(ellipse at center, rgba(0,0,0,0.95) 20%, transparent 70%)',
-        WebkitMaskImage: 'radial-gradient(ellipse at center, rgba(0,0,0,0.95) 20%, transparent 70%)',
+      <div className="fixed inset-0 pointer-events-none" style={{
+        backgroundImage: 'linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)',
+        backgroundSize: '60px 60px',
+        opacity: 0.4,
+        zIndex: 0,
       }} />
 
       {/* Sidebar */}
-      <div className={`fixed inset-y-0 left-0 z-50 w-64 transform transition-transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0`} style={{background: 'rgba(42,47,61,0.95)', backdropFilter: 'blur(18px)', borderRight: `1px solid ${styles.borderGlass}`}}>
+      <div className={`fixed inset-y-0 left-0 z-50 w-64 transform transition-transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0`} style={{background: 'rgba(30,34,44,0.95)', backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)', borderRight: '1px solid rgba(255,255,255,0.06)', boxShadow: '4px 0 24px rgba(0,0,0,0.2)'}}>
         <div className="flex items-center justify-between h-16 px-4" style={{borderBottom: `1px solid ${styles.borderGlass}`}}>
           <Link to="/dashboard" className="flex items-center gap-3 no-underline">
             <BrandMark size={24} />
@@ -181,14 +210,16 @@ function Layout({ children }) {
             <Link
               key={item.name}
               to={item.href}
-              className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all no-underline"
+              className="flex items-center gap-3 px-4 py-3 rounded-xl transition-all no-underline"
               style={{
-                background: location.pathname.startsWith(item.href) ? styles.purplePrimary : 'transparent',
+                background: location.pathname.startsWith(item.href) ? 'linear-gradient(135deg, rgba(91,75,138,0.9) 0%, rgba(107,91,154,0.9) 100%)' : 'transparent',
                 color: location.pathname.startsWith(item.href) ? '#fff' : styles.textTertiary,
                 fontFamily: "'IBM Plex Mono', monospace",
                 fontSize: '11px',
                 letterSpacing: '1px',
                 textTransform: 'uppercase',
+                boxShadow: location.pathname.startsWith(item.href) ? '0 4px 15px rgba(91,75,138,0.4)' : 'none',
+                border: location.pathname.startsWith(item.href) ? '1px solid rgba(157,140,207,0.3)' : '1px solid transparent',
               }}
             >
               {item.icon === 'brand' ? <BrandMark size={16} /> : <item.icon className="w-4 h-4" />}
@@ -215,7 +246,7 @@ function Layout({ children }) {
 
       {/* Main Content */}
       <div className={`${sidebarOpen ? 'lg:ml-64' : ''} relative z-10`}>
-        <header className="h-16 flex items-center px-6 gap-4" style={{borderBottom: `1px solid ${styles.borderGlass}`, background: 'rgba(42,47,61,0.5)', backdropFilter: 'blur(12px)'}}>
+        <header className="h-16 flex items-center px-6 gap-4" style={{borderBottom: '1px solid rgba(255,255,255,0.06)', background: 'rgba(30,34,44,0.8)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)'}}>
           <button onClick={() => setSidebarOpen(!sidebarOpen)} className="lg:hidden" style={{color: styles.textSecondary, background: 'none', border: 'none'}}>
             <Menu className="w-6 h-6" />
           </button>
@@ -235,19 +266,185 @@ function Layout({ children }) {
             Verify
           </Link>
         </header>
-        <main className="p-6">{children}</main>
+        <main className="p-8" style={{position: 'relative', zIndex: 1}}>{children}</main>
       </div>
     </div>
   );
 }
 
 // Panel Component
-function Panel({ children, className = '' }) {
+function Panel({ children, className = '', glow = false, accent = null }) {
+  const accentColors = {
+    purple: 'rgba(157,140,207,0.15)',
+    green: 'rgba(92,214,133,0.1)',
+    amber: 'rgba(214,160,92,0.1)',
+    red: 'rgba(214,92,92,0.1)',
+  };
   return (
-    <div className={`rounded-xl p-6 ${className}`} style={{background: styles.bgPanel, border: `1px solid ${styles.borderGlass}`, backdropFilter: 'blur(12px)'}}>
+    <div className={`rounded-2xl p-6 ${className}`} style={{
+      background: accent ? `linear-gradient(135deg, ${accentColors[accent] || accentColors.purple} 0%, rgba(255,255,255,0.02) 100%)` : 'rgba(255,255,255,0.03)',
+      border: `1px solid ${styles.borderGlass}`,
+      backdropFilter: 'blur(16px)',
+      boxShadow: glow ? '0 8px 32px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.05)' : 'none',
+      position: 'relative',
+      overflow: 'hidden',
+    }}>
+      {glow && <div style={{position:'absolute',top:0,left:0,right:0,height:'1px',background:'linear-gradient(90deg,transparent,rgba(157,140,207,0.3),transparent)'}}/>}
       {children}
     </div>
   );
+}
+
+// Section Header Component
+function SectionHeader({ label, title, description, action }) {
+  return (
+    <div style={{marginBottom: '24px'}}>
+      <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px'}}>
+        <div>
+          {label && <p style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', color: styles.purpleBright, marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '12px'}}>
+            <span style={{width: '24px', height: '1px', background: styles.purpleBright}}></span>
+            {label}
+          </p>}
+          <h1 style={{fontFamily: "'Source Serif 4', serif", fontSize: '32px', fontWeight: 200, margin: 0, letterSpacing: '-0.02em'}}>{title}</h1>
+          {description && <p style={{color: styles.textSecondary, marginTop: '8px', fontSize: '15px'}}>{description}</p>}
+        </div>
+        {action}
+      </div>
+    </div>
+  );
+}
+
+// Stat Card Component
+function StatCard({ label, value, trend, color = styles.purpleBright, icon }) {
+  return (
+    <Panel glow>
+      <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start'}}>
+        <div>
+          <p style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '12px'}}>{label}</p>
+          <p style={{fontFamily: "'Source Serif 4', serif", fontSize: '36px', fontWeight: 200, color: color, margin: 0, lineHeight: 1}}>{value}</p>
+          {trend && <p style={{fontSize: '12px', color: trend > 0 ? styles.accentGreen : styles.accentRed, marginTop: '8px'}}>{trend > 0 ? '↑' : '↓'} {Math.abs(trend)}%</p>}
+        </div>
+        {icon && <div style={{width: '48px', height: '48px', borderRadius: '12px', background: `${color}15`, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>{icon}</div>}
+      </div>
+    </Panel>
+  );
+}
+
+// Status Badge Component  
+function StatusBadge({ status, size = 'md' }) {
+  const statusConfig = {
+    pending: { bg: 'rgba(214,160,92,0.15)', border: 'rgba(214,160,92,0.3)', color: styles.accentAmber, label: 'Pending' },
+    under_review: { bg: 'rgba(157,140,207,0.15)', border: 'rgba(157,140,207,0.3)', color: styles.purpleBright, label: 'Under Review' },
+    approved: { bg: 'rgba(92,214,133,0.15)', border: 'rgba(92,214,133,0.3)', color: styles.accentGreen, label: 'Approved' },
+    testing: { bg: 'rgba(157,140,207,0.15)', border: 'rgba(157,140,207,0.3)', color: styles.purpleBright, label: 'Testing' },
+    conformant: { bg: 'rgba(92,214,133,0.15)', border: 'rgba(92,214,133,0.3)', color: styles.accentGreen, label: 'Conformant' },
+    certified: { bg: 'rgba(92,214,133,0.15)', border: 'rgba(92,214,133,0.3)', color: styles.accentGreen, label: 'Certified' },
+    active: { bg: 'rgba(92,214,133,0.15)', border: 'rgba(92,214,133,0.3)', color: styles.accentGreen, label: 'Active' },
+    issued: { bg: 'rgba(92,214,133,0.15)', border: 'rgba(92,214,133,0.3)', color: styles.accentGreen, label: 'Issued' },
+    revoked: { bg: 'rgba(214,92,92,0.15)', border: 'rgba(214,92,92,0.3)', color: styles.accentRed, label: 'Revoked' },
+    suspended: { bg: 'rgba(214,160,92,0.15)', border: 'rgba(214,160,92,0.3)', color: styles.accentAmber, label: 'Suspended' },
+    running: { bg: 'rgba(214,160,92,0.15)', border: 'rgba(214,160,92,0.3)', color: styles.accentAmber, label: 'Running' },
+    scheduled: { bg: 'rgba(157,140,207,0.15)', border: 'rgba(157,140,207,0.3)', color: styles.purpleBright, label: 'Scheduled' },
+    completed: { bg: 'rgba(92,214,133,0.15)', border: 'rgba(92,214,133,0.3)', color: styles.accentGreen, label: 'Completed' },
+  };
+  const config = statusConfig[status] || statusConfig.pending;
+  const padding = size === 'sm' ? '4px 10px' : '6px 14px';
+  const fontSize = size === 'sm' ? '9px' : '10px';
+  return (
+    <span style={{
+      display: 'inline-flex', alignItems: 'center', gap: '6px',
+      padding, borderRadius: '20px', fontSize, fontFamily: "'IBM Plex Mono', monospace",
+      letterSpacing: '1px', textTransform: 'uppercase',
+      background: config.bg, border: `1px solid ${config.border}`, color: config.color,
+    }}>
+      <span style={{width: '6px', height: '6px', borderRadius: '50%', background: config.color, boxShadow: `0 0 8px ${config.color}`}}></span>
+      {config.label}
+    </span>
+  );
+}
+
+// Progress Bar Component
+function ProgressBar({ value, max = 100, color = styles.purpleBright, showLabel = true, size = 'md' }) {
+  const pct = Math.min(100, (value / max) * 100);
+  const height = size === 'sm' ? '4px' : '8px';
+  return (
+    <div style={{display: 'flex', alignItems: 'center', gap: '12px'}}>
+      <div style={{flex: 1, height, borderRadius: '4px', background: 'rgba(255,255,255,0.1)', overflow: 'hidden'}}>
+        <div style={{
+          width: `${pct}%`, height: '100%', borderRadius: '4px',
+          background: `linear-gradient(90deg, ${color}, ${color}aa)`,
+          boxShadow: `0 0 12px ${color}50`,
+          transition: 'width 0.5s ease',
+        }}/>
+      </div>
+      {showLabel && <span style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', color: styles.textTertiary, minWidth: '40px'}}>{Math.round(pct)}%</span>}
+    </div>
+  );
+}
+
+// Data Table Component
+function DataTable({ columns, data, onRowClick, emptyMessage = 'No data found' }) {
+  return (
+    <div style={{overflowX: 'auto'}}>
+      <table style={{width: '100%', borderCollapse: 'collapse'}}>
+        <thead>
+          <tr style={{borderBottom: `1px solid ${styles.borderGlass}`}}>
+            {columns.map((col, i) => (
+              <th key={i} style={{
+                padding: '14px 16px', textAlign: col.align || 'left',
+                fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px',
+                letterSpacing: '1.5px', textTransform: 'uppercase',
+                color: styles.textTertiary, fontWeight: 400,
+              }}>{col.label}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {data.length === 0 ? (
+            <tr><td colSpan={columns.length} style={{padding: '48px', textAlign: 'center', color: styles.textTertiary}}>{emptyMessage}</td></tr>
+          ) : data.map((row, i) => (
+            <tr key={i} onClick={() => onRowClick?.(row)} style={{
+              borderBottom: `1px solid ${styles.borderGlass}`,
+              cursor: onRowClick ? 'pointer' : 'default',
+              transition: 'background 0.15s',
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.02)'}
+            onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}>
+              {columns.map((col, j) => (
+                <td key={j} style={{padding: '16px', textAlign: col.align || 'left', color: styles.textSecondary, fontSize: '14px'}}>
+                  {col.render ? col.render(row) : row[col.key]}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+// Action Button Component
+function ActionButton({ children, variant = 'primary', size = 'md', icon, onClick, disabled, href }) {
+  const variants = {
+    primary: { bg: 'linear-gradient(135deg, #5B4B8A 0%, #7B6BAA 100%)', border: 'rgba(157,140,207,0.5)', color: '#fff', shadow: '0 4px 20px rgba(91,75,138,0.3)' },
+    secondary: { bg: 'transparent', border: 'rgba(255,255,255,0.15)', color: styles.textPrimary, shadow: 'none' },
+    success: { bg: 'rgba(92,214,133,0.15)', border: 'rgba(92,214,133,0.4)', color: styles.accentGreen, shadow: 'none' },
+    danger: { bg: 'rgba(214,92,92,0.1)', border: 'rgba(214,92,92,0.3)', color: styles.accentRed, shadow: 'none' },
+  };
+  const sizes = { sm: '10px 16px', md: '12px 20px', lg: '14px 28px' };
+  const v = variants[variant];
+  const style = {
+    display: 'inline-flex', alignItems: 'center', gap: '8px',
+    padding: sizes[size], borderRadius: '12px',
+    background: v.bg, border: `1px solid ${v.border}`, color: v.color,
+    fontFamily: "'IBM Plex Mono', monospace", fontSize: size === 'sm' ? '10px' : '11px',
+    letterSpacing: '1px', textTransform: 'uppercase',
+    cursor: disabled ? 'not-allowed' : 'pointer',
+    opacity: disabled ? 0.5 : 1, boxShadow: v.shadow,
+    textDecoration: 'none', transition: 'all 0.2s ease',
+  };
+  const Component = href ? 'a' : 'button';
+  return <Component href={href} onClick={onClick} disabled={disabled} style={style}>{icon}{children}</Component>;
 }
 
 // Login Page
@@ -274,83 +471,226 @@ function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4" style={{background: `radial-gradient(1200px 700px at 15% 10%, rgba(91,75,138,0.15), transparent 55%), radial-gradient(900px 600px at 85% 80%, rgba(92,214,133,0.06), transparent 55%), ${styles.bgDeep}`}}>
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <div className="flex justify-center mb-4">
-            <BrandMark size={48} />
+    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden" style={{background: styles.bgDeep}}>
+      {/* Animated background gradients */}
+      <div style={{
+        position: 'absolute', top: '-20%', left: '-10%', width: '600px', height: '600px',
+        background: 'radial-gradient(circle, rgba(91,75,138,0.3) 0%, transparent 70%)',
+        animation: 'float1 15s ease-in-out infinite', pointerEvents: 'none',
+      }} />
+      <div style={{
+        position: 'absolute', bottom: '-30%', right: '-15%', width: '800px', height: '800px',
+        background: 'radial-gradient(circle, rgba(92,214,133,0.15) 0%, transparent 70%)',
+        animation: 'float2 20s ease-in-out infinite', pointerEvents: 'none',
+      }} />
+      <div style={{
+        position: 'absolute', top: '40%', right: '10%', width: '400px', height: '400px',
+        background: 'radial-gradient(circle, rgba(157,140,207,0.2) 0%, transparent 70%)',
+        animation: 'float3 12s ease-in-out infinite', pointerEvents: 'none',
+      }} />
+      
+      {/* Grid overlay */}
+      <div style={{
+        position: 'fixed', inset: 0,
+        backgroundImage: 'linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)',
+        backgroundSize: '60px 60px', opacity: 0.5, pointerEvents: 'none',
+      }} />
+
+      {/* Decorative lines */}
+      <div style={{ position: 'absolute', top: '20%', left: '5%', width: '1px', height: '200px',
+        background: 'linear-gradient(to bottom, transparent, rgba(157,140,207,0.3), transparent)',
+      }} />
+      <div style={{ position: 'absolute', bottom: '15%', right: '8%', width: '150px', height: '1px',
+        background: 'linear-gradient(to right, transparent, rgba(92,214,133,0.3), transparent)',
+      }} />
+
+      <style>{`
+        @keyframes float1 { 0%, 100% { transform: translate(0, 0) scale(1); } 33% { transform: translate(30px, -30px) scale(1.05); } 66% { transform: translate(-20px, 20px) scale(0.95); } }
+        @keyframes float2 { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(-40px, -40px) scale(1.1); } }
+        @keyframes float3 { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(20px, 30px); } }
+        @keyframes pulse-ring { 0% { transform: scale(0.8); opacity: 0.5; } 50% { transform: scale(1.2); opacity: 0; } 100% { transform: scale(0.8); opacity: 0.5; } }
+        .login-input { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .login-input:focus { border-color: rgba(157,140,207,0.6) !important; box-shadow: 0 0 0 3px rgba(157,140,207,0.1), 0 4px 20px rgba(0,0,0,0.2); transform: translateY(-1px); }
+        .login-btn { position: relative; overflow: hidden; transition: all 0.3s ease; }
+        .login-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(91,75,138,0.5); }
+      `}</style>
+
+      <div className="w-full max-w-md relative z-10">
+        {/* Brand section */}
+        <div className="text-center mb-10">
+          {/* Animated brand mark with rings */}
+          <div className="relative flex justify-center mb-6" style={{height: '100px', alignItems: 'center'}}>
+            <div style={{
+              position: 'absolute', width: '80px', height: '80px',
+              border: '1px solid rgba(157,140,207,0.2)', borderRadius: '50%',
+              animation: 'pulse-ring 3s ease-out infinite',
+            }} />
+            <div style={{
+              position: 'absolute', width: '100px', height: '100px',
+              border: '1px solid rgba(157,140,207,0.1)', borderRadius: '50%',
+              animation: 'pulse-ring 3s ease-out infinite 0.5s',
+            }} />
+            <div style={{
+              width: '56px', height: '56px',
+              background: 'linear-gradient(135deg, #5B4B8A 0%, #7B6BAA 100%)',
+              border: '2px solid #9d8ccf', borderRadius: '14px',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              boxShadow: '0 8px 32px rgba(91,75,138,0.4), inset 0 1px 0 rgba(255,255,255,0.1)',
+            }}>
+              <div style={{
+                width: '18px', height: '18px',
+                background: 'radial-gradient(circle, #e8e0ff 0%, #c4b8e8 100%)',
+                borderRadius: '50%', boxShadow: '0 0 20px rgba(196,184,232,0.5)',
+                animation: 'eyePulse 3s ease-in-out infinite',
+              }} />
+            </div>
           </div>
-          <h1 style={{fontFamily: "'Source Serif 4', serif", fontSize: '32px', fontWeight: 200, color: styles.textPrimary, margin: 0}}>ODDC Platform</h1>
-          <p style={{color: styles.textTertiary, fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', marginTop: '8px'}}>Sentinel Authority</p>
-          <a href="https://sentinelauthority.org" className="mt-4 inline-block" style={{color: styles.purpleBright, fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px'}}>← MAIN SITE</a>
+          
+          <h1 style={{
+            fontFamily: "'Source Serif 4', serif", fontSize: '36px', fontWeight: 200,
+            color: styles.textPrimary, margin: '0 0 8px 0', letterSpacing: '-0.02em',
+          }}>
+            ODDC <span style={{color: styles.purpleBright, fontStyle: 'italic'}}>Portal</span>
+          </h1>
+          
+          <p style={{
+            color: styles.textTertiary, fontFamily: "'IBM Plex Mono', monospace",
+            fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', marginTop: '12px',
+          }}>Sentinel Authority</p>
+
+          <a href="https://sentinelauthority.org" style={{
+            color: styles.purpleBright, fontFamily: "'IBM Plex Mono', monospace",
+            fontSize: '10px', letterSpacing: '1px', textDecoration: 'none',
+            padding: '8px 16px', border: '1px solid rgba(157,140,207,0.2)',
+            borderRadius: '20px', marginTop: '16px', display: 'inline-block',
+          }}>← VISIT MAIN SITE</a>
         </div>
         
-        <Panel>
-          {error && <div className="mb-4 p-3 rounded-lg text-sm" style={{background: 'rgba(214,92,92,0.15)', border: '1px solid rgba(214,92,92,0.3)', color: styles.accentRed}}>{error}</div>}
+        {/* Login card */}
+        <div style={{
+          background: 'rgba(255,255,255,0.03)', backdropFilter: 'blur(20px)',
+          border: '1px solid rgba(255,255,255,0.08)', borderRadius: '24px', padding: '40px',
+          boxShadow: '0 25px 50px -12px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.05) inset',
+        }}>
+          {/* Tab switcher */}
+          <div style={{
+            display: 'flex', background: 'rgba(0,0,0,0.2)',
+            borderRadius: '12px', padding: '4px', marginBottom: '32px',
+          }}>
+            <button onClick={() => setIsRegister(false)} type="button" style={{
+              flex: 1, padding: '12px', borderRadius: '10px', border: 'none',
+              background: !isRegister ? styles.purplePrimary : 'transparent',
+              color: !isRegister ? '#fff' : styles.textTertiary,
+              fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px',
+              letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer',
+            }}>Sign In</button>
+            <button onClick={() => setIsRegister(true)} type="button" style={{
+              flex: 1, padding: '12px', borderRadius: '10px', border: 'none',
+              background: isRegister ? styles.purplePrimary : 'transparent',
+              color: isRegister ? '#fff' : styles.textTertiary,
+              fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px',
+              letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer',
+            }}>Register</button>
+          </div>
+
+          {error && (
+            <div style={{
+              marginBottom: '24px', padding: '14px 16px', borderRadius: '12px',
+              background: 'rgba(214,92,92,0.1)', border: '1px solid rgba(214,92,92,0.3)',
+              color: styles.accentRed, fontSize: '13px', display: 'flex', alignItems: 'center', gap: '10px',
+            }}><span style={{fontSize: '16px'}}>⚠</span>{error}</div>
+          )}
           
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-5">
             {isRegister && (
               <>
-                <input
-                  type="text"
-                  placeholder="Full Name"
-                  value={formData.full_name}
-                  onChange={(e) => setFormData({...formData, full_name: e.target.value})}
-                  className="w-full px-4 py-3 rounded-lg outline-none transition-colors"
-                  style={{background: 'rgba(255,255,255,0.05)', border: `1px solid ${styles.borderGlass}`, color: styles.textPrimary, fontFamily: "'Inter', sans-serif"}}
-                  required
-                />
-                <input
-                  type="text"
-                  placeholder="Organization Name"
-                  value={formData.organization_name}
-                  onChange={(e) => setFormData({...formData, organization_name: e.target.value})}
-                  className="w-full px-4 py-3 rounded-lg outline-none transition-colors"
-                  style={{background: 'rgba(255,255,255,0.05)', border: `1px solid ${styles.borderGlass}`, color: styles.textPrimary, fontFamily: "'Inter', sans-serif"}}
-                  required
-                />
+                <div>
+                  <label style={{
+                    display: 'block', marginBottom: '8px', color: styles.textTertiary,
+                    fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px',
+                    letterSpacing: '1px', textTransform: 'uppercase',
+                  }}>Full Name</label>
+                  <input type="text" placeholder="Jane Smith" value={formData.full_name}
+                    onChange={(e) => setFormData({...formData, full_name: e.target.value})}
+                    className="login-input w-full px-4 py-4 rounded-xl outline-none"
+                    style={{ background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.08)',
+                      color: styles.textPrimary, fontFamily: "'Inter', sans-serif", fontSize: '15px',
+                    }} required />
+                </div>
+                <div>
+                  <label style={{
+                    display: 'block', marginBottom: '8px', color: styles.textTertiary,
+                    fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px',
+                    letterSpacing: '1px', textTransform: 'uppercase',
+                  }}>Organization</label>
+                  <input type="text" placeholder="Acme Robotics Inc." value={formData.organization_name}
+                    onChange={(e) => setFormData({...formData, organization_name: e.target.value})}
+                    className="login-input w-full px-4 py-4 rounded-xl outline-none"
+                    style={{ background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.08)',
+                      color: styles.textPrimary, fontFamily: "'Inter', sans-serif", fontSize: '15px',
+                    }} required />
+                </div>
               </>
             )}
-            <input
-              type="email"
-              placeholder="Email"
-              value={formData.email}
-              onChange={(e) => setFormData({...formData, email: e.target.value})}
-              className="w-full px-4 py-3 rounded-lg outline-none transition-colors"
-              style={{background: 'rgba(255,255,255,0.05)', border: `1px solid ${styles.borderGlass}`, color: styles.textPrimary, fontFamily: "'Inter', sans-serif"}}
-              required
-            />
-            <input
-              type="password"
-              placeholder="Password"
-              value={formData.password}
-              onChange={(e) => setFormData({...formData, password: e.target.value})}
-              className="w-full px-4 py-3 rounded-lg outline-none transition-colors"
-              style={{background: 'rgba(255,255,255,0.05)', border: `1px solid ${styles.borderGlass}`, color: styles.textPrimary, fontFamily: "'Inter', sans-serif"}}
-              required
-            />
-            <button 
-              type="submit" 
-              className="w-full py-3 rounded-lg font-medium transition-all"
-              style={{background: styles.purplePrimary, border: `1px solid ${styles.purpleBright}`, color: '#fff', fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', cursor: 'pointer'}}
-            >
-              {isRegister ? 'Create Account' : 'Sign In'}
-            </button>
+            <div>
+              <label style={{
+                display: 'block', marginBottom: '8px', color: styles.textTertiary,
+                fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px',
+                letterSpacing: '1px', textTransform: 'uppercase',
+              }}>Email Address</label>
+              <input type="email" placeholder="you@company.com" value={formData.email}
+                onChange={(e) => setFormData({...formData, email: e.target.value})}
+                className="login-input w-full px-4 py-4 rounded-xl outline-none"
+                style={{ background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.08)',
+                  color: styles.textPrimary, fontFamily: "'Inter', sans-serif", fontSize: '15px',
+                }} required />
+            </div>
+            <div>
+              <label style={{
+                display: 'block', marginBottom: '8px', color: styles.textTertiary,
+                fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px',
+                letterSpacing: '1px', textTransform: 'uppercase',
+              }}>Password</label>
+              <input type="password" placeholder="••••••••••••" value={formData.password}
+                onChange={(e) => setFormData({...formData, password: e.target.value})}
+                className="login-input w-full px-4 py-4 rounded-xl outline-none"
+                style={{ background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.08)',
+                  color: styles.textPrimary, fontFamily: "'Inter', sans-serif", fontSize: '15px',
+                }} required />
+            </div>
+            
+            <button type="submit" className="login-btn w-full py-4 rounded-xl font-medium"
+              style={{
+                background: 'linear-gradient(135deg, #5B4B8A 0%, #7B6BAA 100%)',
+                border: '1px solid rgba(157,140,207,0.5)', color: '#fff',
+                fontFamily: "'IBM Plex Mono', monospace", fontSize: '12px',
+                letterSpacing: '2px', textTransform: 'uppercase', cursor: 'pointer',
+                marginTop: '8px', boxShadow: '0 4px 20px rgba(91,75,138,0.4)',
+              }}>{isRegister ? 'Create Account' : 'Sign In'}</button>
           </form>
           
-          <div className="mt-6 text-center">
-            <button 
-              onClick={() => setIsRegister(!isRegister)} 
-              style={{color: styles.purpleBright, background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'Inter', sans-serif", fontSize: '14px'}}
-            >
-              {isRegister ? 'Already have an account? Sign in' : "Don't have an account? Register"}
-            </button>
-          </div>
-        </Panel>
+          {!isRegister && (
+            <div className="mt-6 text-center">
+              <a href="#" style={{ color: styles.textTertiary, fontSize: '13px', textDecoration: 'none' }}>Forgot password?</a>
+            </div>
+          )}
+        </div>
+        
+        {/* Footer */}
+        <div className="mt-8 text-center">
+          <p style={{
+            color: styles.textTertiary, fontSize: '11px',
+            fontFamily: "'IBM Plex Mono', monospace", letterSpacing: '1px',
+          }}>
+            Protected by ENVELO • <a href="https://sentinelauthority.org/privacy.html" style={{color: styles.purpleBright, textDecoration: 'none'}}>Privacy</a> • <a href="https://sentinelauthority.org/terms.html" style={{color: styles.purpleBright, textDecoration: 'none'}}>Terms</a>
+          </p>
+        </div>
       </div>
     </div>
   );
 }
+
+
 
 // Dashboard
 
@@ -495,27 +835,38 @@ function Dashboard() {
     api.get('/api/dashboard/active-tests').then(res => setActiveTests(res.data)).catch(console.error);
   }, []);
 
-  const statCards = [
-    { label: 'Total Applications', value: stats?.total_applications || 0, color: styles.purpleBright },
-    { label: 'Active Tests', value: stats?.active_tests || 0, color: styles.accentAmber },
-    { label: 'Certificates Issued', value: stats?.certificates_issued || 0, color: styles.accentGreen },
-  ];
-
   return (
-    <div className="space-y-6">
-      <div>
-        <p style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', color: styles.purpleBright, marginBottom: '8px'}}>Overview</p>
-        <h1 style={{fontFamily: "'Source Serif 4', serif", fontSize: '36px', fontWeight: 200, margin: 0}}>Dashboard</h1>
-      </div>
+    <div className="space-y-8">
+      <SectionHeader 
+        label="Overview" 
+        title="Dashboard"
+        action={
+          <ActionButton href="/applications/new" icon={<Plus className="w-4 h-4" />}>
+            New Application
+          </ActionButton>
+        }
+      />
 
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {statCards.map((stat, i) => (
-          <Panel key={i}>
-            <p style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '8px'}}>{stat.label}</p>
-            <p style={{fontFamily: "'Source Serif 4', serif", fontSize: '42px', fontWeight: 200, color: stat.color, margin: 0}}>{stat.value}</p>
-          </Panel>
-        ))}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <StatCard 
+          label="Total Applications" 
+          value={stats?.total_applications || 0} 
+          color={styles.purpleBright}
+          icon={<FileText className="w-5 h-5" style={{color: styles.purpleBright}} />}
+        />
+        <StatCard 
+          label="Active Tests" 
+          value={stats?.active_tests || 0} 
+          color={styles.accentAmber}
+          icon={<Activity className="w-5 h-5" style={{color: styles.accentAmber}} />}
+        />
+        <StatCard 
+          label="Certificates Issued" 
+          value={stats?.certificates_issued || 0} 
+          color={styles.accentGreen}
+          icon={<Award className="w-5 h-5" style={{color: styles.accentGreen}} />}
+        />
       </div>
 
       {/* Active Tests */}
@@ -1263,86 +1614,255 @@ function VerifyPage() {
   const [certNumber, setCertNumber] = useState('');
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleVerify = async (e) => {
     e.preventDefault();
+    if (!certNumber.trim()) return;
     setError('');
     setResult(null);
+    setLoading(true);
     try {
       const res = await api.get(`/api/verify/${certNumber}`);
       setResult(res.data);
     } catch (err) {
       setError('Certificate not found');
     }
+    setLoading(false);
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4" style={{background: `radial-gradient(1200px 700px at 15% 10%, rgba(91,75,138,0.15), transparent 55%), radial-gradient(900px 600px at 85% 80%, rgba(92,214,133,0.06), transparent 55%), ${styles.bgDeep}`}}>
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <div className="flex justify-center mb-4">
-            <BrandMark size={48} />
-          </div>
-          <h1 style={{fontFamily: "'Source Serif 4', serif", fontSize: '32px', fontWeight: 200, color: styles.textPrimary, margin: 0}}>Verify Certificate</h1>
-          <p style={{color: styles.textTertiary, marginTop: '8px'}}>Enter a certificate number to verify its status</p>
-        </div>
+    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden" style={{background: styles.bgDeep}}>
+      {/* Animated background gradients */}
+      <div style={{
+        position: 'absolute', top: '-20%', left: '-10%', width: '600px', height: '600px',
+        background: 'radial-gradient(circle, rgba(91,75,138,0.3) 0%, transparent 70%)',
+        animation: 'float1 15s ease-in-out infinite', pointerEvents: 'none',
+      }} />
+      <div style={{
+        position: 'absolute', bottom: '-30%', right: '-15%', width: '800px', height: '800px',
+        background: 'radial-gradient(circle, rgba(92,214,133,0.15) 0%, transparent 70%)',
+        animation: 'float2 20s ease-in-out infinite', pointerEvents: 'none',
+      }} />
+      <div style={{
+        position: 'absolute', top: '40%', right: '10%', width: '400px', height: '400px',
+        background: 'radial-gradient(circle, rgba(157,140,207,0.2) 0%, transparent 70%)',
+        animation: 'float3 12s ease-in-out infinite', pointerEvents: 'none',
+      }} />
+      
+      {/* Grid overlay */}
+      <div style={{
+        position: 'fixed', inset: 0,
+        backgroundImage: 'linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)',
+        backgroundSize: '60px 60px', opacity: 0.5, pointerEvents: 'none',
+      }} />
 
-        <Panel>
-          <form onSubmit={handleVerify} className="space-y-4">
-            <input
-              type="text"
-              placeholder="e.g., ODDC-2026-00001"
-              value={certNumber}
-              onChange={(e) => setCertNumber(e.target.value)}
-              className="w-full px-4 py-3 rounded-lg outline-none"
-              style={{background: 'rgba(255,255,255,0.05)', border: `1px solid ${styles.borderGlass}`, color: styles.textPrimary, fontFamily: "'IBM Plex Mono', monospace", textAlign: 'center'}}
-            />
-            <button type="submit" className="w-full py-3 rounded-lg transition-all" style={{background: styles.purplePrimary, border: `1px solid ${styles.purpleBright}`, color: '#fff', fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', cursor: 'pointer'}}>
-              Verify
+      {/* Decorative elements */}
+      <div style={{ position: 'absolute', top: '15%', left: '8%', width: '1px', height: '150px',
+        background: 'linear-gradient(to bottom, transparent, rgba(157,140,207,0.4), transparent)',
+      }} />
+      <div style={{ position: 'absolute', bottom: '20%', right: '5%', width: '100px', height: '1px',
+        background: 'linear-gradient(to right, transparent, rgba(92,214,133,0.4), transparent)',
+      }} />
+
+      <style>{`
+        @keyframes float1 { 0%, 100% { transform: translate(0, 0) scale(1); } 33% { transform: translate(30px, -30px) scale(1.05); } 66% { transform: translate(-20px, 20px) scale(0.95); } }
+        @keyframes float2 { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(-40px, -40px) scale(1.1); } }
+        @keyframes float3 { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(20px, 30px); } }
+        @keyframes pulse-ring { 0% { transform: scale(0.9); opacity: 0.6; } 50% { transform: scale(1.1); opacity: 0; } 100% { transform: scale(0.9); opacity: 0.6; } }
+        @keyframes scan { 0% { top: 0; } 100% { top: 100%; } }
+        .verify-input { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .verify-input:focus { border-color: rgba(157,140,207,0.6) !important; box-shadow: 0 0 0 3px rgba(157,140,207,0.1), 0 4px 20px rgba(0,0,0,0.2); transform: translateY(-1px); }
+        .verify-btn { position: relative; overflow: hidden; transition: all 0.3s ease; }
+        .verify-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(91,75,138,0.5); }
+        .verify-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+      `}</style>
+
+      <div className="w-full max-w-lg relative z-10">
+        {/* Brand section */}
+        <div className="text-center mb-10">
+          <div className="relative flex justify-center mb-6" style={{height: '100px', alignItems: 'center'}}>
+            <div style={{
+              position: 'absolute', width: '80px', height: '80px',
+              border: '1px solid rgba(92,214,133,0.3)', borderRadius: '50%',
+              animation: 'pulse-ring 3s ease-out infinite',
+            }} />
+            <div style={{
+              position: 'absolute', width: '100px', height: '100px',
+              border: '1px solid rgba(92,214,133,0.15)', borderRadius: '50%',
+              animation: 'pulse-ring 3s ease-out infinite 0.5s',
+            }} />
+            <div style={{
+              width: '56px', height: '56px',
+              background: 'linear-gradient(135deg, #3a7d54 0%, #5CD685 100%)',
+              border: '2px solid #5CD685', borderRadius: '14px',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              boxShadow: '0 8px 32px rgba(92,214,133,0.4), inset 0 1px 0 rgba(255,255,255,0.2)',
+            }}>
+              <div style={{
+                width: '18px', height: '18px',
+                background: 'radial-gradient(circle, #e8e0ff 0%, #c4b8e8 100%)',
+                borderRadius: '50%', boxShadow: '0 0 20px rgba(196,184,232,0.5)',
+              }} />
+            </div>
+          </div>
+          
+          <h1 style={{
+            fontFamily: "'Source Serif 4', serif", fontSize: '36px', fontWeight: 200,
+            color: styles.textPrimary, margin: '0 0 8px 0', letterSpacing: '-0.02em',
+          }}>
+            Certificate <span style={{color: styles.purpleBright, fontStyle: 'italic'}}>Verification</span>
+          </h1>
+          
+          <p style={{
+            color: styles.textTertiary, fontFamily: "'IBM Plex Mono', monospace",
+            fontSize: '11px', letterSpacing: '3px', textTransform: 'uppercase', marginTop: '16px',
+          }}>Sentinel Authority • ODDC Registry</p>
+        </div>
+        
+        {/* Verification card */}
+        <div style={{
+          background: 'rgba(255,255,255,0.03)', backdropFilter: 'blur(20px)',
+          border: '1px solid rgba(255,255,255,0.08)', borderRadius: '24px', padding: '40px',
+          boxShadow: '0 25px 50px -12px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.05) inset',
+        }}>
+          <form onSubmit={handleVerify} className="space-y-6">
+            <div>
+              <label style={{
+                display: 'block', marginBottom: '10px', color: styles.textTertiary,
+                fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px',
+                letterSpacing: '2px', textTransform: 'uppercase', textAlign: 'center',
+              }}>Certificate Number</label>
+              <input
+                type="text"
+                placeholder="ODDC-2026-00001"
+                value={certNumber}
+                onChange={(e) => setCertNumber(e.target.value.toUpperCase())}
+                className="verify-input w-full px-5 py-4 rounded-xl outline-none"
+                style={{
+                  background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.08)',
+                  color: styles.textPrimary, fontFamily: "'IBM Plex Mono', monospace",
+                  fontSize: '18px', textAlign: 'center', letterSpacing: '2px',
+                }}
+              />
+            </div>
+            <button 
+              type="submit" 
+              disabled={loading || !certNumber.trim()}
+              className="verify-btn w-full py-4 rounded-xl font-medium"
+              style={{
+                background: 'linear-gradient(135deg, #5B4B8A 0%, #7B6BAA 100%)',
+                border: '1px solid rgba(157,140,207,0.5)', color: '#fff',
+                fontFamily: "'IBM Plex Mono', monospace", fontSize: '12px',
+                letterSpacing: '2px', textTransform: 'uppercase', cursor: 'pointer',
+                boxShadow: '0 4px 20px rgba(91,75,138,0.4)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
+              }}>
+              {loading ? (
+                <><RefreshCw className="w-4 h-4" style={{animation: 'spin 1s linear infinite'}} /> Verifying...</>
+              ) : (
+                <><Search className="w-4 h-4" /> Verify Certificate</>
+              )}
             </button>
           </form>
 
-          {error && <div className="mt-4 p-4 rounded-lg text-center" style={{background: 'rgba(214,92,92,0.15)', border: '1px solid rgba(214,92,92,0.3)', color: styles.accentRed}}>{error}</div>}
+          {error && (
+            <div className="mt-6 p-5 rounded-xl text-center" style={{
+              background: 'rgba(214,92,92,0.1)', border: '1px solid rgba(214,92,92,0.3)',
+            }}>
+              <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', marginBottom: '8px'}}>
+                <AlertTriangle className="w-5 h-5" style={{color: styles.accentRed}} />
+                <span style={{color: styles.accentRed, fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase'}}>Not Found</span>
+              </div>
+              <p style={{color: styles.textSecondary, fontSize: '14px'}}>No certificate exists with this number</p>
+            </div>
+          )}
 
           {result && (result.status === 'NOT_FOUND' || result.state === 'NOT_FOUND') && (
-            <div className="mt-6 p-4 rounded-lg text-center" style={{background: 'rgba(214,92,92,0.1)', border: '1px solid rgba(214,92,92,0.3)'}}>
-              <span style={{color: styles.accentRed, fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase'}}>Certificate Not Found</span>
-              <p style={{color: styles.textSecondary, marginTop: '8px', fontSize: '14px'}}>No certificate exists with number: {result.certificate_number}</p>
+            <div className="mt-6 p-5 rounded-xl text-center" style={{
+              background: 'rgba(214,92,92,0.1)', border: '1px solid rgba(214,92,92,0.3)',
+            }}>
+              <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', marginBottom: '8px'}}>
+                <AlertTriangle className="w-5 h-5" style={{color: styles.accentRed}} />
+                <span style={{color: styles.accentRed, fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase'}}>Certificate Not Found</span>
+              </div>
+              <p style={{color: styles.textSecondary, fontSize: '14px'}}>No certificate exists with number: <strong>{result.certificate_number}</strong></p>
             </div>
           )}
 
           {result && result.status !== 'NOT_FOUND' && result.state !== 'NOT_FOUND' && (
-            <div className="mt-6 p-4 rounded-lg" style={{background: 'rgba(92,214,133,0.1)', border: '1px solid rgba(92,214,133,0.3)'}}>
-              <div className="flex items-center gap-2 mb-4">
-                <CheckCircle className="w-5 h-5" style={{color: styles.accentGreen}} />
-                <span style={{color: styles.accentGreen, fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase'}}>Valid Certificate</span>
+            <div className="mt-6 rounded-xl overflow-hidden" style={{
+              background: 'rgba(92,214,133,0.08)', border: '1px solid rgba(92,214,133,0.25)',
+            }}>
+              {/* Header */}
+              <div style={{
+                padding: '16px 20px', background: 'rgba(92,214,133,0.15)',
+                borderBottom: '1px solid rgba(92,214,133,0.2)',
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              }}>
+                <div style={{display: 'flex', alignItems: 'center', gap: '10px'}}>
+                  <CheckCircle className="w-5 h-5" style={{color: styles.accentGreen}} />
+                  <span style={{color: styles.accentGreen, fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', fontWeight: 500}}>Valid Certificate</span>
+                </div>
+                <span style={{
+                  padding: '4px 12px', borderRadius: '20px', fontSize: '10px',
+                  background: 'rgba(92,214,133,0.2)', color: styles.accentGreen,
+                  fontFamily: "'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '1px',
+                  display: 'flex', alignItems: 'center', gap: '6px',
+                }}>
+                  <span style={{width: '6px', height: '6px', borderRadius: '50%', background: styles.accentGreen, boxShadow: '0 0 8px rgba(92,214,133,0.8)'}}></span>
+                  {result.state || 'CONFORMANT'}
+                </span>
               </div>
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span style={{color: styles.textTertiary, fontSize: '14px'}}>Organization</span>
-                  <span style={{color: styles.textPrimary}}>{result.organization_name}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span style={{color: styles.textTertiary, fontSize: '14px'}}>System</span>
-                  <span style={{color: styles.textPrimary}}>{result.system_name}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span style={{color: styles.textTertiary, fontSize: '14px'}}>Status</span>
-                  <span style={{color: styles.accentGreen, textTransform: 'uppercase'}}>{result.state}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span style={{color: styles.textTertiary, fontSize: '14px'}}>Expires</span>
-                  <span style={{color: styles.textPrimary}}>{new Date(result.expires_at).toLocaleDateString()}</span>
+              
+              {/* Details */}
+              <div style={{padding: '20px'}}>
+                <div style={{display: 'grid', gap: '16px'}}>
+                  <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '12px', borderBottom: '1px solid rgba(255,255,255,0.06)'}}>
+                    <span style={{color: styles.textTertiary, fontSize: '12px', fontFamily: "'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '1px'}}>Certificate</span>
+                    <span style={{color: styles.accentGreen, fontFamily: "'IBM Plex Mono', monospace", fontSize: '14px', fontWeight: 500}}>{result.certificate_number}</span>
+                  </div>
+                  <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '12px', borderBottom: '1px solid rgba(255,255,255,0.06)'}}>
+                    <span style={{color: styles.textTertiary, fontSize: '12px', fontFamily: "'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '1px'}}>Organization</span>
+                    <span style={{color: styles.textPrimary, fontSize: '14px'}}>{result.organization_name}</span>
+                  </div>
+                  <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '12px', borderBottom: '1px solid rgba(255,255,255,0.06)'}}>
+                    <span style={{color: styles.textTertiary, fontSize: '12px', fontFamily: "'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '1px'}}>System</span>
+                    <span style={{color: styles.textPrimary, fontSize: '14px'}}>{result.system_name}</span>
+                  </div>
+                  <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                    <span style={{color: styles.textTertiary, fontSize: '12px', fontFamily: "'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '1px'}}>Expires</span>
+                    <span style={{color: styles.textPrimary, fontSize: '14px'}}>{result.expires_at ? new Date(result.expires_at).toLocaleDateString() : 'N/A'}</span>
+                  </div>
                 </div>
               </div>
             </div>
           )}
-        </Panel>
-
+        </div>
+        
+        {/* Footer links */}
+        <div className="mt-8 text-center" style={{display: 'flex', justifyContent: 'center', gap: '24px', flexWrap: 'wrap'}}>
+          <Link to="/login" style={{
+            color: styles.purpleBright, fontFamily: "'IBM Plex Mono', monospace",
+            fontSize: '11px', letterSpacing: '1px', textDecoration: 'none',
+            padding: '10px 20px', border: '1px solid rgba(157,140,207,0.2)',
+            borderRadius: '20px', transition: 'all 0.3s ease',
+          }}>← Sign In</Link>
+          <a href="https://sentinelauthority.org" style={{
+            color: styles.textTertiary, fontFamily: "'IBM Plex Mono', monospace",
+            fontSize: '11px', letterSpacing: '1px', textDecoration: 'none',
+            padding: '10px 20px', border: '1px solid rgba(255,255,255,0.1)',
+            borderRadius: '20px', transition: 'all 0.3s ease',
+          }}>Main Site →</a>
+        </div>
+        
         <div className="mt-6 text-center">
-          <Link to="/dashboard" style={{color: styles.purpleBright, fontFamily: "'Inter', sans-serif", fontSize: '14px'}}>
-            Back to Dashboard
-          </Link>
+          <p style={{
+            color: styles.textTertiary, fontSize: '10px',
+            fontFamily: "'IBM Plex Mono', monospace", letterSpacing: '1px',
+          }}>
+            Powered by ENVELO • <a href="https://sentinelauthority.org/privacy.html" style={{color: styles.purpleBright, textDecoration: 'none'}}>Privacy</a>
+          </p>
         </div>
       </div>
     </div>

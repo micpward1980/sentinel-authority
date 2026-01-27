@@ -11,1507 +11,219 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,200;0,300;0,400;1,200;1,300&family=Inter:wght@200;400;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <style>
-
     :root{
-      color-scheme: dark;
-      
-      /* Core palette */
-      --purple-primary:#5B4B8A;
-      --purple-bright:#9d8ccf;
-      --purple-glow:rgba(157,140,207,.20);
-      --bg-deep:#2a2f3d;
-      --bg-panel:rgba(255,255,255,.05);
-      --accent-green:#5CD685;
-      --accent-amber:#D6A05C;
-      --accent-red:#D65C5C;
-
-      /* Text hierarchy */
-      --text-primary:rgba(255,255,255,.94);
-      --text-secondary:rgba(255,255,255,.75);
-      --text-tertiary:rgba(255,255,255,.50);
-
-      /* Borders */
-      --border-glass:rgba(255,255,255,.10);
-      --border-subtle:rgba(255,255,255,.06);
-
-      /* Typography */
-      --serif:'Source Serif 4',serif;
-      --mono:'IBM Plex Mono',monospace;
-      --sans:'Inter',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-
-      /* Timing */
-      --ease: cubic-bezier(0.16, 1, 0.3, 1);
-      --ease-out: cubic-bezier(0.33, 1, 0.68, 1);
-      
-      /* Spacing scale (10px base) */
-      --space-1: 10px;
-      --space-2: 20px;
-      --space-3: 30px;
-      --space-4: 40px;
-      --space-5: 50px;
-      --space-6: 60px;
-      --space-8: 80px;
-      --space-10: 100px;
-      --space-12: 120px;
-      
-      /* Layout */
-      --max: 1200px;
-      --nav-height: 72px;
+      color-scheme:dark;
+      --purple-primary:#5B4B8A;--purple-bright:#9d8ccf;
+      --bg-deep:#2a2f3d;--bg-panel:rgba(255,255,255,.05);
+      --accent-green:#5CD685;--accent-amber:#D6A05C;--accent-red:#D65C5C;
+      --text-primary:rgba(255,255,255,.94);--text-secondary:rgba(255,255,255,.75);--text-tertiary:rgba(255,255,255,.50);
+      --border-glass:rgba(255,255,255,.10);--border-subtle:rgba(255,255,255,.06);
+      --serif:'Source Serif 4',serif;--mono:'IBM Plex Mono',monospace;--sans:'Inter',system-ui,-apple-system,sans-serif;
+      --space-1:10px;--space-2:20px;--space-3:30px;--space-4:40px;--space-6:60px;--space-8:80px;
+      --max:900px;--nav-height:72px;
     }
-
-    *{ box-sizing:border-box; }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth;background:var(--bg-deep)}
+    body{margin:0;font-family:var(--sans);background:radial-gradient(ellipse at 20% 0%,rgba(91,75,138,.15) 0%,transparent 50%),var(--bg-deep);color:var(--text-primary);-webkit-font-smoothing:antialiased;min-height:100vh;line-height:1.7}
+    a{color:var(--purple-bright);text-decoration:none}a:hover{text-decoration:underline}
+    ::selection{background:var(--purple-primary);color:#fff}
     
-    /* Skip link for accessibility */
-    .skip-link{
-      position:absolute;
-      left:-9999px;
-      top:auto;
-      width:1px;
-      height:1px;
-      overflow:hidden;
-      z-index:999;
-    }
-    .skip-link:focus{
-      position:fixed;
-      top:var(--space-1);
-      left:var(--space-1);
-      width:auto;
-      height:auto;
-      padding:12px 18px;
-      background:var(--bg-deep);
-      border:1px solid var(--purple-bright);
-      border-radius:8px;
-      color:var(--text-primary);
-      font-family:var(--mono);
-      font-size:11px;
-      letter-spacing:2px;
-      text-transform:uppercase;
-      text-decoration:none;
-    }
+    .grid-overlay{position:fixed;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(rgba(255,255,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.03) 1px,transparent 1px);background-size:60px 60px;opacity:.3}
     
-    /* Screen reader only */
-    .sr-only{
-      position:absolute;
-      width:1px;
-      height:1px;
-      padding:0;
-      margin:-1px;
-      overflow:hidden;
-      clip:rect(0,0,0,0);
-      white-space:nowrap;
-      border:0;
-    }
+    .site-header{position:fixed;top:0;width:100%;z-index:50;padding:0 var(--space-2);height:var(--nav-height);border-bottom:1px solid rgba(255,255,255,.08);background:rgba(42,47,61,.85);backdrop-filter:blur(20px);display:flex;align-items:center}
+    .nav-inner{max-width:1200px;margin:0 auto;width:100%;display:flex;align-items:center;justify-content:space-between}
+    .brand{display:flex;align-items:center;gap:var(--space-1);text-decoration:none}.brand:hover{text-decoration:none}
+    .brand-mark{width:24px;height:24px;background:var(--purple-primary);border:2px solid var(--purple-bright);border-radius:6px;display:flex;align-items:center;justify-content:center}
+    .brand-mark-inner{width:8px;height:8px;background:#c4b8e8;border-radius:50%;animation:pulse 3s ease-in-out infinite}
+    @keyframes pulse{0%,100%{opacity:.7;transform:scale(.95)}50%{opacity:1;transform:scale(1.05)}}
+    .brand-name{font-family:var(--mono);font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.86)}
+    .back-link{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-tertiary);text-decoration:none;display:flex;align-items:center;gap:8px;transition:color .2s}.back-link:hover{color:var(--text-primary);text-decoration:none}
     
-    /* Focus styles for accessibility */
-    a:focus-visible, button:focus-visible {
-      outline: 2px solid rgba(157,140,207,.75);
-      outline-offset: 3px;
-      border-radius: 10px;
-    }
+    main{position:relative;z-index:1;max-width:var(--max);margin:0 auto;padding:calc(var(--nav-height) + 60px) var(--space-2) 80px}
     
-    html{ scroll-behavior:smooth; background:var(--bg-deep); }
-    body{
-      margin:0;
-      font-family:var(--sans);
-      background: radial-gradient(1200px 700px at 15% 10%, rgba(91,75,138,.15), transparent 55%),
-                  radial-gradient(900px 600px at 85% 80%, rgba(92,214,133,.06), transparent 55%),
-                  var(--bg-deep);
-      color:var(--text-primary);
-      overflow-x:hidden;
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
-    }
-    a{ color:inherit; text-decoration:none; }
-    a:hover{ text-decoration:underline; text-underline-offset:4px; }
-    ::selection{ background:var(--purple-primary); color:#fff; }
-
-    /* Subtle grid overlay */
-    .grid-overlay{
-      position:fixed;
-      inset:0;
-      pointer-events:none;
-      z-index:0;
-      background-image:
-        linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
-      background-size: var(--space-12) var(--space-12);
-      opacity:.15;
-      mask-image: radial-gradient(ellipse at center, rgba(0,0,0,.95) 20%, transparent 70%);
-    }
-
-    /* ============================================
-       NAVIGATION
-       ============================================ */
-    .site-header{
-      position:fixed;
-      top:0;
-      width:100%;
-      z-index:50;
-      padding:0 var(--space-2, 20px);
-      height: var(--nav-height, 72px);
-      border-bottom:1px solid rgba(255,255,255,.10);
-      background: rgba(42,47,61,.88);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-      display: flex;
-      align-items: center;
-    }
-    .nav-inner{
-      max-width: var(--max, 1200px);
-      margin:0 auto;
-      width: 100%;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap: var(--space-2, 20px);
-    }
-    .brand{
-      display:flex;
-      align-items:center;
-      gap: 10px;
-      gap: var(--space-1, 10px);
-      flex-shrink: 0;
-      text-decoration: none;
-      visibility: visible;
-      opacity: 1;
-    }
-    .brand:hover{ text-decoration: none; }
-    .brand-mark{
-      width: 24px;
-      height: 24px;
-      background: #5B4B8A;
-      background: var(--purple-primary, #5B4B8A);
-      border: 2px solid #9d8ccf;
-      border: 2px solid var(--purple-bright, #9d8ccf);
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-    .brand-mark-inner{
-      width: 8px;
-      height: 8px;
-      background: #c4b8e8;
-      border-radius: 50%;
-      animation: eye-pulse 7s ease-in-out infinite;
-      will-change: transform, opacity, box-shadow;
-    }
-    @keyframes eye-pulse {
-      0%, 100% {
-        opacity: .75;
-        transform: scale(.98);
-        box-shadow: 0 0 0 rgba(196,184,232,0);
-      }
-      50% {
-        opacity: 1;
-        transform: scale(1.02);
-        box-shadow: 0 0 10px rgba(157,140,207,.22);
-      }
-    }
-    @media (prefers-reduced-motion: reduce){
-      .brand-mark-inner{ animation: none; opacity: .9; }
-    }
-    .brand-name{
-      font-family: 'IBM Plex Mono', monospace;
-      font-family: var(--mono, 'IBM Plex Mono', monospace);
-      font-size: 10px;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      color: #dbdbdb;
-      color: rgba(255,255,255,.86);
-      white-space: nowrap;
-    }
-    /* Back link for sub-pages */
-    .back-link{
-      font-family: var(--mono, 'IBM Plex Mono', monospace);
-      font-size: 10px;
-      font-weight: 500;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: var(--text-tertiary, rgba(255,255,255,.50));
-      text-decoration: none;
-      transition: color 0.2s ease;
-    }
-    .back-link:hover{
-      color: var(--text-primary, rgba(255,255,255,.94));
-      text-decoration: none;
-    }
-
-
-    .nav-links{
-      display:flex;
-      align-items:center;
-      gap: 14px;
-      flex-wrap: nowrap;
-      justify-content:center;
-    }
-    .nav-links a{
-      font-family: var(--mono);
-      font-size: 9px;
-      letter-spacing: 1.5px;
-      color: var(--text-tertiary);
-      padding: 8px 4px;
-      position: relative;
-      transition: color .25s ease;
-      white-space: nowrap;
-    }
-    .nav-links a:hover{ color: var(--text-primary); text-decoration:none; }
-    .nav-links a::after{
-      content:"";
-      position:absolute;
-      left:4px; right:4px; bottom:4px;
-      height:1px;
-      background: var(--purple-bright);
-      transform: scaleX(0);
-      transform-origin: left;
-      transition: transform .35s var(--ease);
-      opacity:.9;
-    }
-    .nav-links a:hover::after{ transform: scaleX(1); }
+    .page-hero{margin-bottom:var(--space-4);padding-bottom:var(--space-4);border-bottom:1px solid var(--border-glass)}
+    .page-label{font-family:var(--mono);font-size:10px;letter-spacing:5px;text-transform:uppercase;color:var(--purple-bright);display:flex;align-items:center;gap:12px;margin-bottom:16px}
+    .page-label::before{content:'';width:40px;height:1px;background:var(--purple-bright)}
+    .page-title{font-family:var(--serif);font-size:clamp(32px,5vw,48px);font-weight:200;line-height:1.1;margin:0 0 8px}
+    .page-subtitle{font-size:15px;color:var(--text-tertiary);margin-bottom:16px}
+    .page-meta{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+    .effective{font-family:var(--mono);font-size:11px;color:var(--text-tertiary);padding:8px 14px;background:rgba(255,255,255,.03);border:1px solid var(--border-subtle);border-radius:8px}
+    .page-intro{font-size:16px;color:var(--text-secondary);max-width:65ch;margin-top:var(--space-2);line-height:1.8}
     
-    /* Active section indicator */
-    .nav-links a.active{
-      color: var(--text-primary);
-    }
-    .nav-links a.active::after{
-      transform: scaleX(1);
-      opacity: .6;
-    }
-
-    .nav-badge{
-      display:flex;
-      align-items:center;
-      gap:6px;
-      font-family: var(--mono);
-      font-size: 8px;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      color: rgba(214,160,92,.95);
-      border: 1px solid rgba(214,160,92,.25);
-      background: rgba(214,160,92,.08);
-      padding: 6px 8px;
-      border-radius: 999px;
-      white-space: nowrap;
-      flex-shrink: 0;
-    }
-
-    /* Mobile nav toggle */
-    .nav-toggle{
-      display: none;
-      appearance: none;
-      border: 1px solid var(--border-glass);
-      background: rgba(255,255,255,.03);
-      width: 40px;
-      height: 40px;
-      border-radius: 10px;
-      cursor: pointer;
-      position: relative;
-      transition: border-color .2s ease, background .2s ease;
-    }
-    .nav-toggle:hover{
-      border-color: rgba(255,255,255,.18);
-      background: rgba(255,255,255,.05);
-    }
-    .nav-toggle span{
-      position: absolute;
-      left: 50%;
-      width: 16px;
-      height: 1px;
-      background: var(--text-secondary);
-      transform: translateX(-50%);
-      transition: all .18s var(--ease-out);
-    }
-    .nav-toggle span:nth-child(1){ top: 14px; }
-    .nav-toggle span:nth-child(2){ top: 19px; }
-    .nav-toggle span:nth-child(3){ top: 24px; }
+    /* Critical box */
+    .critical-box{background:linear-gradient(135deg,rgba(214,92,92,.12) 0%,rgba(214,92,92,.03) 100%);border:1px solid rgba(214,92,92,.35);border-radius:16px;padding:24px;margin:var(--space-3) 0}
+    .critical-box h3{font-family:var(--mono);font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--accent-red);margin:0 0 12px;display:flex;align-items:center;gap:10px}
+    .critical-box h3::before{content:'⚠';font-size:14px}
+    .critical-box p{color:var(--text-secondary);margin:0;font-size:14px;line-height:1.8}
+    .critical-box strong{color:rgba(214,92,92,.95)}
     
-    .nav-toggle[aria-expanded="true"] span:nth-child(1){
-      top: 19px;
-      transform: translateX(-50%) rotate(45deg);
-    }
-    .nav-toggle[aria-expanded="true"] span:nth-child(2){
-      opacity: 0;
-      transform: translateX(-50%) scaleX(0);
-    }
-    .nav-toggle[aria-expanded="true"] span:nth-child(3){
-      top: 19px;
-      transform: translateX(-50%) rotate(-45deg);
-    }
-
-    /* Mobile drawer */
-    .nav-drawer{
-      display: none;
-      position: fixed;
-      top: var(--nav-height);
-      right: 0;
-      width: 280px;
-      max-width: calc(100vw - var(--space-4));
-      height: calc(100vh - var(--nav-height));
-      background: rgba(42,47,61,.96);
-      backdrop-filter: blur(24px);
-      border-left: 1px solid var(--border-glass);
-      transform: translateX(100%);
-      transition: transform .18s var(--ease-out);
-      z-index: 49;
-      padding: var(--space-3) var(--space-2);
-      overflow-y: auto;
-    }
-    .nav-drawer.open{
-      transform: translateX(0);
-    }
-    .nav-drawer a{
-      display: flex;
-      align-items: center;
-      font-family: var(--mono);
-      font-size: 10px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: var(--text-secondary);
-      padding: 14px 0;
-      border-bottom: 1px solid var(--border-subtle);
-      transition: color .2s ease;
-    }
-    .nav-drawer a:hover{
-      color: var(--text-primary);
-      text-decoration: none;
-    }
-    .nav-drawer a.active{
-      color: var(--purple-bright);
-    }
+    /* TOC */
+    .toc{background:rgba(255,255,255,.02);border:1px solid var(--border-glass);border-radius:14px;padding:20px 24px;margin-bottom:var(--space-4);position:relative}
+    .toc-title{font-family:var(--mono);font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--text-tertiary);margin-bottom:12px}
+    .toc-list{display:flex;flex-direction:column;gap:6px;margin:0;padding:0;list-style:none}
+    .toc-list a{font-size:12px;color:var(--text-secondary);display:flex;align-items:center;gap:8px;padding:6px 0;transition:color .2s;border-bottom:1px solid var(--border-subtle)}
+    .toc-list a:last-child{border-bottom:none}
+    .toc-list a:hover{color:var(--text-primary);text-decoration:none}
+    .toc-list .num{font-family:var(--mono);font-size:9px;color:var(--purple-bright);min-width:20px}
+    @media(max-width:768px){.toc{position:relative;top:0}}
     
-    .drawer-overlay{
-      display: none;
-      position: fixed;
-      inset: 0;
-      top: var(--nav-height);
-      background: rgba(0,0,0,.4);
-      z-index: 48;
-      opacity: 0;
-      transition: opacity .18s ease;
-      pointer-events: none;
-    }
-    .drawer-overlay.open{
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    @media (max-width: 860px){
-      .nav-links{ display:none; }
-      .nav-toggle{ display: block; }
-      .nav-drawer{ display: block; }
-      .drawer-overlay{ display: block; }
-    }
-
-    /* ============================================
-       MAIN CONTENT
-       ============================================ */
-    main{
-      position: relative;
-      z-index: 1;
-      max-width: var(--max);
-      margin: 0 auto;
-      padding: 0 var(--space-2);
-    }
-
-    /* ============================================
-       HERO
-       ============================================ */
-    .hero{
-      min-height: 100vh;
-      padding: calc(var(--nav-height) + var(--space-8)) 0 var(--space-6);
-      display:flex;
-      flex-direction: column;
-      justify-content: center;
-      gap: var(--space-2);
-      position: relative;
-    }
+    .content-section{margin-bottom:var(--space-4);scroll-margin-top:calc(var(--nav-height) + 20px)}
+    .content-section h2{font-family:var(--serif);font-size:22px;font-weight:300;margin:0 0 var(--space-2);padding-top:var(--space-2);display:flex;align-items:center;gap:12px;border-top:1px solid var(--border-glass)}
+    .content-section h2 .num{font-family:var(--mono);font-size:11px;color:var(--purple-bright);letter-spacing:1px}
+    .content-section h3{font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--text-primary);margin:var(--space-2) 0 var(--space-1)}
+    .content-section p{color:var(--text-secondary);margin:0 0 var(--space-2);font-size:14px;line-height:1.8}
+    .content-section strong{color:var(--text-primary)}
     
-    /* Hero anchor line */
-    .hero::before{
-      content: "";
-      position: absolute;
-      left: 0;
-      top: calc(var(--nav-height) + var(--space-6));
-      bottom: var(--space-6);
-      width: 1px;
-      background: linear-gradient(
-        to bottom,
-        transparent 0%,
-        rgba(157,140,207,.15) 10%,
-        rgba(157,140,207,.15) 90%,
-        transparent 100%
-      );
-    }
+    .info-card{background:rgba(255,255,255,.03);border:1px solid var(--border-glass);border-radius:14px;padding:20px 24px;margin:var(--space-2) 0}
+    .info-card ul{margin:0;padding:0 0 0 20px;color:var(--text-secondary)}
+    .info-card li{margin-bottom:10px;font-size:13px;line-height:1.7}
+    .info-card li:last-child{margin-bottom:0}
+    .info-card li strong{color:var(--text-primary)}
     
-    @media (max-width: 860px){
-      .hero{
-        padding-top: calc(var(--nav-height) + var(--space-4));
-        justify-content: flex-start;
-      }
-      .hero::before{ display: none; }
-    }
+    .info-box{background:linear-gradient(135deg,rgba(157,140,207,.1) 0%,rgba(157,140,207,.03) 100%);border:1px solid rgba(157,140,207,.25);border-radius:14px;padding:24px;margin:var(--space-3) 0}
+    .info-box h3{font-family:var(--mono);font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--purple-bright);margin:0 0 12px}
+    .info-box p{color:var(--text-secondary);margin:0 0 12px;font-size:14px;line-height:1.7}
+    .info-box ul{margin:0;padding:0 0 0 20px;color:var(--text-secondary);font-size:13px}
+    .info-box li{margin-bottom:6px}
     
-    .hero-kicker{
-      font-family: var(--mono);
-      font-size: 10px;
-      letter-spacing: 6px;
-      text-transform: uppercase;
-      color: var(--purple-bright);
-      display:flex;
-      align-items:center;
-      gap:14px;
-    }
-    .hero-kicker::before{
-      content:"";
-      width:var(--space-4);
-      height:1px;
-      background: var(--purple-bright);
-      opacity:.95;
-    }
+    .warning-box{background:linear-gradient(135deg,rgba(214,160,92,.1) 0%,rgba(214,160,92,.03) 100%);border:1px solid rgba(214,160,92,.3);border-radius:14px;padding:24px;margin:var(--space-3) 0}
+    .warning-box h3{font-family:var(--mono);font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--accent-amber);margin:0 0 12px}
+    .warning-box p{color:var(--text-secondary);margin:0;font-size:14px;line-height:1.7}
     
-    h1{
-      font-family: var(--serif);
-      font-size: clamp(44px, 7vw, 92px);
-      font-weight: 200;
-      line-height: .95;
-      margin: 0;
-      letter-spacing: -0.04em;
-    }
-    h1 .accent{
-      font-style: italic;
-      color: var(--purple-bright);
-      position: relative;
-      text-shadow: 
-        -1px 0 rgba(255,100,100,0.08), 
-        1px 0 rgba(100,255,255,0.08),
-        0 0 20px var(--purple-glow);
-    }
+    .contact-card{background:linear-gradient(135deg,rgba(157,140,207,.1) 0%,rgba(157,140,207,.03) 100%);border:1px solid rgba(157,140,207,.25);border-radius:16px;padding:24px;margin-top:var(--space-4);display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+    .contact-icon{width:48px;height:48px;background:rgba(157,140,207,.15);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .contact-content{flex:1;min-width:200px}
+    .contact-title{font-size:15px;color:var(--text-primary);margin-bottom:4px}
+    .contact-desc{font-size:13px;color:var(--text-tertiary)}
+    .contact-link{font-family:var(--mono);font-size:11px;letter-spacing:1px;color:var(--purple-bright);padding:10px 18px;border:1px solid rgba(157,140,207,.4);border-radius:8px;text-decoration:none;transition:all .2s;white-space:nowrap}
+    .contact-link:hover{background:rgba(157,140,207,.1);border-color:rgba(157,140,207,.6);text-decoration:none}
     
-    /* Hero stamp line */
-    .hero-stamp{
-      width: 60px;
-      height: 1px;
-      background: var(--purple-bright);
-      opacity: .15;
-      margin: var(--space-1) 0;
-    }
-    
-    .hero-notice{
-      font-family: var(--mono);
-      font-size: 10px;
-      letter-spacing: 1px;
-      color: var(--purple-bright);
-      border: 1px solid rgba(157,140,207,.22);
-      background: rgba(91,75,138,.05);
-      padding: 8px 12px;
-      border-radius: 8px;
-      width: fit-content;
-      margin: var(--space-1) 0 var(--space-2);
-    }
-    
-    .hero-desc{
-      max-width: 62ch;
-      font-size: 18px;
-      font-weight: 200;
-      line-height: 1.75;
-      color: var(--text-secondary);
-      border-left: 2px solid rgba(91,75,138,.65);
-      padding-left: var(--space-2);
-      margin: 0;
-    }
-    
-    .hero-disclaimer{
-      font-size: 11px;
-      color: var(--text-tertiary);
-      font-weight: 200;
-      font-family: var(--mono);
-      letter-spacing: 0.5px;
-      margin: 0;
-      line-height: 1.7;
-    }
-    .hero-disclaimer + .hero-disclaimer{
-      margin-top: 6px;
-    }
-    
-    .hero-subline{
-      font-size: 15px;
-      color: var(--text-secondary);
-      font-weight: 200;
-      margin: var(--space-1) 0 0;
-    }
-
-    .hero-actions{
-      display:flex;
-      gap: 14px;
-      flex-wrap: wrap;
-      margin-top: var(--space-1);
-    }
-    
-    .hero-footnote{
-      font-family: var(--mono);
-      font-size: 9px;
-      color: var(--text-tertiary);
-      letter-spacing: 1px;
-      margin-top: var(--space-2);
-    }
-    
-    @media (max-width: 600px){
-      h1{ font-weight: 300; line-height: 1.0; }
-    }
-    
-    /* ============================================
-       BUTTONS
-       ============================================ */
-    .btn{
-      appearance:none;
-      border:1px solid rgba(255,255,255,.18);
-      background: transparent;
-      color: var(--text-primary);
-      padding: 14px 18px;
-      border-radius: 14px;
-      font-family: var(--mono);
-      font-size: 10px;
-      letter-spacing: 2.5px;
-      text-transform: uppercase;
-      cursor: pointer;
-      transition: transform .2s var(--ease), border-color .2s ease, background .2s ease;
-      position: relative;
-      overflow:hidden;
-    }
-    .btn:hover{
-      transform: translateY(-1px);
-      border-color: rgba(255,255,255,.28);
-      background: rgba(255,255,255,.04);
-      text-decoration: none;
-    }
-    .btn.primary{
-      border-color: rgba(157,140,207,.55);
-      background: rgba(91,75,138,.18);
-      box-shadow: 0 18px 50px rgba(0,0,0,.30);
-    }
-    .btn.primary:hover{
-      border-color: rgba(157,140,207,.85);
-      background: rgba(91,75,138,.26);
-    }
-
-    /* ============================================
-       SECTIONS
-       ============================================ */
-    .section{
-      padding: var(--space-10) 0;
-      border-top: 1px solid var(--border-glass);
-      scroll-margin-top: calc(var(--nav-height) + 24px);
-    }
-    .section-head{
-      display:flex;
-      align-items:flex-end;
-      justify-content: space-between;
-      gap: var(--space-2);
-      flex-wrap: wrap;
-      margin-bottom: var(--space-4);
-    }
-    .section-label{
-      font-family: var(--mono);
-      font-size: 10px;
-      letter-spacing: 5px;
-      text-transform: uppercase;
-      color: var(--purple-bright);
-      display:block;
-      margin-bottom: 12px;
-    }
-    .section-title{
-      font-family: var(--serif);
-      font-size: clamp(30px, 4vw, 50px);
-      font-weight: 200;
-      line-height: 1.1;
-      margin: 0;
-      letter-spacing: -0.03em;
-    }
-    @media (max-width: 600px){
-      .section-title{ font-weight: 300; }
-    }
-    .section-lead{
-      max-width: 70ch;
-      color: var(--text-secondary);
-      font-weight: 200;
-      line-height: 1.85;
-      margin: var(--space-2) 0 0;
-      font-size: 16px;
-    }
-
-    .grid-2{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap: var(--space-3);
-      align-items: start;
-    }
-    @media (max-width: 980px){
-      .grid-2{ grid-template-columns: 1fr; }
-    }
-
-    /* ============================================
-       PANELS
-       ============================================ */
-    .panel{
-      background: var(--bg-panel);
-      border: 1px solid var(--border-glass);
-      border-radius: 18px;
-      padding: var(--space-3) 28px;
-      backdrop-filter: blur(18px);
-      position: relative;
-      overflow:hidden;
-    }
-    .panel::before{
-      content:"";
-      position:absolute;
-      inset:-20%;
-      background: radial-gradient(circle at 20% 20%, rgba(157,140,207,.10), transparent 55%);
-      pointer-events:none;
-      transform: rotate(-8deg);
-      opacity:.8;
-    }
-    .panel > *{ position: relative; z-index: 1; }
-
-    .panel h3{
-      margin: 0 0 14px;
-      font-family: var(--mono);
-      font-size: 11px;
-      letter-spacing: 4px;
-      text-transform: uppercase;
-      color: rgba(255,255,255,.85);
-    }
-    .panel p{
-      margin: 0 0 var(--space-2);
-      color: var(--text-secondary);
-      font-weight: 200;
-      line-height: 1.85;
-    }
-    
-    .panel-note{
-      font-size: 12px;
-      color: var(--text-tertiary);
-      font-weight: 400;
-      font-family: var(--mono);
-      letter-spacing: 0.5px;
-      margin-bottom: 14px;
-    }
-    .panel-detail{
-      font-size: 13px;
-      color: var(--text-secondary);
-      font-weight: 200;
-      margin-bottom: 8px;
-    }
-    .panel-fine{
-      font-size: 11px;
-      color: var(--text-tertiary);
-      font-weight: 200;
-      margin-bottom: 14px;
-    }
-    
-    .list{
-      list-style: none;
-      padding: 0;
-      margin: 0;
-      border-top: 1px solid var(--border-glass);
-    }
-    .list li{
-      padding: 12px 0;
-      border-bottom: 1px solid var(--border-glass);
-      color: var(--text-secondary);
-      font-size: 14px;
-      line-height: 1.6;
-    }
-    .list li:last-child{ border-bottom:none; }
-    .list b{ color: var(--text-primary); font-weight: 600; }
-
-    .tag{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      font-family: var(--mono);
-      font-size: 10px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      padding: 8px 10px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.03);
-      color: rgba(255,255,255,.82);
-      width: fit-content;
-    }
-
-    /* Document download links */
-    .doc-links {
-      display: flex;
-      gap: 10px;
-      margin-top: 10px;
-      flex-wrap: wrap;
-    }
-    .doc-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 6px 12px;
-      background: rgba(91, 75, 138, 0.15);
-      border: 1px solid rgba(157, 140, 207, 0.25);
-      border-radius: 4px;
-      color: var(--purple-bright);
-      font-family: var(--mono);
-      font-size: 10px;
-      letter-spacing: 0.5px;
-      text-decoration: none;
-      transition: all 0.2s ease;
-    }
-    .doc-link:hover {
-      background: rgba(91, 75, 138, 0.3);
-      border-color: rgba(157, 140, 207, 0.5);
-      color: #fff;
-      text-decoration: none;
-    }
-    .doc-icon {
-      padding: 2px 5px;
-      background: rgba(157, 140, 207, 0.2);
-      border-radius: 2px;
-      font-size: 9px;
-      font-weight: 600;
-      letter-spacing: 1px;
-    }
-    .tag .dot{
-      width:6px;height:6px;border-radius:50%;
-      background: var(--accent-green);
-      box-shadow: 0 0 0 6px rgba(92,214,133,.10);
-    }
-
-    /* ============================================
-       CRITERIA CHECKLIST
-       ============================================ */
-    .checklist{
-      display:grid;
-      gap: 12px;
-      margin-top: var(--space-2);
-    }
-    .check{
-      display:flex;
-      gap: 12px;
-      padding: 14px;
-      border-radius: 16px;
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.025);
-      align-items:flex-start;
-    }
-    .check svg{ flex:0 0 auto; margin-top: 2px; }
-    .check-title{
-      font-weight: 600;
-      color: var(--text-primary);
-      font-size: 14px;
-      margin-bottom: 2px;
-    }
-    .check-desc{
-      color: var(--text-secondary);
-      font-size: 13px;
-      line-height: 1.6;
-      font-weight: 200;
-    }
-
-    /* ============================================
-       MECHANISM NODES
-       ============================================ */
-    .mechanism{
-      display:grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: var(--space-1);
-    }
-    @media (max-width: 980px){
-      .mechanism{ grid-template-columns: 1fr; }
-    }
-    .node{
-      border: 1px solid var(--border-glass);
-      background: rgba(255,255,255,.02);
-      border-radius: 18px;
-      padding: 28px 22px;
-      position: relative;
-      overflow:hidden;
-      min-height: 165px;
-    }
-    .node::before{
-      content:"";
-      position:absolute;
-      inset:-30%;
-      background: radial-gradient(circle at 30% 20%, rgba(157,140,207,.08), transparent 55%);
-      opacity:.85;
-      pointer-events:none;
-    }
-    .node > *{ position: relative; z-index: 1; }
-    .node-num{
-      font-family: var(--mono);
-      font-size: 10px;
-      letter-spacing: 4px;
-      color: var(--purple-bright);
-      text-transform: uppercase;
-      margin-bottom: 12px;
-    }
-    .node-title{
-      font-family: var(--serif);
-      font-size: 22px;
-      font-weight: 200;
-      margin: 0 0 var(--space-1);
-      letter-spacing: -0.02em;
-    }
-    @media (max-width: 600px){
-      .node-title{ font-weight: 300; }
-    }
-    .node-desc{
-      color: var(--text-tertiary);
-      line-height: 1.65;
-      font-size: 13px;
-      font-weight: 200;
-      margin: 0;
-    }
-
-    /* ============================================
-       RECORD BLOCK
-       ============================================ */
-    .record{
-      background: rgba(0,0,0,.20);
-      border: 1px solid rgba(255,255,255,.12);
-      border-radius: 18px;
-      overflow:hidden;
-    }
-    .record-head{
-      display:flex;
-      justify-content: space-between;
-      align-items:center;
-      padding: var(--space-2) 18px;
-      background: rgba(91,75,138,.12);
-      border-bottom: 1px solid rgba(255,255,255,.10);
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-    .record-title{
-      font-family: var(--mono);
-      font-size: 10px;
-      letter-spacing: 4px;
-      text-transform: uppercase;
-      color: rgba(255,255,255,.88);
-    }
-    .record-status{
-      font-family: var(--mono);
-      font-size: 10px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: rgba(92,214,133,.92);
-      border: 1px solid rgba(92,214,133,.20);
-      background: rgba(92,214,133,.06);
-      padding: 6px 10px;
-      border-radius: 999px;
-      display:flex; align-items:center; gap: 8px;
-    }
-    .record-status .s-dot{
-      width: 6px; height: 6px; border-radius: 50%;
-      background: var(--accent-green);
-    }
-    .record-status.illustrative{
-      color: rgba(214,160,92,.95);
-      border-color: rgba(214,160,92,.25);
-      background: rgba(214,160,92,.08);
-    }
-    .record-status.illustrative .s-dot{
-      background: var(--accent-amber);
-    }
-    .record-head-right{
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 6px;
-    }
-    .verify-link{
-      font-family: var(--mono);
-      font-size: 9px;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      color: var(--purple-bright);
-      border: 1px solid rgba(157,140,207,.35);
-      background: rgba(91,75,138,.08);
-      padding: 6px 10px;
-      border-radius: 6px;
-      transition: all .2s ease;
-    }
-    .verify-link:hover{
-      border-color: rgba(157,140,207,.55);
-      background: rgba(91,75,138,.15);
-      text-decoration: none;
-    }
-    .record-body{
-      padding: 18px;
-      font-family: var(--mono);
-      font-size: 12px;
-      color: rgba(255,255,255,.86);
-    }
-    .kv{
-      display:grid;
-      grid-template-columns: 150px 1fr;
-      gap: 12px;
-      padding: var(--space-1) 0;
-      border-bottom: 1px solid rgba(255,255,255,.08);
-    }
-    .kv:last-child{ border-bottom:none; }
-    .k{
-      color: rgba(255,255,255,.42);
-      font-size: 10px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-    }
-    .v{
-      color: rgba(255,255,255,.90);
-      word-break: break-word;
-    }
-    .hash-row{
-      display:flex;
-      align-items:center;
-      gap:var(--space-1);
-    }
-    .copy-btn{
-      appearance:none;
-      border:1px solid rgba(255,255,255,.18);
-      background:rgba(255,255,255,.04);
-      color:rgba(255,255,255,.65);
-      padding:4px 8px;
-      border-radius:6px;
-      font-family:var(--mono);
-      font-size:9px;
-      letter-spacing:1px;
-      text-transform:uppercase;
-      cursor:pointer;
-      transition:all .2s ease;
-    }
-    .copy-btn:hover{
-      border-color:rgba(157,140,207,.55);
-      background:rgba(91,75,138,.18);
-      color:rgba(255,255,255,.90);
-    }
-    .copy-btn.copied{
-      border-color:rgba(92,214,133,.35);
-      background:rgba(92,214,133,.12);
-      color:rgba(92,214,133,.95);
-    }
-    .record-note{
-      margin-top: 14px;
-      padding-top: 14px;
-      border-top: 1px solid rgba(255,255,255,.10);
-      color: rgba(255,255,255,.62);
-      font-size: 11.5px;
-      line-height: 1.7;
-      font-weight: 200;
-      font-family: var(--sans);
-    }
-    
-    /* Copy toast */
-    .copy-toast{
-      position: fixed;
-      bottom: var(--space-3);
-      left: 50%;
-      transform: translateX(-50%) translateY(20px);
-      background: rgba(92,214,133,.12);
-      border: 1px solid rgba(92,214,133,.35);
-      color: rgba(92,214,133,.95);
-      font-family: var(--mono);
-      font-size: 10px;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      padding: 12px 18px;
-      border-radius: 10px;
-      backdrop-filter: blur(12px);
-      opacity: 0;
-      transition: opacity .18s ease, transform .18s var(--ease-out);
-      pointer-events: none;
-      z-index: 100;
-    }
-    .copy-toast.show{
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
-
-    /* ============================================
-       STATES
-       ============================================ */
-    .states{
-      display:grid;
-      gap: var(--space-1);
-      margin-top: var(--space-2);
-    }
-    .state{
-      padding: 14px;
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.02);
-      border-radius: 16px;
-      display:flex;
-      justify-content: space-between;
-      gap: 12px;
-      align-items:flex-start;
-    }
-    .state-left{
-      display:flex; flex-direction: column; gap: 2px;
-    }
-    .state-name{
-      font-family: var(--mono);
-      font-size: 10px;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      color: rgba(255,255,255,.86);
-    }
-    .state-desc{
-      color: var(--text-secondary);
-      font-size: 13px;
-      line-height: 1.6;
-      font-weight: 200;
-      margin:0;
-    }
-    .badge{
-      font-family: var(--mono);
-      font-size: 9px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      padding: 6px 8px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.03);
-      color: rgba(255,255,255,.80);
-      white-space: nowrap;
-    }
-    .badge.green{ border-color: rgba(92,214,133,.22); color: rgba(92,214,133,.90); background: rgba(92,214,133,.06); }
-    .badge.amber{ border-color: rgba(214,160,92,.22); color: rgba(214,160,92,.95); background: rgba(214,160,92,.06); }
-    .badge.red{ border-color: rgba(214,92,92,.22); color: rgba(214,92,92,.95); background: rgba(214,92,92,.06); }
-
-    /* ============================================
-       ENFORCEMENT DIAGRAM
-       ============================================ */
-    .diagram-container{
-      display:flex;
-      flex-direction: column;
-      align-items: center;
-      margin: var(--space-3) 0 var(--space-5);
-    }
-    .enforcement-diagram{
-      max-width: 400px;
-      width: 100%;
-      height: auto;
-    }
-    .diagram-caption{
-      font-size: 11px;
-      color: var(--text-tertiary);
-      text-align: center;
-      margin-top: var(--space-2);
-      font-family: var(--mono);
-      letter-spacing: 0.5px;
-    }
-    
-    /* Subtle interlock pulse */
-    @keyframes interlock-pulse {
-      0%, 100% { 
-        stroke: rgba(157,140,207,0.65);
-        filter: drop-shadow(0 0 0 rgba(157,140,207,0));
-      }
-      50% { 
-        stroke: rgba(157,140,207,0.85);
-        filter: drop-shadow(0 0 8px rgba(157,140,207,0.25));
-      }
-    }
-    .interlock-bg{
-      animation: interlock-pulse 3s ease-in-out infinite;
-    }
-    
-    @media (prefers-reduced-motion: reduce){
-      .interlock-bg{ animation: none; }
-    }
-    
-    /* ============================================
-       CONTACT
-       ============================================ */
-    /* Process Timeline */
-    .process-timeline{ display: flex; flex-direction: column; gap: 0; }
-    .process-step{ display: flex; gap: 16px; padding: 16px 0; border-bottom: 1px solid var(--border-glass); }
-    .process-step:last-child{ border-bottom: none; }
-    .process-step-num{ 
-      width: 28px; height: 28px; flex-shrink: 0;
-      background: rgba(91,75,138,.18); border: 1px solid rgba(157,140,207,.35);
-      border-radius: 50%; display: flex; align-items: center; justify-content: center;
-      font-family: var(--mono); font-size: 11px; color: var(--purple-bright);
-    }
-    .process-step-content b{ display: block; margin-bottom: 4px; }
-    .process-step-content p{ color: var(--text-secondary); font-size: 13px; line-height: 1.6; margin: 0; }
-
-    .contact-card{
-      max-width: 540px;
-      background: var(--bg-panel);
-      border: 1px solid var(--border-glass);
-      border-radius: 18px;
-      padding: 8px 0;
-      backdrop-filter: blur(18px);
-    }
-    .contact-row{
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 18px 28px;
-      border-bottom: 1px solid var(--border-glass);
-      gap: var(--space-2);
-      flex-wrap: wrap;
-    }
-    .contact-row:last-child{ border-bottom: none; }
-    .contact-label{
-      font-family: var(--mono);
-      font-size: 10px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: var(--text-tertiary);
-    }
-    .contact-link{
-      font-family: var(--sans);
-      font-size: 14px;
-      color: var(--purple-bright);
-      transition: color .2s ease;
-    }
-    .contact-link:hover{
-      color: var(--text-primary);
-      text-decoration: none;
-    }
-
-    /* ============================================
-       DEFINITION CALLOUT
-       ============================================ */
-    .definition-callout{
-      background: rgba(91,75,138,.08);
-      border: 1px solid rgba(157,140,207,.25);
-      border-radius: 12px;
-      padding: var(--space-2) 18px;
-      margin-top: var(--space-2);
-    }
-    .definition-term{
-      font-family: var(--mono);
-      font-size: 10px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: var(--purple-bright);
-      margin-bottom: 6px;
-    }
-    .definition-text{
-      color: var(--text-secondary);
-      font-size: 13px;
-      line-height: 1.65;
-      font-weight: 200;
-      margin: 0;
-    }
-    
-    /* ============================================
-       PROGRAM IDENTITY
-       ============================================ */
-    .program-grid{
-      display: grid;
-      gap: 8px;
-      font-size: 13px;
-    }
-    .program-row{
-      display: flex;
-      justify-content: space-between;
-      gap: var(--space-2);
-      flex-wrap: wrap;
-      padding: 6px 0;
-      border-bottom: 1px solid var(--border-glass);
-    }
-    .program-row:last-child{ border-bottom: none; }
-    .program-label{
-      color: var(--text-tertiary);
-      font-family: var(--mono);
-      font-size: 10px;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-    }
-    .program-value{
-      color: var(--text-primary);
-    }
-    .program-value.amber{
-      color: var(--accent-amber);
-    }
-    .program-value a{
-      color: var(--purple-bright);
-    }
-    
-    /* ============================================
-       FOOTER
-       ============================================ */
-    footer{
-      border-top: 1px solid var(--border-glass);
-      padding: var(--space-6) 0 var(--space-4);
-      margin-top: var(--space-4);
-      color: rgba(255,255,255,.45);
-      font-family: var(--mono);
-      font-size: 10px;
-      letter-spacing: 1px;
-    }
-    .footer-inner{
-      max-width: var(--max);
-      margin: 0 auto;
-      padding: 0 var(--space-2);
-      display:flex;
-      justify-content: space-between;
-      align-items:flex-start;
-      gap: var(--space-2);
-      flex-wrap: wrap;
-    }
-    .footer-spec{
-      margin-top: 8px;
-      color: rgba(255,255,255,.38);
-      font-size: 9px;
-      letter-spacing: 1px;
-    }
-    .footer-disclaimer{
-      margin-top: 12px;
-      color: rgba(255,255,255,.42);
-      font-size: 10px;
-      max-width: 480px;
-      line-height: 1.7;
-    }
-    .foot-links{ display:flex; gap: var(--space-4); flex-wrap: wrap; }
-    .foot-col{ display:flex; flex-direction:column; gap:8px; min-width:120px; }
-    .foot-col-title{ font-family:var(--mono); font-size:9px; letter-spacing:2px; color:var(--purple-bright); margin-bottom:4px; }
-    .foot-links a{ color: rgba(255,255,255,.48); font-size:13px; }
-    .foot-links a:hover{ color: rgba(255,255,255,.82); text-decoration:none; }
-    .old-foot-links{
-      display:flex; gap: var(--space-2); flex-wrap: wrap;
-    }
-    .foot-links a{ color: rgba(255,255,255,.48); }
-    .foot-links a:hover{ color: rgba(255,255,255,.82); text-decoration:none; }
-
-    /* ============================================
-       REVEAL ANIMATION
-       ============================================ */
-    .reveal{ 
-      opacity: 0; 
-      transform: translateY(var(--space-3)); 
-      transition: opacity .9s var(--ease), transform .9s var(--ease); 
-    }
-    .reveal.active{ opacity: 1; transform: translateY(0); }
-    
-    @media (prefers-reduced-motion: reduce){
-      .reveal{ opacity: 1; transform: none; transition: none; }
-    }
-
-    /* Download Modal */
-    .download-modal{
-      display: none;
-      position: fixed;
-      inset: 0;
-      z-index: 100;
-      background: rgba(0,0,0,.6);
-      backdrop-filter: blur(6px);
-      align-items: center;
-      justify-content: center;
-      padding: var(--space-2);
-    }
-    .download-modal.open{ display: flex; }
-    .download-modal-card{
-      background: var(--bg-deep);
-      border: 1px solid var(--border-glass);
-      border-radius: 18px;
-      padding: var(--space-3);
-      max-width: 420px;
-      width: 100%;
-      position: relative;
-    }
-    .download-modal-close{
-      position: absolute;
-      top: 14px;
-      right: 14px;
-      appearance: none;
-      border: none;
-      background: none;
-      color: var(--text-tertiary);
-      font-size: 24px;
-      cursor: pointer;
-      line-height: 1;
-    }
-    .download-modal-close:hover{ color: var(--text-primary); }
-    .download-modal-card h3{
-      font-family: var(--serif);
-      font-size: 22px;
-      font-weight: 200;
-      margin: 0 0 8px;
-    }
-    .download-modal-card > p{
-      color: var(--text-secondary);
-      font-size: 13px;
-      line-height: 1.7;
-      margin: 0 0 var(--space-2);
-    }
-    .download-form-group{ margin-bottom: 14px; }
-    .download-form-label{
-      display: block;
-      font-family: var(--mono);
-      font-size: 9px;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      color: var(--text-tertiary);
-      margin-bottom: 6px;
-    }
-    .download-form-input, .download-form-select{
-      width: 100%;
-      padding: 12px 14px;
-      background: rgba(255,255,255,.04);
-      border: 1px solid var(--border-glass);
-      border-radius: 8px;
-      color: var(--text-primary);
-      font-family: var(--sans);
-      font-size: 14px;
-    }
-    .download-form-input:focus, .download-form-select:focus{
-      outline: none;
-      border-color: rgba(157,140,207,.55);
-    }
-    .download-form-select{
-      appearance: none;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.5)' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: right 12px center;
-    }
-    .download-form-btn{
-      appearance: none;
-      width: 100%;
-      border: 1px solid rgba(157,140,207,.55);
-      background: rgba(91,75,138,.18);
-      color: var(--text-primary);
-      padding: 14px 24px;
-      border-radius: 12px;
-      font-family: var(--mono);
-      font-size: 10px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      cursor: pointer;
-      transition: transform .2s var(--ease), border-color .2s ease, background .2s ease;
-    }
-    .download-form-btn:hover{
-      transform: translateY(-1px);
-      border-color: rgba(157,140,207,.85);
-      background: rgba(91,75,138,.26);
-    }
-    .download-form-fine{
-      font-size: 11px;
-      color: var(--text-tertiary);
-      margin-top: var(--space-2);
-      line-height: 1.6;
-      text-align: center;
-    }
-
-    th:768px){ .nav-links{ display:none; }
-    .contact-box{
-      background:var(--bg-panel); border:1px solid var(--border-glass);
-      border-radius:12px; padding:var(--space-3); margin-top:var(--space-4);
-    }
-    .contact-box h3{
-      font-family:var(--mono); font-size:10px; letter-spacing:3px;
-      text-transform:uppercase; color:var(--text-tertiary); margin:0 0 var(--space-1) 0;
-    }
-    .contact-box p{ margin-bottom:6px; }
-    .contact-box a{ color:var(--purple-bright); }
-    @keyframes eye-pulse {
-      0%, 100% {
-        opacity: .75;
-        transform: scale(.98);
-        box-shadow: 0 0 0 rgba(196,184,232,0);
-      }
-      50% {
-        opacity: 1;
-        transform: scale(1.02);
-        box-shadow: 0 0 10px rgba(157,140,207,.22);
-      }
-    @media (prefers-reduced-motion: reduce){
-      .brand-mark-inner{ animation: none; opacity: .9; }
-    @media(max-width:768px){ .nav-links{ display:none; }
-  
+    footer{margin-top:var(--space-8);padding:var(--space-4) var(--space-2);border-top:1px solid var(--border-glass);text-align:center}
+    .footer-copy{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-tertiary)}
+    .footer-links{margin-top:16px;display:flex;justify-content:center;gap:24px;flex-wrap:wrap}
+    .footer-links a{font-family:var(--mono);font-size:10px;letter-spacing:1px;color:var(--text-tertiary);text-decoration:none}.footer-links a:hover{color:var(--text-primary)}
   </style>
 </head>
 <body>
-  <!-- Grid overlay -->
   <div class="grid-overlay" aria-hidden="true"></div>
   
-  <!-- Site header -->
   <header class="site-header">
     <div class="nav-inner">
       <a href="index.html" class="brand">
-        <div class="brand-mark" aria-hidden="true">
-          <div class="brand-mark-inner"></div>
-        </div>
+        <div class="brand-mark"><div class="brand-mark-inner"></div></div>
         <div class="brand-name">Sentinel Authority</div>
       </a>
-      <a href="index.html" class="back-link">← Back to Home</a>
+      <a href="index.html" class="back-link">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Back
+      </a>
     </div>
   </header>
 
-  <main style="position: relative; z-index: 1; max-width: var(--max, 1200px); margin: 0 auto; padding: calc(var(--nav-height, 72px) + 60px) var(--space-2, 20px) 60px;">
-    <div class="content">
+  <main>
+    <div class="page-hero">
       <div class="page-label">Certification Terms</div>
-      <h1>Conformance Agreement</h1>
-      <div class="subtitle">ODD Conformance Determination Terms and Conditions</div>
-      <p class="intro">This Conformance Agreement ("Agreement") governs the relationship between Sentinel Authority ("SA") and the organization ("Applicant") seeking ODD Conformance Determination (ODDC) for autonomous systems. By submitting a certification application, Applicant agrees to this Agreement.</p>
-      <div class="critical-box">
-        <h3>Critical Understanding</h3>
-        <p>ODDC attests that a system operates within declared boundaries with non-bypassable enforcement at the time of determination. <strong>ODDC is not:</strong> regulatory approval, safety certification, product certification, a guarantee of performance, insurance, or warranty. Applicant remains solely responsible for system behavior, regulatory compliance, and all consequences of operation.</p>
+      <h1 class="page-title">Conformance Agreement</h1>
+      <div class="page-subtitle">ODD Conformance Determination Terms and Conditions</div>
+      <div class="page-meta">
+        <div class="effective">Effective: January 2026</div>
       </div>
-      <h2>1. Scope of Determination</h2>
+      <p class="page-intro">
+        This Agreement governs the relationship between Sentinel Authority ("SA") and organizations seeking ODD Conformance Determination (ODDC) for autonomous systems. By submitting a certification application, you agree to these terms.
+      </p>
+    </div>
+
+    <!-- Critical Understanding -->
+    <div class="critical-box">
+      <h3>Critical Understanding</h3>
+      <p>ODDC attests that a system operates within declared boundaries with non-bypassable enforcement at the time of determination. <strong>ODDC is NOT:</strong> regulatory approval, safety certification, product certification, a guarantee of performance, insurance, or warranty. Applicant remains solely responsible for system behavior, regulatory compliance, and all consequences of operation.</p>
+    </div>
+
+    <!-- Table of Contents -->
+    <div class="toc">
+      <div class="toc-title">Contents</div>
+      <ul class="toc-list">
+        <li><a href="#scope"><span class="num">1</span> Scope of Determination</a></li>
+        <li><a href="#obligations"><span class="num">2</span> Applicant Obligations</a></li>
+        <li><a href="#sa-obligations"><span class="num">3</span> SA Obligations</a></li>
+        <li><a href="#terms"><span class="num">4</span> Conformance Terms</a></li>
+        <li><a href="#revocation"><span class="num">5</span> Revocation</a></li>
+        <li><a href="#suspension"><span class="num">6</span> Suspension & Reinstatement</a></li>
+        <li><a href="#liability"><span class="num">7</span> Liability & Indemnification</a></li>
+        <li><a href="#confidentiality"><span class="num">8</span> Confidentiality</a></li>
+        <li><a href="#ip"><span class="num">9</span> Intellectual Property</a></li>
+        <li><a href="#general"><span class="num">10</span> General Provisions</a></li>
+      </ul>
+    </div>
+
+    <div id="scope" class="content-section">
+      <h2><span class="num">1</span> Scope of Determination</h2>
       <p>SA will evaluate and determine conformance based on:</p>
-      <ul>
-        <li><strong>ODD Specification:</strong> The Operational Design Domain as declared by Applicant</li>
-        <li><strong>ENVELO Compliance:</strong> Runtime enforcement architecture meeting ENVELO requirements</li>
-        <li><strong>CAT-72 Evidence:</strong> Successful completion of 72+ hour convergence test</li>
-        <li><strong>Architectural Consonance:</strong> Training data and safety envelope derived from common simulation</li>
-      </ul>
-      <h2>2. Applicant Obligations</h2>
+      <div class="info-card">
+        <ul>
+          <li><strong>ODD Specification:</strong> The Operational Design Domain as declared by Applicant</li>
+          <li><strong>ENVELO Compliance:</strong> Runtime enforcement architecture meeting ENVELO requirements</li>
+          <li><strong>CAT-72 Evidence:</strong> Successful completion of 72+ hour convergence test</li>
+          <li><strong>Architectural Consonance:</strong> Training data and safety envelope derived from common simulation</li>
+        </ul>
+      </div>
+    </div>
+
+    <div id="obligations" class="content-section">
+      <h2><span class="num">2</span> Applicant Obligations</h2>
+      
       <h3>2.1 Application Requirements</h3>
-      <p>Applicant shall:</p>
-      <ul>
-        <li>Provide complete and accurate application materials</li>
-        <li>Disclose all relevant system specifications and operational parameters</li>
-        <li>Identify all boundaries, tolerances, and constraints in the ODD specification</li>
-        <li>Submit documentation of ENVELO-compliant enforcement architecture</li>
-      </ul>
+      <div class="info-card">
+        <ul>
+          <li>Provide complete and accurate application materials</li>
+          <li>Disclose all relevant system specifications and operational parameters</li>
+          <li>Identify all boundaries, tolerances, and constraints in the ODD specification</li>
+          <li>Submit documentation of ENVELO-compliant enforcement architecture</li>
+        </ul>
+      </div>
+
       <h3>2.2 Testing Requirements</h3>
-      <p>Applicant shall:</p>
-      <ul>
-        <li>Deploy the ENVELO Agent as configured by SA</li>
-        <li>Conduct CAT-72 testing under normal operational conditions</li>
-        <li>Not modify system configuration, ODD parameters, or enforcement settings during testing</li>
-        <li>Report any test interruptions, violations, or anomalies</li>
-      </ul>
+      <div class="info-card">
+        <ul>
+          <li>Deploy the ENVELO Agent as configured by SA</li>
+          <li>Conduct CAT-72 testing under normal operational conditions</li>
+          <li>Not modify system configuration, ODD parameters, or enforcement settings during testing</li>
+          <li>Report any test interruptions, violations, or anomalies</li>
+        </ul>
+      </div>
+
       <h3>2.3 Post-Certification Requirements</h3>
-      <p>Upon certification, Applicant shall maintain minimum uptime requirements:</p>
-      <ul>
-        <li><strong>ENVELO Agent Uptime:</strong> Minimum 99% monthly uptime required</li>
-        <li><strong>Brief Outages:</strong> Outages under 1 hour require no action</li>
-        <li><strong>Extended Outages:</strong> Outages exceeding 1 hour trigger automated notification</li>
-        <li><strong>Critical Threshold:</strong> Cumulative downtime exceeding 24 hours per calendar month may result in certificate suspension</li>
-      </ul>
-      <p>Upon certification, Applicant shall:</p>
-      <ul>
-        <li>Maintain ENVELO Agent in continuous operation during certified system operation</li>
-        <li>Not bypass, disable, or tamper with enforcement mechanisms</li>
-        <li>Notify SA of any system modifications affecting ODD or enforcement</li>
-        <li>Complete renewal testing prior to conformance expiration</li>
-        <li>Use the ODDC mark only in accordance with mark usage guidelines</li>
-      </ul>
-      <h2>3. SA Obligations</h2>
-      <p>SA shall:</p>
-      <ul>
-        <li>Review applications within stated timelines</li>
-        <li>Conduct scope assessment and provide fee quotation</li>
-        <li>Administer CAT-72 testing per documented procedures</li>
-        <li>Issue conformance determination based on evidentiary record</li>
-        <li>Maintain certification records per retention requirements</li>
-        <li>Provide certificate verification services</li>
-      </ul>
+      <div class="warning-box">
+        <h3>Uptime Requirements</h3>
+        <p><strong>ENVELO Agent Uptime:</strong> Minimum 99% monthly uptime required. Outages under 1 hour require no action. Extended outages exceeding 1 hour trigger automated notification. Cumulative downtime exceeding 24 hours per calendar month may result in certificate suspension.</p>
+      </div>
+      <div class="info-card">
+        <ul>
+          <li>Maintain ENVELO Agent in continuous operation during certified system operation</li>
+          <li>Not bypass, disable, or tamper with enforcement mechanisms</li>
+          <li>Notify SA of any system modifications affecting ODD or enforcement</li>
+          <li>Complete renewal testing prior to conformance expiration</li>
+          <li>Use the ODDC mark only in accordance with mark usage guidelines</li>
+        </ul>
+      </div>
+    </div>
+
+    <div id="sa-obligations" class="content-section">
+      <h2><span class="num">3</span> SA Obligations</h2>
+      <div class="info-card">
+        <ul>
+          <li>Review applications within stated timelines</li>
+          <li>Conduct scope assessment and provide fee quotation</li>
+          <li>Administer CAT-72 testing per documented procedures</li>
+          <li>Issue conformance determination based on evidentiary record</li>
+          <li>Maintain certification records per retention requirements</li>
+          <li>Provide certificate verification services</li>
+        </ul>
+      </div>
+
       <div class="info-box">
         <h3>What SA Does Not Do</h3>
-        <p>SA does not:</p>
-        <ul style="margin-bottom:0;">
+        <ul>
           <li>Implement, operate, or monitor runtime systems</li>
           <li>Certify implementation correctness or validate code</li>
           <li>Warrant system behavior or performance</li>
@@ -1519,99 +231,131 @@
           <li>Assume any operational responsibility for certified systems</li>
         </ul>
       </div>
-      <h2>4. Conformance Terms</h2>
+    </div>
+
+    <div id="terms" class="content-section">
+      <h2><span class="num">4</span> Conformance Terms</h2>
+      
       <h3>4.1 Term Duration</h3>
       <p>Conformance terms range from 6-24 months based on operational domain risk profile, ODD complexity, and applicant conformance history. Term duration is specified in the conformance determination.</p>
+
       <h3>4.2 Renewal</h3>
       <p>Renewal requires CAT-72 re-completion. Streamlined renewal (48-hour test duration) may be available for applicants with clean conformance history and no modifications.</p>
+
       <h3>4.3 Modifications</h3>
       <p>Any modification to the certified system's ODD specification, enforcement architecture, or underlying simulation requires:</p>
-      <ul>
-        <li>Notification to SA within 5 business days</li>
-        <li>Evaluation of modification impact</li>
-        <li>Potential re-certification if modification affects conformance basis</li>
-      </ul>
-      <h2>5. Revocation</h2>
+      <div class="info-card">
+        <ul>
+          <li>Notification to SA within 5 business days</li>
+          <li>Evaluation of modification impact</li>
+          <li>Potential re-certification if modification affects conformance basis</li>
+        </ul>
+      </div>
+    </div>
+
+    <div id="revocation" class="content-section">
+      <h2><span class="num">5</span> Revocation</h2>
       <p>SA may revoke conformance for:</p>
-      <ul>
-        <li>Material misrepresentation in application materials</li>
-        <li>Unauthorized modification to certified system</li>
-        <li>Disabling, bypassing, or tampering with ENVELO enforcement</li>
-        <li>Failure to maintain ENVELO Agent operation</li>
-        <li>Non-payment of fees</li>
-        <li>Violation of this Agreement</li>
-      </ul>
+      <div class="critical-box" style="background:linear-gradient(135deg,rgba(214,92,92,.08) 0%,rgba(214,92,92,.02) 100%);">
+        <h3>Grounds for Revocation</h3>
+        <p>Material misrepresentation in application materials • Unauthorized modification to certified system • Disabling, bypassing, or tampering with ENVELO enforcement • Failure to maintain ENVELO Agent operation • Non-payment of fees • Violation of this Agreement</p>
+      </div>
       <p>Revocation is recorded in the SA registry and reflected in verification results.</p>
-      <h2>6. Suspension and Reinstatement</h2>
+    </div>
+
+    <div id="suspension" class="content-section">
+      <h2><span class="num">6</span> Suspension & Reinstatement</h2>
+      
       <h3>6.1 Automatic Suspension</h3>
       <p>Certificates may be automatically suspended when:</p>
-      <ul>
-        <li>ENVELO Agent downtime exceeds 24 cumulative hours in a calendar month</li>
-        <li>Violation rate exceeds 10% of total actions over a 24-hour period</li>
-        <li>Agent is unreachable for more than 72 consecutive hours</li>
-      </ul>
-      <p>Suspended certificates will reflect "SUSPENDED" status in verification queries.</p>
-      <h3>6.2 Reinstatement</h3>
-      <p>Reinstatement requires:</p>
-      <ul>
-        <li><strong>First suspension:</strong> Restore agent operation and pass 24-hour verification check</li>
-        <li><strong>Second suspension:</strong> Above plus written remediation plan</li>
-        <li><strong>Third suspension:</strong> Full CAT-72 re-certification required</li>
-      </ul>
-      <h3>6.3 Reinstatement Fee</h3>
-      <p>A reinstatement fee of $500 applies after the first suspension. This fee covers SA verification and administrative costs.</p>
-      <h3>6.4 No Refunds During Suspension</h3>
-      <p>Certification fees are non-refundable during suspension periods. Applicant remains responsible for maintaining operational readiness.</p>
+      <div class="info-card">
+        <ul>
+          <li>ENVELO Agent downtime exceeds 24 cumulative hours in a calendar month</li>
+          <li>Violation rate exceeds 10% of total actions over a 24-hour period</li>
+          <li>Agent is unreachable for more than 72 consecutive hours</li>
+        </ul>
+      </div>
 
-      <h2>7. Liability and Indemnification</h2>
+      <h3>6.2 Reinstatement</h3>
+      <div class="info-card">
+        <ul>
+          <li><strong>First suspension:</strong> Restore agent operation and pass 24-hour verification check</li>
+          <li><strong>Second suspension:</strong> Above plus written remediation plan</li>
+          <li><strong>Third suspension:</strong> Full CAT-72 re-certification required</li>
+        </ul>
+      </div>
+
+      <h3>6.3 Reinstatement Fee</h3>
+      <p>A reinstatement fee of $500 applies after the first suspension. This fee covers SA verification and administrative costs. Certification fees are non-refundable during suspension periods.</p>
+    </div>
+
+    <div id="liability" class="content-section">
+      <h2><span class="num">7</span> Liability & Indemnification</h2>
+      
       <h3>7.1 Limitation of Liability</h3>
       <p>SA's total liability under this Agreement shall not exceed the fees paid for the specific certification at issue. SA is not liable for indirect, incidental, consequential, special, or punitive damages.</p>
+
       <h3>7.2 No Liability for System Behavior</h3>
       <p>SA has no liability for the behavior, performance, or consequences of operation of any system, whether certified or not. Certification attests to bounded operation at time of determination; it does not guarantee future behavior.</p>
+
       <h3>7.3 Indemnification</h3>
-      <p>Applicant shall indemnify, defend, and hold harmless SA from any claims, damages, losses, or expenses arising from: operation of Applicant's systems; Applicant's violation of this Agreement; claims by third parties related to Applicant's products or services.</p>
-      <h2>8. Confidentiality</h2>
+      <p>Applicant shall indemnify, defend, and hold harmless SA from any claims, damages, losses, or expenses arising from operation of Applicant's systems, violation of this Agreement, or claims by third parties related to Applicant's products or services.</p>
+    </div>
+
+    <div id="confidentiality" class="content-section">
+      <h2><span class="num">8</span> Confidentiality</h2>
       <p>SA will maintain confidentiality of Applicant's technical documentation and application materials, except:</p>
-      <ul>
-        <li>Certificate information is publicly verifiable</li>
-        <li>Disclosure required by law or valid legal process</li>
-        <li>Aggregate, anonymized data for research or reporting</li>
-      </ul>
-      <h2>9. Intellectual Property</h2>
+      <div class="info-card">
+        <ul>
+          <li>Certificate information is publicly verifiable</li>
+          <li>Disclosure required by law or valid legal process</li>
+          <li>Aggregate, anonymized data for research or reporting</li>
+        </ul>
+      </div>
+    </div>
+
+    <div id="ip" class="content-section">
+      <h2><span class="num">9</span> Intellectual Property</h2>
       <p>Applicant retains all rights to its systems, documentation, and intellectual property. SA retains all rights to ODDC methodology, ENVELO specifications, CAT-72 procedures, and related intellectual property. Nothing in this Agreement grants either party rights to the other's intellectual property except as expressly stated.</p>
-      <h2>10. General Provisions</h2>
+    </div>
+
+    <div id="general" class="content-section">
+      <h2><span class="num">10</span> General Provisions</h2>
+      
       <h3>10.1 Governing Law</h3>
-      <p>This Agreement is governed by the laws of the State of Texas, USA. Disputes shall be resolved in the courts of Travis County, Texas.</p>
+      <p>This Agreement is governed by the laws of the Province of Ontario, Canada. Disputes shall be resolved in the courts of Ontario, Canada.</p>
+
       <h3>10.2 Entire Agreement</h3>
       <p>This Agreement, together with the Terms of Service and applicable fee schedules, constitutes the entire agreement between the parties.</p>
+
       <h3>10.3 Amendments</h3>
       <p>SA may amend this Agreement with notice to Applicant. Continued participation in certification after amendment constitutes acceptance.</p>
+
       <h3>10.4 Severability</h3>
       <p>If any provision is found unenforceable, the remaining provisions remain in effect.</p>
-      <div class="contact-box">
-        <h3>Contact Us</h3>
-        <p><strong>Email:</strong> <a href="mailto:conformance@sentinelauthority.org">conformance@sentinelauthority.org</a></p>
+    </div>
+
+    <div class="contact-card">
+      <div class="contact-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(157,140,207,0.9)" stroke-width="1.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
       </div>
+      <div class="contact-content">
+        <div class="contact-title">Questions about this agreement?</div>
+        <div class="contact-desc">Contact our conformance team for clarification.</div>
+      </div>
+      <a href="mailto:conformance@sentinelauthority.org" class="contact-link">conformance@sentinelauthority.org →</a>
     </div>
   </main>
 
-  <!-- Footer -->
-  <footer style="margin-top: var(--space-8, 80px); padding: var(--space-4, 40px) var(--space-2, 20px); border-top: 1px solid var(--border-glass, rgba(255,255,255,.10)); text-align: center;">
-    <div style="max-width: var(--max, 1200px); margin: 0 auto;">
-      <div style="font-family: var(--mono, 'IBM Plex Mono', monospace); font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-tertiary, rgba(255,255,255,.50));">
-        © <span id="footer-year"></span> SENTINEL AUTHORITY
-      </div>
-      <div style="margin-top: 16px; display: flex; justify-content: center; gap: 24px; flex-wrap: wrap; font-family: var(--mono, 'IBM Plex Mono', monospace); font-size: 10px; letter-spacing: 1px;">
-        <a href="privacy.html" style="color: var(--text-tertiary, rgba(255,255,255,.50)); text-decoration: none; transition: color 0.2s;">Privacy</a>
-        <a href="terms.html" style="color: var(--text-tertiary, rgba(255,255,255,.50)); text-decoration: none; transition: color 0.2s;">Terms</a>
-        <a href="index.html#artifacts" style="color: var(--text-tertiary, rgba(255,255,255,.50)); text-decoration: none; transition: color 0.2s;">Documents</a>
-        <a href="conformance-agreement.html" style="color: var(--text-tertiary, rgba(255,255,255,.50)); text-decoration: none; transition: color 0.2s;">Conformance</a>
-      </div>
+  <footer>
+    <div class="footer-copy">© <span id="yr"></span> Sentinel Authority</div>
+    <div class="footer-links">
+      <a href="privacy.html">Privacy</a>
+      <a href="terms.html">Terms</a>
+      <a href="index.html#artifacts">Documents</a>
+      <a href="conformance-agreement.html">Conformance</a>
     </div>
   </footer>
-  <script>document.getElementById("footer-year").textContent = new Date().getFullYear();</script>
-  <script>
-document.getElementById("year").textContent = new Date().getFullYear();
-  </script>
+  <script>document.getElementById("yr").textContent=new Date().getFullYear();</script>
 </body>
 </html>
