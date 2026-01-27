@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Security — Sentinel Authority</title>
+  <meta name="description" content="ENVELO Agent security architecture. Learn how we protect your systems with one-way data flow and zero remote access." />
+  <link rel="canonical" href="https://sentinelauthority.org/security.html" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect x='6' y='6' width='20' height='20' rx='5' fill='%235B4B8A' stroke='%239d8ccf' stroke-width='2'/><circle cx='16' cy='16' r='4' fill='%239d8ccf'/></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,200;0,300;0,400;1,200;1,300&family=Inter:wght@200;400;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root{
+      color-scheme: dark;
+      --purple-primary:#5B4B8A; --purple-bright:#9d8ccf; --bg-deep:#2a2f3d;
+      --bg-panel:rgba(255,255,255,.05); --accent-amber:#D6A05C; --accent-green:#5CD685;
+      --text-primary:rgba(255,255,255,.94); --text-secondary:rgba(255,255,255,.75);
+      --text-tertiary:rgba(255,255,255,.50); --border-glass:rgba(255,255,255,.10);
+      --serif:'Source Serif 4',serif; --mono:'IBM Plex Mono',monospace;
+      --sans:'Inter',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      --space-1: 10px; --space-2: 20px; --space-3: 30px; --space-4: 40px;
+      --space-6: 60px; --space-8: 80px; --space-12: 120px;
+      --max: 1200px; --nav-height: 72px;
+    }
+    *{ box-sizing:border-box; }
+    html{ scroll-behavior:smooth; background:var(--bg-deep); }
+    body{
+      margin:0; font-family:var(--sans);
+      background: radial-gradient(1200px 700px at 15% 10%, rgba(91,75,138,.15), transparent 55%),
+                  radial-gradient(900px 600px at 85% 80%, rgba(92,214,133,.06), transparent 55%),
+                  var(--bg-deep);
+      color:var(--text-primary); overflow-x:hidden; -webkit-font-smoothing:antialiased;
+    }
+    a{ color:inherit; text-decoration:none; }
+    a:hover{ text-decoration:underline; text-underline-offset:4px; }
+    ::selection{ background:var(--purple-primary); color:#fff; }
+    .grid-overlay{
+      position:fixed; inset:0; pointer-events:none; z-index:0;
+      background-image: linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+      background-size: var(--space-12) var(--space-12); opacity:.15;
+      mask-image: radial-gradient(ellipse at center, rgba(0,0,0,.95) 20%, transparent 70%);
+    }
+    .site-header{
+      position:fixed; top:0; width:100%; z-index:50;
+      padding:0 var(--space-2); height: var(--nav-height);
+      border-bottom:1px solid rgba(255,255,255,.10);
+      background: rgba(42,47,61,.88); backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px); display: flex; align-items: center;
+    }
+    .nav-inner{
+      max-width: var(--max); margin:0 auto; width: 100%;
+      display:flex; align-items:center; justify-content:space-between;
+    }
+    .brand{ display:flex; align-items:center; gap: var(--space-1); flex-shrink: 0; text-decoration: none; }
+    .brand:hover{ text-decoration: none; }
+    .brand-mark{
+      width: 24px; height: 24px; background: var(--purple-primary);
+      border: 2px solid var(--purple-bright); border-radius: 6px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .brand-mark-inner{ width: 8px; height: 8px; background: #c4b8e8; border-radius: 50%; }
+    .brand-name{
+      font-family: var(--mono); font-size: 11px; letter-spacing: 3px;
+      text-transform: uppercase; color: var(--text-primary);
+    }
+    .nav-links{ display:flex; gap:var(--space-3); }
+    .nav-links a{
+      font-family:var(--mono); font-size:10px; letter-spacing:2px;
+      text-transform:uppercase; color:var(--text-tertiary); transition: color .2s ease;
+    }
+    .nav-links a:hover{ color:var(--text-primary); text-decoration:none; }
+    main{ position:relative; z-index:1; padding: calc(var(--nav-height) + var(--space-6)) var(--space-2) var(--space-8); }
+    .content{ max-width: 900px; margin: 0 auto; }
+    .page-label{
+      font-family:var(--mono); font-size:10px; letter-spacing:4px;
+      text-transform:uppercase; color:var(--purple-bright); margin-bottom:var(--space-1);
+    }
+    h1{ font-family:var(--serif); font-size:clamp(36px,5vw,48px); font-weight:200; line-height:1.15; margin:0 0 var(--space-1) 0; }
+    .subtitle{ font-family:var(--mono); font-size:11px; color:var(--text-tertiary); margin-bottom:var(--space-4); }
+    .intro{ font-size:17px; line-height:1.7; color:var(--text-secondary); margin-bottom:var(--space-4); }
+    h2{ font-family:var(--serif); font-size:28px; font-weight:300; margin: var(--space-6) 0 var(--space-2) 0; color:var(--text-primary); }
+    h3{ font-size:16px; font-weight:500; margin: var(--space-3) 0 var(--space-1) 0; color:var(--text-primary); }
+    p{ color:var(--text-secondary); line-height:1.7; margin-bottom:var(--space-2); }
+    ul{ padding-left:var(--space-2); margin-bottom:var(--space-2); }
+    li{ color:var(--text-secondary); line-height:1.7; margin-bottom:8px; }
+    strong{ color:var(--text-primary); font-weight:500; }
+    
+    .highlight-box{
+      background:rgba(92,214,133,.08); border:1px solid rgba(92,214,133,.25);
+      border-radius:12px; padding:var(--space-3); margin:var(--space-3) 0;
+    }
+    .highlight-box h3{
+      font-family:var(--mono); font-size:10px; letter-spacing:3px;
+      text-transform:uppercase; color:var(--accent-green); margin:0 0 var(--space-1) 0;
+    }
+    .highlight-box p{ margin-bottom:0; }
+    
+    .warning-box{
+      background:rgba(214,160,92,.08); border:1px solid rgba(214,160,92,.25);
+      border-radius:12px; padding:var(--space-3); margin:var(--space-3) 0;
+    }
+    .warning-box h3{
+      font-family:var(--mono); font-size:10px; letter-spacing:3px;
+      text-transform:uppercase; color:var(--accent-amber); margin:0 0 var(--space-1) 0;
+    }
+    
+    .diagram-box{
+      background:var(--bg-panel); border:1px solid var(--border-glass);
+      border-radius:12px; padding:var(--space-4); margin:var(--space-4) 0;
+      font-family:var(--mono); font-size:13px; text-align:center;
+    }
+    .diagram-box .flow{
+      display:flex; align-items:center; justify-content:center; gap:var(--space-2);
+      flex-wrap:wrap; margin:var(--space-2) 0;
+    }
+    .diagram-box .node{
+      background:rgba(91,75,138,.2); border:1px solid var(--purple-bright);
+      border-radius:8px; padding:12px 20px; color:var(--text-primary);
+    }
+    .diagram-box .arrow{
+      color:var(--accent-green); font-size:20px;
+    }
+    .diagram-box .blocked{
+      color:rgba(255,100,100,.6); text-decoration:line-through;
+    }
+    .diagram-box .label{
+      font-size:10px; color:var(--text-tertiary); margin-top:var(--space-1);
+      text-transform:uppercase; letter-spacing:1px;
+    }
+    
+    .grid-2{
+      display:grid; grid-template-columns:repeat(2, 1fr); gap:var(--space-2);
+      margin:var(--space-3) 0;
+    }
+    @media(max-width:768px){ .grid-2{ grid-template-columns:1fr; } }
+    
+    .feature-card{
+      background:var(--bg-panel); border:1px solid var(--border-glass);
+      border-radius:12px; padding:var(--space-3);
+    }
+    .feature-card h4{
+      font-family:var(--mono); font-size:11px; letter-spacing:2px;
+      text-transform:uppercase; color:var(--purple-bright); margin:0 0 8px 0;
+    }
+    .feature-card p{ margin:0; font-size:14px; }
+    
+    .data-table{
+      width:100%; border-collapse:collapse; margin:var(--space-3) 0;
+    }
+    .data-table th{
+      font-family:var(--mono); font-size:10px; letter-spacing:1px;
+      text-transform:uppercase; color:var(--text-tertiary);
+      text-align:left; padding:12px; border-bottom:1px solid var(--border-glass);
+    }
+    .data-table td{
+      padding:12px; border-bottom:1px solid var(--border-glass);
+      color:var(--text-secondary); font-size:14px;
+    }
+    .data-table .yes{ color:var(--accent-green); }
+    .data-table .no{ color:rgba(255,100,100,.8); }
+    
+    .contact-box{
+      background:var(--bg-panel); border:1px solid var(--border-glass);
+      border-radius:12px; padding:var(--space-3); margin-top:var(--space-4);
+    }
+    .contact-box h3{
+      font-family:var(--mono); font-size:10px; letter-spacing:3px;
+      text-transform:uppercase; color:var(--text-tertiary); margin:0 0 var(--space-1) 0;
+    }
+    .contact-box p{ margin-bottom:6px; }
+    .contact-box a{ color:var(--purple-bright); }
+    
+    footer{
+      border-top:1px solid var(--border-glass); padding:var(--space-4) var(--space-2);
+      font-family:var(--mono); font-size:10px; letter-spacing:1px;
+      color:var(--text-tertiary); text-align:center;
+    }
+    footer a{ color:var(--text-tertiary); margin:0 var(--space-1); }
+    footer a:hover{ color:var(--text-secondary); }
+    @media(max-width:768px){ .nav-links{ display:none; } h1{ font-size:32px; } }
+  </style>
+</head>
+<body>
+  <div class="grid-overlay" aria-hidden="true"></div>
+  <header class="site-header">
+    <div class="nav-inner">
+      <a href="index.html" class="brand">
+        <div class="brand-mark" aria-hidden="true"><div class="brand-mark-inner"></div></div>
+        <div class="brand-name">Sentinel Authority</div>
+      </a>
+      <div class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="index.html#process">Process</a>
+        <a href="security.html">Security</a>
+        <a href="https://app.sentinelauthority.org">Sign In</a>
+      </div>
+    </div>
+  </header>
+  
+  <main>
+    <div class="content">
+      <div class="page-label">Security Architecture</div>
+      <h1>Zero Trust, Zero Access</h1>
+      <div class="subtitle">How ENVELO Agent protects your systems</div>
+      
+      <p class="intro">Enterprise security teams ask: "Is this agent a backdoor into our systems?" The answer is <strong>architecturally impossible</strong>. The ENVELO Agent is designed with a one-way data flow that makes remote access or control physically impossible.</p>
+      
+      <div class="highlight-box">
+        <h3>The Core Guarantee</h3>
+        <p>Sentinel Authority <strong>cannot</strong> send commands to your system, execute code on your infrastructure, access your network, or control your autonomous systems. The agent only observes and reports—it has no actuator access.</p>
+      </div>
+      
+      <h2>One-Way Data Architecture</h2>
+      <p>The ENVELO Agent uses an outbound-only communication model. All connections are initiated by the agent on your infrastructure. There are no listening ports, no inbound connections, and no way for external parties to "reach in."</p>
+      
+      <div class="diagram-box">
+        <div class="label">Data Flow Direction</div>
+        <div class="flow">
+          <div class="node">Your System</div>
+          <div class="arrow">→</div>
+          <div class="node">ENVELO Agent</div>
+          <div class="arrow">→</div>
+          <div class="node">Sentinel Authority</div>
+        </div>
+        <div class="label" style="margin-top:var(--space-2);">Blocked Direction</div>
+        <div class="flow">
+          <div class="node">Sentinel Authority</div>
+          <div class="blocked">→ → →</div>
+          <div class="node" style="opacity:0.5;">Your System</div>
+        </div>
+      </div>
+      
+      <h2>What the Agent Can and Cannot Do</h2>
+      
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Capability</th>
+            <th>Agent Can</th>
+            <th>Agent Cannot</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Observe boundary evaluations</td>
+            <td class="yes">✓ Yes</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Report pass/block decisions</td>
+            <td class="yes">✓ Yes</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Send commands to your system</td>
+            <td></td>
+            <td class="no">✗ Never</td>
+          </tr>
+          <tr>
+            <td>Execute remote code</td>
+            <td></td>
+            <td class="no">✗ Never</td>
+          </tr>
+          <tr>
+            <td>Access your network</td>
+            <td></td>
+            <td class="no">✗ Never</td>
+          </tr>
+          <tr>
+            <td>Control actuators</td>
+            <td></td>
+            <td class="no">✗ Never</td>
+          </tr>
+          <tr>
+            <td>Read proprietary algorithms</td>
+            <td></td>
+            <td class="no">✗ Never</td>
+          </tr>
+          <tr>
+            <td>Open inbound connections</td>
+            <td></td>
+            <td class="no">✗ Never</td>
+          </tr>
+        </tbody>
+      </table>
+      
+      <h2>Security Controls</h2>
+      
+      <div class="grid-2">
+        <div class="feature-card">
+          <h4>No Listening Ports</h4>
+          <p>The agent opens zero inbound ports. It only makes outbound HTTPS connections to api.sentinelauthority.org.</p>
+        </div>
+        <div class="feature-card">
+          <h4>Customer-Controlled</h4>
+          <p>You deploy, configure, and can terminate the agent at any time. We cannot start, stop, or modify it remotely.</p>
+        </div>
+        <div class="feature-card">
+          <h4>TLS 1.3 Encryption</h4>
+          <p>All communications use TLS 1.3 with certificate pinning. Data is encrypted in transit and at rest.</p>
+        </div>
+        <div class="feature-card">
+          <h4>API Key Rotation</h4>
+          <p>Rotate credentials anytime from your dashboard. Revoke access instantly if needed.</p>
+        </div>
+        <div class="feature-card">
+          <h4>Auditable Source</h4>
+          <p>The agent source code is available for security review before deployment. No obfuscation, no hidden functionality.</p>
+        </div>
+        <div class="feature-card">
+          <h4>Data Minimization</h4>
+          <p>We collect only boundary evaluation results—not your algorithms, training data, or proprietary logic.</p>
+        </div>
+      </div>
+      
+      <h2>What Data Is Transmitted</h2>
+      <p>The ENVELO Agent transmits only the minimum data required for conformance monitoring:</p>
+      
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Data Type</th>
+            <th>Transmitted</th>
+            <th>Purpose</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Boundary evaluation result (PASS/BLOCK)</td>
+            <td class="yes">✓</td>
+            <td>Conformance verification</td>
+          </tr>
+          <tr>
+            <td>Boundary name that was evaluated</td>
+            <td class="yes">✓</td>
+            <td>Violation attribution</td>
+          </tr>
+          <tr>
+            <td>Timestamp</td>
+            <td class="yes">✓</td>
+            <td>Audit trail</td>
+          </tr>
+          <tr>
+            <td>Session heartbeat</td>
+            <td class="yes">✓</td>
+            <td>Uptime monitoring</td>
+          </tr>
+          <tr>
+            <td>Your AI model weights</td>
+            <td class="no">✗</td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td>Your training data</td>
+            <td class="no">✗</td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td>Your source code</td>
+            <td class="no">✗</td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td>Your network topology</td>
+            <td class="no">✗</td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td>Sensor data or camera feeds</td>
+            <td class="no">✗</td>
+            <td>—</td>
+          </tr>
+        </tbody>
+      </table>
+      
+      <h2>Network Security</h2>
+      <h3>Firewall Configuration</h3>
+      <p>The agent requires only one outbound rule:</p>
+      <ul>
+        <li><strong>Destination:</strong> api.sentinelauthority.org</li>
+        <li><strong>Port:</strong> 443 (HTTPS)</li>
+        <li><strong>Direction:</strong> Outbound only</li>
+        <li><strong>Protocol:</strong> TLS 1.3</li>
+      </ul>
+      <p>No inbound firewall rules are required. The agent does not accept incoming connections.</p>
+      
+      <h3>Network Isolation</h3>
+      <p>For maximum security, deploy the agent in a network segment with:</p>
+      <ul>
+        <li>Read-only access to the ENVELO interlock's decision log</li>
+        <li>Outbound HTTPS to api.sentinelauthority.org</li>
+        <li>No other network access</li>
+      </ul>
+      
+      <div class="warning-box">
+        <h3>Important Clarification</h3>
+        <p>The ENVELO Agent does not implement your safety interlock—your system does. The agent only observes and reports on decisions your interlock has already made. Even if the agent were compromised, it has no pathway to affect your system's behavior.</p>
+      </div>
+      
+      <h2>Compliance Roadmap</h2>
+      <p>Sentinel Authority is committed to enterprise security standards:</p>
+      <ul>
+        <li><strong>SOC 2 Type II:</strong> In progress, expected Q3 2026</li>
+        <li><strong>ISO 27001:</strong> Planned Q4 2026</li>
+        <li><strong>Penetration Testing:</strong> Annual third-party testing</li>
+        <li><strong>Vulnerability Disclosure:</strong> <a href="mailto:security@sentinelauthority.org">security@sentinelauthority.org</a></li>
+      </ul>
+      
+      <h2>Security Review Process</h2>
+      <p>For enterprise customers requiring security review:</p>
+      <ul>
+        <li>Agent source code available under NDA</li>
+        <li>Architecture documentation package</li>
+        <li>Third-party security assessment reports</li>
+        <li>Custom deployment options for air-gapped environments</li>
+      </ul>
+      
+      <div class="contact-box">
+        <h3>Security Questions?</h3>
+        <p>Our security team is available to discuss your requirements.</p>
+        <p><strong>Email:</strong> <a href="mailto:security@sentinelauthority.org">security@sentinelauthority.org</a></p>
+      </div>
+    </div>
+  </main>
+  
+  <footer>
+    <div>© <span id="year"></span> SENTINEL AUTHORITY</div>
+    <div style="margin-top:10px;">
+      <a href="privacy.html">Privacy</a>
+      <a href="terms.html">Terms</a>
+      <a href="security.html">Security</a>
+      <a href="conformance-agreement.html">Conformance Agreement</a>
+    </div>
+  </footer>
+  <script>document.getElementById("year").textContent = new Date().getFullYear();</script>
+</body>
+</html>
