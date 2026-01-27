@@ -72,20 +72,22 @@ async def get_recent_applications(db: AsyncSession = Depends(get_db), user: dict
 @router.get("/active-tests")
 async def get_active_tests(db: AsyncSession = Depends(get_db), user: dict = Depends(get_current_user)):
     result = await db.execute(
-        select(CAT72Test).where(CAT72Test.state == TestState.RUNNING).order_by(CAT72Test.started_at.desc())
+        select(CAT72Test, Application).join(Application, CAT72Test.application_id == Application.id).where(CAT72Test.state == TestState.RUNNING).order_by(CAT72Test.started_at.desc())
     )
-    tests = result.scalars().all()
+    rows = result.all()
     return [
         {
             "id": t.id,
             "test_id": t.test_id,
+            "organization_name": a.organization_name if hasattr(a, "organization_name") else "",
+            "system_name": a.system_name if hasattr(a, "system_name") else "",
             "state": t.state.value,
             "elapsed_seconds": t.elapsed_seconds,
             "duration_hours": t.duration_hours,
             "convergence_score": t.convergence_score,
             "interlock_activations": t.interlock_activations,
         }
-        for t in tests
+        for t, a in rows
     ]
 
 

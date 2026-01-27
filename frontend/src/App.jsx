@@ -1,6 +1,6 @@
 import React, { useState, useEffect, createContext, useContext } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, Link, useNavigate, useLocation, useParams } from 'react-router-dom';
-import { FileText, Activity, Award, Users, Home, LogOut, Menu, X, CheckCircle, AlertTriangle, Clock, Search, Plus, ArrowLeft, ExternalLink, Shield, Download } from 'lucide-react';
+import { FileText, Activity, Award, Users, Home, LogOut, Menu, X, CheckCircle, AlertTriangle, Clock, Search, Plus, ArrowLeft, ExternalLink, Shield, Download, RefreshCw } from 'lucide-react';
 import axios from 'axios';
 
 // API Configuration
@@ -2467,6 +2467,354 @@ if __name__ == "__main__":
 }
 
 // Main App
+// Monitoring Dashboard
+function MonitoringPage() {
+  const [overview, setOverview] = useState(null);
+  const [alerts, setAlerts] = useState([]);
+  const [selectedSession, setSelectedSession] = useState(null);
+  const [timeline, setTimeline] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [autoRefresh, setAutoRefresh] = useState(true);
+  const { user } = useAuth();
+
+  const fetchData = async () => {
+    try {
+      const [overviewRes, alertsRes] = await Promise.all([
+        api.get('/api/envelo/monitoring/overview'),
+        api.get('/api/envelo/monitoring/alerts')
+      ]);
+      setOverview(overviewRes.data);
+      setAlerts(alertsRes.data.alerts || []);
+    } catch (err) {
+      console.error('Failed to fetch monitoring data:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+    if (autoRefresh) {
+      const interval = setInterval(fetchData, 10000); // Refresh every 10 seconds
+      return () => clearInterval(interval);
+    }
+  }, [autoRefresh]);
+
+  const fetchTimeline = async (sessionId) => {
+    try {
+      const res = await api.get(`/envelo/monitoring/session/${sessionId}/timeline?hours=24`);
+      setTimeline(res.data.timeline || []);
+    } catch (err) {
+      console.error('Failed to fetch timeline:', err);
+    }
+  };
+
+  useEffect(() => {
+    if (selectedSession) {
+      fetchTimeline(selectedSession.id);
+    }
+  }, [selectedSession]);
+
+  if (loading) {
+    return (
+      <div style={{padding: '40px', textAlign: 'center'}}>
+        <RefreshCw size={24} style={{animation: 'spin 1s linear infinite', color: styles.purpleBright}} />
+        <p style={{marginTop: '16px', color: styles.textSecondary}}>Loading monitoring data...</p>
+      </div>
+    );
+  }
+
+  const summary = overview?.summary || {};
+  const sessions = overview?.sessions || [];
+
+  return (
+    <div style={{maxWidth: '1400px', margin: '0 auto'}}>
+      <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px'}}>
+        <div>
+          <h1 style={{fontFamily: "'Source Serif 4', serif", fontSize: '28px', fontWeight: 300, margin: 0}}>
+            System Monitoring
+          </h1>
+          <p style={{color: styles.textSecondary, marginTop: '4px', fontSize: '14px'}}>
+            Real-time ENVELO agent status and telemetry
+          </p>
+        </div>
+        <div style={{display: 'flex', gap: '12px', alignItems: 'center'}}>
+          <label style={{display: 'flex', alignItems: 'center', gap: '8px', color: styles.textSecondary, fontSize: '13px', cursor: 'pointer'}}>
+            <input 
+              type="checkbox" 
+              checked={autoRefresh} 
+              onChange={(e) => setAutoRefresh(e.target.checked)}
+              style={{accentColor: styles.purpleBright}}
+            />
+            Auto-refresh
+          </label>
+          <button 
+            onClick={fetchData}
+            style={{
+              background: styles.bgPanel, border: `1px solid ${styles.borderGlass}`,
+              borderRadius: '8px', padding: '8px 16px', color: styles.textPrimary,
+              cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px'
+            }}
+          >
+            <RefreshCw size={14} /> Refresh
+          </button>
+        </div>
+      </div>
+
+      {/* Alerts Banner */}
+      {alerts.length > 0 && (
+        <div style={{
+          background: 'rgba(214, 92, 92, 0.1)',
+          border: '1px solid rgba(214, 92, 92, 0.3)',
+          borderRadius: '12px',
+          padding: '16px',
+          marginBottom: '24px'
+        }}>
+          <div style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px'}}>
+            <AlertTriangle size={18} style={{color: '#D65C5C'}} />
+            <span style={{fontWeight: 500, color: '#D65C5C'}}>{alerts.length} Active Alert{alerts.length > 1 ? 's' : ''}</span>
+          </div>
+          <div style={{display: 'flex', flexDirection: 'column', gap: '8px'}}>
+            {alerts.map((alert, i) => (
+              <div key={i} style={{
+                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                background: 'rgba(0,0,0,0.2)', borderRadius: '8px', padding: '10px 14px'
+              }}>
+                <div>
+                  <span style={{
+                    fontSize: '10px', fontFamily: "'IBM Plex Mono', monospace",
+                    textTransform: 'uppercase', letterSpacing: '1px',
+                    color: alert.severity === 'critical' ? '#D65C5C' : '#D6A05C',
+                    marginRight: '12px'
+                  }}>
+                    {alert.severity}
+                  </span>
+                  <span style={{color: styles.textPrimary}}>{alert.message}</span>
+                </div>
+                <span style={{color: styles.textTertiary, fontSize: '12px', fontFamily: "'IBM Plex Mono', monospace"}}>
+                  {alert.session_id?.slice(0, 8)}...
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Summary Cards */}
+      <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '32px'}}>
+        <div style={{background: styles.bgPanel, border: `1px solid ${styles.borderGlass}`, borderRadius: '12px', padding: '20px'}}>
+          <div style={{fontSize: '10px', fontFamily: "'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '2px', color: styles.textTertiary, marginBottom: '8px'}}>
+            Active Sessions
+          </div>
+          <div style={{fontSize: '32px', fontWeight: 300, color: styles.accentGreen}}>{summary.active || 0}</div>
+          <div style={{fontSize: '12px', color: styles.textSecondary, marginTop: '4px'}}>
+            {summary.offline || 0} offline
+          </div>
+        </div>
+
+        <div style={{background: styles.bgPanel, border: `1px solid ${styles.borderGlass}`, borderRadius: '12px', padding: '20px'}}>
+          <div style={{fontSize: '10px', fontFamily: "'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '2px', color: styles.textTertiary, marginBottom: '8px'}}>
+            Total Actions
+          </div>
+          <div style={{fontSize: '32px', fontWeight: 300, color: styles.textPrimary}}>{(summary.total_actions || 0).toLocaleString()}</div>
+          <div style={{fontSize: '12px', color: styles.textSecondary, marginTop: '4px'}}>
+            {summary.total_pass?.toLocaleString() || 0} passed, {summary.total_block?.toLocaleString() || 0} blocked
+          </div>
+        </div>
+
+        <div style={{background: styles.bgPanel, border: `1px solid ${styles.borderGlass}`, borderRadius: '12px', padding: '20px'}}>
+          <div style={{fontSize: '10px', fontFamily: "'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '2px', color: styles.textTertiary, marginBottom: '8px'}}>
+            Pass Rate
+          </div>
+          <div style={{fontSize: '32px', fontWeight: 300, color: summary.pass_rate >= 99 ? styles.accentGreen : summary.pass_rate >= 95 ? '#D6A05C' : '#D65C5C'}}>
+            {summary.pass_rate?.toFixed(1) || 0}%
+          </div>
+          <div style={{fontSize: '12px', color: styles.textSecondary, marginTop: '4px'}}>
+            enforcement success
+          </div>
+        </div>
+
+        <div style={{background: styles.bgPanel, border: `1px solid ${styles.borderGlass}`, borderRadius: '12px', padding: '20px'}}>
+          <div style={{fontSize: '10px', fontFamily: "'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '2px', color: styles.textTertiary, marginBottom: '8px'}}>
+            Total Sessions
+          </div>
+          <div style={{fontSize: '32px', fontWeight: 300, color: styles.textPrimary}}>{summary.total || 0}</div>
+          <div style={{fontSize: '12px', color: styles.textSecondary, marginTop: '4px'}}>
+            {summary.ended || 0} completed
+          </div>
+        </div>
+      </div>
+
+      {/* Sessions Table */}
+      <div style={{background: styles.bgPanel, border: `1px solid ${styles.borderGlass}`, borderRadius: '12px', overflow: 'hidden'}}>
+        <div style={{padding: '16px 20px', borderBottom: `1px solid ${styles.borderSubtle}`}}>
+          <h2 style={{margin: 0, fontSize: '14px', fontFamily: "'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '2px', color: styles.textTertiary}}>
+            Agent Sessions
+          </h2>
+        </div>
+        
+        {sessions.length === 0 ? (
+          <div style={{padding: '40px', textAlign: 'center', color: styles.textSecondary}}>
+            No ENVELO sessions found. Deploy an agent to begin monitoring.
+          </div>
+        ) : (
+          <div style={{overflowX: 'auto'}}>
+            <table style={{width: '100%', borderCollapse: 'collapse'}}>
+              <thead>
+                <tr style={{background: 'rgba(0,0,0,0.2)'}}>
+                  <th style={{padding: '12px 16px', textAlign: 'left', fontSize: '10px', fontFamily: "'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '1px', color: styles.textTertiary}}>Status</th>
+                  <th style={{padding: '12px 16px', textAlign: 'left', fontSize: '10px', fontFamily: "'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '1px', color: styles.textTertiary}}>Session ID</th>
+                  <th style={{padding: '12px 16px', textAlign: 'left', fontSize: '10px', fontFamily: "'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '1px', color: styles.textTertiary}}>Uptime</th>
+                  <th style={{padding: '12px 16px', textAlign: 'right', fontSize: '10px', fontFamily: "'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '1px', color: styles.textTertiary}}>Actions</th>
+                  <th style={{padding: '12px 16px', textAlign: 'right', fontSize: '10px', fontFamily: "'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '1px', color: styles.textTertiary}}>Pass Rate</th>
+                  <th style={{padding: '12px 16px', textAlign: 'left', fontSize: '10px', fontFamily: "'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '1px', color: styles.textTertiary}}>Last Activity</th>
+                </tr>
+              </thead>
+              <tbody>
+                {sessions.map((session) => {
+                  const total = session.pass_count + session.block_count;
+                  const passRate = total > 0 ? (session.pass_count / total * 100) : 0;
+                  const isSelected = selectedSession?.id === session.id;
+                  
+                  return (
+                    <tr 
+                      key={session.id}
+                      onClick={() => setSelectedSession(isSelected ? null : session)}
+                      style={{
+                        borderBottom: `1px solid ${styles.borderSubtle}`,
+                        cursor: 'pointer',
+                        background: isSelected ? 'rgba(91, 75, 138, 0.15)' : 'transparent',
+                        transition: 'background 0.15s'
+                      }}
+                      onMouseEnter={(e) => { if (!isSelected) e.currentTarget.style.background = 'rgba(255,255,255,0.03)'; }}
+                      onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.background = 'transparent'; }}
+                    >
+                      <td style={{padding: '14px 16px'}}>
+                        <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+                          <div style={{
+                            width: '10px', height: '10px', borderRadius: '50%',
+                            background: session.is_online ? styles.accentGreen : session.status === 'ended' ? styles.textTertiary : '#D65C5C',
+                            boxShadow: session.is_online ? `0 0 8px ${styles.accentGreen}` : 'none'
+                          }} />
+                          <span style={{
+                            fontSize: '11px', fontFamily: "'IBM Plex Mono', monospace",
+                            textTransform: 'uppercase', letterSpacing: '1px',
+                            color: session.is_online ? styles.accentGreen : session.status === 'ended' ? styles.textTertiary : '#D65C5C'
+                          }}>
+                            {session.is_online ? 'Online' : session.status === 'ended' ? 'Ended' : 'Offline'}
+                          </span>
+                        </div>
+                      </td>
+                      <td style={{padding: '14px 16px', fontFamily: "'IBM Plex Mono', monospace", fontSize: '12px', color: styles.textSecondary}}>
+                        {session.session_id}
+                      </td>
+                      <td style={{padding: '14px 16px', color: styles.textSecondary, fontSize: '13px'}}>
+                        {session.uptime_hours?.toFixed(1)}h
+                      </td>
+                      <td style={{padding: '14px 16px', textAlign: 'right', color: styles.textPrimary, fontFamily: "'IBM Plex Mono', monospace", fontSize: '13px'}}>
+                        {total.toLocaleString()}
+                      </td>
+                      <td style={{padding: '14px 16px', textAlign: 'right'}}>
+                        <span style={{
+                          color: passRate >= 99 ? styles.accentGreen : passRate >= 95 ? '#D6A05C' : '#D65C5C',
+                          fontFamily: "'IBM Plex Mono', monospace", fontSize: '13px'
+                        }}>
+                          {passRate.toFixed(1)}%
+                        </span>
+                      </td>
+                      <td style={{padding: '14px 16px', color: styles.textTertiary, fontSize: '12px'}}>
+                        {session.last_activity ? new Date(session.last_activity).toLocaleString() : '-'}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+      {/* Session Detail Panel */}
+      {selectedSession && (
+        <div style={{
+          marginTop: '24px',
+          background: styles.bgPanel,
+          border: `1px solid ${styles.borderGlass}`,
+          borderRadius: '12px',
+          overflow: 'hidden'
+        }}>
+          <div style={{padding: '16px 20px', borderBottom: `1px solid ${styles.borderSubtle}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+            <h2 style={{margin: 0, fontSize: '14px', fontFamily: "'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '2px', color: styles.textTertiary}}>
+              Session Detail: {selectedSession.session_id}
+            </h2>
+            <button 
+              onClick={() => setSelectedSession(null)}
+              style={{background: 'none', border: 'none', color: styles.textTertiary, cursor: 'pointer', fontSize: '18px'}}
+            >
+              ×
+            </button>
+          </div>
+          
+          <div style={{padding: '20px'}}>
+            <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '16px', marginBottom: '24px'}}>
+              <div>
+                <div style={{fontSize: '10px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px'}}>Started</div>
+                <div style={{color: styles.textPrimary}}>{selectedSession.started_at ? new Date(selectedSession.started_at).toLocaleString() : '-'}</div>
+              </div>
+              <div>
+                <div style={{fontSize: '10px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px'}}>Pass Count</div>
+                <div style={{color: styles.accentGreen, fontFamily: "'IBM Plex Mono', monospace"}}>{selectedSession.pass_count.toLocaleString()}</div>
+              </div>
+              <div>
+                <div style={{fontSize: '10px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px'}}>Block Count</div>
+                <div style={{color: '#D65C5C', fontFamily: "'IBM Plex Mono', monospace"}}>{selectedSession.block_count.toLocaleString()}</div>
+              </div>
+              <div>
+                <div style={{fontSize: '10px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px'}}>Certificate</div>
+                <div style={{color: styles.textPrimary}}>{selectedSession.certificate_id || '-'}</div>
+              </div>
+            </div>
+
+            {/* Simple Timeline Bar Chart */}
+            {timeline.length > 0 && (
+              <div>
+                <div style={{fontSize: '10px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '12px'}}>
+                  24-Hour Activity
+                </div>
+                <div style={{display: 'flex', gap: '2px', height: '60px', alignItems: 'flex-end'}}>
+                  {timeline.map((point, i) => {
+                    const maxTotal = Math.max(...timeline.map(t => t.total), 1);
+                    const height = (point.total / maxTotal) * 100;
+                    const passRatio = point.total > 0 ? point.pass / point.total : 1;
+                    
+                    return (
+                      <div
+                        key={i}
+                        style={{
+                          flex: 1,
+                          height: `${Math.max(height, 2)}%`,
+                          background: passRatio >= 0.99 ? styles.accentGreen : passRatio >= 0.95 ? '#D6A05C' : '#D65C5C',
+                          borderRadius: '2px 2px 0 0',
+                          opacity: 0.8
+                        }}
+                        title={`${new Date(point.hour).toLocaleTimeString()}: ${point.total} actions (${point.pass} pass, ${point.block} block)`}
+                      />
+                    );
+                  })}
+                </div>
+                <div style={{display: 'flex', justifyContent: 'space-between', marginTop: '4px', fontSize: '10px', color: styles.textTertiary}}>
+                  <span>24h ago</span>
+                  <span>Now</span>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function App() {
   return (
     <BrowserRouter>
