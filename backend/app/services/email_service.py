@@ -358,3 +358,66 @@ async def notify_admin_agent_offline(system_name: str, org_name: str, session_id
     """
     
     await send_email(ADMIN_EMAIL, subject, html)
+
+
+async def notify_high_violation_rate(to: str, system_name: str, org_name: str, block_count: int, block_rate: float):
+    """Notify customer of high violation rate"""
+    subject = f"🚨 High Violation Rate: {system_name}"
+    
+    html = f"""
+    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 20px;">
+        <div style="text-align: center; margin-bottom: 32px;">
+            <div style="display: inline-block; width: 40px; height: 40px; background: #5B4B8A; border-radius: 8px; margin-bottom: 16px;"></div>
+            <h1 style="font-size: 24px; font-weight: 300; color: #1a1a2e; margin: 0;">Violation Rate Alert</h1>
+        </div>
+        
+        <div style="background: #F8D7DA; border: 1px solid #F5C6CB; border-radius: 8px; padding: 16px; margin-bottom: 24px;">
+            <p style="margin: 0; color: #721C24;"><strong>Alert:</strong> Your system has a high boundary violation rate of {block_rate:.1f}%</p>
+        </div>
+        
+        <div style="background: #f8f9fa; border-radius: 8px; padding: 24px; margin-bottom: 24px;">
+            <p style="margin: 0 0 12px 0;"><strong>Organization:</strong> {org_name}</p>
+            <p style="margin: 0 0 12px 0;"><strong>System:</strong> {system_name}</p>
+            <p style="margin: 0;"><strong>Blocked Actions:</strong> {block_count}</p>
+        </div>
+        
+        <p style="color: #666; line-height: 1.6;">
+            The ENVELO agent is blocking actions that exceed your declared Operational Design Domain boundaries. 
+            This indicates your autonomous system is attempting to operate outside its certified parameters.
+        </p>
+        
+        <p style="color: #666; line-height: 1.6;">
+            <strong>What this means:</strong> The interlock is working correctly by preventing out-of-bounds operation.
+            However, frequent violations may indicate a need to review your system configuration or ODD boundaries.
+        </p>
+        
+        <div style="margin-top: 32px; padding-top: 24px; border-top: 1px solid #e9ecef; text-align: center;">
+            <p style="margin: 0; font-size: 12px; color: #999;">Sentinel Authority — ODDC Certification</p>
+        </div>
+    </div>
+    """
+    
+    await send_email(to, subject, html)
+
+
+async def notify_admin_high_violations(system_name: str, org_name: str, block_count: int, block_rate: float, customer_email: str):
+    """Notify admin of customer's high violation rate"""
+    subject = f"🚨 Customer High Violations: {org_name} - {system_name}"
+    
+    html = f"""
+    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 20px;">
+        <h2 style="color: #1a1a2e;">High Violation Rate Alert</h2>
+        
+        <div style="background: #f8f9fa; border-radius: 8px; padding: 24px; margin-bottom: 24px;">
+            <p style="margin: 0 0 12px 0;"><strong>Organization:</strong> {org_name}</p>
+            <p style="margin: 0 0 12px 0;"><strong>System:</strong> {system_name}</p>
+            <p style="margin: 0 0 12px 0;"><strong>Blocked Actions:</strong> {block_count}</p>
+            <p style="margin: 0 0 12px 0;"><strong>Violation Rate:</strong> {block_rate:.1f}%</p>
+            <p style="margin: 0;"><strong>Customer Email:</strong> {customer_email}</p>
+        </div>
+        
+        <p style="color: #666;">Customer has been notified. Consider reaching out to discuss ODD boundary adjustments.</p>
+    </div>
+    """
+    
+    await send_email(ADMIN_EMAIL, subject, html)

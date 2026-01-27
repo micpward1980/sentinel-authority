@@ -905,4 +905,86 @@ async def check_offline_agents(
                     except Exception as e:
                         print(f"Failed to send offline notification: {e}")
     
+    # Also check for high violation rates
+    for session in sessions:
+        total = (session.pass_count or 0) + (session.block_count or 0)
+        if total > 100:
+            block_rate = (session.block_count or 0) / total * 100
+            if block_rate > 10:  # More than 10% violations
+                api_key_result = await db.execute(select(APIKey).where(APIKey.id == session.api_key_id))
+                api_key = api_key_result.scalar_one_or_none()
+                if api_key:
+                    user_result = await db.execute(select(User).where(User.id == api_key.user_id))
+                    user = user_result.scalar_one_or_none()
+                    if user:
+                        cert_result = await db.execute(select(Certificate).where(Certificate.id == session.certificate_id))
+                        cert = cert_result.scalar_one_or_none()
+                        system_name = cert.system_name if cert else "Unknown"
+                        org_name = cert.organization_name if cert else user.organization or "Unknown"
+                        try:
+                            from app.services.email_service import notify_high_violation_rate, notify_admin_high_violations
+                            await notify_high_violation_rate(user.email, system_name, org_name, session.block_count, block_rate)
+                            await notify_admin_high_violations(system_name, org_name, session.block_count, block_rate, user.email)
+                            notifications_sent += 1
+                        except Exception as e:
+                            print(f"Failed to send violation notification: {e}")
+
+    return {"notifications_sent": notifications_sent}
+
+
+@router.post("/check-violations")
+async def check_violation_rates(
+    db: AsyncSession = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    """Check for high violation rates and send notifications (admin only)"""
+    from app.services.email_service import notify_high_violation_rate, notify_admin_high_violations
+    from app.models.models import User, Certificate
+    
+    if current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    notifications_sent = 0
+    
+    result = await db.execute(
+        select(EnveloSession).where(EnveloSession.status == "active")
+    )
+    sessions = result.scalars().all()
+    
+    for session in sessions:
+        total = (session.pass_count or 0) + (session.block_count or 0)
+        if total > 100:
+            block_rate = (session.block_count or 0) / total * 100
+            if block_rate > 10:
+                api_key_result = await db.execute(
+                    select(APIKey).where(APIKey.id == session.api_key_id)
+                )
+                api_key = api_key_result.scalar_one_or_none()
+                
+                if api_key:
+                    user_result = await db.execute(
+                        select(User).where(User.id == api_key.user_id)
+                    )
+                    user = user_result.scalar_one_or_none()
+                    
+                    if user:
+                        cert_result = await db.execute(
+                            select(Certificate).where(Certificate.id == session.certificate_id)
+                        )
+                        cert = cert_result.scalar_one_or_none()
+                        
+                        system_name = cert.system_name if cert else "Unknown"
+                        org_name = cert.organization_name if cert else user.organization or "Unknown"
+                        
+                        try:
+                            await notify_high_violation_rate(
+                                user.email, system_name, org_name, session.block_count, block_rate
+                            )
+                            await notify_admin_high_violations(
+                                system_name, org_name, session.block_count, block_rate, user.email
+                            )
+                            notifications_sent += 1
+                        except Exception as e:
+                            print(f"Failed to send violation notification: {e}")
+    
     return {"notifications_sent": notifications_sent}
