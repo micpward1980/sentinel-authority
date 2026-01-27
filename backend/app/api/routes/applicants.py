@@ -81,7 +81,7 @@ async def create_application(
     await db.commit()
     await db.refresh(application)
     
-    notify_admin_new_application(
+    await notify_admin_new_application(
         app_data.organization_name,
         app_data.system_name,
         app_data.contact_email
@@ -226,7 +226,7 @@ async def document_download(
     """
     
     try:
-        send_email(ADMIN_EMAIL, subject, html)
+        await send_email(ADMIN_EMAIL, subject, html)
         return {"success": True, "message": "Download tracked"}
     except Exception as e:
         print(f"Email error: {e}")

@@ -8,7 +8,7 @@ import os
 from typing import Optional
 
 RESEND_API_KEY = os.getenv("RESEND_API_KEY", "re_BkncgUC1_2uMjrza8EsxuSS8Ja6HLgCTV")
-FROM_EMAIL = os.getenv("FROM_EMAIL", "notifications@sentinelauthority.com")
+FROM_EMAIL = os.getenv("FROM_EMAIL", "notifications@sentinelauthority.org")
 
 async def send_email(to: str, subject: str, html: str, from_email: str = None) -> bool:
     """Send an email via Resend"""
@@ -261,3 +261,39 @@ async def send_test_setup_instructions(
     </div>
     """
     await send_email(to, f"CAT-72 Test Ready - Setup Instructions for {system_name}", html)
+
+
+async def notify_certificate_issued(to: str, system_name: str, cert_number: str, org_name: str):
+    """Notify applicant that their certificate has been issued"""
+    html = f"""
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <div style="background: #5B4B8A; padding: 20px; text-align: center;">
+            <h1 style="color: white; margin: 0;">SENTINEL AUTHORITY</h1>
+        </div>
+        <div style="padding: 30px; background: #f9f9f9;">
+            <h2 style="color: #2e7d32;">🎉 ODDC Certificate Issued</h2>
+            <p>Congratulations! Your system has successfully completed CAT-72 testing and has been granted ODDC conformance.</p>
+            
+            <div style="background: white; border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin: 20px 0;">
+                <p style="margin: 8px 0;"><strong>Certificate Number:</strong> {cert_number}</p>
+                <p style="margin: 8px 0;"><strong>System:</strong> {system_name}</p>
+                <p style="margin: 8px 0;"><strong>Organization:</strong> {org_name}</p>
+            </div>
+            
+            <p><strong>Next Steps:</strong></p>
+            <ul style="line-height: 1.8;">
+                <li>Download your certificate from the <a href="https://app.sentinelauthority.org" style="color: #5B4B8A;">portal</a></li>
+                <li>Your ENVELO Agent is now authorized for production use</li>
+                <li>Verify your certificate anytime at <a href="https://sentinelauthority.org/verify.html?cert={cert_number}" style="color: #5B4B8A;">sentinelauthority.org/verify</a></li>
+            </ul>
+            
+            <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
+            <p style="font-size: 12px; color: #666;">
+                Questions? Contact us at info@sentinelauthority.org
+            </p>
+        </div>
+    </div>
+    """
+    await send_email(to, f"ODDC Certificate Issued: {system_name}", html)
+    # Also notify admin
+    await send_email("info@sentinelauthority.org", f"Certificate Issued: {cert_number} - {system_name}", html)

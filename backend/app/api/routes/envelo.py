@@ -610,3 +610,233 @@ async def download_session_report(
         media_type="application/pdf",
         headers={"Content-Disposition": f"attachment; filename=CAT72-Report-{session.session_id}.pdf"}
     )
+
+
+@router.post("/heartbeat")
+async def receive_heartbeat(
+    db: AsyncSession = Depends(get_db),
+    api_key: APIKey = Depends(get_api_key_from_header)
+):
+    """Receive heartbeat from ENVELO agent - lightweight ping to confirm agent is alive"""
+    from pydantic import BaseModel
+    
+    # Update all active sessions for this API key
+    result = await db.execute(
+        select(EnveloSession).where(
+            EnveloSession.api_key_id == api_key.id,
+            EnveloSession.status == "active"
+        )
+    )
+    sessions = result.scalars().all()
+    
+    now = datetime.utcnow()
+    for session in sessions:
+        session.last_heartbeat_at = now
+    
+    await db.commit()
+    
+    return {"status": "ok", "timestamp": now.isoformat(), "sessions_updated": len(sessions)}
+
+
+@router.get("/monitoring/overview")
+async def get_monitoring_overview(
+    db: AsyncSession = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    """Get monitoring overview for dashboard"""
+    
+    from datetime import timedelta
+    now = datetime.utcnow()
+    
+    # Get all sessions for this user's certificates
+    if current_user.get("role") == "admin":
+        sessions_result = await db.execute(
+            select(EnveloSession).order_by(EnveloSession.started_at.desc()).limit(100)
+        )
+    else:
+        # Get user's API keys
+        keys_result = await db.execute(
+            select(APIKey).where(APIKey.user_id == int(current_user["sub"]))
+        )
+        user_keys = keys_result.scalars().all()
+        key_ids = [k.id for k in user_keys]
+        
+        if not key_ids:
+            return {"sessions": [], "summary": {"total": 0, "active": 0, "offline": 0}}
+        
+        sessions_result = await db.execute(
+            select(EnveloSession).where(
+                EnveloSession.api_key_id.in_(key_ids)
+            ).order_by(EnveloSession.started_at.desc()).limit(100)
+        )
+    
+    sessions = sessions_result.scalars().all()
+    
+    # Categorize sessions
+    active_count = 0
+    offline_count = 0
+    total_pass = 0
+    total_block = 0
+    
+    session_data = []
+    for s in sessions:
+        # Check if session is online (heartbeat within last 2 minutes)
+        last_activity = s.last_heartbeat_at or s.last_telemetry_at or s.started_at
+        is_online = False
+        if s.status == "active" and last_activity:
+            is_online = (now - last_activity).total_seconds() < 120
+        
+        if s.status == "active":
+            if is_online:
+                active_count += 1
+            else:
+                offline_count += 1
+        
+        total_pass += s.pass_count or 0
+        total_block += s.block_count or 0
+        
+        session_data.append({
+            "id": s.id,
+            "session_id": s.session_id,
+            "certificate_id": s.certificate_id,
+            "status": s.status,
+            "is_online": is_online,
+            "started_at": s.started_at.isoformat() if s.started_at else None,
+            "last_activity": last_activity.isoformat() if last_activity else None,
+            "pass_count": s.pass_count or 0,
+            "block_count": s.block_count or 0,
+            "uptime_hours": round((now - s.started_at).total_seconds() / 3600, 1) if s.started_at else 0
+        })
+    
+    return {
+        "sessions": session_data,
+        "summary": {
+            "total": len(sessions),
+            "active": active_count,
+            "offline": offline_count,
+            "ended": len([s for s in sessions if s.status == "ended"]),
+            "total_actions": total_pass + total_block,
+            "total_pass": total_pass,
+            "total_block": total_block,
+            "pass_rate": round((total_pass / max(total_pass + total_block, 1)) * 100, 2)
+        }
+    }
+
+
+@router.get("/monitoring/session/{session_id}/timeline")
+async def get_session_timeline(
+    session_id: int,
+    hours: int = 24,
+    db: AsyncSession = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    """Get hourly aggregated data for a session"""
+    from datetime import timedelta
+    from sqlalchemy import and_
+    
+    # Get session
+    result = await db.execute(select(EnveloSession).where(EnveloSession.id == session_id))
+    session = result.scalar_one_or_none()
+    
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+    
+    now = datetime.utcnow()
+    start_time = now - timedelta(hours=hours)
+    
+    # Get telemetry records in time range
+    result = await db.execute(
+        select(TelemetryRecord).where(
+            and_(
+                TelemetryRecord.session_id == session_id,
+                TelemetryRecord.timestamp >= start_time
+            )
+        ).order_by(TelemetryRecord.timestamp)
+    )
+    records = result.scalars().all()
+    
+    # Aggregate by hour
+    hourly_data = {}
+    for r in records:
+        hour_key = r.timestamp.replace(minute=0, second=0, microsecond=0).isoformat()
+        if hour_key not in hourly_data:
+            hourly_data[hour_key] = {"pass": 0, "block": 0, "total": 0}
+        hourly_data[hour_key]["total"] += 1
+        if r.result == "PASS":
+            hourly_data[hour_key]["pass"] += 1
+        else:
+            hourly_data[hour_key]["block"] += 1
+    
+    return {
+        "session_id": session_id,
+        "hours": hours,
+        "timeline": [
+            {"hour": k, "pass": v["pass"], "block": v["block"], "total": v["total"]}
+            for k, v in sorted(hourly_data.items())
+        ]
+    }
+
+
+@router.get("/monitoring/alerts")
+async def get_alerts(
+    db: AsyncSession = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    """Get current alerts for monitoring"""
+    from datetime import timedelta
+    
+    now = datetime.utcnow()
+    alerts = []
+    
+    # Get sessions that should be monitored
+    if current_user.get("role") == "admin":
+        sessions_result = await db.execute(
+            select(EnveloSession).where(EnveloSession.status == "active")
+        )
+    else:
+        keys_result = await db.execute(
+            select(APIKey).where(APIKey.user_id == int(current_user["sub"]))
+        )
+        user_keys = keys_result.scalars().all()
+        key_ids = [k.id for k in user_keys]
+        
+        if not key_ids:
+            return {"alerts": []}
+        
+        sessions_result = await db.execute(
+            select(EnveloSession).where(
+                EnveloSession.api_key_id.in_(key_ids),
+                EnveloSession.status == "active"
+            )
+        )
+    
+    sessions = sessions_result.scalars().all()
+    
+    for s in sessions:
+        last_activity = s.last_heartbeat_at or s.last_telemetry_at
+        
+        # Alert if no activity for 2+ minutes
+        if last_activity and (now - last_activity).total_seconds() > 120:
+            minutes_offline = int((now - last_activity).total_seconds() / 60)
+            alerts.append({
+                "type": "offline",
+                "severity": "critical" if minutes_offline > 10 else "warning",
+                "session_id": s.session_id,
+                "message": f"Agent offline for {minutes_offline} minutes",
+                "since": last_activity.isoformat()
+            })
+        
+        # Alert if high violation rate
+        total = (s.pass_count or 0) + (s.block_count or 0)
+        if total > 100:
+            block_rate = (s.block_count or 0) / total * 100
+            if block_rate > 10:
+                alerts.append({
+                    "type": "high_violations",
+                    "severity": "warning",
+                    "session_id": s.session_id,
+                    "message": f"High violation rate: {block_rate:.1f}%",
+                    "block_count": s.block_count
+                })
+    
+    return {"alerts": alerts, "total": len(alerts)}

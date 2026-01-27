@@ -49,7 +49,7 @@ async def register(user_data: UserCreate, db: AsyncSession = Depends(get_db)):
     await db.commit()
     await db.refresh(user)
     
-    notify_admin_new_registration(user.email, user.full_name)
+    await notify_admin_new_registration(user.email, user.full_name)
     
     token = create_access_token({"sub": str(user.id), "email": user.email, "role": user.role.value, "organization": user.organization})
     return {

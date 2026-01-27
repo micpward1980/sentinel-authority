@@ -61,3 +61,26 @@ async def download_certificate(
             "Content-Disposition": f"attachment; filename={certificate.certificate_number}.pdf"
         }
     )
+
+@router.post("/document-download")
+async def document_download_lead(request: Request):
+    """Capture lead info when someone downloads a document"""
+    from app.services.email_service import send_email
+    
+    data = await request.json()
+    email = data.get("email", "Unknown")
+    org = data.get("organization", "Not provided")
+    role = data.get("role", "Not provided")
+    document = data.get("document", "Unknown")
+    
+    html = f"""
+    <h2>Document Download Lead</h2>
+    <p><strong>Document:</strong> {document}</p>
+    <p><strong>Email:</strong> {email}</p>
+    <p><strong>Organization:</strong> {org}</p>
+    <p><strong>Role:</strong> {role}</p>
+    """
+    
+    await send_email("info@sentinelauthority.org", f"Document Download: {document}", html)
+    
+    return {"status": "ok"}

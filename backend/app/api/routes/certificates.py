@@ -1,4 +1,5 @@
 """Certificate Registry routes."""
+from app.services.email_service import notify_certificate_issued
 from datetime import datetime, timedelta
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import Response
@@ -43,6 +44,8 @@ async def issue_certificate(test_id: str, db: AsyncSession = Depends(get_db), us
     application.state = CertificationState.CONFORMANT
     await db.commit()
     await db.refresh(certificate)
+    # Send notification email
+    await notify_certificate_issued(application.contact_email, certificate.system_name, certificate.certificate_number, certificate.organization_name)
     return {"certificate_number": certificate.certificate_number, "organization_name": certificate.organization_name, "system_name": certificate.system_name, "state": certificate.state.value, "issued_at": certificate.issued_at.isoformat(), "expires_at": certificate.expires_at.isoformat(), "verification_url": certificate.verification_url}
 
 @router.get("/")

@@ -119,11 +119,14 @@ function Layout({ children }) {
   const { user, logout } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [userCerts, setUserCerts] = useState([]);
+  const [userApps, setUserApps] = useState([]);
   const location = useLocation();
+
 
   useEffect(() => {
     if (user) {
       api.get('/api/certificates/').then(res => setUserCerts(res.data || [])).catch(() => setUserCerts([]));
+      api.get('/api/applications/').then(res => setUserApps(res.data || [])).catch(() => setUserApps([]));
     }
   }, [user]);
 
@@ -133,12 +136,15 @@ function Layout({ children }) {
     { name: 'CAT-72 Console', href: '/cat72', icon: Activity, roles: ['admin'] },
     { name: 'Certificates', href: '/certificates', icon: Award, roles: ['admin', 'applicant'] },
     { name: 'ENVELO Agent', href: '/envelo', icon: 'brand', roles: ['admin', 'applicant'], requiresCert: true },
+    { name: 'Monitoring', href: '/monitoring', icon: Activity, roles: ['admin', 'applicant'], requiresCert: true },
   ];
 
   const hasCert = userCerts.some(c => c.status === 'issued' || c.status === 'active');
+  const hasApprovedApp = userApps.some(a => a.status === 'approved' || a.status === 'testing');
+  const canAccessAgent = hasCert || hasApprovedApp;
   const filteredNav = navigation.filter(item => {
     if (!item.roles.includes(user?.role || '')) return false;
-    if (item.requiresCert && user?.role !== 'admin' && !hasCert) return false;
+    if (item.requiresCert && user?.role !== 'admin' && !canAccessAgent) return false;
     return true;
   });
 
@@ -212,10 +218,12 @@ function Layout({ children }) {
             <ExternalLink className="w-4 h-4" />
             Main Site
           </a>
+          {user?.role === 'admin' && (
           <a href="https://api.sentinelauthority.org/docs" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 transition-colors no-underline" style={{color: styles.textTertiary, fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1.5px', textTransform: 'uppercase'}}>
             <FileText className="w-4 h-4" />
             API Docs
           </a>
+          )}
           <Link to="/verify" className="flex items-center gap-2 transition-colors no-underline" style={{color: styles.textTertiary, fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1.5px', textTransform: 'uppercase'}}>
             <Search className="w-4 h-4" />
             Verify
@@ -644,7 +652,7 @@ function NewApplication() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     organization_name: '', contact_name: '', contact_email: '', contact_phone: '',
-    system_name: '', system_description: '', system_version: '', manufacturer: '',
+    system_name: '', system_type: '', system_description: '', system_version: '', manufacturer: '',
     odd_specification: '', envelope_definition: '',
     facility_location: '', preferred_test_date: '', notes: ''
   });
@@ -722,13 +730,28 @@ function NewApplication() {
                   <input type="text" value={formData.system_name} onChange={(e) => setFormData({...formData, system_name: e.target.value})} className="w-full px-4 py-3 rounded-lg outline-none" style={inputStyle} required />
                 </div>
                 <div>
+                  <label style={{display: 'block', marginBottom: '8px', color: styles.textSecondary, fontSize: '14px'}}>System Type *</label>
+                  <select value={formData.system_type} onChange={(e) => setFormData({...formData, system_type: e.target.value})} className="w-full px-4 py-3 rounded-lg outline-none" style={inputStyle} required>
+                    <option value="">Select type...</option>
+                    <option value="mobile_robot">Mobile Robot / AMR</option>
+                    <option value="industrial_arm">Industrial Robot Arm</option>
+                    <option value="drone">Drone / UAV</option>
+                    <option value="autonomous_vehicle">Autonomous Vehicle</option>
+                    <option value="agv">Automated Guided Vehicle (AGV)</option>
+                    <option value="cobot">Collaborative Robot (Cobot)</option>
+                    <option value="other">Other Autonomous System</option>
+                  </select>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
                   <label style={{display: 'block', marginBottom: '8px', color: styles.textSecondary, fontSize: '14px'}}>System Version</label>
                   <input type="text" value={formData.system_version} onChange={(e) => setFormData({...formData, system_version: e.target.value})} className="w-full px-4 py-3 rounded-lg outline-none" style={inputStyle} placeholder="e.g., 1.0.0" />
                 </div>
-              </div>
-              <div>
-                <label style={{display: 'block', marginBottom: '8px', color: styles.textSecondary, fontSize: '14px'}}>Manufacturer</label>
-                <input type="text" value={formData.manufacturer} onChange={(e) => setFormData({...formData, manufacturer: e.target.value})} className="w-full px-4 py-3 rounded-lg outline-none" style={inputStyle} />
+                <div>
+                  <label style={{display: 'block', marginBottom: '8px', color: styles.textSecondary, fontSize: '14px'}}>Manufacturer</label>
+                  <input type="text" value={formData.manufacturer} onChange={(e) => setFormData({...formData, manufacturer: e.target.value})} className="w-full px-4 py-3 rounded-lg outline-none" style={inputStyle} />
+                </div>
               </div>
               <div>
                 <label style={{display: 'block', marginBottom: '8px', color: styles.textSecondary, fontSize: '14px'}}>System Description *</label>
@@ -742,11 +765,11 @@ function NewApplication() {
             <div className="space-y-4">
               <div>
                 <label style={{display: 'block', marginBottom: '8px', color: styles.textSecondary, fontSize: '14px'}}>ODD Specification *</label>
-                <textarea value={formData.odd_specification} onChange={(e) => setFormData({...formData, odd_specification: e.target.value})} rows={6} className="w-full px-4 py-3 rounded-lg outline-none resize-none" style={inputStyle} placeholder="Describe the Operational Design Domain including environment type, speed limits, geographic constraints, weather conditions, etc." required />
+                <textarea value={formData.odd_specification} onChange={(e) => setFormData({...formData, odd_specification: e.target.value})} rows={6} className="w-full px-4 py-3 rounded-lg outline-none resize-none" style={inputStyle} placeholder="Example: Indoor warehouse environment, max speed 5 mph, operating temperature 40-90°F, flat concrete surfaces only, no human workers in active zones during operation." required />
               </div>
               <div>
                 <label style={{display: 'block', marginBottom: '8px', color: styles.textSecondary, fontSize: '14px'}}>Safety Boundaries & Operational Limits</label>
-                <textarea value={formData.envelope_definition} onChange={(e) => setFormData({...formData, envelope_definition: e.target.value})} rows={4} className="w-full px-4 py-3 rounded-lg outline-none resize-none" style={inputStyle} placeholder="Define the specific constraints your system must operate within (e.g., speed limits, geographic boundaries, environmental conditions, time restrictions)" />
+                <textarea value={formData.envelope_definition} onChange={(e) => setFormData({...formData, envelope_definition: e.target.value})} rows={4} className="w-full px-4 py-3 rounded-lg outline-none resize-none" style={inputStyle} placeholder="Example: Speed limit 5 mph (hard stop at 6 mph), geofenced to warehouse floor coordinates, emergency stop if human detected within 10ft, operating hours 6am-10pm." />
               </div>
             </div>
           </div>
@@ -829,7 +852,16 @@ function ApplicationDetail() {
           Back to Applications
         </Link>
         <div style={{display: 'flex', gap: '12px'}}>
-          {app.state !== 'conformant' && (
+          {(app.state === 'pending' || app.state === 'under_review') && (
+            <button
+              onClick={handleApprove}
+              className="px-4 py-2 rounded-lg transition-all"
+              style={{background: 'rgba(92,214,133,0.15)', border: '1px solid rgba(92,214,133,0.4)', color: styles.accentGreen, fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}
+            >
+              Approve Application
+            </button>
+          )}
+          {app.state === 'approved' && (
             <button
               onClick={handleScheduleTest}
               disabled={scheduling}
@@ -901,8 +933,8 @@ function ApplicationDetail() {
             >
               <option value="pending">Pending</option>
               <option value="under_review">Under Review</option>
-              <option value="observe">Observe</option>
-              <option value="bounded">Bounded</option>
+              <option value="approved">Approved (Agent Access)</option>
+              <option value="testing">Testing (CAT-72 Active)</option>
               <option value="conformant">Conformant</option>
               <option value="revoked">Revoked</option>
             </select>
@@ -2079,6 +2111,8 @@ function EnveloPage() {
   const [sessions, setSessions] = useState([]);
   const [selectedSession, setSelectedSession] = useState(null);
   const [userCerts, setUserCerts] = useState([]);
+  const [userApps, setUserApps] = useState([]);
+  const [cat72Status, setCat72Status] = useState(null);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -2086,14 +2120,16 @@ function EnveloPage() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [statsRes, sessionsRes, certsRes] = await Promise.all([
+        const [statsRes, sessionsRes, certsRes, appsRes] = await Promise.all([
           api.get('/api/envelo/stats').catch(() => ({ data: null })),
           api.get('/api/envelo/admin/sessions').catch(() => ({ data: { sessions: [] } })),
-          api.get('/api/certificates/').catch(() => ({ data: [] }))
+          api.get('/api/certificates/').catch(() => ({ data: [] })),
+          api.get('/api/applications/').catch(() => ({ data: [] }))
         ]);
         setStats(statsRes.data);
         setSessions(sessionsRes.data.sessions || []);
         setUserCerts(certsRes.data || []);
+        setUserApps(appsRes.data || []);
       } catch (err) {
         console.error(err);
       }
@@ -2103,20 +2139,24 @@ function EnveloPage() {
   }, []);
 
   const hasCert = user?.role === 'admin' || userCerts.some(c => c.status === 'issued' || c.status === 'active');
+  const hasApprovedApp = userApps.some(a => a.status === 'approved' || a.status === 'testing');
+  const canAccessAgent = hasCert || hasApprovedApp;
+  const isTestMode = hasApprovedApp && !hasCert;
+  const approvedApps = userApps.filter(a => a.status === 'approved' || a.status === 'testing');
 
   if (loading) {
     return <div style={{color: styles.textTertiary, padding: '40px', textAlign: 'center'}}>Loading...</div>;
   }
 
-  if (!hasCert) {
+  if (!canAccessAgent) {
     return (
       <div className="space-y-6">
         <Panel>
           <div style={{textAlign: 'center', padding: '40px'}}>
             <Award size={48} style={{color: styles.textTertiary, margin: '0 auto 16px'}} />
-            <h2 style={{fontFamily: "'Source Serif 4', serif", fontSize: '24px', fontWeight: 200, marginBottom: '12px'}}>Certification Required</h2>
-            <p style={{color: styles.textSecondary, marginBottom: '24px'}}>You must have an active ODDC certificate to download and use the ENVELO Agent.</p>
-            <p style={{color: styles.textTertiary, fontSize: '13px'}}>Complete the CAT-72 certification process to gain access.</p>
+            <h2 style={{fontFamily: "'Source Serif 4', serif", fontSize: '24px', fontWeight: 200, marginBottom: '12px'}}>Application Approval Required</h2>
+            <p style={{color: styles.textSecondary, marginBottom: '24px'}}>Your application must be approved before you can access the ENVELO Agent.</p>
+            <p style={{color: styles.textTertiary, fontSize: '13px'}}>Once approved, you can download the agent and begin CAT-72 testing.</p>
           </div>
         </Panel>
       </div>
@@ -2264,9 +2304,43 @@ if __name__ == "__main__":
         </div>
       )}
 
+      {isTestMode && (
+        <Panel style={{background: 'linear-gradient(135deg, rgba(91,75,138,0.2), rgba(91,75,138,0.05))', border: '1px solid rgba(157,140,207,0.4)'}}>
+          <div style={{display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px'}}>
+            <div style={{width: '12px', height: '12px', borderRadius: '50%', background: '#f59e0b', animation: 'pulse 2s infinite'}}></div>
+            <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: '#f59e0b', margin: 0}}>Test Mode Active</h2>
+          </div>
+          <p style={{color: styles.textSecondary, marginBottom: '20px'}}>Your application has been approved. Deploy the ENVELO Agent and complete 72 hours of continuous operation to earn certification.</p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4" style={{marginBottom: '20px'}}>
+            {approvedApps.map(app => (
+              <div key={app.id} style={{padding: '16px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)'}}>
+                <div style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px'}}>System</div>
+                <div style={{fontSize: '14px', color: styles.textPrimary, marginBottom: '12px'}}>{app.system_name}</div>
+                <div style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px'}}>CAT-72 Status</div>
+                <div style={{fontSize: '14px', color: app.cat72_started ? styles.accentGreen : '#f59e0b'}}>
+                  {app.cat72_started ? `In Progress` : 'Ready to Start'}
+                </div>
+              </div>
+            ))}
+          </div>
+          
+          <div style={{padding: '16px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)'}}>
+            <h3 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '12px'}}>Next Steps</h3>
+            <ol style={{margin: 0, paddingLeft: '20px', color: styles.textSecondary, fontSize: '13px'}}>
+              <li style={{marginBottom: '8px'}}>Generate an API key below</li>
+              <li style={{marginBottom: '8px'}}>Download the ENVELO Agent for your system</li>
+              <li style={{marginBottom: '8px'}}>Deploy the agent on your autonomous system</li>
+              <li style={{marginBottom: '8px'}}>Run continuously for 72 hours with no violations</li>
+              <li>Certification issued automatically upon successful completion</li>
+            </ol>
+          </div>
+        </Panel>
+      )}
+
       <Panel>
-        <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Your Certified Systems</h2>
-        <p style={{color: styles.textSecondary, marginBottom: '20px'}}>Download the ENVELO Agent pre-configured for each certified system. The agent must remain running to maintain certification compliance.</p>
+        <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>{isTestMode ? 'Systems Ready for Testing' : 'Your Certified Systems'}</h2>
+        <p style={{color: styles.textSecondary, marginBottom: '20px'}}>{isTestMode ? 'Download the ENVELO Agent for your approved systems. Run continuously for 72 hours to complete certification.' : 'Download the ENVELO Agent pre-configured for each certified system. The agent must remain running to maintain certification compliance.'}</p>
         
         {certifiedSystems.length > 0 ? (
           <div className="space-y-4">
@@ -2324,7 +2398,7 @@ if __name__ == "__main__":
         <div style={{background: 'rgba(0,0,0,0.3)', border: `1px solid ${styles.borderGlass}`, borderRadius: '8px', padding: '16px', fontFamily: "'IBM Plex Mono', monospace", fontSize: '13px'}}>
           <p style={{color: styles.textTertiary, marginBottom: '8px'}}># Your ENVELO configuration</p>
           <p style={{color: styles.textSecondary}}>certificate_id = <span style={{color: styles.accentGreen}}>"YOUR-CERTIFICATE-ID"</span></p>
-          <p style={{color: styles.textSecondary}}>api_key = <span style={{color: styles.accentGreen}}>"{apiKey}"</span></p>
+          <p style={{color: styles.textSecondary}}>api_key = <span style={{color: styles.accentGreen}}>"{activeApiKey || 'YOUR-API-KEY'}"</span></p>
           <p style={{color: styles.textSecondary}}>api_endpoint = <span style={{color: styles.accentGreen}}>"https://api.sentinelauthority.org"</span></p>
         </div>
         <p style={{color: styles.textTertiary, fontSize: '12px', marginTop: '12px'}}>Replace YOUR-CERTIFICATE-ID with your actual ODDC certificate number after certification.</p>
@@ -2407,6 +2481,7 @@ function App() {
           <Route path="/cat72" element={<ProtectedRoute roles={['admin', 'operator']}><Layout><CAT72Console /></Layout></ProtectedRoute>} />
           <Route path="/certificates" element={<ProtectedRoute><Layout><CertificatesPage /></Layout></ProtectedRoute>} />
           <Route path="/envelo" element={<ProtectedRoute><Layout><EnveloPage /></Layout></ProtectedRoute>} />
+          <Route path="/monitoring" element={<ProtectedRoute><Layout><MonitoringPage /></Layout></ProtectedRoute>} />
           <Route path="/" element={<Navigate to="/dashboard" />} />
         </Routes>
       </AuthProvider>
