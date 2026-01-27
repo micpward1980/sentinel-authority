@@ -2397,9 +2397,24 @@
     function handleDownloadSubmit(e) {
       e.preventDefault();
       const form = e.target;
-      closeDownloadModal();
-      window.open(currentPdfPath, '_blank');
-      form.reset();
+      
+      const data = {
+        email: document.getElementById('download-email').value,
+        organization: document.getElementById('download-org').value || 'Not provided',
+        role: document.getElementById('download-role').value || 'Not provided',
+        document: document.getElementById('documentName').value
+      };
+      
+      fetch('https://sentinel-authority-production.up.railway.app/api/applications/document-download', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      })
+      .finally(() => {
+        closeDownloadModal();
+        window.open(currentPdfPath, '_blank');
+        form.reset();
+      });
     }
   </script>
 </body>
