@@ -12,7 +12,7 @@ from fastapi.responses import HTMLResponse
 
 from app.core.config import settings
 from app.core.database import init_db
-from app.api.routes import auth, dashboard, applicants, cat72, certificates, verification, licensees, envelo, apikeys
+from app.api.routes import auth, dashboard, applicants, cat72, certificates, verification, licensees, envelo, apikeys, envelo_boundaries
 
 # Logging setup
 logging.basicConfig(level=logging.INFO)
@@ -54,6 +54,7 @@ app.include_router(certificates.router, prefix="/api/certificates", tags=["Certi
 app.include_router(verification.router, prefix="/api/verify", tags=["Public Verification"])
 app.include_router(licensees.router, prefix="/api/licensees", tags=["Licensee Portal"])
 app.include_router(envelo.router, prefix="/api/envelo", tags=["ENVELO Agent"])
+app.include_router(envelo_boundaries.router, prefix="/api/envelo/boundaries", tags=["ENVELO Boundaries"])
 app.include_router(apikeys.router, prefix="/api/apikeys", tags=["API Keys"])
 
 
