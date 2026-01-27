@@ -841,11 +841,6 @@ function Dashboard() {
       <SectionHeader 
         label="Overview" 
         title="Dashboard"
-        action={
-          <ActionButton href="/applications/new" icon={<Plus className="w-4 h-4" />}>
-            New Application
-          </ActionButton>
-        }
       />
 
       {/* Stats */}
@@ -899,10 +894,10 @@ function Dashboard() {
       <Panel>
         <div className="flex justify-between items-center mb-4">
           <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary}}>Recent Applications</h2>
-          <Link to="/applications/new" className="flex items-center gap-2 px-4 py-2 rounded-lg transition-colors no-underline" style={{background: styles.purplePrimary, border: `1px solid ${styles.purpleBright}`, color: '#fff', fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase'}}>
+          {user?.role !== "admin" && <Link to="/applications/new" className="flex items-center gap-2 px-4 py-2 rounded-lg transition-colors no-underline" style={{background: styles.purplePrimary, border: `1px solid ${styles.purpleBright}`, color: '#fff', fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase'}}>
             <Plus className="w-4 h-4" />
             New Application
-          </Link>
+          </Link>}
         </div>
         <div className="overflow-x-auto">
           <table className="w-full">
@@ -944,6 +939,7 @@ function Dashboard() {
 
 // Applications List
 function ApplicationsList() {
+  const { user } = useAuth();
   const [applications, setApplications] = useState([]);
 
   useEffect(() => {
@@ -957,10 +953,10 @@ function ApplicationsList() {
           <p style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', color: styles.purpleBright, marginBottom: '8px'}}>Conformance</p>
           <h1 style={{fontFamily: "'Source Serif 4', serif", fontSize: '36px', fontWeight: 200, margin: 0}}>Applications</h1>
         </div>
-        <Link to="/applications/new" className="flex items-center gap-2 px-4 py-2 rounded-lg transition-colors no-underline" style={{background: styles.purplePrimary, border: `1px solid ${styles.purpleBright}`, color: '#fff', fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase'}}>
+        {user?.role !== "admin" && <Link to="/applications/new" className="flex items-center gap-2 px-4 py-2 rounded-lg transition-colors no-underline" style={{background: styles.purplePrimary, border: `1px solid ${styles.purpleBright}`, color: '#fff', fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase'}}>
           <Plus className="w-4 h-4" />
           New Application
-        </Link>
+        </Link>}
       </div>
 
       <Panel>
