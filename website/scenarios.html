@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>ODDC Conformance Scenarios — Sentinel Authority</title>
+  <meta name="description" content="Representative ODDC conformance scenarios across industries including data centers, autonomous vehicles, healthcare, financial services, manufacturing, and aerospace.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect x='6' y='6' width='20' height='20' rx='5' fill='%235B4B8A' stroke='%239d8ccf' stroke-width='2'/><circle cx='16' cy='16' r='4' fill='%239d8ccf'/></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@200;300;400&family=Inter:wght@200;400;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --purple-primary:#5B4B8A;--purple-bright:#9d8ccf;--bg-deep:#2a2f3d;--bg-panel:rgba(255,255,255,.05);
+      --accent-green:#5CD685;--accent-amber:#D6A05C;--text-primary:rgba(255,255,255,.94);
+      --text-secondary:rgba(255,255,255,.75);--text-tertiary:rgba(255,255,255,.50);--border-glass:rgba(255,255,255,.10);
+      --serif:'Source Serif 4',serif;--mono:'IBM Plex Mono',monospace;--sans:'Inter',system-ui,sans-serif;
+      --space-1:10px;--space-2:20px;--space-3:30px;--space-4:40px;--max:900px;--nav-height:72px;
+      --ease:cubic-bezier(.4,0,.2,1);
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth;background:var(--bg-deep)}
+    body{margin:0;font-family:var(--sans);background:radial-gradient(1200px 700px at 15% 10%,rgba(91,75,138,.15),transparent 55%),radial-gradient(900px 600px at 85% 80%,rgba(92,214,133,.06),transparent 55%),var(--bg-deep);color:var(--text-primary);-webkit-font-smoothing:antialiased}
+    a{color:inherit;text-decoration:none}a:hover{text-decoration:underline;text-underline-offset:4px}
+    .site-header{position:fixed;top:0;width:100%;z-index:50;padding:0 var(--space-2);height:var(--nav-height);border-bottom:1px solid rgba(255,255,255,.10);background:rgba(42,47,61,.88);backdrop-filter:blur(18px);display:flex;align-items:center}
+    .nav-inner{max-width:var(--max);margin:0 auto;width:100%;display:flex;align-items:center;justify-content:space-between;gap:var(--space-2)}
+    .brand{display:flex;align-items:center;gap:var(--space-1);text-decoration:none}.brand:hover{text-decoration:none}
+    .brand-mark{width:24px;height:24px;background:var(--purple-primary);border:2px solid var(--purple-bright);border-radius:6px;display:flex;align-items:center;justify-content:center}
+    .brand-mark-inner{width:8px;height:8px;background:#c4b8e8;border-radius:50%}
+    .brand-name{font-family:var(--mono);font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.86)}
+    .back-link{font-family:var(--mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-tertiary);transition:color .2s ease}.back-link:hover{color:var(--text-primary);text-decoration:none}
+    main{position:relative;z-index:1;max-width:var(--max);margin:0 auto;padding:calc(var(--nav-height) + 60px) var(--space-2) 60px}
+    .page-header{margin-bottom:var(--space-4);text-align:center}
+    .page-kicker{font-family:var(--mono);font-size:10px;letter-spacing:5px;text-transform:uppercase;color:var(--purple-bright);margin-bottom:12px}
+    .page-title{font-family:var(--serif);font-size:clamp(32px,5vw,48px);font-weight:200;line-height:1.1;margin:0 0 var(--space-2);letter-spacing:-0.03em}
+    .page-desc{color:var(--text-secondary);font-weight:200;line-height:1.75;font-size:16px;max-width:65ch;margin:0 auto}
+    .tiles-header{font-family:var(--mono);font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--text-tertiary);text-align:center;margin:var(--space-4) 0 var(--space-2)}
+    .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:var(--space-2);margin-bottom:var(--space-4)}
+    .tile{background:var(--bg-panel);border:1px solid var(--border-glass);border-radius:14px;padding:var(--space-2);cursor:pointer;transition:transform .2s var(--ease),border-color .2s ease}
+    .tile:hover{transform:translateY(-2px);border-color:rgba(157,140,207,.35);text-decoration:none}
+    .tile h3{font-family:var(--serif);font-size:18px;font-weight:300;margin:0 0 8px}
+    .tile span{font-family:var(--mono);font-size:10px;letter-spacing:1px;color:var(--purple-bright)}
+    .scenario{background:var(--bg-panel);border:1px solid var(--border-glass);border-radius:18px;padding:var(--space-3);margin-bottom:var(--space-3)}
+    .scenario h2{font-family:var(--serif);font-size:26px;font-weight:200;margin:0 0 var(--space-2)}
+    .scenario p{color:var(--text-secondary);font-size:15px;line-height:1.75;margin:0 0 var(--space-2)}
+    .scenario h4{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-tertiary);margin:var(--space-2) 0 var(--space-1)}
+    .scenario ul{margin:0;padding-left:20px;color:var(--text-secondary);font-size:14px;line-height:1.8}
+    .scenario-download{display:inline-block;margin-top:var(--space-2);padding:12px 20px;background:rgba(91,75,138,.18);border:1px solid rgba(157,140,207,.55);border-radius:10px;color:var(--text-primary);font-family:var(--mono);font-size:11px;letter-spacing:1px;text-decoration:none;cursor:pointer;transition:transform .2s ease,border-color .2s ease,background .2s ease}
+    .scenario-download:hover{transform:translateY(-1px);border-color:rgba(157,140,207,.85);background:rgba(91,75,138,.26);text-decoration:none}
+    .modal{display:none;position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:var(--space-2)}
+    .modal.open{display:flex}
+    .modal-card{background:var(--bg-deep);border:1px solid var(--border-glass);border-radius:18px;padding:var(--space-3);max-width:420px;width:100%;position:relative}
+    .modal-close{position:absolute;top:14px;right:14px;appearance:none;border:none;background:none;color:var(--text-tertiary);font-size:24px;cursor:pointer;line-height:1}.modal-close:hover{color:var(--text-primary)}
+    .modal-card h3{font-family:var(--serif);font-size:22px;font-weight:200;margin:0 0 8px}
+    .modal-card>p{color:var(--text-secondary);font-size:13px;line-height:1.7;margin:0 0 var(--space-2)}
+    .form-group{margin-bottom:14px}
+    .form-label{display:block;font-family:var(--mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-tertiary);margin-bottom:6px}
+    .form-input,.form-select{width:100%;padding:12px 14px;background:rgba(255,255,255,.04);border:1px solid var(--border-glass);border-radius:8px;color:var(--text-primary);font-family:var(--sans);font-size:14px}
+    .form-input:focus,.form-select:focus{outline:none;border-color:rgba(157,140,207,.55)}
+    .form-select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.5)' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+    .btn{appearance:none;width:100%;border:1px solid rgba(157,140,207,.55);background:rgba(91,75,138,.18);color:var(--text-primary);padding:14px 24px;border-radius:12px;font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:transform .2s var(--ease),border-color .2s ease,background .2s ease}
+    .btn:hover{transform:translateY(-1px);border-color:rgba(157,140,207,.85);background:rgba(91,75,138,.26)}
+    .form-fine{font-size:11px;color:var(--text-tertiary);margin-top:var(--space-2);line-height:1.6;text-align:center}
+    footer{border-top:1px solid var(--border-glass);padding:var(--space-4) 0;margin-top:var(--space-4);color:rgba(255,255,255,.45);font-family:var(--mono);font-size:10px;letter-spacing:1px}
+    .footer-inner{max-width:var(--max);margin:0 auto;padding:0 var(--space-2);display:flex;justify-content:space-between;align-items:center;gap:var(--space-2);flex-wrap:wrap}
+    .footer-inner a{color:var(--purple-bright)}
+    .reveal{opacity:0;transform:translateY(20px);transition:opacity .6s var(--ease),transform .6s var(--ease)}.reveal.active{opacity:1;transform:translateY(0)}
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="nav-inner">
+      <a href="index.html" class="brand"><div class="brand-mark"><div class="brand-mark-inner"></div></div><div class="brand-name">Sentinel Authority</div></a>
+      <a href="index.html" class="back-link">← Back to Overview</a>
+    </div>
+  </header>
+
+  <main>
+    <div class="page-header reveal">
+      <div class="page-kicker">ODDC Conformance Scenarios</div>
+      <h1 class="page-title">Industry Applications</h1>
+      <p class="page-desc">Representative scenarios illustrating how ODDC conformance with ENVELO-compliant enforcement applies across industries. These examples are illustrative and non-normative.</p>
+    </div>
+
+    <div class="tiles-header reveal">Representative Scenarios — Conformance by Industry</div>
+    <div class="tiles reveal">
+      <a href="#datacenters" class="tile"><h3>Data Centers & Hyperscale Computing</h3><span>View scenario →</span></a>
+      <a href="#vehicles" class="tile"><h3>Autonomous Vehicles</h3><span>View scenario →</span></a>
+      <a href="#healthcare" class="tile"><h3>Healthcare & Medical AI</h3><span>View scenario →</span></a>
+      <a href="#finance" class="tile"><h3>Financial Services & Trading</h3><span>View scenario →</span></a>
+      <a href="#manufacturing" class="tile"><h3>Industrial Manufacturing</h3><span>View scenario →</span></a>
+      <a href="#aerospace" class="tile"><h3>Aerospace & Defense</h3><span>View scenario →</span></a>
+    </div>
+
+    <section id="datacenters" class="scenario reveal">
+      <h2>Data Centers & Hyperscale Computing</h2>
+      <p>Hyperscale environments increasingly rely on autonomous systems to allocate power, optimize cooling, place workloads, and orchestrate AI-on-AI stacks. ODDC conformance scenarios illustrate facility-level and stack-level envelope boundaries (power draw, thermal ceilings, isolation requirements, recursion limits), enforced via ENVELO-compliant non-bypassable runtime interlocks.</p>
+      <h4>Representative interlock behavior (modeled)</h4>
+      <ul>
+        <li>Hard-cap interlocks on CPU throttling to prevent TDP overruns during load spikes</li>
+        <li>Automatic workload shedding to non-critical queues as facility power approaches envelope limits</li>
+        <li>Maximum recursion depth for AI managing AI without human checkpoint</li>
+      </ul>
+      <h4>Evidence outputs</h4>
+      <ul>
+        <li>Append-only envelope adherence logs</li>
+        <li>Cryptographic attestations suitable for underwriting review and incident reconstruction</li>
+      </ul>
+      <a href="#" class="scenario-download" onclick="openModal(); return false;">↓ Download Full ODDC Scenarios PDF</a>
+    </section>
+
+    <section id="vehicles" class="scenario reveal">
+      <h2>Autonomous Vehicles</h2>
+      <p>ODDC conformance scenarios illustrate mathematically specified authorization parameters governing vehicle behavior across conditions (zone speed ceilings, confidence thresholds, weather degradation protocols, emergency override rules), with ENVELO-compliant enforcement preventing boundary violations regardless of model intent.</p>
+      <h4>Representative interlock behavior (modeled)</h4>
+      <ul>
+        <li>Non-bypassable speed interlock tied to zone authorization</li>
+        <li>Mandatory stop/slowdown when detection confidence falls below envelope threshold</li>
+        <li>Weather-tier degradation limits on velocity and acceleration</li>
+      </ul>
+      <h4>Evidence outputs</h4>
+      <ul>
+        <li>Cryptographic, time-indexed record of envelope compliance and override triggers</li>
+      </ul>
+      <a href="#" class="scenario-download" onclick="openModal(); return false;">↓ Download Full ODDC Scenarios PDF</a>
+    </section>
+
+    <section id="healthcare" class="scenario reveal">
+      <h2>Healthcare & Medical AI</h2>
+      <p>Medical AI operates in life-critical environments where auditability and bounded autonomy are required. ODDC conformance scenarios illustrate operational boundaries for diagnostic recommendations and clinical interventions, including mandatory human checkpoints for high-impact actions, with ENVELO-compliant enforcement present and auditable.</p>
+      <h4>Representative interlock behavior (modeled)</h4>
+      <ul>
+        <li>Mandatory confirmation interlock for Stage 3+ interventions</li>
+        <li>Hard deviation thresholds on surgical trajectories or procedure assistance</li>
+        <li>Automatic escalation on anomalous vital signs beyond envelope thresholds</li>
+      </ul>
+      <h4>Evidence outputs</h4>
+      <ul>
+        <li>Append-only clinical decision trace aligned to audit requirements (separate from regulatory approval)</li>
+      </ul>
+      <a href="#" class="scenario-download" onclick="openModal(); return false;">↓ Download Full ODDC Scenarios PDF</a>
+    </section>
+
+    <section id="finance" class="scenario reveal">
+      <h2>Financial Services & Trading</h2>
+      <p>High-frequency automated decision systems can create cascading failures if limits are bypassable. ODDC conformance scenarios illustrate quantifiable risk envelopes (position concentration, volatility deviation thresholds, drawdown caps) enforced independently of the trading algorithms via ENVELO-compliant mechanisms.</p>
+      <h4>Representative interlock behavior (modeled)</h4>
+      <ul>
+        <li>Volatility-triggered circuit breaker disconnecting order submission channels</li>
+        <li>Real-time enforcement of position limits and concentration thresholds</li>
+        <li>Mandatory review triggers on envelope-defined drawdown events</li>
+      </ul>
+      <h4>Evidence outputs</h4>
+      <ul>
+        <li>Cryptographic attestation of order gating and circuit-breaker events</li>
+      </ul>
+      <a href="#" class="scenario-download" onclick="openModal(); return false;">↓ Download Full ODDC Scenarios PDF</a>
+    </section>
+
+    <section id="manufacturing" class="scenario reveal">
+      <h2>Industrial Manufacturing</h2>
+      <p>Autonomous robotics and AI-driven production systems operate alongside humans in hazardous environments. ODDC conformance scenarios illustrate safety envelopes for force output, proximity response, speed reduction zones, and anomaly thresholds with ENVELO-compliant isolated enforcement mechanisms.</p>
+      <h4>Representative interlock behavior (modeled)</h4>
+      <ul>
+        <li>Proximity-triggered force limiters and full-stop thresholds</li>
+        <li>Non-bypassable caps on actuator torque or force output</li>
+        <li>Independent enforcement layer separated from control logic</li>
+      </ul>
+      <h4>Evidence outputs</h4>
+      <ul>
+        <li>Audit-ready boundary adherence record supporting incident review and safety assurance</li>
+      </ul>
+      <a href="#" class="scenario-download" onclick="openModal(); return false;">↓ Download Full ODDC Scenarios PDF</a>
+    </section>
+
+    <section id="aerospace" class="scenario reveal">
+      <h2>Aerospace & Defense</h2>
+      <p>Autonomous aircraft and mission systems require strict operational certainty. ODDC conformance scenarios illustrate mission envelopes (geofencing, altitude ceilings, comm-loss protocols, payload authorization levels) with ENVELO-compliant chain-of-custody enforcement.</p>
+      <h4>Representative interlock behavior (modeled)</h4>
+      <ul>
+        <li>Geofence-triggered return-to-base initiation</li>
+        <li>Mandatory RTB after defined comm-loss duration</li>
+        <li>Multi-party cryptographic release for payload authorization</li>
+      </ul>
+      <h4>Evidence outputs</h4>
+      <ul>
+        <li>Cryptographically signed compliance logs for post-mission audit</li>
+      </ul>
+      <a href="#" class="scenario-download" onclick="openModal(); return false;">↓ Download Full ODDC Scenarios PDF</a>
+    </section>
+  </main>
+
+  <div id="downloadModal" class="modal" aria-hidden="true">
+    <div class="modal-card">
+      <button class="modal-close" onclick="closeModal()" aria-label="Close">×</button>
+      <h3>Download Scenarios PDF</h3>
+      <p>Please provide your contact information to access this document.</p>
+      <form id="downloadForm" action="https://api.web3forms.com/submit" method="POST" onsubmit="handleSubmit(event)">
+        <input type="hidden" name="access_key" value="3e7e3ac5-9b32-46a0-b901-d36f8723879c">
+        <input type="hidden" name="subject" value="New Scenarios PDF Download">
+        <input type="hidden" name="from_name" value="Sentinel Authority Website">
+        <input type="hidden" name="document" value="ODDC Scenarios v1.0">
+        <div class="form-group">
+          <label class="form-label" for="email">Email (required)</label>
+          <input type="email" id="email" name="email" class="form-input" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="org">Organization (optional)</label>
+          <input type="text" id="org" name="org" class="form-input">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="role">Role (optional)</label>
+          <select id="role" name="role" class="form-select">
+            <option value="">Select…</option>
+            <option value="engineering">Engineering</option>
+            <option value="risk">Risk & Insurance</option>
+            <option value="regulatory">Regulatory</option>
+            <option value="legal">Legal</option>
+            <option value="operations">Operations</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <button type="submit" class="btn">View Document</button>
+        <p class="form-fine">Contact information is used for document delivery and technical correspondence only.</p>
+      </form>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-inner">
+      <div>© <span id="year"></span> SENTINEL AUTHORITY — ODDC CONFORMANCE</div>
+      <a href="mailto:info@sentinelauthority.org">info@sentinelauthority.org</a>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    const modal = document.getElementById('downloadModal');
+
+    function openModal() {
+      modal.classList.add('open');
+      modal.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      modal.classList.remove('open');
+      modal.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+    }
+
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && modal.classList.contains('open')) closeModal();
+    });
+
+    function handleSubmit(e) {
+      e.preventDefault();
+      const form = e.target;
+      const formData = new FormData(form);
+      
+      fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        closeModal();
+        window.open('docs/ODDC_Scenarios_v1.0.pdf', '_blank');
+        form.reset();
+      })
+      .catch(error => {
+        console.error('Form error:', error);
+        closeModal();
+        window.open('docs/ODDC_Scenarios_v1.0.pdf', '_blank');
+        form.reset();
+      });
+    }
+
+    // Reveal on scroll
+    function checkReveal() {
+      document.querySelectorAll('.reveal').forEach(el => {
+        const rect = el.getBoundingClientRect();
+        if (rect.top < window.innerHeight - 60) {
+          el.classList.add('active');
+        }
+      });
+    }
+    window.addEventListener('scroll', checkReveal, { passive: true });
+    window.addEventListener('load', checkReveal);
+    checkReveal();
+  </script>
+</body>
+</html>
