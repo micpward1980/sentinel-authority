@@ -5,6 +5,7 @@ from fastapi import APIRouter, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from pydantic import BaseModel
+from typing import Optional
 
 from app.core.database import get_db
 from fastapi import Depends
@@ -17,15 +18,15 @@ class VerificationResponse(BaseModel):
     valid: bool
     certificate_number: str
     status: str
-    organization_name: str = None
-    system_name: str = None
-    system_version: str = None
-    issued_at: str = None
-    expires_at: str = None
-    convergence_score: float = None
-    evidence_hash: str = None
-    signature: str = None
-    audit_log_ref: str = None
+    organization_name: Optional[str] = None
+    system_name: Optional[str] = None
+    system_version: Optional[str] = None
+    issued_at: Optional[str] = None
+    expires_at: Optional[str] = None
+    convergence_score: Optional[float] = None
+    evidence_hash: Optional[str] = None
+    signature: Optional[str] = None
+    audit_log_ref: Optional[str] = None
     message: str
 
 
