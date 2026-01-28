@@ -2409,6 +2409,27 @@
       svg[style*="max-width: 900px"] { min-width: 600px; }
       [style*="border-radius: 24px"][style*="padding: 40px"] { overflow-x: auto; -webkit-overflow-scrolling: touch; padding: 24px 16px !important; }
     }
+  
+    /* Conformance States Mobile */
+    @media (max-width: 768px) {
+      /* Stack states vertically */
+      [style*="display: flex"][style*="justify-content: center"][style*="align-items: center"][style*="gap: 8px"][style*="flex-wrap: wrap"] {
+        flex-direction: column !important;
+        gap: 8px !important;
+      }
+      
+      /* Rotate arrows to point down */
+      [style*="display: flex"][style*="justify-content: center"][style*="align-items: center"][style*="gap: 8px"] > svg[width="24"][height="24"] {
+        transform: rotate(90deg) !important;
+      }
+      
+      /* Make state boxes full width */
+      [style*="display: flex"][style*="align-items: center"][style*="gap: 12px"][style*="padding: 16px 24px"] {
+        width: 180px !important;
+        justify-content: flex-start !important;
+      }
+    }
+
   </style>
 
       <!-- Conformance States -->
