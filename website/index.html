@@ -2148,41 +2148,91 @@
           </g>
         </svg>
         
-        <!-- Mobile Mechanism Diagram -->
+        <!-- Mobile Mechanism Diagram (Animated) -->
         <div class="mechanism-mobile" style="padding: 16px 8px;">
-          <div style="display: flex; flex-direction: column; align-items: center; gap: 12px;">
-            <div style="background: rgba(157,140,207,0.08); border: 1.5px solid rgba(157,140,207,0.25); border-radius: 12px; padding: 14px 28px; text-align: center;">
-              <div style="font-family: var(--mono); font-size: 9px; letter-spacing: 2px; color: rgba(157,140,207,0.7);">MODEL</div>
-              <svg width="36" height="36" viewBox="0 0 40 40" style="margin-top: 6px;"><circle cx="10" cy="10" r="5" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/><circle cx="30" cy="10" r="5" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/><circle cx="20" cy="28" r="5" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/></svg>
-            </div>
-            <div style="text-align: center;"><span style="font-family: var(--mono); font-size: 8px; color: rgba(255,255,255,0.35);">ACTION</span><br/><svg width="20" height="20" viewBox="0 0 20 24"><path d="M10 2v16M5 14l5 5 5-5" stroke="rgba(255,255,255,0.25)" fill="none" stroke-width="1.5"/></svg></div>
-            <div style="background: linear-gradient(135deg, rgba(91,75,138,0.2), rgba(91,75,138,0.1)); border: 2px solid rgba(157,140,207,0.5); border-radius: 14px; padding: 18px 28px; text-align: center;">
-              <div style="font-family: var(--mono); font-size: 10px; letter-spacing: 3px; color: rgba(157,140,207,0.9);">ENVELO</div>
-              <svg width="36" height="36" viewBox="0 0 40 40" style="margin: 10px 0;"><polygon points="20,4 36,20 20,36 4,20" fill="rgba(157,140,207,0.1)" stroke="rgba(157,140,207,0.6)" stroke-width="1.5"/><path d="M14 20 L18 24 L26 16" fill="none" stroke="rgba(92,214,133,0.8)" stroke-width="2"/></svg>
-              <div style="font-family: var(--mono); font-size: 10px; color: rgba(255,255,255,0.8);">INTERLOCK</div>
-            </div>
-            <div style="text-align: center;"><span style="font-family: var(--mono); font-size: 8px; color: rgba(255,255,255,0.35);">DECISION</span><br/><svg width="20" height="20" viewBox="0 0 20 24"><path d="M10 2v16M5 14l5 5 5-5" stroke="rgba(255,255,255,0.25)" fill="none" stroke-width="1.5"/></svg></div>
-            <div style="background: rgba(255,255,255,0.03); border: 1.5px solid rgba(255,255,255,0.12); border-radius: 12px; padding: 12px 24px; text-align: center;">
-              <div style="font-family: var(--mono); font-size: 9px; letter-spacing: 2px; color: rgba(255,255,255,0.5);">GATE</div>
-            </div>
-            <div style="display: flex; gap: 40px;">
-              <svg width="20" height="20" viewBox="0 0 20 24"><path d="M10 2v16M5 14l5 5 5-5" stroke="rgba(92,214,133,0.5)" fill="none" stroke-width="1.5"/></svg>
-              <svg width="20" height="20" viewBox="0 0 20 24"><path d="M10 2v16M5 14l5 5 5-5" stroke="rgba(214,92,92,0.5)" fill="none" stroke-width="1.5"/></svg>
-            </div>
-            <div style="display: flex; gap: 16px;">
-              <div style="background: rgba(92,214,133,0.08); border: 1.5px solid rgba(92,214,133,0.3); border-radius: 12px; padding: 12px 16px; text-align: center;">
-                <div style="font-family: var(--mono); font-size: 8px; color: rgba(92,214,133,0.9);">ACTUATOR</div>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(92,214,133,0.7)" stroke-width="2" style="margin-top: 6px;"><circle cx="12" cy="12" r="8"/></svg>
-              </div>
-              <div style="background: rgba(214,92,92,0.08); border: 1.5px solid rgba(214,92,92,0.3); border-radius: 12px; padding: 12px 16px; text-align: center;">
-                <div style="font-family: var(--mono); font-size: 8px; color: rgba(214,92,92,0.9);">BLOCKED</div>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(214,92,92,0.7)" stroke-width="2.5" style="margin-top: 6px;"><line x1="7" y1="7" x2="17" y2="17"/><line x1="17" y1="7" x2="7" y2="17"/></svg>
-              </div>
-            </div>
-            <div style="margin-top: 8px; padding: 8px 16px; background: rgba(255,255,255,0.02); border: 1px dashed rgba(255,255,255,0.1); border-radius: 6px;">
-              <span style="font-family: var(--mono); font-size: 8px; color: rgba(255,255,255,0.4);">AUDIT TRAIL</span>
-            </div>
-          </div>
+          <svg width="100%" height="520" viewBox="0 0 200 520" style="max-width: 280px; margin: 0 auto; display: block;">
+            <defs>
+              <filter id="mob-glow"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            </defs>
+            
+            <!-- MODEL Box -->
+            <rect x="40" y="10" width="120" height="70" rx="12" fill="rgba(157,140,207,0.08)" stroke="rgba(157,140,207,0.25)" stroke-width="1.5"/>
+            <text x="100" y="32" text-anchor="middle" fill="rgba(157,140,207,0.7)" font-family="monospace" font-size="9" letter-spacing="2">MODEL</text>
+            <circle cx="70" cy="55" r="6" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/>
+            <circle cx="100" cy="55" r="6" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/>
+            <circle cx="130" cy="55" r="6" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/>
+            
+            <!-- Arrow 1: MODEL to ENVELO -->
+            <text x="100" y="98" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-family="monospace" font-size="8">ACTION</text>
+            <line x1="100" y1="80" x2="100" y2="140" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
+            <polygon points="100,145 95,135 105,135" fill="rgba(255,255,255,0.3)"/>
+            
+            <!-- Animated packet 1 -->
+            <circle r="5" fill="rgba(157,140,207,0.9)" filter="url(#mob-glow)">
+              <animate attributeName="cy" values="80;140;140" keyTimes="0;0.6;1" dur="3s" repeatCount="indefinite"/>
+              <animate attributeName="cx" values="100;100;100" dur="3s" repeatCount="indefinite"/>
+              <animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.1;0.5;0.6;1" dur="3s" repeatCount="indefinite"/>
+            </circle>
+            
+            <!-- ENVELO Box -->
+            <rect x="30" y="150" width="140" height="100" rx="14" fill="rgba(91,75,138,0.15)" stroke="rgba(157,140,207,0.5)" stroke-width="2"/>
+            <text x="100" y="175" text-anchor="middle" fill="rgba(157,140,207,0.9)" font-family="monospace" font-size="10" letter-spacing="3">ENVELO</text>
+            <polygon points="100,190 120,210 100,230 80,210" fill="rgba(157,140,207,0.1)" stroke="rgba(157,140,207,0.6)" stroke-width="1.5"/>
+            <path d="M90 210 L96 216 L110 202" fill="none" stroke="rgba(92,214,133,0.8)" stroke-width="2" stroke-linecap="round"/>
+            <text x="100" y="245" text-anchor="middle" fill="rgba(255,255,255,0.8)" font-family="monospace" font-size="10">INTERLOCK</text>
+            
+            <!-- Arrow 2: ENVELO to GATE -->
+            <text x="100" y="275" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-family="monospace" font-size="8">DECISION</text>
+            <line x1="100" y1="255" x2="100" y2="310" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
+            <polygon points="100,315 95,305 105,305" fill="rgba(255,255,255,0.3)"/>
+            
+            <!-- Animated packet 2 -->
+            <circle r="5" fill="rgba(157,140,207,0.9)" filter="url(#mob-glow)">
+              <animate attributeName="cy" values="255;310;310" keyTimes="0;0.6;1" dur="3s" repeatCount="indefinite" begin="1s"/>
+              <animate attributeName="cx" values="100;100;100" dur="3s" repeatCount="indefinite" begin="1s"/>
+              <animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.1;0.5;0.6;1" dur="3s" repeatCount="indefinite" begin="1s"/>
+            </circle>
+            
+            <!-- GATE Box -->
+            <rect x="50" y="320" width="100" height="50" rx="12" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.12)" stroke-width="1.5"/>
+            <text x="100" y="350" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-family="monospace" font-size="9" letter-spacing="2">GATE</text>
+            
+            <!-- Split arrows -->
+            <line x1="70" y1="370" x2="55" y2="420" stroke="rgba(92,214,133,0.4)" stroke-width="1.5"/>
+            <polygon points="55,425 50,415 60,415" fill="rgba(92,214,133,0.5)"/>
+            <line x1="130" y1="370" x2="145" y2="420" stroke="rgba(214,92,92,0.4)" stroke-width="1.5"/>
+            <polygon points="145,425 140,415 150,415" fill="rgba(214,92,92,0.5)"/>
+            
+            <!-- Animated permit packet -->
+            <circle r="4" fill="rgba(92,214,133,0.9)" filter="url(#mob-glow)">
+              <animate attributeName="cx" values="70;55;55" keyTimes="0;0.6;1" dur="3s" repeatCount="indefinite" begin="2s"/>
+              <animate attributeName="cy" values="370;420;420" keyTimes="0;0.6;1" dur="3s" repeatCount="indefinite" begin="2s"/>
+              <animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.1;0.5;0.6;1" dur="3s" repeatCount="indefinite" begin="2s"/>
+            </circle>
+            
+            <!-- Animated block packet -->
+            <circle r="4" fill="rgba(214,92,92,0.9)" filter="url(#mob-glow)">
+              <animate attributeName="cx" values="130;145;145" keyTimes="0;0.6;1" dur="4.5s" repeatCount="indefinite" begin="3.5s"/>
+              <animate attributeName="cy" values="370;420;420" keyTimes="0;0.6;1" dur="4.5s" repeatCount="indefinite" begin="3.5s"/>
+              <animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.1;0.5;0.6;1" dur="4.5s" repeatCount="indefinite" begin="3.5s"/>
+            </circle>
+            
+            <!-- ACTUATOR Box -->
+            <rect x="15" y="430" width="80" height="55" rx="12" fill="rgba(92,214,133,0.08)" stroke="rgba(92,214,133,0.3)" stroke-width="1.5"/>
+            <text x="55" y="452" text-anchor="middle" fill="rgba(92,214,133,0.9)" font-family="monospace" font-size="8" letter-spacing="1">ACTUATOR</text>
+            <circle cx="55" cy="470" r="10" fill="none" stroke="rgba(92,214,133,0.5)" stroke-width="1.5"/>
+            <circle cx="55" cy="470" r="4" fill="rgba(92,214,133,0.4)"/>
+            
+            <!-- BLOCKED Box -->
+            <rect x="105" y="430" width="80" height="55" rx="12" fill="rgba(214,92,92,0.08)" stroke="rgba(214,92,92,0.3)" stroke-width="1.5"/>
+            <text x="145" y="452" text-anchor="middle" fill="rgba(214,92,92,0.9)" font-family="monospace" font-size="8" letter-spacing="1">BLOCKED</text>
+            <line x1="137" y1="462" x2="153" y2="478" stroke="rgba(214,92,92,0.7)" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="153" y1="462" x2="137" y2="478" stroke="rgba(214,92,92,0.7)" stroke-width="2.5" stroke-linecap="round"/>
+            
+            <!-- AUDIT -->
+            <rect x="55" y="495" width="90" height="22" rx="6" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.1)" stroke-width="1" stroke-dasharray="4 3"/>
+            <text x="100" y="510" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-family="monospace" font-size="8" letter-spacing="1">AUDIT TRAIL</text>
+          </svg>
         </div>
         
         <div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.06); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
