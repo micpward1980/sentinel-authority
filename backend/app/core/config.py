@@ -17,6 +17,8 @@ class Settings(BaseSettings):
         "http://localhost:3000",
         "http://localhost:5173",
         "https://app.sentinelauthority.org",
+        "https://www.sentinelauthority.org",
+        "https://sentinelauthority.org",
         "https://envelo.ai",
     ]
     CAT72_DURATION_HOURS: int = 72
