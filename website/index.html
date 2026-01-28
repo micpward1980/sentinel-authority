@@ -2439,6 +2439,57 @@
       .timeline-mobile { display: block !important; }
     }
 
+  
+    /* Verify & API Sections Mobile */
+    @media (max-width: 768px) {
+      /* Verify certificate section */
+      [style*="SENTINEL REGISTRY"],
+      [style*="border-radius: 16px"][style*="background: rgba(30"] {
+        padding: 20px 16px !important;
+      }
+      
+      /* Stack verify buttons vertically */
+      [style*="display: grid"][style*="grid-template-columns: 1fr 1fr"][style*="gap: 12px"] {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+      }
+      
+      /* Input and button row */
+      [style*="display: flex"][style*="gap: 12px"]:has(input) {
+        flex-direction: column !important;
+      }
+      
+      /* Programmatic access section */
+      [style*="PROGRAMMATIC ACCESS"] {
+        font-size: 14px !important;
+        letter-spacing: 3px !important;
+      }
+      
+      /* API code block - allow scroll */
+      [style*="font-family: 'IBM Plex Mono'"][style*="background: rgba(0,0,0"] {
+        font-size: 11px !important;
+        overflow-x: auto !important;
+        white-space: nowrap !important;
+      }
+      
+      /* Add more vertical spacing between major sections */
+      #verify, #contact {
+        padding-top: 60px !important;
+        padding-bottom: 60px !important;
+      }
+      
+      /* Card sections - more padding */
+      [style*="border-radius: 20px"][style*="padding: 32px"],
+      [style*="border-radius: 24px"][style*="padding: 32px"] {
+        padding: 24px 20px !important;
+      }
+      
+      [style*="border-radius: 20px"][style*="padding: 28px"],
+      [style*="border-radius: 16px"][style*="padding: 28px"] {
+        padding: 20px 16px !important;
+      }
+    }
+
   </style>
 
       <!-- Conformance States -->
