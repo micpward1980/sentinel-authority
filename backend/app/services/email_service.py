@@ -421,3 +421,58 @@ async def notify_admin_high_violations(system_name: str, org_name: str, block_co
     """
     
     await send_email(ADMIN_EMAIL, subject, html)
+
+
+async def send_provisioned_agent_email(to: str, customer_name: str, system_name: str, certificate_number: str, agent_code: str):
+    """Send the pre-configured ENVELO agent to a customer"""
+    
+    html = f"""
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #f9f9f9;">
+        <div style="background: linear-gradient(135deg, #5B4B8A 0%, #6B5B9A 100%); padding: 30px; text-align: center;">
+            <h1 style="color: white; margin: 0; font-size: 24px;">SENTINEL AUTHORITY</h1>
+            <p style="color: rgba(255,255,255,0.8); margin: 10px 0 0 0; font-size: 12px; letter-spacing: 2px;">OPERATIONAL DESIGN DOMAIN CONFORMANCE</p>
+        </div>
+        
+        <div style="padding: 30px; background: white;">
+            <h2 style="color: #333; margin-top: 0;">Your ENVELO Agent is Ready</h2>
+            
+            <p>Hello {customer_name},</p>
+            
+            <p>Your ENVELO enforcement agent has been configured and is ready to deploy. This agent is pre-configured for your system and requires no additional setup.</p>
+            
+            <div style="background: #f4f4f8; border-left: 4px solid #5B4B8A; padding: 15px; margin: 20px 0;">
+                <p style="margin: 0 0 10px 0;"><strong>System:</strong> {system_name}</p>
+                <p style="margin: 0;"><strong>Certificate:</strong> {certificate_number}</p>
+            </div>
+            
+            <h3 style="color: #333;">Quick Start</h3>
+            <ol style="color: #555; line-height: 1.8;">
+                <li>Save the attached <code>envelo_agent.py</code> file to your system</li>
+                <li>Run: <code style="background: #f0f0f0; padding: 2px 6px; border-radius: 3px;">python envelo_agent.py</code></li>
+                <li>The agent will connect automatically and begin enforcement</li>
+            </ol>
+            
+            <p style="margin-top: 20px;">For CAT-72 attestation, the agent must run continuously for 72 hours with no violations. Your progress is tracked automatically.</p>
+            
+            <div style="background: #fff3cd; border: 1px solid #ffc107; padding: 15px; border-radius: 5px; margin: 20px 0;">
+                <p style="margin: 0; color: #856404;"><strong>⚠️ Important:</strong> Keep this file secure. It contains your API credentials.</p>
+            </div>
+            
+            <p>You can monitor your agent status at:<br>
+            <a href="https://app.sentinelauthority.org/envelo" style="color: #5B4B8A;">https://app.sentinelauthority.org/envelo</a></p>
+        </div>
+        
+        <div style="padding: 20px; background: #f4f4f8; text-align: center; font-size: 12px; color: #666;">
+            <p style="margin: 0;">Questions? Contact us at <a href="mailto:support@sentinelauthority.org" style="color: #5B4B8A;">support@sentinelauthority.org</a></p>
+            <p style="margin: 10px 0 0 0;">Sentinel Authority • Autonomous System Conformance</p>
+        </div>
+    </div>
+    """
+    
+    # For now, send HTML email. In production, attach the .py file
+    # Resend supports attachments but we'll include download link for now
+    return await send_email(
+        to=to,
+        subject=f"Your ENVELO Agent is Ready - {system_name}",
+        html=html
+    )

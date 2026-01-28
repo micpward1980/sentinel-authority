@@ -171,3 +171,358 @@ async def validate_api_key(key: str, db: AsyncSession) -> Optional[APIKey]:
         await db.commit()
     
     return api_key
+
+
+@router.post("/admin/provision")
+async def provision_customer_agent(
+    user_id: int,
+    certificate_id: int,
+    name: str = "ENVELO Agent",
+    send_email: bool = True,
+    db: AsyncSession = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    """Admin endpoint: Generate API key for a customer and optionally email them the agent"""
+    
+    # Verify admin
+    if current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    # Get the customer user
+    result = await db.execute(select(User).where(User.id == user_id))
+    customer = result.scalar_one_or_none()
+    if not customer:
+        raise HTTPException(status_code=404, detail="Customer not found")
+    
+    # Get the certificate
+    result = await db.execute(select(Certificate).where(Certificate.id == certificate_id))
+    cert = result.scalar_one_or_none()
+    if not cert:
+        raise HTTPException(status_code=404, detail="Certificate not found")
+    
+    # Generate API key for the customer
+    raw_key = generate_api_key()
+    key_hash = hash_key(raw_key)
+    key_prefix = raw_key[:12]
+    
+    api_key = APIKey(
+        key_hash=key_hash,
+        key_prefix=key_prefix,
+        certificate_id=certificate_id,
+        user_id=user_id,
+        name=f"ENVELO Agent - {cert.system_name}",
+        is_active=True
+    )
+    
+    db.add(api_key)
+    await db.commit()
+    await db.refresh(api_key)
+    
+    # Generate the agent code
+    agent_code = generate_provisioned_agent(cert, raw_key)
+    
+    # Optionally send email to customer
+    if send_email and customer.email:
+        from app.services.email_service import send_provisioned_agent_email
+        await send_provisioned_agent_email(
+            to=customer.email,
+            customer_name=customer.name or customer.email,
+            system_name=cert.system_name,
+            certificate_number=cert.certificate_number,
+            agent_code=agent_code
+        )
+    
+    return {
+        "success": True,
+        "api_key_id": api_key.id,
+        "api_key_prefix": key_prefix,
+        "certificate_number": cert.certificate_number,
+        "customer_email": customer.email,
+        "email_sent": send_email,
+        "agent_code": agent_code  # Also return so admin can download directly
+    }
+
+
+def generate_provisioned_agent(cert, api_key: str) -> str:
+    """Generate a fully configured ENVELO agent for a customer"""
+    
+    boundaries_code = ""
+    if cert.envelope_definition:
+        envelope = cert.envelope_definition if isinstance(cert.envelope_definition, dict) else {}
+        for b in envelope.get("numeric_boundaries", []):
+            boundaries_code += f'        self.add_boundary("{b.get("name", "")}", min_val={b.get("min_value", "None")}, max_val={b.get("max_value", "None")})\n'
+        for b in envelope.get("rate_boundaries", []):
+            boundaries_code += f'        self.add_rate_boundary("{b.get("name", "")}", max_per_second={b.get("max_per_second", "None")})\n'
+    
+    return f'''#!/usr/bin/env python3
+"""
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                         ENVELO AGENT - SENTINEL AUTHORITY                    ║
+║                                                                              ║
+║  System: {cert.system_name or "Unknown":<59} ║
+║  Certificate: {cert.certificate_number:<54} ║
+║  Organization: {cert.organization_name or "Unknown":<53} ║
+║                                                                              ║
+║  THIS AGENT IS PRE-CONFIGURED. JUST RUN IT.                                  ║
+║  python envelo_agent.py                                                      ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+Generated: {datetime.utcnow().isoformat()}Z
+"""
+
+import os
+import sys
+import time
+import json
+import uuid
+import signal
+import threading
+from datetime import datetime
+
+try:
+    import requests
+except ImportError:
+    print("Installing required package: requests")
+    os.system("pip install requests")
+    import requests
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# CONFIGURATION - DO NOT MODIFY
+# ═══════════════════════════════════════════════════════════════════════════════
+API_ENDPOINT = "https://sentinel-authority-production.up.railway.app"
+API_KEY = "{api_key}"
+CERTIFICATE_NUMBER = "{cert.certificate_number}"
+SYSTEM_NAME = "{cert.system_name or 'Unknown'}"
+ORGANIZATION = "{cert.organization_name or 'Unknown'}"
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# ENVELO AGENT
+# ═══════════════════════════════════════════════════════════════════════════════
+
+class EnveloAgent:
+    def __init__(self):
+        self.session_id = None
+        self.boundaries = {{}}
+        self.rate_limits = {{}}
+        self.stats = {{"pass": 0, "block": 0}}
+        self.running = False
+        self._heartbeat_thread = None
+        self._load_configured_boundaries()
+    
+    def _load_configured_boundaries(self):
+        """Load pre-configured boundaries from Sentinel Authority"""
+{boundaries_code if boundaries_code else '        pass  # Boundaries will be fetched from server'}
+    
+    def add_boundary(self, name, min_val=None, max_val=None, unit=""):
+        self.boundaries[name] = {{"min": min_val, "max": max_val, "unit": unit}}
+    
+    def add_rate_boundary(self, name, max_per_second=None, max_per_minute=None):
+        self.rate_limits[name] = {{"max_per_second": max_per_second, "max_per_minute": max_per_minute, "calls": []}}
+    
+    def start(self):
+        """Start the ENVELO agent session"""
+        print(f"[ENVELO] Starting agent for {{SYSTEM_NAME}}...")
+        
+        # Fetch latest boundaries from server
+        try:
+            res = requests.get(
+                f"{{API_ENDPOINT}}/api/envelo/boundaries/config",
+                headers={{"Authorization": f"Bearer {{API_KEY}}"}},
+                timeout=10
+            )
+            if res.ok:
+                config = res.json()
+                for b in config.get("numeric_boundaries", []):
+                    self.add_boundary(b["name"], b.get("min_value"), b.get("max_value"), b.get("unit", ""))
+                for b in config.get("rate_boundaries", []):
+                    self.add_rate_boundary(b["name"], b.get("max_per_second"))
+                print(f"[ENVELO] Loaded {{len(self.boundaries)}} numeric + {{len(self.rate_limits)}} rate boundaries")
+        except Exception as e:
+            print(f"[ENVELO] Warning: Could not fetch boundaries from server: {{e}}")
+        
+        # Start session
+        self.session_id = str(uuid.uuid4())
+        try:
+            res = requests.post(
+                f"{{API_ENDPOINT}}/api/envelo/sessions",
+                headers={{"Authorization": f"Bearer {{API_KEY}}"}},
+                json={{
+                    "certificate_id": CERTIFICATE_NUMBER,
+                    "session_id": self.session_id,
+                    "started_at": datetime.utcnow().isoformat() + "Z",
+                    "agent_version": "2.0.0",
+                    "boundaries": list(self.boundaries.values())
+                }},
+                timeout=10
+            )
+            if res.ok:
+                print(f"[ENVELO] Session started: {{self.session_id[:16]}}...")
+                self.running = True
+                self._start_heartbeat()
+                return True
+            else:
+                print(f"[ENVELO] Failed to start session: {{res.text}}")
+        except Exception as e:
+            print(f"[ENVELO] Connection error: {{e}}")
+        return False
+    
+    def _start_heartbeat(self):
+        """Start background heartbeat thread"""
+        def heartbeat_loop():
+            while self.running:
+                try:
+                    requests.post(
+                        f"{{API_ENDPOINT}}/api/envelo/heartbeat",
+                        headers={{"Authorization": f"Bearer {{API_KEY}}"}},
+                        timeout=5
+                    )
+                except:
+                    pass
+                time.sleep(60)
+        
+        self._heartbeat_thread = threading.Thread(target=heartbeat_loop, daemon=True)
+        self._heartbeat_thread.start()
+    
+    def check(self, parameter, value):
+        """Check if a value is within boundaries. Returns True if allowed, False if blocked."""
+        if parameter not in self.boundaries:
+            return True
+        
+        b = self.boundaries[parameter]
+        violation = None
+        
+        if b["min"] is not None and value < b["min"]:
+            violation = f"{{parameter}}={{value}} below minimum {{b['min']}}"
+        elif b["max"] is not None and value > b["max"]:
+            violation = f"{{parameter}}={{value}} above maximum {{b['max']}}"
+        
+        if violation:
+            self._report_violation(parameter, value, violation)
+            return False
+        
+        self.stats["pass"] += 1
+        return True
+    
+    def enforce(self, **params):
+        """Check multiple parameters at once. Returns True only if ALL pass."""
+        for param, value in params.items():
+            if not self.check(param, value):
+                return False
+        return True
+    
+    def _report_violation(self, parameter, value, message):
+        """Report a violation to Sentinel Authority"""
+        self.stats["block"] += 1
+        print(f"[ENVELO] ⛔ VIOLATION: {{message}}")
+        
+        try:
+            requests.post(
+                f"{{API_ENDPOINT}}/api/envelo/telemetry",
+                headers={{"Authorization": f"Bearer {{API_KEY}}"}},
+                json={{
+                    "certificate_id": CERTIFICATE_NUMBER,
+                    "session_id": self.session_id,
+                    "records": [{{
+                        "timestamp": datetime.utcnow().isoformat() + "Z",
+                        "action_type": "boundary_check",
+                        "result": "BLOCK",
+                        "parameters": {{parameter: value}},
+                        "boundary_evaluations": [{{"boundary": parameter, "passed": False, "message": message}}]
+                    }}],
+                    "stats": {{"block_count": 1}}
+                }},
+                timeout=5
+            )
+        except:
+            pass
+    
+    def report_action(self, action_type, parameters, result="PASS"):
+        """Report a successful action to telemetry"""
+        try:
+            requests.post(
+                f"{{API_ENDPOINT}}/api/envelo/telemetry",
+                headers={{"Authorization": f"Bearer {{API_KEY}}"}},
+                json={{
+                    "certificate_id": CERTIFICATE_NUMBER,
+                    "session_id": self.session_id,
+                    "records": [{{
+                        "timestamp": datetime.utcnow().isoformat() + "Z",
+                        "action_type": action_type,
+                        "result": result,
+                        "parameters": parameters,
+                        "boundary_evaluations": []
+                    }}],
+                    "stats": {{"pass_count": 1 if result == "PASS" else 0}}
+                }},
+                timeout=5
+            )
+        except:
+            pass
+    
+    def stop(self):
+        """Stop the ENVELO agent session"""
+        self.running = False
+        print(f"[ENVELO] Stopping agent...")
+        print(f"[ENVELO] Session stats: {{self.stats['pass']}} passed, {{self.stats['block']}} blocked")
+        
+        try:
+            requests.post(
+                f"{{API_ENDPOINT}}/api/envelo/sessions/{{self.session_id}}/end",
+                headers={{"Authorization": f"Bearer {{API_KEY}}"}},
+                json={{
+                    "ended_at": datetime.utcnow().isoformat() + "Z",
+                    "final_stats": self.stats
+                }},
+                timeout=10
+            )
+            print("[ENVELO] Session ended successfully")
+        except Exception as e:
+            print(f"[ENVELO] Warning: Could not end session cleanly: {{e}}")
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# MAIN - Run this agent
+# ═══════════════════════════════════════════════════════════════════════════════
+
+agent = EnveloAgent()
+
+def signal_handler(sig, frame):
+    print("\\n[ENVELO] Shutdown signal received...")
+    agent.stop()
+    sys.exit(0)
+
+signal.signal(signal.SIGINT, signal_handler)
+signal.signal(signal.SIGTERM, signal_handler)
+
+if __name__ == "__main__":
+    print()
+    print("=" * 70)
+    print("  ENVELO Agent - Sentinel Authority")
+    print(f"  System: {{SYSTEM_NAME}}")
+    print(f"  Organization: {{ORGANIZATION}}")
+    print(f"  Certificate: {{CERTIFICATE_NUMBER}}")
+    print("=" * 70)
+    print()
+    
+    if agent.start():
+        print()
+        print("[ENVELO] ✓ Agent is running. Press Ctrl+C to stop.")
+        print()
+        print("Usage in your code:")
+        print("  from envelo_agent import agent")
+        print("  ")
+        print("  # Check before action")
+        print("  if agent.check('speed', current_speed):")
+        print("      execute_movement()")
+        print("  ")
+        print("  # Or check multiple parameters")
+        print("  if agent.enforce(speed=50, temperature=25):")
+        print("      execute_action()")
+        print()
+        
+        # Keep running for CAT-72 testing
+        while agent.running:
+            time.sleep(1)
+    else:
+        print("[ENVELO] ✗ Failed to start agent. Check your connection and credentials.")
+        sys.exit(1)
+'''
