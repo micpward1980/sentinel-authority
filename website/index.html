@@ -1556,6 +1556,54 @@
       }
     }
     
+    
+    /* Security Section Mobile - Vertical Flow */
+    @media (max-width: 768px) {
+      #security .section-head {
+        padding: 0 16px;
+      }
+      
+      /* Make the data flow vertical on mobile */
+      #security [style*="display: flex"][style*="align-items: center"][style*="gap: 16px"] {
+        flex-direction: column !important;
+        gap: 12px !important;
+      }
+      
+      /* Rotate arrows to point down */
+      #security svg[width="60"][height="24"] {
+        transform: rotate(90deg);
+        margin: 4px 0;
+      }
+      
+      /* Shrink the boxes a bit */
+      #security [style*="min-width: 140px"] {
+        min-width: 120px !important;
+        padding: 16px 20px !important;
+      }
+      
+      /* No inbound banner - wrap text */
+      #security [style*="NO INBOUND"] {
+        font-size: 9px !important;
+        letter-spacing: 1px !important;
+      }
+      
+      #security [style*="display: inline-flex"][style*="gap: 10px"] {
+        padding: 10px 16px !important;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      #security [style*="min-width: 140px"] {
+        min-width: 100px !important;
+        padding: 14px 16px !important;
+      }
+      
+      #security [style*="NO INBOUND"] {
+        font-size: 8px !important;
+        letter-spacing: 0.5px !important;
+      }
+    }
+
     @media (max-width: 480px) {
       h1 {
         font-size: 26px !important;
