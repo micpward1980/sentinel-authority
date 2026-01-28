@@ -2,8 +2,8 @@
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, or_, func
-from app.database import get_db
-from app.models import Certificate
+from app.core.database import get_db
+from app.models.models import Certificate, CertificationState
 
 router = APIRouter(prefix="/api/registry", tags=["registry"])
 
