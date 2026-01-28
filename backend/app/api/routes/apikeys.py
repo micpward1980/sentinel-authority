@@ -277,6 +277,7 @@ import json
 import uuid
 import signal
 import threading
+from app.services.agent_generator import generate_provisioned_agent
 from datetime import datetime
 
 try:
