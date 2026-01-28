@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "envelo"
+version = "1.0.0"
+description = "ENVELO - Enforcer for Non-Violable Execution & Limit Oversight"
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "Proprietary"}
+authors = [
+    {name = "Sentinel Authority", email = "support@sentinelauthority.org"}
+]
+keywords = ["autonomous", "safety", "enforcement", "ODD", "ENVELO"]
+dependencies = [
+    "requests>=2.25.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "black>=23.0.0",
+    "mypy>=1.0.0",
+]
+
+[project.urls]
+Homepage = "https://www.sentinelauthority.org"
+Documentation = "https://docs.sentinelauthority.org/envelo"
