@@ -1865,6 +1865,13 @@
             </g>
           </g>
           
+
+          <!-- Animated block packet -->
+          <circle r="4" fill="rgba(214,92,92,0.9)" filter="url(#mech-glow)">
+            <animate attributeName="cx" values="660;700;700;780" keyTimes="0;0.3;0.5;1" dur="4.5s" repeatCount="indefinite" begin="3.5s" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+            <animate attributeName="cy" values="125;125;155;155" keyTimes="0;0.3;0.5;1" dur="4.5s" repeatCount="indefinite" begin="3.5s" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+            <animate attributeName="opacity" values="0;1;1;1;0;0" keyTimes="0;0.05;0.4;0.9;0.95;1" dur="4.5s" repeatCount="indefinite" begin="3.5s"/>
+          </circle>
           <!-- AUDIT TRAIL -->
           <path d="M 370 165 L 370 195 L 500 195" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#mech-arr)"/>
           <g transform="translate(505, 180)">
