@@ -2149,7 +2149,7 @@
         </svg>
         
         <!-- Mobile Mechanism Diagram (Vertical) -->
-        <svg class="mechanism-mobile" viewBox="0 0 320 580" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 100%; max-width: 320px; margin: 0 auto; display: none;">
+        <svg class="mechanism-mobile" viewBox="0 0 320 560" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 100%; max-width: 320px; margin: 0 auto; display: none;">
           <defs>
             <linearGradient id="mob-accent-grad" x1="0%" y1="0%" x2="0%" y2="100%">
               <stop offset="0%" stop-color="rgba(157,140,207,0.05)"/>
@@ -2157,13 +2157,10 @@
               <stop offset="100%" stop-color="rgba(157,140,207,0.05)"/>
             </linearGradient>
             <filter id="mob-glow"><feGaussianBlur stdDeviation="2" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-            <marker id="mob-arr" viewBox="0 0 10 10" refX="5" refY="9" markerWidth="4" markerHeight="4" orient="auto"><path d="M 0 0 L 5 10 L 10 0 z" fill="rgba(255,255,255,0.3)"/></marker>
-            <marker id="mob-arr-g" viewBox="0 0 10 10" refX="5" refY="9" markerWidth="4" markerHeight="4" orient="auto"><path d="M 0 0 L 5 10 L 10 0 z" fill="rgba(92,214,133,0.8)"/></marker>
-            <marker id="mob-arr-r" viewBox="0 0 10 10" refX="5" refY="9" markerWidth="4" markerHeight="4" orient="auto"><path d="M 0 0 L 5 10 L 10 0 z" fill="rgba(214,92,92,0.8)"/></marker>
           </defs>
           
           <!-- NODE: AI MODEL -->
-          <g transform="translate(100, 20)">
+          <g transform="translate(100, 15)">
             <rect width="120" height="80" rx="12" fill="rgba(157,140,207,0.08)" stroke="rgba(157,140,207,0.25)" stroke-width="1.5"/>
             <text x="60" y="28" text-anchor="middle" fill="rgba(157,140,207,0.7)" font-family="IBM Plex Mono, monospace" font-size="9" letter-spacing="2">MODEL</text>
             <g transform="translate(40, 34)">
@@ -2176,104 +2173,108 @@
             </g>
           </g>
           
-          <!-- CONNECTOR 1 -->
-          <line x1="160" y1="100" x2="160" y2="150" stroke="rgba(255,255,255,0.15)" stroke-width="1.5" marker-end="url(#mob-arr)"/>
-          <text x="180" y="130" text-anchor="start" fill="rgba(255,255,255,0.35)" font-family="IBM Plex Mono, monospace" font-size="8" letter-spacing="1">ACTION</text>
+          <!-- CONNECTOR 1: MODEL to ENVELO -->
+          <line x1="160" y1="95" x2="160" y2="145" stroke="rgba(255,255,255,0.15)" stroke-width="1.5"/>
+          <polygon points="160,150 155,140 165,140" fill="rgba(255,255,255,0.3)"/>
+          <text x="180" y="125" text-anchor="start" fill="rgba(255,255,255,0.35)" font-family="IBM Plex Mono, monospace" font-size="8" letter-spacing="1">ACTION</text>
           
           <!-- Animated packet 1 -->
           <circle r="5" fill="rgba(157,140,207,0.9)" filter="url(#mob-glow)">
-            <animate attributeName="cy" values="100;150;150" keyTimes="0;0.4;1" dur="3s" repeatCount="indefinite"/>
+            <animate attributeName="cy" values="95;145;145" keyTimes="0;0.4;1" dur="3s" repeatCount="indefinite"/>
             <animate attributeName="cx" values="160;160;160" dur="3s" repeatCount="indefinite"/>
             <animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.05;0.35;0.4;1" dur="3s" repeatCount="indefinite"/>
           </circle>
           
           <!-- NODE: ENVELO INTERLOCK -->
           <g transform="translate(95, 155)">
-            <rect x="-4" y="-4" width="138" height="118" rx="16" fill="url(#mob-accent-grad)"/>
-            <rect width="130" height="110" rx="14" fill="rgba(91,75,138,0.15)" stroke="rgba(157,140,207,0.5)" stroke-width="2"/>
-            <text x="65" y="26" text-anchor="middle" fill="rgba(157,140,207,0.9)" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="3">ENVELO</text>
-            <g transform="translate(45, 32)">
+            <rect x="-4" y="-4" width="138" height="110" rx="16" fill="url(#mob-accent-grad)"/>
+            <rect width="130" height="102" rx="14" fill="rgba(91,75,138,0.15)" stroke="rgba(157,140,207,0.5)" stroke-width="2"/>
+            <text x="65" y="24" text-anchor="middle" fill="rgba(157,140,207,0.9)" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="3">ENVELO</text>
+            <g transform="translate(45, 28)">
               <polygon points="20,4 36,25 20,46 4,25" fill="rgba(157,140,207,0.1)" stroke="rgba(157,140,207,0.6)" stroke-width="1.5"/>
               <path d="M14 25 L18 29 L26 21" fill="none" stroke="rgba(92,214,133,0.8)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </g>
-            <text x="65" y="92" text-anchor="middle" fill="rgba(255,255,255,0.8)" font-family="IBM Plex Mono, monospace" font-size="10" font-weight="500">INTERLOCK</text>
+            <text x="65" y="88" text-anchor="middle" fill="rgba(255,255,255,0.8)" font-family="IBM Plex Mono, monospace" font-size="10" font-weight="500">INTERLOCK</text>
             <rect x="6" y="6" width="118" height="2" rx="1" fill="rgba(157,140,207,0.4)">
-              <animate attributeName="y" values="6;102;6" dur="2.5s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1"/>
+              <animate attributeName="y" values="6;94;6" dur="2.5s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1"/>
               <animate attributeName="opacity" values="0.4;0.15;0.4" dur="2.5s" repeatCount="indefinite"/>
             </rect>
           </g>
           
-          <!-- CONNECTOR 2 -->
-          <line x1="160" y1="265" x2="160" y2="315" stroke="rgba(255,255,255,0.15)" stroke-width="1.5" marker-end="url(#mob-arr)"/>
-          <text x="180" y="295" text-anchor="start" fill="rgba(255,255,255,0.35)" font-family="IBM Plex Mono, monospace" font-size="8" letter-spacing="1">DECISION</text>
+          <!-- CONNECTOR 2: ENVELO to GATE -->
+          <line x1="160" y1="261" x2="160" y2="305" stroke="rgba(255,255,255,0.15)" stroke-width="1.5"/>
+          <polygon points="160,310 155,300 165,300" fill="rgba(255,255,255,0.3)"/>
+          <text x="180" y="288" text-anchor="start" fill="rgba(255,255,255,0.35)" font-family="IBM Plex Mono, monospace" font-size="8" letter-spacing="1">DECISION</text>
           
           <!-- Animated packet 2 -->
           <circle r="5" fill="rgba(157,140,207,0.9)" filter="url(#mob-glow)">
-            <animate attributeName="cy" values="265;315;315" keyTimes="0;0.4;1" dur="3s" repeatCount="indefinite" begin="1s"/>
+            <animate attributeName="cy" values="261;305;305" keyTimes="0;0.4;1" dur="3s" repeatCount="indefinite" begin="1s"/>
             <animate attributeName="cx" values="160;160;160" dur="3s" repeatCount="indefinite" begin="1s"/>
             <animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.05;0.35;0.4;1" dur="3s" repeatCount="indefinite" begin="1s"/>
           </circle>
           
           <!-- NODE: GATE -->
-          <g transform="translate(110, 320)">
-            <rect width="100" height="70" rx="12" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.12)" stroke-width="1.5"/>
-            <text x="50" y="25" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-family="IBM Plex Mono, monospace" font-size="9" letter-spacing="2">GATE</text>
-            <g transform="translate(30, 30)">
-              <line x1="20" y1="0" x2="20" y2="28" stroke="rgba(255,255,255,0.2)" stroke-width="2"/>
-              <circle cx="20" cy="14" r="8" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
-              <line x1="20" y1="6" x2="32" y2="0" stroke="rgba(92,214,133,0.6)" stroke-width="1.5"/>
-              <line x1="20" y1="22" x2="32" y2="28" stroke="rgba(214,92,92,0.6)" stroke-width="1.5"/>
+          <g transform="translate(110, 315)">
+            <rect width="100" height="65" rx="12" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.12)" stroke-width="1.5"/>
+            <text x="50" y="22" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-family="IBM Plex Mono, monospace" font-size="9" letter-spacing="2">GATE</text>
+            <g transform="translate(32, 28)">
+              <circle cx="18" cy="12" r="8" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
+              <line x1="10" y1="12" x2="0" y2="24" stroke="rgba(92,214,133,0.6)" stroke-width="1.5"/>
+              <line x1="26" y1="12" x2="36" y2="24" stroke="rgba(214,92,92,0.6)" stroke-width="1.5"/>
             </g>
           </g>
           
-          <!-- PERMIT PATH -->
-          <path d="M 130 390 L 130 420 L 90 420 L 90 455" fill="none" stroke="rgba(92,214,133,0.4)" stroke-width="1.5" marker-end="url(#mob-arr-g)"/>
+          <!-- PERMIT PATH: Gate to Actuator -->
+          <path d="M 135 380 L 135 405 L 95 405 L 95 435" fill="none" stroke="rgba(92,214,133,0.4)" stroke-width="1.5"/>
+          <polygon points="95,440 90,430 100,430" fill="rgba(92,214,133,0.6)"/>
           
           <!-- Animated permit packet -->
           <circle r="4" fill="rgba(92,214,133,0.9)" filter="url(#mob-glow)">
-            <animate attributeName="cx" values="130;130;90;90" keyTimes="0;0.3;0.5;1" dur="3s" repeatCount="indefinite" begin="2s" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
-            <animate attributeName="cy" values="390;420;420;455" keyTimes="0;0.3;0.5;1" dur="3s" repeatCount="indefinite" begin="2s" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+            <animate attributeName="cx" values="135;135;95;95" keyTimes="0;0.3;0.5;1" dur="3s" repeatCount="indefinite" begin="2s" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+            <animate attributeName="cy" values="380;405;405;435" keyTimes="0;0.3;0.5;1" dur="3s" repeatCount="indefinite" begin="2s" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
             <animate attributeName="opacity" values="0;1;1;1;0;0" keyTimes="0;0.05;0.4;0.9;0.95;1" dur="3s" repeatCount="indefinite" begin="2s"/>
           </circle>
           
           <!-- ACTUATOR -->
-          <g transform="translate(40, 460)">
-            <rect width="100" height="60" rx="12" fill="rgba(92,214,133,0.08)" stroke="rgba(92,214,133,0.3)" stroke-width="1.5"/>
-            <text x="50" y="22" text-anchor="middle" fill="rgba(92,214,133,0.8)" font-family="IBM Plex Mono, monospace" font-size="9" letter-spacing="1">ACTUATOR</text>
-            <g transform="translate(32, 26)">
-              <circle cx="18" cy="14" r="10" fill="none" stroke="rgba(92,214,133,0.5)" stroke-width="1.5"/>
-              <circle cx="18" cy="14" r="4" fill="rgba(92,214,133,0.4)"/>
-              <line x1="18" y1="1" x2="18" y2="6" stroke="rgba(92,214,133,0.5)" stroke-width="2"/>
+          <g transform="translate(45, 445)">
+            <rect width="100" height="55" rx="12" fill="rgba(92,214,133,0.08)" stroke="rgba(92,214,133,0.3)" stroke-width="1.5"/>
+            <text x="50" y="20" text-anchor="middle" fill="rgba(92,214,133,0.8)" font-family="IBM Plex Mono, monospace" font-size="9" letter-spacing="1">ACTUATOR</text>
+            <g transform="translate(35, 24)">
+              <circle cx="15" cy="12" r="10" fill="none" stroke="rgba(92,214,133,0.5)" stroke-width="1.5"/>
+              <circle cx="15" cy="12" r="4" fill="rgba(92,214,133,0.4)"/>
+              <line x1="15" y1="0" x2="15" y2="4" stroke="rgba(92,214,133,0.5)" stroke-width="2"/>
             </g>
           </g>
           
-          <!-- BLOCK PATH -->
-          <path d="M 190 390 L 190 420 L 230 420 L 230 455" fill="none" stroke="rgba(214,92,92,0.4)" stroke-width="1.5" marker-end="url(#mob-arr-r)"/>
+          <!-- BLOCK PATH: Gate to Blocked -->
+          <path d="M 185 380 L 185 405 L 225 405 L 225 435" fill="none" stroke="rgba(214,92,92,0.4)" stroke-width="1.5"/>
+          <polygon points="225,440 220,430 230,430" fill="rgba(214,92,92,0.6)"/>
           
           <!-- Animated block packet -->
           <circle r="4" fill="rgba(214,92,92,0.9)" filter="url(#mob-glow)">
-            <animate attributeName="cx" values="190;190;230;230" keyTimes="0;0.3;0.5;1" dur="4.5s" repeatCount="indefinite" begin="3.5s" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
-            <animate attributeName="cy" values="390;420;420;455" keyTimes="0;0.3;0.5;1" dur="4.5s" repeatCount="indefinite" begin="3.5s" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+            <animate attributeName="cx" values="185;185;225;225" keyTimes="0;0.3;0.5;1" dur="4.5s" repeatCount="indefinite" begin="3.5s" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+            <animate attributeName="cy" values="380;405;405;435" keyTimes="0;0.3;0.5;1" dur="4.5s" repeatCount="indefinite" begin="3.5s" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
             <animate attributeName="opacity" values="0;1;1;1;0;0" keyTimes="0;0.05;0.4;0.9;0.95;1" dur="4.5s" repeatCount="indefinite" begin="3.5s"/>
           </circle>
           
-          <!-- BLOCK BOX -->
-          <g transform="translate(180, 460)">
-            <rect width="100" height="60" rx="12" fill="rgba(214,92,92,0.08)" stroke="rgba(214,92,92,0.3)" stroke-width="1.5"/>
-            <text x="50" y="22" text-anchor="middle" fill="rgba(214,92,92,0.8)" font-family="IBM Plex Mono, monospace" font-size="9" letter-spacing="1">BLOCKED</text>
-            <g transform="translate(37, 28)">
-              <line x1="8" y1="8" x2="18" y2="18" stroke="rgba(214,92,92,0.7)" stroke-width="2.5" stroke-linecap="round"/>
-              <line x1="18" y1="8" x2="8" y2="18" stroke="rgba(214,92,92,0.7)" stroke-width="2.5" stroke-linecap="round"/>
+          <!-- BLOCKED BOX -->
+          <g transform="translate(175, 445)">
+            <rect width="100" height="55" rx="12" fill="rgba(214,92,92,0.08)" stroke="rgba(214,92,92,0.3)" stroke-width="1.5"/>
+            <text x="50" y="20" text-anchor="middle" fill="rgba(214,92,92,0.8)" font-family="IBM Plex Mono, monospace" font-size="9" letter-spacing="1">BLOCKED</text>
+            <g transform="translate(37, 26)">
+              <line x1="8" y1="6" x2="18" y2="16" stroke="rgba(214,92,92,0.7)" stroke-width="2.5" stroke-linecap="round"/>
+              <line x1="18" y1="6" x2="8" y2="16" stroke="rgba(214,92,92,0.7)" stroke-width="2.5" stroke-linecap="round"/>
             </g>
           </g>
           
           <!-- AUDIT TRAIL -->
-          <path d="M 160 269 L 260 269 L 260 545 L 200 545" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#mob-arr)"/>
-          <g transform="translate(125, 535)">
-            <rect width="70" height="26" rx="6" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
-            <text x="35" y="17" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-family="IBM Plex Mono, monospace" font-size="9" letter-spacing="1">AUDIT</text>
+          <path d="M 160 261 L 270 261 L 270 520 L 200 520" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1" stroke-dasharray="4 3"/>
+          <polygon points="195,520 205,515 205,525" fill="rgba(255,255,255,0.2)"/>
+          <g transform="translate(125, 510)">
+            <rect width="70" height="24" rx="6" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+            <text x="35" y="16" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-family="IBM Plex Mono, monospace" font-size="9" letter-spacing="1">AUDIT</text>
           </g>
-        </svg>
+        </svg></svg>
         
         <div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.06); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
           <span style="font-family: var(--mono); font-size: 10px; color: var(--text-tertiary); letter-spacing: 0.5px;">Illustrative enforcement flow. Implementations designed by system operators.</span>
