@@ -3177,7 +3177,7 @@
       resultDiv.innerHTML = '';
       
       try {
-        const response = await fetch(`https://api.sentinelauthority.org/api/verify/${encodeURIComponent(certNumber)}`);
+        const response = await fetch(`https://sentinel-authority-production.up.railway.app/api/verify/${encodeURIComponent(certNumber)}`);
         
         if (response.ok) {
           const data = await response.json();
