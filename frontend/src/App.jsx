@@ -1624,6 +1624,9 @@ function LicenseesPage() {
 
 // Verify Page (Public)
 function VerifyPage() {
+  const [mode, setMode] = useState("verify"); // verify or search
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
   const [certNumber, setCertNumber] = useState('');
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
@@ -1640,6 +1643,21 @@ function VerifyPage() {
       setResult(res.data);
     } catch (err) {
       setError('Certificate not found');
+    }
+    setLoading(false);
+  };
+
+  const handleSearch = async (e) => {
+    e.preventDefault();
+    if (!searchQuery.trim()) return;
+    setError("");
+    setSearchResults([]);
+    setLoading(true);
+    try {
+      const res = await api.get(`/api/registry/search?q=${encodeURIComponent(searchQuery)}`);
+      setSearchResults(res.data);
+    } catch (err) {
+      setError("Search failed");
     }
     setLoading(false);
   };
