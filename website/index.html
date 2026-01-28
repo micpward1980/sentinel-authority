@@ -3172,8 +3172,8 @@
       
       if (!certNumber) { input.focus(); return; }
       
-      btn.disabled = true;
-      btn.innerHTML = 'Verifying...';
+      if (btn) btn.disabled = true;
+      if (btn) btn.textContent = 'Verifying...';
       resultDiv.innerHTML = '';
       
       try {
@@ -3195,8 +3195,8 @@
         showVerifyError("Unable to connect to registry. Please try again later.");
       }
       
-      btn.disabled = false;
-      btn.innerHTML = "Verify Certificate";
+      if (btn) btn.disabled = false;
+      if (btn) btn.textContent = "Verify";
     }
     
     function showVerifySuccess(data) {
