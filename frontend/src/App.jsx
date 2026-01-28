@@ -1749,6 +1749,24 @@ function VerifyPage() {
             color: styles.textTertiary, fontFamily: "'IBM Plex Mono', monospace",
             fontSize: '11px', letterSpacing: '3px', textTransform: 'uppercase', marginTop: '16px',
           }}>Sentinel Authority • ODDC Registry</p>
+
+        {/* Mode Tabs */}
+        <div style={{display: "flex", justifyContent: "center", gap: "8px", marginTop: "24px"}}>
+          <button onClick={() => setMode("verify")} style={{
+            padding: "10px 24px", borderRadius: "20px", border: "none", cursor: "pointer",
+            fontFamily: "'IBM Plex Mono', monospace", fontSize: "11px", letterSpacing: "1px",
+            background: mode === "verify" ? styles.purplePrimary : "rgba(255,255,255,0.05)",
+            color: mode === "verify" ? "#fff" : styles.textTertiary,
+            transition: "all 0.2s"
+          }}>Verify Certificate</button>
+          <button onClick={() => setMode("search")} style={{
+            padding: "10px 24px", borderRadius: "20px", border: "none", cursor: "pointer",
+            fontFamily: "'IBM Plex Mono', monospace", fontSize: "11px", letterSpacing: "1px",
+            background: mode === "search" ? styles.purplePrimary : "rgba(255,255,255,0.05)",
+            color: mode === "search" ? "#fff" : styles.textTertiary,
+            transition: "all 0.2s"
+          }}>Search Registry</button>
+        </div>
         </div>
         
         {/* Verification card */}
@@ -1757,6 +1775,7 @@ function VerifyPage() {
           border: '1px solid rgba(255,255,255,0.08)', borderRadius: '24px', padding: '40px',
           boxShadow: '0 25px 50px -12px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.05) inset',
         }}>
+{mode === "verify" && (
           <form onSubmit={handleVerify} className="space-y-6">
             <div>
               <label style={{
@@ -1797,6 +1816,65 @@ function VerifyPage() {
             </button>
           </form>
 
+          )}
+
+          {mode === "search" && (
+            <div className="space-y-6">
+              <form onSubmit={handleSearch}>
+                <div>
+                  <label style={{
+                    display: "block", marginBottom: "10px", color: styles.textTertiary,
+                    fontFamily: "'IBM Plex Mono', monospace", fontSize: "10px",
+                    letterSpacing: "2px", textTransform: "uppercase", textAlign: "center",
+                  }}>Search by Organization or System</label>
+                  <input
+                    type="text"
+                    placeholder="Company name or system..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="verify-input w-full px-5 py-4 rounded-xl outline-none"
+                    style={{
+                      background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)",
+                      color: styles.textPrimary, fontSize: "16px", textAlign: "center",
+                    }}
+                  />
+                </div>
+                <button type="submit" disabled={loading} className="verify-btn w-full py-4 rounded-xl font-medium mt-4"
+                  style={{
+                    background: "linear-gradient(135deg, #5B4B8A 0%, #7c6aaf 100%)",
+                    color: "#fff", border: "none", cursor: "pointer",
+                    fontFamily: "'IBM Plex Mono', monospace", fontSize: "12px", letterSpacing: "1px",
+                  }}>
+                  {loading ? "Searching..." : "Search Registry"}
+                </button>
+              </form>
+              {searchResults.length > 0 && (
+                <div style={{marginTop: "24px"}}>
+                  <p style={{color: styles.textTertiary, fontSize: "12px", marginBottom: "12px", textAlign: "center"}}>
+                    {searchResults.length} certificate(s) found
+                  </p>
+                  {searchResults.map((cert) => (
+                    <div key={cert.certificate_number} onClick={() => {setCertNumber(cert.certificate_number); setMode("verify"); setTimeout(() => document.querySelector("form").requestSubmit(), 100);}} style={{
+                      background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)",
+                      borderRadius: "12px", padding: "16px", marginBottom: "8px", cursor: "pointer",
+                      transition: "all 0.2s",
+                    }}>
+                      <div style={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
+                        <div>
+                          <div style={{color: styles.textPrimary, fontWeight: 500}}>{cert.organization_name}</div>
+                          <div style={{color: styles.textTertiary, fontSize: "12px"}}>{cert.system_name}</div>
+                        </div>
+                        <div style={{textAlign: "right"}}>
+                          <div style={{color: styles.purpleBright, fontFamily: "'IBM Plex Mono', monospace", fontSize: "11px"}}>{cert.certificate_number}</div>
+                          <div style={{color: styles.accentGreen, fontSize: "10px", textTransform: "uppercase"}}>{cert.state}</div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
           {error && (
             <div className="mt-6 p-5 rounded-xl text-center" style={{
               background: 'rgba(214,92,92,0.1)', border: '1px solid rgba(214,92,92,0.3)',
