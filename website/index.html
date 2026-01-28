@@ -1703,6 +1703,16 @@
       svg[style*="max-width: 900px"] { min-width: 600px; }
       [style*="border-radius: 24px"][style*="padding: 40px"] { overflow-x: auto; -webkit-overflow-scrolling: touch; padding: 24px 16px !important; }
     }
+  
+    /* Flow Diagram Responsive */
+    .flow-diagram-desktop { display: block; }
+    .flow-diagram-mobile { display: none !important; }
+    
+    @media (max-width: 768px) {
+      .flow-diagram-desktop { display: none !important; }
+      .flow-diagram-mobile { display: block !important; }
+    }
+
   </style>
 </head>
 
@@ -2019,7 +2029,7 @@
       <div class="reveal" style="background: linear-gradient(180deg, rgba(91,75,138,0.08) 0%, rgba(91,75,138,0.02) 100%); border: 1px solid rgba(157,140,207,0.15); border-radius: 24px; padding: 40px 32px; margin-bottom: var(--space-4); position: relative; overflow: hidden;">
         <div style="position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(157,140,207,0.4), transparent);"></div>
         
-        <svg viewBox="0 0 900 220" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 100%; max-width: 900px; margin: 0 auto; display: block;">
+        <svg class="flow-diagram-desktop" viewBox="0 0 900 220" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 100%; max-width: 900px; margin: 0 auto; display: block;">
           <defs>
             <linearGradient id="mech-accent-grad" x1="0%" y1="0%" x2="100%" y2="0%">
               <stop offset="0%" stop-color="rgba(157,140,207,0.05)"/>
@@ -2209,6 +2219,32 @@
               <polygon points="12,2 20,12 12,22 4,12"/>
               <path d="M9 12l2 2 4-4"/>
             </svg>
+        <!-- Mobile Flow Diagram (simplified vertical) -->
+        <div class="flow-diagram-mobile" style="display: none;">
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 12px;">
+            <div style="background: rgba(157,140,207,0.08); border: 1px solid rgba(157,140,207,0.25); border-radius: 12px; padding: 16px 24px; text-align: center; width: 140px;">
+              <div style="font-family: var(--mono); font-size: 9px; letter-spacing: 2px; color: rgba(157,140,207,0.7);">MODEL</div>
+              <div style="font-size: 11px; color: var(--text-secondary); margin-top: 4px;">AI Decision</div>
+            </div>
+            <svg width="24" height="30" viewBox="0 0 24 30"><path d="M12 0v24M6 18l6 6 6-6" stroke="rgba(157,140,207,0.5)" fill="none" stroke-width="2"/></svg>
+            <div style="background: rgba(91,75,138,0.2); border: 2px solid rgba(157,140,207,0.5); border-radius: 14px; padding: 20px 24px; text-align: center; width: 160px;">
+              <div style="font-family: var(--mono); font-size: 10px; letter-spacing: 3px; color: rgba(157,140,207,0.9); font-weight: 600;">ENVELO</div>
+              <div style="font-size: 11px; color: var(--text-secondary); margin-top: 4px;">Interlock Check</div>
+            </div>
+            <svg width="24" height="30" viewBox="0 0 24 30"><path d="M12 0v24M6 18l6 6 6-6" stroke="rgba(255,255,255,0.3)" fill="none" stroke-width="2"/></svg>
+            <div style="display: flex; gap: 16px; justify-content: center;">
+              <div style="background: rgba(92,214,133,0.1); border: 1px solid rgba(92,214,133,0.3); border-radius: 10px; padding: 12px 16px; text-align: center;">
+                <div style="font-family: var(--mono); font-size: 9px; color: rgba(92,214,133,0.9);">PERMIT</div>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(92,214,133,0.8)" stroke-width="2" style="margin-top: 4px;"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <div style="background: rgba(214,92,92,0.1); border: 1px solid rgba(214,92,92,0.3); border-radius: 10px; padding: 12px 16px; text-align: center;">
+                <div style="font-family: var(--mono); font-size: 9px; color: rgba(214,92,92,0.9);">BLOCK</div>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(214,92,92,0.8)" stroke-width="2" style="margin-top: 4px;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </div>
+            </div>
+          </div>
+        </div>
+
             <div style="font-family: var(--mono); font-size: 11px; letter-spacing: 1px; color: rgba(157,140,207,0.95);">ENVELO AGENT</div>
             <div style="font-size: 11px; color: var(--text-tertiary); margin-top: 4px;">Observe Only</div>
           </div>
