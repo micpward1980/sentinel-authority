@@ -18,7 +18,7 @@ async def search_registry(
     Only returns active/conformant certificates.
     """
     query = select(Certificate).where(
-        Certificate.state.in_(['conformant', 'active'])
+        Certificate.state.in_([CertificationState.CONFORMANT, CertificationState.ACTIVE])
     )
     
     if q and q.strip():
@@ -55,7 +55,7 @@ async def registry_stats(db: AsyncSession = Depends(get_db)):
     # Total active certificates
     result = await db.execute(
         select(func.count(Certificate.id)).where(
-            Certificate.state.in_(['conformant', 'active'])
+            Certificate.state.in_([CertificationState.CONFORMANT, CertificationState.ACTIVE])
         )
     )
     active_count = result.scalar() or 0
@@ -63,7 +63,7 @@ async def registry_stats(db: AsyncSession = Depends(get_db)):
     # Total organizations
     result = await db.execute(
         select(func.count(func.distinct(Certificate.organization_name))).where(
-            Certificate.state.in_(['conformant', 'active'])
+            Certificate.state.in_([CertificationState.CONFORMANT, CertificationState.ACTIVE])
         )
     )
     org_count = result.scalar() or 0
