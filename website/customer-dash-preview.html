@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Customer Dashboard Preview</title>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@200;300;400&family=Inter:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --purple-primary:#5B4B8A;
+      --purple-bright:#9d8ccf;
+      --accent-green:#5CD685;
+      --accent-amber:#D6A05C;
+      --accent-red:#D65C5C;
+      --text-primary:rgba(255,255,255,.94);
+      --text-secondary:rgba(255,255,255,.75);
+      --text-tertiary:rgba(255,255,255,.50);
+      --border-glass:rgba(255,255,255,.10);
+      --bg-panel:rgba(255,255,255,.03);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { 
+      background: linear-gradient(180deg, #0e0e14 0%, #12121a 100%);
+      font-family: 'Inter', sans-serif;
+      color: var(--text-primary);
+      min-height: 100vh;
+      padding: 40px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .header {
+      margin-bottom: 40px;
+    }
+    .label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--purple-bright);
+      margin-bottom: 8px;
+    }
+    h1 {
+      font-family: 'Source Serif 4', serif;
+      font-size: 36px;
+      font-weight: 200;
+    }
+    .subtitle {
+      color: var(--text-secondary);
+      margin-top: 8px;
+      font-size: 15px;
+    }
+    .panel {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-glass);
+      border-radius: 16px;
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+    .panel.success {
+      background: linear-gradient(135deg, rgba(92,214,133,0.08) 0%, rgba(92,214,133,0.02) 100%);
+      border-color: rgba(92,214,133,0.25);
+    }
+    .panel-title {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-tertiary);
+      margin-bottom: 20px;
+    }
+    .system-card {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 24px;
+      background: rgba(0,0,0,0.2);
+      border: 1px solid var(--border-glass);
+      border-radius: 12px;
+      margin-bottom: 16px;
+    }
+    .system-info h3 {
+      font-size: 18px;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+    .system-cert {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 13px;
+      color: var(--purple-bright);
+      margin-bottom: 4px;
+    }
+    .system-meta {
+      font-size: 12px;
+      color: var(--text-tertiary);
+    }
+    .status-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      text-transform: uppercase;
+    }
+    .status-badge.active {
+      background: rgba(92,214,133,0.15);
+      color: var(--accent-green);
+    }
+    .status-badge.offline {
+      background: rgba(255,255,255,0.05);
+      color: var(--text-tertiary);
+    }
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+    .status-badge.active .status-dot {
+      box-shadow: 0 0 8px var(--accent-green);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    .btn {
+      padding: 12px 24px;
+      background: var(--purple-primary);
+      border: 1px solid var(--purple-bright);
+      border-radius: 8px;
+      color: white;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn.secondary {
+      background: transparent;
+      border-color: var(--border-glass);
+      color: var(--text-secondary);
+    }
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .stat-box {
+      text-align: center;
+      padding: 20px;
+      background: rgba(0,0,0,0.2);
+      border-radius: 12px;
+    }
+    .stat-box .value {
+      font-size: 28px;
+      font-weight: 200;
+      margin-bottom: 4px;
+    }
+    .stat-box .label {
+      font-size: 10px;
+      color: var(--text-tertiary);
+      margin: 0;
+    }
+    .api-key-box {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid var(--border-glass);
+      border-radius: 8px;
+      margin-bottom: 16px;
+    }
+    .api-key {
+      flex: 1;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 14px;
+      color: var(--accent-green);
+      letter-spacing: 1px;
+    }
+    .copy-btn {
+      padding: 8px 16px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border-glass);
+      border-radius: 6px;
+      color: var(--text-secondary);
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .help-text {
+      font-size: 13px;
+      color: var(--text-tertiary);
+      line-height: 1.6;
+    }
+    .mono { font-family: 'IBM Plex Mono', monospace; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="label">ENVELO Agent</div>
+    <h1>Your Systems</h1>
+    <p class="subtitle">Monitor enforcement status and manage your attested systems</p>
+  </div>
+
+  <!-- System Card - Active -->
+  <div class="system-card">
+    <div class="system-info">
+      <h3>Warehouse AGV Fleet</h3>
+      <div class="system-cert">ODDC-2026-00042</div>
+      <div class="system-meta">Attested Jan 15, 2026 • Expires Jan 15, 2027</div>
+    </div>
+    <div style="display: flex; align-items: center; gap: 16px;">
+      <div class="status-badge active">
+        <span class="status-dot"></span>
+        ENVELO Active
+      </div>
+      <button class="btn secondary">Details</button>
+    </div>
+  </div>
+
+  <!-- Stats for active system -->
+  <div class="panel success">
+    <div class="stats-row">
+      <div class="stat-box">
+        <div class="value" style="color: var(--accent-green);">156h</div>
+        <div class="label">Uptime</div>
+      </div>
+      <div class="stat-box">
+        <div class="value" style="color: var(--purple-bright);">45,291</div>
+        <div class="label">Telemetry Records</div>
+      </div>
+      <div class="stat-box">
+        <div class="value" style="color: var(--accent-green);">0</div>
+        <div class="label">Violations</div>
+      </div>
+    </div>
+    <p class="help-text" style="text-align: center;">System operating within declared boundaries. Attestation valid.</p>
+  </div>
+
+  <!-- API Key -->
+  <div class="panel">
+    <div class="panel-title">Your API Key</div>
+    <div class="api-key-box">
+      <span class="api-key">sk_live_a8f3k2m9x7p4q1w6...</span>
+      <button class="copy-btn">Copy</button>
+    </div>
+    <p class="help-text">Use this key to authenticate your ENVELO Agent. Keep it secret.</p>
+  </div>
+
+  <!-- Download Agent -->
+  <div class="panel">
+    <div class="panel-title">ENVELO Agent</div>
+    <p style="color: var(--text-secondary); margin-bottom: 20px;">Download the pre-configured agent for your system. The agent must remain running during operation to maintain attestation.</p>
+    <button class="btn">↓ Download Agent</button>
+  </div>
+
+  <!-- Help -->
+  <div class="panel">
+    <div class="panel-title">Need Help?</div>
+    <p class="help-text" style="margin-bottom: 16px;">
+      If your ENVELO Agent goes offline, your system status will change to "Offline" within 5 minutes. 
+      Extended outages may affect your attestation status.
+    </p>
+    <a href="#" style="color: var(--purple-bright); font-size: 13px;">View Documentation →</a>
+  </div>
+</body>
+</html>
