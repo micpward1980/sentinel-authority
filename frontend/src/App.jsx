@@ -120,11 +120,26 @@ const styles = {
   textTertiary: 'rgba(255,255,255,0.50)',
   borderGlass: 'rgba(255,255,255,0.10)',
 };
+// Mobile detection hook
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+  
+  return isMobile;
+}
+
+
 
 // Layout
 function Layout({ children }) {
   const { user, logout } = useAuth();
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const isMobile = useIsMobile();
+  const [sidebarOpen, setSidebarOpen] = useState(!isMobile);
   const [userCerts, setUserCerts] = useState([]);
   const [userApps, setUserApps] = useState([]);
   const location = useLocation();
@@ -195,6 +210,13 @@ function Layout({ children }) {
         zIndex: 0,
       }} />
 
+      {/* Mobile Overlay */}
+      {isMobile && sidebarOpen && (
+        <div 
+          onClick={() => setSidebarOpen(false)} 
+          style={{position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 40}}
+        />
+      )}
       {/* Sidebar */}
       <div className={`fixed inset-y-0 left-0 z-50 w-64 transform transition-transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0`} style={{background: 'rgba(30,34,44,0.95)', backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)', borderRight: '1px solid rgba(255,255,255,0.06)', boxShadow: '4px 0 24px rgba(0,0,0,0.2)'}}>
         <div className="flex items-center justify-between h-16 px-4" style={{borderBottom: `1px solid ${styles.borderGlass}`}}>
