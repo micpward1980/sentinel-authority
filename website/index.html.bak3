@@ -1602,103 +1602,54 @@
         </div>
       </div>
 
-      <!-- Hero Visual - Interlock Gate concept -->
+      <!-- Hero Visual - Shield/Lock concept -->
       <div class="reveal" style="display: flex; justify-content: center; margin-bottom: var(--space-4);">
-        <div style="position: relative; width: 380px; height: 380px;">
+        <div style="position: relative; width: 340px; height: 340px;">
           <!-- Outer glow -->
           <div style="position: absolute; inset: -30px; border-radius: 50%; background: radial-gradient(circle, rgba(92,214,133,0.12) 0%, transparent 70%); animation: pulse-slow 4s ease-in-out infinite;"></div>
           
           <!-- Rotating boundary ring -->
-          <svg viewBox="0 0 380 380" style="position: absolute; inset: 0; animation: rotate-slow 35s linear infinite;">
+          <svg viewBox="0 0 340 340" style="position: absolute; inset: 0; animation: rotate-slow 30s linear infinite;">
             <defs>
-              <linearGradient id="envelo-ring" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="rgba(92,214,133,0.7)"/>
-                <stop offset="50%" stop-color="rgba(157,140,207,0.5)"/>
-                <stop offset="100%" stop-color="rgba(92,214,133,0.7)"/>
+              <linearGradient id="envelo-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="rgba(92,214,133,0.9)"/>
+                <stop offset="50%" stop-color="rgba(157,140,207,0.7)"/>
+                <stop offset="100%" stop-color="rgba(92,214,133,0.9)"/>
               </linearGradient>
             </defs>
-            <circle cx="190" cy="190" r="175" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
-            <circle cx="190" cy="190" r="175" fill="none" stroke="url(#envelo-ring)" stroke-width="3" stroke-dasharray="180 920" stroke-linecap="round"/>
+            <circle cx="170" cy="170" r="155" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="2"/>
+            <circle cx="170" cy="170" r="155" fill="none" stroke="url(#envelo-gradient)" stroke-width="4" stroke-dasharray="200 774" stroke-linecap="round"/>
           </svg>
           
-          <!-- Inner ring -->
-          <svg viewBox="0 0 380 380" style="position: absolute; inset: 0; animation: rotate-reverse 50s linear infinite;">
-            <circle cx="190" cy="190" r="140" fill="none" stroke="rgba(92,214,133,0.1)" stroke-width="1" stroke-dasharray="8 6"/>
+          <!-- Inner hexagon boundary -->
+          <svg viewBox="0 0 340 340" style="position: absolute; inset: 0;">
+            <polygon points="170,40 280,95 280,205 170,260 60,205 60,95" fill="none" stroke="rgba(92,214,133,0.2)" stroke-width="1.5" stroke-dasharray="8 4"/>
           </svg>
           
-          <!-- Center Interlock Gate Diagram -->
-          <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;">
-            <svg viewBox="0 0 240 200" fill="none" style="width: 260px; height: 220px;">
-              <defs>
-                <filter id="env-glow-g"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-                <filter id="env-glow-r"><feGaussianBlur stdDeviation="2" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-                <linearGradient id="gate-fill" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stop-color="rgba(92,214,133,0.15)"/>
-                  <stop offset="100%" stop-color="rgba(92,214,133,0.05)"/>
-                </linearGradient>
-              </defs>
-              
-              <!-- Input line -->
-              <line x1="20" y1="100" x2="70" y2="100" stroke="rgba(255,255,255,0.25)" stroke-width="2"/>
-              <text x="30" y="88" fill="rgba(255,255,255,0.35)" font-family="IBM Plex Mono, monospace" font-size="8" letter-spacing="1">IN</text>
-              
-              <!-- Central Gate Box -->
-              <rect x="70" y="55" width="100" height="90" rx="12" fill="url(#gate-fill)" stroke="rgba(92,214,133,0.5)" stroke-width="2"/>
-              
-              <!-- Gate internal - diamond decision node -->
-              <polygon points="120,75 140,100 120,125 100,100" fill="rgba(92,214,133,0.1)" stroke="rgba(92,214,133,0.6)" stroke-width="1.5"/>
-              
-              <!-- Checkmark inside diamond -->
-              <path d="M 112 100 L 118 106 L 128 94" stroke="rgba(92,214,133,0.9)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-              
-              <!-- ENVELO label -->
-              <text x="120" y="48" text-anchor="middle" fill="rgba(92,214,133,0.8)" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="2">ENVELO</text>
-              
-              <!-- Permit path (top right) -->
-              <path d="M 170 85 L 195 85 L 195 55 L 220 55" stroke="rgba(92,214,133,0.5)" stroke-width="2" fill="none"/>
-              <polygon points="220,55 212,51 212,59" fill="rgba(92,214,133,0.7)"/>
-              <rect x="178" y="30" width="50" height="20" rx="4" fill="rgba(92,214,133,0.1)" stroke="rgba(92,214,133,0.3)" stroke-width="1"/>
-              <text x="203" y="43" text-anchor="middle" fill="rgba(92,214,133,0.9)" font-family="IBM Plex Mono, monospace" font-size="8" letter-spacing="1">PERMIT</text>
-              
-              <!-- Block path (bottom right) -->
-              <path d="M 170 115 L 195 115 L 195 145 L 220 145" stroke="rgba(214,92,92,0.5)" stroke-width="2" fill="none"/>
-              <polygon points="220,145 212,141 212,149" fill="rgba(214,92,92,0.7)"/>
-              <rect x="178" y="155" width="50" height="20" rx="4" fill="rgba(214,92,92,0.1)" stroke="rgba(214,92,92,0.3)" stroke-width="1"/>
-              <text x="203" y="168" text-anchor="middle" fill="rgba(214,92,92,0.9)" font-family="IBM Plex Mono, monospace" font-size="8" letter-spacing="1">BLOCK</text>
-              
-              <!-- Animated input packet -->
-              <circle r="5" fill="rgba(157,140,207,0.9)" filter="url(#env-glow-g)">
-                <animate attributeName="cx" values="20;70;70" keyTimes="0;0.5;1" dur="2.5s" repeatCount="indefinite"/>
-                <animate attributeName="cy" values="100;100;100" dur="2.5s" repeatCount="indefinite"/>
-                <animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.1;0.45;0.5;1" dur="2.5s" repeatCount="indefinite"/>
-              </circle>
-              
-              <!-- Animated permit packet (goes up-right) -->
-              <circle r="4" fill="rgba(92,214,133,0.95)" filter="url(#env-glow-g)">
-                <animate attributeName="cx" values="170;195;195;220" keyTimes="0;0.3;0.6;1" dur="2.5s" repeatCount="indefinite" begin="1.3s" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
-                <animate attributeName="cy" values="85;85;55;55" keyTimes="0;0.3;0.6;1" dur="2.5s" repeatCount="indefinite" begin="1.3s" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
-                <animate attributeName="opacity" values="0;1;1;1;0;0" keyTimes="0;0.05;0.5;0.9;0.95;1" dur="2.5s" repeatCount="indefinite" begin="1.3s"/>
-              </circle>
-              
-              <!-- Animated block packet (goes down-right, less frequent) -->
-              <circle r="4" fill="rgba(214,92,92,0.9)" filter="url(#env-glow-r)">
-                <animate attributeName="cx" values="170;195;195;220" keyTimes="0;0.3;0.6;1" dur="4s" repeatCount="indefinite" begin="3s" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
-                <animate attributeName="cy" values="115;115;145;145" keyTimes="0;0.3;0.6;1" dur="4s" repeatCount="indefinite" begin="3s" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
-                <animate attributeName="opacity" values="0;1;1;1;0;0" keyTimes="0;0.05;0.5;0.9;0.95;1" dur="4s" repeatCount="indefinite" begin="3s"/>
-              </circle>
-              
-              <!-- Scan line inside gate -->
-              <rect x="74" y="59" width="92" height="2" rx="1" fill="rgba(92,214,133,0.35)">
-                <animate attributeName="y" values="59;139;59" dur="2s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1"/>
-                <animate attributeName="opacity" values="0.35;0.1;0.35" dur="2s" repeatCount="indefinite"/>
-              </rect>
-            </svg>
+          <!-- Center shield icon -->
+          <div style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+            <div style="width: 120px; height: 140px; position: relative;">
+              <svg viewBox="0 0 100 120" fill="none" style="width: 100%; height: 100%;">
+                <path d="M50 5 L90 25 L90 65 C90 90 50 115 50 115 C50 115 10 90 10 65 L10 25 Z" 
+                      fill="rgba(92,214,133,0.1)" stroke="rgba(92,214,133,0.6)" stroke-width="2"/>
+                <path d="M35 60 L45 70 L65 50" stroke="rgba(92,214,133,0.9)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div style="font-family: var(--mono); font-size: 11px; letter-spacing: 4px; color: rgba(92,214,133,0.8); margin-top: 8px;">ENFORCED</div>
           </div>
           
-          <!-- Label below -->
-          <div style="position: absolute; bottom: 25px; left: 50%; transform: translateX(-50%); text-align: center;">
-            <div style="font-family: var(--mono); font-size: 11px; letter-spacing: 4px; color: rgba(92,214,133,0.8);">ENFORCEMENT AGENT</div>
-            <div style="font-size: 11px; color: var(--text-tertiary); margin-top: 4px;">Non-bypassable interlock</div>
+          <!-- Orbiting action dots -->
+          <div style="position: absolute; inset: 0; animation: rotate-slow 8s linear infinite;">
+            <div style="position: absolute; top: 25px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center;">
+              <div style="width: 10px; height: 10px; background: rgba(92,214,133,0.9); border-radius: 50%; box-shadow: 0 0 15px rgba(92,214,133,0.6);"></div>
+              <div style="font-size: 8px; color: rgba(92,214,133,0.7); margin-top: 4px; font-family: var(--mono);">PASS</div>
+            </div>
+          </div>
+          <div style="position: absolute; inset: 0; animation: rotate-reverse 12s linear infinite;">
+            <div style="position: absolute; bottom: 35px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center;">
+              <div style="width: 10px; height: 10px; background: rgba(214,92,92,0.9); border-radius: 50%; box-shadow: 0 0 15px rgba(214,92,92,0.6);"></div>
+              <div style="font-size: 8px; color: rgba(214,92,92,0.7); margin-top: 4px; font-family: var(--mono);">BLOCK</div>
+            </div>
           </div>
         </div>
       </div>
