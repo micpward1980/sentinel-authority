@@ -1615,6 +1615,70 @@
       }
     }
 
+    /* CAT-72 Process Flow Mobile */
+    @media (max-width: 768px) {
+      /* Stack the process steps vertically */
+      [style*="display: flex"][style*="justify-content: center"][style*="gap: 0"][style*="align-items: center"] {
+        flex-direction: column !important;
+        gap: 8px !important;
+      }
+      
+      /* Process step boxes - reduce padding */
+      [style*="display: flex"][style*="flex-direction: column"][style*="align-items: center"][style*="padding: 24px 32px"] {
+        padding: 16px 20px !important;
+      }
+      
+      /* Hide the horizontal arrows between steps */
+      [style*="display: flex"][style*="justify-content: center"][style*="gap: 0"] > svg[width="40"][height="24"] {
+        transform: rotate(90deg) !important;
+        margin: 0 !important;
+        opacity: 0.3 !important;
+        height: 20px !important;
+      }
+      
+      /* 72 hours big number - smaller on mobile */
+      [style*="font-size: 140px"] {
+        font-size: 80px !important;
+      }
+      
+      /* The animated ring container - smaller */
+      [style*="width: 320px"][style*="height: 320px"] {
+        width: 220px !important;
+        height: 220px !important;
+      }
+      
+      [style*="width: 280px"][style*="height: 280px"] {
+        width: 180px !important;
+        height: 180px !important;
+      }
+      
+      [style*="width: 240px"][style*="height: 240px"] {
+        width: 150px !important;
+        height: 150px !important;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      [style*="font-size: 140px"] {
+        font-size: 60px !important;
+      }
+      
+      [style*="width: 320px"][style*="height: 320px"] {
+        width: 180px !important;
+        height: 180px !important;
+      }
+      
+      [style*="width: 280px"][style*="height: 280px"] {
+        width: 150px !important;
+        height: 150px !important;
+      }
+      
+      [style*="width: 240px"][style*="height: 240px"] {
+        width: 120px !important;
+        height: 120px !important;
+      }
+    }
+
     @media (max-width: 480px) {
       h1 {
         font-size: 26px !important;
