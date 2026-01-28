@@ -2019,7 +2019,7 @@
       <div class="reveal" style="background: linear-gradient(180deg, rgba(91,75,138,0.08) 0%, rgba(91,75,138,0.02) 100%); border: 1px solid rgba(157,140,207,0.15); border-radius: 24px; padding: 40px 32px; margin-bottom: var(--space-4); position: relative; overflow: hidden;">
         <div style="position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(157,140,207,0.4), transparent);"></div>
         
-        <svg viewBox="0 0 900 220" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 100%; max-width: 900px; margin: 0 auto; display: block;">
+        <svg class="mechanism-desktop" viewBox="0 0 900 220" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 100%; max-width: 900px; margin: 0 auto; display: block;">
           <defs>
             <linearGradient id="mech-accent-grad" x1="0%" y1="0%" x2="100%" y2="0%">
               <stop offset="0%" stop-color="rgba(157,140,207,0.05)"/>
@@ -2462,6 +2462,15 @@
         font-size: 11px !important;
         line-height: 1.6 !important;
       }
+    }
+
+  
+    /* Mechanism Flow Diagram */
+    .mechanism-desktop { display: block; }
+    .mechanism-mobile { display: none; }
+    @media (max-width: 768px) {
+      .mechanism-desktop { display: none !important; }
+      .mechanism-mobile { display: block !important; }
     }
 
   </style>
