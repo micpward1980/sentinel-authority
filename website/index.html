@@ -1713,66 +1713,6 @@
         </p>
       </div>
 
-      <!-- How it works - flow -->
-      <div class="reveal" style="background: linear-gradient(180deg, rgba(91,75,138,0.08) 0%, rgba(92,214,133,0.04) 100%); border: 1px solid rgba(157,140,207,0.15); border-radius: 24px; padding: 40px; margin-bottom: var(--space-3);">
-        <div style="text-align: center; margin-bottom: 32px;">
-          <div style="font-family: var(--mono); font-size: 10px; letter-spacing: 3px; color: rgba(157,140,207,0.7);">HOW IT WORKS</div>
-        </div>
-        <div style="display: flex; justify-content: center; align-items: center; gap: 16px; flex-wrap: wrap;">
-          <!-- Step 1: Action -->
-          <div style="display: flex; flex-direction: column; align-items: center; min-width: 140px;">
-            <div style="width: 56px; height: 56px; border-radius: 14px; background: rgba(157,140,207,0.15); border: 1px solid rgba(157,140,207,0.3); display: flex; align-items: center; justify-content: center; margin-bottom: 12px;">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(157,140,207,0.9)" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M1 12h4M19 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
-            </div>
-            <div style="font-weight: 500; color: var(--text-primary); font-size: 13px;">AI Requests Action</div>
-            <div style="font-size: 11px; color: var(--text-tertiary); margin-top: 4px;">Intent to execute</div>
-          </div>
-          
-          <!-- Arrow -->
-          <svg width="32" height="24" viewBox="0 0 32 24" fill="none" style="flex-shrink: 0;"><path d="M0 12h28M22 6l6 6-6 6" stroke="rgba(157,140,207,0.4)" stroke-width="1.5"/></svg>
-          
-          <!-- Step 2: ENVELO Check -->
-          <div style="display: flex; flex-direction: column; align-items: center; min-width: 140px;">
-            <div style="width: 72px; height: 72px; border-radius: 50%; background: linear-gradient(135deg, rgba(92,214,133,0.2) 0%, rgba(92,214,133,0.05) 100%); border: 2px solid rgba(92,214,133,0.5); display: flex; align-items: center; justify-content: center; margin-bottom: 12px; position: relative;">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(92,214,133,0.9)" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-              <div style="position: absolute; inset: -4px; border-radius: 50%; border: 1px solid rgba(92,214,133,0.3); animation: pulse 2s ease-in-out infinite;"></div>
-            </div>
-            <div style="font-weight: 600; color: rgba(92,214,133,0.9); font-size: 14px;">ENVELO Validates</div>
-            <div style="font-size: 11px; color: var(--text-tertiary); margin-top: 4px;">Check against ODD</div>
-          </div>
-          
-          <!-- Split arrows -->
-          <div style="display: flex; flex-direction: column; gap: 20px; align-items: center;">
-            <svg width="32" height="20" viewBox="0 0 32 20" fill="none"><path d="M0 10h28M22 4l6 6-6 6" stroke="rgba(92,214,133,0.5)" stroke-width="1.5"/></svg>
-            <svg width="32" height="20" viewBox="0 0 32 20" fill="none"><path d="M0 10h28M22 4l6 6-6 6" stroke="rgba(214,92,92,0.5)" stroke-width="1.5"/></svg>
-          </div>
-          
-          <!-- Outcomes -->
-          <div style="display: flex; flex-direction: column; gap: 16px;">
-            <!-- Pass -->
-            <div style="display: flex; align-items: center; gap: 12px; padding: 12px 20px; background: rgba(92,214,133,0.08); border: 1px solid rgba(92,214,133,0.25); border-radius: 12px;">
-              <div style="width: 28px; height: 28px; border-radius: 50%; background: rgba(92,214,133,0.2); display: flex; align-items: center; justify-content: center;">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(92,214,133,0.9)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-              </div>
-              <div>
-                <div style="font-weight: 500; color: rgba(92,214,133,0.9); font-size: 13px;">Within Bounds</div>
-                <div style="font-size: 10px; color: var(--text-tertiary);">Action permitted</div>
-              </div>
-            </div>
-            <!-- Block -->
-            <div style="display: flex; align-items: center; gap: 12px; padding: 12px 20px; background: rgba(214,92,92,0.08); border: 1px solid rgba(214,92,92,0.25); border-radius: 12px;">
-              <div style="width: 28px; height: 28px; border-radius: 50%; background: rgba(214,92,92,0.2); display: flex; align-items: center; justify-content: center;">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(214,92,92,0.9)" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-              </div>
-              <div>
-                <div style="font-weight: 500; color: rgba(214,92,92,0.9); font-size: 13px;">Out of Bounds</div>
-                <div style="font-size: 10px; color: var(--text-tertiary);">Action blocked</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <!-- Four Pillars -->
       <div class="reveal" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-bottom: var(--space-3);">
         <div style="background: linear-gradient(135deg, rgba(92,214,133,0.1) 0%, rgba(92,214,133,0.02) 100%); border: 1px solid rgba(92,214,133,0.2); border-radius: 16px; padding: 24px;">
