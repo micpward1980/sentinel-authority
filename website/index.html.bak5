@@ -1447,10 +1447,10 @@
       </a>
 
       <nav class="nav-links" aria-label="Section navigation">
-        <a href="#envelo" data-section="envelo">ENVELO</a>
-        <a href="#security" data-section="security">SECURITY</a>
+        <a href="#envelo" data-section="envelo">FRAMEWORK</a>
         <a href="#criteria" data-section="criteria">CRITERIA</a>
         <a href="#artifacts" data-section="artifacts">ARTIFACTS</a>
+        <a href="#security" data-section="security">SECURITY</a>
         <a href="#verify" data-section="verify">VERIFY</a>
         <a href="#contact" data-section="contact">CONTACT</a>
         <a href="https://app.sentinelauthority.org">SIGN IN</a>
@@ -1472,13 +1472,13 @@
   
   <div class="drawer-overlay" aria-hidden="true"></div>
   <div id="nav-drawer" class="nav-drawer" role="navigation" aria-label="Mobile navigation">
-    <a href="#envelo" data-section="envelo">ENVELO</a>
-    <a href="#envelo" data-section="envelo">ENVELO</a>
-    <a href="#security" data-section="security">SECURITY</a>
+    <a href="#envelo" data-section="envelo">FRAMEWORK</a>
     <a href="#criteria" data-section="criteria">CRITERIA</a>
     <a href="#artifacts" data-section="artifacts">ARTIFACTS</a>
-    <a href="#verify" data-section="verify">VERIFY</a>
+    <a href="#security" data-section="security">SECURITY</a>
+        <a href="#verify" data-section="verify">VERIFY</a>
     <a href="#contact" data-section="contact">CONTACT</a>
+    <a href="https://app.sentinelauthority.org">SIGN IN</a>
   </div>
   <!-- Copy toast -->
   <div class="copy-toast" role="status" aria-live="polite">Hash copied to clipboard</div>
@@ -1898,138 +1898,8 @@
         </div>
       </div>
     </section>
-    <section id="security" class="section">
-      <div class="section-head reveal">
-        <div>
-          <span class="section-label">SECURITY ARCHITECTURE</span>
-          <h2 class="section-title">Zero Trust, Zero Access</h2>
-          <p class="section-lead">
-            Enterprise security teams ask: "Is this agent a backdoor?" The answer is <strong>architecturally impossible</strong>.
-          </p>
-        </div>
-      </div>
 
-      <!-- Simple Data Flow Diagram -->
-      <div class="reveal" style="display: flex; justify-content: center; margin-bottom: 80px; padding-bottom: 40px;">
-        <div style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap; justify-content: center;">
-          
-          <!-- Your System -->
-          <div style="background: linear-gradient(135deg, rgba(92,214,133,0.12) 0%, rgba(92,214,133,0.04) 100%); border: 1px solid rgba(92,214,133,0.3); border-radius: 16px; padding: 24px 28px; text-align: center; min-width: 140px;">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(92,214,133,0.8)" stroke-width="1.5" style="margin-bottom: 8px;">
-              <rect x="2" y="3" width="20" height="14" rx="2"/>
-              <line x1="8" y1="21" x2="16" y2="21"/>
-              <line x1="12" y1="17" x2="12" y2="21"/>
-            </svg>
-            <div style="font-family: var(--mono); font-size: 11px; letter-spacing: 1px; color: rgba(92,214,133,0.9);">YOUR SYSTEM</div>
-            <div style="font-size: 11px; color: var(--text-tertiary); margin-top: 4px;">Protected</div>
-          </div>
-          
-          <!-- Arrow Out -->
-          <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
-            <span style="font-family: var(--mono); font-size: 9px; color: rgba(92,214,133,0.7); letter-spacing: 1px;">TELEMETRY</span>
-            <svg width="60" height="24" viewBox="0 0 60 24">
-              <path d="M 0 12 L 50 12" stroke="rgba(92,214,133,0.5)" stroke-width="2" stroke-dasharray="6 4">
-                <animate attributeName="stroke-dashoffset" from="0" to="-20" dur="1s" repeatCount="indefinite"/>
-              </path>
-              <polygon points="55,12 47,8 47,16" fill="rgba(92,214,133,0.7)"/>
-            </svg>
-          </div>
-          
-          <!-- ENVELO Agent -->
-          <div style="background: linear-gradient(135deg, rgba(157,140,207,0.15) 0%, rgba(157,140,207,0.05) 100%); border: 2px solid rgba(157,140,207,0.4); border-radius: 16px; padding: 24px 28px; text-align: center; min-width: 140px;">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(157,140,207,0.9)" stroke-width="1.5" style="margin-bottom: 8px;">
-              <polygon points="12,2 20,12 12,22 4,12"/>
-              <path d="M9 12l2 2 4-4"/>
-            </svg>
-            <div style="font-family: var(--mono); font-size: 11px; letter-spacing: 1px; color: rgba(157,140,207,0.95);">ENVELO AGENT</div>
-            <div style="font-size: 11px; color: var(--text-tertiary); margin-top: 4px;">Observe Only</div>
-          </div>
-          
-          <!-- Arrow Out -->
-          <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
-            <span style="font-family: var(--mono); font-size: 9px; color: rgba(92,214,133,0.7); letter-spacing: 1px;">HTTPS OUT</span>
-            <svg width="60" height="24" viewBox="0 0 60 24">
-              <path d="M 0 12 L 50 12" stroke="rgba(92,214,133,0.5)" stroke-width="2" stroke-dasharray="6 4">
-                <animate attributeName="stroke-dashoffset" from="0" to="-20" dur="1s" repeatCount="indefinite"/>
-              </path>
-              <polygon points="55,12 47,8 47,16" fill="rgba(92,214,133,0.7)"/>
-            </svg>
-          </div>
-          
-          <!-- Sentinel Authority -->
-          <div style="background: linear-gradient(135deg, rgba(157,140,207,0.08) 0%, rgba(157,140,207,0.02) 100%); border: 1px solid rgba(157,140,207,0.25); border-radius: 16px; padding: 24px 28px; text-align: center; min-width: 140px;">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(157,140,207,0.7)" stroke-width="1.5" style="margin-bottom: 8px;">
-              <circle cx="12" cy="12" r="10"/>
-              <path d="M12 6v6l4 2"/>
-            </svg>
-            <div style="font-family: var(--mono); font-size: 11px; letter-spacing: 1px; color: rgba(157,140,207,0.85);">SENTINEL</div>
-            <div style="font-size: 11px; color: var(--text-tertiary); margin-top: 4px;">Registry</div>
-          </div>
-        </div>
-      </div>
-      
-      <!-- No Inbound Banner -->
-      <div class="reveal" style="text-align: center; margin-bottom: var(--space-4);">
-        <div style="display: inline-flex; align-items: center; gap: 10px; padding: 12px 24px; background: rgba(214,92,92,0.08); border: 1px solid rgba(214,92,92,0.25); border-radius: 50px;">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(214,92,92,0.8)" stroke-width="2">
-            <line x1="18" y1="6" x2="6" y2="18"/>
-            <line x1="6" y1="6" x2="18" y2="18"/>
-          </svg>
-          <span style="font-family: var(--mono); font-size: 11px; letter-spacing: 2px; color: rgba(214,92,92,0.9);">NO INBOUND ACCESS — ONE-WAY DATA FLOW ONLY</span>
-        </div>
-      </div>
-
-      <!-- Three Security Pillars -->
-      <div class="reveal" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; margin-bottom: var(--space-4);">
-        
-        <div style="position: relative; background: linear-gradient(180deg, rgba(92,214,133,0.1) 0%, rgba(92,214,133,0.02) 100%); border: 1px solid rgba(92,214,133,0.2); border-radius: 20px; padding: 28px; overflow: hidden;">
-          <div style="position: absolute; top: 0; left: 24px; width: 40px; height: 3px; background: linear-gradient(90deg, rgba(92,214,133,0.8), transparent);"></div>
-          <div style="font-family: 'Source Serif 4', serif; font-size: 42px; font-weight: 200; color: rgba(92,214,133,0.3); line-height: 1; margin-bottom: 12px;">01</div>
-          <h4 style="font-size: 16px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px;">Zero Listening Ports</h4>
-          <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin: 0;">Agent opens no inbound ports. Only outbound HTTPS to api.sentinelauthority.org.</p>
-        </div>
-        
-        <div style="position: relative; background: linear-gradient(180deg, rgba(157,140,207,0.1) 0%, rgba(157,140,207,0.02) 100%); border: 1px solid rgba(157,140,207,0.2); border-radius: 20px; padding: 28px; overflow: hidden;">
-          <div style="position: absolute; top: 0; left: 24px; width: 40px; height: 3px; background: linear-gradient(90deg, rgba(157,140,207,0.8), transparent);"></div>
-          <div style="font-family: 'Source Serif 4', serif; font-size: 42px; font-weight: 200; color: rgba(157,140,207,0.3); line-height: 1; margin-bottom: 12px;">02</div>
-          <h4 style="font-size: 16px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px;">Customer Controlled</h4>
-          <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin: 0;">You deploy, configure, and terminate. We cannot start, stop, or modify remotely.</p>
-        </div>
-        
-        <div style="position: relative; background: linear-gradient(180deg, rgba(214,160,92,0.1) 0%, rgba(214,160,92,0.02) 100%); border: 1px solid rgba(214,160,92,0.2); border-radius: 20px; padding: 28px; overflow: hidden;">
-          <div style="position: absolute; top: 0; left: 24px; width: 40px; height: 3px; background: linear-gradient(90deg, rgba(214,160,92,0.8), transparent);"></div>
-          <div style="font-family: 'Source Serif 4', serif; font-size: 42px; font-weight: 200; color: rgba(214,160,92,0.3); line-height: 1; margin-bottom: 12px;">03</div>
-          <h4 style="font-size: 16px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px;">TLS 1.3 + Pinning</h4>
-          <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin: 0;">All communications encrypted with certificate pinning. Data encrypted at rest.</p>
-        </div>
-      </div>
-
-      <!-- Core Guarantee Panel -->
-      <div class="reveal" style="background: linear-gradient(135deg, rgba(214,92,92,0.08) 0%, rgba(214,92,92,0.02) 100%); border: 1px solid rgba(214,92,92,0.2); border-radius: 20px; padding: 32px; text-align: center;">
-        <div style="font-family: var(--mono); font-size: 10px; letter-spacing: 3px; color: rgba(214,92,92,0.8); margin-bottom: 12px;">THE CORE GUARANTEE</div>
-        <p style="font-size: 16px; color: var(--text-secondary); line-height: 1.7; max-width: 700px; margin: 0 auto 24px;">
-          Sentinel Authority <strong style="color: var(--text-primary);">cannot</strong> send commands to your system, execute code on your infrastructure, access your network, or control your autonomous systems.
-        </p>
-        <div style="display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;">
-          <span style="display: inline-flex; align-items: center; gap: 6px; padding: 10px 16px; background: rgba(214,92,92,0.1); border: 1px solid rgba(214,92,92,0.25); border-radius: 8px; font-size: 12px; color: rgba(214,92,92,0.9);">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-            No Remote Commands
-          </span>
-          <span style="display: inline-flex; align-items: center; gap: 6px; padding: 10px 16px; background: rgba(214,92,92,0.1); border: 1px solid rgba(214,92,92,0.25); border-radius: 8px; font-size: 12px; color: rgba(214,92,92,0.9);">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-            No Code Execution
-          </span>
-          <span style="display: inline-flex; align-items: center; gap: 6px; padding: 10px 16px; background: rgba(214,92,92,0.1); border: 1px solid rgba(214,92,92,0.25); border-radius: 8px; font-size: 12px; color: rgba(214,92,92,0.9);">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-            No Network Access
-          </span>
-          <span style="display: inline-flex; align-items: center; gap: 6px; padding: 10px 16px; background: rgba(214,92,92,0.1); border: 1px solid rgba(214,92,92,0.25); border-radius: 8px; font-size: 12px; color: rgba(214,92,92,0.9);">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-            No Actuator Control
-          </span>
-        </div>
-      </div>
-    </section>
+    <!-- CRITERIA -->
     <section id="criteria" class="section">
       <div class="section-head reveal">
         <div>
@@ -2230,6 +2100,8 @@
         </div>
       </div>
     </section>
+
+    <!-- CAT-72 -->
     <section id="cat72" class="section">
       <div class="section-head reveal">
         <div>
@@ -2417,6 +2289,8 @@
         </a>
       </div>
     </section>
+
+    <!-- PROCESS -->
     <section id="process" class="section">
       <div class="section-head reveal">
         <div>
@@ -2581,6 +2455,351 @@
         <p style="font-family: var(--mono); font-size: 10px; color: var(--text-tertiary); margin-top: var(--space-1);">2-4 weeks from application to certification</p>
       </div>
     </section>
+
+
+    <!-- SECURITY -->
+    <section id="security" class="section">
+      <div class="section-head reveal">
+        <div>
+          <span class="section-label">SECURITY ARCHITECTURE</span>
+          <h2 class="section-title">Zero Trust, Zero Access</h2>
+          <p class="section-lead">
+            Enterprise security teams ask: "Is this agent a backdoor?" The answer is <strong>architecturally impossible</strong>.
+          </p>
+        </div>
+      </div>
+
+      <!-- Simple Data Flow Diagram -->
+      <div class="reveal" style="display: flex; justify-content: center; margin-bottom: 80px; padding-bottom: 40px;">
+        <div style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap; justify-content: center;">
+          
+          <!-- Your System -->
+          <div style="background: linear-gradient(135deg, rgba(92,214,133,0.12) 0%, rgba(92,214,133,0.04) 100%); border: 1px solid rgba(92,214,133,0.3); border-radius: 16px; padding: 24px 28px; text-align: center; min-width: 140px;">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(92,214,133,0.8)" stroke-width="1.5" style="margin-bottom: 8px;">
+              <rect x="2" y="3" width="20" height="14" rx="2"/>
+              <line x1="8" y1="21" x2="16" y2="21"/>
+              <line x1="12" y1="17" x2="12" y2="21"/>
+            </svg>
+            <div style="font-family: var(--mono); font-size: 11px; letter-spacing: 1px; color: rgba(92,214,133,0.9);">YOUR SYSTEM</div>
+            <div style="font-size: 11px; color: var(--text-tertiary); margin-top: 4px;">Protected</div>
+          </div>
+          
+          <!-- Arrow Out -->
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
+            <span style="font-family: var(--mono); font-size: 9px; color: rgba(92,214,133,0.7); letter-spacing: 1px;">TELEMETRY</span>
+            <svg width="60" height="24" viewBox="0 0 60 24">
+              <path d="M 0 12 L 50 12" stroke="rgba(92,214,133,0.5)" stroke-width="2" stroke-dasharray="6 4">
+                <animate attributeName="stroke-dashoffset" from="0" to="-20" dur="1s" repeatCount="indefinite"/>
+              </path>
+              <polygon points="55,12 47,8 47,16" fill="rgba(92,214,133,0.7)"/>
+            </svg>
+          </div>
+          
+          <!-- ENVELO Agent -->
+          <div style="background: linear-gradient(135deg, rgba(157,140,207,0.15) 0%, rgba(157,140,207,0.05) 100%); border: 2px solid rgba(157,140,207,0.4); border-radius: 16px; padding: 24px 28px; text-align: center; min-width: 140px;">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(157,140,207,0.9)" stroke-width="1.5" style="margin-bottom: 8px;">
+              <polygon points="12,2 20,12 12,22 4,12"/>
+              <path d="M9 12l2 2 4-4"/>
+            </svg>
+            <div style="font-family: var(--mono); font-size: 11px; letter-spacing: 1px; color: rgba(157,140,207,0.95);">ENVELO AGENT</div>
+            <div style="font-size: 11px; color: var(--text-tertiary); margin-top: 4px;">Observe Only</div>
+          </div>
+          
+          <!-- Arrow Out -->
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
+            <span style="font-family: var(--mono); font-size: 9px; color: rgba(92,214,133,0.7); letter-spacing: 1px;">HTTPS OUT</span>
+            <svg width="60" height="24" viewBox="0 0 60 24">
+              <path d="M 0 12 L 50 12" stroke="rgba(92,214,133,0.5)" stroke-width="2" stroke-dasharray="6 4">
+                <animate attributeName="stroke-dashoffset" from="0" to="-20" dur="1s" repeatCount="indefinite"/>
+              </path>
+              <polygon points="55,12 47,8 47,16" fill="rgba(92,214,133,0.7)"/>
+            </svg>
+          </div>
+          
+          <!-- Sentinel Authority -->
+          <div style="background: linear-gradient(135deg, rgba(157,140,207,0.08) 0%, rgba(157,140,207,0.02) 100%); border: 1px solid rgba(157,140,207,0.25); border-radius: 16px; padding: 24px 28px; text-align: center; min-width: 140px;">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(157,140,207,0.7)" stroke-width="1.5" style="margin-bottom: 8px;">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 6v6l4 2"/>
+            </svg>
+            <div style="font-family: var(--mono); font-size: 11px; letter-spacing: 1px; color: rgba(157,140,207,0.85);">SENTINEL</div>
+            <div style="font-size: 11px; color: var(--text-tertiary); margin-top: 4px;">Registry</div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- No Inbound Banner -->
+      <div class="reveal" style="text-align: center; margin-bottom: var(--space-4);">
+        <div style="display: inline-flex; align-items: center; gap: 10px; padding: 12px 24px; background: rgba(214,92,92,0.08); border: 1px solid rgba(214,92,92,0.25); border-radius: 50px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(214,92,92,0.8)" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+          <span style="font-family: var(--mono); font-size: 11px; letter-spacing: 2px; color: rgba(214,92,92,0.9);">NO INBOUND ACCESS — ONE-WAY DATA FLOW ONLY</span>
+        </div>
+      </div>
+
+      <!-- Three Security Pillars -->
+      <div class="reveal" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; margin-bottom: var(--space-4);">
+        
+        <div style="position: relative; background: linear-gradient(180deg, rgba(92,214,133,0.1) 0%, rgba(92,214,133,0.02) 100%); border: 1px solid rgba(92,214,133,0.2); border-radius: 20px; padding: 28px; overflow: hidden;">
+          <div style="position: absolute; top: 0; left: 24px; width: 40px; height: 3px; background: linear-gradient(90deg, rgba(92,214,133,0.8), transparent);"></div>
+          <div style="font-family: 'Source Serif 4', serif; font-size: 42px; font-weight: 200; color: rgba(92,214,133,0.3); line-height: 1; margin-bottom: 12px;">01</div>
+          <h4 style="font-size: 16px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px;">Zero Listening Ports</h4>
+          <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin: 0;">Agent opens no inbound ports. Only outbound HTTPS to api.sentinelauthority.org.</p>
+        </div>
+        
+        <div style="position: relative; background: linear-gradient(180deg, rgba(157,140,207,0.1) 0%, rgba(157,140,207,0.02) 100%); border: 1px solid rgba(157,140,207,0.2); border-radius: 20px; padding: 28px; overflow: hidden;">
+          <div style="position: absolute; top: 0; left: 24px; width: 40px; height: 3px; background: linear-gradient(90deg, rgba(157,140,207,0.8), transparent);"></div>
+          <div style="font-family: 'Source Serif 4', serif; font-size: 42px; font-weight: 200; color: rgba(157,140,207,0.3); line-height: 1; margin-bottom: 12px;">02</div>
+          <h4 style="font-size: 16px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px;">Customer Controlled</h4>
+          <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin: 0;">You deploy, configure, and terminate. We cannot start, stop, or modify remotely.</p>
+        </div>
+        
+        <div style="position: relative; background: linear-gradient(180deg, rgba(214,160,92,0.1) 0%, rgba(214,160,92,0.02) 100%); border: 1px solid rgba(214,160,92,0.2); border-radius: 20px; padding: 28px; overflow: hidden;">
+          <div style="position: absolute; top: 0; left: 24px; width: 40px; height: 3px; background: linear-gradient(90deg, rgba(214,160,92,0.8), transparent);"></div>
+          <div style="font-family: 'Source Serif 4', serif; font-size: 42px; font-weight: 200; color: rgba(214,160,92,0.3); line-height: 1; margin-bottom: 12px;">03</div>
+          <h4 style="font-size: 16px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px;">TLS 1.3 + Pinning</h4>
+          <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin: 0;">All communications encrypted with certificate pinning. Data encrypted at rest.</p>
+        </div>
+      </div>
+
+      <!-- Core Guarantee Panel -->
+      <div class="reveal" style="background: linear-gradient(135deg, rgba(214,92,92,0.08) 0%, rgba(214,92,92,0.02) 100%); border: 1px solid rgba(214,92,92,0.2); border-radius: 20px; padding: 32px; text-align: center;">
+        <div style="font-family: var(--mono); font-size: 10px; letter-spacing: 3px; color: rgba(214,92,92,0.8); margin-bottom: 12px;">THE CORE GUARANTEE</div>
+        <p style="font-size: 16px; color: var(--text-secondary); line-height: 1.7; max-width: 700px; margin: 0 auto 24px;">
+          Sentinel Authority <strong style="color: var(--text-primary);">cannot</strong> send commands to your system, execute code on your infrastructure, access your network, or control your autonomous systems.
+        </p>
+        <div style="display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;">
+          <span style="display: inline-flex; align-items: center; gap: 6px; padding: 10px 16px; background: rgba(214,92,92,0.1); border: 1px solid rgba(214,92,92,0.25); border-radius: 8px; font-size: 12px; color: rgba(214,92,92,0.9);">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            No Remote Commands
+          </span>
+          <span style="display: inline-flex; align-items: center; gap: 6px; padding: 10px 16px; background: rgba(214,92,92,0.1); border: 1px solid rgba(214,92,92,0.25); border-radius: 8px; font-size: 12px; color: rgba(214,92,92,0.9);">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            No Code Execution
+          </span>
+          <span style="display: inline-flex; align-items: center; gap: 6px; padding: 10px 16px; background: rgba(214,92,92,0.1); border: 1px solid rgba(214,92,92,0.25); border-radius: 8px; font-size: 12px; color: rgba(214,92,92,0.9);">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            No Network Access
+          </span>
+          <span style="display: inline-flex; align-items: center; gap: 6px; padding: 10px 16px; background: rgba(214,92,92,0.1); border: 1px solid rgba(214,92,92,0.25); border-radius: 8px; font-size: 12px; color: rgba(214,92,92,0.9);">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            No Actuator Control
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <!-- VERIFY -->
+    <section id="verify" class="section">
+      <div class="section-head reveal">
+        <div>
+          <span class="section-label">PUBLIC REGISTRY</span>
+          <h2 class="section-title">Verify</h2>
+          <p class="section-lead">
+            Instant verification. Real-time status. Zero trust required.
+          </p>
+        </div>
+      </div>
+
+      <!-- Verification Terminal -->
+      <div class="reveal" style="max-width: 700px; margin: 0 auto;">
+        <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(157,140,207,0.3); border-radius: 20px; overflow: hidden; box-shadow: 0 25px 80px rgba(0,0,0,0.4);">
+          <!-- Terminal header -->
+          <div style="background: rgba(91,75,138,0.15); padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(157,140,207,0.2);">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <div style="width: 12px; height: 12px; border-radius: 50%; background: rgba(214,92,92,0.8);"></div>
+              <div style="width: 12px; height: 12px; border-radius: 50%; background: rgba(214,160,92,0.8);"></div>
+              <div style="width: 12px; height: 12px; border-radius: 50%; background: rgba(92,214,133,0.8);"></div>
+            </div>
+            <div style="font-family: var(--mono); font-size: 10px; letter-spacing: 2px; color: var(--text-tertiary);">SENTINEL REGISTRY</div>
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <div style="width: 6px; height: 6px; border-radius: 50%; background: rgba(92,214,133,0.9); animation: pulse 2s ease-in-out infinite;"></div>
+              <span style="font-family: var(--mono); font-size: 9px; color: rgba(92,214,133,0.9); letter-spacing: 1px;">LIVE</span>
+            </div>
+          </div>
+          
+          <!-- Widget body -->
+          <div style="padding: 30px;">
+            
+            <!-- Mode tabs -->
+            <div style="display: flex; gap: 8px; margin-bottom: 24px;">
+              <button id="tab-verify" onclick="setVerifyMode('verify')" style="
+                flex: 1; padding: 12px 16px; border-radius: 8px; border: none; cursor: pointer;
+                font-family: var(--mono); font-size: 11px; letter-spacing: 1px;
+                background: var(--purple-primary); color: #fff; transition: all 0.2s;
+              ">Verify Certificate</button>
+              <button id="tab-search" onclick="setVerifyMode('search')" style="
+                flex: 1; padding: 12px 16px; border-radius: 8px; border: none; cursor: pointer;
+                font-family: var(--mono); font-size: 11px; letter-spacing: 1px;
+                background: rgba(255,255,255,0.05); color: var(--text-tertiary); transition: all 0.2s;
+              ">Search Registry</button>
+            </div>
+            
+            <!-- Verify mode -->
+            <div id="verify-mode">
+              <div style="display: flex; gap: 12px; align-items: center;">
+                <div style="flex: 1; position: relative;">
+                  <input type="text" id="cert-input" placeholder="ODDC-2026-00001" style="
+                    width: 100%; padding: 18px 24px; font-family: var(--mono); font-size: 16px;
+                    letter-spacing: 1px; background: rgba(255,255,255,0.05);
+                    border: 2px solid rgba(157,140,207,0.3); border-radius: 12px;
+                    color: var(--text-primary); outline: none; box-sizing: border-box;
+                  ">
+                </div>
+                <button id="verify-btn" onclick="verifyCertificate()" style="
+                  padding: 18px 28px; font-family: var(--mono); font-size: 11px; letter-spacing: 2px;
+                  background: linear-gradient(135deg, var(--purple-primary) 0%, rgba(91,75,138,0.6) 100%);
+                  border: 2px solid rgba(157,140,207,0.5); border-radius: 12px; color: #fff; cursor: pointer;
+                ">Verify</button>
+              </div>
+            </div>
+            
+            <!-- Search mode -->
+            <div id="search-mode" style="display: none;">
+              <div style="display: flex; gap: 12px; align-items: center;">
+                <div style="flex: 1; position: relative;">
+                  <input type="text" id="search-input" placeholder="Company or system name..." style="
+                    width: 100%; padding: 18px 24px; font-family: var(--mono); font-size: 16px;
+                    letter-spacing: 1px; background: rgba(255,255,255,0.05);
+                    border: 2px solid rgba(157,140,207,0.3); border-radius: 12px;
+                    color: var(--text-primary); outline: none; box-sizing: border-box;
+                  ">
+                </div>
+                <button id="search-btn" onclick="searchRegistry()" style="
+                  padding: 18px 28px; font-family: var(--mono); font-size: 11px; letter-spacing: 2px;
+                  background: linear-gradient(135deg, var(--purple-primary) 0%, rgba(91,75,138,0.6) 100%);
+                  border: 2px solid rgba(157,140,207,0.5); border-radius: 12px; color: #fff; cursor: pointer;
+                ">Search</button>
+              </div>
+            </div>
+            
+            <!-- Result area -->
+            <div id="verify-result" style="margin-top: 20px;"></div>
+            
+          </div>
+        </div>
+      </div>
+
+
+      <!-- API Access -->
+      <div class="panel reveal" style="margin-top: var(--space-4); max-width: 600px; margin-left: auto; margin-right: auto; text-align: center;">
+        <h3>Programmatic Access</h3>
+        <p style="font-size: 14px; margin-bottom: var(--space-2);">Integrate verification into your systems with our REST API.</p>
+        <div style="background: rgba(0,0,0,0.25); border-radius: 10px; padding: 16px; text-align: left; font-family: var(--mono); font-size: 12px; color: var(--text-secondary); overflow-x: auto;">
+          <span style="color: var(--purple-bright);">GET</span> <span style="color: var(--text-tertiary);">https://api.sentinelauthority.org/v1/verify/</span><span style="color: rgba(92,214,133,0.9);">{certificate_id}</span>
+        </div>
+        <div style="margin-top: var(--space-2);">
+          <a href="mailto:conformance@sentinelauthority.org" style="font-family: var(--mono); font-size: 11px; color: var(--purple-bright); letter-spacing: 1px;">Request API Key →</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact" class="section">
+      <div class="section-head reveal">
+        <div>
+          <span class="section-label">CONNECT</span>
+          <h2 class="section-title">Let's Talk</h2>
+          <p class="section-lead">
+            Ready to certify? Questions about ODDC? We're here.
+          </p>
+        </div>
+      </div>
+
+      <!-- Contact Cards Grid -->
+      <div class="reveal" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--space-2); max-width: 900px;">
+        
+        <!-- General Inquiries -->
+        <a href="mailto:info@sentinelauthority.org" style="text-decoration: none; display: block;">
+          <div style="
+            background: linear-gradient(135deg, rgba(91,75,138,0.12) 0%, rgba(91,75,138,0.04) 100%);
+            border: 1px solid rgba(157,140,207,0.25);
+            border-radius: 18px;
+            padding: 28px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+          " onmouseover="this.style.borderColor='rgba(157,140,207,0.5)';this.style.transform='translateY(-4px)'" onmouseout="this.style.borderColor='rgba(157,140,207,0.25)';this.style.transform='translateY(0)'">
+            <div style="position: absolute; top: -30px; right: -30px; width: 100px; height: 100px; background: radial-gradient(circle, rgba(157,140,207,0.15) 0%, transparent 70%); pointer-events: none;"></div>
+            <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 16px;">
+              <div style="width: 44px; height: 44px; background: rgba(157,140,207,0.15); border: 1px solid rgba(157,140,207,0.3); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(157,140,207,0.9)" stroke-width="1.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              </div>
+              <div>
+                <div style="font-family: var(--mono); font-size: 9px; letter-spacing: 2px; color: var(--text-tertiary); text-transform: uppercase;">General</div>
+                <div style="font-size: 15px; color: var(--text-primary); font-weight: 500;">Inquiries</div>
+              </div>
+            </div>
+            <div style="font-family: var(--mono); font-size: 13px; color: var(--purple-bright); letter-spacing: 0.5px;">info@sentinelauthority.org</div>
+            <div style="font-size: 12px; color: var(--text-tertiary); margin-top: 8px; line-height: 1.6;">Questions about ODDC, the framework, or how conformance works.</div>
+          </div>
+        </a>
+
+        <!-- Conformance -->
+        <a href="mailto:conformance@sentinelauthority.org" style="text-decoration: none; display: block;">
+          <div style="
+            background: linear-gradient(135deg, rgba(92,214,133,0.08) 0%, rgba(92,214,133,0.02) 100%);
+            border: 1px solid rgba(92,214,133,0.25);
+            border-radius: 18px;
+            padding: 28px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+          " onmouseover="this.style.borderColor='rgba(92,214,133,0.5)';this.style.transform='translateY(-4px)'" onmouseout="this.style.borderColor='rgba(92,214,133,0.25)';this.style.transform='translateY(0)'">
+            <div style="position: absolute; top: -30px; right: -30px; width: 100px; height: 100px; background: radial-gradient(circle, rgba(92,214,133,0.12) 0%, transparent 70%); pointer-events: none;"></div>
+            <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 16px;">
+              <div style="width: 44px; height: 44px; background: rgba(92,214,133,0.12); border: 1px solid rgba(92,214,133,0.3); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(92,214,133,0.9)" stroke-width="1.5"><path d="M9 12l2 2 4-4"/><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/></svg>
+              </div>
+              <div>
+                <div style="font-family: var(--mono); font-size: 9px; letter-spacing: 2px; color: var(--text-tertiary); text-transform: uppercase;">Certification</div>
+                <div style="font-size: 15px; color: var(--text-primary); font-weight: 500;">Conformance</div>
+              </div>
+            </div>
+            <div style="font-family: var(--mono); font-size: 11px; color: rgba(92,214,133,0.9); letter-spacing: 0; white-space: nowrap;">conformance@sentinelauthority.org</div>
+            <div style="font-size: 12px; color: var(--text-tertiary); margin-top: 8px; line-height: 1.6;">Start certification, licensing questions, or enterprise solutions.</div>
+          </div>
+        </a>
+
+        <!-- Enterprise -->
+        <a href="https://app.sentinelauthority.org" style="text-decoration: none; display: block;">
+          <div style="
+            background: linear-gradient(135deg, rgba(214,160,92,0.08) 0%, rgba(214,160,92,0.02) 100%);
+            border: 1px solid rgba(214,160,92,0.25);
+            border-radius: 18px;
+            padding: 28px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+          " onmouseover="this.style.borderColor='rgba(214,160,92,0.5)';this.style.transform='translateY(-4px)'" onmouseout="this.style.borderColor='rgba(214,160,92,0.25)';this.style.transform='translateY(0)'">
+            <div style="position: absolute; top: -30px; right: -30px; width: 100px; height: 100px; background: radial-gradient(circle, rgba(214,160,92,0.12) 0%, transparent 70%); pointer-events: none;"></div>
+            <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 16px;">
+              <div style="width: 44px; height: 44px; background: rgba(214,160,92,0.12); border: 1px solid rgba(214,160,92,0.3); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(214,160,92,0.9)" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+              </div>
+              <div>
+                <div style="font-family: var(--mono); font-size: 9px; letter-spacing: 2px; color: var(--text-tertiary); text-transform: uppercase;">Portal</div>
+                <div style="font-size: 15px; color: var(--text-primary); font-weight: 500;">Get Started</div>
+              </div>
+            </div>
+            <div style="font-family: var(--mono); font-size: 13px; color: rgba(214,160,92,0.9); letter-spacing: 0.5px;">app.sentinelauthority.org →</div>
+            <div style="font-size: 12px; color: var(--text-tertiary); margin-top: 8px; line-height: 1.6;">Create an account and begin your certification application.</div>
+          </div>
+        </a>
+      </div>
+
+      <!-- Response time note -->
+      <div class="reveal" style="margin-top: var(--space-3); text-align: center;">
+        <div style="display: inline-flex; align-items: center; gap: 10px; padding: 12px 20px; background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass); border-radius: 30px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-tertiary)" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span style="font-size: 12px; color: var(--text-secondary);">Typical response within <strong style="color: var(--text-primary);">24 hours</strong></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- GOVERNANCE ARTIFACTS -->
     <section id="artifacts" class="section">
       <div class="section-head reveal">
         <div>
@@ -2748,210 +2967,7 @@
         </div>
       </div>
     </section>
-    <section id="verify" class="section">
-      <div class="section-head reveal">
-        <div>
-          <span class="section-label">PUBLIC REGISTRY</span>
-          <h2 class="section-title">Verify</h2>
-          <p class="section-lead">
-            Instant verification. Real-time status. Zero trust required.
-          </p>
-        </div>
-      </div>
 
-      <!-- Verification Terminal -->
-      <div class="reveal" style="max-width: 700px; margin: 0 auto;">
-        <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(157,140,207,0.3); border-radius: 20px; overflow: hidden; box-shadow: 0 25px 80px rgba(0,0,0,0.4);">
-          <!-- Terminal header -->
-          <div style="background: rgba(91,75,138,0.15); padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(157,140,207,0.2);">
-            <div style="display: flex; align-items: center; gap: 8px;">
-              <div style="width: 12px; height: 12px; border-radius: 50%; background: rgba(214,92,92,0.8);"></div>
-              <div style="width: 12px; height: 12px; border-radius: 50%; background: rgba(214,160,92,0.8);"></div>
-              <div style="width: 12px; height: 12px; border-radius: 50%; background: rgba(92,214,133,0.8);"></div>
-            </div>
-            <div style="font-family: var(--mono); font-size: 10px; letter-spacing: 2px; color: var(--text-tertiary);">SENTINEL REGISTRY</div>
-            <div style="display: flex; align-items: center; gap: 6px;">
-              <div style="width: 6px; height: 6px; border-radius: 50%; background: rgba(92,214,133,0.9); animation: pulse 2s ease-in-out infinite;"></div>
-              <span style="font-family: var(--mono); font-size: 9px; color: rgba(92,214,133,0.9); letter-spacing: 1px;">LIVE</span>
-            </div>
-          </div>
-          
-          <!-- Widget body -->
-          <div style="padding: 30px;">
-            
-            <!-- Mode tabs -->
-            <div style="display: flex; gap: 8px; margin-bottom: 24px;">
-              <button id="tab-verify" onclick="setVerifyMode('verify')" style="
-                flex: 1; padding: 12px 16px; border-radius: 8px; border: none; cursor: pointer;
-                font-family: var(--mono); font-size: 11px; letter-spacing: 1px;
-                background: var(--purple-primary); color: #fff; transition: all 0.2s;
-              ">Verify Certificate</button>
-              <button id="tab-search" onclick="setVerifyMode('search')" style="
-                flex: 1; padding: 12px 16px; border-radius: 8px; border: none; cursor: pointer;
-                font-family: var(--mono); font-size: 11px; letter-spacing: 1px;
-                background: rgba(255,255,255,0.05); color: var(--text-tertiary); transition: all 0.2s;
-              ">Search Registry</button>
-            </div>
-            
-            <!-- Verify mode -->
-            <div id="verify-mode">
-              <div style="display: flex; gap: 12px; align-items: center;">
-                <div style="flex: 1; position: relative;">
-                  <input type="text" id="cert-input" placeholder="ODDC-2026-00001" style="
-                    width: 100%; padding: 18px 24px; font-family: var(--mono); font-size: 16px;
-                    letter-spacing: 1px; background: rgba(255,255,255,0.05);
-                    border: 2px solid rgba(157,140,207,0.3); border-radius: 12px;
-                    color: var(--text-primary); outline: none; box-sizing: border-box;
-                  ">
-                </div>
-                <button id="verify-btn" onclick="verifyCertificate()" style="
-                  padding: 18px 28px; font-family: var(--mono); font-size: 11px; letter-spacing: 2px;
-                  background: linear-gradient(135deg, var(--purple-primary) 0%, rgba(91,75,138,0.6) 100%);
-                  border: 2px solid rgba(157,140,207,0.5); border-radius: 12px; color: #fff; cursor: pointer;
-                ">Verify</button>
-              </div>
-            </div>
-            
-            <!-- Search mode -->
-            <div id="search-mode" style="display: none;">
-              <div style="display: flex; gap: 12px; align-items: center;">
-                <div style="flex: 1; position: relative;">
-                  <input type="text" id="search-input" placeholder="Company or system name..." style="
-                    width: 100%; padding: 18px 24px; font-family: var(--mono); font-size: 16px;
-                    letter-spacing: 1px; background: rgba(255,255,255,0.05);
-                    border: 2px solid rgba(157,140,207,0.3); border-radius: 12px;
-                    color: var(--text-primary); outline: none; box-sizing: border-box;
-                  ">
-                </div>
-                <button id="search-btn" onclick="searchRegistry()" style="
-                  padding: 18px 28px; font-family: var(--mono); font-size: 11px; letter-spacing: 2px;
-                  background: linear-gradient(135deg, var(--purple-primary) 0%, rgba(91,75,138,0.6) 100%);
-                  border: 2px solid rgba(157,140,207,0.5); border-radius: 12px; color: #fff; cursor: pointer;
-                ">Search</button>
-              </div>
-            </div>
-            
-            <!-- Result area -->
-            <div id="verify-result" style="margin-top: 20px;"></div>
-            
-          </div>
-        </div>
-      </div>
-
-
-      <!-- API Access -->
-      <div class="panel reveal" style="margin-top: var(--space-4); max-width: 600px; margin-left: auto; margin-right: auto; text-align: center;">
-        <h3>Programmatic Access</h3>
-        <p style="font-size: 14px; margin-bottom: var(--space-2);">Integrate verification into your systems with our REST API.</p>
-        <div style="background: rgba(0,0,0,0.25); border-radius: 10px; padding: 16px; text-align: left; font-family: var(--mono); font-size: 12px; color: var(--text-secondary); overflow-x: auto;">
-          <span style="color: var(--purple-bright);">GET</span> <span style="color: var(--text-tertiary);">https://api.sentinelauthority.org/v1/verify/</span><span style="color: rgba(92,214,133,0.9);">{certificate_id}</span>
-        </div>
-        <div style="margin-top: var(--space-2);">
-          <a href="mailto:conformance@sentinelauthority.org" style="font-family: var(--mono); font-size: 11px; color: var(--purple-bright); letter-spacing: 1px;">Request API Key →</a>
-        </div>
-      </div>
-    </section>
-    <section id="contact" class="section">
-      <div class="section-head reveal">
-        <div>
-          <span class="section-label">CONNECT</span>
-          <h2 class="section-title">Let's Talk</h2>
-          <p class="section-lead">
-            Ready to certify? Questions about ODDC? We're here.
-          </p>
-        </div>
-      </div>
-
-      <!-- Contact Cards Grid -->
-      <div class="reveal" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--space-2); max-width: 900px;">
-        
-        <!-- General Inquiries -->
-        <a href="mailto:info@sentinelauthority.org" style="text-decoration: none; display: block;">
-          <div style="
-            background: linear-gradient(135deg, rgba(91,75,138,0.12) 0%, rgba(91,75,138,0.04) 100%);
-            border: 1px solid rgba(157,140,207,0.25);
-            border-radius: 18px;
-            padding: 28px;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-          " onmouseover="this.style.borderColor='rgba(157,140,207,0.5)';this.style.transform='translateY(-4px)'" onmouseout="this.style.borderColor='rgba(157,140,207,0.25)';this.style.transform='translateY(0)'">
-            <div style="position: absolute; top: -30px; right: -30px; width: 100px; height: 100px; background: radial-gradient(circle, rgba(157,140,207,0.15) 0%, transparent 70%); pointer-events: none;"></div>
-            <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 16px;">
-              <div style="width: 44px; height: 44px; background: rgba(157,140,207,0.15); border: 1px solid rgba(157,140,207,0.3); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(157,140,207,0.9)" stroke-width="1.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-              </div>
-              <div>
-                <div style="font-family: var(--mono); font-size: 9px; letter-spacing: 2px; color: var(--text-tertiary); text-transform: uppercase;">General</div>
-                <div style="font-size: 15px; color: var(--text-primary); font-weight: 500;">Inquiries</div>
-              </div>
-            </div>
-            <div style="font-family: var(--mono); font-size: 13px; color: var(--purple-bright); letter-spacing: 0.5px;">info@sentinelauthority.org</div>
-            <div style="font-size: 12px; color: var(--text-tertiary); margin-top: 8px; line-height: 1.6;">Questions about ODDC, the framework, or how conformance works.</div>
-          </div>
-        </a>
-
-        <!-- Conformance -->
-        <a href="mailto:conformance@sentinelauthority.org" style="text-decoration: none; display: block;">
-          <div style="
-            background: linear-gradient(135deg, rgba(92,214,133,0.08) 0%, rgba(92,214,133,0.02) 100%);
-            border: 1px solid rgba(92,214,133,0.25);
-            border-radius: 18px;
-            padding: 28px;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-          " onmouseover="this.style.borderColor='rgba(92,214,133,0.5)';this.style.transform='translateY(-4px)'" onmouseout="this.style.borderColor='rgba(92,214,133,0.25)';this.style.transform='translateY(0)'">
-            <div style="position: absolute; top: -30px; right: -30px; width: 100px; height: 100px; background: radial-gradient(circle, rgba(92,214,133,0.12) 0%, transparent 70%); pointer-events: none;"></div>
-            <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 16px;">
-              <div style="width: 44px; height: 44px; background: rgba(92,214,133,0.12); border: 1px solid rgba(92,214,133,0.3); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(92,214,133,0.9)" stroke-width="1.5"><path d="M9 12l2 2 4-4"/><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/></svg>
-              </div>
-              <div>
-                <div style="font-family: var(--mono); font-size: 9px; letter-spacing: 2px; color: var(--text-tertiary); text-transform: uppercase;">Certification</div>
-                <div style="font-size: 15px; color: var(--text-primary); font-weight: 500;">Conformance</div>
-              </div>
-            </div>
-            <div style="font-family: var(--mono); font-size: 11px; color: rgba(92,214,133,0.9); letter-spacing: 0; white-space: nowrap;">conformance@sentinelauthority.org</div>
-            <div style="font-size: 12px; color: var(--text-tertiary); margin-top: 8px; line-height: 1.6;">Start certification, licensing questions, or enterprise solutions.</div>
-          </div>
-        </a>
-
-        <!-- Enterprise -->
-        <a href="https://app.sentinelauthority.org" style="text-decoration: none; display: block;">
-          <div style="
-            background: linear-gradient(135deg, rgba(214,160,92,0.08) 0%, rgba(214,160,92,0.02) 100%);
-            border: 1px solid rgba(214,160,92,0.25);
-            border-radius: 18px;
-            padding: 28px;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-          " onmouseover="this.style.borderColor='rgba(214,160,92,0.5)';this.style.transform='translateY(-4px)'" onmouseout="this.style.borderColor='rgba(214,160,92,0.25)';this.style.transform='translateY(0)'">
-            <div style="position: absolute; top: -30px; right: -30px; width: 100px; height: 100px; background: radial-gradient(circle, rgba(214,160,92,0.12) 0%, transparent 70%); pointer-events: none;"></div>
-            <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 16px;">
-              <div style="width: 44px; height: 44px; background: rgba(214,160,92,0.12); border: 1px solid rgba(214,160,92,0.3); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(214,160,92,0.9)" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-              </div>
-              <div>
-                <div style="font-family: var(--mono); font-size: 9px; letter-spacing: 2px; color: var(--text-tertiary); text-transform: uppercase;">Portal</div>
-                <div style="font-size: 15px; color: var(--text-primary); font-weight: 500;">Get Started</div>
-              </div>
-            </div>
-            <div style="font-family: var(--mono); font-size: 13px; color: rgba(214,160,92,0.9); letter-spacing: 0.5px;">app.sentinelauthority.org →</div>
-            <div style="font-size: 12px; color: var(--text-tertiary); margin-top: 8px; line-height: 1.6;">Create an account and begin your certification application.</div>
-          </div>
-        </a>
-      </div>
-
-      <!-- Response time note -->
-      <div class="reveal" style="margin-top: var(--space-3); text-align: center;">
-        <div style="display: inline-flex; align-items: center; gap: 10px; padding: 12px 20px; background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass); border-radius: 30px;">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-tertiary)" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          <span style="font-size: 12px; color: var(--text-secondary);">Typical response within <strong style="color: var(--text-primary);">24 hours</strong></span>
-        </div>
-      </div>
-    </section>
     <footer>
       <div class="footer-inner">
         <div>
@@ -2964,8 +2980,6 @@
         <div class="foot-links">
           <div class="foot-col">
             <div class="foot-col-title">FRAMEWORK</div>
-            <a href="#envelo">ENVELO</a>
-            <a href="#security">Security</a>
             <a href="#criteria">Criteria</a>
             <a href="#cat72">CAT-72</a>
             <a href="#process">Process</a>
