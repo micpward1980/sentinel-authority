@@ -1237,7 +1237,7 @@ function ApplicationDetail() {
       </div>
       
       {testCreated && (
-        <div className="p-4 rounded-lg" style={{background: 'rgba(92,214,133,0.1)', border: '1px solid rgba(92,214,133,0.3)'}}>
+        <div className="p-4 rounded-lg" style={{background: 'rgba(92,214,133,0.1)', border: '1px solid rgba(139,92,246,0.3)'}}>
           <p style={{color: styles.accentGreen, fontFamily: "'IBM Plex Mono', monospace", fontSize: '12px'}}>
             Test Created: {testCreated.test_id} — <Link to="/cat72" style={{color: styles.purpleBright}}>Go to CAT-72 Console</Link>
           </p>
@@ -1456,7 +1456,7 @@ function CAT72Console() {
                         onClick={() => handleStart(test.test_id)}
                         disabled={loading[test.test_id]}
                         className="px-3 py-1 rounded transition-colors"
-                        style={{background: 'rgba(92,214,133,0.15)', border: '1px solid rgba(92,214,133,0.3)', color: styles.accentGreen, fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}
+                        style={{background: 'rgba(92,214,133,0.15)', border: '1px solid rgba(139,92,246,0.3)', color: styles.accentGreen, fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}
                       >
                         {loading[test.test_id] === 'starting' ? '...' : 'Start'}
                       </button>
@@ -1697,20 +1697,20 @@ function VerifyPage() {
           <div className="relative flex justify-center mb-6" style={{height: '100px', alignItems: 'center'}}>
             <div style={{
               position: 'absolute', width: '80px', height: '80px',
-              border: '1px solid rgba(92,214,133,0.3)', borderRadius: '50%',
+              border: '1px solid rgba(139,92,246,0.3)', borderRadius: '50%',
               animation: 'pulse-ring 3s ease-out infinite',
             }} />
             <div style={{
               position: 'absolute', width: '100px', height: '100px',
-              border: '1px solid rgba(92,214,133,0.15)', borderRadius: '50%',
+              border: '1px solid rgba(139,92,246,0.15)', borderRadius: '50%',
               animation: 'pulse-ring 3s ease-out infinite 0.5s',
             }} />
             <div style={{
               width: '56px', height: '56px',
-              background: 'linear-gradient(135deg, #3a7d54 0%, #5CD685 100%)',
-              border: '2px solid #5CD685', borderRadius: '14px',
+              background: 'linear-gradient(135deg, #5B4B8A 0%, #8b5cf6 100%)',
+              border: '2px solid #8b5cf6', borderRadius: '14px',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              boxShadow: '0 8px 32px rgba(92,214,133,0.4), inset 0 1px 0 rgba(255,255,255,0.2)',
+              boxShadow: '0 8px 32px rgba(139,92,246,0.4), inset 0 1px 0 rgba(255,255,255,0.2)',
             }}>
               <div style={{
                 width: '18px', height: '18px',
@@ -1854,28 +1854,17 @@ function VerifyPage() {
         </div>
         
         {/* Footer links */}
-        <div className="mt-8 text-center" style={{display: 'flex', justifyContent: 'center', gap: '24px', flexWrap: 'wrap'}}>
-          <Link to="/login" style={{
-            color: styles.purpleBright, fontFamily: "'IBM Plex Mono', monospace",
-            fontSize: '11px', letterSpacing: '1px', textDecoration: 'none',
-            padding: '10px 20px', border: '1px solid rgba(157,140,207,0.2)',
-            borderRadius: '20px', transition: 'all 0.3s ease',
-          }}>← Sign In</Link>
-          <a href="https://sentinelauthority.org" style={{
-            color: styles.textTertiary, fontFamily: "'IBM Plex Mono', monospace",
-            fontSize: '11px', letterSpacing: '1px', textDecoration: 'none',
-            padding: '10px 20px', border: '1px solid rgba(255,255,255,0.1)',
-            borderRadius: '20px', transition: 'all 0.3s ease',
-          }}>Main Site →</a>
-        </div>
-        
-        <div className="mt-6 text-center">
-          <p style={{
-            color: styles.textTertiary, fontSize: '10px',
-            fontFamily: "'IBM Plex Mono', monospace", letterSpacing: '1px',
-          }}>
-            Powered by ENVELO • <a href="https://sentinelauthority.org/privacy.html" style={{color: styles.purpleBright, textDecoration: 'none'}}>Privacy</a>
-          </p>
+
+        {/* Portal link */}
+        <div className="mt-8 text-center">
+          <Link to="/dashboard" style={{
+            color: styles.textPrimary, fontFamily: "'IBM Plex Mono', monospace",
+            fontSize: "11px", letterSpacing: "1px", textDecoration: "none",
+            padding: "12px 32px", background: styles.purplePrimary,
+            border: "1px solid " + styles.purpleBright,
+            borderRadius: "8px", transition: "all 0.3s ease",
+            display: "inline-block",
+          }}>Portal →</Link>
         </div>
       </div>
     </div>
@@ -2043,7 +2032,7 @@ function AgentSimulator({ apiKey }) {
       
       {stats.pass + stats.block > 0 && (
         <div style={{display: 'flex', gap: '24px', marginBottom: '16px'}}>
-          <div style={{padding: '12px 20px', background: 'rgba(92,214,133,0.1)', border: '1px solid rgba(92,214,133,0.3)', borderRadius: '6px'}}>
+          <div style={{padding: '12px 20px', background: 'rgba(92,214,133,0.1)', border: '1px solid rgba(139,92,246,0.3)', borderRadius: '6px'}}>
             <div style={{fontSize: '24px', fontWeight: 700, color: styles.accentGreen}}>{stats.pass}</div>
             <div style={{fontSize: '11px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px'}}>Passed</div>
           </div>
@@ -2421,7 +2410,7 @@ if __name__ == "__main__":
   return (
     <div>
       {generatedKey && (
-        <div style={{background: 'rgba(92,214,133,0.1)', border: '1px solid rgba(92,214,133,0.3)', borderRadius: '8px', padding: '16px', marginBottom: '20px'}}>
+        <div style={{background: 'rgba(92,214,133,0.1)', border: '1px solid rgba(139,92,246,0.3)', borderRadius: '8px', padding: '16px', marginBottom: '20px'}}>
           <div style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', color: styles.accentGreen, marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '1px'}}>✓ New API Key Generated</div>
           <div style={{background: 'rgba(0,0,0,0.3)', padding: '12px', borderRadius: '6px', fontFamily: "'IBM Plex Mono', monospace", fontSize: '13px', color: styles.textPrimary, wordBreak: 'break-all', marginBottom: '12px'}}>
             {generatedKey.key}
@@ -2894,7 +2883,7 @@ if __name__ == "__main__":
                     </div>
                   </div>
                   <div style={{display: 'flex', alignItems: 'center', gap: '12px'}}>
-                    <span style={{padding: '4px 12px', background: 'rgba(92,214,133,0.15)', border: '1px solid rgba(92,214,133,0.3)', borderRadius: '20px', fontSize: '11px', color: styles.accentGreen, fontFamily: "'IBM Plex Mono', monospace", textTransform: 'uppercase'}}>
+                    <span style={{padding: '4px 12px', background: 'rgba(92,214,133,0.15)', border: '1px solid rgba(139,92,246,0.3)', borderRadius: '20px', fontSize: '11px', color: styles.accentGreen, fontFamily: "'IBM Plex Mono', monospace", textTransform: 'uppercase'}}>
                       {cert.status}
                     </span>
                     <button

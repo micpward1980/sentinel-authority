@@ -12,7 +12,7 @@ from fastapi.responses import HTMLResponse
 
 from app.core.config import settings
 from app.core.database import init_db
-from app.api.routes import auth, dashboard, applicants, cat72, certificates, verification, licensees, envelo, apikeys, envelo_boundaries
+from app.api.routes import auth, dashboard, applicants, cat72, certificates, verification, licensees, envelo, apikeys, envelo_boundaries, registry
 
 # Logging setup
 logging.basicConfig(level=logging.INFO)

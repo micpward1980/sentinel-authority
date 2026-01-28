@@ -3,8 +3,10 @@ from reportlab.lib.pagesizes import letter
 from reportlab.lib.units import inch
 from reportlab.lib.colors import HexColor, white
 from reportlab.pdfgen import canvas
+from reportlab.lib.utils import ImageReader
 from io import BytesIO
 from datetime import datetime
+import qrcode
 
 # Colors matching sentinelauthority.org exactly
 PURPLE_PRIMARY = HexColor('#5B4B8A')
@@ -15,6 +17,26 @@ TEXT_PRIMARY = HexColor('#f0f0f0')
 TEXT_SECONDARY = HexColor('#bfbfbf')
 TEXT_TERTIARY = HexColor('#808080')
 BORDER_GLASS = HexColor('#333844')
+
+def generate_qr_code(url):
+    """Generate QR code image for verification URL"""
+    qr = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_M,
+        box_size=10,
+        border=2,
+    )
+    qr.add_data(url)
+    qr.make(fit=True)
+    
+    # Create QR with purple color to match branding
+    img = qr.make_image(fill_color="#9d8ccf", back_color="#2a2f3d")
+    
+    # Convert to bytes for reportlab
+    img_buffer = BytesIO()
+    img.save(img_buffer, format='PNG')
+    img_buffer.seek(0)
+    return img_buffer
 
 def generate_certificate_pdf(certificate_id, organization_name, system_name, odd_specification, issued_date, expiry_date, test_id, convergence_score, stability_index, drift_rate, evidence_hash):
     buffer = BytesIO()
@@ -79,40 +101,67 @@ def generate_certificate_pdf(certificate_id, organization_name, system_name, odd
     c.setFont("Helvetica", 11)
     c.drawCentredString(width/2, y, "This record attests that")
     
+    # Organization name (prominent)
     y -= 0.4*inch
     c.setFillColor(TEXT_PRIMARY)
     c.setFont("Helvetica-Bold", 16)
     c.drawCentredString(width/2, y, organization_name)
     
+    # System name
     y -= 0.35*inch
-    c.setFillColor(TEXT_SECONDARY)
-    c.setFont("Helvetica", 11)
-    c.drawCentredString(width/2, y, "has demonstrated conformance for the autonomous system")
+    c.setFillColor(PURPLE_BRIGHT)
+    c.setFont("Helvetica", 12)
+    c.drawCentredString(width/2, y, f"System: {system_name}")
     
+    # ODD description
     y -= 0.4*inch
-    c.setFillColor(PURPLE_BRIGHT)
-    c.setFont("Helvetica-Bold", 14)
-    c.drawCentredString(width/2, y, system_name)
-    
-    y -= 0.35*inch
     c.setFillColor(TEXT_SECONDARY)
-    c.setFont("Helvetica", 10)
-    c.drawCentredString(width/2, y, f"Operational Design Domain: {odd_specification}")
+    c.setFont("Helvetica", 9)
+    c.drawCentredString(width/2, y, "has demonstrated conformance within the declared Operational Design Domain:")
     
-    # CAT-72 Results box
-    y -= 0.7*inch
-    box_h = 1.4*inch
-    box_w = 5*inch
-    box_x = (width - box_w) / 2
+    # ODD box
+    y -= 0.35*inch
+    odd_text = odd_specification[:200] + "..." if len(str(odd_specification)) > 200 else str(odd_specification)
     
-    c.setFillColor(HexColor('#363d4d'))
+    box_width = 5*inch
+    box_height = 0.8*inch
+    box_x = (width - box_width) / 2
+    
+    c.setFillColor(HexColor('#1a1f2e'))
     c.setStrokeColor(BORDER_GLASS)
-    c.setLineWidth(1)
-    c.roundRect(box_x, y - box_h, box_w, box_h, 5, fill=True, stroke=True)
+    c.setLineWidth(0.5)
+    c.roundRect(box_x, y - box_height, box_width, box_height, 5, fill=True, stroke=True)
     
-    # Box header
+    c.setFillColor(TEXT_SECONDARY)
+    c.setFont("Helvetica-Oblique", 8)
+    
+    # Word wrap ODD text
+    words = odd_text.split()
+    lines = []
+    current_line = []
+    for word in words:
+        current_line.append(word)
+        if c.stringWidth(' '.join(current_line), "Helvetica-Oblique", 8) > box_width - 0.4*inch:
+            current_line.pop()
+            lines.append(' '.join(current_line))
+            current_line = [word]
+    if current_line:
+        lines.append(' '.join(current_line))
+    
+    text_y = y - 0.2*inch
+    for line in lines[:4]:
+        c.drawCentredString(width/2, text_y, line)
+        text_y -= 0.15*inch
+    
+    # CAT-72 Evidence box
+    y -= 1.3*inch
+    box_height = 1.1*inch
+    c.setFillColor(HexColor('#1a1f2e'))
+    c.setStrokeColor(PURPLE_PRIMARY)
+    c.roundRect(box_x, y - box_height, box_width, box_height, 5, fill=True, stroke=True)
+    
     c.setFillColor(PURPLE_BRIGHT)
-    c.setFont("Helvetica-Bold", 10)
+    c.setFont("Helvetica-Bold", 9)
     c.drawCentredString(width/2, y - 0.25*inch, f"CAT-72 EVIDENCE — {test_id}")
     
     # Metrics grid
@@ -160,25 +209,45 @@ def generate_certificate_pdf(certificate_id, organization_name, system_name, odd
     c.setFillColor(TEXT_TERTIARY)
     c.drawCentredString(width/2, y, "Enforcer for Non-Violable Execution & Limit Oversight")
     
-    # Evidence hash
+    # QR Code section
+    qr_size = 0.9*inch
+    qr_x = width - 1.4*inch  # Right side
+    qr_y = 1.2*inch  # Bottom area
+    
+    # Generate QR code linking to verification page
+    verify_url = f"https://app.sentinelauthority.org/verify?cert={certificate_id}"
+    try:
+        qr_img = generate_qr_code(verify_url)
+        qr_reader = ImageReader(qr_img)
+        c.drawImage(qr_reader, qr_x, qr_y, width=qr_size, height=qr_size)
+        
+        # QR label
+        c.setFillColor(TEXT_TERTIARY)
+        c.setFont("Helvetica", 6)
+        c.drawCentredString(qr_x + qr_size/2, qr_y - 0.12*inch, "SCAN TO VERIFY")
+    except Exception as e:
+        # If QR generation fails, just skip it
+        pass
+    
+    # Evidence hash (shifted left to make room for QR)
     y = 1.9*inch
     c.setFillColor(TEXT_TERTIARY)
     c.setFont("Helvetica", 7)
-    c.drawCentredString(width/2, y, "EVIDENCE HASH")
+    c.drawString(0.8*inch, y, "EVIDENCE HASH")
     
     y -= 0.18*inch
     c.setFillColor(TEXT_PRIMARY)
     c.setFont("Courier", 6)
-    c.drawCentredString(width/2, y, evidence_hash)
+    c.drawString(0.8*inch, y, evidence_hash)
     
-    # Verification URL
+    # Verification URL (shifted left)
     y -= 0.25*inch
     c.setFillColor(PURPLE_BRIGHT)
     c.setFont("Helvetica", 8)
-    c.drawCentredString(width/2, y, "Verify: sentinelauthority.org/verify")
+    c.drawString(0.8*inch, y, "Verify: app.sentinelauthority.org/verify")
     
     # Footer disclaimer
-    y -= 0.3*inch
+    y = 0.85*inch
     c.setFillColor(TEXT_TERTIARY)
     c.setFont("Helvetica-Oblique", 6)
     c.drawCentredString(width/2, y, "ODDC attests conformance within declared ODD. Does not attest safety, regulatory compliance, or fitness for purpose.")
