@@ -1442,118 +1442,297 @@
   </header>
 
   <main style="position: relative; z-index: 1; max-width: var(--max, 1200px); margin: 0 auto; padding: calc(var(--nav-height, 72px) + 60px) var(--space-2, 20px) 60px;">
-    <div class="page-header reveal">
-      <div class="page-kicker">ODDC Conformance Scenarios</div>
-      <h1 class="page-title">Industry Applications</h1>
-      <p class="page-desc">Representative scenarios illustrating how ODDC conformance with ENVELO-compliant enforcement applies across industries. These examples are illustrative and non-normative.</p>
+    
+    <!-- Hero Header -->
+    <div class="reveal" style="text-align: center; margin-bottom: 60px;">
+      <div style="display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; background: rgba(157,140,207,0.1); border: 1px solid rgba(157,140,207,0.3); border-radius: 50px; margin-bottom: 24px;">
+        <div style="width: 8px; height: 8px; background: rgba(157,140,207,0.9); border-radius: 50%;"></div>
+        <span style="font-family: var(--mono); font-size: 11px; letter-spacing: 2px; color: rgba(157,140,207,0.9);">ODDC CONFORMANCE SCENARIOS</span>
+      </div>
+      <h1 style="font-family: 'Source Serif 4', serif; font-size: clamp(36px, 6vw, 56px); font-weight: 200; color: var(--text-primary); margin: 0 0 20px;">Industry Applications</h1>
+      <p style="font-size: 18px; color: var(--text-secondary); max-width: 700px; margin: 0 auto; line-height: 1.7;">
+        Representative scenarios illustrating how ODDC conformance with ENVELO-compliant enforcement applies across industries.
+      </p>
     </div>
 
-    <div class="tiles-header reveal">Representative Scenarios — Conformance by Industry</div>
-    <div class="tiles reveal">
-      <a href="#datacenters" class="tile"><h3>Data Centers & Hyperscale Computing</h3><span>View scenario →</span></a>
-      <a href="#vehicles" class="tile"><h3>Autonomous Vehicles</h3><span>View scenario →</span></a>
-      <a href="#healthcare" class="tile"><h3>Healthcare & Medical AI</h3><span>View scenario →</span></a>
-      <a href="#finance" class="tile"><h3>Financial Services & Trading</h3><span>View scenario →</span></a>
-      <a href="#manufacturing" class="tile"><h3>Industrial Manufacturing</h3><span>View scenario →</span></a>
-      <a href="#aerospace" class="tile"><h3>Aerospace & Defense</h3><span>View scenario →</span></a>
+    <!-- Industry Grid -->
+    <div class="reveal" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 80px;">
+      
+      <!-- Data Centers -->
+      <a href="#datacenters" style="position: relative; background: linear-gradient(135deg, rgba(92,214,133,0.1) 0%, rgba(92,214,133,0.02) 100%); border: 1px solid rgba(92,214,133,0.25); border-radius: 20px; padding: 28px; text-decoration: none; transition: all 0.3s ease; overflow: hidden;" onmouseover="this.style.transform='translateY(-4px)';this.style.borderColor='rgba(92,214,133,0.5)'" onmouseout="this.style.transform='translateY(0)';this.style.borderColor='rgba(92,214,133,0.25)'">
+        <div style="position: absolute; top: 0; left: 24px; width: 50px; height: 3px; background: linear-gradient(90deg, rgba(92,214,133,0.8), transparent);"></div>
+        <div style="width: 48px; height: 48px; background: rgba(92,214,133,0.15); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(92,214,133,0.9)" stroke-width="1.5"><rect x="2" y="3" width="20" height="18" rx="2"/><line x1="2" y1="9" x2="22" y2="9"/><line x1="2" y1="15" x2="22" y2="15"/><circle cx="7" cy="6" r="1" fill="rgba(92,214,133,0.9)"/><circle cx="7" cy="12" r="1" fill="rgba(92,214,133,0.9)"/><circle cx="7" cy="18" r="1" fill="rgba(92,214,133,0.9)"/></svg>
+        </div>
+        <h3 style="font-size: 18px; font-weight: 600; color: var(--text-primary); margin: 0 0 8px;">Data Centers</h3>
+        <p style="font-size: 13px; color: var(--text-tertiary); margin: 0; line-height: 1.5;">Hyperscale computing & AI orchestration</p>
+        <span style="display: inline-block; margin-top: 16px; font-family: var(--mono); font-size: 11px; color: rgba(92,214,133,0.8);">View scenario →</span>
+      </a>
+
+      <!-- Autonomous Vehicles -->
+      <a href="#vehicles" style="position: relative; background: linear-gradient(135deg, rgba(157,140,207,0.1) 0%, rgba(157,140,207,0.02) 100%); border: 1px solid rgba(157,140,207,0.25); border-radius: 20px; padding: 28px; text-decoration: none; transition: all 0.3s ease; overflow: hidden;" onmouseover="this.style.transform='translateY(-4px)';this.style.borderColor='rgba(157,140,207,0.5)'" onmouseout="this.style.transform='translateY(0)';this.style.borderColor='rgba(157,140,207,0.25)'">
+        <div style="position: absolute; top: 0; left: 24px; width: 50px; height: 3px; background: linear-gradient(90deg, rgba(157,140,207,0.8), transparent);"></div>
+        <div style="width: 48px; height: 48px; background: rgba(157,140,207,0.15); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(157,140,207,0.9)" stroke-width="1.5"><path d="M5 17h14v-5H5z"/><path d="M19 12l-2-6H7l-2 6"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/></svg>
+        </div>
+        <h3 style="font-size: 18px; font-weight: 600; color: var(--text-primary); margin: 0 0 8px;">Autonomous Vehicles</h3>
+        <p style="font-size: 13px; color: var(--text-tertiary); margin: 0; line-height: 1.5;">Speed, geofence & weather protocols</p>
+        <span style="display: inline-block; margin-top: 16px; font-family: var(--mono); font-size: 11px; color: rgba(157,140,207,0.8);">View scenario →</span>
+      </a>
+
+      <!-- Healthcare -->
+      <a href="#healthcare" style="position: relative; background: linear-gradient(135deg, rgba(214,92,92,0.1) 0%, rgba(214,92,92,0.02) 100%); border: 1px solid rgba(214,92,92,0.25); border-radius: 20px; padding: 28px; text-decoration: none; transition: all 0.3s ease; overflow: hidden;" onmouseover="this.style.transform='translateY(-4px)';this.style.borderColor='rgba(214,92,92,0.5)'" onmouseout="this.style.transform='translateY(0)';this.style.borderColor='rgba(214,92,92,0.25)'">
+        <div style="position: absolute; top: 0; left: 24px; width: 50px; height: 3px; background: linear-gradient(90deg, rgba(214,92,92,0.8), transparent);"></div>
+        <div style="width: 48px; height: 48px; background: rgba(214,92,92,0.15); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(214,92,92,0.9)" stroke-width="1.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+        </div>
+        <h3 style="font-size: 18px; font-weight: 600; color: var(--text-primary); margin: 0 0 8px;">Healthcare & Medical AI</h3>
+        <p style="font-size: 13px; color: var(--text-tertiary); margin: 0; line-height: 1.5;">Clinical decision support boundaries</p>
+        <span style="display: inline-block; margin-top: 16px; font-family: var(--mono); font-size: 11px; color: rgba(214,92,92,0.8);">View scenario →</span>
+      </a>
+
+      <!-- Financial Services -->
+      <a href="#finance" style="position: relative; background: linear-gradient(135deg, rgba(214,160,92,0.1) 0%, rgba(214,160,92,0.02) 100%); border: 1px solid rgba(214,160,92,0.25); border-radius: 20px; padding: 28px; text-decoration: none; transition: all 0.3s ease; overflow: hidden;" onmouseover="this.style.transform='translateY(-4px)';this.style.borderColor='rgba(214,160,92,0.5)'" onmouseout="this.style.transform='translateY(0)';this.style.borderColor='rgba(214,160,92,0.25)'">
+        <div style="position: absolute; top: 0; left: 24px; width: 50px; height: 3px; background: linear-gradient(90deg, rgba(214,160,92,0.8), transparent);"></div>
+        <div style="width: 48px; height: 48px; background: rgba(214,160,92,0.15); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(214,160,92,0.9)" stroke-width="1.5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        </div>
+        <h3 style="font-size: 18px; font-weight: 600; color: var(--text-primary); margin: 0 0 8px;">Financial Services</h3>
+        <p style="font-size: 13px; color: var(--text-tertiary); margin: 0; line-height: 1.5;">Trading limits & circuit breakers</p>
+        <span style="display: inline-block; margin-top: 16px; font-family: var(--mono); font-size: 11px; color: rgba(214,160,92,0.8);">View scenario →</span>
+      </a>
+
+      <!-- Manufacturing -->
+      <a href="#manufacturing" style="position: relative; background: linear-gradient(135deg, rgba(92,214,133,0.1) 0%, rgba(92,214,133,0.02) 100%); border: 1px solid rgba(92,214,133,0.25); border-radius: 20px; padding: 28px; text-decoration: none; transition: all 0.3s ease; overflow: hidden;" onmouseover="this.style.transform='translateY(-4px)';this.style.borderColor='rgba(92,214,133,0.5)'" onmouseout="this.style.transform='translateY(0)';this.style.borderColor='rgba(92,214,133,0.25)'">
+        <div style="position: absolute; top: 0; left: 24px; width: 50px; height: 3px; background: linear-gradient(90deg, rgba(92,214,133,0.8), transparent);"></div>
+        <div style="width: 48px; height: 48px; background: rgba(92,214,133,0.15); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(92,214,133,0.9)" stroke-width="1.5"><path d="M2 20h20"/><path d="M5 20V8l7-5 7 5v12"/><path d="M9 20v-6h6v6"/></svg>
+        </div>
+        <h3 style="font-size: 18px; font-weight: 600; color: var(--text-primary); margin: 0 0 8px;">Industrial Manufacturing</h3>
+        <p style="font-size: 13px; color: var(--text-tertiary); margin: 0; line-height: 1.5;">Robotics safety envelopes</p>
+        <span style="display: inline-block; margin-top: 16px; font-family: var(--mono); font-size: 11px; color: rgba(92,214,133,0.8);">View scenario →</span>
+      </a>
+
+      <!-- Aerospace -->
+      <a href="#aerospace" style="position: relative; background: linear-gradient(135deg, rgba(157,140,207,0.1) 0%, rgba(157,140,207,0.02) 100%); border: 1px solid rgba(157,140,207,0.25); border-radius: 20px; padding: 28px; text-decoration: none; transition: all 0.3s ease; overflow: hidden;" onmouseover="this.style.transform='translateY(-4px)';this.style.borderColor='rgba(157,140,207,0.5)'" onmouseout="this.style.transform='translateY(0)';this.style.borderColor='rgba(157,140,207,0.25)'">
+        <div style="position: absolute; top: 0; left: 24px; width: 50px; height: 3px; background: linear-gradient(90deg, rgba(157,140,207,0.8), transparent);"></div>
+        <div style="width: 48px; height: 48px; background: rgba(157,140,207,0.15); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(157,140,207,0.9)" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        </div>
+        <h3 style="font-size: 18px; font-weight: 600; color: var(--text-primary); margin: 0 0 8px;">Aerospace & Defense</h3>
+        <p style="font-size: 13px; color: var(--text-tertiary); margin: 0; line-height: 1.5;">Mission envelopes & geofencing</p>
+        <span style="display: inline-block; margin-top: 16px; font-family: var(--mono); font-size: 11px; color: rgba(157,140,207,0.8);">View scenario →</span>
+      </a>
     </div>
 
-    <section id="datacenters" class="scenario reveal">
-      <h2>Data Centers & Hyperscale Computing</h2>
-      <p>Hyperscale environments increasingly rely on autonomous systems to allocate power, optimize cooling, place workloads, and orchestrate AI-on-AI stacks. ODDC conformance scenarios illustrate facility-level and stack-level envelope boundaries (power draw, thermal ceilings, isolation requirements, recursion limits), enforced via ENVELO-compliant non-bypassable runtime interlocks.</p>
-      <h4>Representative interlock behavior (modeled)</h4>
-      <ul>
-        <li>Hard-cap interlocks on CPU throttling to prevent TDP overruns during load spikes</li>
-        <li>Automatic workload shedding to non-critical queues as facility power approaches envelope limits</li>
-        <li>Maximum recursion depth for AI managing AI without human checkpoint</li>
-      </ul>
-      <h4>Evidence outputs</h4>
-      <ul>
-        <li>Append-only envelope adherence logs</li>
-        <li>Cryptographic attestations suitable for underwriting review and incident reconstruction</li>
-      </ul>
-      <a href="#" class="scenario-download" onclick="openModal(); return false;">↓ Download Full ODDC Scenarios PDF</a>
+    <!-- Scenario Sections -->
+    <section id="datacenters" class="reveal" style="margin-bottom: 60px; padding: 40px; background: linear-gradient(135deg, rgba(92,214,133,0.08) 0%, rgba(92,214,133,0.02) 100%); border: 1px solid rgba(92,214,133,0.2); border-radius: 24px;">
+      <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 24px;">
+        <div style="width: 56px; height: 56px; background: rgba(92,214,133,0.15); border-radius: 14px; display: flex; align-items: center; justify-content: center;">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(92,214,133,0.9)" stroke-width="1.5"><rect x="2" y="3" width="20" height="18" rx="2"/><line x1="2" y1="9" x2="22" y2="9"/><line x1="2" y1="15" x2="22" y2="15"/><circle cx="7" cy="6" r="1" fill="rgba(92,214,133,0.9)"/><circle cx="7" cy="12" r="1" fill="rgba(92,214,133,0.9)"/><circle cx="7" cy="18" r="1" fill="rgba(92,214,133,0.9)"/></svg>
+        </div>
+        <h2 style="font-family: 'Source Serif 4', serif; font-size: 28px; font-weight: 300; color: var(--text-primary); margin: 0;">Data Centers & Hyperscale Computing</h2>
+      </div>
+      <p style="font-size: 16px; color: var(--text-secondary); line-height: 1.7; margin-bottom: 24px;">
+        Hyperscale environments increasingly rely on autonomous systems to allocate power, optimize cooling, place workloads, and orchestrate AI-on-AI stacks. ODDC conformance scenarios illustrate facility-level and stack-level envelope boundaries.
+      </p>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 24px;">
+        <div style="background: rgba(0,0,0,0.2); border-radius: 12px; padding: 20px;">
+          <h4 style="font-family: var(--mono); font-size: 11px; letter-spacing: 2px; color: rgba(92,214,133,0.9); margin: 0 0 12px;">INTERLOCK BEHAVIOR</h4>
+          <ul style="margin: 0; padding-left: 20px; color: var(--text-secondary); font-size: 14px; line-height: 1.8;">
+            <li>Hard-cap interlocks on CPU throttling to prevent TDP overruns</li>
+            <li>Automatic workload shedding as power approaches limits</li>
+            <li>Maximum recursion depth for AI managing AI</li>
+          </ul>
+        </div>
+        <div style="background: rgba(0,0,0,0.2); border-radius: 12px; padding: 20px;">
+          <h4 style="font-family: var(--mono); font-size: 11px; letter-spacing: 2px; color: rgba(92,214,133,0.9); margin: 0 0 12px;">EVIDENCE OUTPUTS</h4>
+          <ul style="margin: 0; padding-left: 20px; color: var(--text-secondary); font-size: 14px; line-height: 1.8;">
+            <li>Append-only envelope adherence logs</li>
+            <li>Cryptographic attestations for underwriting review</li>
+          </ul>
+        </div>
+      </div>
+      <a href="docs/ODDC_Scenarios_v1.0.pdf" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; background: rgba(92,214,133,0.15); border: 1px solid rgba(92,214,133,0.4); border-radius: 10px; color: rgba(92,214,133,0.95); font-family: var(--mono); font-size: 12px; text-decoration: none; transition: all 0.2s;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download Full Scenarios PDF
+      </a>
     </section>
 
-    <section id="vehicles" class="scenario reveal">
-      <h2>Autonomous Vehicles</h2>
-      <p>ODDC conformance scenarios illustrate mathematically specified authorization parameters governing vehicle behavior across conditions (zone speed ceilings, confidence thresholds, weather degradation protocols, emergency override rules), with ENVELO-compliant enforcement preventing boundary violations regardless of model intent.</p>
-      <h4>Representative interlock behavior (modeled)</h4>
-      <ul>
-        <li>Non-bypassable speed interlock tied to zone authorization</li>
-        <li>Mandatory stop/slowdown when detection confidence falls below envelope threshold</li>
-        <li>Weather-tier degradation limits on velocity and acceleration</li>
-      </ul>
-      <h4>Evidence outputs</h4>
-      <ul>
-        <li>Cryptographic, time-indexed record of envelope compliance and override triggers</li>
-      </ul>
-      <a href="#" class="scenario-download" onclick="openModal(); return false;">↓ Download Full ODDC Scenarios PDF</a>
+    <section id="vehicles" class="reveal" style="margin-bottom: 60px; padding: 40px; background: linear-gradient(135deg, rgba(157,140,207,0.08) 0%, rgba(157,140,207,0.02) 100%); border: 1px solid rgba(157,140,207,0.2); border-radius: 24px;">
+      <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 24px;">
+        <div style="width: 56px; height: 56px; background: rgba(157,140,207,0.15); border-radius: 14px; display: flex; align-items: center; justify-content: center;">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(157,140,207,0.9)" stroke-width="1.5"><path d="M5 17h14v-5H5z"/><path d="M19 12l-2-6H7l-2 6"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/></svg>
+        </div>
+        <h2 style="font-family: 'Source Serif 4', serif; font-size: 28px; font-weight: 300; color: var(--text-primary); margin: 0;">Autonomous Vehicles</h2>
+      </div>
+      <p style="font-size: 16px; color: var(--text-secondary); line-height: 1.7; margin-bottom: 24px;">
+        ODDC conformance scenarios illustrate mathematically specified authorization parameters governing vehicle behavior across conditions with ENVELO-compliant enforcement preventing boundary violations.
+      </p>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 24px;">
+        <div style="background: rgba(0,0,0,0.2); border-radius: 12px; padding: 20px;">
+          <h4 style="font-family: var(--mono); font-size: 11px; letter-spacing: 2px; color: rgba(157,140,207,0.9); margin: 0 0 12px;">INTERLOCK BEHAVIOR</h4>
+          <ul style="margin: 0; padding-left: 20px; color: var(--text-secondary); font-size: 14px; line-height: 1.8;">
+            <li>Non-bypassable speed interlock tied to zone authorization</li>
+            <li>Mandatory stop when confidence falls below threshold</li>
+            <li>Weather-tier degradation limits on velocity</li>
+          </ul>
+        </div>
+        <div style="background: rgba(0,0,0,0.2); border-radius: 12px; padding: 20px;">
+          <h4 style="font-family: var(--mono); font-size: 11px; letter-spacing: 2px; color: rgba(157,140,207,0.9); margin: 0 0 12px;">EVIDENCE OUTPUTS</h4>
+          <ul style="margin: 0; padding-left: 20px; color: var(--text-secondary); font-size: 14px; line-height: 1.8;">
+            <li>Cryptographic, time-indexed compliance record</li>
+            <li>Override trigger documentation</li>
+          </ul>
+        </div>
+      </div>
+      <a href="docs/ODDC_Scenarios_v1.0.pdf" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; background: rgba(157,140,207,0.15); border: 1px solid rgba(157,140,207,0.4); border-radius: 10px; color: rgba(157,140,207,0.95); font-family: var(--mono); font-size: 12px; text-decoration: none; transition: all 0.2s;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download Full Scenarios PDF
+      </a>
     </section>
 
-    <section id="healthcare" class="scenario reveal">
-      <h2>Healthcare & Medical AI</h2>
-      <p>Medical AI operates in life-critical environments where auditability and bounded autonomy are required. ODDC conformance scenarios illustrate operational boundaries for diagnostic recommendations and clinical interventions, including mandatory human checkpoints for high-impact actions, with ENVELO-compliant enforcement present and auditable.</p>
-      <h4>Representative interlock behavior (modeled)</h4>
-      <ul>
-        <li>Mandatory confirmation interlock for Stage 3+ interventions</li>
-        <li>Hard deviation thresholds on surgical trajectories or procedure assistance</li>
-        <li>Automatic escalation on anomalous vital signs beyond envelope thresholds</li>
-      </ul>
-      <h4>Evidence outputs</h4>
-      <ul>
-        <li>Append-only clinical decision trace aligned to audit requirements (separate from regulatory approval)</li>
-      </ul>
-      <a href="#" class="scenario-download" onclick="openModal(); return false;">↓ Download Full ODDC Scenarios PDF</a>
+    <section id="healthcare" class="reveal" style="margin-bottom: 60px; padding: 40px; background: linear-gradient(135deg, rgba(214,92,92,0.08) 0%, rgba(214,92,92,0.02) 100%); border: 1px solid rgba(214,92,92,0.2); border-radius: 24px;">
+      <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 24px;">
+        <div style="width: 56px; height: 56px; background: rgba(214,92,92,0.15); border-radius: 14px; display: flex; align-items: center; justify-content: center;">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(214,92,92,0.9)" stroke-width="1.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+        </div>
+        <h2 style="font-family: 'Source Serif 4', serif; font-size: 28px; font-weight: 300; color: var(--text-primary); margin: 0;">Healthcare & Medical AI</h2>
+      </div>
+      <p style="font-size: 16px; color: var(--text-secondary); line-height: 1.7; margin-bottom: 24px;">
+        Medical AI operates in life-critical environments where auditability and bounded autonomy are required. ODDC conformance scenarios illustrate operational boundaries for diagnostic recommendations and clinical interventions.
+      </p>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 24px;">
+        <div style="background: rgba(0,0,0,0.2); border-radius: 12px; padding: 20px;">
+          <h4 style="font-family: var(--mono); font-size: 11px; letter-spacing: 2px; color: rgba(214,92,92,0.9); margin: 0 0 12px;">INTERLOCK BEHAVIOR</h4>
+          <ul style="margin: 0; padding-left: 20px; color: var(--text-secondary); font-size: 14px; line-height: 1.8;">
+            <li>Mandatory confirmation for Stage 3+ interventions</li>
+            <li>Hard deviation thresholds on surgical trajectories</li>
+            <li>Automatic escalation on anomalous vital signs</li>
+          </ul>
+        </div>
+        <div style="background: rgba(0,0,0,0.2); border-radius: 12px; padding: 20px;">
+          <h4 style="font-family: var(--mono); font-size: 11px; letter-spacing: 2px; color: rgba(214,92,92,0.9); margin: 0 0 12px;">EVIDENCE OUTPUTS</h4>
+          <ul style="margin: 0; padding-left: 20px; color: var(--text-secondary); font-size: 14px; line-height: 1.8;">
+            <li>Append-only clinical decision trace</li>
+            <li>Aligned to audit requirements</li>
+          </ul>
+        </div>
+      </div>
+      <a href="docs/ODDC_Scenarios_v1.0.pdf" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; background: rgba(214,92,92,0.15); border: 1px solid rgba(214,92,92,0.4); border-radius: 10px; color: rgba(214,92,92,0.95); font-family: var(--mono); font-size: 12px; text-decoration: none; transition: all 0.2s;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download Full Scenarios PDF
+      </a>
     </section>
 
-    <section id="finance" class="scenario reveal">
-      <h2>Financial Services & Trading</h2>
-      <p>High-frequency automated decision systems can create cascading failures if limits are bypassable. ODDC conformance scenarios illustrate quantifiable risk envelopes (position concentration, volatility deviation thresholds, drawdown caps) enforced independently of the trading algorithms via ENVELO-compliant mechanisms.</p>
-      <h4>Representative interlock behavior (modeled)</h4>
-      <ul>
-        <li>Volatility-triggered circuit breaker disconnecting order submission channels</li>
-        <li>Real-time enforcement of position limits and concentration thresholds</li>
-        <li>Mandatory review triggers on envelope-defined drawdown events</li>
-      </ul>
-      <h4>Evidence outputs</h4>
-      <ul>
-        <li>Cryptographic attestation of order gating and circuit-breaker events</li>
-      </ul>
-      <a href="#" class="scenario-download" onclick="openModal(); return false;">↓ Download Full ODDC Scenarios PDF</a>
+    <section id="finance" class="reveal" style="margin-bottom: 60px; padding: 40px; background: linear-gradient(135deg, rgba(214,160,92,0.08) 0%, rgba(214,160,92,0.02) 100%); border: 1px solid rgba(214,160,92,0.2); border-radius: 24px;">
+      <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 24px;">
+        <div style="width: 56px; height: 56px; background: rgba(214,160,92,0.15); border-radius: 14px; display: flex; align-items: center; justify-content: center;">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(214,160,92,0.9)" stroke-width="1.5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        </div>
+        <h2 style="font-family: 'Source Serif 4', serif; font-size: 28px; font-weight: 300; color: var(--text-primary); margin: 0;">Financial Services & Trading</h2>
+      </div>
+      <p style="font-size: 16px; color: var(--text-secondary); line-height: 1.7; margin-bottom: 24px;">
+        High-frequency automated decision systems can create cascading failures if limits are bypassable. ODDC conformance scenarios illustrate quantifiable risk envelopes enforced independently of trading algorithms.
+      </p>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 24px;">
+        <div style="background: rgba(0,0,0,0.2); border-radius: 12px; padding: 20px;">
+          <h4 style="font-family: var(--mono); font-size: 11px; letter-spacing: 2px; color: rgba(214,160,92,0.9); margin: 0 0 12px;">INTERLOCK BEHAVIOR</h4>
+          <ul style="margin: 0; padding-left: 20px; color: var(--text-secondary); font-size: 14px; line-height: 1.8;">
+            <li>Volatility-triggered circuit breaker</li>
+            <li>Real-time position limit enforcement</li>
+            <li>Mandatory review on drawdown events</li>
+          </ul>
+        </div>
+        <div style="background: rgba(0,0,0,0.2); border-radius: 12px; padding: 20px;">
+          <h4 style="font-family: var(--mono); font-size: 11px; letter-spacing: 2px; color: rgba(214,160,92,0.9); margin: 0 0 12px;">EVIDENCE OUTPUTS</h4>
+          <ul style="margin: 0; padding-left: 20px; color: var(--text-secondary); font-size: 14px; line-height: 1.8;">
+            <li>Cryptographic attestation of order gating</li>
+            <li>Circuit-breaker event records</li>
+          </ul>
+        </div>
+      </div>
+      <a href="docs/ODDC_Scenarios_v1.0.pdf" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; background: rgba(214,160,92,0.15); border: 1px solid rgba(214,160,92,0.4); border-radius: 10px; color: rgba(214,160,92,0.95); font-family: var(--mono); font-size: 12px; text-decoration: none; transition: all 0.2s;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download Full Scenarios PDF
+      </a>
     </section>
 
-    <section id="manufacturing" class="scenario reveal">
-      <h2>Industrial Manufacturing</h2>
-      <p>Autonomous robotics and AI-driven production systems operate alongside humans in hazardous environments. ODDC conformance scenarios illustrate safety envelopes for force output, proximity response, speed reduction zones, and anomaly thresholds with ENVELO-compliant isolated enforcement mechanisms.</p>
-      <h4>Representative interlock behavior (modeled)</h4>
-      <ul>
-        <li>Proximity-triggered force limiters and full-stop thresholds</li>
-        <li>Non-bypassable caps on actuator torque or force output</li>
-        <li>Independent enforcement layer separated from control logic</li>
-      </ul>
-      <h4>Evidence outputs</h4>
-      <ul>
-        <li>Audit-ready boundary adherence record supporting incident review and safety assurance</li>
-      </ul>
-      <a href="#" class="scenario-download" onclick="openModal(); return false;">↓ Download Full ODDC Scenarios PDF</a>
+    <section id="manufacturing" class="reveal" style="margin-bottom: 60px; padding: 40px; background: linear-gradient(135deg, rgba(92,214,133,0.08) 0%, rgba(92,214,133,0.02) 100%); border: 1px solid rgba(92,214,133,0.2); border-radius: 24px;">
+      <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 24px;">
+        <div style="width: 56px; height: 56px; background: rgba(92,214,133,0.15); border-radius: 14px; display: flex; align-items: center; justify-content: center;">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(92,214,133,0.9)" stroke-width="1.5"><path d="M2 20h20"/><path d="M5 20V8l7-5 7 5v12"/><path d="M9 20v-6h6v6"/></svg>
+        </div>
+        <h2 style="font-family: 'Source Serif 4', serif; font-size: 28px; font-weight: 300; color: var(--text-primary); margin: 0;">Industrial Manufacturing</h2>
+      </div>
+      <p style="font-size: 16px; color: var(--text-secondary); line-height: 1.7; margin-bottom: 24px;">
+        Autonomous robotics and AI-driven production systems operate alongside humans in hazardous environments. ODDC conformance scenarios illustrate safety envelopes with ENVELO-compliant isolated enforcement.
+      </p>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 24px;">
+        <div style="background: rgba(0,0,0,0.2); border-radius: 12px; padding: 20px;">
+          <h4 style="font-family: var(--mono); font-size: 11px; letter-spacing: 2px; color: rgba(92,214,133,0.9); margin: 0 0 12px;">INTERLOCK BEHAVIOR</h4>
+          <ul style="margin: 0; padding-left: 20px; color: var(--text-secondary); font-size: 14px; line-height: 1.8;">
+            <li>Proximity-triggered force limiters</li>
+            <li>Non-bypassable caps on actuator torque</li>
+            <li>Independent enforcement layer</li>
+          </ul>
+        </div>
+        <div style="background: rgba(0,0,0,0.2); border-radius: 12px; padding: 20px;">
+          <h4 style="font-family: var(--mono); font-size: 11px; letter-spacing: 2px; color: rgba(92,214,133,0.9); margin: 0 0 12px;">EVIDENCE OUTPUTS</h4>
+          <ul style="margin: 0; padding-left: 20px; color: var(--text-secondary); font-size: 14px; line-height: 1.8;">
+            <li>Audit-ready boundary adherence record</li>
+            <li>Incident review documentation</li>
+          </ul>
+        </div>
+      </div>
+      <a href="docs/ODDC_Scenarios_v1.0.pdf" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; background: rgba(92,214,133,0.15); border: 1px solid rgba(92,214,133,0.4); border-radius: 10px; color: rgba(92,214,133,0.95); font-family: var(--mono); font-size: 12px; text-decoration: none; transition: all 0.2s;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download Full Scenarios PDF
+      </a>
     </section>
 
-    <section id="aerospace" class="scenario reveal">
-      <h2>Aerospace & Defense</h2>
-      <p>Autonomous aircraft and mission systems require strict operational certainty. ODDC conformance scenarios illustrate mission envelopes (geofencing, altitude ceilings, comm-loss protocols, payload authorization levels) with ENVELO-compliant chain-of-custody enforcement.</p>
-      <h4>Representative interlock behavior (modeled)</h4>
-      <ul>
-        <li>Geofence-triggered return-to-base initiation</li>
-        <li>Mandatory RTB after defined comm-loss duration</li>
-        <li>Multi-party cryptographic release for payload authorization</li>
-      </ul>
-      <h4>Evidence outputs</h4>
-      <ul>
-        <li>Cryptographically signed compliance logs for post-mission audit</li>
-      </ul>
-      <a href="#" class="scenario-download" onclick="openModal(); return false;">↓ Download Full ODDC Scenarios PDF</a>
+    <section id="aerospace" class="reveal" style="margin-bottom: 60px; padding: 40px; background: linear-gradient(135deg, rgba(157,140,207,0.08) 0%, rgba(157,140,207,0.02) 100%); border: 1px solid rgba(157,140,207,0.2); border-radius: 24px;">
+      <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 24px;">
+        <div style="width: 56px; height: 56px; background: rgba(157,140,207,0.15); border-radius: 14px; display: flex; align-items: center; justify-content: center;">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(157,140,207,0.9)" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        </div>
+        <h2 style="font-family: 'Source Serif 4', serif; font-size: 28px; font-weight: 300; color: var(--text-primary); margin: 0;">Aerospace & Defense</h2>
+      </div>
+      <p style="font-size: 16px; color: var(--text-secondary); line-height: 1.7; margin-bottom: 24px;">
+        Autonomous aircraft and mission systems require strict operational certainty. ODDC conformance scenarios illustrate mission envelopes with ENVELO-compliant chain-of-custody enforcement.
+      </p>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 24px;">
+        <div style="background: rgba(0,0,0,0.2); border-radius: 12px; padding: 20px;">
+          <h4 style="font-family: var(--mono); font-size: 11px; letter-spacing: 2px; color: rgba(157,140,207,0.9); margin: 0 0 12px;">INTERLOCK BEHAVIOR</h4>
+          <ul style="margin: 0; padding-left: 20px; color: var(--text-secondary); font-size: 14px; line-height: 1.8;">
+            <li>Geofence-triggered return-to-base</li>
+            <li>Mandatory RTB on comm-loss</li>
+            <li>Multi-party cryptographic payload release</li>
+          </ul>
+        </div>
+        <div style="background: rgba(0,0,0,0.2); border-radius: 12px; padding: 20px;">
+          <h4 style="font-family: var(--mono); font-size: 11px; letter-spacing: 2px; color: rgba(157,140,207,0.9); margin: 0 0 12px;">EVIDENCE OUTPUTS</h4>
+          <ul style="margin: 0; padding-left: 20px; color: var(--text-secondary); font-size: 14px; line-height: 1.8;">
+            <li>Cryptographically signed compliance logs</li>
+            <li>Post-mission audit trail</li>
+          </ul>
+        </div>
+      </div>
+      <a href="docs/ODDC_Scenarios_v1.0.pdf" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; background: rgba(157,140,207,0.15); border: 1px solid rgba(157,140,207,0.4); border-radius: 10px; color: rgba(157,140,207,0.95); font-family: var(--mono); font-size: 12px; text-decoration: none; transition: all 0.2s;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download Full Scenarios PDF
+      </a>
     </section>
+
+    <!-- Bottom CTA -->
+    <div class="reveal" style="text-align: center; padding: 40px; background: linear-gradient(135deg, rgba(91,75,138,0.15) 0%, rgba(91,75,138,0.05) 100%); border: 1px solid rgba(157,140,207,0.25); border-radius: 24px;">
+      <h3 style="font-family: 'Source Serif 4', serif; font-size: 24px; font-weight: 300; color: var(--text-primary); margin: 0 0 12px;">Ready to certify your system?</h3>
+      <p style="font-size: 15px; color: var(--text-secondary); margin: 0 0 24px;">Start your ODDC conformance journey today.</p>
+      <a href="https://app.sentinelauthority.org" style="display: inline-flex; align-items: center; gap: 10px; padding: 16px 28px; background: linear-gradient(135deg, rgba(157,140,207,0.9) 0%, rgba(91,75,138,0.9) 100%); border-radius: 12px; color: #fff; font-family: var(--mono); font-size: 13px; letter-spacing: 1px; text-decoration: none; transition: all 0.2s;">
+        Start Certification
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+    </div>
   </main>
 
   <!-- Footer -->
@@ -1572,7 +1751,7 @@
   </footer>
   <script>document.getElementById("footer-year").textContent = new Date().getFullYear();</script>
   <script>
-document.getElementById("year").textContent = new Date().getFullYear();
+const fy = document.getElementById("footer-year"); if (fy) fy.textContent = new Date().getFullYear();
 
     const modal = document.getElementById('downloadModal');
 
@@ -1588,7 +1767,7 @@ document.getElementById("year").textContent = new Date().getFullYear();
       document.body.style.overflow = '';
     }
 
-    modal.addEventListener('click', (e) => {
+    if (modal) modal.addEventListener('click', (e) => {
       if (e.target === modal) closeModal();
     });
 
