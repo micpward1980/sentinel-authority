@@ -11,8 +11,8 @@ console.log('DIST path:', DIST);
 // Serve static files
 app.use(express.static(DIST));
 
-// SPA fallback - use {*path} for Express 5
-app.get('/{*path}', (req, res) => {
+// SPA fallback - use regex for Express 5
+app.get('/:path(*)', (req, res) => {
   res.sendFile(path.join(DIST, 'index.html'));
 });
 
