@@ -10,4 +10,4 @@ RUN npm run build
 
 EXPOSE 8080
 
-CMD ["node", "server.cjs"]
+CMD ["npm", "run", "preview", "--", "--host", "0.0.0.0", "--port", "8080"]
