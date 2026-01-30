@@ -18,7 +18,6 @@ const mimeTypes = {
 const server = http.createServer((req, res) => {
   let filePath = path.join(DIST, req.url === '/' ? 'index.html' : req.url);
   
-  // SPA fallback
   if (!fs.existsSync(filePath)) {
     filePath = path.join(DIST, 'index.html');
   }
@@ -37,6 +36,6 @@ const server = http.createServer((req, res) => {
   });
 });
 
-server.listen(PORT, '0.0.0.0', () => {
-  console.log(`Server running on port ${PORT}`);
+server.listen(PORT, '0.0.0.0', function() {
+  console.log('Server running on port ' + PORT);
 });
