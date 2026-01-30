@@ -394,6 +394,7 @@
       color: var(--text-primary);
       text-decoration: none;
     }
+    .nav-drawer .nav-signin{ color: var(--purple-bright); border-bottom: none; margin-top: 12px; padding-top: 16px; border-top: 1px solid var(--border-glass); }
     .nav-drawer a.active{
       color: var(--purple-bright);
     }
@@ -1728,11 +1729,11 @@
         <a href="#contact" data-section="contact">CONTACT</a>
         <a href="https://app.sentinelauthority.org">SIGN IN</a>
       </nav>
-      <a href="draft.html" class="nav-badge" title="Draft v1.0 — examples are illustrative and non-normative" aria-describedby="draft-note">
-        <span>DRAFT v1.0</span>
+      <a href="draft.html" class="nav-badge" title="v1.0 — Effective January 2026" aria-describedby="draft-note">
+        <span>v1.0</span>
       </a>
       <span id="draft-note" class="sr-only">
-        Specification status: Draft v1.0. Examples are illustrative and non-normative.
+        Specification v1.0 — Effective January 2026
       </span>
       
       <button class="nav-toggle" aria-label="Open navigation menu" aria-expanded="false" aria-controls="nav-drawer">
@@ -1751,6 +1752,7 @@
     <a href="#artifacts" data-section="artifacts">ARTIFACTS</a>
     <a href="#verify" data-section="verify">VERIFY</a>
     <a href="#contact" data-section="contact">CONTACT</a>
+    <a href="https://app.sentinelauthority.org" class="nav-signin">SIGN IN</a>
   </div>
   <!-- Copy toast -->
   <div class="copy-toast" role="status" aria-live="polite">Hash copied to clipboard</div>
@@ -1876,7 +1878,7 @@
           <div style="position: absolute; inset: -30px; border-radius: 50%; background: radial-gradient(circle, rgba(92,214,133,0.12) 0%, transparent 70%); animation: pulse-slow 4s ease-in-out infinite;"></div>
           
           <!-- Rotating boundary ring -->
-          <svg viewBox="0 0 380 380" style="position: absolute; inset: 0; animation: rotate-slow 35s linear infinite;">
+          <svg viewBox="0 0 380 380" style="position: absolute; inset: 0; animation: rotate-slow 20s linear infinite;">
             <defs>
               <linearGradient id="envelo-ring" x1="0%" y1="0%" x2="100%" y2="100%">
                 <stop offset="0%" stop-color="rgba(92,214,133,0.7)"/>
@@ -1895,7 +1897,7 @@
           
           <!-- Center Interlock Gate Diagram -->
           <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; ;">
-            <svg viewBox="0 0 240 200" fill="none" style="width: 260px; height: 220px;">
+            <svg viewBox="0 0 240 200" fill="none" style="width: 240px; height: 200px; transform: translateX(-10px);">
               <defs>
                 <filter id="env-glow-g"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
                 <filter id="env-glow-r"><feGaussianBlur stdDeviation="2" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
@@ -2337,7 +2339,7 @@
               <path d="M9 12l2 2 4-4"/>
             </svg>
             <div style="font-family: var(--mono); font-size: 11px; letter-spacing: 1px; color: rgba(157,140,207,0.95);">ENVELO AGENT</div>
-            <div style="font-size: 11px; color: var(--text-tertiary); margin-top: 4px;">Observe Only</div>
+            <div style="font-size: 11px; color: var(--text-tertiary); margin-top: 4px;">Enforce Local</div>
           </div>
           
           <!-- Arrow Out -->
@@ -2422,6 +2424,46 @@
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             No Actuator Control
           </span>
+        </div>
+      </div>
+
+      <!-- IT & Compliance FAQ -->
+      <div class="reveal" style="margin-top: var(--space-4); background: rgba(255,255,255,0.02); border: 1px solid var(--border-glass); border-radius: 20px; padding: 32px;">
+        <div style="font-family: var(--mono); font-size: 10px; letter-spacing: 3px; color: var(--text-tertiary); margin-bottom: 24px;">FOR IT &amp; COMPLIANCE TEAMS</div>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px;">
+          <div style="padding-bottom: 20px; border-bottom: 1px solid var(--border-subtle);">
+            <div style="font-size: 14px; color: var(--text-primary); font-weight: 500; margin-bottom: 8px;">What if Sentinel Authority is compromised?</div>
+            <div style="font-size: 13px; color: var(--text-secondary); line-height: 1.6;">There is no path back to your systems. The agent opens no listening ports and accepts no inbound connections. Even a fully compromised Sentinel Authority cannot send commands, push code, or access your infrastructure.</div>
+          </div>
+          <div style="padding-bottom: 20px; border-bottom: 1px solid var(--border-subtle);">
+            <div style="font-size: 14px; color: var(--text-primary); font-weight: 500; margin-bottom: 8px;">Does ENVELO transmit PHI or PII?</div>
+            <div style="font-size: 13px; color: var(--text-secondary); line-height: 1.6;">No. Telemetry contains only operational metrics—boundary proximity, enforcement events, timestamps. No patient data, no payload content, no PII ever leaves your system.</div>
+          </div>
+          <div style="padding-bottom: 20px; border-bottom: 1px solid var(--border-subtle);">
+            <div style="font-size: 14px; color: var(--text-primary); font-weight: 500; margin-bottom: 8px;">Can Sentinel push updates or execute code?</div>
+            <div style="font-size: 13px; color: var(--text-secondary); line-height: 1.6;">No. All updates are customer-initiated. We cannot remotely modify, patch, or execute anything on your infrastructure. Ever.</div>
+          </div>
+          <div style="padding-bottom: 20px; border-bottom: 1px solid var(--border-subtle);">
+            <div style="font-size: 14px; color: var(--text-primary); font-weight: 500; margin-bottom: 8px;">What if Sentinel goes offline?</div>
+            <div style="font-size: 13px; color: var(--text-secondary); line-height: 1.6;">ENVELO continues enforcing locally. Enforcement decisions never depend on external connectivity. Your system remains protected.</div>
+          </div>
+          <div style="padding-bottom: 20px; border-bottom: 1px solid var(--border-subtle);">
+            <div style="font-size: 14px; color: var(--text-primary); font-weight: 500; margin-bottom: 8px;">What firewall rules are required?</div>
+            <div style="font-size: 13px; color: var(--text-secondary); line-height: 1.6;">Outbound HTTPS (443) to api.sentinelauthority.org only. No inbound ports. No DMZ exposure. No VPN tunnels.</div>
+          </div>
+          <div style="padding-bottom: 20px; border-bottom: 1px solid var(--border-subtle);">
+            <div style="font-size: 14px; color: var(--text-primary); font-weight: 500; margin-bottom: 8px;">Can the agent access our application data?</div>
+            <div style="font-size: 13px; color: var(--text-secondary); line-height: 1.6;">No. ENVELO validates action boundaries only. It cannot read, store, or transmit your application data, databases, or files.</div>
+          </div>
+          <div style="padding-bottom: 20px; border-bottom: 1px solid var(--border-subtle);">
+            <div style="font-size: 14px; color: var(--text-primary); font-weight: 500; margin-bottom: 8px;">Is the agent code auditable?</div>
+            <div style="font-size: 13px; color: var(--text-secondary); line-height: 1.6;">Yes. Enterprise customers receive full source access for security review prior to deployment.</div>
+          </div>
+          <div style="padding-bottom: 20px; border-bottom: 1px solid var(--border-subtle);">
+            <div style="font-size: 14px; color: var(--text-primary); font-weight: 500; margin-bottom: 8px;">HIPAA / BAA available?</div>
+            <div style="font-size: 13px; color: var(--text-secondary); line-height: 1.6;">Yes. Business Associate Agreements available for healthcare customers upon request.</div>
+          </div>
         </div>
       </div>
     </section>
@@ -3133,7 +3175,7 @@
             </div>
             <div>
               <div style="font-family: var(--mono); font-size: 10px; letter-spacing: 2px; color: rgba(214,160,92,0.9); margin-bottom: 4px;">SPECIFICATION STATUS</div>
-              <div style="font-size: 20px; color: var(--text-primary); font-weight: 500;">ODDC v1.0 — Draft</div>
+              <div style="font-size: 20px; color: var(--text-primary); font-weight: 500;">ODDC v1.0 — Effective January 2026</div>
             </div>
           </div>
           <div style="display: flex; align-items: center; gap: 24px;">
@@ -3490,7 +3532,7 @@
       <div class="footer-inner">
         <div>
           <div>© <span id="year"></span> SENTINEL AUTHORITY — ODDC</div>
-          <div class="footer-spec">ODDC v1.0 — Draft. Specifications subject to revision. Examples are non-normative.</div>
+          <div class="footer-spec">ODDC v1.0 — Effective January 2026. Specifications subject to revision. Examples are non-normative.</div>
           <div class="footer-disclaimer">
             Independent conformance determination. Not a regulator. Not legal advice. Implementations remain the responsibility of system operators.
           </div>

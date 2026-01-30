@@ -10,6 +10,11 @@ from typing import Optional, Dict, Any, List
 from pathlib import Path
 
 
+# Certificate fingerprint for api.sentinelauthority.org
+# This prevents MITM attacks even if CA is compromised
+SENTINEL_CERT_FINGERPRINT = None  # Set after deployment with actual cert fingerprint
+
+
 @dataclass
 class EnveloConfig:
     """ENVELO Agent Configuration"""
@@ -24,6 +29,11 @@ class EnveloConfig:
     enforcement_mode: str = "BLOCK"  # BLOCK, EXCEPTION, SAFE_STATE
     fail_closed: bool = True
     failsafe_timeout_seconds: float = 30.0
+    
+    # LOCAL ENFORCEMENT - continues working offline
+    cache_boundaries_locally: bool = True
+    boundary_cache_path: str = field(default_factory=lambda: str(Path.home() / ".envelo" / "boundary_cache.json"))
+    enforce_with_cached_boundaries: bool = True  # If True, use last-known-good when offline
     
     telemetry_enabled: bool = True
     telemetry_batch_size: int = 100
@@ -43,12 +53,17 @@ class EnveloConfig:
     system_name: str = ""
     organization: str = ""
     
+    # TLS Security
+    verify_cert_fingerprint: bool = True
+    
     _config_hash: str = field(default="", repr=False)
     
     def __post_init__(self):
         if not self.api_key:
             self._load_from_file()
         self._compute_hash()
+        # Ensure cache directory exists
+        Path(self.boundary_cache_path).parent.mkdir(parents=True, exist_ok=True)
     
     def _load_from_file(self):
         paths = [

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, createContext, useContext } from 'react';
 import BoundaryEditor from './components/BoundaryEditor';
 import { BrowserRouter, Routes, Route, Navigate, Link, useNavigate, useLocation, useParams } from 'react-router-dom';
-import { FileText, Activity, Award, Users, Home, LogOut, Menu, X, CheckCircle, AlertTriangle, Clock, Search, Plus, ArrowLeft, ExternalLink, Shield, Download, RefreshCw } from 'lucide-react';
+import { FileText, Activity, Award, Users, Home, LogOut, Menu, X, CheckCircle, AlertTriangle, Clock, Search, Plus, ArrowLeft, ExternalLink, Shield, Download, RefreshCw, Eye, EyeOff } from 'lucide-react';
 import axios from 'axios';
 
 // API Configuration
@@ -478,6 +478,7 @@ function LoginPage() {
   const [isRegister, setIsRegister] = useState(false);
   const [error, setError] = useState('');
   const [formData, setFormData] = useState({ email: '', password: '', full_name: '', organization_name: '' });
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -675,12 +676,14 @@ function LoginPage() {
                 fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px',
                 letterSpacing: '1px', textTransform: 'uppercase',
               }}>Password</label>
-              <input type="password" placeholder="••••••••••••" value={formData.password}
+              <div style={{position: "relative"}}><input type={showPassword ? "text" : "password"} placeholder="••••••••••••" value={formData.password}
                 onChange={(e) => setFormData({...formData, password: e.target.value})}
                 className="login-input w-full px-4 py-4 rounded-xl outline-none"
                 style={{ background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.08)',
                   color: styles.textPrimary, fontFamily: "'Inter', sans-serif", fontSize: '15px',
                 }} required />
+                <button type="button" onClick={() => setShowPassword(!showPassword)} style={{position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', padding: '4px'}}>{showPassword ? <EyeOff className="w-5 h-5" style={{color: styles.textTertiary}} /> : <Eye className="w-5 h-5" style={{color: styles.textTertiary}} />}</button>
+              </div>
             </div>
             
             <button type="submit" className="login-btn w-full py-4 rounded-xl font-medium"

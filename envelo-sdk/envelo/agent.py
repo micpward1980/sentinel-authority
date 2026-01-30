@@ -16,6 +16,7 @@ import functools
 from queue import Queue, Empty
 from typing import Any, Callable, Dict, List, Optional, Union
 from datetime import datetime, timedelta
+from pathlib import Path
 from contextlib import contextmanager
 
 try:
@@ -236,13 +237,18 @@ class EnveloAgent:
         if not self._started:
             raise EnveloNotStartedError("Agent not started. Call agent.start() first.")
         
-        # Failsafe check
-        if self._failsafe_active:
+        # Failsafe check - only hard-block if NO boundaries loaded
+        # If we have cached boundaries, continue enforcing with them
+        if self._failsafe_active and len(self._boundaries) == 0:
             self._stats["failsafe_blocks"] += 1
-            self.logger.warning(f"FAILSAFE BLOCK: {params}")
+            self.logger.warning(f"FAILSAFE BLOCK (no boundaries): {params}")
             if self.config.enforcement_mode == "EXCEPTION":
                 raise EnveloFailsafeError()
             return False
+        
+        if self._failsafe_active:
+            # We have cached boundaries - continue enforcing locally
+            self.logger.debug(f"OFFLINE ENFORCEMENT (using cached boundaries): {params}")
         
         # Check all parameters
         all_passed = True
@@ -413,15 +419,18 @@ class EnveloAgent:
             if response.status_code == 200:
                 data = response.json()
                 self._load_boundaries(data)
+                self._cache_boundaries(data)  # Cache for offline use
                 self._last_server_contact = time.time()
+                self.logger.info("Boundaries fetched from Sentinel Authority")
                 return True
             else:
                 self.logger.error(f"Failed to fetch boundaries: {response.status_code}")
-                return False
+                return self._load_cached_boundaries()  # Fallback to cache
                 
         except requests.RequestException as e:
-            self.logger.error(f"Connection error fetching boundaries: {e}")
-            return False
+            self.logger.warning(f"Cannot reach Sentinel Authority: {e}")
+            self.logger.info("Attempting to load cached boundaries for offline enforcement...")
+            return self._load_cached_boundaries()  # Fallback to cache
     
     def _load_boundaries(self, config: Dict):
         """Load boundaries from configuration dictionary"""
@@ -476,6 +485,48 @@ class EnveloAgent:
         self.logger.info(f"Loaded {len(self._boundaries)} boundaries")
     
     def add_boundary(self, boundary: Boundary):
+        """Add a boundary manually (for testing or local-only boundaries)"""
+        self._boundaries[boundary.name] = boundary
+        self._parameter_map[boundary.parameter] = boundary.name
+
+    def _cache_boundaries(self, config: Dict):
+        """Cache boundaries locally for offline enforcement"""
+        if not self.config.cache_boundaries_locally:
+            return
+        try:
+            cache_path = Path(self.config.boundary_cache_path)
+            cache_path.parent.mkdir(parents=True, exist_ok=True)
+            with open(cache_path, "w") as f:
+                json.dump({
+                    "cached_at": datetime.utcnow().isoformat() + "Z",
+                    "certificate_number": self.config.certificate_number,
+                    "config": config
+                }, f)
+            self.logger.debug(f"Boundaries cached to {cache_path}")
+        except Exception as e:
+            self.logger.warning(f"Failed to cache boundaries: {e}")
+
+    def _load_cached_boundaries(self) -> bool:
+        """Load boundaries from local cache (for offline operation)"""
+        if not self.config.enforce_with_cached_boundaries:
+            return False
+        try:
+            cache_path = Path(self.config.boundary_cache_path)
+            if not cache_path.exists():
+                self.logger.warning("No cached boundaries found")
+                return False
+            with open(cache_path) as f:
+                data = json.load(f)
+            if data.get("certificate_number") != self.config.certificate_number:
+                self.logger.warning("Cached boundaries are for different certificate")
+                return False
+            self._load_boundaries(data["config"])
+            self.logger.info(f"Loaded {len(self._boundaries)} boundaries from CACHE (offline mode)")
+            self.logger.info(f"  Cached at: {data.get(cached_at, unknown)}")
+            return True
+        except Exception as e:
+            self.logger.warning(f"Failed to load cached boundaries: {e}")
+            return False
         """Add a boundary manually (for testing or local-only boundaries)"""
         self._boundaries[boundary.name] = boundary
         self._parameter_map[boundary.parameter] = boundary.name
