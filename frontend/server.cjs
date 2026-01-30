@@ -1,5 +1,6 @@
 const express = require('express');
 const path = require('path');
+const fs = require('fs');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -11,8 +12,8 @@ console.log('DIST path:', DIST);
 // Serve static files
 app.use(express.static(DIST));
 
-// SPA fallback - use regex for Express 5
-app.get('/:path(*)', (req, res) => {
+// SPA fallback using middleware instead of route
+app.use((req, res) => {
   res.sendFile(path.join(DIST, 'index.html'));
 });
 
