@@ -1121,28 +1121,6 @@
     
     /* Hero animations */
     
-    /* Earth background in hero */
-    .hero {
-      background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/c/cb/The_Blue_Marble_%28remastered%29.jpg/1200px-The_Blue_Marble_%28remastered%29.jpg');
-      background-size: 600px 600px;
-      background-position: center 40%;
-      background-repeat: no-repeat;
-    }
-    .hero::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: radial-gradient(ellipse at center, rgba(26,29,39,0.85) 0%, rgba(26,29,39,0.95) 40%, var(--bg-deep) 70%);
-      z-index: 0;
-      pointer-events: none;
-    }
-
-    
-    
-
     .hero-eye { animation: hero-eye-pulse 4s ease-in-out infinite; }
     @keyframes hero-eye-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
     .scroll-line { animation: scroll-bounce 2s ease-in-out infinite; }
