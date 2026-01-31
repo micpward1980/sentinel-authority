@@ -2403,8 +2403,8 @@
               particles.push({
                 x: centerX + Math.cos(angle) * dist,
                 y: centerY + Math.sin(angle) * dist,
-                vx: (Math.random() - 0.5) * 9,
-                vy: (Math.random() - 0.5) * 9,
+                vx: (Math.random() - 0.5) * 4.5,
+                vy: (Math.random() - 0.5) * 4.5,
                 radius: Math.random() * 2.5 + 1.5
               });
             }
@@ -2497,8 +2497,8 @@
                   const newDist = Math.random() * boundaryRadius * 0.3;
                   p.x = centerX + Math.cos(newAngle) * newDist;
                   p.y = centerY + Math.sin(newAngle) * newDist;
-                  p.vx = (Math.random() - 0.5) * 9;
-                  p.vy = (Math.random() - 0.5) * 9;
+                  p.vx = (Math.random() - 0.5) * 4.5;
+                  p.vy = (Math.random() - 0.5) * 4.5;
                   p.frozen = false;
                   p.frozenTime = 0;
                   p.radius = Math.random() * 2 + 1;
@@ -2545,9 +2545,9 @@
                 
                 // Speed limit
                 const speed = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
-                if (speed > 9) {
-                  p.vx = (p.vx / speed) * 9;
-                  p.vy = (p.vy / speed) * 9;
+                if (speed > 4.5) {
+                  p.vx = (p.vx / speed) * 4.5;
+                  p.vy = (p.vy / speed) * 4.5;
                 }
               }
               
