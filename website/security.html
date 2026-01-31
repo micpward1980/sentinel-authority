@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Security — Sentinel Authority</title>
+  <meta name="description" content="ENVELO Agent security architecture. Zero trust, zero access design for enterprise IT teams." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect x='6' y='6' width='20' height='20' rx='5' fill='%235B4B8A' stroke='%239d8ccf' stroke-width='2'/><circle cx='16' cy='16' r='4' fill='%239d8ccf'/></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,200;0,300;0,400;1,200;1,300&family=Inter:wght@200;400;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root{
+      color-scheme:dark;
+      --purple-primary:#5B4B8A;--purple-bright:#9d8ccf;--purple-glow:rgba(157,140,207,.20);
+      --bg-deep:#2a2f3d;--bg-panel:rgba(255,255,255,.05);
+      --accent-green:#5CD685;--accent-amber:#D6A05C;--accent-red:#D65C5C;
+      --text-primary:rgba(255,255,255,.94);--text-secondary:rgba(255,255,255,.75);--text-tertiary:rgba(255,255,255,.50);
+      --border-glass:rgba(255,255,255,.10);--border-subtle:rgba(255,255,255,.06);
+      --serif:'Source Serif 4',serif;--mono:'IBM Plex Mono',monospace;--sans:'Inter',system-ui,-apple-system,sans-serif;
+      --ease:cubic-bezier(0.16,1,0.3,1);
+      --space-1:10px;--space-2:20px;--space-3:30px;--space-4:40px;--space-6:60px;--space-8:80px;
+      --max:900px;--nav-height:72px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth;background:var(--bg-deep)}
+    body{margin:0;font-family:var(--sans);background:radial-gradient(ellipse at 20% 0%, rgba(91,75,138,.18) 0%, transparent 50%),radial-gradient(ellipse at 80% 100%, rgba(92,214,133,.06) 0%, transparent 50%),var(--bg-deep);color:var(--text-primary);-webkit-font-smoothing:antialiased;min-height:100vh}
+    a{color:inherit;text-decoration:none}a:hover{text-decoration:underline;text-underline-offset:4px}
+    ::selection{background:var(--purple-primary);color:#fff}
+    
+    .grid-overlay{position:fixed;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(rgba(255,255,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.03) 1px,transparent 1px);background-size:60px 60px;opacity:.4}
+    
+    .site-header{position:fixed;top:0;width:100%;z-index:50;padding:0 var(--space-2);height:var(--nav-height);border-bottom:1px solid rgba(255,255,255,.08);background:rgba(42,47,61,.85);backdrop-filter:blur(20px);display:flex;align-items:center}
+    .nav-inner{max-width:var(--max);margin:0 auto;width:100%;display:flex;align-items:center;justify-content:space-between}
+    .brand{display:flex;align-items:center;gap:var(--space-1);text-decoration:none}.brand:hover{text-decoration:none}
+    .brand-mark{width:24px;height:24px;background:var(--purple-primary);border:2px solid var(--purple-bright);border-radius:6px;display:flex;align-items:center;justify-content:center}
+    .brand-mark-inner{width:8px;height:8px;background:#c4b8e8;border-radius:50%}
+    .brand-name{font-family:var(--mono);font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.86)}
+    .back-link{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-tertiary);display:flex;align-items:center;gap:8px}.back-link:hover{color:var(--text-primary);text-decoration:none}
+    
+    main{position:relative;z-index:1;max-width:var(--max);margin:0 auto;padding:calc(var(--nav-height) + 60px) var(--space-2) 80px}
+    
+    .page-label{font-family:var(--mono);font-size:10px;letter-spacing:5px;text-transform:uppercase;color:var(--purple-bright);display:flex;align-items:center;gap:12px;margin-bottom:16px}
+    .page-label::before{content:'';width:40px;height:1px;background:var(--purple-bright)}
+    .page-title{font-family:var(--serif);font-size:clamp(32px,5vw,48px);font-weight:200;line-height:1.1;margin:0 0 20px;letter-spacing:-0.02em}
+    .page-desc{font-size:17px;color:var(--text-secondary);line-height:1.7;max-width:60ch;margin-bottom:var(--space-4)}
+    
+    .faq-section{margin-bottom:var(--space-4)}
+    .faq-section h2{font-family:var(--mono);font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--accent-green);margin:0 0 var(--space-2) 0;padding-bottom:12px;border-bottom:1px solid var(--border-glass)}
+    
+    .faq-item{padding:var(--space-2) 0;border-bottom:1px solid var(--border-subtle)}
+    .faq-item:last-child{border-bottom:none}
+    .faq-q{font-size:15px;font-weight:500;color:var(--text-primary);margin-bottom:8px}
+    .faq-a{font-size:14px;color:var(--text-secondary);line-height:1.7}
+    
+    .highlight-box{background:linear-gradient(135deg,rgba(92,214,133,0.1) 0%,rgba(92,214,133,0.02) 100%);border:1px solid rgba(92,214,133,0.25);border-radius:16px;padding:24px;margin:var(--space-3) 0}
+    .highlight-box h3{font-size:14px;font-weight:600;color:var(--text-primary);margin:0 0 8px}
+    .highlight-box p{font-size:13px;color:var(--text-secondary);line-height:1.6;margin:0}
+    
+    .badge-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:var(--space-2)}
+    .badge{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px;font-size:12px}
+    .badge.red{background:rgba(214,92,92,0.1);border:1px solid rgba(214,92,92,0.3);color:rgba(214,92,92,0.9)}
+    .badge.green{background:rgba(92,214,133,0.1);border:1px solid rgba(92,214,133,0.3);color:rgba(92,214,133,0.9)}
+    
+    footer{margin-top:var(--space-6);padding:var(--space-3) var(--space-2);border-top:1px solid var(--border-glass);text-align:center}
+    .footer-copy{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-tertiary)}
+    
+    @media(max-width:600px){
+      main{padding-top:calc(var(--nav-height) + 40px)}
+      .page-title{font-size:28px}
+    }
+  </style>
+</head>
+<body>
+  <div class="grid-overlay" aria-hidden="true"></div>
+  
+  <header class="site-header">
+    <div class="nav-inner">
+      <a href="index.html" class="brand">
+        <div class="brand-mark"><div class="brand-mark-inner"></div></div>
+        <div class="brand-name">Sentinel Authority</div>
+      </a>
+      <a href="index.html#security" class="back-link">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Back
+      </a>
+    </div>
+  </header>
+  
+  <main>
+    <div class="page-label">Security Architecture</div>
+    <h1 class="page-title">Security FAQ for IT & Compliance Teams</h1>
+    <p class="page-desc">Enterprise security teams ask tough questions. Here are the answers, backed by architecture.</p>
+    
+    <div class="highlight-box">
+      <h3>The Core Guarantee</h3>
+      <p>Sentinel Authority <strong>cannot</strong> send commands to your system, execute code on your infrastructure, access your network, or control your autonomous systems. This is architecturally enforced, not policy-based.</p>
+      <div class="badge-row">
+        <span class="badge red">✗ No Remote Commands</span>
+        <span class="badge red">✗ No Code Execution</span>
+        <span class="badge red">✗ No Network Access</span>
+        <span class="badge red">✗ No Actuator Control</span>
+      </div>
+    </div>
+    
+    <div class="faq-section">
+      <h2>Attack Surface & Compromise</h2>
+      
+      <div class="faq-item">
+        <div class="faq-q">What if Sentinel Authority is compromised?</div>
+        <div class="faq-a">There is no path back to your systems. The agent opens no listening ports and accepts no inbound connections. Even a fully compromised Sentinel Authority cannot send commands, push code, or access your infrastructure. The one-way architecture makes this physically impossible.</div>
+      </div>
+      
+      <div class="faq-item">
+        <div class="faq-q">Can Sentinel push updates or execute code on our systems?</div>
+        <div class="faq-a">No. All updates are customer-initiated. We cannot remotely modify, patch, or execute anything on your infrastructure. The agent fetches boundary configurations (JSON data only) but never accepts executable code.</div>
+      </div>
+      
+      <div class="faq-item">
+        <div class="faq-q">Can the agent access our application data?</div>
+        <div class="faq-a">No. ENVELO validates action boundaries only. It cannot read, store, or transmit your application data, databases, or files. It sees only the parameters you explicitly pass to boundary checks (e.g., "speed=50").</div>
+      </div>
+    </div>
+    
+    <div class="faq-section">
+      <h2>Data Privacy & HIPAA</h2>
+      
+      <div class="faq-item">
+        <div class="faq-q">Does ENVELO transmit PHI or PII?</div>
+        <div class="faq-a">No. Telemetry contains only operational metrics—boundary proximity, enforcement events, timestamps. No patient data, no payload content, no PII ever leaves your system. You control what parameters are passed to the agent.</div>
+      </div>
+      
+      <div class="faq-item">
+        <div class="faq-q">Is a BAA (Business Associate Agreement) available?</div>
+        <div class="faq-a">Yes. Business Associate Agreements are available for healthcare customers upon request. Contact conformance@sentinelauthority.org.</div>
+      </div>
+    </div>
+    
+    <div class="faq-section">
+      <h2>Network & Firewall</h2>
+      
+      <div class="faq-item">
+        <div class="faq-q">What firewall rules are required?</div>
+        <div class="faq-a">Outbound HTTPS (port 443) to api.sentinelauthority.org only. No inbound ports. No DMZ exposure. No VPN tunnels. The agent initiates all connections.</div>
+      </div>
+      
+      <div class="faq-item">
+        <div class="faq-q">What if Sentinel Authority goes offline?</div>
+        <div class="faq-a">ENVELO continues enforcing locally using cached boundaries. Enforcement decisions never depend on external connectivity. Your system remains protected. Telemetry is buffered and synced when connectivity returns.</div>
+      </div>
+    </div>
+    
+    <div class="faq-section">
+      <h2>Auditability & Compliance</h2>
+      
+      <div class="faq-item">
+        <div class="faq-q">Is the agent code auditable?</div>
+        <div class="faq-a">Yes. Enterprise customers receive full source access for security review prior to deployment. We welcome third-party security audits.</div>
+      </div>
+      
+      <div class="faq-item">
+        <div class="faq-q">What compliance certifications do you have?</div>
+        <div class="faq-a">SOC 2 Type II in progress. Architecture designed to exceed SOC 2 requirements. Annual third-party penetration testing. Contact us for the latest compliance documentation.</div>
+      </div>
+    </div>
+    
+    <div class="highlight-box" style="background:linear-gradient(135deg,rgba(157,140,207,0.1) 0%,rgba(157,140,207,0.02) 100%);border-color:rgba(157,140,207,0.25);">
+      <h3>Still have questions?</h3>
+      <p>Our security team is available to discuss your specific requirements. Contact <a href="mailto:conformance@sentinelauthority.org" style="color:var(--purple-bright)">conformance@sentinelauthority.org</a></p>
+    </div>
+  </main>
+  
+  <footer>
+    <div class="footer-copy">© Sentinel Authority — ODDC v1.0</div>
+  </footer>
+</body>
+</html>

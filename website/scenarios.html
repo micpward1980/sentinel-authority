@@ -8,6 +8,9 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect x='6' y='6' width='20' height='20' rx='5' fill='%235B4B8A' stroke='%239d8ccf' stroke-width='2'/><circle cx='16' cy='16' r='4' fill='%239d8ccf'/></svg>" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Performance: Preload critical fonts -->
+    <link rel="preload" href="https://fonts.gstatic.com/s/sourceserif4/v7/vEF42_tTDB4M7-auWDN0ahZJW1ge-w.woff2" as="font" type="font/woff2" crossorigin>
+    
   <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,200;0,300;0,400;1,200;1,300&family=Inter:wght@200;400;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <style>
 
@@ -1423,6 +1426,283 @@
       .brand-mark-inner{ animation: none; opacity: .9; }
   
   
+    
+    /* ============================================
+       ENHANCED ANIMATIONS
+       ============================================ */
+    
+    /* Staggered reveal for grid children */
+    .reveal.active > * {
+      opacity: 0;
+      animation: stagger-in 0.5s ease forwards;
+    }
+    .reveal.active > *:nth-child(1) { animation-delay: 0s; }
+    .reveal.active > *:nth-child(2) { animation-delay: 0.08s; }
+    .reveal.active > *:nth-child(3) { animation-delay: 0.16s; }
+    .reveal.active > *:nth-child(4) { animation-delay: 0.24s; }
+    .reveal.active > *:nth-child(5) { animation-delay: 0.32s; }
+    .reveal.active > *:nth-child(6) { animation-delay: 0.4s; }
+    .reveal.active > *:nth-child(7) { animation-delay: 0.48s; }
+    .reveal.active > *:nth-child(8) { animation-delay: 0.56s; }
+    
+    @keyframes stagger-in {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* Card hover lift effect */
+    [style*="border-radius: 20px"],
+    [style*="border-radius: 16px"],
+    [style*="border-radius: 14px"] {
+      transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease !important;
+    }
+    
+    [style*="border-radius: 20px"]:hover,
+    [style*="border-radius: 16px"]:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    }
+    
+    /* Button glow on hover */
+    .btn.primary {
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease !important;
+    }
+    
+    .btn.primary::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+      transition: left 0.5s ease;
+    }
+    
+    .btn.primary:hover::before {
+      left: 100%;
+    }
+    
+    .btn.primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(91,75,138,0.4);
+    }
+    
+    /* Icon hover rotation */
+    .gate-icon svg,
+    [style*="border-radius: 12px"] svg {
+      transition: transform 0.3s ease;
+    }
+    
+    [style*="border-radius: 20px"]:hover svg,
+    [style*="border-radius: 16px"]:hover svg {
+      transform: scale(1.1);
+    }
+    
+    /* Badge hover */
+    .badge {
+      transition: all 0.2s ease !important;
+    }
+    
+    .badge:hover {
+      transform: translateY(-2px);
+      background: rgba(255,255,255,0.08);
+      border-color: var(--purple-bright);
+    }
+    
+    /* Smooth section transitions */
+    .section {
+      transition: opacity 0.5s ease;
+    }
+    
+    /* Link underline animation */
+    a:not(.btn):not(.brand) {
+      position: relative;
+    }
+    
+    a:not(.btn):not(.brand)::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 0;
+      height: 1px;
+      background: var(--purple-bright);
+      transition: width 0.3s ease;
+    }
+    
+    a:not(.btn):not(.brand):hover::after {
+      width: 100%;
+    }
+    
+    /* Floating animation for hero elements */
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    
+    /* Pulse glow for important elements */
+    @keyframes glow-pulse {
+      0%, 100% { box-shadow: 0 0 20px rgba(92,214,133,0.2); }
+      50% { box-shadow: 0 0 40px rgba(92,214,133,0.4); }
+    }
+    
+    /* Gate 3 (ENVELO) special glow */
+    [style*="rgba(92,214,133,0.15)"] {
+      animation: glow-pulse 3s ease-in-out infinite;
+    }
+    
+    /* Smooth scroll indicator fade */
+    .scroll-indicator {
+      animation: bounce-fade 2s ease-in-out infinite;
+    }
+    
+    @keyframes bounce-fade {
+      0%, 100% { opacity: 0.5; transform: translateY(0); }
+      50% { opacity: 1; transform: translateY(5px); }
+    }
+    
+    /* Process step connector animation */
+    @keyframes flow-right {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 100% 50%; }
+    }
+    
+    /* Typing cursor effect for terminal */
+    @keyframes blink {
+      0%, 50% { opacity: 1; }
+      51%, 100% { opacity: 0; }
+    }
+    
+    /* Number counter animation prep */
+    .counter {
+      display: inline-block;
+    }
+    
+    /* Reduce motion for accessibility */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+      .reveal { opacity: 1; transform: none; }
+      .reveal.active > * { animation: none; opacity: 1; }
+    }
+    
+    
+    
+    /* ============================================
+       LIGHT MODE - AGGRESSIVE OVERRIDE
+       ============================================ */
+    
+    /* Kill the dark radial gradient */
+    
+    /* Make grid subtle */
+    
+    /* ===== HEADER ===== */
+    
+    /* ===== ALL TEXT - BRUTE FORCE ===== */
+    
+    /* Section labels stay purple */
+    
+    /* Tertiary/muted text */
+    
+    /* ===== PURPLE ACCENT TEXT ===== */
+    
+    /* ===== GREEN ACCENT TEXT ===== */
+    
+    /* ===== ALL CARDS & PANELS ===== */
+    
+    /* Cards with purple gradient */
+    
+    /* Cards with green gradient (ENVELO highlight) */
+    
+    /* ===== TERMINAL/VERIFY WIDGET ===== */
+    
+    /* ===== BUTTONS ===== */
+    
+    /* ===== BADGES ===== */
+    
+    /* ===== INPUTS ===== */
+    
+    /* ===== SVGS ===== */
+    
+    /* Purple SVG elements */
+    
+    /* Green SVG elements */
+    
+    /* Gate icons in cards */
+    
+    /* ===== RED/WARNING ===== */
+    
+    /* ===== AMBER/WARNING ===== */
+    
+    /* ===== DRAFT BANNER ===== */
+    
+    /* ===== FOOTER ===== */
+    
+    /* ===== MOBILE DRAWER ===== */
+    
+    /* ===== LINKS ===== */
+    
+    /* But not buttons or nav */
+    
+    /* ===== LEGAL PAGES ===== */
+    
+    /* ===== THEME TOGGLE ===== */
+    
+    
+    .theme-toggle:hover {
+      border-color: var(--purple-bright) !important;
+    }
+    
+    .theme-toggle svg {
+      width: 18px;
+      height: 18px;
+    }
+    
+    .theme-toggle .icon-sun { display: none; }
+    .theme-toggle .icon-moon { display: block; }
+    
+    
+    /* Accessibility - Skip Link */
+    .skip-link {
+      position: absolute;
+      top: -50px;
+      left: 16px;
+      background: var(--purple-primary);
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-family: var(--mono);
+      font-size: 12px;
+      z-index: 9999;
+      transition: top 0.2s ease;
+    }
+    .skip-link:focus {
+      top: 16px;
+      outline: 2px solid var(--purple-bright);
+      outline-offset: 2px;
+    }
+    
+    /* Focus indicators */
+    a:focus, button:focus, input:focus, select:focus, textarea:focus {
+      outline: 2px solid var(--purple-bright);
+      outline-offset: 2px;
+    }
+    
+    /* Focus visible only for keyboard navigation */
+    :focus:not(:focus-visible) {
+      outline: none;
+    }
+    :focus-visible {
+      outline: 2px solid var(--purple-bright);
+      outline-offset: 2px;
+    }
+    
     /* ============================================
        MOBILE RESPONSIVE STYLES
        ============================================ */
@@ -1570,6 +1850,9 @@
   </style>
 </head>
 <body>
+    <!-- Skip to main content link for accessibility -->
+    <a href="#main" class="skip-link">Skip to content</a>
+    
   <!-- Grid overlay -->
   <div class="grid-overlay" aria-hidden="true"></div>
   
@@ -1956,5 +2239,6 @@ const fy = document.getElementById("footer-year"); if (fy) fy.textContent = new 
     window.addEventListener('load', checkReveal);
     checkReveal();
   </script>
+
 </body>
 </html>

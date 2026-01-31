@@ -1,0 +1,13 @@
+# Sentinel Authority - robots.txt
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://www.sentinelauthority.org/sitemap.xml
+
+# Disallow preview/test pages
+Disallow: /*-preview.html
+Disallow: /admin-dash-preview.html
+Disallow: /customer-dash-preview.html
+Disallow: /hero-preview.html
+Disallow: /hero-clean-preview.html
