@@ -1126,6 +1126,55 @@
     @keyframes scroll-bounce { 0%, 100% { transform: scaleY(1); opacity: 0.5; } 50% { transform: scaleY(0.7); opacity: 1; } }
 
     
+    
+    
+    /* Mobile hero element fixes */
+    @media (max-width: 768px) {
+      .scroll-indicator-desktop {
+        display: none !important;
+      }
+      .hero-disclaimer {
+        position: relative !important;
+        bottom: auto !important;
+        left: auto !important;
+        transform: none !important;
+        margin-top: 32px !important;
+        padding: 0 16px !important;
+      }
+      .hero {
+        padding-bottom: 40px !important;
+      }
+    }
+
+    /* ===== MOBILE HERO FIXES ===== */
+    @media (max-width: 768px) {
+      /* Hide scroll indicator completely on mobile */
+      .scroll-line,
+      [style*="SCROLL"] {
+        display: none !important;
+      }
+      
+      /* Fix hero disclaimer - not absolute positioned on mobile */
+      .hero > [style*="position: absolute"][style*="bottom: 10px"] {
+        position: relative !important;
+        bottom: auto !important;
+        left: auto !important;
+        transform: none !important;
+        margin-top: 40px;
+      }
+      
+      /* Fix hero canvas aspect ratio */
+      #hero-canvas {
+        max-height: 100vh;
+      }
+      
+      /* More padding at bottom of hero content */
+      .hero > [style*="z-index: 10"][style*="text-align: center"] {
+        padding-bottom: 60px !important;
+      }
+    }
+    /* ===== END MOBILE HERO FIXES ===== */
+
     /* ===== COMPREHENSIVE MOBILE FIXES ===== */
     @media (max-width: 768px) {
       /* Hero adjustments */
@@ -2304,14 +2353,14 @@
         </div>
       </div>
       
-      <!-- Scroll Indicator -->
-      <div style="position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); z-index: 10; display: flex; flex-direction: column; align-items: center; gap: 8px;">
+      <!-- Scroll Indicator - hidden on mobile -->
+      <div class="scroll-indicator-desktop" style="position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); z-index: 10; display: flex; flex-direction: column; align-items: center; gap: 8px;">
         <div class="scroll-line" style="width: 1px; height: 30px; background: linear-gradient(to bottom, rgba(157,140,207,0.5), transparent);"></div>
         <span style="font-family: var(--mono); font-size: 10px; letter-spacing: 2px; color: rgba(255,255,255,0.35);">SCROLL</span>
       </div>
       
       <!-- Disclaimer at bottom -->
-      <div style="position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); z-index: 10; text-align: center; padding: 0 20px;">
+      <div class="hero-disclaimer" style="position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); z-index: 10; text-align: center; padding: 0 20px;">
         <p style="font-family: var(--mono); font-size: 9px; color: rgba(255,255,255,0.25); letter-spacing: 0.3px; margin: 0; max-width: 600px;">
           Independent conformance determination. Not a regulator. ODDC does not attest safety or compliance.
         </p>
