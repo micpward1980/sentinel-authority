@@ -4178,24 +4178,17 @@
     window.addEventListener('scroll', updateActiveSection, { passive: true });
     updateActiveSection();
 
-    // Reveal animations on scroll
-    const revealElements = document.querySelectorAll('.reveal');
-    
-    function checkReveal() {
-      const windowHeight = window.innerHeight;
-      const revealPoint = 120;
-      
-      revealElements.forEach(el => {
-        const elementTop = el.getBoundingClientRect().top;
-        if (elementTop < windowHeight - revealPoint) {
-          el.classList.add('active');
+        // Reveal animations - IntersectionObserver (GPU-efficient, no scroll jank)
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('active');
+          revealObserver.unobserve(entry.target); // Stop watching once revealed
         }
       });
-    }
+    }, { threshold: 0.15, rootMargin: '0px 0px -50px 0px' });
     
-    window.addEventListener('scroll', checkReveal, { passive: true });
-    window.addEventListener('load', checkReveal);
-    checkReveal();
+    document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 
     // Download Modal
     let currentPdfPath = '';
