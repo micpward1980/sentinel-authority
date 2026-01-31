@@ -2522,9 +2522,9 @@
               ctx.arc(p.x, p.y, p.frozen ? p.radius * 1.5 : p.radius, 0, Math.PI * 2);
               if (p.frozen) {
                 // Bright red, solid
-                ctx.fillStyle = 'rgba(255,60,60,1)';
-                ctx.shadowColor = 'rgba(255,60,60,0.8)';
-                ctx.shadowBlur = 10;
+                ctx.fillStyle = '#FF0000';
+                ctx.shadowColor = '#FF0000';
+                ctx.shadowBlur = 20;
               } else {
                 ctx.fillStyle = 'rgba(92,214,133,0.8)';
                 ctx.shadowBlur = 0;
