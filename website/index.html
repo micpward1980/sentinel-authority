@@ -2508,6 +2508,12 @@
                 // Normal movement
                 p.x += p.vx;
                 p.y += p.vy;
+                const currentSpeed = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+                if (currentSpeed < 4 && !p.frozen) {
+                  const boost = 4 / Math.max(currentSpeed, 0.1);
+                  p.vx *= boost;
+                  p.vy *= boost;
+                }
                 if (window._chaos) { if (p.x < 0 || p.x > width) p.vx *= -1.15; if (p.y < 0 || p.y > height) p.vy *= -1.15; p.x = Math.max(0, Math.min(width, p.x)); p.y = Math.max(0, Math.min(height, p.y)); }
                 
                 const dx = p.x - centerX;
