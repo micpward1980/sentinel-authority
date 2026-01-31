@@ -2520,10 +2520,15 @@
                 const dy = p.y - centerY;
                 const dist = Math.sqrt(dx * dx + dy * dy);
                 
-                // Soft boundary - most particles gently steer away (but not rogue ones)
-                if (!window._chaos && (Date.now() - (window._chaosEndTime || 0) > 500) && dist > boundaryRadius * 0.6 && !p.rogue) {
+                // Soft boundary - bounce particles back before they reach edge
+                if (!window._chaos && (Date.now() - (window._chaosEndTime || 0) > 500) && dist > boundaryRadius * 0.7 && !p.rogue) {
                   const angle = Math.atan2(dy, dx);
-                  // steering disabled for fast particles
+                  // Reflect velocity away from boundary
+                  const dot = p.vx * Math.cos(angle) + p.vy * Math.sin(angle);
+                  if (dot > 0) {
+                    p.vx -= 2 * dot * Math.cos(angle);
+                    p.vy -= 2 * dot * Math.sin(angle);
+                  }
                 }
                 
                 // Hard boundary - freeze at edge
