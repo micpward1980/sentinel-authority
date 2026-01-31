@@ -50,6 +50,22 @@
   </script>
 
   <style>
+
+    /* Performance optimizations */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+    
+    [class*="packet"], [class*="pulse"], [class*="flow"], .hero-ring {
+      will-change: transform, opacity;
+    }
+    
+    /* Replace expensive box-shadow animations with opacity */
+
     :root{
       color-scheme: dark;
       
@@ -1687,17 +1703,17 @@
     .cat72-dot { animation: cat72-orbit 6s ease-in-out infinite; transform-origin: 140px 140px; }
     @keyframes cat72-orbit { 0%, 5% { transform: translateX(-50%) rotate(0deg); } 75% { transform: translateX(-50%) rotate(360deg); } 80%, 100% { transform: translateX(-50%) rotate(0deg); } }
     @keyframes thermo-width { 0% { width: 0%; } 80% { width: 100%; } 85%, 100% { width: 0%; } }
-    @keyframes thermo-dot-0 { 0% { background: rgba(30,33,43,1); border-color: rgba(157,140,207,0.3); } 1%, 80% { background: rgba(92,214,133,1); border-color: rgba(92,214,133,1); box-shadow: 0 0 12px rgba(92,214,133,0.6); } 85%, 100% { background: rgba(30,33,43,1); border-color: rgba(157,140,207,0.3); box-shadow: none; } }
-    @keyframes thermo-dot-33 { 0%, 26% { background: rgba(30,33,43,1); border-color: rgba(157,140,207,0.3); } 27%, 80% { background: rgba(92,214,133,1); border-color: rgba(92,214,133,1); box-shadow: 0 0 12px rgba(92,214,133,0.6); } 85%, 100% { background: rgba(30,33,43,1); border-color: rgba(157,140,207,0.3); box-shadow: none; } }
-    @keyframes thermo-dot-66 { 0%, 52% { background: rgba(30,33,43,1); border-color: rgba(157,140,207,0.3); } 53%, 80% { background: rgba(92,214,133,1); border-color: rgba(92,214,133,1); box-shadow: 0 0 12px rgba(92,214,133,0.6); } 85%, 100% { background: rgba(30,33,43,1); border-color: rgba(157,140,207,0.3); box-shadow: none; } }
-    @keyframes thermo-dot-100 { 0%, 78% { background: rgba(30,33,43,1); border-color: rgba(157,140,207,0.3); } 80% { background: rgba(92,214,133,1); border-color: rgba(92,214,133,1); box-shadow: 0 0 16px rgba(92,214,133,0.8); } 85%, 100% { background: rgba(30,33,43,1); border-color: rgba(157,140,207,0.3); box-shadow: none; } }
+    @keyframes thermo-dot-0 { 0%, 0% { background: rgba(30,33,43,1); border-color: rgba(157,140,207,0.3); opacity: 0.6; } 1%, 80% { background: rgba(92,214,133,1); border-color: rgba(92,214,133,1); opacity: 1; } 85%, 100% { background: rgba(30,33,43,1); border-color: rgba(157,140,207,0.3); opacity: 0.6; } } 1%, 80% { background: rgba(92,214,133,1); border-color: rgba(92,214,133,1); box-shadow: 0 0 12px rgba(92,214,133,0.6); } 85%, 100% { background: rgba(30,33,43,1); border-color: rgba(157,140,207,0.3); box-shadow: none; } }
+    @keyframes thermo-dot-33 { 0%, 26% { background: rgba(30,33,43,1); border-color: rgba(157,140,207,0.3); opacity: 0.6; } 27%, 80% { background: rgba(92,214,133,1); border-color: rgba(92,214,133,1); opacity: 1; } 85%, 100% { background: rgba(30,33,43,1); border-color: rgba(157,140,207,0.3); opacity: 0.6; } } 27%, 80% { background: rgba(92,214,133,1); border-color: rgba(92,214,133,1); box-shadow: 0 0 12px rgba(92,214,133,0.6); } 85%, 100% { background: rgba(30,33,43,1); border-color: rgba(157,140,207,0.3); box-shadow: none; } }
+    @keyframes thermo-dot-66 { 0%, 52% { background: rgba(30,33,43,1); border-color: rgba(157,140,207,0.3); opacity: 0.6; } 53%, 80% { background: rgba(92,214,133,1); border-color: rgba(92,214,133,1); opacity: 1; } 85%, 100% { background: rgba(30,33,43,1); border-color: rgba(157,140,207,0.3); opacity: 0.6; } } 53%, 80% { background: rgba(92,214,133,1); border-color: rgba(92,214,133,1); box-shadow: 0 0 12px rgba(92,214,133,0.6); } 85%, 100% { background: rgba(30,33,43,1); border-color: rgba(157,140,207,0.3); box-shadow: none; } }
+    @keyframes thermo-dot-100 { 0%, 79% { background: rgba(30,33,43,1); border-color: rgba(157,140,207,0.3); opacity: 0.6; } 80%, 80% { background: rgba(92,214,133,1); border-color: rgba(92,214,133,1); opacity: 1; } 85%, 100% { background: rgba(30,33,43,1); border-color: rgba(157,140,207,0.3); opacity: 0.6; } } 80% { background: rgba(92,214,133,1); border-color: rgba(92,214,133,1); box-shadow: 0 0 16px rgba(92,214,133,0.8); } 85%, 100% { background: rgba(30,33,43,1); border-color: rgba(157,140,207,0.3); box-shadow: none; } }
      17%, 52% { background: rgba(92,214,133,0.9); border: 2px solid rgba(92,214,133,0.9); box-shadow: 0 0 12px rgba(92,214,133,0.5); } 54%, 100% { background: rgba(42,47,61,1); border: 2px solid rgba(157,140,207,0.5); box-shadow: none; } }
      34%, 52% { background: rgba(92,214,133,0.9); border: 2px solid rgba(92,214,133,0.9); box-shadow: 0 0 12px rgba(92,214,133,0.5); } 54%, 100% { background: rgba(42,47,61,1); border: 2px solid rgba(157,140,207,0.5); box-shadow: none; } }
      50%, 52% { background: rgba(92,214,133,0.9); border: 2px solid rgba(92,214,133,0.9); box-shadow: 0 0 16px rgba(92,214,133,0.6); } 54%, 100% { background: rgba(42,47,61,1); border: 2px solid rgba(157,140,207,0.5); box-shadow: none; } }
     @keyframes trail-fill { 0% { stroke-dashoffset: 880; } 100% { stroke-dashoffset: 0; } }
     @keyframes orbit-dot { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     @keyframes block-fill-green { 0% { opacity: 0; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1); background: rgba(92,214,133,0.9); } }
-    @keyframes pulse-dot { 0%, 100% { opacity: 1; box-shadow: 0 0 8px rgba(92,214,133,0.8); } 50% { opacity: 0.6; box-shadow: 0 0 16px rgba(92,214,133,0.4); } }
+    @keyframes pulse-dot { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } } 50% { opacity: 0.6; box-shadow: 0 0 16px rgba(92,214,133,0.4); } }
     @keyframes pulse-move { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
     @keyframes rotate-reverse { from { transform: rotate(360deg); } to { transform: rotate(0deg); } }
     @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
@@ -4561,5 +4577,22 @@
       })();
     </script>
 
+
+  <script>
+    // Performance: pause animations when off-screen
+    const animatedSections = document.querySelectorAll('section, .diagram, svg');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.animationPlayState = 'running';
+          entry.target.querySelectorAll('*').forEach(el => el.style.animationPlayState = 'running');
+        } else {
+          entry.target.style.animationPlayState = 'paused';
+          entry.target.querySelectorAll('*').forEach(el => el.style.animationPlayState = 'paused');
+        }
+      });
+    }, { threshold: 0.1 });
+    animatedSections.forEach(s => observer.observe(s));
+  </script>
 </body>
 </html>
