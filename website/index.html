@@ -63,6 +63,13 @@
     [class*="packet"], [class*="pulse"], [class*="flow"], .hero-ring {
       will-change: transform, opacity;
     }
+
+    /* GPU acceleration for blur/backdrop elements */
+    [style*="backdrop-filter"], .nav, .drawer, header {
+      will-change: transform;
+      transform: translateZ(0);
+    }
+
     
     /* Replace expensive box-shadow animations with opacity */
 
@@ -4175,7 +4182,17 @@
       });
     }
     
-    window.addEventListener('scroll', updateActiveSection, { passive: true });
+    // Throttled scroll for active section (fires max 10x/sec instead of 60x)
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          updateActiveSection();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    }, { passive: true });
     updateActiveSection();
 
         // Reveal animations - IntersectionObserver (GPU-efficient, no scroll jank)
