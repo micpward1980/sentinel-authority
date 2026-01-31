@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     DATABASE_URL: str = "postgresql://localhost/sentinel_authority"
     REDIS_URL: str = "redis://localhost:6379"
     SECRET_KEY: str = "change-me-in-production"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 4  # 4 hours
     ALGORITHM: str = "HS256"
     CORS_ORIGINS: List[str] = [
         "http://localhost:3000",

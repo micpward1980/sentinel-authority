@@ -98,11 +98,28 @@ async def login(request: Request, credentials: UserLogin, db: AsyncSession = Dep
     result = await db.execute(select(User).where(User.email == credentials.email))
     user = result.scalar_one_or_none()
     
+    # Check if account is locked
+    if user and user.locked_until and user.locked_until > datetime.utcnow():
+        minutes_left = int((user.locked_until - datetime.utcnow()).total_seconds() / 60) + 1
+        raise HTTPException(status_code=429, detail=f"Account locked. Try again in {minutes_left} minutes.")
+    
+    # Validate credentials
     if not user or not verify_password(credentials.password, user.hashed_password):
+        if user:
+            user.failed_login_attempts = (user.failed_login_attempts or 0) + 1
+            if user.failed_login_attempts >= 5:
+                user.locked_until = datetime.utcnow() + timedelta(minutes=15)
+                user.failed_login_attempts = 0
+            await db.commit()
         raise HTTPException(status_code=401, detail="Invalid credentials")
     
     if not user.is_active:
         raise HTTPException(status_code=401, detail="Account disabled")
+    
+    # Reset failed attempts on successful login
+    user.failed_login_attempts = 0
+    user.locked_until = None
+    await db.commit()
     
     token = create_access_token({"sub": str(user.id), "email": user.email, "role": user.role.value, "organization": user.organization})
     return {
