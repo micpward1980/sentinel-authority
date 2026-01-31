@@ -4175,7 +4175,13 @@
       });
     }
     
-    window.addEventListener('scroll', updateActiveSection, { passive: true });
+    let scrollTick = false;
+    window.addEventListener('scroll', () => {
+      if (!scrollTick) {
+        requestAnimationFrame(() => { updateActiveSection(); scrollTick = false; });
+        scrollTick = true;
+      }
+    }, { passive: true });
     updateActiveSection();
 
     // Reveal animations on scroll
