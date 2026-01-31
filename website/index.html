@@ -2517,9 +2517,7 @@
                 // Soft boundary - most particles gently steer away (but not rogue ones)
                 if (!window._chaos && (Date.now() - (window._chaosEndTime || 0) > 500) && dist > boundaryRadius * 0.6 && !p.rogue) {
                   const angle = Math.atan2(dy, dx);
-                  const steerStrength = (dist - boundaryRadius * 0.6) / (boundaryRadius * 0.4) * 0.01;
-                  p.vx -= Math.cos(angle) * steerStrength;
-                  p.vy -= Math.sin(angle) * steerStrength;
+                  // steering disabled for fast particles
                 }
                 
                 // Hard boundary - freeze at edge
