@@ -2418,7 +2418,7 @@
             
             // Every ~500ms, launch a particle toward the boundary
             const now = Date.now();
-            if (now - lastPop > 500 + Math.random() * 400) {
+            if (now - lastPop > 2000 + Math.random() * 1500) {
               lastPop = now;
               // Pick a random particle and boost it outward
               const victim = particles[Math.floor(Math.random() * particles.length)];
