@@ -476,3 +476,40 @@ async def send_provisioned_agent_email(to: str, customer_name: str, system_name:
         subject=f"Your ENVELO Agent is Ready - {system_name}",
         html=html
     )
+
+async def send_password_reset_email(to: str, name: str, token: str):
+    """Send password reset email"""
+    reset_url = f"https://app.sentinelauthority.org/reset-password?token={token}"
+    
+    html = f"""
+    <div style="font-family: 'IBM Plex Mono', Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #2a2f3d; color: #fff;">
+        <div style="background: linear-gradient(135deg, #5B4B8A 0%, #7B6BAA 100%); padding: 30px; text-align: center;">
+            <div style="display: inline-block; width: 48px; height: 48px; background: #5B4B8A; border: 2px solid #9d8ccf; border-radius: 12px; margin-bottom: 16px;"></div>
+            <h1 style="color: white; margin: 0; font-size: 24px; font-weight: 300;">SENTINEL AUTHORITY</h1>
+        </div>
+        <div style="padding: 40px 30px;">
+            <h2 style="color: #9d8ccf; font-size: 18px; font-weight: 400; margin-bottom: 24px;">Password Reset Request</h2>
+            <p style="color: rgba(255,255,255,0.8); line-height: 1.6; margin-bottom: 24px;">
+                Hi {name or 'there'},
+            </p>
+            <p style="color: rgba(255,255,255,0.8); line-height: 1.6; margin-bottom: 24px;">
+                We received a request to reset your password. Click the button below to create a new password:
+            </p>
+            <div style="text-align: center; margin: 32px 0;">
+                <a href="{reset_url}" style="display: inline-block; background: linear-gradient(135deg, #5B4B8A 0%, #7B6BAA 100%); color: #fff; text-decoration: none; padding: 14px 32px; border-radius: 10px; font-size: 12px; letter-spacing: 2px; text-transform: uppercase;">
+                    Reset Password
+                </a>
+            </div>
+            <p style="color: rgba(255,255,255,0.5); font-size: 13px; line-height: 1.6; margin-top: 32px;">
+                This link will expire in 1 hour. If you didn't request this reset, you can safely ignore this email.
+            </p>
+            <hr style="border: none; border-top: 1px solid rgba(255,255,255,0.1); margin: 32px 0;">
+            <p style="color: rgba(255,255,255,0.4); font-size: 11px; text-align: center;">
+                SENTINEL AUTHORITY — ODDC Conformance<br>
+                <a href="https://sentinelauthority.org" style="color: #9d8ccf; text-decoration: none;">sentinelauthority.org</a>
+            </p>
+        </div>
+    </div>
+    """
+    await send_email(to, "Reset Your Password - Sentinel Authority", html)
+

@@ -40,6 +40,8 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     email = Column(String(255), unique=True, index=True, nullable=False)
     hashed_password = Column(String(255), nullable=False)
+    reset_token = Column(String(255), nullable=True)
+    reset_token_expires = Column(DateTime, nullable=True)
     full_name = Column(String(255))
     organization = Column(String(255))
     role = Column(Enum(UserRole), default=UserRole.SUBSCRIBER)

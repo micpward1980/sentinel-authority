@@ -1,7 +1,8 @@
 """Authentication routes."""
 from app.services.email_service import notify_admin_new_registration
 
-from datetime import datetime
+from datetime import datetime, timedelta
+import secrets
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
@@ -30,6 +31,15 @@ class TokenResponse(BaseModel):
     access_token: str
     token_type: str = "bearer"
     user: dict
+
+
+class ForgotPasswordRequest(BaseModel):
+    email: EmailStr
+
+
+class ResetPasswordRequest(BaseModel):
+    token: str
+    new_password: str
 
 
 @router.post("/register", response_model=TokenResponse)
@@ -85,3 +95,71 @@ async def get_me(current_user: dict = Depends(get_current_user), db: AsyncSessio
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return {"id": user.id, "email": user.email, "full_name": user.full_name, "organization": user.organization, "role": user.role.value}
+
+@router.post("/forgot-password")
+async def forgot_password(request: ForgotPasswordRequest, db: AsyncSession = Depends(get_db)):
+    """Request a password reset email"""
+    result = await db.execute(select(User).where(User.email == request.email))
+    user = result.scalar_one_or_none()
+    
+    # Always return success to prevent email enumeration
+    if not user:
+        return {"message": "If an account exists with this email, a reset link has been sent."}
+    
+    # Generate reset token
+    reset_token = secrets.token_urlsafe(32)
+    user.reset_token = reset_token
+    user.reset_token_expires = datetime.utcnow() + timedelta(hours=1)
+    
+    await db.commit()
+    
+    # Send reset email
+    await send_password_reset_email(user.email, user.full_name, reset_token)
+    
+    return {"message": "If an account exists with this email, a reset link has been sent."}
+
+
+@router.post("/reset-password")
+async def reset_password(request: ResetPasswordRequest, db: AsyncSession = Depends(get_db)):
+    """Reset password using token"""
+    result = await db.execute(
+        select(User).where(
+            User.reset_token == request.token,
+            User.reset_token_expires > datetime.utcnow()
+        )
+    )
+    user = result.scalar_one_or_none()
+    
+    if not user:
+        raise HTTPException(status_code=400, detail="Invalid or expired reset token")
+    
+    # Validate password strength
+    if len(request.new_password) < 8:
+        raise HTTPException(status_code=400, detail="Password must be at least 8 characters")
+    
+    # Update password and clear token
+    user.hashed_password = get_password_hash(request.new_password)
+    user.reset_token = None
+    user.reset_token_expires = None
+    
+    await db.commit()
+    
+    return {"message": "Password has been reset successfully"}
+
+
+@router.get("/verify-reset-token/{token}")
+async def verify_reset_token(token: str, db: AsyncSession = Depends(get_db)):
+    """Verify if a reset token is valid"""
+    result = await db.execute(
+        select(User).where(
+            User.reset_token == token,
+            User.reset_token_expires > datetime.utcnow()
+        )
+    )
+    user = result.scalar_one_or_none()
+    
+    if not user:
+        raise HTTPException(status_code=400, detail="Invalid or expired reset token")
+    
+    return {"valid": True, "email": user.email}
+
