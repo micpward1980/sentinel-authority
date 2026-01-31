@@ -4485,11 +4485,13 @@
                   var origLen = d.p.length;
                   // Add 50 more particles for the party
                   for (var i = 0; i < 150; i++) {
+                    var a = Math.random() * Math.PI * 2;
+                    var spd = 60 + Math.random() * 40;
                     d.p.push({
-                      x: d.cx + (Math.random() - 0.5) * d.r,
-                      y: d.cy + (Math.random() - 0.5) * d.r,
-                      vx: (Math.random() - 0.5) * 80,
-                      vy: (Math.random() - 0.5) * 80,
+                      x: d.cx + Math.cos(a) * 20,
+                      y: d.cy + Math.sin(a) * 20,
+                      vx: Math.cos(a) * spd,
+                      vy: Math.sin(a) * spd,
                       radius: Math.random() * 8 + 5,
                       frozen: false,
                       frozenTime: 0,
@@ -4498,8 +4500,11 @@
                   }
                   d.p.forEach(function(x) {
                     x.frozen = false;
-                    x.vx = (Math.random() - 0.5) * 80;
-                    x.vy = (Math.random() - 0.5) * 80;
+                    // Explode outward from center
+                    var angle = Math.atan2(x.y - d.cy, x.x - d.cx) || Math.random() * Math.PI * 2;
+                    var speed = 60 + Math.random() * 40;
+                    x.vx = Math.cos(angle) * speed;
+                    x.vy = Math.sin(angle) * speed;
                     x.radius = Math.random() * 8 + 5;
                   });
                   window._origParticleCount = origLen;
