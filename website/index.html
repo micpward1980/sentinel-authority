@@ -2401,7 +2401,7 @@
             for (let i = 0; i < 25; i++) {
               const orbitRadius = boundaryRadius * (0.3 + Math.random() * 0.35);
               const angle = Math.random() * Math.PI * 2;
-              const speed = 0.003 + Math.random() * 0.004;
+              const speed = 0.006 + Math.random() * 0.008;
               const clockwise = Math.random() > 0.3;
               particles.push({
                 orbitRadius: orbitRadius,
@@ -2507,7 +2507,7 @@
                 }
               } else if (p.rogue) {
                 // Moving outward toward boundary
-                p.escapeProgress += 0.012;
+                p.escapeProgress += 0.02;
                 const currentRadius = p.orbitRadius + (boundaryRadius - p.orbitRadius) * p.escapeProgress;
                 x = centerX + Math.cos(p.escapeAngle) * currentRadius;
                 y = centerY + Math.sin(p.escapeAngle) * currentRadius;
