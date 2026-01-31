@@ -4437,6 +4437,13 @@
             window._disco = false;
             icon.style.boxShadow = '0 0 40px rgba(157,140,207,0.5)';
             icon.style.animation = 'none';
+            // Change wink back to eye
+            var eye = document.querySelector('#hero-icon > div');
+            if (eye) {
+              eye.innerHTML = '';
+              eye.style.background = 'radial-gradient(circle, #fff 0%, #c4b8e8 100%)';
+              eye.style.fontSize = '';
+            }
             // Reset particles to center BEFORE turning off chaos
             if (window._hp && window._hp.p) {
               var d = window._hp;
@@ -4480,6 +4487,13 @@
               if (window._musicPlaying) {
                 window._chaos = true;
                 window._disco = true;
+                // Change eye to wink
+                var eye = document.querySelector('#hero-icon > div');
+                if (eye) {
+                  eye.style.background = 'none';
+                  eye.style.fontSize = '32px';
+                  eye.innerHTML = '😉';
+                }
                 if (window._hp && window._hp.p) {
                   var d = window._hp;
                   var origLen = d.p.length;
