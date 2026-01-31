@@ -2497,8 +2497,8 @@
                   const newDist = Math.random() * boundaryRadius * 0.3;
                   p.x = centerX + Math.cos(newAngle) * newDist;
                   p.y = centerY + Math.sin(newAngle) * newDist;
-                  p.vx = (Math.random() - 0.5) * 0.8;
-                  p.vy = (Math.random() - 0.5) * 0.8;
+                  p.vx = (Math.random() - 0.5) * 4;
+                  p.vy = (Math.random() - 0.5) * 4;
                   p.frozen = false;
                   p.frozenTime = 0;
                   p.radius = Math.random() * 2 + 1;
@@ -2517,7 +2517,7 @@
                 // Soft boundary - most particles gently steer away (but not rogue ones)
                 if (!window._chaos && (Date.now() - (window._chaosEndTime || 0) > 500) && dist > boundaryRadius * 0.6 && !p.rogue) {
                   const angle = Math.atan2(dy, dx);
-                  const steerStrength = (dist - boundaryRadius * 0.6) / (boundaryRadius * 0.4) * 0.05;
+                  const steerStrength = (dist - boundaryRadius * 0.6) / (boundaryRadius * 0.4) * 0.01;
                   p.vx -= Math.cos(angle) * steerStrength;
                   p.vy -= Math.sin(angle) * steerStrength;
                 }
