@@ -2409,10 +2409,25 @@
             }
           }
           
+          let lastPop = 0;
+          
           function animate() {
             ctx.clearRect(0, 0, width, height);
             boundaryPulse += 0.015;
             const pulseOffset = Math.sin(boundaryPulse) * 4;
+            
+            // Force 2-3 pops per second
+            const now = Date.now();
+            if (now - lastPop > 400 + Math.random() * 300) {
+              lastPop = now;
+              // Pick a random particle and send it to the edge
+              const victim = particles[Math.floor(Math.random() * particles.length)];
+              if (victim) {
+                const angle = Math.atan2(victim.y - centerY, victim.x - centerX);
+                victim.x = centerX + Math.cos(angle) * (boundaryRadius - 5);
+                victim.y = centerY + Math.sin(angle) * (boundaryRadius - 5);
+              }
+            }
             
             // Outer glow
             const gradient = ctx.createRadialGradient(centerX, centerY, boundaryRadius - 30, centerX, centerY, boundaryRadius + 60);
