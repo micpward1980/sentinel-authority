@@ -52,6 +52,12 @@
   <style>
 
     /* Performance optimizations */
+    
+    /* Pause all animations when not in viewport - handled by JS observer */
+    .anim-paused, .anim-paused * {
+      animation-play-state: paused !important;
+    }
+
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after {
         animation-duration: 0.01ms !important;
@@ -270,6 +276,12 @@
         box-shadow: 0 0 10px rgba(157,140,207,.22);
       }
     }
+    
+    /* Pause all animations when not in viewport - handled by JS observer */
+    .anim-paused, .anim-paused * {
+      animation-play-state: paused !important;
+    }
+
     @media (prefers-reduced-motion: reduce){
       .brand-mark-inner{ animation: none; opacity: .9; }
     }
@@ -1390,6 +1402,12 @@
       animation: interlock-pulse 3s ease-in-out infinite;
     }
     
+    
+    /* Pause all animations when not in viewport - handled by JS observer */
+    .anim-paused, .anim-paused * {
+      animation-play-state: paused !important;
+    }
+
     @media (prefers-reduced-motion: reduce){
       .interlock-bg{ animation: none; }
     }
@@ -1562,6 +1580,12 @@
     }
     .reveal.active{ opacity: 1; transform: translateY(0); }
     
+    
+    /* Pause all animations when not in viewport - handled by JS observer */
+    .anim-paused, .anim-paused * {
+      animation-play-state: paused !important;
+    }
+
     @media (prefers-reduced-motion: reduce){
       .reveal{ opacity: 1; transform: none; transition: none; }
     }
@@ -1885,6 +1909,12 @@
     }
     
     /* Reduce motion for accessibility */
+    
+    /* Pause all animations when not in viewport - handled by JS observer */
+    .anim-paused, .anim-paused * {
+      animation-play-state: paused !important;
+    }
+
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after {
         animation-duration: 0.01ms !important;
@@ -4589,20 +4619,17 @@
 
 
   <script>
-    // Performance: pause animations when off-screen
-    const animatedSections = document.querySelectorAll('section, .diagram, svg');
-    const observer = new IntersectionObserver((entries) => {
+    // Performance: pause ALL animations when section is off-screen
+    const animObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
-          entry.target.style.animationPlayState = 'running';
-          entry.target.querySelectorAll('*').forEach(el => el.style.animationPlayState = 'running');
+          entry.target.classList.remove('anim-paused');
         } else {
-          entry.target.style.animationPlayState = 'paused';
-          entry.target.querySelectorAll('*').forEach(el => el.style.animationPlayState = 'paused');
+          entry.target.classList.add('anim-paused');
         }
       });
-    }, { threshold: 0.1 });
-    animatedSections.forEach(s => observer.observe(s));
+    }, { threshold: 0, rootMargin: '100px' });
+    document.querySelectorAll('section, .hero, .diagram, svg, [class*="flow"], [class*="packet"]').forEach(el => animObserver.observe(el));
   </script>
 </body>
 </html>
