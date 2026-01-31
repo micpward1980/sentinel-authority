@@ -2405,7 +2405,7 @@
                 y: centerY + Math.sin(angle) * dist,
                 vx: (Math.random() - 0.5) * 3,
                 vy: (Math.random() - 0.5) * 3,
-                radius: Math.random() * 3 + 2
+                radius: Math.random() * 2.5 + 1.5
               });
             }
             animate();
@@ -2464,14 +2464,14 @@
             // Main boundary
             ctx.beginPath();
             ctx.arc(centerX, centerY, boundaryRadius + pulseOffset, 0, Math.PI * 2);
-            ctx.strokeStyle = 'rgba(157,140,207,0.5)';
+            ctx.strokeStyle = 'rgba(157,140,207,0.35)';
             ctx.lineWidth = 2;
             ctx.stroke();
             
             // Inner boundary
             ctx.beginPath();
             ctx.arc(centerX, centerY, boundaryRadius + pulseOffset - 12, 0, Math.PI * 2);
-            ctx.strokeStyle = 'rgba(157,140,207,0.25)';
+            ctx.strokeStyle = 'rgba(157,140,207,0.12)';
             ctx.lineWidth = 1;
             ctx.setLineDash([6, 12]);
             ctx.stroke();
@@ -2555,9 +2555,6 @@
               }
               ctx.fill();
               ctx.shadowBlur = 0;
-              ctx.strokeStyle = 'rgba(255,255,255,0.6)';
-              ctx.lineWidth = 0.5;
-              ctx.stroke();
               
               ctx.beginPath();
               ctx.moveTo(p.x, p.y);
@@ -2931,7 +2928,7 @@
       <div class="reveal" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: var(--space-4);">
         
         <!-- Gate 1 -->
-        <div style="position: relative; background: linear-gradient(180deg, rgba(157,140,207,0.25) 0%, rgba(157,140,207,0.03) 100%); border: 1px solid rgba(157,140,207,0.3); border-radius: 20px; padding: 24px 16px; text-align: center; overflow: hidden;">
+        <div style="position: relative; background: linear-gradient(180deg, rgba(157,140,207,0.12) 0%, rgba(157,140,207,0.03) 100%); border: 1px solid rgba(157,140,207,0.3); border-radius: 20px; padding: 24px 16px; text-align: center; overflow: hidden;">
           <div style="position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 60px; height: 3px; background: linear-gradient(90deg, transparent, rgba(157,140,207,0.8), transparent);"></div>
           <div style="color: rgba(157,140,207,0.7); margin-bottom: 4px;"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
       <circle cx="12" cy="12" r="9"/>
@@ -2948,7 +2945,7 @@
         </div>
 
         <!-- Gate 2 -->
-        <div style="position: relative; background: linear-gradient(180deg, rgba(157,140,207,0.25) 0%, rgba(157,140,207,0.03) 100%); border: 1px solid rgba(157,140,207,0.3); border-radius: 20px; padding: 24px 16px; text-align: center; overflow: hidden;">
+        <div style="position: relative; background: linear-gradient(180deg, rgba(157,140,207,0.12) 0%, rgba(157,140,207,0.03) 100%); border: 1px solid rgba(157,140,207,0.3); border-radius: 20px; padding: 24px 16px; text-align: center; overflow: hidden;">
           <div style="position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 60px; height: 3px; background: linear-gradient(90deg, transparent, rgba(157,140,207,0.8), transparent);"></div>
           <div style="color: rgba(157,140,207,0.7); margin-bottom: 4px;"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
       <path d="M3 12h4l3-8 4 16 3-8h4"/>
@@ -2972,7 +2969,7 @@
         </div>
 
         <!-- Gate 4 -->
-        <div style="position: relative; background: linear-gradient(180deg, rgba(157,140,207,0.25) 0%, rgba(157,140,207,0.03) 100%); border: 1px solid rgba(157,140,207,0.3); border-radius: 20px; padding: 24px 16px; text-align: center; overflow: hidden;">
+        <div style="position: relative; background: linear-gradient(180deg, rgba(157,140,207,0.12) 0%, rgba(157,140,207,0.03) 100%); border: 1px solid rgba(157,140,207,0.3); border-radius: 20px; padding: 24px 16px; text-align: center; overflow: hidden;">
           <div style="position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 60px; height: 3px; background: linear-gradient(90deg, transparent, rgba(157,140,207,0.8), transparent);"></div>
           <div style="color: rgba(157,140,207,0.7); margin-bottom: 4px;"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
       <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
@@ -2985,7 +2982,7 @@
         </div>
 
         <!-- Gate 5 -->
-        <div style="position: relative; background: linear-gradient(180deg, rgba(157,140,207,0.25) 0%, rgba(157,140,207,0.03) 100%); border: 1px solid rgba(157,140,207,0.3); border-radius: 20px; padding: 24px 16px; text-align: center; overflow: hidden;">
+        <div style="position: relative; background: linear-gradient(180deg, rgba(157,140,207,0.12) 0%, rgba(157,140,207,0.03) 100%); border: 1px solid rgba(157,140,207,0.3); border-radius: 20px; padding: 24px 16px; text-align: center; overflow: hidden;">
           <div style="position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 60px; height: 3px; background: linear-gradient(90deg, transparent, rgba(157,140,207,0.8), transparent);"></div>
           <div style="color: rgba(157,140,207,0.7); margin-bottom: 4px;"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
       <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
@@ -3637,7 +3634,7 @@
         <div onclick="openDownloadModal('docs/ODDC_Overview_v1.0.pdf', 'ODDC Overview v1.0')" style="cursor: pointer; position: relative; background: linear-gradient(180deg, rgba(157,140,207,0.1) 0%, rgba(157,140,207,0.02) 100%); border: 1px solid rgba(157,140,207,0.25); border-radius: 20px; padding: 28px; transition: all 0.3s ease; overflow: hidden;" onmouseover="this.style.borderColor='rgba(157,140,207,0.5)';this.style.transform='translateY(-4px)'" onmouseout="this.style.borderColor='rgba(157,140,207,0.25)';this.style.transform='translateY(0)'">
           <div style="position: absolute; top: 0; left: 24px; width: 50px; height: 3px; background: linear-gradient(90deg, rgba(157,140,207,0.8), transparent);"></div>
           <div style="position: absolute; top: 16px; right: 16px; padding: 6px 10px; background: rgba(157,140,207,0.15); border-radius: 6px; font-family: var(--mono); font-size: 9px; letter-spacing: 1px; color: var(--purple-bright);">PDF</div>
-          <div style="width: 48px; height: 48px; background: rgba(157,140,207,0.25); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+          <div style="width: 48px; height: 48px; background: rgba(157,140,207,0.12); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(157,140,207,0.9)" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
           </div>
           <div style="font-size: 17px; color: var(--text-primary); font-weight: 600; margin-bottom: 8px;">ODDC Overview</div>
@@ -3667,7 +3664,7 @@
         <div onclick="openDownloadModal('docs/CAT-72_Procedure_v1.0.pdf', 'CAT-72 Procedure v1.0')" style="cursor: pointer; position: relative; background: linear-gradient(180deg, rgba(157,140,207,0.1) 0%, rgba(157,140,207,0.02) 100%); border: 1px solid rgba(157,140,207,0.25); border-radius: 20px; padding: 28px; transition: all 0.3s ease; overflow: hidden;" onmouseover="this.style.borderColor='rgba(157,140,207,0.5)';this.style.transform='translateY(-4px)'" onmouseout="this.style.borderColor='rgba(157,140,207,0.25)';this.style.transform='translateY(0)'">
           <div style="position: absolute; top: 0; left: 24px; width: 50px; height: 3px; background: linear-gradient(90deg, rgba(157,140,207,0.8), transparent);"></div>
           <div style="position: absolute; top: 16px; right: 16px; padding: 6px 10px; background: rgba(157,140,207,0.15); border-radius: 6px; font-family: var(--mono); font-size: 9px; letter-spacing: 1px; color: var(--purple-bright);">PDF</div>
-          <div style="width: 48px; height: 48px; background: rgba(157,140,207,0.25); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+          <div style="width: 48px; height: 48px; background: rgba(157,140,207,0.12); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(157,140,207,0.9)" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
           </div>
           <div style="font-size: 17px; color: var(--text-primary); font-weight: 600; margin-bottom: 8px;">CAT-72 Procedure</div>
@@ -4482,7 +4479,7 @@
                   y: d.cy + Math.sin(a) * dist,
                   vx: (Math.random() - 0.5) * 1.2,
                   vy: (Math.random() - 0.5) * 1.2,
-                  radius: Math.random() * 3 + 2,
+                  radius: Math.random() * 2.5 + 1.5,
                   frozen: false,
                   frozenTime: 0,
                   rogue: false
