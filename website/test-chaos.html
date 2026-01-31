@@ -4436,14 +4436,11 @@
             window._musicPlaying = false;
             window._disco = false;
             icon.style.boxShadow = '0 0 40px rgba(157,140,207,0.5)';
+            icon.style.background = 'linear-gradient(135deg, #5B4B8A 0%, #7B6BAA 100%)';
+            icon.querySelector('div').style.background = 'radial-gradient(circle, #fff 0%, #c4b8e8 100%)';
+            clearInterval(window._bombInterval);
             icon.style.animation = 'none';
-            // Change wink back to eye
-            var eye = document.querySelector('#hero-icon > div');
-            if (eye) {
-              eye.innerHTML = '';
-              eye.style.background = 'radial-gradient(circle, #fff 0%, #c4b8e8 100%)';
-              eye.style.fontSize = '';
-            }
+            
             // Reset particles to center BEFORE turning off chaos
             if (window._hp && window._hp.p) {
               var d = window._hp;
@@ -4482,18 +4479,43 @@
             window._musicPlaying = true;
             icon.style.boxShadow = '0 0 60px rgba(157,140,207,0.9), 0 0 100px rgba(92,214,133,0.5)';
             icon.style.animation = 'pulse 1s ease-in-out infinite';
-            // After 45 seconds, trigger chaos
+            // At 38 seconds, start bomb flash
             setTimeout(function() {
               if (window._musicPlaying) {
+                var icon = document.getElementById('hero-icon');
+                var flash = 0;
+                window._bombInterval = setInterval(function() {
+                  flash++;
+                  if (flash % 2 === 0) {
+                    icon.style.background = 'linear-gradient(135deg, #ff3333 0%, #ff6666 100%)';
+                    icon.style.boxShadow = '0 0 60px rgba(255,50,50,0.9)';
+                  } else {
+                    icon.style.background = 'linear-gradient(135deg, #5B4B8A 0%, #7B6BAA 100%)';
+                    icon.style.boxShadow = '0 0 40px rgba(157,140,207,0.5)';
+            icon.style.background = 'linear-gradient(135deg, #5B4B8A 0%, #7B6BAA 100%)';
+            icon.querySelector('div').style.background = 'radial-gradient(circle, #fff 0%, #c4b8e8 100%)';
+            clearInterval(window._bombInterval);
+                  }
+                }, 200 - flash * 20);
+              }
+            }, 38000);
+            // At 45 seconds, BOOM - trigger chaos
+            setTimeout(function() {
+              if (window._musicPlaying) {
+                clearInterval(window._bombInterval);
+                var icon = document.getElementById('hero-icon');
+                // Bright flash
+                icon.style.background = '#fff';
+                icon.style.boxShadow = '0 0 100px rgba(255,255,255,1), 0 0 200px rgba(255,255,255,0.8)';
+                // Then go dark
+                setTimeout(function() {
+                  icon.style.background = 'linear-gradient(135deg, #222 0%, #333 100%)';
+                  icon.style.boxShadow = '0 0 10px rgba(0,0,0,0.5)';
+                  icon.querySelector('div').style.background = 'radial-gradient(circle, #444 0%, #222 100%)';
+                }, 150);
                 window._chaos = true;
                 window._disco = true;
-                // Change eye to wink
-                var eye = document.querySelector('#hero-icon > div');
-                if (eye) {
-                  eye.style.background = 'none';
-                  eye.style.fontSize = '32px';
-                  eye.innerHTML = '😉';
-                }
+                
                 if (window._hp && window._hp.p) {
                   var d = window._hp;
                   var origLen = d.p.length;
