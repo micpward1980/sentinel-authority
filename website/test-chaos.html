@@ -2488,7 +2488,7 @@
                 // Normal movement
                 p.x += p.vx;
                 p.y += p.vy;
-                if (window._chaos) { if (p.x < 0 || p.x > width) p.vx *= -1; if (p.y < 0 || p.y > height) p.vy *= -1; p.x = Math.max(0, Math.min(width, p.x)); p.y = Math.max(0, Math.min(height, p.y)); }
+                if (window._chaos) { if (p.x < 0 || p.x > width) p.vx *= -1.05; if (p.y < 0 || p.y > height) p.vy *= -1.05; p.x = Math.max(0, Math.min(width, p.x)); p.y = Math.max(0, Math.min(height, p.y)); }
                 
                 const dx = p.x - centerX;
                 const dy = p.y - centerY;
@@ -2530,7 +2530,7 @@
                 ctx.shadowColor = '#FF0033';
                 ctx.shadowBlur = 30;
               } else {
-                ctx.fillStyle = 'rgba(92,214,133,0.8)';
+                ctx.fillStyle = window._disco ? 'rgba(92,255,150,1)' : 'rgba(92,214,133,0.8)'; if(window._disco){ctx.shadowColor='rgba(92,255,150,0.9)';ctx.shadowBlur=20;}
                 ctx.shadowBlur = 0;
               }
               ctx.fill();
@@ -4418,6 +4418,7 @@
         var timer = null;
         var playing = false;
             window._musicPlaying = false;
+            window._disco = false;
         var icon = document.getElementById('hero-icon');
         
         function handleTap(e) {
@@ -4433,6 +4434,7 @@
             container.innerHTML = '';
             playing = false;
             window._musicPlaying = false;
+            window._disco = false;
             icon.style.boxShadow = '0 0 40px rgba(157,140,207,0.5)';
             icon.style.animation = 'none';
             // Reset particles to center BEFORE turning off chaos
@@ -4476,11 +4478,13 @@
             setTimeout(function() {
               if (window._musicPlaying) {
                 window._chaos = true;
+                window._disco = true;
                 if (window._hp && window._hp.p) {
                   window._hp.p.forEach(function(x) {
                     x.frozen = false;
-                    x.vx = (Math.random() - 0.5) * 12;
-                    x.vy = (Math.random() - 0.5) * 12;
+                    x.vx = (Math.random() - 0.5) * 25;
+                    x.vy = (Math.random() - 0.5) * 25;
+                    x.radius = Math.random() * 4 + 3;
                   });
                 }
               }
