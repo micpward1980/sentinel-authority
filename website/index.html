@@ -2412,8 +2412,12 @@
           }
           
           function resize() {
-            width = canvas.width = canvas.offsetWidth;
-            height = canvas.height = canvas.offsetHeight;
+            const dpr = window.devicePixelRatio || 1;
+            width = canvas.offsetWidth;
+            height = canvas.offsetHeight;
+            canvas.width = width * dpr;
+            canvas.height = height * dpr;
+            ctx.scale(dpr, dpr);
             centerX = width / 2;
             centerY = height / 2;
             // Always use width-based radius to keep circle round on tall screens
