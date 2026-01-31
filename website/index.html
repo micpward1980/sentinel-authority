@@ -2447,7 +2447,7 @@
               const candidate = particles.find(p => !p.rogue && !p.blocked);
               if (candidate) {
                 candidate.rogue = true;
-                candidate.escapeAngle = candidate.angle;
+                candidate.escapeAngle = -Math.PI/2 + (Math.random() - 0.5) * Math.PI * 0.8;
                 candidate.escapeProgress = 0;
                 lastRogue = now;
               }
