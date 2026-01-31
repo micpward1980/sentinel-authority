@@ -3,7 +3,10 @@ from app.services.email_service import notify_admin_new_registration
 
 from datetime import datetime, timedelta
 import secrets
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
+from slowapi import Limiter
+from slowapi.util import get_remote_address
+import re
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from pydantic import BaseModel, EmailStr
@@ -13,6 +16,20 @@ from app.core.security import get_password_hash, verify_password, create_access_
 from app.models.models import User, UserRole
 
 router = APIRouter()
+limiter = Limiter(key_func=get_remote_address)
+
+
+def validate_password_strength(password: str) -> tuple:
+    """Validate password meets security requirements"""
+    if len(password) < 8:
+        return False, "Password must be at least 8 characters"
+    if not re.search(r"[A-Z]", password):
+        return False, "Password must contain at least one uppercase letter"
+    if not re.search(r"[a-z]", password):
+        return False, "Password must contain at least one lowercase letter"
+    if not re.search(r"\d", password):
+        return False, "Password must contain at least one number"
+    return True, ""
 
 
 class UserCreate(BaseModel):
@@ -43,10 +60,16 @@ class ResetPasswordRequest(BaseModel):
 
 
 @router.post("/register", response_model=TokenResponse)
-async def register(user_data: UserCreate, db: AsyncSession = Depends(get_db)):
+@limiter.limit("3/minute")
+async def register(request: Request, user_data: UserCreate, db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(User).where(User.email == user_data.email))
     if result.scalar_one_or_none():
         raise HTTPException(status_code=400, detail="Email already registered")
+    
+    # Validate password strength
+    valid, msg = validate_password_strength(user_data.password)
+    if not valid:
+        raise HTTPException(status_code=400, detail=msg)
     
     user = User(
         email=user_data.email,
@@ -70,7 +93,8 @@ async def register(user_data: UserCreate, db: AsyncSession = Depends(get_db)):
 
 
 @router.post("/login", response_model=TokenResponse)
-async def login(credentials: UserLogin, db: AsyncSession = Depends(get_db)):
+@limiter.limit("5/minute")
+async def login(request: Request, credentials: UserLogin, db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(User).where(User.email == credentials.email))
     user = result.scalar_one_or_none()
     
@@ -97,9 +121,10 @@ async def get_me(current_user: dict = Depends(get_current_user), db: AsyncSessio
     return {"id": user.id, "email": user.email, "full_name": user.full_name, "organization": user.organization, "role": user.role.value}
 
 @router.post("/forgot-password")
-async def forgot_password(request: ForgotPasswordRequest, db: AsyncSession = Depends(get_db)):
+@limiter.limit("3/minute")
+async def forgot_password(request: Request, req: ForgotPasswordRequest, db: AsyncSession = Depends(get_db)):
     """Request a password reset email"""
-    result = await db.execute(select(User).where(User.email == request.email))
+    result = await db.execute(select(User).where(User.email == req.email))
     user = result.scalar_one_or_none()
     
     # Always return success to prevent email enumeration

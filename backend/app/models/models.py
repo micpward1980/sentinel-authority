@@ -42,6 +42,8 @@ class User(Base):
     hashed_password = Column(String(255), nullable=False)
     reset_token = Column(String(255), nullable=True)
     reset_token_expires = Column(DateTime, nullable=True)
+    failed_login_attempts = Column(Integer, default=0)
+    locked_until = Column(DateTime, nullable=True)
     full_name = Column(String(255))
     organization = Column(String(255))
     role = Column(Enum(UserRole), default=UserRole.SUBSCRIBER)
