@@ -2565,12 +2565,7 @@
               ctx.fill();
               ctx.shadowBlur = 0;
               
-              ctx.beginPath();
-              ctx.moveTo(p.x, p.y);
-              ctx.lineTo(p.x - p.vx * 4, p.y - p.vy * 4);
-              ctx.strokeStyle = 'rgba(92,214,133,0.25)';
-              ctx.lineWidth = p.radius * 0.8;
-              ctx.stroke();
+              // tail removed
               
               particles.slice(i + 1).forEach(p2 => {
                 const dx2 = p.x - p2.x;
