@@ -2488,7 +2488,7 @@
                 // Normal movement
                 p.x += p.vx;
                 p.y += p.vy;
-                if (window._chaos) { if (p.x < 0 || p.x > width) p.vx *= -1.05; if (p.y < 0 || p.y > height) p.vy *= -1.05; p.x = Math.max(0, Math.min(width, p.x)); p.y = Math.max(0, Math.min(height, p.y)); }
+                if (window._chaos) { if (p.x < 0 || p.x > width) p.vx *= -1.1; if (p.y < 0 || p.y > height) p.vy *= -1.1; p.x = Math.max(0, Math.min(width, p.x)); p.y = Math.max(0, Math.min(height, p.y)); }
                 
                 const dx = p.x - centerX;
                 const dy = p.y - centerY;
@@ -4440,6 +4440,7 @@
             // Reset particles to center BEFORE turning off chaos
             if (window._hp && window._hp.p) {
               var d = window._hp;
+              if (window._origParticleCount) { d.p.length = window._origParticleCount; }
               for (var i = 0; i < d.p.length; i++) {
                 var a = Math.random() * Math.PI * 2;
                 var dist = Math.random() * d.r * 0.25;
@@ -4480,12 +4481,28 @@
                 window._chaos = true;
                 window._disco = true;
                 if (window._hp && window._hp.p) {
-                  window._hp.p.forEach(function(x) {
+                  var d = window._hp;
+                  var origLen = d.p.length;
+                  // Add 50 more particles for the party
+                  for (var i = 0; i < 50; i++) {
+                    d.p.push({
+                      x: d.cx + (Math.random() - 0.5) * d.r,
+                      y: d.cy + (Math.random() - 0.5) * d.r,
+                      vx: (Math.random() - 0.5) * 40,
+                      vy: (Math.random() - 0.5) * 40,
+                      radius: Math.random() * 6 + 4,
+                      frozen: false,
+                      frozenTime: 0,
+                      rogue: false
+                    });
+                  }
+                  d.p.forEach(function(x) {
                     x.frozen = false;
-                    x.vx = (Math.random() - 0.5) * 25;
-                    x.vy = (Math.random() - 0.5) * 25;
-                    x.radius = Math.random() * 4 + 3;
+                    x.vx = (Math.random() - 0.5) * 40;
+                    x.vy = (Math.random() - 0.5) * 40;
+                    x.radius = Math.random() * 6 + 4;
                   });
+                  window._origParticleCount = origLen;
                 }
               }
             }, 45000);
