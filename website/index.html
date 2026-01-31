@@ -2468,7 +2468,7 @@
             particles.forEach((p, i) => {
               // If frozen, don't move - just check if time to respawn
               if (p.frozen) {
-                if (Date.now() - p.frozenTime > 1000) {
+                if (Date.now() - p.frozenTime > 3000) {
                   // Respawn from center
                   const newAngle = Math.random() * Math.PI * 2;
                   const newDist = Math.random() * boundaryRadius * 0.3;
@@ -2519,12 +2519,12 @@
               }
               
               ctx.beginPath();
-              ctx.arc(p.x, p.y, p.frozen ? p.radius * 1.5 : p.radius, 0, Math.PI * 2);
+              ctx.arc(p.x, p.y, p.frozen ? p.radius * 2 : p.radius, 0, Math.PI * 2);
               if (p.frozen) {
                 // Bright red, solid
-                ctx.fillStyle = '#FF0000';
-                ctx.shadowColor = '#FF0000';
-                ctx.shadowBlur = 20;
+                ctx.fillStyle = '#FF0033';
+                ctx.shadowColor = '#FF0033';
+                ctx.shadowBlur = 30;
               } else {
                 ctx.fillStyle = 'rgba(92,214,133,0.8)';
                 ctx.shadowBlur = 0;
