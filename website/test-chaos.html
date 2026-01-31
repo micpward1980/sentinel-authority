@@ -4437,18 +4437,20 @@
             // Reset particles to center
             if (window._hp && window._hp.p) {
               var d = window._hp;
-              d.p.forEach(function(x) {
+              for (var i = 0; i < d.p.length; i++) {
                 var a = Math.random() * Math.PI * 2;
-                var dist = Math.random() * d.r * 0.5;
-                x.x = d.cx + Math.cos(a) * dist;
-                x.y = d.cy + Math.sin(a) * dist;
-                x.vx = (Math.random() - 0.5) * 1.5;
-                x.vy = (Math.random() - 0.5) * 1.5;
-                x.frozen = false;
-                x.frozenTime = 0;
-                x.rogue = false;
-                x.radius = Math.random() * 2.5 + 1.5;
-              });
+                var dist = Math.random() * d.r * 0.4;
+                d.p[i] = {
+                  x: d.cx + Math.cos(a) * dist,
+                  y: d.cy + Math.sin(a) * dist,
+                  vx: (Math.random() - 0.5) * 1.2,
+                  vy: (Math.random() - 0.5) * 1.2,
+                  radius: Math.random() * 2.5 + 1.5,
+                  frozen: false,
+                  frozenTime: 0,
+                  rogue: false
+                };
+              }
             }
             clicks = 0;
             return;
