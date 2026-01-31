@@ -4431,10 +4431,9 @@
             var container = document.getElementById('sos-player');
             container.innerHTML = '';
             playing = false;
-            window._chaos = false;
             icon.style.boxShadow = '0 0 40px rgba(157,140,207,0.5)';
             icon.style.animation = 'none';
-            // Reset particles to center
+            // Reset particles to center BEFORE turning off chaos
             if (window._hp && window._hp.p) {
               var d = window._hp;
               for (var i = 0; i < d.p.length; i++) {
@@ -4451,6 +4450,7 @@
                   rogue: false
                 };
               }
+              window._chaos = false;
             }
             clicks = 0;
             return;
