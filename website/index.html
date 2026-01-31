@@ -4439,6 +4439,8 @@
             icon.style.background = 'linear-gradient(135deg, #5B4B8A 0%, #7B6BAA 100%)';
             icon.querySelector('div').style.background = 'radial-gradient(circle, #fff 0%, #c4b8e8 100%)';
             clearInterval(window._bombInterval);
+            clearTimeout(window._bombTimeout);
+            clearTimeout(window._chaosTimeout);
             icon.style.animation = 'none';
             
             // Reset particles to center BEFORE turning off chaos
@@ -4480,7 +4482,7 @@
             icon.style.boxShadow = '0 0 60px rgba(157,140,207,0.9), 0 0 100px rgba(92,214,133,0.5)';
             icon.style.animation = 'pulse 1s ease-in-out infinite';
             // At 38 seconds, start bomb flash
-            setTimeout(function() {
+            window._bombTimeout = setTimeout(function() {
               if (window._musicPlaying) {
                 var icon = document.getElementById('hero-icon');
                 var flash = 0;
@@ -4495,14 +4497,18 @@
             icon.style.background = 'linear-gradient(135deg, #5B4B8A 0%, #7B6BAA 100%)';
             icon.querySelector('div').style.background = 'radial-gradient(circle, #fff 0%, #c4b8e8 100%)';
             clearInterval(window._bombInterval);
+            clearTimeout(window._bombTimeout);
+            clearTimeout(window._chaosTimeout);
                   }
                 }, 200 - flash * 20);
               }
             }, 38000);
             // At 45 seconds, BOOM - trigger chaos
-            setTimeout(function() {
+            window._chaosTimeout = setTimeout(function() {
               if (window._musicPlaying) {
                 clearInterval(window._bombInterval);
+            clearTimeout(window._bombTimeout);
+            clearTimeout(window._chaosTimeout);
                 var icon = document.getElementById('hero-icon');
                 // Bright flash
                 icon.style.background = '#fff';
