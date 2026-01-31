@@ -2495,7 +2495,7 @@
                 const dist = Math.sqrt(dx * dx + dy * dy);
                 
                 // Soft boundary - most particles gently steer away (but not rogue ones)
-                if (!window._chaos && dist > boundaryRadius * 0.6 && !p.rogue) {
+                if (!window._chaos && (Date.now() - (window._chaosEndTime || 0) > 500) && dist > boundaryRadius * 0.6 && !p.rogue) {
                   const angle = Math.atan2(dy, dx);
                   const steerStrength = (dist - boundaryRadius * 0.6) / (boundaryRadius * 0.4) * 0.05;
                   p.vx -= Math.cos(angle) * steerStrength;
@@ -2503,7 +2503,7 @@
                 }
                 
                 // Hard boundary - freeze at edge
-                if (!window._chaos && dist > boundaryRadius - 10) {
+                if (!window._chaos && (Date.now() - (window._chaosEndTime || 0) > 500) && dist > boundaryRadius - 10) {
                   const angle = Math.atan2(dy, dx);
                   p.x = centerX + Math.cos(angle) * (boundaryRadius - 10);
                   p.y = centerY + Math.sin(angle) * (boundaryRadius - 10);
@@ -4412,7 +4412,7 @@
     <!-- Easter Egg: 6 clicks in 10 sec for chaos mode with SOS by ABBA -->
     <div id="sos-player" style="position: fixed; top: -9999px; left: -9999px; width: 1px; height: 1px; overflow: hidden; pointer-events: none;"></div>
     <script>
-      window._chaos = false;
+      window._chaos = false; window._chaosEndTime = Date.now();
       (function() {
         var clicks = 0;
         var timer = null;
@@ -4450,7 +4450,7 @@
                   rogue: false
                 };
               }
-              window._chaos = false;
+              window._chaos = false; window._chaosEndTime = Date.now();
             }
             clicks = 0;
             return;
