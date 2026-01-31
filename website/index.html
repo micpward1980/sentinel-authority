@@ -1316,26 +1316,6 @@
       }
     }
     
-    /* Hide canvas on mobile portrait - prevents distortion */
-    @media (max-width: 600px) and (orientation: portrait) {
-      #hero-canvas {
-        display: none !important;
-      }
-      .hero::before {
-        content: '';
-        position: absolute;
-        top: 30%;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 280px;
-        height: 280px;
-        border: 2px solid rgba(157,140,207,0.35);
-        border-radius: 50%;
-        pointer-events: none;
-        z-index: 1;
-      }
-    }
-
     /* ===== END MOBILE FIXES ===== */
 
     /* Security diagram animations */
