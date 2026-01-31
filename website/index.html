@@ -2539,14 +2539,14 @@
             blockedParticles = blockedParticles.filter(bp => {
               bp.life -= 0.06;
               if (bp.life <= 0) return false;
-              const popSize = (bp.size || 8) * (1 + (1 - bp.life) * 2);
+              const popSize = (bp.size || 12) * (1 + (1 - bp.life) * 4);
               ctx.beginPath();
               ctx.arc(bp.x, bp.y, popSize, 0, Math.PI * 2);
               ctx.fillStyle = 'rgba(214,92,92,' + (bp.life * 0.7) + ')';
               ctx.fill();
               // Add ring effect
               ctx.beginPath();
-              ctx.arc(bp.x, bp.y, popSize * 1.5, 0, Math.PI * 2);
+              ctx.arc(bp.x, bp.y, popSize * 2, 0, Math.PI * 2);
               ctx.strokeStyle = 'rgba(214,92,92,' + (bp.life * 0.3) + ')';
               ctx.lineWidth = 1;
               ctx.stroke();
