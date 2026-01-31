@@ -4439,11 +4439,15 @@
               var d = window._hp;
               d.p.forEach(function(x) {
                 var a = Math.random() * Math.PI * 2;
-                x.x = d.cx + Math.cos(a) * d.r * 0.5;
-                x.y = d.cy + Math.sin(a) * d.r * 0.5;
-                x.vx = (Math.random() - 0.5);
-                x.vy = (Math.random() - 0.5);
+                var dist = Math.random() * d.r * 0.5;
+                x.x = d.cx + Math.cos(a) * dist;
+                x.y = d.cy + Math.sin(a) * dist;
+                x.vx = (Math.random() - 0.5) * 1.5;
+                x.vy = (Math.random() - 0.5) * 1.5;
                 x.frozen = false;
+                x.frozenTime = 0;
+                x.rogue = false;
+                x.radius = Math.random() * 2.5 + 1.5;
               });
             }
             clicks = 0;
