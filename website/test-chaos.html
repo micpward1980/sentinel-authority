@@ -2488,7 +2488,7 @@
                 // Normal movement
                 p.x += p.vx;
                 p.y += p.vy;
-                if (window._chaos) { if (p.x < 0 || p.x > width) p.vx *= -1.1; if (p.y < 0 || p.y > height) p.vy *= -1.1; p.x = Math.max(0, Math.min(width, p.x)); p.y = Math.max(0, Math.min(height, p.y)); }
+                if (window._chaos) { if (p.x < 0 || p.x > width) p.vx *= -1.15; if (p.y < 0 || p.y > height) p.vy *= -1.15; p.x = Math.max(0, Math.min(width, p.x)); p.y = Math.max(0, Math.min(height, p.y)); }
                 
                 const dx = p.x - centerX;
                 const dy = p.y - centerY;
@@ -4484,13 +4484,13 @@
                   var d = window._hp;
                   var origLen = d.p.length;
                   // Add 50 more particles for the party
-                  for (var i = 0; i < 50; i++) {
+                  for (var i = 0; i < 150; i++) {
                     d.p.push({
                       x: d.cx + (Math.random() - 0.5) * d.r,
                       y: d.cy + (Math.random() - 0.5) * d.r,
-                      vx: (Math.random() - 0.5) * 40,
-                      vy: (Math.random() - 0.5) * 40,
-                      radius: Math.random() * 6 + 4,
+                      vx: (Math.random() - 0.5) * 80,
+                      vy: (Math.random() - 0.5) * 80,
+                      radius: Math.random() * 8 + 5,
                       frozen: false,
                       frozenTime: 0,
                       rogue: false
@@ -4498,9 +4498,9 @@
                   }
                   d.p.forEach(function(x) {
                     x.frozen = false;
-                    x.vx = (Math.random() - 0.5) * 40;
-                    x.vy = (Math.random() - 0.5) * 40;
-                    x.radius = Math.random() * 6 + 4;
+                    x.vx = (Math.random() - 0.5) * 80;
+                    x.vy = (Math.random() - 0.5) * 80;
+                    x.radius = Math.random() * 8 + 5;
                   });
                   window._origParticleCount = origLen;
                 }
