@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Light Mode Test</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+    }
+    iframe {
+      width: 100%;
+      height: 100vh;
+      border: none;
+    }
+    .toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 10000;
+      padding: 12px 20px;
+      background: #5B4B8A;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: system-ui;
+      font-size: 14px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+  </style>
+</head>
+<body>
+  <button class="toggle" onclick="toggleMode()">Toggle Light/Dark</button>
+  <iframe id="site" src="index.html"></iframe>
+  
+  <script>
+    let isLight = false;
+    
+    const lightModeCSS = `
+      :root {
+        --bg-primary: #ffffff !important;
+        --bg-secondary: #f8f9fa !important;
+        --surface: #ffffff !important;
+        --surface-elevated: #f8f9fa !important;
+        --text-primary: #1a1d27 !important;
+        --text-secondary: #4a5568 !important;
+        --text-tertiary: #718096 !important;
+        --border-subtle: rgba(0,0,0,0.08) !important;
+      }
+      body {
+        background: #ffffff !important;
+        color: #1a1d27 !important;
+      }
+      header, nav, .nav-wrapper {
+        background: #ffffff !important;
+        border-color: rgba(0,0,0,0.08) !important;
+      }
+      section {
+        background: #ffffff !important;
+      }
+      .hero, [class*="hero"] {
+        background: linear-gradient(180deg, #f8f9fa 0%, #ffffff 100%) !important;
+      }
+      h1, h2, h3, h4, h5, h6, .section-title {
+        color: #1a1d27 !important;
+      }
+      p, span, div {
+        color: inherit;
+      }
+      .section-lead, [class*="lead"] {
+        color: #718096 !important;
+      }
+      
+      /* Cards and boxes */
+      [style*="background: rgba(92,214,133"],
+      [style*="background: linear-gradient(135deg, rgba(92,214,133"],
+      [style*="background: rgba(157,140,207"],
+      [style*="background: linear-gradient(135deg, rgba(157,140,207"],
+      [style*="background: rgba(91,75,138"] {
+        background: #f8f9fa !important;
+      }
+      
+      /* Borders */
+      [style*="border: 1px solid rgba(92,214,133"] {
+        border-color: rgba(45,138,78,0.3) !important;
+      }
+      [style*="border: 1px solid rgba(157,140,207"],
+      [style*="border: 2px solid rgba(157,140,207"] {
+        border-color: rgba(91,75,138,0.3) !important;
+      }
+      
+      /* Text colors for dark mode overrides */
+      [style*="color: rgba(255,255,255"],
+      [style*="color: var(--text-primary)"] {
+        color: #1a1d27 !important;
+      }
+      [style*="color: var(--text-secondary)"] {
+        color: #4a5568 !important;
+      }
+      [style*="color: var(--text-tertiary)"] {
+        color: #718096 !important;
+      }
+      
+      /* Keep brand colors */
+      [style*="color: rgba(92,214,133"] {
+        color: #2d8a4e !important;
+      }
+      [style*="color: rgba(157,140,207"],
+      [style*="color: rgba(196,184,232"] {
+        color: #5B4B8A !important;
+      }
+      [style*="color: rgba(214,92,92"] {
+        color: #c53030 !important;
+      }
+      
+      /* SVG strokes */
+      [stroke="rgba(92,214,133,0.8)"],
+      [stroke="rgba(92,214,133,0.9)"] {
+        stroke: #2d8a4e !important;
+      }
+      [stroke="rgba(157,140,207,0.8)"] {
+        stroke: #5B4B8A !important;
+      }
+      
+      /* Footer */
+      footer {
+        background: #f8f9fa !important;
+        border-color: rgba(0,0,0,0.08) !important;
+      }
+      
+      /* Mobile nav */
+      .mobile-nav, [class*="mobile"] {
+        background: #ffffff !important;
+      }
+      
+      /* Diagram backgrounds */
+      .diagram-container, [class*="diagram"] {
+        background: #f8f9fa !important;
+      }
+      
+      /* Definition callout */
+      .definition-callout {
+        background: #f8f9fa !important;
+        border-color: rgba(91,75,138,0.2) !important;
+      }
+      
+      /* Reveal sections */
+      .reveal {
+        background: transparent !important;
+      }
+    `;
+    
+    function toggleMode() {
+      isLight = !isLight;
+      const iframe = document.getElementById('site');
+      const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+      
+      let styleEl = iframeDoc.getElementById('light-mode-override');
+      
+      if (isLight) {
+        if (!styleEl) {
+          styleEl = iframeDoc.createElement('style');
+          styleEl.id = 'light-mode-override';
+          iframeDoc.head.appendChild(styleEl);
+        }
+        styleEl.textContent = lightModeCSS;
+        document.querySelector('.toggle').textContent = 'Switch to Dark';
+      } else {
+        if (styleEl) {
+          styleEl.remove();
+        }
+        document.querySelector('.toggle').textContent = 'Switch to Light';
+      }
+    }
+  </script>
+</body>
+</html>
