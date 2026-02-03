@@ -214,7 +214,7 @@ def generate_certificate_pdf(certificate_id, organization_name, system_name, odd
     y -= 0.16*inch
     c.setFont("Helvetica-Oblique", 7)
     c.setFillColor(TEXT_TERTIARY)
-    c.drawCentredString(width/2, y, "Enforcer for Non-Violable Execution & Limit Oversight")
+    c.drawCentredString(width/2, y, "Enforced Non-Violable Execution-Limit Override")
     
     # Evidence hash + QR section
     # Left side: hash + verify link
