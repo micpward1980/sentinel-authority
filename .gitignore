@@ -46,3 +46,5 @@ build/
 
 # Docker
 *.pid
+.vercel
+.env*.local
