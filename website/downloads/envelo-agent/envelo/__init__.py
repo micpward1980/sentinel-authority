@@ -1,5 +1,5 @@
 """
-ENVELO Agent - Enforcer for Non-Violable Execution & Limit Oversight
+ENVELO Agent - Enforced Non-Violable Execution-Limit Override
 Provided by Sentinel Authority for ODDC Conformance
 """
 

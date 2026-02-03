@@ -1,6 +1,6 @@
 """
 ENVELO Agent v2.0
-Enforcer for Non-Violable Execution & Limit Oversight
+Enforced Non-Violable Execution-Limit Override
 
 Key change: Boundaries are fetched from Sentinel Authority API, not configured locally.
 This ensures the agent enforces exactly what was approved during certification.
