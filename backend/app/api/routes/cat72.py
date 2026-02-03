@@ -195,7 +195,7 @@ async def list_tests(
             "started_at": t.started_at.isoformat() if t.started_at else None,
             "result": t.result,
         }
-        for t in tests
+        for t, a in rows
     ]
 
 

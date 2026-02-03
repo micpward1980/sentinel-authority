@@ -96,17 +96,17 @@ async def custom_swagger_ui():
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css" />
     <style>
         :root {
-            --bg-deep: #1a1d24;
+            --bg-deep: #2a2f3d;
             --bg-panel: rgba(255,255,255,0.03);
             --purple-primary: #5B4B8A;
             --purple-bright: #9d8ccf;
             --green: #5CD685;
             --amber: #D6A05C;
             --red: #D65C5C;
-            --text-primary: #e8e6e3;
-            --text-secondary: #a8a5a0;
-            --text-tertiary: #6b6966;
-            --border-glass: rgba(255,255,255,0.08);
+            --text-primary: rgba(255,255,255,0.94);
+            --text-secondary: rgba(255,255,255,0.75);
+            --text-tertiary: rgba(255,255,255,0.50);
+            --border-glass: rgba(255,255,255,0.10);
         }
         
         * { box-sizing: border-box; }
@@ -122,17 +122,17 @@ async def custom_swagger_ui():
         /* Animated background gradients */
         .bg-gradient-1 {
             position: fixed; top: -15%; left: -5%; width: 600px; height: 600px;
-            background: radial-gradient(circle, rgba(91,75,138,0.25) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(91,75,138,0.18) 0%, transparent 70%);
             animation: float1 20s ease-in-out infinite; pointer-events: none; z-index: 0;
         }
         .bg-gradient-2 {
             position: fixed; bottom: -25%; right: -10%; width: 800px; height: 800px;
-            background: radial-gradient(circle, rgba(92,214,133,0.12) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(92,214,133,0.06) 0%, transparent 70%);
             animation: float2 25s ease-in-out infinite; pointer-events: none; z-index: 0;
         }
         .bg-gradient-3 {
             position: fixed; top: 40%; right: 15%; width: 400px; height: 400px;
-            background: radial-gradient(circle, rgba(157,140,207,0.15) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(157,140,207,0.10) 0%, transparent 70%);
             animation: float3 15s ease-in-out infinite; pointer-events: none; z-index: 0;
         }
         
@@ -141,8 +141,10 @@ async def custom_swagger_ui():
             position: fixed; inset: 0; pointer-events: none; z-index: 0;
             background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), 
                               linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
-            background-size: 60px 60px;
-            opacity: 0.5;
+            background-size: 120px 120px;
+            opacity: 0.2;
+            mask-image: radial-gradient(ellipse at center, rgba(0,0,0,0.9) 20%, transparent 70%);
+            -webkit-mask-image: radial-gradient(ellipse at center, rgba(0,0,0,0.9) 20%, transparent 70%);
         }
         
         @keyframes float1 { 0%, 100% { transform: translate(0, 0) scale(1); } 33% { transform: translate(40px, -40px) scale(1.05); } 66% { transform: translate(-30px, 30px) scale(0.95); } }
@@ -152,7 +154,7 @@ async def custom_swagger_ui():
         /* Custom header */
         .custom-header {
             position: relative; z-index: 10;
-            background: rgba(30,34,44,0.9);
+            background: rgba(42,47,61,0.88);
             backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--border-glass);
             padding: 24px 40px;
