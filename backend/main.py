@@ -488,9 +488,9 @@ async def custom_swagger_ui():
         </div>
         <div class="header-badge">Live</div>
         <div class="header-links">
-            <a href="https://sentinelauthority.org" class="header-link">Main Site</a>
-            <a href="https://app.sentinelauthority.org/verify" class="header-link">Verify</a>
-            <a href="https://app.sentinelauthority.org" class="header-link">Dashboard</a>
+            <a href="https://sentinelauthority.org" class="header-link"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Main Site</a>
+            <a href="https://app.sentinelauthority.org/verify" class="header-link"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Verify</a>
+            <a href="https://app.sentinelauthority.org" class="header-link"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Dashboard</a>
         </div>
     </div>
     
