@@ -1668,12 +1668,17 @@
     @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
     @keyframes heartbeat {
       0%, 100% { transform: scale(1); }
-      2% { transform: scale(1); }
-      6% { transform: scale(1.05); }
-      12% { transform: scale(1); }
-      16% { transform: scale(1.03); }
-      22% { transform: scale(1); }
+      36% { transform: scale(1); }
+      40% { transform: scale(1.06); }
+      46% { transform: scale(1); }
+      50% { transform: scale(1.03); }
+      56% { transform: scale(1); }
     }
+    @keyframes ekg-sweep {
+      0% { stroke-dashoffset: 130; }
+      100% { stroke-dashoffset: 0; }
+    }
+    .ekg-sweep { animation: ekg-sweep 0.833s ease-in-out infinite; }
     @keyframes pulse-slow { 0%, 100% { opacity: 0.3; transform: scale(1); } 50% { opacity: 0.6; transform: scale(1.02); } }
     @keyframes bar-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
     @keyframes ekg-draw { 0% { stroke-dashoffset: 800; opacity: 1; } 80% { stroke-dashoffset: 0; opacity: 1; } 90%, 100% { stroke-dashoffset: 0; opacity: 0; } }
@@ -3303,7 +3308,7 @@
         
         <!-- Fixed 72 Display -->
         <div style="display: flex; align-items: center;">
-          <div style="font-family: 'Source Serif 4', serif; font-size: 120px; font-weight: 200; background: linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(157,140,207,0.8) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: heartbeat 2s ease-in-out infinite;">72</div>
+          <div style="font-family: 'Source Serif 4', serif; font-size: 120px; font-weight: 200; background: linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(157,140,207,0.8) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: heartbeat 0.833s ease-in-out infinite;">72</div>
           <div style="font-family: var(--mono); font-size: 14px; letter-spacing: 4px; color: rgba(157,140,207,0.8); margin-left: 12px; align-self: center;">HOURS</div>
         </div>
         
@@ -3320,8 +3325,7 @@
                   pathLength="100"
                   stroke-dasharray="30 100"
                   stroke-dashoffset="130"
-                  style="filter: drop-shadow(0 0 8px rgba(92,214,133,0.6));">
-              <animate attributeName="stroke-dashoffset" from="130" to="0" dur="2s" repeatCount="indefinite"/>
+                  class="ekg-sweep" style="filter: drop-shadow(0 0 8px rgba(92,214,133,0.6));">
             </path>
           </svg>
         </div>
