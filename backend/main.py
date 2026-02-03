@@ -97,7 +97,7 @@ async def custom_swagger_ui():
     <style>
         :root {
             --bg-deep: #2a2f3d;
-            --bg-panel: rgba(255,255,255,0.03);
+            --bg-panel: rgba(255,255,255,0.05);
             --purple-primary: #5B4B8A;
             --purple-bright: #9d8ccf;
             --green: #5CD685;
@@ -139,8 +139,8 @@ async def custom_swagger_ui():
         /* Grid overlay */
         .grid-overlay {
             position: fixed; inset: 0; pointer-events: none; z-index: 0;
-            background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), 
-                              linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), 
+                              linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
             background-size: 120px 120px;
             opacity: 0.2;
             mask-image: radial-gradient(ellipse at center, rgba(0,0,0,0.9) 20%, transparent 70%);
