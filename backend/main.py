@@ -115,7 +115,10 @@ async def custom_swagger_ui():
             background: var(--bg-deep); 
             margin: 0; 
             font-family: 'Inter', sans-serif;
+            font-weight: 400;
             min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
             overflow-x: hidden;
         }
         
@@ -151,59 +154,27 @@ async def custom_swagger_ui():
         @keyframes float2 { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(-50px, -50px) scale(1.1); } }
         @keyframes float3 { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(30px, 40px); } }
         
-        /* Custom header */
+        /* Custom header - matches dashboard */
         .custom-header {
             position: relative; z-index: 10;
+            height: 64px;
             background: rgba(42,47,61,0.88);
             backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--border-glass);
-            padding: 24px 40px;
-            display: flex; align-items: center; justify-content: space-between;
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            padding: 0 24px;
+            display: flex; align-items: center;
         }
-        .header-brand {
-            display: flex; align-items: center; gap: 16px;
-        }
-        .brand-mark {
-            width: 44px; height: 44px;
-            background: linear-gradient(135deg, #5B4B8A 0%, #7B6BAA 100%);
-            border: 2px solid #9d8ccf; border-radius: 12px;
-            display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 4px 20px rgba(91,75,138,0.4);
-        }
-        .brand-mark-dot {
-            width: 14px; height: 14px;
-            background: radial-gradient(circle, #e8e0ff 0%, #c4b8e8 100%);
-            border-radius: 50%;
-        }
-        .header-title {
-            font-family: 'Source Serif 4', serif;
-            font-size: 24px; font-weight: 200;
-            color: var(--text-primary);
-            letter-spacing: -0.02em;
-        }
-        .header-title span { color: var(--purple-bright); font-style: italic; }
-        .header-badge {
-            font-family: 'IBM Plex Mono', monospace;
-            font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
-            color: var(--green); background: rgba(92,214,133,0.1);
-            border: 1px solid rgba(92,214,133,0.3);
-            padding: 6px 14px; border-radius: 20px;
-            display: flex; align-items: center; gap: 8px;
-        }
-        .header-badge::before {
-            content: ''; width: 6px; height: 6px; border-radius: 50%;
-            background: var(--green); box-shadow: 0 0 8px var(--green);
-        }
+        .header-spacer { flex: 1; }
         .header-links {
-            display: flex; gap: 12px;
+            display: flex; align-items: center; gap: 20px;
         }
         .header-link {
             font-family: 'IBM Plex Mono', monospace;
             font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase;
             color: var(--text-tertiary); text-decoration: none;
-            padding: 8px 0;
-            transition: color 0.2s ease;
             display: flex; align-items: center; gap: 6px;
+            transition: color 0.2s ease;
         }
         .header-link:hover {
             color: var(--purple-bright);
@@ -214,7 +185,7 @@ async def custom_swagger_ui():
             background: transparent !important;
             position: relative; z-index: 5;
         }
-        .swagger-ui .wrapper { padding: 30px 40px; max-width: 1400px; }
+        .swagger-ui .wrapper { padding: 32px; max-width: 1400px; }
         
         /* Hide default topbar */
         .swagger-ui .topbar { display: none !important; }
@@ -413,7 +384,10 @@ async def custom_swagger_ui():
         
         /* Scrollbar */
         ::-webkit-scrollbar { width: 8px; height: 8px; }
-        ::-webkit-scrollbar-track { background: var(--bg-deep); }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(157,140,207,0.3); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(157,140,207,0.5); }
         ::-webkit-scrollbar-thumb { background: var(--purple-primary); border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: var(--purple-bright); }
         
@@ -480,13 +454,7 @@ async def custom_swagger_ui():
     <div class="grid-overlay"></div>
     
     <div class="custom-header">
-        <div class="header-brand">
-            <div class="brand-mark"><div class="brand-mark-dot"></div></div>
-            <div>
-                <div class="header-title">API <span>Reference</span></div>
-            </div>
-        </div>
-        <div class="header-badge">Live</div>
+        <div class="header-spacer"></div>
         <div class="header-links">
             <a href="https://sentinelauthority.org" class="header-link"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Main Site</a>
             <a href="https://app.sentinelauthority.org/verify" class="header-link"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Verify</a>
