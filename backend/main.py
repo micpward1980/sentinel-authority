@@ -199,16 +199,14 @@ async def custom_swagger_ui():
         }
         .header-link {
             font-family: 'IBM Plex Mono', monospace;
-            font-size: 10px; letter-spacing: 1px; text-transform: uppercase;
+            font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase;
             color: var(--text-tertiary); text-decoration: none;
-            padding: 10px 18px; border-radius: 10px;
-            border: 1px solid var(--border-glass);
-            transition: all 0.3s ease;
+            padding: 8px 0;
+            transition: color 0.2s ease;
+            display: flex; align-items: center; gap: 6px;
         }
         .header-link:hover {
             color: var(--purple-bright);
-            border-color: rgba(157,140,207,0.3);
-            background: rgba(157,140,207,0.1);
         }
         
         /* Swagger UI overrides */
@@ -491,7 +489,8 @@ async def custom_swagger_ui():
         <div class="header-badge">Live</div>
         <div class="header-links">
             <a href="https://sentinelauthority.org" class="header-link">Main Site</a>
-            <a href="https://app.sentinelauthority.org" class="header-link">Portal</a>
+            <a href="https://app.sentinelauthority.org/verify" class="header-link">Verify</a>
+            <a href="https://app.sentinelauthority.org" class="header-link">Dashboard</a>
         </div>
     </div>
     
