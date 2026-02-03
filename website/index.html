@@ -1678,7 +1678,7 @@
       0% { stroke-dashoffset: 130; }
       100% { stroke-dashoffset: 0; }
     }
-    .ekg-sweep { animation: ekg-sweep 0.833s ease-in-out infinite; }
+    .ekg-sweep { animation: ekg-sweep 0.833s linear infinite; }
     @keyframes pulse-slow { 0%, 100% { opacity: 0.3; transform: scale(1); } 50% { opacity: 0.6; transform: scale(1.02); } }
     @keyframes bar-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
     @keyframes ekg-draw { 0% { stroke-dashoffset: 800; opacity: 1; } 80% { stroke-dashoffset: 0; opacity: 1; } 90%, 100% { stroke-dashoffset: 0; opacity: 0; } }
@@ -3308,7 +3308,7 @@
         
         <!-- Fixed 72 Display -->
         <div style="display: flex; align-items: center;">
-          <div style="font-family: 'Source Serif 4', serif; font-size: 120px; font-weight: 200; background: linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(157,140,207,0.8) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: heartbeat 0.833s ease-in-out infinite;">72</div>
+          <div style="font-family: 'Source Serif 4', serif; font-size: 120px; font-weight: 200; background: linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(157,140,207,0.8) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: heartbeat 0.833s cubic-bezier(0.4, 0, 0.2, 1) infinite;">72</div>
           <div style="font-family: var(--mono); font-size: 14px; letter-spacing: 4px; color: rgba(157,140,207,0.8); margin-left: 12px; align-self: center;">HOURS</div>
         </div>
         
