@@ -253,11 +253,11 @@ def generate_certificate_pdf(certificate_id, organization_name, system_name, odd
     # Footer disclaimer
     c.setFillColor(TEXT_TERTIARY)
     c.setFont("Helvetica-Oblique", 6)
-    c.drawCentredString(width/2, 0.82*inch, "ODDC attests conformance within declared ODD. Does not attest safety, regulatory compliance, or fitness for purpose.")
-    c.drawCentredString(width/2, 0.7*inch, "Independent conformance determination. Not a regulator. Not legal advice.")
+    c.drawCentredString(width/2, 0.92*inch, "ODDC attests conformance within declared ODD. Does not attest safety, regulatory compliance, or fitness for purpose.")
+    c.drawCentredString(width/2, 0.80*inch, "Independent conformance determination. Not a regulator. Not legal advice.")
     
     c.setFont("Helvetica", 6)
-    c.drawCentredString(width/2, 0.58*inch, "© 2026 Sentinel Authority")
+    c.drawCentredString(width/2, 0.68*inch, "© 2026 Sentinel Authority")
     
     c.save()
     buffer.seek(0)
