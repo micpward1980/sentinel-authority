@@ -1527,10 +1527,31 @@ function CAT72Console() {
 // Certificates
 function CertificatesPage() {
   const [certificates, setCertificates] = useState([]);
+  const [statusFilter, setStatusFilter] = useState('active');
 
   useEffect(() => {
     api.get('/api/certificates/').then(res => setCertificates(res.data)).catch(console.error);
   }, []);
+
+  const filteredCerts = certificates.filter(cert => {
+    if (statusFilter === 'all') return true;
+    if (statusFilter === 'active') return cert.state === 'conformant' || cert.state === 'active' || cert.state === 'issued';
+    return cert.state === statusFilter;
+  });
+
+  const counts = {
+    all: certificates.length,
+    active: certificates.filter(c => c.state === 'conformant' || c.state === 'active' || c.state === 'issued').length,
+    suspended: certificates.filter(c => c.state === 'suspended').length,
+    revoked: certificates.filter(c => c.state === 'revoked').length,
+  };
+
+  const filterTabs = [
+    { key: 'active', label: 'Active' },
+    { key: 'suspended', label: 'Suspended' },
+    { key: 'revoked', label: 'Revoked' },
+    { key: 'all', label: 'All Records' },
+  ];
 
   return (
     <div className="space-y-6">
@@ -1538,6 +1559,32 @@ function CertificatesPage() {
         <p style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', color: styles.purpleBright, marginBottom: '8px'}}>Records</p>
         <h1 style={{fontFamily: "'Source Serif 4', serif", fontSize: '36px', fontWeight: 200, margin: 0}}>Certificates</h1>
         <p style={{color: styles.textSecondary, marginTop: '8px'}}>Issued ODDC conformance determinations</p>
+      </div>
+
+      {/* Filter Tabs */}
+      <div style={{display: 'flex', gap: '4px', background: 'rgba(255,255,255,0.03)', borderRadius: '8px', padding: '4px', border: `1px solid ${styles.borderGlass}`}}>
+        {filterTabs.map(tab => (
+          <button
+            key={tab.key}
+            onClick={() => setStatusFilter(tab.key)}
+            style={{
+              flex: 1,
+              padding: '8px 16px',
+              borderRadius: '6px',
+              border: 'none',
+              cursor: 'pointer',
+              fontFamily: "'IBM Plex Mono', monospace",
+              fontSize: '10px',
+              letterSpacing: '1.5px',
+              textTransform: 'uppercase',
+              transition: 'all 0.2s',
+              background: statusFilter === tab.key ? styles.purplePrimary : 'transparent',
+              color: statusFilter === tab.key ? '#fff' : styles.textTertiary,
+            }}
+          >
+            {tab.label} {counts[tab.key] > 0 ? `(${counts[tab.key]})` : ''}
+          </button>
+        ))}
       </div>
 
       <Panel>
@@ -1553,7 +1600,7 @@ function CertificatesPage() {
             </tr>
           </thead>
           <tbody>
-            {certificates.map((cert) => (
+            {filteredCerts.map((cert) => (
               <tr key={cert.id} style={{borderBottom: `1px solid ${styles.borderGlass}`}}>
                 <td className="px-4 py-4" style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '12px', color: styles.purpleBright}}>{cert.certificate_number}</td>
                 <td className="px-4 py-4" style={{color: styles.textPrimary}}>{cert.system_name}</td>
@@ -1586,8 +1633,10 @@ function CertificatesPage() {
             ))}
           </tbody>
         </table>
-        {certificates.length === 0 && (
-          <div className="text-center py-12" style={{color: styles.textTertiary}}>No certificates issued</div>
+        {filteredCerts.length === 0 && (
+          <div className="text-center py-12" style={{color: styles.textTertiary}}>
+            {certificates.length === 0 ? 'No certificates issued' : `No ${statusFilter === 'all' ? '' : statusFilter + ' '}certificates`}
+          </div>
         )}
       </Panel>
     </div>
@@ -3450,6 +3499,7 @@ function MonitoringPage() {
   const [autoRefresh, setAutoRefresh] = useState(true);
   const [customerFilter, setCustomerFilter] = useState("");
   const [onlineOnly, setOnlineOnly] = useState(false);
+  const [hideEnded, setHideEnded] = useState(true);
   const { user } = useAuth();
 
   const fetchData = async () => {
@@ -3504,6 +3554,7 @@ function MonitoringPage() {
   const filteredSessions = sessions.filter(s => {
     if (customerFilter && s.organization_name !== customerFilter) return false;
     if (onlineOnly && !s.is_online) return false;
+    if (hideEnded && (s.status === 'ended' || s.status === 'completed' || s.status === 'disconnected')) return false;
     return true;
   });
 
@@ -3634,6 +3685,10 @@ function MonitoringPage() {
               <option value="">All Customers</option>
               {[...new Set(sessions.map(s => s.organization_name).filter(Boolean))].map(org => <option key={org} value={org}>{org}</option>)}
             </select>
+            <label style={{display: 'flex', alignItems: 'center', gap: '6px', color: styles.textSecondary, fontSize: '12px', cursor: 'pointer'}}>
+              <input type="checkbox" checked={hideEnded} onChange={(e) => setHideEnded(e.target.checked)} style={{accentColor: styles.purpleBright}} />
+              Hide ended
+            </label>
             <label style={{display: 'flex', alignItems: 'center', gap: '6px', color: styles.textSecondary, fontSize: '12px', cursor: 'pointer'}}>
               <input type="checkbox" checked={onlineOnly} onChange={(e) => setOnlineOnly(e.target.checked)} style={{accentColor: styles.purpleBright}} />
               Online only
