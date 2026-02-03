@@ -779,7 +779,6 @@ function CustomerDashboard() {
         {applications.length === 0 ? (
           <div style={{textAlign: 'center', padding: '40px', color: styles.textTertiary}}>
             <p style={{marginBottom: '16px'}}>No applications yet</p>
-            <a href="https://sentinelauthority.org/apply.html" style={{color: styles.purpleBright}}>Apply for Certification →</a>
           </div>
         ) : (
           <div className="space-y-3">
