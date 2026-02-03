@@ -3497,6 +3497,7 @@ function MonitoringPage() {
   const [timeline, setTimeline] = useState([]);
   const [loading, setLoading] = useState(true);
   const [autoRefresh, setAutoRefresh] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [customerFilter, setCustomerFilter] = useState("");
   const [onlineOnly, setOnlineOnly] = useState(false);
   const [hideEnded, setHideEnded] = useState(true);
@@ -3580,14 +3581,14 @@ function MonitoringPage() {
             Auto-refresh
           </label>
           <button 
-            onClick={fetchData}
+            onClick={async () => { setRefreshing(true); await fetchData(); setTimeout(() => setRefreshing(false), 600); }}
             style={{
               background: styles.bgPanel, border: `1px solid ${styles.borderGlass}`,
               borderRadius: '8px', padding: '8px 16px', color: styles.textPrimary,
               cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px'
             }}
           >
-            <RefreshCw size={14} /> Refresh
+            <RefreshCw size={14} style={refreshing ? {animation: "spin 1s linear infinite"} : {}} /> {refreshing ? "Refreshing..." : "Refresh"}
           </button>
         </div>
       </div>
