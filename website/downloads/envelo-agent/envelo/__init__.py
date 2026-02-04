@@ -1,19 +1,51 @@
 """
-ENVELO Agent - Enforced Non-Violable Execution-Limit Override
-Provided by Sentinel Authority for ODDC Conformance
+ENVELO - Enforced Non-Violable Execution-Limit Override
+Sentinel Authority Runtime Enforcement SDK v2.0.0
+
+Usage:
+    from envelo import EnveloAgent
+    
+    agent = EnveloAgent()
+    agent.start()
+    
+    @agent.enforce
+    def move_robot(speed, position):
+        robot.actuate(speed, position)
+
+CLI:
+    envelo setup       # Push-button deployment
+    envelo status      # Health check
 """
 
-__version__ = "1.0.0"
-__author__ = "Sentinel Authority"
+from .agent import EnveloAgent
+from .boundaries import (
+    NumericBoundary,
+    GeoBoundary, 
+    TimeBoundary,
+    RateBoundary,
+    StateBoundary
+)
+from .exceptions import (
+    EnveloViolation,
+    EnveloBoundaryError,
+    EnveloConnectionError,
+    EnveloConfigError
+)
+from .config import EnveloConfig
+from .genie import EnveloGenie
 
-from .agent import EnveloAgent, EnveloConfig
-from .boundaries import Boundary, NumericBoundary, GeoBoundary, RateLimitBoundary, StateBoundary, CustomBoundary
-from .actions import Action, ActionResult
-from .exceptions import BoundaryViolation, EnveloError
-
+__version__ = "2.0.0"
 __all__ = [
-    "EnveloAgent", "EnveloConfig",
-    "Boundary", "NumericBoundary", "GeoBoundary", "RateLimitBoundary", "StateBoundary", "CustomBoundary",
-    "Action", "ActionResult",
-    "BoundaryViolation", "EnveloError",
+    "EnveloAgent",
+    "EnveloConfig",
+    "EnveloGenie",
+    "NumericBoundary",
+    "GeoBoundary",
+    "TimeBoundary",
+    "RateBoundary",
+    "StateBoundary",
+    "EnveloViolation",
+    "EnveloBoundaryError",
+    "EnveloConnectionError",
+    "EnveloConfigError",
 ]

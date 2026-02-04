@@ -1,6 +1,6 @@
 """
-ENVELO - Enforcer for Non-Violable Execution & Limit Oversight
-Sentinel Authority Runtime Enforcement SDK
+ENVELO - Enforced Non-Violable Execution-Limit Override
+Sentinel Authority Runtime Enforcement SDK v2.0.0
 
 Usage:
     from envelo import EnveloAgent
@@ -11,6 +11,10 @@ Usage:
     @agent.enforce
     def move_robot(speed, position):
         robot.actuate(speed, position)
+
+CLI:
+    envelo setup       # Push-button deployment
+    envelo status      # Health check
 """
 
 from .agent import EnveloAgent
@@ -28,11 +32,13 @@ from .exceptions import (
     EnveloConfigError
 )
 from .config import EnveloConfig
+from .genie import EnveloGenie
 
-__version__ = "1.0.0"
+__version__ = "2.0.0"
 __all__ = [
     "EnveloAgent",
     "EnveloConfig",
+    "EnveloGenie",
     "NumericBoundary",
     "GeoBoundary",
     "TimeBoundary",
