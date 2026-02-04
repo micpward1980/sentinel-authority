@@ -761,7 +761,24 @@ function LoginPage() {
             }}>Register</button>
           </div>
 
-          {error && (
+                  {twoFAStep ? (
+          <div style={{textAlign: 'center'}}>
+            <div style={{width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(157,140,207,0.15)', border: '1px solid rgba(157,140,207,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px'}}>
+              <Shield className="w-6 h-6" style={{color: styles.purpleBright}} />
+            </div>
+            <h3 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.purpleBright, marginBottom: '8px'}}>Two-Factor Authentication</h3>
+            <p style={{color: styles.textTertiary, fontSize: '13px', marginBottom: '24px'}}>Enter the 6-digit code from your authenticator app</p>
+            {error && <div style={{background: 'rgba(214,92,92,0.1)', border: '1px solid rgba(214,92,92,0.2)', borderRadius: '8px', padding: '10px 14px', marginBottom: '16px', color: '#D65C5C', fontSize: '13px'}}>{error}</div>}
+            <form onSubmit={handle2FASubmit}>
+              <input type="text" value={totpCode} onChange={e => setTotpCode(e.target.value.replace(/\D/g, '').slice(0, 6))} placeholder="000000" maxLength={6} autoFocus style={{width: '100%', background: 'rgba(255,255,255,0.03)', border: '1px solid ' + styles.borderGlass, borderRadius: '10px', padding: '14px', color: styles.textPrimary, fontSize: '24px', fontFamily: "'IBM Plex Mono', monospace", letterSpacing: '8px', textAlign: 'center', outline: 'none', marginBottom: '16px', boxSizing: 'border-box'}} />
+              <button type="submit" disabled={verifying2FA || totpCode.length !== 6} className="login-btn" style={{width: '100%', padding: '14px', borderRadius: '10px', background: totpCode.length === 6 ? styles.purplePrimary : 'rgba(255,255,255,0.05)', border: '1px solid ' + (totpCode.length === 6 ? styles.purpleBright : styles.borderGlass), color: totpCode.length === 6 ? '#fff' : styles.textTertiary, fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', cursor: verifying2FA ? 'wait' : 'pointer'}}>
+                {verifying2FA ? 'Verifying...' : 'Verify Code'}
+              </button>
+            </form>
+            <button onClick={() => { setTwoFAStep(false); setTotpCode(''); setError(''); }} style={{background: 'none', border: 'none', color: styles.textTertiary, fontSize: '12px', cursor: 'pointer', marginTop: '16px', fontFamily: "'IBM Plex Mono', monospace"}}>Back to login</button>
+          </div>
+        ) : (<>
+{error && (
             <div style={{
               marginBottom: '24px', padding: '14px 16px', borderRadius: '12px',
               background: 'rgba(214,92,92,0.1)', border: '1px solid rgba(214,92,92,0.3)',
@@ -838,6 +855,8 @@ function LoginPage() {
                 marginTop: '8px', boxShadow: '0 4px 20px rgba(91,75,138,0.4)',
               }}>{isRegister ? 'Create Account' : 'Sign In'}</button>
           </form>
+        </>)}
+
           
           {!isRegister && (
             <div className="mt-6 text-center">
