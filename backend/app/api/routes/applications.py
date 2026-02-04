@@ -51,11 +51,11 @@ async def download_certificate(
     if not certificate:
         raise HTTPException(status_code=404, detail="Certificate not found")
     
-    if not certificate.pdf_data:
+    if not certificate.certificate_pdf:
         raise HTTPException(status_code=404, detail="Certificate PDF not generated")
     
     return Response(
-        content=certificate.pdf_data,
+        content=certificate.certificate_pdf,
         media_type="application/pdf",
         headers={
             "Content-Disposition": f"attachment; filename={certificate.certificate_number}.pdf"

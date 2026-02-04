@@ -894,7 +894,7 @@ function CustomerDashboard() {
                   <div style={{fontSize: '12px', color: styles.textTertiary}}>Issued: {new Date(cert.issued_at).toLocaleDateString()}{cert.expires_at ? ` · Expires: ${new Date(cert.expires_at).toLocaleDateString()}` : ''}</div>
                 </div>
                 <div style={{display: 'flex', gap: '8px'}}>
-                  <a href={`https://sentinel-authority-production.up.railway.app/api/applications/${cert.application_id}/certificate/download`}
+                  <a href={`${API_BASE}/api/certificates/${cert.certificate_number}/pdf`}
                      target="_blank"
                      style={{padding: '8px 16px', background: styles.purplePrimary, borderRadius: '6px', color: '#fff', fontSize: '11px', fontFamily: "'IBM Plex Mono', monospace", textDecoration: 'none'}}>
                     Download PDF
@@ -1908,7 +1908,7 @@ function CAT72Console() {
                         </button>
                       )}
                       {test.certificate_issued && (
-                        <><span style={{color: styles.accentGreen, fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px'}}>✓ Certified</span><a href={`${API_BASE}/api/applications/${test.application_id}/certificate/download`} target="_blank" style={{marginLeft: '8px', padding: '2px 8px', background: styles.purplePrimary, borderRadius: '4px', color: '#fff', fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', textDecoration: 'none'}}>PDF</a></>
+                        <><span style={{color: styles.accentGreen, fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px'}}>✓ Certified</span><a href={`${API_BASE}/api/certificates/${test.certificate_number || test.test_id}/pdf`} target="_blank" style={{marginLeft: '8px', padding: '2px 8px', background: styles.purplePrimary, borderRadius: '4px', color: '#fff', fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', textDecoration: 'none'}}>PDF</a></>
                       )}
                     </div>
                   </td>

@@ -44,6 +44,28 @@ async def issue_certificate(test_id: str, db: AsyncSession = Depends(get_db), us
     application.state = CertificationState.CONFORMANT
     await db.commit()
     await db.refresh(certificate)
+    # Generate and store PDF
+    try:
+        odd_spec = certificate.odd_specification or {}
+        odd_string = odd_spec.get("environment_type", "General") if isinstance(odd_spec, dict) else str(odd_spec)
+        pdf_bytes = generate_certificate_pdf(
+            certificate.certificate_number,
+            certificate.organization_name,
+            certificate.system_name,
+            odd_string,
+            certificate.issued_at,
+            certificate.expires_at,
+            test.test_id if test else "N/A",
+            certificate.convergence_score or 0.95,
+            test.stability_index if test else 0.95,
+            test.drift_rate if test else 0.01,
+            certificate.evidence_hash or "N/A"
+        )
+        certificate.certificate_pdf = pdf_bytes
+        await db.commit()
+        await db.refresh(certificate)
+    except Exception as e:
+        print(f"[CERT] PDF generation failed for {certificate.certificate_number}: {e}")
     # Send notification email
     await notify_certificate_issued(application.contact_email, certificate.system_name, certificate.certificate_number, certificate.organization_name)
     return {"certificate_number": certificate.certificate_number, "organization_name": certificate.organization_name, "system_name": certificate.system_name, "state": certificate.state.value, "issued_at": certificate.issued_at.isoformat(), "expires_at": certificate.expires_at.isoformat(), "verification_url": certificate.verification_url}
@@ -91,6 +113,54 @@ async def download_pdf(certificate_number: str, db: AsyncSession = Depends(get_d
     odd_string = odd_spec.get("environment_type", "General") if isinstance(odd_spec, dict) else str(odd_spec)
     pdf_bytes = generate_certificate_pdf(cert.certificate_number, cert.organization_name, cert.system_name, odd_string, cert.issued_at, cert.expires_at, test.test_id if test else "N/A", cert.convergence_score or 0.95, test.stability_index if test else 0.95, test.drift_rate if test else 0.01, cert.evidence_hash or "N/A")
     return Response(content=pdf_bytes, media_type="application/pdf", headers={"Content-Disposition": f"attachment; filename=ODDC-{cert.certificate_number}.pdf"})
+
+
+
+@router.post("/{certificate_number}/regenerate-pdf")
+async def regenerate_pdf(certificate_number: str, db: AsyncSession = Depends(get_db), user: dict = Depends(require_role(["admin"]))):
+    """Regenerate PDF for an existing certificate (admin only)"""
+    result = await db.execute(select(Certificate).where(Certificate.certificate_number == certificate_number))
+    cert = result.scalar_one_or_none()
+    if not cert: raise HTTPException(status_code=404, detail="Certificate not found")
+    test_result = await db.execute(select(CAT72Test).where(CAT72Test.id == cert.test_id))
+    test = test_result.scalar_one_or_none()
+    odd_spec = cert.odd_specification or {}
+    odd_string = odd_spec.get("environment_type", "General") if isinstance(odd_spec, dict) else str(odd_spec)
+    pdf_bytes = generate_certificate_pdf(
+        cert.certificate_number, cert.organization_name, cert.system_name, odd_string,
+        cert.issued_at, cert.expires_at, test.test_id if test else "N/A",
+        cert.convergence_score or 0.95, test.stability_index if test else 0.95,
+        test.drift_rate if test else 0.01, cert.evidence_hash or "N/A"
+    )
+    cert.certificate_pdf = pdf_bytes
+    await db.commit()
+    return {"message": f"PDF regenerated for {cert.certificate_number}", "size_bytes": len(pdf_bytes)}
+
+@router.post("/regenerate-all-pdfs")
+async def regenerate_all_pdfs(db: AsyncSession = Depends(get_db), user: dict = Depends(require_role(["admin"]))):
+    """Regenerate PDFs for all certificates missing them (admin only)"""
+    result = await db.execute(select(Certificate).where(Certificate.certificate_pdf == None))
+    certs = result.scalars().all()
+    regenerated = 0
+    errors = []
+    for cert in certs:
+        try:
+            test_result = await db.execute(select(CAT72Test).where(CAT72Test.id == cert.test_id))
+            test = test_result.scalar_one_or_none()
+            odd_spec = cert.odd_specification or {}
+            odd_string = odd_spec.get("environment_type", "General") if isinstance(odd_spec, dict) else str(odd_spec)
+            pdf_bytes = generate_certificate_pdf(
+                cert.certificate_number, cert.organization_name, cert.system_name, odd_string,
+                cert.issued_at, cert.expires_at, test.test_id if test else "N/A",
+                cert.convergence_score or 0.95, test.stability_index if test else 0.95,
+                test.drift_rate if test else 0.01, cert.evidence_hash or "N/A"
+            )
+            cert.certificate_pdf = pdf_bytes
+            regenerated += 1
+        except Exception as e:
+            errors.append({"cert": cert.certificate_number, "error": str(e)})
+    await db.commit()
+    return {"regenerated": regenerated, "errors": errors, "total_missing": len(certs)}
 
 @router.patch("/{certificate_number}/suspend")
 async def suspend_certificate(certificate_number: str, reason: str, db: AsyncSession = Depends(get_db), user: dict = Depends(require_role(["admin"]))):
