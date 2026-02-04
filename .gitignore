@@ -50,3 +50,8 @@ build/
 .env*.local
 patch_*.js
 patch_*.py
+
+# Migration & patch scripts
+migrate_*.py
+patch_*.py
+patch_*.js
