@@ -6030,7 +6030,7 @@ function SettingsPage() {
   const disable2FA = async () => {
     setTwoFA(prev => ({...prev, disabling: true}));
     try {
-      await api.post('/api/auth/2fa/disable', { current_password: twoFA.disablePw, new_password: 'unused' });
+      await api.post('/api/auth/2fa/disable', { current_password: twoFA.disablePw });
       toast.show('Two-factor authentication disabled', 'success');
       setTwoFA(prev => ({...prev, enabled: false, disablePw: '', disabling: false}));
     } catch (err) {
