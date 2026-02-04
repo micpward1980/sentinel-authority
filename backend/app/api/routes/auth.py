@@ -80,6 +80,7 @@ class DisableTOTPRequest(BaseModel):
 @limiter.limit("5/minute")
 @router.post("/2fa/setup", response_model=TOTPSetupResponse, summary="Generate TOTP secret for 2FA setup")
 async def setup_2fa(
+    request: Request,
     db: AsyncSession = Depends(get_db),
     current_user: dict = Depends(get_current_user)
 ):
@@ -113,6 +114,7 @@ async def setup_2fa(
 @limiter.limit("5/minute")
 @router.post("/2fa/enable", summary="Verify code and enable 2FA")
 async def enable_2fa(
+    request: Request,
     body: TOTPVerifyRequest,
     db: AsyncSession = Depends(get_db),
     current_user: dict = Depends(get_current_user)
