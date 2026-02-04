@@ -66,7 +66,7 @@ app.include_router(envelo_boundaries.router, prefix="/api/envelo/boundaries", ta
 app.include_router(apikeys.router, prefix="/api/apikeys", tags=["API Keys"])
 app.include_router(registry.router)
 app.include_router(users.router, prefix="/api/users", tags=["User Management"])
-# app.include_router(documents.router, prefix="/api/documents", tags=["Documents"])
+app.include_router(documents.router, prefix="/api/documents", tags=["Documents"])
 
 
 @app.get("/health")
