@@ -14,7 +14,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 
 from app.core.config import settings
-from app.core.database import init_db
+from app.core.database import init_db, get_db
 from app.core.security import get_current_user
 from fastapi import Depends
 from app.api.routes import audit as audit_routes, auth, dashboard, applicants, cat72, certificates, verification, licensees, envelo, apikeys, envelo_boundaries, registry, users, documents, deploy
