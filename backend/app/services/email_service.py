@@ -171,9 +171,10 @@ async def notify_admin_new_registration(email: str, name: str = None):
         </div>
         <div style="padding: 30px; background: #f9f9f9;">
             <h2 style="color: #333;">New User Registration</h2>
-            <p>A new user has registered:</p>
+            <p>A new user has registered and is <strong>awaiting your approval</strong>:</p>
             <p><strong>Email:</strong> {email}<br>
             <strong>Name:</strong> {name or 'Not provided'}</p>
+            <p style="margin-top: 20px;"><a href="https://app.sentinelauthority.org/users" style="background: #5B4B8A; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">Review &amp; Approve</a></p>
         </div>
     </div>
     """
