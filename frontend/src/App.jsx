@@ -1,7 +1,7 @@
 import React, { useState, useEffect, createContext, useContext } from 'react';
 import BoundaryEditor from './components/BoundaryEditor';
 import { BrowserRouter, Routes, Route, Navigate, Link, useNavigate, useLocation, useParams } from 'react-router-dom';
-import { FileText, Activity, Award, Users, Home, LogOut, Menu, X, CheckCircle, AlertTriangle, Clock, Search, Plus, ArrowLeft, ExternalLink, Shield, Download, RefreshCw, Eye, EyeOff } from 'lucide-react';
+import { FileText, Activity, Award, Users, Home, LogOut, Menu, X, CheckCircle, AlertTriangle, Clock, Search, Plus, ArrowLeft, ExternalLink, Shield, Download, RefreshCw, Eye, EyeOff BookOpen, } from 'lucide-react';
 import axios from 'axios';
 
 // API Configuration
@@ -108,6 +108,7 @@ function ProtectedRoute({ children, roles }) {
 // Custom styles to match website
 const styles = {
   bgDeep: '#2a2f3d',
+  bgSurface: '#1e212b',
   bgPanel: 'rgba(255,255,255,0.05)',
   purplePrimary: '#5B4B8A',
   purpleBright: '#9d8ccf',
@@ -115,10 +116,13 @@ const styles = {
   accentGreen: '#5CD685',
   accentAmber: '#D6A05C',
   accentRed: '#D65C5C',
-  textPrimary: 'rgba(255,255,255,0.94)',
+  textPrimary: 'rgba(255,255,255,0.92)',
   textSecondary: 'rgba(255,255,255,0.75)',
   textTertiary: 'rgba(255,255,255,0.50)',
   borderGlass: 'rgba(255,255,255,0.10)',
+  mono: "'IBM Plex Mono', monospace",
+  serif: "'Source Serif 4', Georgia, serif",
+  sans: "'Inter', system-ui, sans-serif",
 };
 // Mobile detection hook
 function useIsMobile() {
@@ -156,6 +160,7 @@ function Layout({ children }) {
     { name: 'Applications', href: '/applications', icon: FileText, roles: ['admin', 'applicant'] },
     { name: 'CAT-72 Console', href: '/cat72', icon: Activity, roles: ['admin'] },
     { name: 'Certificates', href: '/certificates', icon: Award, roles: ['admin', 'applicant'] },
+    { name: 'Resources', href: '/resources', icon: BookOpen, roles: ['admin', 'applicant'] },
     { name: 'ENVELO Agent', href: '/envelo', icon: 'brand', roles: ['admin', 'applicant'], requiresCert: true },
     { name: 'Monitoring', href: '/monitoring', icon: Activity, roles: ['admin', 'applicant'], requiresCert: true },
     { name: 'User Management', href: '/users', icon: Users, roles: ['admin'] },
@@ -171,21 +176,21 @@ function Layout({ children }) {
   });
 
   return (
-    <div className="min-h-screen" style={{background: styles.bgDeep, color: styles.textPrimary, fontFamily: "'Inter', system-ui, -apple-system, sans-serif"}}>
+    <div className="min-h-screen" style={{background: '#2a2f3d', color: styles.textPrimary, fontFamily: "'Inter', system-ui, -apple-system, sans-serif"}}>
       {/* Animated background gradients */}
       <div style={{
         position: 'fixed', top: '-10%', left: '5%', width: '500px', height: '500px',
-        background: 'radial-gradient(circle, rgba(91,75,138,0.25) 0%, transparent 70%)',
+        background: 'radial-gradient(circle, rgba(91,75,138,0.18) 0%, transparent 70%)',
         animation: 'float1 20s ease-in-out infinite', pointerEvents: 'none', zIndex: 0,
       }} />
       <div style={{
         position: 'fixed', bottom: '-20%', right: '0%', width: '700px', height: '700px',
-        background: 'radial-gradient(circle, rgba(92,214,133,0.12) 0%, transparent 70%)',
+        background: 'radial-gradient(circle, rgba(92,214,133,0.06) 0%, transparent 70%)',
         animation: 'float2 25s ease-in-out infinite', pointerEvents: 'none', zIndex: 0,
       }} />
       <div style={{
         position: 'fixed', top: '50%', right: '20%', width: '400px', height: '400px',
-        background: 'radial-gradient(circle, rgba(157,140,207,0.15) 0%, transparent 70%)',
+        background: 'radial-gradient(circle, rgba(157,140,207,0.10) 0%, transparent 70%)',
         animation: 'float3 15s ease-in-out infinite', pointerEvents: 'none', zIndex: 0,
       }} />
       
@@ -206,8 +211,10 @@ function Layout({ children }) {
       {/* Grid overlay */}
       <div className="fixed inset-0 pointer-events-none" style={{
         backgroundImage: 'linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)',
-        backgroundSize: '60px 60px',
-        opacity: 0.4,
+        backgroundSize: '120px 120px',
+        opacity: 0.2,
+        maskImage: 'radial-gradient(ellipse at center, rgba(0,0,0,0.9) 20%, transparent 70%)',
+        WebkitMaskImage: 'radial-gradient(ellipse at center, rgba(0,0,0,0.9) 20%, transparent 70%)',
         zIndex: 0,
       }} />
 
@@ -219,7 +226,7 @@ function Layout({ children }) {
         />
       )}
       {/* Sidebar */}
-      <div className={`fixed inset-y-0 left-0 z-50 w-64 transform transition-transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0`} style={{background: 'rgba(30,34,44,0.95)', backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)', borderRight: '1px solid rgba(255,255,255,0.06)', boxShadow: '4px 0 24px rgba(0,0,0,0.2)'}}>
+      <div className={`fixed inset-y-0 left-0 z-50 w-64 transform transition-transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0`} style={{background: 'rgba(42,47,61,0.88)', backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)', borderRight: '1px solid rgba(255,255,255,0.08)', boxShadow: '4px 0 24px rgba(0,0,0,0.2)'}}>
         <div className="flex items-center justify-between h-16 px-4" style={{borderBottom: `1px solid ${styles.borderGlass}`}}>
           <Link to="/dashboard" className="flex items-center gap-3 no-underline">
             <BrandMark size={24} />
@@ -270,7 +277,7 @@ function Layout({ children }) {
 
       {/* Main Content */}
       <div className={`${sidebarOpen ? 'lg:ml-64' : ''} relative z-10`}>
-        <header className="h-16 flex items-center px-6 gap-4" style={{borderBottom: '1px solid rgba(255,255,255,0.06)', background: 'rgba(30,34,44,0.8)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)'}}>
+        <header className="h-16 flex items-center px-6 gap-4" style={{borderBottom: '1px solid rgba(255,255,255,0.06)', background: 'rgba(42,47,61,0.88)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)'}}>
           <button onClick={() => setSidebarOpen(!sidebarOpen)} className="lg:hidden" style={{color: styles.textSecondary, background: 'none', border: 'none'}}>
             <Menu className="w-6 h-6" />
           </button>
@@ -497,28 +504,36 @@ function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden" style={{background: styles.bgDeep}}>
+      <Link to="/dashboard" style={{
+        position: 'fixed', top: '24px', right: '32px', zIndex: 20,
+        color: styles.textTertiary, fontFamily: "'IBM Plex Mono', monospace",
+        fontSize: '10px', letterSpacing: '1.5px', textTransform: 'uppercase',
+        textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '6px',
+        transition: 'color 0.2s',
+      }}>← Dashboard</Link>
       {/* Animated background gradients */}
       <div style={{
         position: 'absolute', top: '-20%', left: '-10%', width: '600px', height: '600px',
-        background: 'radial-gradient(circle, rgba(91,75,138,0.3) 0%, transparent 70%)',
-        animation: 'float1 15s ease-in-out infinite', pointerEvents: 'none',
+        background: 'radial-gradient(circle, rgba(91,75,138,0.18) 0%, transparent 65%)',
+        animation: 'float1 25s ease-in-out infinite', pointerEvents: 'none',
       }} />
       <div style={{
         position: 'absolute', bottom: '-30%', right: '-15%', width: '800px', height: '800px',
-        background: 'radial-gradient(circle, rgba(92,214,133,0.15) 0%, transparent 70%)',
-        animation: 'float2 20s ease-in-out infinite', pointerEvents: 'none',
+        background: 'radial-gradient(circle, rgba(92,214,133,0.06) 0%, transparent 65%)',
+        animation: 'float2 30s ease-in-out infinite', pointerEvents: 'none',
       }} />
       <div style={{
         position: 'absolute', top: '40%', right: '10%', width: '400px', height: '400px',
-        background: 'radial-gradient(circle, rgba(157,140,207,0.2) 0%, transparent 70%)',
-        animation: 'float3 12s ease-in-out infinite', pointerEvents: 'none',
+        background: 'radial-gradient(circle, rgba(157,140,207,0.10) 0%, transparent 65%)',
+        animation: 'float3 15s ease-in-out infinite', pointerEvents: 'none',
       }} />
       
       {/* Grid overlay */}
       <div style={{
         position: 'fixed', inset: 0,
         backgroundImage: 'linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)',
-        backgroundSize: '60px 60px', opacity: 0.5, pointerEvents: 'none',
+        backgroundSize: '120px 120px', opacity: 0.2, pointerEvents: 'none',
+        maskImage: 'radial-gradient(ellipse at center, rgba(0,0,0,0.9) 20%, transparent 70%)', WebkitMaskImage: 'radial-gradient(ellipse at center, rgba(0,0,0,0.9) 20%, transparent 70%)',
       }} />
 
       {/* Decorative lines */}
@@ -595,12 +610,12 @@ function LoginPage() {
         <div style={{
           background: 'rgba(255,255,255,0.03)', backdropFilter: 'blur(20px)',
           border: '1px solid rgba(255,255,255,0.08)', borderRadius: '24px', padding: '40px',
-          boxShadow: '0 25px 50px -12px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.05) inset',
+          boxShadow: '0 25px 50px -12px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.05) inset', transition: 'all 0.3s ease', minHeight: '280px',
         }}>
           {/* Tab switcher */}
           <div style={{
             display: 'flex', background: 'rgba(0,0,0,0.2)',
-            borderRadius: '12px', padding: '4px', marginBottom: '32px',
+            borderRadius: '16px', padding: '4px', marginBottom: '32px',
           }}>
             <button onClick={() => setIsRegister(false)} type="button" style={{
               flex: 1, padding: '12px', borderRadius: '10px', border: 'none',
@@ -752,24 +767,22 @@ function CustomerDashboard() {
       {/* Quick Stats */}
       <div style={{display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px'}}>
         <Panel>
-          <div style={{textAlign: 'center', padding: '12px'}}>
-            <div style={{fontSize: '36px', fontWeight: 200, color: styles.purpleBright}}>{applications.length}</div>
-            <div style={{fontSize: '11px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px', marginTop: '4px'}}>Applications</div>
+          <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px 12px'}}>
+            <div style={{fontFamily: styles.serif, fontSize: '36px', fontWeight: 200, color: styles.purpleBright, lineHeight: '43px'}}>{applications.length}</div>
+            <div style={{fontFamily: styles.mono, fontSize: '11px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px', marginTop: '8px'}}>Applications</div>
           </div>
         </Panel>
         <Panel>
-          <div style={{textAlign: 'center', padding: '12px'}}>
-            <div style={{fontSize: '36px', fontWeight: 200, color: styles.accentGreen}}>{certificates.length}</div>
-            <div style={{fontSize: '11px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px', marginTop: '4px'}}>Certificates</div>
+          <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px 12px'}}>
+            <div style={{fontFamily: styles.serif, fontSize: '36px', fontWeight: 200, color: styles.accentGreen, lineHeight: '43px'}}>{certificates.length}</div>
+            <div style={{fontFamily: styles.mono, fontSize: '11px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px', marginTop: '8px'}}>Certificates</div>
           </div>
         </Panel>
         <Panel>
-          <div style={{textAlign: 'center', padding: '12px'}}>
-            <a href="https://sentinel-website-eta.vercel.app/status.html" target="_blank" style={{display: 'block', textDecoration: 'none'}}>
-              <div style={{fontSize: '24px', marginBottom: '8px'}}>📊</div>
-              <div style={{fontSize: '11px', color: styles.purpleBright, textTransform: 'uppercase', letterSpacing: '1px'}}>Check Test Status</div>
-            </a>
-          </div>
+          <a href="https://sentinel-website-eta.vercel.app/status.html" target="_blank" rel="noopener noreferrer" style={{textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px 12px'}}>
+            <div style={{height: '43px', display: 'flex', alignItems: 'center', justifyContent: 'center'}}><Activity size={36} style={{color: styles.purpleBright}} /></div>
+            <div style={{fontFamily: styles.mono, fontSize: '11px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px', marginTop: '8px'}}>Check Test Status</div>
+          </a>
         </Panel>
       </div>
 
@@ -1168,7 +1181,7 @@ function ApplicationDetail() {
       </div>
       
       {testCreated && (
-        <div className="p-4 rounded-lg" style={{background: 'rgba(92,214,133,0.1)', border: '1px solid rgba(139,92,246,0.3)'}}>
+        <div className="p-4 rounded-lg" style={{background: 'rgba(92,214,133,0.1)', border: '1px solid rgba(157,140,207,0.3)'}}>
           <p style={{color: styles.accentGreen, fontFamily: "'IBM Plex Mono', monospace", fontSize: '12px'}}>
             Test Created: {testCreated.test_id} — <Link to="/cat72" style={{color: styles.purpleBright}}>Go to CAT-72 Console</Link>
           </p>
@@ -1387,7 +1400,7 @@ function CAT72Console() {
                         onClick={() => handleStart(test.test_id)}
                         disabled={loading[test.test_id]}
                         className="px-3 py-1 rounded transition-colors"
-                        style={{background: 'rgba(92,214,133,0.15)', border: '1px solid rgba(139,92,246,0.3)', color: styles.accentGreen, fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}
+                        style={{background: 'rgba(92,214,133,0.15)', border: '1px solid rgba(157,140,207,0.3)', color: styles.accentGreen, fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}
                       >
                         {loading[test.test_id] === 'starting' ? '...' : 'Start'}
                       </button>
@@ -1635,37 +1648,45 @@ function VerifyPage() {
     setLoading(true);
     try {
       const res = await api.get(`/api/registry/search?q=${encodeURIComponent(searchQuery)}`);
-      setSearchResults(res.data);
+      setSearchResults(res.data.results || []); if (!res.data.results || res.data.results.length === 0) setError("No certificates found for that search");
     } catch (err) {
-      setError("Search failed");
+      setError("Unable to connect to registry");
     }
     setLoading(false);
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden" style={{background: styles.bgDeep}}>
+      <Link to="/dashboard" style={{
+        position: 'fixed', top: '24px', right: '32px', zIndex: 20,
+        color: styles.textTertiary, fontFamily: "'IBM Plex Mono', monospace",
+        fontSize: '10px', letterSpacing: '1.5px', textTransform: 'uppercase',
+        textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '6px',
+        transition: 'color 0.2s',
+      }}><Home className="w-3.5 h-3.5" /> Dashboard</Link>
       {/* Animated background gradients */}
       <div style={{
         position: 'absolute', top: '-20%', left: '-10%', width: '600px', height: '600px',
-        background: 'radial-gradient(circle, rgba(91,75,138,0.3) 0%, transparent 70%)',
-        animation: 'float1 15s ease-in-out infinite', pointerEvents: 'none',
+        background: 'radial-gradient(circle, rgba(91,75,138,0.18) 0%, transparent 65%)',
+        animation: 'float1 25s ease-in-out infinite', pointerEvents: 'none',
       }} />
       <div style={{
         position: 'absolute', bottom: '-30%', right: '-15%', width: '800px', height: '800px',
-        background: 'radial-gradient(circle, rgba(92,214,133,0.15) 0%, transparent 70%)',
-        animation: 'float2 20s ease-in-out infinite', pointerEvents: 'none',
+        background: 'radial-gradient(circle, rgba(92,214,133,0.06) 0%, transparent 65%)',
+        animation: 'float2 30s ease-in-out infinite', pointerEvents: 'none',
       }} />
       <div style={{
         position: 'absolute', top: '40%', right: '10%', width: '400px', height: '400px',
-        background: 'radial-gradient(circle, rgba(157,140,207,0.2) 0%, transparent 70%)',
-        animation: 'float3 12s ease-in-out infinite', pointerEvents: 'none',
+        background: 'radial-gradient(circle, rgba(157,140,207,0.10) 0%, transparent 65%)',
+        animation: 'float3 15s ease-in-out infinite', pointerEvents: 'none',
       }} />
       
       {/* Grid overlay */}
       <div style={{
         position: 'fixed', inset: 0,
         backgroundImage: 'linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)',
-        backgroundSize: '60px 60px', opacity: 0.5, pointerEvents: 'none',
+        backgroundSize: '120px 120px', opacity: 0.2, pointerEvents: 'none',
+        maskImage: 'radial-gradient(ellipse at center, rgba(0,0,0,0.9) 20%, transparent 70%)', WebkitMaskImage: 'radial-gradient(ellipse at center, rgba(0,0,0,0.9) 20%, transparent 70%)',
       }} />
 
       {/* Decorative elements */}
@@ -1695,20 +1716,20 @@ function VerifyPage() {
           <div className="relative flex justify-center mb-6" style={{height: '100px', alignItems: 'center'}}>
             <div style={{
               position: 'absolute', width: '80px', height: '80px',
-              border: '1px solid rgba(139,92,246,0.3)', borderRadius: '50%',
+              border: '1px solid rgba(157,140,207,0.3)', borderRadius: '50%',
               animation: 'pulse-ring 3s ease-out infinite',
             }} />
             <div style={{
               position: 'absolute', width: '100px', height: '100px',
-              border: '1px solid rgba(139,92,246,0.15)', borderRadius: '50%',
+              border: '1px solid rgba(157,140,207,0.15)', borderRadius: '50%',
               animation: 'pulse-ring 3s ease-out infinite 0.5s',
             }} />
             <div style={{
               width: '56px', height: '56px',
               background: 'linear-gradient(135deg, #5B4B8A 0%, #8b5cf6 100%)',
-              border: '2px solid #8b5cf6', borderRadius: '14px',
+              border: '2px solid #9d8ccf', borderRadius: '14px',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              boxShadow: '0 8px 32px rgba(139,92,246,0.4), inset 0 1px 0 rgba(255,255,255,0.2)',
+              boxShadow: '0 8px 32px rgba(157,140,207,0.4), inset 0 1px 0 rgba(255,255,255,0.2)',
             }}>
               <div style={{
                 width: '18px', height: '18px',
@@ -1753,7 +1774,7 @@ function VerifyPage() {
         <div style={{
           background: 'rgba(255,255,255,0.03)', backdropFilter: 'blur(20px)',
           border: '1px solid rgba(255,255,255,0.08)', borderRadius: '24px', padding: '40px',
-          boxShadow: '0 25px 50px -12px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.05) inset',
+          boxShadow: '0 25px 50px -12px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.05) inset', transition: 'all 0.3s ease', minHeight: '280px',
         }}>
 {mode === "verify" && (
           <form onSubmit={handleVerify} className="space-y-6">
@@ -1767,7 +1788,7 @@ function VerifyPage() {
                 type="text"
                 placeholder="ODDC-2026-00001"
                 value={certNumber}
-                onChange={(e) => setCertNumber(e.target.value.toUpperCase())}
+                onChange={(e) => { setCertNumber(e.target.value.toUpperCase()); setError(""); setResult(null); }}
                 className="verify-input w-full px-5 py-4 rounded-xl outline-none"
                 style={{
                   background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.08)',
@@ -1798,37 +1819,47 @@ function VerifyPage() {
 
           )}
 
-          {mode === "search" && (
-            <div className="space-y-6">
-              <form onSubmit={handleSearch}>
-                <div>
-                  <label style={{
-                    display: "block", marginBottom: "10px", color: styles.textTertiary,
-                    fontFamily: "'IBM Plex Mono', monospace", fontSize: "10px",
-                    letterSpacing: "2px", textTransform: "uppercase", textAlign: "center",
-                  }}>Search by Organization or System</label>
-                  <input
-                    type="text"
-                    placeholder="Company name or system..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="verify-input w-full px-5 py-4 rounded-xl outline-none"
-                    style={{
-                      background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)",
-                      color: styles.textPrimary, fontSize: "16px", textAlign: "center",
-                    }}
-                  />
-                </div>
-                <button type="submit" disabled={loading} className="verify-btn w-full py-4 rounded-xl font-medium mt-4"
-                  style={{
-                    background: "linear-gradient(135deg, #5B4B8A 0%, #7c6aaf 100%)",
-                    color: "#fff", border: "none", cursor: "pointer",
-                    fontFamily: "'IBM Plex Mono', monospace", fontSize: "12px", letterSpacing: "1px",
-                  }}>
-                  {loading ? "Searching..." : "Search Registry"}
-                </button>
-              </form>
-              {searchResults.length > 0 && (
+          {mode === "search" && (<>
+          <form onSubmit={handleSearch} className="space-y-6">
+            <div>
+              <label style={{
+                display: 'block', marginBottom: '10px', color: styles.textTertiary,
+                fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px',
+                letterSpacing: '2px', textTransform: 'uppercase', textAlign: 'center',
+              }}>Organization or System Name</label>
+              <input
+                type="text"
+                placeholder="Company name or system..."
+                value={searchQuery}
+                onChange={(e) => { setSearchQuery(e.target.value); setError(""); }}
+                className="verify-input w-full px-5 py-4 rounded-xl outline-none"
+                style={{
+                  background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.08)',
+                  color: styles.textPrimary, fontFamily: "'IBM Plex Mono', monospace",
+                  fontSize: '18px', textAlign: 'center', letterSpacing: '2px',
+                }}
+              />
+            </div>
+            <button 
+              type="submit" 
+              disabled={loading || !searchQuery.trim()}
+              className="verify-btn w-full py-4 rounded-xl font-medium"
+              style={{
+                background: 'linear-gradient(135deg, #5B4B8A 0%, #7B6BAA 100%)',
+                border: '1px solid rgba(157,140,207,0.5)', color: '#fff',
+                fontFamily: "'IBM Plex Mono', monospace", fontSize: '12px',
+                letterSpacing: '2px', textTransform: 'uppercase', cursor: 'pointer',
+                boxShadow: '0 4px 20px rgba(91,75,138,0.4)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
+              }}>
+              {loading ? (
+                <><RefreshCw className="w-4 h-4" style={{animation: 'spin 1s linear infinite'}} /> Searching...</>
+              ) : (
+                <><Search className="w-4 h-4" /> Search Registry</>
+              )}
+            </button>
+          </form>
+          {searchResults.length > 0 && (
                 <div style={{marginTop: "24px"}}>
                   <p style={{color: styles.textTertiary, fontSize: "12px", marginBottom: "12px", textAlign: "center"}}>
                     {searchResults.length} certificate(s) found
@@ -1852,18 +1883,18 @@ function VerifyPage() {
                     </div>
                   ))}
                 </div>
-              )}
-            </div>
           )}
+          </>)}
+          <div style={{minHeight: '80px', marginTop: '16px'}}>
           {error && (
-            <div className="mt-6 p-5 rounded-xl text-center" style={{
+            <div className="p-5 rounded-xl text-center" style={{
               background: 'rgba(214,92,92,0.1)', border: '1px solid rgba(214,92,92,0.3)',
             }}>
               <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', marginBottom: '8px'}}>
                 <AlertTriangle className="w-5 h-5" style={{color: styles.accentRed}} />
                 <span style={{color: styles.accentRed, fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase'}}>Not Found</span>
               </div>
-              <p style={{color: styles.textSecondary, fontSize: '14px'}}>No certificate exists with this number</p>
+              <p style={{color: styles.textSecondary, fontSize: '14px'}}>{error}</p>
             </div>
           )}
 
@@ -1929,19 +1960,8 @@ function VerifyPage() {
           )}
         </div>
         
-        {/* Footer links */}
-
-        {/* Portal link */}
-        <div className="mt-8 text-center">
-          <Link to="/dashboard" style={{
-            color: styles.textPrimary, fontFamily: "'IBM Plex Mono', monospace",
-            fontSize: "11px", letterSpacing: "1px", textDecoration: "none",
-            padding: "12px 32px", background: styles.purplePrimary,
-            border: "1px solid " + styles.purpleBright,
-            borderRadius: "8px", transition: "all 0.3s ease",
-            display: "inline-block",
-          }}>Portal →</Link>
         </div>
+
       </div>
     </div>
   );
@@ -2094,7 +2114,7 @@ function AgentSimulator({ apiKey }) {
             color: running ? styles.textTertiary : '#000',
             fontFamily: "'IBM Plex Mono', monospace",
             fontSize: '12px',
-            fontWeight: 600,
+            fontWeight: 400,
             cursor: running || !apiKey ? 'not-allowed' : 'pointer',
             display: 'flex',
             alignItems: 'center',
@@ -2108,12 +2128,12 @@ function AgentSimulator({ apiKey }) {
       
       {stats.pass + stats.block > 0 && (
         <div style={{display: 'flex', gap: '24px', marginBottom: '16px'}}>
-          <div style={{padding: '12px 20px', background: 'rgba(92,214,133,0.1)', border: '1px solid rgba(139,92,246,0.3)', borderRadius: '6px'}}>
-            <div style={{fontSize: '24px', fontWeight: 700, color: styles.accentGreen}}>{stats.pass}</div>
+          <div style={{padding: '12px 20px', background: 'rgba(92,214,133,0.1)', border: '1px solid rgba(157,140,207,0.3)', borderRadius: '6px'}}>
+            <div style={{fontSize: '24px', fontWeight: 500, color: styles.accentGreen}}>{stats.pass}</div>
             <div style={{fontSize: '11px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px'}}>Passed</div>
           </div>
           <div style={{padding: '12px 20px', background: 'rgba(214,92,92,0.1)', border: '1px solid rgba(214,92,92,0.3)', borderRadius: '6px'}}>
-            <div style={{fontSize: '24px', fontWeight: 700, color: '#D65C5C'}}>{stats.block}</div>
+            <div style={{fontSize: '24px', fontWeight: 500, color: '#D65C5C'}}>{stats.block}</div>
             <div style={{fontSize: '11px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px'}}>Blocked</div>
           </div>
         </div>
@@ -2155,19 +2175,19 @@ function SessionReport({ session }) {
     <div>
       <div style={{display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '24px'}}>
         <div style={{padding: '16px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px', textAlign: 'center'}}>
-          <div style={{fontSize: '28px', fontWeight: 700, color: '#fff'}}>{(session.pass_count || 0) + (session.block_count || 0)}</div>
+          <div style={{fontSize: '28px', fontWeight: 500, color: '#fff'}}>{(session.pass_count || 0) + (session.block_count || 0)}</div>
           <div style={{fontSize: '11px', color: '#888', textTransform: 'uppercase'}}>Total Actions</div>
         </div>
         <div style={{padding: '16px', background: 'rgba(92,214,133,0.1)', borderRadius: '8px', textAlign: 'center'}}>
-          <div style={{fontSize: '28px', fontWeight: 700, color: '#5CD685'}}>{session.pass_count || 0}</div>
+          <div style={{fontSize: '28px', fontWeight: 500, color: '#5CD685'}}>{session.pass_count || 0}</div>
           <div style={{fontSize: '11px', color: '#888', textTransform: 'uppercase'}}>Passed</div>
         </div>
         <div style={{padding: '16px', background: 'rgba(214,92,92,0.1)', borderRadius: '8px', textAlign: 'center'}}>
-          <div style={{fontSize: '28px', fontWeight: 700, color: '#D65C5C'}}>{session.block_count || 0}</div>
+          <div style={{fontSize: '28px', fontWeight: 500, color: '#D65C5C'}}>{session.block_count || 0}</div>
           <div style={{fontSize: '11px', color: '#888', textTransform: 'uppercase'}}>Blocked</div>
         </div>
         <div style={{padding: '16px', background: passRate >= 95 ? 'rgba(92,214,133,0.1)' : 'rgba(214,92,92,0.1)', borderRadius: '8px', textAlign: 'center'}}>
-          <div style={{fontSize: '28px', fontWeight: 700, color: passRate >= 95 ? '#5CD685' : '#D65C5C'}}>{passRate}%</div>
+          <div style={{fontSize: '28px', fontWeight: 500, color: passRate >= 95 ? '#5CD685' : '#D65C5C'}}>{passRate}%</div>
           <div style={{fontSize: '11px', color: '#888', textTransform: 'uppercase'}}>Pass Rate</div>
         </div>
       </div>
@@ -2198,7 +2218,7 @@ function TelemetryLog({ sessionId }) {
     <div style={{maxHeight: '300px', overflowY: 'auto'}}>
       <table style={{width: '100%', borderCollapse: 'collapse', fontSize: '12px'}}>
         <thead><tr style={{borderBottom: '1px solid rgba(255,255,255,0.1)'}}><th style={{padding: '8px', textAlign: 'left', color: '#888'}}>Time</th><th style={{padding: '8px', textAlign: 'left', color: '#888'}}>Action</th><th style={{padding: '8px', textAlign: 'left', color: '#888'}}>Result</th><th style={{padding: '8px', textAlign: 'left', color: '#888'}}>Params</th></tr></thead>
-        <tbody>{records.map((r, i) => (<tr key={i} style={{borderBottom: '1px solid rgba(255,255,255,0.05)'}}><td style={{padding: '8px', fontFamily: 'monospace', fontSize: '11px', color: '#aaa'}}>{r.timestamp ? new Date(r.timestamp).toLocaleTimeString() : '-'}</td><td style={{padding: '8px', color: '#fff'}}>{r.action_type}</td><td style={{padding: '8px'}}><span style={{padding: '2px 8px', borderRadius: '4px', fontSize: '10px', fontWeight: 600, background: r.result === 'PASS' ? 'rgba(92,214,133,0.2)' : 'rgba(214,92,92,0.2)', color: r.result === 'PASS' ? '#5CD685' : '#D65C5C'}}>{r.result}</span></td><td style={{padding: '8px', color: '#666', fontFamily: 'monospace', fontSize: '10px'}}>{JSON.stringify(r.parameters || {})}</td></tr>))}</tbody>
+        <tbody>{records.map((r, i) => (<tr key={i} style={{borderBottom: '1px solid rgba(255,255,255,0.05)'}}><td style={{padding: '8px', fontFamily: 'monospace', fontSize: '11px', color: '#aaa'}}>{r.timestamp ? new Date(r.timestamp).toLocaleTimeString() : '-'}</td><td style={{padding: '8px', color: '#fff'}}>{r.action_type}</td><td style={{padding: '8px'}}><span style={{padding: '2px 8px', borderRadius: '4px', fontSize: '10px', fontWeight: 400, background: r.result === 'PASS' ? 'rgba(92,214,133,0.2)' : 'rgba(214,92,92,0.2)', color: r.result === 'PASS' ? '#5CD685' : '#D65C5C'}}>{r.result}</span></td><td style={{padding: '8px', color: '#666', fontFamily: 'monospace', fontSize: '10px'}}>{JSON.stringify(r.parameters || {})}</td></tr>))}</tbody>
       </table>
     </div>
   );
@@ -2486,7 +2506,7 @@ if __name__ == "__main__":
   return (
     <div>
       {generatedKey && (
-        <div style={{background: 'rgba(92,214,133,0.1)', border: '1px solid rgba(139,92,246,0.3)', borderRadius: '8px', padding: '16px', marginBottom: '20px'}}>
+        <div style={{background: 'rgba(92,214,133,0.1)', border: '1px solid rgba(157,140,207,0.3)', borderRadius: '8px', padding: '16px', marginBottom: '20px'}}>
           <div style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', color: styles.accentGreen, marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '1px'}}>✓ New API Key Generated</div>
           <div style={{background: 'rgba(0,0,0,0.3)', padding: '12px', borderRadius: '6px', fontFamily: "'IBM Plex Mono', monospace", fontSize: '13px', color: styles.textPrimary, wordBreak: 'break-all', marginBottom: '12px'}}>
             {generatedKey.key}
@@ -2709,6 +2729,135 @@ def your_action(**params):
 }
 
 // ENVELO Agent Page
+
+
+function ResourcesPage() {
+  const { user, token } = useAuth();
+  const API = import.meta.env.VITE_API_URL || '';
+  const [documents, setDocuments] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch(API + '/api/documents/', {
+      headers: { 'Authorization': 'Bearer ' + token }
+    })
+      .then(function(r) { return r.json(); })
+      .then(function(data) { setDocuments(Array.isArray(data) ? data : []); setLoading(false); })
+      .catch(function() { setLoading(false); });
+  }, []);
+
+  const handleDownload = async (docId, title) => {
+    try {
+      const response = await fetch(API + '/api/documents/' + docId + '/download', {
+        headers: { 'Authorization': 'Bearer ' + token }
+      });
+      if (!response.ok) throw new Error('Download failed');
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = title.replace(/\s+/g, '_') + '.pdf';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('Download error:', err);
+    }
+  };
+
+  return (
+    <div style={{ padding: '32px', maxWidth: '900px' }}>
+      <div style={{ marginBottom: '32px' }}>
+        <p style={{
+          fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px',
+          letterSpacing: '2px', textTransform: 'uppercase',
+          color: styles.purpleBright, marginBottom: '8px'
+        }}>RESOURCES</p>
+        <h1 style={{
+          fontFamily: "'Source Serif 4', serif", fontSize: '28px',
+          fontWeight: 200, color: styles.textPrimary, margin: 0
+        }}>Documents & Guides</h1>
+        <p style={{ color: styles.textTertiary, marginTop: '8px', fontSize: '14px' }}>
+          Reference materials for the ODDC certification process.
+        </p>
+      </div>
+
+      {loading ? (
+        <div style={{ color: styles.textTertiary, fontFamily: "'IBM Plex Mono', monospace", fontSize: '12px' }}>
+          Loading documents...
+        </div>
+      ) : documents.length === 0 ? (
+        <div style={{
+          padding: '40px', textAlign: 'center', borderRadius: '12px',
+          border: '1px solid ' + styles.borderGlass, background: styles.bgCard,
+          color: styles.textTertiary
+        }}>
+          No documents available.
+        </div>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          {documents.map(doc => (
+            <div key={doc.id} style={{
+              padding: '24px', borderRadius: '12px',
+              border: '1px solid ' + styles.borderGlass, background: styles.bgCard,
+              display: 'flex', alignItems: 'center', gap: '20px'
+            }}>
+              <div style={{
+                width: '48px', height: '48px', borderRadius: '10px',
+                background: styles.purplePrimary + '22',
+                border: '1px solid ' + styles.purplePrimary + '44',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
+              }}>
+                <BookOpen style={{ width: '22px', height: '22px', color: styles.purpleBright }} />
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontWeight: 600, color: styles.textPrimary, fontSize: '15px', marginBottom: '4px' }}>
+                  {doc.title}
+                </div>
+                <div style={{ color: styles.textTertiary, fontSize: '13px', lineHeight: '1.4' }}>
+                  {doc.description}
+                </div>
+                <div style={{
+                  fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px',
+                  color: styles.textTertiary, marginTop: '6px',
+                  letterSpacing: '1px', textTransform: 'uppercase'
+                }}>
+                  {'PDF • v' + doc.version}
+                </div>
+              </div>
+              <button
+                onClick={() => handleDownload(doc.id, doc.title)}
+                style={{
+                  padding: '10px 20px', borderRadius: '8px',
+                  background: styles.purplePrimary,
+                  border: '1px solid ' + styles.purpleBright,
+                  color: '#fff', fontFamily: "'IBM Plex Mono', monospace",
+                  fontSize: '11px', letterSpacing: '1px',
+                  textTransform: 'uppercase', cursor: 'pointer', flexShrink: 0
+                }}
+              >
+                Download
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {user && user.role === 'admin' && (
+        <div style={{
+          marginTop: '40px', padding: '20px', borderRadius: '10px',
+          border: '1px dashed ' + styles.borderGlass,
+          color: styles.textTertiary, fontSize: '12px',
+          fontFamily: "'IBM Plex Mono', monospace"
+        }}>
+          ADMIN: To add documents, place PDFs in backend/static/documents/ and register them in documents.py
+        </div>
+      )}
+    </div>
+  );
+}
+
 function EnveloPage() {
   const { user } = useAuth();
   
@@ -3539,7 +3688,7 @@ function MonitoringPage() {
 
       {/* Summary Cards */}
       <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '32px'}}>
-        <div style={{background: styles.bgPanel, border: `1px solid ${styles.borderGlass}`, borderRadius: '12px', padding: '20px'}}>
+        <div style={{background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '16px', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', padding: '20px'}}>
           <div style={{fontSize: '10px', fontFamily: "'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '2px', color: styles.textTertiary, marginBottom: '8px'}}>
             Active Sessions
           </div>
@@ -3549,7 +3698,7 @@ function MonitoringPage() {
           </div>
         </div>
 
-        <div style={{background: styles.bgPanel, border: `1px solid ${styles.borderGlass}`, borderRadius: '12px', padding: '20px'}}>
+        <div style={{background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '16px', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', padding: '20px'}}>
           <div style={{fontSize: '10px', fontFamily: "'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '2px', color: styles.textTertiary, marginBottom: '8px'}}>
             Total Actions
           </div>
@@ -3559,7 +3708,7 @@ function MonitoringPage() {
           </div>
         </div>
 
-        <div style={{background: styles.bgPanel, border: `1px solid ${styles.borderGlass}`, borderRadius: '12px', padding: '20px'}}>
+        <div style={{background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '16px', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', padding: '20px'}}>
           <div style={{fontSize: '10px', fontFamily: "'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '2px', color: styles.textTertiary, marginBottom: '8px'}}>
             Pass Rate
           </div>
@@ -3571,7 +3720,7 @@ function MonitoringPage() {
           </div>
         </div>
 
-        <div style={{background: styles.bgPanel, border: `1px solid ${styles.borderGlass}`, borderRadius: '12px', padding: '20px'}}>
+        <div style={{background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '16px', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', padding: '20px'}}>
           <div style={{fontSize: '10px', fontFamily: "'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '2px', color: styles.textTertiary, marginBottom: '8px'}}>
             Total Sessions
           </div>
@@ -3583,7 +3732,7 @@ function MonitoringPage() {
       </div>
 
       {/* Sessions Table */}
-      <div style={{background: styles.bgPanel, border: `1px solid ${styles.borderGlass}`, borderRadius: '12px', overflow: 'hidden'}}>
+      <div style={{background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '16px', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', overflow: 'hidden'}}>
         <div style={{padding: '16px 20px', borderBottom: `1px solid ${styles.borderSubtle}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
           <h2 style={{margin: 0, fontSize: '14px', fontFamily: "'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '2px', color: styles.textTertiary}}>Agent Sessions</h2>
           <div style={{display: 'flex', gap: '12px', alignItems: 'center'}}>
@@ -3891,7 +4040,7 @@ function UserManagementPage() {
           <div className="space-y-2">
             {filteredUsers.map(user => (
               <div key={user.id || user.email} onClick={() => { setSelectedUser(user); setShowEditModal(true); }} className="flex items-center gap-4 p-4 rounded-lg cursor-pointer transition-all" style={{background: 'rgba(255,255,255,0.02)', border: '1px solid ' + styles.borderGlass}}>
-                <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style={{background: styles.purplePrimary, color: '#fff', fontWeight: '600'}}>{user.full_name?.[0] || user.email?.[0] || '?'}</div>
+                <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style={{background: styles.purplePrimary, color: '#fff', fontWeight: '400'}}>{user.full_name?.[0] || user.email?.[0] || '?'}</div>
                 <div className="flex-1 min-w-0">
                   <p style={{color: styles.textPrimary, fontWeight: '500'}}>{user.full_name || 'No Name'}</p>
                   <p style={{color: styles.textTertiary, fontSize: '13px'}}>{user.email}</p>
@@ -3909,7 +4058,7 @@ function UserManagementPage() {
       {showInviteModal && (
         <div className="fixed inset-0 flex items-center justify-center z-50" style={{background: 'rgba(0,0,0,0.7)'}}>
           <div className="w-full max-w-md mx-4 p-6 rounded-xl" style={{background: styles.bgDeep, border: '1px solid ' + styles.borderGlass}}>
-            <h2 style={{color: styles.textPrimary, fontSize: '20px', fontWeight: '600', marginBottom: '24px', textAlign: 'center'}}>Invite New User</h2>
+            <h2 style={{color: styles.textPrimary, fontSize: '20px', fontWeight: '400', marginBottom: '24px', textAlign: 'center'}}>Invite New User</h2>
             <div className="space-y-4">
               <div><label style={{color: styles.textSecondary, fontSize: '12px', display: 'block', marginBottom: '6px'}}>Email *</label><input type="email" value={inviteForm.email} onChange={(e) => setInviteForm({...inviteForm, email: e.target.value})} placeholder="user@company.com" className="sexy-input w-full px-4 py-3 rounded-lg" style={{background: 'rgba(255,255,255,0.05)', border: '1px solid ' + styles.borderGlass, color: styles.textPrimary, outline: 'none'}} /></div>
               <div><label style={{color: styles.textSecondary, fontSize: '12px', display: 'block', marginBottom: '6px'}}>Full Name *</label><input type="text" value={inviteForm.full_name} onChange={(e) => setInviteForm({...inviteForm, full_name: e.target.value})} placeholder="John Smith" className="sexy-input w-full px-4 py-3 rounded-lg" style={{background: 'rgba(255,255,255,0.05)', border: '1px solid ' + styles.borderGlass, color: styles.textPrimary, outline: 'none'}} /></div>
@@ -3931,9 +4080,9 @@ function UserManagementPage() {
       {showEditModal && selectedUser && (
         <div className="fixed inset-0 flex items-center justify-center z-50" style={{background: 'rgba(0,0,0,0.7)'}}>
           <div className="w-full max-w-md mx-4 p-6 rounded-xl" style={{background: styles.bgDeep, border: '1px solid ' + styles.borderGlass}}>
-            <h2 style={{color: styles.textPrimary, fontSize: '20px', fontWeight: '600', marginBottom: '24px', textAlign: 'center'}}>Manage User</h2>
+            <h2 style={{color: styles.textPrimary, fontSize: '20px', fontWeight: '400', marginBottom: '24px', textAlign: 'center'}}>Manage User</h2>
             <div className="text-center mb-6 p-4 rounded-lg" style={{background: 'rgba(255,255,255,0.03)'}}>
-              <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3" style={{background: styles.purplePrimary, color: '#fff', fontSize: '24px', fontWeight: '600'}}>{selectedUser.full_name?.[0] || selectedUser.email?.[0] || '?'}</div>
+              <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3" style={{background: styles.purplePrimary, color: '#fff', fontSize: '24px', fontWeight: '400'}}>{selectedUser.full_name?.[0] || selectedUser.email?.[0] || '?'}</div>
               <p style={{color: styles.textPrimary, fontSize: '18px', fontWeight: '500'}}>{selectedUser.full_name || 'No Name'}</p>
               <p style={{color: styles.textTertiary, fontSize: '14px'}}>{selectedUser.email}</p>
             </div>
@@ -3971,6 +4120,7 @@ function App() {
           <Route path="/applications/:id" element={<ProtectedRoute><Layout><ApplicationDetail /></Layout></ProtectedRoute>} />
           <Route path="/cat72" element={<ProtectedRoute roles={['admin', 'operator']}><Layout><CAT72Console /></Layout></ProtectedRoute>} />
           <Route path="/certificates" element={<ProtectedRoute><Layout><CertificatesPage /></Layout></ProtectedRoute>} />
+          <Route path="/resources" element={<ProtectedRoute><Layout><ResourcesPage /></Layout></ProtectedRoute>} />
           <Route path="/envelo" element={<ProtectedRoute><Layout><EnveloPage /></Layout></ProtectedRoute>} />
           <Route path="/monitoring" element={<ProtectedRoute><Layout><MonitoringPage /></Layout></ProtectedRoute>} />
           <Route path="/users" element={<ProtectedRoute roles={["admin"]}><Layout><UserManagementPage /></Layout></ProtectedRoute>} />

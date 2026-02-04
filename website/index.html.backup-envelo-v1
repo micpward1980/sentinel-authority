@@ -2979,8 +2979,8 @@
                   ctx.beginPath();
                   ctx.arc(p.trail[t].x, p.trail[t].y, trailSize, 0, Math.PI * 2);
                   if (p.blocked) ctx.fillStyle = 'rgba(255,60,60,' + alpha + ')';
-                  else if (p.blipping) ctx.fillStyle = 'rgba(214,92,92,' + alpha + ')';
-                  else if (p.rogue) ctx.fillStyle = 'rgba(214,92,92,' + alpha + ')';
+                  else if (p.blipping) ctx.fillStyle = 'rgba(255,220,60,' + alpha + ')';
+                  else if (p.rogue) ctx.fillStyle = 'rgba(255,180,100,' + alpha + ')';
                   else if (p.returning) ctx.fillStyle = 'rgba(157,140,207,' + alpha + ')';
                   else ctx.fillStyle = 'rgba(92,214,133,' + alpha + ')';
                   ctx.fill();
@@ -2992,18 +2992,18 @@
               if (p.blocked) {
                 ctx.beginPath(); ctx.arc(px, py, r, 0, Math.PI*2); ctx.fillStyle='#FF3333'; ctx.shadowColor='#FF3333'; ctx.shadowBlur=45; ctx.fill(); ctx.shadowBlur=0;
               } else if (p.rogue) {
-                ctx.beginPath(); ctx.arc(px, py, r, 0, Math.PI*2); ctx.fillStyle='rgba(214,92,92,'+p.opacity+')'; ctx.shadowColor='rgba(214,92,92,0.6)'; ctx.shadowBlur=14; ctx.fill(); ctx.shadowBlur=0;
+                ctx.beginPath(); ctx.arc(px, py, r, 0, Math.PI*2); ctx.fillStyle='rgba(255,180,100,'+p.opacity+')'; ctx.shadowColor='rgba(255,180,100,0.6)'; ctx.shadowBlur=14; ctx.fill(); ctx.shadowBlur=0;
               } else if (p.returning) {
                 ctx.beginPath(); ctx.arc(px, py, r, 0, Math.PI*2); ctx.fillStyle='rgba(157,140,207,'+p.opacity+')'; ctx.shadowColor='rgba(157,140,207,0.3)'; ctx.shadowBlur=6; ctx.fill(); ctx.shadowBlur=0;
               } else if (p.blipping) {
                 const blipAge = (now - p.blipStart) / p.blipDuration;
                 const pulse = 0.5 + 0.5 * Math.sin(blipAge * Math.PI * 8);
-                const br = 214;
-                const bg = 92;
-                const bb = 92;
+                const br = Math.floor(255);
+                const bg = Math.floor(180 + 75 * pulse);
+                const bb = Math.floor(40);
                 ctx.beginPath(); ctx.arc(px, py, r * (1.3 + 0.5 * pulse), 0, Math.PI*2);
                 ctx.fillStyle='rgba('+br+','+bg+','+bb+','+(0.9+0.1*pulse)+')';
-                ctx.shadowColor='rgba(214,92,92,0.9)'; ctx.shadowBlur=25; ctx.fill(); ctx.shadowBlur=0;
+                ctx.shadowColor='rgba(255,200,60,0.9)'; ctx.shadowBlur=25; ctx.fill(); ctx.shadowBlur=0;
               } else {
                 ctx.beginPath(); ctx.arc(px, py, r, 0, Math.PI*2); ctx.fillStyle='rgba(92,214,133,'+p.opacity+')'; ctx.shadowColor='rgba(92,214,133,0.6)'; ctx.shadowBlur=16; ctx.fill(); ctx.shadowBlur=0;
                 positions.push({x: px, y: py});
@@ -3051,7 +3051,7 @@
         </div>
       </div>
 
-      <!-- Mechanism Flow Diagram - Animated Canvas v2 -->
+      <!-- Mechanism Flow Diagram - Animated Canvas -->
       <div class="reveal" style="display: flex; justify-content: center; margin-bottom: var(--space-4);">
         <div style="width: 100%; max-width: 880px;">
           <canvas id="envelo-canvas" style="width: 100%; display: block;"></canvas>
@@ -3070,23 +3070,11 @@
         var lastSpawn = 0;
         var nextDelay = 1500;
         var enveloGlow = 0;
-        var gateAngle = 0; // gate rotation state
-        var gateTarget = 0;
-        var connPulses = []; // connection line pulses
-        var scanLines = []; // ENVELO internal scan lines
-
-        var dataLabels = [
-          'speed: 47mph', 'dose: 120mg', 'alt: 3200ft', 'temp: 72°F',
-          'lat: 30.41°N', 'load: 82%', 'rpm: 2400', 'psi: 34.2',
-          'freq: 60Hz', 'vol: 240mL', 'rate: 12/min', 'torque: 88Nm',
-          'depth: 15m', 'flow: 3.2L/s', 'angle: 12.5°', 'pH: 7.2',
-          'lux: 450', 'dB: 78', 'g-force: 1.2', 'voltage: 3.3V'
-        ];
 
         function resize() {
           var r = c.parentElement.getBoundingClientRect();
           W = r.width;
-          H = W < 550 ? 390 : 310;
+          H = W < 550 ? 370 : 300;
           c.width = W * dpr;
           c.height = H * dpr;
           c.style.height = H + 'px';
@@ -3112,85 +3100,47 @@
           if (mob) {
             var cx = W / 2;
             return {
-              model:   {x:cx, y:50,  w:80, h:80},
-              envelo:  {x:cx, y:158, w:110,h:110},
-              gate:    {x:cx, y:258, w:68, h:68},
-              execute: {x:cx-60, y:338, w:92,h:32},
-              blocked: {x:cx+60, y:338, w:92,h:32},
+              model:   {x:cx, y:45,  w:80, h:80},
+              envelo:  {x:cx, y:148, w:100,h:100},
+              gate:    {x:cx, y:238, w:60, h:60},
+              execute: {x:cx-58, y:312, w:88,h:30},
+              blocked: {x:cx+58, y:312, w:88,h:30},
               mob: true
             };
           }
-          var cy = H/2 - 10;
+          var cy = H/2 - 15;
           var m = W*0.05;
           var s = (W - m*2) / 5;
           return {
             model:   {x:m+s*0.5, y:cy, w:90, h:90},
-            envelo:  {x:m+s*1.85,y:cy, w:120,h:120},
-            gate:    {x:m+s*3.1, y:cy, w:72, h:72},
-            execute: {x:m+s*4.3, y:cy-36, w:100,h:34},
-            blocked: {x:m+s*4.3, y:cy+36, w:100,h:34},
+            envelo:  {x:m+s*1.85,y:cy, w:110,h:110},
+            gate:    {x:m+s*3.1, y:cy, w:70, h:70},
+            execute: {x:m+s*4.3, y:cy-34, w:100,h:32},
+            blocked: {x:m+s*4.3, y:cy+34, w:100,h:32},
             mob: false
           };
         }
 
-        function getConnPoints(L) {
-          if (!L.mob) {
-            return [
-              {ax:L.model.x+L.model.w/2, ay:L.model.y, bx:L.envelo.x-L.envelo.w/2, by:L.envelo.y, label:'ACTION'},
-              {ax:L.envelo.x+L.envelo.w/2, ay:L.envelo.y, bx:L.gate.x-L.gate.w/2, by:L.gate.y, label:'VERDICT'},
-              {ax:L.gate.x+L.gate.w/2, ay:L.gate.y, bx:L.execute.x-L.execute.w/2, by:L.execute.y, label:''},
-              {ax:L.gate.x+L.gate.w/2, ay:L.gate.y, bx:L.blocked.x-L.blocked.w/2, by:L.blocked.y, label:''}
-            ];
-          }
-          return [
-            {ax:L.model.x, ay:L.model.y+L.model.h/2, bx:L.envelo.x, by:L.envelo.y-L.envelo.h/2, label:''},
-            {ax:L.envelo.x, ay:L.envelo.y+L.envelo.h/2, bx:L.gate.x, by:L.gate.y-L.gate.h/2, label:''},
-            {ax:L.gate.x, ay:L.gate.y+L.gate.h/2, bx:L.execute.x, by:L.execute.y-L.execute.h/2, label:''},
-            {ax:L.gate.x, ay:L.gate.y+L.gate.h/2, bx:L.blocked.x, by:L.blocked.y-L.blocked.h/2, label:''}
-          ];
-        }
-
-        function drawConn(cp, col, alpha) {
+        function drawConn(ax,ay,bx,by,col,alpha,label) {
           ctx.beginPath();
-          ctx.moveTo(cp.ax,cp.ay); ctx.lineTo(cp.bx,cp.by);
+          ctx.moveTo(ax,ay); ctx.lineTo(bx,by);
           ctx.strokeStyle = col+alpha+')';
           ctx.lineWidth = 1.5;
           ctx.stroke();
-          var ang = Math.atan2(cp.by-cp.ay,cp.bx-cp.ax);
+          var ang = Math.atan2(by-ay,bx-ax);
           ctx.beginPath();
-          ctx.moveTo(cp.bx,cp.by);
-          ctx.lineTo(cp.bx-6*Math.cos(ang-0.4),cp.by-6*Math.sin(ang-0.4));
-          ctx.lineTo(cp.bx-6*Math.cos(ang+0.4),cp.by-6*Math.sin(ang+0.4));
+          ctx.moveTo(bx,by);
+          ctx.lineTo(bx-6*Math.cos(ang-0.4),by-6*Math.sin(ang-0.4));
+          ctx.lineTo(bx-6*Math.cos(ang+0.4),by-6*Math.sin(ang+0.4));
           ctx.closePath();
-          ctx.fillStyle = col+(Math.min(parseFloat(alpha)*3,0.5))+')';
+          ctx.fillStyle = col+(Math.min(alpha*3,0.5))+')';
           ctx.fill();
-          if (cp.label) {
-            var mx=(cp.ax+cp.bx)/2, my=(cp.ay+cp.by)/2-12;
+          if (label) {
+            var mx=(ax+bx)/2, my=(ay+by)/2-12;
             ctx.font = '8px monospace';
             ctx.textAlign = 'center';
-            ctx.fillStyle = col+'0.4)';
-            ctx.fillText(cp.label, mx, my);
-          }
-        }
-
-        function drawConnPulses(cps, time) {
-          for (var i=connPulses.length-1;i>=0;i--) {
-            var cp = connPulses[i];
-            cp.t += cp.speed;
-            if (cp.t > 1.3) { connPulses.splice(i,1); continue; }
-            var ct = clamp(cp.t);
-            var conn = cps[cp.conn];
-            if (!conn) continue;
-            var px = lerp(conn.ax,conn.bx,ct);
-            var py = lerp(conn.ay,conn.by,ct);
-            var a = ct<0.1 ? ct*10 : (ct>0.9 ? (1-ct)*10 : 1);
-            ctx.beginPath();
-            ctx.arc(px,py,2,0,Math.PI*2);
-            ctx.fillStyle=cp.col+a*0.6+')';
-            ctx.shadowColor=cp.col+'0.4)';
-            ctx.shadowBlur=8;
-            ctx.fill();
-            ctx.shadowBlur=0;
+            ctx.fillStyle = col+'0.45)';
+            ctx.fillText(label, mx, my);
           }
         }
 
@@ -3210,104 +3160,65 @@
               ctx.strokeStyle='rgba(92,214,133,0.5)';ctx.lineWidth=1;ctx.stroke();
             }
           } else if (label==='ENVELO') {
-            // Scan lines - always subtly visible, brighter during processing
-            var scanAlpha = 0.06 + enveloGlow*0.12;
-            var bandAlpha = 0.025 + enveloGlow*0.04;
-            ctx.save();
-            ctx.beginPath();
-            rr(x+2,y+2,n.w-4,n.h-4,8);
-            ctx.clip();
-            var scanY = n.y - n.h/2 + (time*40 % n.h);
-            ctx.beginPath();
-            ctx.moveTo(x+8, scanY);
-            ctx.lineTo(x+n.w-8, scanY);
-            ctx.strokeStyle = 'rgba(157,140,207,'+scanAlpha+')';
-            ctx.lineWidth = 1;
-            ctx.stroke();
-            var sg = ctx.createLinearGradient(x,scanY-8,x,scanY+8);
-            sg.addColorStop(0,'rgba(157,140,207,0)');
-            sg.addColorStop(0.5,'rgba(157,140,207,'+bandAlpha+')');
-            sg.addColorStop(1,'rgba(157,140,207,0)');
-            ctx.fillStyle = sg;
-            ctx.fillRect(x+4,scanY-8,n.w-8,16);
-            var scanY2 = n.y - n.h/2 + ((time*40+n.h/2) % n.h);
-            ctx.beginPath();
-            ctx.moveTo(x+8, scanY2);
-            ctx.lineTo(x+n.w-8, scanY2);
-            ctx.strokeStyle = 'rgba(157,140,207,'+(scanAlpha*0.5)+')';
-            ctx.lineWidth = 0.5;
-            ctx.stroke();
-            ctx.restore();
-
-            // Eye
-            var pulse = 1 + 0.15*Math.sin(time*2.5) + enveloGlow*0.4;
-            var er = 12*pulse;
-            ctx.beginPath(); ctx.arc(n.x,n.y-8,er,0,Math.PI*2);
-            var eg = ctx.createRadialGradient(n.x,n.y-8,0,n.x,n.y-8,er);
-            eg.addColorStop(0,'#e8e0ff');eg.addColorStop(0.5,'#c4b8e8');eg.addColorStop(1,'#7B6BAA');
+            var pulse = 1 + 0.12*Math.sin(time*2.5) + enveloGlow*0.3;
+            var er = 11*pulse;
+            ctx.beginPath(); ctx.arc(n.x,n.y-10,er,0,Math.PI*2);
+            var eg = ctx.createRadialGradient(n.x,n.y-10,0,n.x,n.y-10,er);
+            eg.addColorStop(0,'#e8e0ff');eg.addColorStop(0.6,'#b8a8e0');eg.addColorStop(1,'#7B6BAA');
             ctx.fillStyle=eg;
-            ctx.fill();
+            ctx.shadowColor='rgba(157,140,207,'+(0.3+enveloGlow*0.5)+')';
+            ctx.shadowBlur=14*pulse;
+            ctx.fill();ctx.shadowBlur=0;
           } else if (label==='GATE') {
-            // Animated gate
-            gateAngle += (gateTarget - gateAngle) * 0.08;
-            ctx.save();
-            ctx.translate(n.x, n.y-6);
-            // Gate housing
-            ctx.beginPath();ctx.arc(0,0,11,0,Math.PI*2);
+            ctx.beginPath();ctx.arc(n.x,n.y-8,9,0,Math.PI*2);
             ctx.strokeStyle='rgba(255,255,255,0.2)';ctx.lineWidth=1.5;ctx.stroke();
-            // Gate bar that rotates
-            ctx.rotate(gateAngle);
-            ctx.beginPath();ctx.moveTo(0,-10);ctx.lineTo(0,10);
-            var gateCol = Math.abs(gateAngle) < 0.1 ? 'rgba(255,255,255,0.15)' :
-                         (gateAngle > 0 ? 'rgba(92,214,133,0.5)' : 'rgba(214,92,92,0.5)');
-            ctx.strokeStyle=gateCol;ctx.lineWidth=2;ctx.stroke();
-            ctx.restore();
+            ctx.beginPath();ctx.moveTo(n.x,n.y-17);ctx.lineTo(n.x,n.y+1);
+            ctx.strokeStyle='rgba(255,255,255,0.12)';ctx.lineWidth=1.5;ctx.stroke();
           }
 
           ctx.font = (n.h<=34?9:10)+'px monospace';
           ctx.textAlign='center';
           var tCol = bCol.replace(/[\d.]+\)$/,'0.9)');
           ctx.fillStyle = tCol;
-          var ly = n.h<=34 ? n.y+4 : (label==='ENVELO'?n.y+20:label==='GATE'?n.y+n.h/2-6:n.y+n.h/2-4);
+          var ly = n.h<=34 ? n.y+4 : (label==='ENVELO'?n.y+16:n.y+n.h/2-4);
           ctx.fillText(label, n.x, ly);
 
           if (label==='ENVELO') {
-            ctx.font='9px sans-serif';ctx.fillStyle='rgba(255,255,255,0.3)';
+            ctx.font='9px sans-serif';ctx.fillStyle='rgba(255,255,255,0.35)';
             ctx.fillText('Interlock',n.x,n.y+n.h/2+14);
           }
         }
 
         function spawn(ts) {
-          var label = dataLabels[Math.floor(Math.random()*dataLabels.length)];
           packets.push({
             state:0, t:0,
-            speed: 0.0003 + Math.random()*0.0002,
+            speed: 0.0007 + Math.random()*0.0003,
             decision: Math.random()>0.2?'exec':'block',
             opacity:1, r: 3+Math.random()*1.5,
-            trail:[], x:0, y:0,
-            label: label,
-            labelOpacity: 1,
-            spawned: ts
+            trail:[], x:0, y:0
           });
-          nextDelay = 1200 + Math.random()*1800;
+          nextDelay = 1300 + Math.random()*1700;
           lastSpawn = ts;
         }
 
         function animate(ts) {
           resize();
           var L = layout();
-          var cps = getConnPoints(L);
           var time = ts/1000;
           ctx.clearRect(0,0,W,H);
 
-          // Connections with base glow
-          drawConn(cps[0], 'rgba(92,214,133,','0.15');
-          drawConn(cps[1], 'rgba(157,140,207,','0.12');
-          drawConn(cps[2], 'rgba(92,214,133,','0.08');
-          drawConn(cps[3], 'rgba(214,92,92,','0.08');
-
-          // Connection pulses
-          drawConnPulses(cps, time);
+          // Connections
+          if (!L.mob) {
+            drawConn(L.model.x+L.model.w/2, L.model.y, L.envelo.x-L.envelo.w/2, L.envelo.y, 'rgba(92,214,133,','0.15','ACTION');
+            drawConn(L.envelo.x+L.envelo.w/2, L.envelo.y, L.gate.x-L.gate.w/2, L.gate.y, 'rgba(157,140,207,','0.12','VERDICT');
+            drawConn(L.gate.x+L.gate.w/2, L.gate.y, L.execute.x-L.execute.w/2, L.execute.y, 'rgba(92,214,133,','0.10','');
+            drawConn(L.gate.x+L.gate.w/2, L.gate.y, L.blocked.x-L.blocked.w/2, L.blocked.y, 'rgba(214,92,92,','0.10','');
+          } else {
+            drawConn(L.model.x, L.model.y+L.model.h/2, L.envelo.x, L.envelo.y-L.envelo.h/2, 'rgba(92,214,133,','0.15','');
+            drawConn(L.envelo.x, L.envelo.y+L.envelo.h/2, L.gate.x, L.gate.y-L.gate.h/2, 'rgba(157,140,207,','0.12','');
+            drawConn(L.gate.x, L.gate.y+L.gate.h/2, L.execute.x, L.execute.y-L.execute.h/2, 'rgba(92,214,133,','0.10','');
+            drawConn(L.gate.x, L.gate.y+L.gate.h/2, L.blocked.x, L.blocked.y-L.blocked.h/2, 'rgba(214,92,92,','0.10','');
+          }
 
           // Nodes
           drawNode(L.model,'MODEL','rgba(92,214,133,0.2)','rgba(92,214,133,0.06)',time);
@@ -3317,13 +3228,10 @@
           drawNode(L.blocked,'BLOCKED','rgba(214,92,92,0.25)','rgba(214,92,92,0.08)',time);
 
           // Decay envelo glow
-          enveloGlow *= 0.97;
+          enveloGlow *= 0.96;
 
           // Spawn
           if (ts - lastSpawn > nextDelay) spawn(ts);
-
-          // Reset gate when no packets in state 3
-          var anyAtGate = false;
 
           // Update packets
           for (var i=packets.length-1; i>=0; i--) {
@@ -3333,57 +3241,45 @@
             var px, py, col;
 
             if (!L.mob) {
+              // Desktop horizontal
               switch(p.state) {
-                case 0:
+                case 0: // MODEL -> ENVELO
                   px = lerp(L.model.x+L.model.w/2+4, L.envelo.x-L.envelo.w/2-4, et);
                   py = L.model.y;
                   col = 'rgba(92,214,133,';
-                  p.labelOpacity = et < 0.8 ? 1 : (1-et)*5;
-                  if (p.t>=1){
-                    p.t=0;p.state=1;p.speed*=0.3;enveloGlow=1;p.trail=[];
-                    p.labelOpacity=0;
-                    connPulses.push({conn:0,t:0,speed:0.015,col:'rgba(92,214,133,'});
-                  }
+                  if (p.t>=1){p.t=0;p.state=1;p.speed*=0.35;enveloGlow=1;}
                   break;
-                case 1:
+                case 1: // Processing in ENVELO
                   px = L.envelo.x;
                   py = L.envelo.y;
                   col = 'rgba(157,140,207,';
                   p.r = Math.max(p.r*0.985, 1.5);
-                  if (p.t>=1){
-                    p.t=0;p.state=2;p.speed=0.0008;p.trail=[];p.r=3+Math.random();stats.total++;
-                    // No verdict pulse — packet IS the verdict
-                  }
+                  if (p.t>=1){p.t=0;p.state=2;p.speed=0.0009;p.r=3+Math.random();stats.total++;}
                   break;
-                case 2:
+                case 2: // ENVELO -> GATE
                   px = lerp(L.envelo.x+L.envelo.w/2+4, L.gate.x-L.gate.w/2-4, et);
                   py = L.envelo.y;
                   col = 'rgba(157,140,207,';
-                  if (p.t>=1){p.t=0;p.state=3;p.speed=0.001;p.trail=[];}
+                  if (p.t>=1){p.t=0;p.state=3;p.speed=0.0012;}
                   break;
-                case 3:
-                  anyAtGate = true;
+                case 3: // GATE -> branch
                   if (p.decision==='exec') {
-                    gateTarget = Math.PI/4;
                     px = lerp(L.gate.x+L.gate.w/2+4, L.execute.x-L.execute.w/2-4, et);
                     py = lerp(L.gate.y, L.execute.y, et);
                     col = 'rgba(92,214,133,';
-                    
                   } else {
-                    gateTarget = -Math.PI/4;
                     px = lerp(L.gate.x+L.gate.w/2+4, L.blocked.x-L.blocked.w/2-4, et);
                     py = lerp(L.gate.y, L.blocked.y, et);
                     col = 'rgba(214,92,92,';
-                    
                   }
                   if (p.t>=1){
                     p.state=4;
                     if (p.decision==='exec'){stats.exec++;}
                     else {
                       stats.block++;
-                      for(var b=0;b<12;b++) bursts.push({
+                      for(var b=0;b<10;b++) bursts.push({
                         x:px,y:py,
-                        vx:(Math.random()-0.5)*6,vy:(Math.random()-0.5)*6,
+                        vx:(Math.random()-0.5)*5,vy:(Math.random()-0.5)*5,
                         life:1, r:1.5+Math.random()*2
                       });
                     }
@@ -3395,42 +3291,32 @@
                   break;
               }
             } else {
+              // Mobile vertical
               switch(p.state) {
                 case 0:
                   px = L.model.x;
                   py = lerp(L.model.y+L.model.h/2+4, L.envelo.y-L.envelo.h/2-4, et);
                   col = 'rgba(92,214,133,';
-                  p.labelOpacity = et < 0.8 ? 1 : (1-et)*5;
-                  if (p.t>=1){
-                    p.t=0;p.state=1;p.speed*=0.3;enveloGlow=1;p.trail=[];
-                    p.labelOpacity=0;
-                    connPulses.push({conn:0,t:0,speed:0.015,col:'rgba(92,214,133,'});
-                  }
+                  if (p.t>=1){p.t=0;p.state=1;p.speed*=0.35;enveloGlow=1;}
                   break;
                 case 1:
                   px = L.envelo.x; py = L.envelo.y;
                   col = 'rgba(157,140,207,';
                   p.r = Math.max(p.r*0.985, 1.5);
-                  if (p.t>=1){
-                    p.t=0;p.state=2;p.speed=0.0008;p.trail=[];p.r=3+Math.random();stats.total++;
-                    // No verdict pulse — packet IS the verdict
-                  }
+                  if (p.t>=1){p.t=0;p.state=2;p.speed=0.0009;p.r=3+Math.random();stats.total++;}
                   break;
                 case 2:
                   px = L.gate.x;
                   py = lerp(L.envelo.y+L.envelo.h/2+4, L.gate.y-L.gate.h/2-4, et);
                   col = 'rgba(157,140,207,';
-                  if (p.t>=1){p.t=0;p.state=3;p.speed=0.001;p.trail=[];}
+                  if (p.t>=1){p.t=0;p.state=3;p.speed=0.0012;}
                   break;
                 case 3:
-                  anyAtGate = true;
                   if (p.decision==='exec') {
-                    gateTarget = Math.PI/4;
                     px = lerp(L.gate.x, L.execute.x, et);
                     py = lerp(L.gate.y+L.gate.h/2+4, L.execute.y-L.execute.h/2-4, et);
                     col = 'rgba(92,214,133,';
                   } else {
-                    gateTarget = -Math.PI/4;
                     px = lerp(L.gate.x, L.blocked.x, et);
                     py = lerp(L.gate.y+L.gate.h/2+4, L.blocked.y-L.blocked.h/2-4, et);
                     col = 'rgba(214,92,92,';
@@ -3440,9 +3326,9 @@
                     if (p.decision==='exec'){stats.exec++;}
                     else {
                       stats.block++;
-                      for(var b=0;b<12;b++) bursts.push({
+                      for(var b=0;b<10;b++) bursts.push({
                         x:px,y:py,
-                        vx:(Math.random()-0.5)*6,vy:(Math.random()-0.5)*6,
+                        vx:(Math.random()-0.5)*5,vy:(Math.random()-0.5)*5,
                         life:1, r:1.5+Math.random()*2
                       });
                     }
@@ -3468,54 +3354,37 @@
               ctx.fill();
             }
 
-            // Packet dot (hide during ENVELO processing)
-            if (p.state===1) { p.trail=[]; }
-            if (p.state!==1) {
+            // Packet dot
             ctx.beginPath();
             ctx.arc(px,py,p.r,0,Math.PI*2);
             ctx.fillStyle=col+(0.9*p.opacity)+')';
-            
-            
+            ctx.shadowColor=col+'0.5)';
+            ctx.shadowBlur=10;
             ctx.fill();
             ctx.shadowBlur=0;
 
-            }
-            // Data label (only during state 0 travel)
-            if (p.state===0 && p.labelOpacity>0.05) {
-              ctx.font = '8px monospace';
-              ctx.textAlign = 'left';
-              ctx.fillStyle = 'rgba(92,214,133,'+(0.6*p.labelOpacity*p.opacity)+')';
-              ctx.fillText(p.label, px+8, py+12);
-            }
-
             if (p.opacity<=0) packets.splice(i,1);
           }
-
-          // Reset gate when idle
-          if (!anyAtGate) gateTarget = 0;
 
           // Burst particles
           for (var i=bursts.length-1;i>=0;i--){
             var b=bursts[i];
             b.x+=b.vx; b.y+=b.vy;
-            b.vx*=0.91; b.vy*=0.91;
-            b.life-=0.022;
+            b.vx*=0.92; b.vy*=0.92;
+            b.life-=0.025;
             if(b.life<=0){bursts.splice(i,1);continue;}
             ctx.beginPath();
             ctx.arc(b.x,b.y,b.r*b.life,0,Math.PI*2);
-            ctx.fillStyle='rgba(214,92,92,'+(b.life*0.9)+')';
-            ctx.shadowColor='rgba(214,92,92,0.3)';
-            ctx.shadowBlur=4;
+            ctx.fillStyle='rgba(214,92,92,'+b.life+')';
             ctx.fill();
-            ctx.shadowBlur=0;
           }
 
           // Audit counter
           ctx.font='9px monospace';
           ctx.textAlign='center';
-          ctx.fillStyle='rgba(255,255,255,0.4)';
-          var auditY = L.mob ? H-12 : H-10;
-          ctx.fillText('AUDIT TRAIL  \u00B7  '+stats.total+' checked  \u00B7  '+stats.exec+' passed  \u00B7  '+stats.block+' blocked', W/2, auditY);
+          ctx.fillStyle='rgba(255,255,255,0.22)';
+          var auditY = L.mob ? H-10 : H-12;
+          ctx.fillText('AUDIT TRAIL  \u00B7  '+stats.total+' checked  \u00B7  '+stats.exec+' executed  \u00B7  '+stats.block+' blocked', W/2, auditY);
 
           requestAnimationFrame(animate);
         }
@@ -3589,516 +3458,83 @@
         </div>
       </div>
 
-      <!-- Security Data Flow Diagram - Canvas -->
-      <div class="reveal" style="display: flex; justify-content: center; margin-bottom: 40px;">
-        <div style="width: 100%; max-width: 880px;">
-          <canvas id="security-canvas" style="width: 100%; display: block;"></canvas>
+      <!-- Security Data Flow Diagram - Enterprise -->
+      <div class="reveal" style="margin-bottom: 80px; padding-bottom: 40px;">
+        <div class="security-flow" style="display: flex; align-items: center; justify-content: center; gap: 0; flex-wrap: wrap;">
+          
+          <!-- Node: MODEL -->
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 12px;">
+            <div style="width: 120px; height: 120px; background: rgba(92,214,133,0.06); border: 1px solid rgba(92,214,133,0.2); border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s ease; cursor: pointer;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,0.2)'" onmouseout="this.style.transform='none';this.style.boxShadow='none'">
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="rgba(92,214,133,0.8)" stroke-width="1.5">
+                <rect x="3" y="3" width="7" height="7" rx="1"/>
+                <rect x="14" y="3" width="7" height="7" rx="1"/>
+                <rect x="3" y="14" width="7" height="7" rx="1"/>
+                <rect x="14" y="14" width="7" height="7" rx="1"/>
+              </svg>
+              <span style="font-family: var(--mono); font-size: 10px; letter-spacing: 1px; color: rgba(92,214,133,0.9);">MODEL</span>
+            </div>
+            <span style="font-size: 11px; color: var(--text-tertiary);">Autonomous System</span>
+          </div>
+          
+          <!-- Connector 1 -->
+          <div class="security-connector" style="display: flex; flex-direction: column; align-items: center; gap: 6px; width: 100px;">
+            <span class="connector-label" style="font-family: var(--mono); font-size: 9px; color: rgba(255,255,255,0.35); letter-spacing: 1px;">REQUEST</span>
+            <div style="width: 100%; height: 2px; background: rgba(157,140,207,0.15); position: relative;">
+              <div style="position: absolute; right: 0; top: 50%; transform: translateY(-50%); width: 0; height: 0; border-left: 6px solid rgba(157,140,207,0.4); border-top: 4px solid transparent; border-bottom: 4px solid transparent;"></div>
+              <div class="flow-packet" style="position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 6px; height: 6px; background: rgba(92,214,133,0.8); border-radius: 50%;"></div>
+            </div>
+          </div>
+          
+          <!-- Node: ENVELO - Brand Mark -->
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 12px;">
+            <div style="width: 140px; height: 140px; background: rgba(91,75,138,0.12); border: 2px solid rgba(157,140,207,0.4); border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; transition: all 0.2s ease; cursor: pointer;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 24px rgba(91,75,138,0.25)'" onmouseout="this.style.transform='none';this.style.boxShadow='none'">
+              <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #5B4B8A 0%, #7B6BAA 100%); border: 2px solid #9d8ccf; border-radius: 10px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(91,75,138,0.4);">
+                <div class="envelo-eye" style="width: 16px; height: 16px; background: radial-gradient(circle, #e8e0ff 0%, #c4b8e8 100%); border-radius: 50%;"></div>
+              </div>
+              <span style="font-family: var(--mono); font-size: 11px; letter-spacing: 1px; color: rgba(157,140,207,0.95);">ENVELO</span>
+            </div>
+            <span style="font-size: 11px; color: var(--text-tertiary);">Enforcement Agent</span>
+            <div style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; background: rgba(92,214,133,0.08); border: 1px solid rgba(92,214,133,0.2); border-radius: 20px;">
+              <div style="width: 5px; height: 5px; background: rgba(92,214,133,0.9); border-radius: 50%;"></div>
+              <span style="font-family: var(--mono); font-size: 9px; letter-spacing: 1px; color: rgba(92,214,133,0.9);">ACTIVE</span>
+            </div>
+          </div>
+          
+          <!-- Connector 2 -->
+          <div class="security-connector" style="display: flex; flex-direction: column; align-items: center; gap: 6px; width: 100px;">
+            <span class="connector-label" style="font-family: var(--mono); font-size: 9px; color: rgba(255,255,255,0.35); letter-spacing: 1px;">TELEMETRY</span>
+            <div style="width: 100%; height: 2px; background: rgba(157,140,207,0.15); position: relative;">
+              <div style="position: absolute; right: 0; top: 50%; transform: translateY(-50%); width: 0; height: 0; border-left: 6px solid rgba(157,140,207,0.4); border-top: 4px solid transparent; border-bottom: 4px solid transparent;"></div>
+              <div class="flow-packet flow-packet-delayed" style="position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 6px; height: 6px; background: rgba(92,214,133,0.8); border-radius: 50%;"></div>
+            </div>
+          </div>
+          
+          <!-- Node: Sentinel Registry -->
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 12px;">
+            <div style="width: 120px; height: 120px; background: rgba(157,140,207,0.06); border: 1px solid rgba(157,140,207,0.2); border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s ease; cursor: pointer;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,0.2)'" onmouseout="this.style.transform='none';this.style.boxShadow='none'">
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="rgba(157,140,207,0.8)" stroke-width="1.5">
+                <ellipse cx="12" cy="5" rx="9" ry="3"/>
+                <path d="M21 5v6c0 1.66-4.03 3-9 3s-9-1.34-9-3V5"/>
+                <path d="M21 11v6c0 1.66-4.03 3-9 3s-9-1.34-9-3v-6"/>
+              </svg>
+              <span style="font-family: var(--mono); font-size: 10px; letter-spacing: 1px; color: rgba(157,140,207,0.9);">SENTINEL</span>
+            </div>
+            <span style="font-size: 11px; color: var(--text-tertiary);">Authority Registry</span>
+          </div>
+          
         </div>
       </div>
-      <script>
-      (function() {
-        var c = document.getElementById('security-canvas');
-        if (!c) return;
-        var ctx = c.getContext('2d');
-        var dpr = window.devicePixelRatio || 1;
-        var W = 0, H = 0;
-        var outPackets = [];
-        var inPackets = [];
-        var bursts = [];
-        var stats = { out: 0, rejected: 0 };
-        var lastOutSpawn = 0;
-        var lastInSpawn = 0;
-        var nextOutDelay = 1500;
-        var nextInDelay = 4000;
-        var shieldFlash = 0;
-        var enveloGlow = 0;
-        var bannerFlash = 0;
-
-        var telemetryLabels = [
-          'heartbeat', 'log_hash', 'cert_check', 'status_ok',
-          'audit_sync', 'config_ack', 'uptime: 99.7%', 'drift: 0.00',
-          'sig_valid', 'boundary_ok', 'tls_1.3', 'pin_match'
-        ];
-
-        var attackLabels = [
-          'SSH:22', 'RDP:3389', 'CMD:exec', 'PORT:scan',
-          'API:inject', 'ROOT:sudo', 'SHELL:rev', 'FTP:21'
-        ];
-
-        function resize() {
-          var r = c.parentElement.getBoundingClientRect();
-          W = r.width;
-          H = W < 550 ? 380 : 300;
-          c.width = W * dpr;
-          c.height = H * dpr;
-          c.style.height = H + 'px';
-          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-        }
-
-        function rr(x, y, w, h, r) {
-          ctx.beginPath();
-          ctx.moveTo(x+r,y);
-          ctx.arcTo(x+w,y,x+w,y+h,r);
-          ctx.arcTo(x+w,y+h,x,y+h,r);
-          ctx.arcTo(x,y+h,x,y,r);
-          ctx.arcTo(x,y,x+w,y,r);
-          ctx.closePath();
-        }
-
-        function lerp(a,b,t) { return a+(b-a)*t; }
-        function ease(t) { return t<0.5?2*t*t:-1+(4-2*t)*t; }
-        function clamp(t) { return Math.min(Math.max(t,0),1); }
-
-        function layout() {
-          var mob = W < 550;
-          if (mob) {
-            var cx = W / 2;
-            return {
-              model:    {x:cx, y:55,  w:90, h:90},
-              envelo:   {x:cx, y:165, w:120,h:120},
-              sentinel: {x:cx, y:290, w:90, h:90},
-              mob: true
-            };
-          }
-          var cy = H/2 - 10;
-          var m = W*0.08;
-          var s = (W - m*2) / 3;
-          return {
-            model:    {x:m+s*0.5, y:cy, w:100, h:100},
-            envelo:   {x:m+s*1.5, y:cy, w:130, h:130},
-            sentinel: {x:m+s*2.5, y:cy, w:100, h:100},
-            mob: false
-          };
-        }
-
-        function getConns(L) {
-          if (!L.mob) {
-            return [
-              {ax:L.model.x+L.model.w/2, ay:L.model.y, bx:L.envelo.x-L.envelo.w/2, by:L.envelo.y, label:'REQUEST'},
-              {ax:L.envelo.x+L.envelo.w/2, ay:L.envelo.y, bx:L.sentinel.x-L.sentinel.w/2, by:L.sentinel.y, label:'TELEMETRY'}
-            ];
-          }
-          return [
-            {ax:L.model.x, ay:L.model.y+L.model.h/2, bx:L.envelo.x, by:L.envelo.y-L.envelo.h/2, label:'REQUEST'},
-            {ax:L.envelo.x, ay:L.envelo.y+L.envelo.h/2, bx:L.sentinel.x, by:L.sentinel.y-L.sentinel.h/2, label:'TELEMETRY'}
-          ];
-        }
-
-        function drawConn(cp, col, alpha) {
-          ctx.beginPath();
-          ctx.moveTo(cp.ax,cp.ay); ctx.lineTo(cp.bx,cp.by);
-          ctx.strokeStyle = col+alpha+')';
-          ctx.lineWidth = 1.5;
-          ctx.stroke();
-          // Arrow
-          var ang = Math.atan2(cp.by-cp.ay,cp.bx-cp.ax);
-          ctx.beginPath();
-          ctx.moveTo(cp.bx,cp.by);
-          ctx.lineTo(cp.bx-6*Math.cos(ang-0.4),cp.by-6*Math.sin(ang-0.4));
-          ctx.lineTo(cp.bx-6*Math.cos(ang+0.4),cp.by-6*Math.sin(ang+0.4));
-          ctx.closePath();
-          ctx.fillStyle = col+(Math.min(parseFloat(alpha)*3,0.5))+')';
-          ctx.fill();
-          // Label
-          if (cp.label) {
-            var mx=(cp.ax+cp.bx)/2, my=(cp.ay+cp.by)/2-12;
-            ctx.font = '8px monospace';
-            ctx.textAlign = 'center';
-            ctx.fillStyle = col+'0.4)';
-            ctx.fillText(cp.label, mx, my);
-          }
-        }
-
-        function drawNode(n, label, bCol, fCol, time) {
-          var x=n.x-n.w/2, y=n.y-n.h/2;
-          
-          // Shield effect on ENVELO
-          if (label==='ENVELO' && shieldFlash > 0.05) {
-            ctx.save();
-            ctx.beginPath();
-            rr(x-4,y-4,n.w+8,n.h+8,14);
-            ctx.strokeStyle = 'rgba(214,92,92,'+(shieldFlash*0.5)+')';
-            ctx.lineWidth = 2;
-            ctx.stroke();
-            // Second ring
-            ctx.beginPath();
-            rr(x-8,y-8,n.w+16,n.h+16,18);
-            ctx.strokeStyle = 'rgba(214,92,92,'+(shieldFlash*0.2)+')';
-            ctx.lineWidth = 1;
-            ctx.stroke();
-            ctx.restore();
-          }
-
-          rr(x,y,n.w,n.h,10);
-          ctx.fillStyle = fCol;
-          ctx.fill();
-          ctx.strokeStyle = bCol;
-          ctx.lineWidth = label==='ENVELO'?2:1;
-          ctx.stroke();
-
-          if (label==='MODEL') {
-            var s=8,g=3,ox=n.x-(s+g/2),oy=n.y-22;
-            for(var r=0;r<2;r++) for(var cc=0;cc<2;cc++){
-              rr(ox+cc*(s+g),oy+r*(s+g),s,s,2);
-              ctx.strokeStyle='rgba(92,214,133,0.5)';ctx.lineWidth=1;ctx.stroke();
-            }
-          } else if (label==='ENVELO') {
-            // Scan lines - always subtly visible, brighter during processing
-            var scanAlpha = 0.06 + enveloGlow*0.12;
-            var bandAlpha = 0.025 + enveloGlow*0.04;
-            ctx.save();
-            ctx.beginPath();
-            rr(x+2,y+2,n.w-4,n.h-4,8);
-            ctx.clip();
-            var scanY = n.y - n.h/2 + (time*40 % n.h);
-            ctx.beginPath();
-            ctx.moveTo(x+8, scanY);
-            ctx.lineTo(x+n.w-8, scanY);
-            ctx.strokeStyle = 'rgba(157,140,207,'+scanAlpha+')';
-            ctx.lineWidth = 1;
-            ctx.stroke();
-            var sg = ctx.createLinearGradient(x,scanY-8,x,scanY+8);
-            sg.addColorStop(0,'rgba(157,140,207,0)');
-            sg.addColorStop(0.5,'rgba(157,140,207,'+bandAlpha+')');
-            sg.addColorStop(1,'rgba(157,140,207,0)');
-            ctx.fillStyle = sg;
-            ctx.fillRect(x+4,scanY-8,n.w-8,16);
-            var scanY2 = n.y - n.h/2 + ((time*40+n.h/2) % n.h);
-            ctx.beginPath();
-            ctx.moveTo(x+8, scanY2);
-            ctx.lineTo(x+n.w-8, scanY2);
-            ctx.strokeStyle = 'rgba(157,140,207,'+(scanAlpha*0.5)+')';
-            ctx.lineWidth = 0.5;
-            ctx.stroke();
-            ctx.restore();
-
-            // Eye
-            var pulse = 1 + 0.15*Math.sin(time*2.5) + enveloGlow*0.4;
-            var er = 12*pulse;
-            ctx.beginPath(); ctx.arc(n.x,n.y-8,er,0,Math.PI*2);
-            var eg = ctx.createRadialGradient(n.x,n.y-8,0,n.x,n.y-8,er);
-            eg.addColorStop(0,'#e8e0ff');eg.addColorStop(0.5,'#c4b8e8');eg.addColorStop(1,'#7B6BAA');
-            ctx.fillStyle=eg;
-            ctx.fill();
-
-          } else if (label==='SENTINEL') {
-            // Database icon
-            ctx.beginPath();
-            ctx.ellipse(n.x, n.y-16, 18, 6, 0, 0, Math.PI*2);
-            ctx.strokeStyle='rgba(157,140,207,0.5)';ctx.lineWidth=1;ctx.stroke();
-            ctx.beginPath();
-            ctx.moveTo(n.x-18,n.y-16);ctx.lineTo(n.x-18,n.y);
-            ctx.strokeStyle='rgba(157,140,207,0.3)';ctx.stroke();
-            ctx.beginPath();
-            ctx.moveTo(n.x+18,n.y-16);ctx.lineTo(n.x+18,n.y);
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.ellipse(n.x, n.y, 18, 6, 0, 0, Math.PI);
-            ctx.strokeStyle='rgba(157,140,207,0.5)';ctx.stroke();
-          }
-
-          // Label
-          ctx.font = (label==='ENVELO'?11:10)+'px monospace';
-          ctx.textAlign='center';
-          var tCol = bCol.replace(/[\d.]+\)$/,'0.9)');
-          ctx.fillStyle = tCol;
-          var ly = label==='ENVELO' ? n.y+20 : (label==='SENTINEL' ? n.y+18 : n.y+n.h/2-4);
-          ctx.fillText(label, n.x, ly);
-
-          // Sub-labels
-          ctx.font='9px sans-serif';ctx.fillStyle='rgba(255,255,255,0.3)';
-          if (label==='MODEL') ctx.fillText('Autonomous System', n.x, n.y+n.h/2+16);
-          if (label==='ENVELO') {
-            ctx.fillText('Enforcement Agent', n.x, n.y+n.h/2+14);
-          }
-          if (label==='SENTINEL') ctx.fillText('Authority Registry', n.x, n.y+n.h/2+16);
-        }
-
-        function spawnOut(ts) {
-          var label = telemetryLabels[Math.floor(Math.random()*telemetryLabels.length)];
-          outPackets.push({
-            state:0, t:0,
-            speed: 0.0003 + Math.random()*0.0002,
-            opacity:1, r:3+Math.random()*1.5,
-            trail:[], x:0, y:0,
-            label: label, labelOpacity:1
-          });
-          nextOutDelay = 1200 + Math.random()*1800;
-          lastOutSpawn = ts;
-        }
-
-        function spawnIn(ts) {
-          var label = attackLabels[Math.floor(Math.random()*attackLabels.length)];
-          inPackets.push({
-            t: 0,
-            speed: 0.0002 + Math.random()*0.0001,
-            opacity: 1, r: 3+Math.random()*1.5,
-            trail: [], x:0, y:0,
-            label: label, rejected: false
-          });
-          nextInDelay = 3500 + Math.random()*4000;
-          lastInSpawn = ts;
-        }
-
-        function animate(ts) {
-          resize();
-          var L = layout();
-          var conns = getConns(L);
-          var time = ts/1000;
-          ctx.clearRect(0,0,W,H);
-
-          // Draw connections (one-way arrows)
-          drawConn(conns[0], 'rgba(92,214,133,','0.12');
-          drawConn(conns[1], 'rgba(157,140,207,','0.12');
-
-          // Draw nodes
-          drawNode(L.model,'MODEL','rgba(92,214,133,0.2)','rgba(92,214,133,0.06)',time);
-          drawNode(L.envelo,'ENVELO','rgba(157,140,207,0.4)','rgba(91,75,138,0.12)',time);
-          drawNode(L.sentinel,'SENTINEL','rgba(157,140,207,0.2)','rgba(157,140,207,0.06)',time);
-
-          // Decay effects
-          shieldFlash *= 0.96;
-          enveloGlow *= 0.97;
-          bannerFlash *= 0.98;
-
-          // Spawn outbound
-          if (ts - lastOutSpawn > nextOutDelay) spawnOut(ts);
-          // Spawn inbound attack
-          if (ts - lastInSpawn > nextInDelay) spawnIn(ts);
-
-          // --- Outbound packets (legitimate flow) ---
-          for (var i=outPackets.length-1; i>=0; i--) {
-            var p = outPackets[i];
-            p.t += p.speed * 16;
-            var et = ease(clamp(p.t));
-            var px, py, col;
-
-            if (!L.mob) {
-              if (p.state===0) {
-                px = lerp(L.model.x+L.model.w/2+4, L.envelo.x-L.envelo.w/2-4, et);
-                py = L.model.y;
-                col = 'rgba(92,214,133,';
-                p.labelOpacity = et < 0.7 ? 1 : (1-et)*3.3;
-                if (p.t>=1) { p.t=0; p.state=1; p.speed*=0.35; p.trail=[]; p.labelOpacity=0; enveloGlow=1; }
-              } else if (p.state===1) {
-                px = L.envelo.x;
-                py = L.envelo.y;
-                col = 'rgba(157,140,207,';
-                p.r = Math.max(p.r*0.985, 1.5);
-                if (p.t>=1) { p.t=0; p.state=2; p.speed=0.0006; p.trail=[]; p.r=3+Math.random(); stats.out++; }
-              } else if (p.state===2) {
-                px = lerp(L.envelo.x+L.envelo.w/2+4, L.sentinel.x-L.sentinel.w/2-4, et);
-                py = L.envelo.y;
-                col = 'rgba(157,140,207,';
-                if (p.t>=1) { p.state=3; }
-              } else {
-                px=p.x; py=p.y; p.opacity-=0.04;
-                col='rgba(157,140,207,';
-              }
-            } else {
-              if (p.state===0) {
-                px = L.model.x;
-                py = lerp(L.model.y+L.model.h/2+4, L.envelo.y-L.envelo.h/2-4, et);
-                col = 'rgba(92,214,133,';
-                p.labelOpacity = et < 0.7 ? 1 : (1-et)*3.3;
-                if (p.t>=1) { p.t=0; p.state=1; p.speed*=0.35; p.trail=[]; p.labelOpacity=0; enveloGlow=1; }
-              } else if (p.state===1) {
-                px = L.envelo.x;
-                py = L.envelo.y;
-                col = 'rgba(157,140,207,';
-                p.r = Math.max(p.r*0.985, 1.5);
-                if (p.t>=1) { p.t=0; p.state=2; p.speed=0.0006; p.trail=[]; p.r=3+Math.random(); stats.out++; }
-              } else if (p.state===2) {
-                px = L.envelo.x;
-                py = lerp(L.envelo.y+L.envelo.h/2+4, L.sentinel.y-L.sentinel.h/2-4, et);
-                col = 'rgba(157,140,207,';
-                if (p.t>=1) { p.state=3; }
-              } else {
-                px=p.x; py=p.y; p.opacity-=0.04;
-                col='rgba(157,140,207,';
-              }
-            }
-
-            p.x=px; p.y=py;
-
-            // Trail
-            p.trail.push({x:px,y:py});
-            if(p.trail.length>6) p.trail.shift();
-            for(var j=0;j<p.trail.length-1;j++){
-              var a=(j/p.trail.length)*0.25*p.opacity;
-              ctx.beginPath();
-              ctx.arc(p.trail[j].x,p.trail[j].y,p.r*(j/p.trail.length)*0.5,0,Math.PI*2);
-              ctx.fillStyle=col+a+')';
-              ctx.fill();
-            }
-
-            // Dot (hide during ENVELO processing)
-            if (p.state!==1) {
-            ctx.beginPath();
-            ctx.arc(px,py,p.r,0,Math.PI*2);
-            ctx.fillStyle=col+(0.9*p.opacity)+')';
-            ctx.fill();
-            }
-
-            // Label
-            if (p.state===0 && p.labelOpacity>0.05) {
-              ctx.font = '8px monospace';
-              ctx.textAlign = 'left';
-              ctx.fillStyle = 'rgba(92,214,133,'+(0.6*p.labelOpacity*p.opacity)+')';
-              ctx.fillText(p.label, px+8, py+12);
-            }
-
-            if (p.opacity<=0) outPackets.splice(i,1);
-          }
-
-          // --- Inbound attack packets (rejected) ---
-          for (var i=inPackets.length-1; i>=0; i--) {
-            var p = inPackets[i];
-            p.t += p.speed * 16;
-            var et = ease(clamp(p.t));
-            var px, py;
-
-            // Approach ENVELO from the right (or bottom on mobile)
-            var wallX, wallY;
-            if (!L.mob) {
-              wallX = L.envelo.x + L.envelo.w/2 + 6;
-              wallY = L.envelo.y;
-              var startX = W;
-              var startY = L.envelo.y + (Math.sin(i*2.7)*20);
-              px = lerp(startX, wallX, et);
-              py = lerp(startY, wallY, et);
-            } else {
-              wallX = L.envelo.x;
-              wallY = L.envelo.y + L.envelo.h/2 + 6;
-              var startX = L.envelo.x + (Math.sin(i*2.7)*20);
-              var startY = H;
-              px = lerp(startX, wallX, et);
-              py = lerp(startY, wallY, et);
-            }
-
-            p.x = px; p.y = py;
-
-            if (!p.rejected) {
-              // Trail
-              p.trail.push({x:px,y:py});
-              if(p.trail.length>6) p.trail.shift();
-              for(var j=0;j<p.trail.length-1;j++){
-                var a=(j/p.trail.length)*0.2*p.opacity;
-                ctx.beginPath();
-                ctx.arc(p.trail[j].x,p.trail[j].y,p.r*(j/p.trail.length)*0.5,0,Math.PI*2);
-                ctx.fillStyle='rgba(214,92,92,'+a+')';
-                ctx.fill();
-              }
-
-              // Red dot
-              ctx.beginPath();
-              ctx.arc(px,py,p.r,0,Math.PI*2);
-              ctx.fillStyle='rgba(214,92,92,'+(0.8*p.opacity)+')';
-              ctx.shadowColor='rgba(214,92,92,0.4)';
-              ctx.shadowBlur=10;
-              ctx.fill();
-              ctx.shadowBlur=0;
-
-              // Attack label
-              if (p.opacity > 0.3) {
-                ctx.font = '7px monospace';
-                ctx.textAlign = 'right';
-                ctx.fillStyle = 'rgba(214,92,92,'+(0.5*p.opacity)+')';
-                if (!L.mob) {
-                  ctx.fillText(p.label, px-8, py+12);
-                } else {
-                  ctx.textAlign = 'left';
-                  ctx.fillText(p.label, px+8, py+12);
-                }
-              }
-
-              // Hit the wall
-              if (p.t >= 0.85) {
-                p.rejected = true;
-                shieldFlash = 1;
-                bannerFlash = 1;
-                stats.rejected++;
-                // Burst
-                for(var b=0;b<14;b++) {
-                  var angle = Math.random()*Math.PI*2;
-                  var spd = 2 + Math.random()*4;
-                  bursts.push({
-                    x:px, y:py,
-                    vx: Math.cos(angle)*spd * (L.mob ? 1 : 1),
-                    vy: Math.sin(angle)*spd,
-                    life:1, r:1+Math.random()*2, col:'red'
-                  });
-                }
-              }
-            } else {
-              p.opacity -= 0.05;
-            }
-
-            if (p.opacity<=0) inPackets.splice(i,1);
-          }
-
-          // --- Burst particles ---
-          for (var i=bursts.length-1;i>=0;i--){
-            var b=bursts[i];
-            b.x+=b.vx; b.y+=b.vy;
-            b.vx*=0.9; b.vy*=0.9;
-            b.life-=0.025;
-            if(b.life<=0){bursts.splice(i,1);continue;}
-            ctx.beginPath();
-            ctx.arc(b.x,b.y,b.r*b.life,0,Math.PI*2);
-            ctx.fillStyle='rgba(214,92,92,'+(b.life*0.8)+')';
-            ctx.shadowColor='rgba(214,92,92,0.3)';
-            ctx.shadowBlur=4;
-            ctx.fill();
-            ctx.shadowBlur=0;
-          }
-
-          // --- No Inbound Banner (flashes on rejection) ---
-          var bannerAlpha = 0.15 + bannerFlash * 0.6;
-          ctx.font = '9px monospace';
-          ctx.textAlign = 'center';
-          ctx.letterSpacing = '2px';
-          
-          // Banner background pill
-          var bannerText = 'NO INBOUND ACCESS \u2014 ONE-WAY DATA FLOW ONLY';
-          var bannerY = L.mob ? H-14 : H-12;
-          var tw = ctx.measureText(bannerText).width;
-          rr(W/2-tw/2-12, bannerY-10, tw+24, 18, 9);
-          ctx.fillStyle = 'rgba(214,92,92,'+(bannerAlpha*0.08)+')';
-          ctx.fill();
-          ctx.strokeStyle = 'rgba(214,92,92,'+(bannerAlpha*0.3)+')';
-          ctx.lineWidth = 0.5;
-          ctx.stroke();
-
-          // X icon
-          var iconX = W/2-tw/2-2;
-          ctx.beginPath();
-          ctx.moveTo(iconX-4,bannerY-4); ctx.lineTo(iconX+2,bannerY+2);
-          ctx.moveTo(iconX+2,bannerY-4); ctx.lineTo(iconX-4,bannerY+2);
-          ctx.strokeStyle='rgba(214,92,92,'+(bannerAlpha*0.9)+')';
-          ctx.lineWidth=1.2;
-          ctx.stroke();
-
-          // Text
-          ctx.fillStyle = 'rgba(214,92,92,'+(bannerAlpha*0.9)+')';
-          ctx.fillText(bannerText, W/2+6, bannerY+1);
-
-          // --- Status line ---
-          ctx.font='9px monospace';
-          ctx.fillStyle='rgba(255,255,255,0.2)';
-          var statusY = L.mob ? H-32 : H-30;
-          ctx.fillText(stats.out+' telemetry sent  \u00B7  '+stats.rejected+' inbound rejected', W/2, statusY);
-
-          requestAnimationFrame(animate);
-        }
-
-        resize();
-        window.addEventListener('resize', function(){ resize(); });
-        requestAnimationFrame(animate);
-      })();
-      </script>
-
       
+      <!-- No Inbound Banner -->
+      <div class="reveal" style="text-align: center; margin-bottom: var(--space-4);">
+        <div style="display: inline-flex; align-items: center; gap: 10px; padding: 12px 24px; background: rgba(214,92,92,0.08); border: 1px solid rgba(214,92,92,0.25); border-radius: 50px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(214,92,92,0.8)" stroke-width="1.5">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+          <span style="font-family: var(--mono); font-size: 11px; letter-spacing: 2px; color: rgba(214,92,92,0.9);">NO INBOUND ACCESS — ONE-WAY DATA FLOW ONLY</span>
+        </div>
+      </div>
 
       <!-- Three Security Pillars -->
       <div class="reveal" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; margin-bottom: var(--space-4);">
@@ -4171,7 +3607,7 @@
           HIPAA/BAA Ready
         </span>
       <div class="reveal" style="margin-top: var(--space-2); text-align: center;">
-        <a href="security.html" style="font-family: var(--mono); font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: rgba(157,140,207,0.95); display: inline-flex; align-items: center; gap: 10px; padding: 14px 28px; background: rgba(157,140,207,0.1); border: 1px solid rgba(157,140,207,0.3); border-radius: 50px; transition: all 0.2s ease;" onmouseover="this.style.background='rgba(157,140,207,0.18)';this.style.borderColor='rgba(157,140,207,0.5)'" onmouseout="this.style.background='rgba(157,140,207,0.1)';this.style.borderColor='rgba(157,140,207,0.3)'"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(157,140,207,0.8)" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Security FAQ for IT Teams <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+        <a href="security.html" style="font-family: var(--mono); font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-tertiary); display: inline-flex; align-items: center; gap: 8px;">Security FAQ for IT Teams <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
       </div>
       </div>
 

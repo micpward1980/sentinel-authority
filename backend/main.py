@@ -15,7 +15,7 @@ from fastapi.responses import HTMLResponse
 
 from app.core.config import settings
 from app.core.database import init_db
-from app.api.routes import auth, dashboard, applicants, cat72, certificates, verification, licensees, envelo, apikeys, envelo_boundaries, registry, users
+from app.api.routes import auth, dashboard, applicants, cat72, certificates, verification, licensees, envelo, apikeys, envelo_boundaries, registry, users, documents
 
 # Logging setup
 logging.basicConfig(level=logging.INFO)
@@ -66,6 +66,7 @@ app.include_router(envelo_boundaries.router, prefix="/api/envelo/boundaries", ta
 app.include_router(apikeys.router, prefix="/api/apikeys", tags=["API Keys"])
 app.include_router(registry.router)
 app.include_router(users.router, prefix="/api/users", tags=["User Management"])
+app.include_router(documents.router, prefix="/api/documents", tags=["Documents"])
 
 
 @app.get("/health")
