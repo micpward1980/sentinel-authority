@@ -1332,6 +1332,7 @@ function ApplicationsList() {
   const { user } = useAuth();
   const [applications, setApplications] = useState([]);
   const [filter, setFilter] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
   const [selected, setSelected] = useState(new Set());
   const [bulkLoading, setBulkLoading] = useState(false);
 
@@ -1385,7 +1386,7 @@ function ApplicationsList() {
     { key: 'revoked', label: 'Suspended' },
   ];
 
-  const filtered = filter === 'all' ? applications : applications.filter(a => a.state === filter || (filter === 'revoked' && a.state === 'suspended'));
+  const filtered = (filter === 'all' ? applications : applications.filter(a => a.state === filter || (filter === 'revoked' && a.state === 'suspended'))).filter(a => { if (!searchQuery) return true; const q = searchQuery.toLowerCase(); return (a.system_name || '').toLowerCase().includes(q) || (a.organization_name || '').toLowerCase().includes(q) || (a.application_number || '').toLowerCase().includes(q) || (a.contact_email || '').toLowerCase().includes(q); });
 
   const stateColor = (state) => {
     if (state === 'conformant') return styles.accentGreen;
@@ -1405,6 +1406,14 @@ function ApplicationsList() {
           <Plus className="w-4 h-4" />
           New Application
         </Link>}
+      </div>
+
+      <div style={{display: 'flex', gap: '12px', alignItems: 'center'}}>
+        <div style={{position: 'relative', flex: 1, maxWidth: '400px'}}>
+          <Search className="w-4 h-4" style={{position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: styles.textTertiary}} />
+          <input value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="Search by name, org, or ID..." style={{width: '100%', background: 'rgba(255,255,255,0.03)', border: `1px solid ${styles.borderGlass}`, borderRadius: '8px', padding: '8px 12px 8px 36px', color: styles.textPrimary, fontSize: '13px', fontFamily: "'IBM Plex Mono', monospace", outline: 'none'}} />
+        </div>
+        <span style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', color: styles.textTertiary}}>{filtered.length} of {applications.length}</span>
       </div>
 
       {/* Filter Tabs */}
