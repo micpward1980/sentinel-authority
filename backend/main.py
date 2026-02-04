@@ -648,6 +648,11 @@ async def start_auto_evaluator():
                 print("Added notifications_read_at column")
             except Exception:
                 pass
+            try:
+                await conn.execute(text("ALTER TABLE audit_log ADD COLUMN prev_hash VARCHAR(64)"))
+                print("Added prev_hash column to audit_log")
+            except Exception:
+                pass
             CREATE TABLE IF NOT EXISTS application_comments (
                 id SERIAL PRIMARY KEY,
                 application_id INTEGER REFERENCES applications(id),
