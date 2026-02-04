@@ -1053,6 +1053,7 @@ function Dashboard() {
                     <button onClick={() => handleQuickAdvance(app.id, 'under_review', `Begin review for ${app.system_name}`)} className="px-3 py-1 rounded" style={{background: 'rgba(214,160,92,0.15)', border: '1px solid rgba(214,160,92,0.3)', color: styles.accentAmber, fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>Begin Review</button>
                   )}
                   <button onClick={() => handleQuickAdvance(app.id, 'approved', `Approve ${app.system_name}`)} className="px-3 py-1 rounded" style={{background: 'rgba(92,214,133,0.15)', border: '1px solid rgba(92,214,133,0.3)', color: styles.accentGreen, fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>Approve</button>
+                  <button onClick={() => handleQuickAdvance(app.id, 'suspended', `Suspend ${app.system_name}`)} className="px-3 py-1 rounded" style={{background: 'rgba(214,92,92,0.1)', border: '1px solid rgba(214,92,92,0.3)', color: styles.accentRed, fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>Suspend</button>
                   <Link to={`/applications/${app.id}`} className="px-3 py-1 rounded no-underline" style={{background: 'rgba(157,140,207,0.1)', border: `1px solid ${styles.borderGlass}`, color: styles.purpleBright, fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1px', textTransform: 'uppercase'}}>View</Link>
                 </div>
               </div>
@@ -1246,6 +1247,15 @@ function ApplicationsList() {
                     )}
                     {app.state === 'conformant' && (
                       <span style={{color: styles.accentGreen, fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px'}}>✓ Certified</span>
+                    )}
+                    {app.state === 'testing' && (
+                      <Link to="/cat72" className="px-2 py-1 rounded no-underline" style={{background: 'rgba(157,140,207,0.15)', border: `1px solid ${styles.borderGlass}`, color: styles.purpleBright, fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.5px'}}>View Test</Link>
+                    )}
+                    {['pending','under_review','approved','testing','conformant'].includes(app.state) && (
+                      <button onClick={(e) => { e.stopPropagation(); handleQuickAdvance(app.id, 'suspended', `Suspend ${app.system_name}`); }} className="px-2 py-1 rounded" style={{background: 'rgba(214,92,92,0.1)', border: '1px solid rgba(214,92,92,0.3)', color: styles.accentRed, fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.5px'}}>Suspend</button>
+                    )}
+                    {(app.state === 'suspended' || app.state === 'revoked') && (
+                      <button onClick={(e) => { e.stopPropagation(); handleQuickAdvance(app.id, 'pending', `Reinstate ${app.system_name} to pending`); }} className="px-2 py-1 rounded" style={{background: 'rgba(92,214,133,0.1)', border: '1px solid rgba(92,214,133,0.3)', color: styles.accentGreen, fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.5px'}}>Reinstate</button>
                     )}
                   </div>
                 </td>
@@ -1518,18 +1528,48 @@ function ApplicationDetail() {
     if (!window.confirm('Approve this application and grant ENVELO agent access?')) return;
     try {
       await api.patch(`/api/applications/${id}/state?new_state=approved`);
-      setApp({...app, state: 'approved'});
+      await refreshApp();
     } catch (err) {
       alert('Failed to approve: ' + (err.response?.data?.detail || err.message));
+    }
+  };
+
+  const refreshApp = async () => {
+    try {
+      const res = await api.get(`/api/applications/${id}`);
+      setApp(res.data);
+    } catch (err) {
+      console.error('Failed to refresh:', err);
     }
   };
 
   const handleAdvanceToReview = async () => {
     try {
       await api.patch(`/api/applications/${id}/state?new_state=under_review`);
-      setApp({...app, state: 'under_review'});
+      await refreshApp();
     } catch (err) {
       alert('Failed to update: ' + (err.response?.data?.detail || err.message));
+    }
+  };
+
+  const handleSuspend = async () => {
+    const reason = window.prompt('Suspension reason (shown to applicant):');
+    if (!reason) return;
+    try {
+      await api.patch(`/api/applications/${id}/state?new_state=suspended`);
+      await refreshApp();
+    } catch (err) {
+      alert('Failed to suspend: ' + (err.response?.data?.detail || err.message));
+    }
+  };
+
+  const handleReinstate = async () => {
+    if (!window.confirm('Reinstate this application to pending? The applicant will need to go through review again.')) return;
+    try {
+      await api.patch(`/api/applications/${id}/state?new_state=pending`);
+      await refreshApp();
+    } catch (err) {
+      alert('Failed to reinstate: ' + (err.response?.data?.detail || err.message));
     }
   };
 
@@ -1580,6 +1620,21 @@ function ApplicationDetail() {
           {app.state === 'approved' && (
             <button onClick={handleScheduleTest} disabled={scheduling} className="px-4 py-2 rounded-lg transition-all" style={{background: styles.purplePrimary, border: `1px solid ${styles.purpleBright}`, color: '#fff', fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: scheduling ? 'wait' : 'pointer', opacity: scheduling ? 0.7 : 1}}>
               {scheduling ? 'Scheduling...' : 'Schedule CAT-72 Test'}
+            </button>
+          )}
+          {['pending','under_review','approved','testing','conformant'].includes(app.state) && (
+            <button onClick={handleSuspend} className="px-4 py-2 rounded-lg transition-all" style={{background: 'rgba(214,92,92,0.1)', border: '1px solid rgba(214,92,92,0.3)', color: '#D65C5C', fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>
+              Suspend
+            </button>
+          )}
+          {(app.state === 'suspended' || app.state === 'revoked') && (
+            <button onClick={handleReinstate} className="px-4 py-2 rounded-lg transition-all" style={{background: 'rgba(92,214,133,0.15)', border: '1px solid rgba(92,214,133,0.4)', color: styles.accentGreen, fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>
+              Reinstate
+            </button>
+          )}
+          {app.state === 'expired' && (
+            <button onClick={handleReinstate} className="px-4 py-2 rounded-lg transition-all" style={{background: 'rgba(157,140,207,0.15)', border: `1px solid ${styles.purpleBright}`, color: styles.purpleBright, fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>
+              Re-open
             </button>
           )}
           <button onClick={handleDeleteApplication} className="px-4 py-2 rounded-lg transition-all" style={{background: 'rgba(214,92,92,0.1)', border: '1px solid rgba(214,92,92,0.3)', color: '#D65C5C', fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>
