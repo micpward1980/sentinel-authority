@@ -8,7 +8,7 @@ from app.core.database import get_db
 from app.core.security import get_current_user, require_role
 from app.models.models import AuditLog
 
-router = APIRouter(prefix="/api/audit", tags=["audit"])
+router = APIRouter(tags=["audit"])
 
 
 @router.get("/logs", summary="Query audit logs")
