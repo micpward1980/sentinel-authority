@@ -10,7 +10,7 @@ from typing import Optional, Dict, Any
 from app.core.database import get_db
 from app.core.security import get_current_user
 from app.models.models import Application, User, CertificationState
-from app.services.email_service import notify_admin_new_application
+from app.services.email_service import notify_admin_new_application, send_application_received
 
 router = APIRouter()
 
@@ -80,6 +80,12 @@ async def create_application(
     db.add(application)
     await db.commit()
     await db.refresh(application)
+    
+    # Notify the applicant
+    try:
+        await send_application_received(app_data.contact_email, app_data.system_name, application.id)
+    except Exception as e:
+        print(f"Email error (app received): {e}")
     
     await notify_admin_new_application(
         app_data.organization_name,

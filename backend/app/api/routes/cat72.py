@@ -12,7 +12,10 @@ from pydantic import BaseModel
 from app.core.database import get_db
 from app.core.security import get_current_user, require_role
 from app.core.config import settings
-from app.services.email_service import send_test_setup_instructions
+from app.services.email_service import (
+    send_test_setup_instructions, send_test_started, send_test_failed,
+    send_certificate_issued
+)
 from app.models.models import (
     CAT72Test, Application, Telemetry, InterlockEvent, 
     TestState, CertificationState, UserRole
@@ -160,6 +163,17 @@ async def create_test(
     await db.commit()
     await db.refresh(test)
     
+    # Notify applicant
+    try:
+        from app.models.models import User
+        owner_result = await db.execute(select(User).where(User.id == application.user_id))
+        owner = owner_result.scalar_one_or_none()
+        if owner and owner.email:
+            from app.services.email_service import send_test_scheduled
+            await send_test_scheduled(owner.email, application.system_name, "Within 24 hours")
+    except Exception as e:
+        print(f"Email error (test scheduled): {e}")
+    
     return {
         "id": test.id,
         "test_id": test.test_id,
@@ -266,6 +280,19 @@ async def start_test(
     test.evidence_hash = genesis_hash
     
     await db.commit()
+    
+    # Notify applicant
+    try:
+        app_result = await db.execute(select(Application).where(Application.id == test.application_id))
+        application = app_result.scalar_one_or_none()
+        if application:
+            from app.models.models import User
+            owner_result = await db.execute(select(User).where(User.id == application.user_id))
+            owner = owner_result.scalar_one_or_none()
+            if owner and owner.email:
+                await send_test_started(owner.email, application.system_name, test.test_id)
+    except Exception as e:
+        print(f"Email error (test started): {e}")
     
     return {
         "test_id": test.test_id,
@@ -443,6 +470,36 @@ async def stop_test(
     test.evidence_hash = final_hash
     
     await db.commit()
+    
+    # Notify applicant of result
+    try:
+        app_result = await db.execute(select(Application).where(Application.id == test.application_id))
+        application = app_result.scalar_one_or_none()
+        if application:
+            from app.models.models import User
+            owner_result = await db.execute(select(User).where(User.id == application.user_id))
+            owner = owner_result.scalar_one_or_none()
+            if owner and owner.email:
+                if test.result == "PASS":
+                    await send_certificate_issued(
+                        owner.email, application.system_name,
+                        test.test_id, "Pending issuance"
+                    )
+                else:
+                    reason = []
+                    if test.convergence_score < 0.95:
+                        reason.append(f"Convergence {test.convergence_score:.1%} < 95%")
+                    if test.drift_rate and test.drift_rate > 0.005:
+                        reason.append(f"Drift rate {test.drift_rate:.4f} > 0.005")
+                    if test.stability_index and test.stability_index < 0.90:
+                        reason.append(f"Stability {test.stability_index:.1%} < 90%")
+                    await send_test_failed(
+                        owner.email, application.system_name,
+                        "; ".join(reason) or "Did not meet thresholds",
+                        (test.convergence_score or 0) * 100
+                    )
+    except Exception as e:
+        print(f"Email error (test result): {e}")
     
     return {
         "test_id": test.test_id,

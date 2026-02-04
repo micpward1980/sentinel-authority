@@ -9,6 +9,7 @@ from typing import Optional
 
 RESEND_API_KEY = os.getenv("RESEND_API_KEY", "re_BkncgUC1_2uMjrza8EsxuSS8Ja6HLgCTV")
 FROM_EMAIL = os.getenv("FROM_EMAIL", "notifications@sentinelauthority.org")
+ADMIN_EMAIL = os.getenv("ADMIN_EMAIL", "info@sentinelauthority.org")
 
 async def send_email(to: str, subject: str, html: str, from_email: str = None) -> bool:
     """Send an email via Resend"""
@@ -514,3 +515,89 @@ async def send_password_reset_email(to: str, name: str, token: str):
     """
     await send_email(to, "Reset Your Password - Sentinel Authority", html)
 
+
+
+async def send_application_approved(to: str, system_name: str, app_number: str):
+    """Notify applicant their application has been approved"""
+    html = f"""
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <div style="background: #5B4B8A; padding: 20px; text-align: center;">
+            <h1 style="color: white; margin: 0;">SENTINEL AUTHORITY</h1>
+        </div>
+        <div style="padding: 30px; background: #f9f9f9;">
+            <h2 style="color: #2e7d32;">✓ Application Approved</h2>
+            <p>Your ODDC certification application has been approved.</p>
+            <p><strong>System:</strong> {system_name}<br>
+            <strong>Application:</strong> {app_number}</p>
+            <h3 style="color: #5B4B8A;">Next Steps</h3>
+            <ol>
+                <li>Deploy the ENVELO Agent from your <a href="https://app.sentinelauthority.org/envelo" style="color: #5B4B8A;">dashboard</a></li>
+                <li>Your CAT-72 conformance test will be scheduled</li>
+                <li>The test runs for 72 continuous hours</li>
+            </ol>
+            <div style="text-align: center; margin: 30px 0;">
+                <a href="https://app.sentinelauthority.org/envelo"
+                   style="background: #5B4B8A; color: white; padding: 12px 30px;
+                          text-decoration: none; border-radius: 6px; font-weight: bold;">
+                    Deploy ENVELO Agent
+                </a>
+            </div>
+            <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
+            <p style="font-size: 12px; color: #666;">Questions? Contact us at info@sentinelauthority.org</p>
+        </div>
+    </div>
+    """
+    await send_email(to, f"Application Approved - {system_name}", html)
+
+
+async def send_application_under_review(to: str, system_name: str, app_number: str):
+    """Notify applicant their application is under review"""
+    html = f"""
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <div style="background: #5B4B8A; padding: 20px; text-align: center;">
+            <h1 style="color: white; margin: 0;">SENTINEL AUTHORITY</h1>
+        </div>
+        <div style="padding: 30px; background: #f9f9f9;">
+            <h2 style="color: #5B4B8A;">Application Under Review</h2>
+            <p>Your ODDC certification application is now being reviewed by our team.</p>
+            <p><strong>System:</strong> {system_name}<br>
+            <strong>Application:</strong> {app_number}</p>
+            <p>We typically complete reviews within 2-3 business days. You'll receive a notification when a decision has been made.</p>
+            <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
+            <p style="font-size: 12px; color: #666;">Questions? Contact us at info@sentinelauthority.org</p>
+        </div>
+    </div>
+    """
+    await send_email(to, f"Application Under Review - {system_name}", html)
+
+
+async def send_certificate_expiry_warning(to: str, system_name: str, cert_number: str, days_remaining: int):
+    """Warn customer their certificate is expiring soon"""
+    urgency = "🚨" if days_remaining <= 7 else "⚠️"
+    color = "#D65C5C" if days_remaining <= 7 else "#D6A05C"
+    html = f"""
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <div style="background: #5B4B8A; padding: 20px; text-align: center;">
+            <h1 style="color: white; margin: 0;">SENTINEL AUTHORITY</h1>
+        </div>
+        <div style="padding: 30px; background: #f9f9f9;">
+            <h2 style="color: {color};">{urgency} Certificate Expiring in {days_remaining} Days</h2>
+            <p>Your ODDC certificate will expire soon and requires renewal.</p>
+            <p><strong>System:</strong> {system_name}<br>
+            <strong>Certificate:</strong> {cert_number}<br>
+            <strong>Days Remaining:</strong> {days_remaining}</p>
+            <p>To maintain your certification, please contact us to schedule a renewal CAT-72 test.</p>
+            <div style="text-align: center; margin: 30px 0;">
+                <a href="https://app.sentinelauthority.org/certificates"
+                   style="background: #5B4B8A; color: white; padding: 12px 30px;
+                          text-decoration: none; border-radius: 6px; font-weight: bold;">
+                    View Certificate
+                </a>
+            </div>
+            <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
+            <p style="font-size: 12px; color: #666;">Questions? Contact us at info@sentinelauthority.org</p>
+        </div>
+    </div>
+    """
+    await send_email(to, f"{urgency} Certificate Expiring - {cert_number}", html)
+    await send_email(ADMIN_EMAIL, f"Certificate Expiring: {cert_number} ({days_remaining} days)", html)
