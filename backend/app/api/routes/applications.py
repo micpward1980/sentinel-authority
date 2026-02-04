@@ -13,7 +13,8 @@ async def evaluate_cat72_test(
     if current_user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Admin access required")
     
-    from app.services.cat72_evaluator import evaluate_test
+    from app.services.audit_service import write_audit_log
+from app.services.cat72_evaluator import evaluate_test
     result = await evaluate_test(db, test_id)
     return result
 

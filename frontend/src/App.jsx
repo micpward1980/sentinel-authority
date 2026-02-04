@@ -165,6 +165,7 @@ function Layout({ children }) {
     { name: 'ENVELO Agent', href: '/envelo', icon: 'brand', roles: ['admin', 'applicant'], requiresCert: true },
     { name: 'Monitoring', href: '/monitoring', icon: Activity, roles: ['admin', 'applicant'], requiresCert: true },
     { name: 'User Management', href: '/users', icon: Users, roles: ['admin'] },
+    { name: 'Activity Log', href: '/activity', icon: FileText, roles: ['admin'] },
     { name: 'Settings', href: '/settings', icon: Settings, roles: ['admin', 'applicant'] },
   ];
 
@@ -5184,6 +5185,130 @@ function UserManagementPage() {
 
 
 // ═══ Settings Page ═══
+
+// ═══ Activity History / Audit Log ═══
+function ActivityPage() {
+  const [logs, setLogs] = useState([]);
+  const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [actionFilter, setActionFilter] = useState('');
+  const [resourceFilter, setResourceFilter] = useState('');
+  const [emailFilter, setEmailFilter] = useState('');
+  const [page, setPage] = useState(0);
+  const [actions, setActions] = useState([]);
+  const [resourceTypes, setResourceTypes] = useState([]);
+  const PAGE_SIZE = 50;
+
+  useEffect(() => {
+    api.get('/api/audit/actions').then(r => setActions(r.data.actions || [])).catch(() => {});
+    api.get('/api/audit/resource-types').then(r => setResourceTypes(r.data.resource_types || [])).catch(() => {});
+  }, []);
+
+  const fetchLogs = async () => {
+    setLoading(true);
+    try {
+      const params = new URLSearchParams();
+      if (actionFilter) params.set('action', actionFilter);
+      if (resourceFilter) params.set('resource_type', resourceFilter);
+      if (emailFilter) params.set('user_email', emailFilter);
+      params.set('limit', PAGE_SIZE);
+      params.set('offset', page * PAGE_SIZE);
+      const res = await api.get(`/api/audit/logs?${params}`);
+      setLogs(res.data.logs || []);
+      setTotal(res.data.total || 0);
+    } catch (err) {
+      console.error('Failed to load audit logs:', err);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => { fetchLogs(); }, [actionFilter, resourceFilter, emailFilter, page]);
+
+  const actionColor = (action) => {
+    if (action?.includes('issued') || action?.includes('approved') || action?.includes('conformant')) return styles.accentGreen;
+    if (action?.includes('suspended') || action?.includes('revoked') || action?.includes('failed')) return '#D65C5C';
+    if (action?.includes('pending') || action?.includes('under_review')) return '#D6A05C';
+    return styles.purpleBright;
+  };
+
+  const totalPages = Math.ceil(total / PAGE_SIZE);
+
+  return (
+    <div className="space-y-6">
+      <SectionHeader label="Administration" title="Activity History" />
+
+      {/* Filters */}
+      <Panel>
+        <div style={{display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap'}}>
+          <select value={actionFilter} onChange={e => { setActionFilter(e.target.value); setPage(0); }} style={{background: styles.bgDeep, border: `1px solid ${styles.borderGlass}`, borderRadius: '8px', padding: '8px 12px', color: styles.textPrimary, fontSize: '12px', fontFamily: "'IBM Plex Mono', monospace", minWidth: '180px'}}>
+            <option value="">All Actions</option>
+            {actions.map(a => <option key={a} value={a}>{a}</option>)}
+          </select>
+          <select value={resourceFilter} onChange={e => { setResourceFilter(e.target.value); setPage(0); }} style={{background: styles.bgDeep, border: `1px solid ${styles.borderGlass}`, borderRadius: '8px', padding: '8px 12px', color: styles.textPrimary, fontSize: '12px', fontFamily: "'IBM Plex Mono', monospace", minWidth: '150px'}}>
+            <option value="">All Resources</option>
+            {resourceTypes.map(t => <option key={t} value={t}>{t}</option>)}
+          </select>
+          <input value={emailFilter} onChange={e => { setEmailFilter(e.target.value); setPage(0); }} placeholder="Filter by email..." style={{background: styles.bgDeep, border: `1px solid ${styles.borderGlass}`, borderRadius: '8px', padding: '8px 12px', color: styles.textPrimary, fontSize: '12px', fontFamily: "'IBM Plex Mono', monospace", flex: 1, minWidth: '150px'}} />
+          <span style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', color: styles.textTertiary}}>{total.toLocaleString()} entries</span>
+        </div>
+      </Panel>
+
+      {/* Logs Table */}
+      <Panel noPad>
+        {loading ? (
+          <div style={{padding: '40px', textAlign: 'center', color: styles.textTertiary}}>Loading...</div>
+        ) : logs.length === 0 ? (
+          <div style={{padding: '40px', textAlign: 'center', color: styles.textTertiary}}>No audit log entries found</div>
+        ) : (
+          <div style={{overflowX: 'auto'}}>
+            <table style={{width: '100%', borderCollapse: 'collapse'}}>
+              <thead>
+                <tr style={{background: 'rgba(0,0,0,0.2)'}}>
+                  <th style={{padding: '12px 16px', textAlign: 'left', fontSize: '10px', fontFamily: "'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '1px', color: styles.textTertiary}}>Timestamp</th>
+                  <th style={{padding: '12px 16px', textAlign: 'left', fontSize: '10px', fontFamily: "'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '1px', color: styles.textTertiary}}>User</th>
+                  <th style={{padding: '12px 16px', textAlign: 'left', fontSize: '10px', fontFamily: "'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '1px', color: styles.textTertiary}}>Action</th>
+                  <th style={{padding: '12px 16px', textAlign: 'left', fontSize: '10px', fontFamily: "'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '1px', color: styles.textTertiary}}>Resource</th>
+                  <th style={{padding: '12px 16px', textAlign: 'left', fontSize: '10px', fontFamily: "'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '1px', color: styles.textTertiary}}>Details</th>
+                  <th style={{padding: '12px 16px', textAlign: 'left', fontSize: '10px', fontFamily: "'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '1px', color: styles.textTertiary}}>Hash</th>
+                </tr>
+              </thead>
+              <tbody>
+                {logs.map(log => (
+                  <tr key={log.id} style={{borderBottom: `1px solid ${styles.borderSubtle}`}}>
+                    <td style={{padding: '12px 16px', fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', color: styles.textSecondary, whiteSpace: 'nowrap'}}>{log.timestamp ? new Date(log.timestamp).toLocaleString() : '-'}</td>
+                    <td style={{padding: '12px 16px', fontSize: '13px', color: styles.textPrimary}}>{log.user_email || '-'}</td>
+                    <td style={{padding: '12px 16px'}}>
+                      <span style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', color: actionColor(log.action), letterSpacing: '0.5px'}}>{log.action}</span>
+                    </td>
+                    <td style={{padding: '12px 16px', fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', color: styles.textTertiary}}>
+                      {log.resource_type}{log.resource_id ? ` #${log.resource_id}` : ''}
+                    </td>
+                    <td style={{padding: '12px 16px', fontSize: '12px', color: styles.textTertiary, maxWidth: '300px'}}>
+                      {log.details ? Object.entries(log.details).filter(([k]) => k !== 'old_state').map(([k, v]) => (
+                        <span key={k} style={{marginRight: '12px'}}><span style={{color: styles.textTertiary}}>{k.replace(/_/g, ' ')}:</span> <span style={{color: styles.textSecondary}}>{String(v)}</span></span>
+                      )) : '-'}
+                    </td>
+                    <td style={{padding: '12px 16px', fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary, letterSpacing: '0.5px'}}>{log.log_hash || '-'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div style={{display: 'flex', justifyContent: 'center', gap: '8px', padding: '16px', borderTop: `1px solid ${styles.borderSubtle}`}}>
+            <button onClick={() => setPage(Math.max(0, page - 1))} disabled={page === 0} style={{padding: '6px 12px', background: styles.bgDeep, border: `1px solid ${styles.borderGlass}`, borderRadius: '6px', color: page === 0 ? styles.textTertiary : styles.textPrimary, cursor: page === 0 ? 'not-allowed' : 'pointer', fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px'}}>← Prev</button>
+            <span style={{padding: '6px 12px', fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', color: styles.textSecondary}}>{page + 1} / {totalPages}</span>
+            <button onClick={() => setPage(Math.min(totalPages - 1, page + 1))} disabled={page >= totalPages - 1} style={{padding: '6px 12px', background: styles.bgDeep, border: `1px solid ${styles.borderGlass}`, borderRadius: '6px', color: page >= totalPages - 1 ? styles.textTertiary : styles.textPrimary, cursor: page >= totalPages - 1 ? 'not-allowed' : 'pointer', fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px'}}>Next →</button>
+          </div>
+        )}
+      </Panel>
+    </div>
+  );
+}
+
 function SettingsPage() {
   const { user } = useAuth();
   const [prefs, setPrefs] = useState(null);
@@ -5277,6 +5402,7 @@ function App() {
           <Route path="/resources" element={<ProtectedRoute><Layout><ResourcesPage /></Layout></ProtectedRoute>} />
           <Route path="/envelo" element={<ProtectedRoute><Layout><EnveloPage /></Layout></ProtectedRoute>} />
           <Route path="/monitoring" element={<ProtectedRoute><Layout><MonitoringPage /></Layout></ProtectedRoute>} />
+          <Route path="/activity" element={<ProtectedRoute roles={["admin"]}><Layout><ActivityPage /></Layout></ProtectedRoute>} />
           <Route path="/settings" element={<ProtectedRoute><Layout><SettingsPage /></Layout></ProtectedRoute>} />
           <Route path="/users" element={<ProtectedRoute roles={["admin"]}><Layout><UserManagementPage /></Layout></ProtectedRoute>} />
           <Route path="/" element={<Navigate to="/dashboard" />} />

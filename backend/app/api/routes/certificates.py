@@ -1,3 +1,4 @@
+from app.services.audit_service import write_audit_log
 """Certificate Registry routes."""
 from app.services.email_service import notify_certificate_issued
 from datetime import datetime, timedelta
