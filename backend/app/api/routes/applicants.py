@@ -10,7 +10,11 @@ from typing import Optional, Dict, Any
 from app.core.database import get_db
 from app.core.security import get_current_user
 from app.models.models import Application, User, CertificationState
-from app.services.email_service import notify_admin_new_application, send_application_received
+from app.services.email_service import (
+    notify_admin_new_application, send_application_received,
+    send_application_approved, send_application_under_review,
+    send_test_scheduled, send_email, ADMIN_EMAIL
+)
 
 router = APIRouter()
 
@@ -183,6 +187,30 @@ async def update_application_state(
     if not app:
         raise HTTPException(status_code=404, detail="Application not found")
     
+    # Valid state transitions
+    VALID_TRANSITIONS = {
+        "pending": ["under_review", "suspended"],
+        "under_review": ["approved", "pending", "suspended"],
+        "approved": ["bounded", "testing", "under_review", "suspended"],
+        "bounded": ["testing", "approved", "suspended"],
+        "testing": ["conformant", "approved", "suspended"],
+        "conformant": ["suspended", "expired"],
+        "suspended": ["pending", "under_review", "approved"],
+        "expired": ["pending"],
+    }
+    
+    current = app.state.value if hasattr(app.state, 'value') else str(app.state)
+    allowed = VALID_TRANSITIONS.get(current, [])
+    
+    # Admin override: allow any transition
+    if new_state not in allowed and user.get("role") != "admin":
+        raise HTTPException(
+            status_code=400,
+            detail=f"Cannot transition from '{current}' to '{new_state}'. Allowed: {allowed}"
+        )
+    
+    previous_state = current
+    
     try:
         app.state = CertificationState(new_state)
         app.reviewed_at = datetime.utcnow()
@@ -222,6 +250,63 @@ async def update_application_state(
             result["api_key_generated"] = True
             result["api_key"] = api_key_raw
             result["note"] = "API key auto-generated for customer deploy"
+        
+        # ── Email notifications on state transitions ──
+        try:
+            # Get applicant email
+            applicant_email = app.contact_email
+            if not applicant_email and app.applicant_id:
+                from app.models.models import User
+                user_result = await db.execute(select(User).where(User.id == app.applicant_id))
+                owner = user_result.scalar_one_or_none()
+                if owner:
+                    applicant_email = owner.email
+            
+            app_number = app.application_number or f"SA-{app.id:04d}"
+            system_name = app.system_name or "Unnamed System"
+            
+            if applicant_email:
+                if new_state == "approved":
+                    await send_application_approved(applicant_email, system_name, app_number)
+                    # If API key was generated, send setup instructions too
+                    if api_key_raw:
+                        from app.services.email_service import send_test_setup_instructions
+                        await send_test_setup_instructions(
+                            applicant_email, system_name,
+                            app_number, api_key_raw, "Pending"
+                        )
+                elif new_state == "under_review":
+                    await send_application_under_review(applicant_email, system_name, app_number)
+                elif new_state == "suspended":
+                    await send_email(
+                        applicant_email,
+                        f"Application Suspended - {system_name}",
+                        f'<div style="font-family: Arial; max-width: 600px; margin: 0 auto;">'
+                        f'<div style="background: #5B4B8A; padding: 20px; text-align: center;"><h1 style="color: white; margin: 0;">SENTINEL AUTHORITY</h1></div>'
+                        f'<div style="padding: 30px; background: #f9f9f9;">'
+                        f'<h2 style="color: #D6A05C;">Application Suspended</h2>'
+                        f'<p>Your application for <strong>{system_name}</strong> ({app_number}) has been suspended.</p>'
+                        f'<p>Please contact us at info@sentinelauthority.org for more information.</p>'
+                        f'</div></div>'
+                    )
+            
+            # Notify admin of all state changes
+            await send_email(
+                ADMIN_EMAIL,
+                f"Application State Change: {app_number} → {new_state.upper()}",
+                f'<div style="font-family: Arial; max-width: 600px; margin: 0 auto;">'
+                f'<div style="background: #5B4B8A; padding: 20px; text-align: center;"><h1 style="color: white; margin: 0;">SENTINEL AUTHORITY</h1></div>'
+                f'<div style="padding: 30px; background: #f9f9f9;">'
+                f'<h2>State Change: {new_state.upper()}</h2>'
+                f'<p><strong>System:</strong> {system_name}<br>'
+                f'<strong>Application:</strong> {app_number}<br>'
+                f'<strong>New State:</strong> {new_state}<br>'
+                f'<strong>Changed by:</strong> User #{user.get("sub", "unknown")}</p>'
+                f'</div></div>'
+            )
+        except Exception as e:
+            print(f"Email error (state change): {e}")
+        
         return result
     except ValueError:
         raise HTTPException(status_code=400, detail=f"Invalid state: {new_state}")
