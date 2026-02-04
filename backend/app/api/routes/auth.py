@@ -77,6 +77,7 @@ class TOTPVerifyRequest(BaseModel):
 class DisableTOTPRequest(BaseModel):
     current_password: str
 
+@limiter.limit("5/minute")
 @router.post("/2fa/setup", response_model=TOTPSetupResponse, summary="Generate TOTP secret for 2FA setup")
 async def setup_2fa(
     db: AsyncSession = Depends(get_db),
@@ -109,6 +110,7 @@ async def setup_2fa(
     return {"secret": secret, "uri": uri, "qr_base64": qr_b64}
 
 
+@limiter.limit("5/minute")
 @router.post("/2fa/enable", summary="Verify code and enable 2FA")
 async def enable_2fa(
     body: TOTPVerifyRequest,
@@ -149,7 +151,9 @@ async def disable_2fa(
 
 
 @router.post("/2fa/verify-login", summary="Verify TOTP during login")
+@limiter.limit("5/minute")
 async def verify_2fa_login(
+    request: Request,
     body: TOTPVerifyRequest,
     temp_token: str = Query(..., description="Temporary token from login"),
     db: AsyncSession = Depends(get_db)
