@@ -1,7 +1,7 @@
 import React, { useState, useEffect, createContext, useContext } from 'react';
 import BoundaryEditor from './components/BoundaryEditor';
 import QRCode from 'qrcode';
-import { BrowserRouter, Routes, Route, Navigate, Link, useNavigate, useLocation, useParams } from 'react-router-dom';
+import { Wifi, BrowserRouter, Routes, Route, Navigate, Link, useNavigate, useLocation, useParams } from 'react-router-dom';
 import { Settings, FileText, Activity, Award, Users, Home, LogOut, Menu, X, CheckCircle, AlertTriangle, Clock, Search, Plus, ArrowLeft, ExternalLink, Shield, Download, RefreshCw, Eye, EyeOff, BookOpen, } from 'lucide-react';
 import axios from 'axios';
 
@@ -964,12 +964,16 @@ function Dashboard() {
   const [recentApps, setRecentApps] = useState([]);
   const [activeTests, setActiveTests] = useState([]);
   const [allApps, setAllApps] = useState([]);
+  const [recentCerts, setRecentCerts] = useState([]);
+  const [monitoring, setMonitoring] = useState(null);
 
   const loadData = () => {
     api.get('/api/dashboard/stats').then(res => setStats(res.data)).catch(console.error);
     api.get('/api/dashboard/recent-applications').then(res => setRecentApps(res.data)).catch(console.error);
     api.get('/api/dashboard/active-tests').then(res => setActiveTests(res.data)).catch(console.error);
     api.get('/api/applications/').then(res => setAllApps(res.data)).catch(console.error);
+    api.get('/api/dashboard/recent-certificates').then(res => setRecentCerts(res.data)).catch(console.error);
+    api.get('/api/envelo/monitoring/overview').then(res => setMonitoring(res.data)).catch(console.error);
   };
 
   useEffect(() => {
@@ -1005,12 +1009,24 @@ function Dashboard() {
       <SectionHeader label="Administration" title="Dashboard" />
 
       {/* Stats Row */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <StatCard label="Total Applications" value={stats?.total_applications || 0} color={styles.purpleBright} icon={<FileText className="w-5 h-5" style={{color: styles.purpleBright}} />} />
-        <StatCard label="Active Tests" value={stats?.active_tests || 0} color={styles.accentAmber} icon={<Activity className="w-5 h-5" style={{color: styles.accentAmber}} />} />
-        <StatCard label="Certificates Issued" value={stats?.certificates_issued || 0} color={styles.accentGreen} icon={<Award className="w-5 h-5" style={{color: styles.accentGreen}} />} />
-        <StatCard label="Needs Action" value={needsAction.length} color={needsAction.length > 0 ? '#D6A05C' : styles.textTertiary} icon={<AlertCircle className="w-5 h-5" style={{color: needsAction.length > 0 ? '#D6A05C' : styles.textTertiary}} />} />
-      </div>
+      {(() => {
+        const onlineAgents = monitoring?.sessions?.filter(s => {
+          const la = s.last_heartbeat_at || s.last_telemetry_at || s.started_at;
+          return s.status === 'active' && la && (Date.now() - new Date(la).getTime()) < 120000;
+        }).length || monitoring?.summary?.active || 0;
+        const expiringCount = recentCerts.filter(c => c.expires_at && c.state === 'conformant' && new Date(c.expires_at) < new Date(Date.now() + 30*24*60*60*1000)).length;
+        const actionCount = needsAction.length + expiringCount;
+        return (
+          <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px'}}>
+            <StatCard label="Total Applications" value={stats?.total_applications || 0} color={styles.purpleBright} icon={<FileText className="w-5 h-5" style={{color: styles.purpleBright}} />} />
+            <StatCard label="Active Tests" value={stats?.active_tests || 0} color={styles.accentAmber} icon={<Activity className="w-5 h-5" style={{color: styles.accentAmber}} />} />
+            <StatCard label="Active Certificates" value={stats?.certificates_active || 0} color={styles.accentGreen} icon={<Shield className="w-5 h-5" style={{color: styles.accentGreen}} />} />
+            <StatCard label="Online Agents" value={onlineAgents} color={onlineAgents > 0 ? styles.accentGreen : styles.textTertiary} icon={<Wifi className="w-5 h-5" style={{color: onlineAgents > 0 ? styles.accentGreen : styles.textTertiary}} />} />
+            <StatCard label="Certificates Issued" value={stats?.certificates_issued || 0} color={styles.purpleBright} icon={<Award className="w-5 h-5" style={{color: styles.purpleBright}} />} />
+            <StatCard label="Needs Action" value={actionCount} color={actionCount > 0 ? '#D6A05C' : styles.textTertiary} icon={<AlertCircle className="w-5 h-5" style={{color: actionCount > 0 ? '#D6A05C' : styles.textTertiary}} />} />
+          </div>
+        );
+      })()}
 
       {/* Pipeline Breakdown */}
       <Panel>
@@ -1091,6 +1107,69 @@ function Dashboard() {
                 </div>
               );
             })}
+          </div>
+        </Panel>
+      )}
+
+      {/* Expiring Certificates Warning */}
+      {(() => {
+        const expiring = recentCerts.filter(c => c.expires_at && c.state === 'conformant' && new Date(c.expires_at) < new Date(Date.now() + 30*24*60*60*1000));
+        if (expiring.length === 0) return null;
+        return (
+          <div style={{background: 'rgba(214,160,92,0.08)', border: '1px solid rgba(214,160,92,0.25)', borderRadius: '12px', padding: '16px'}}>
+            <div style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px'}}>
+              <AlertTriangle size={16} style={{color: '#D6A05C'}} />
+              <span style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', color: '#D6A05C', fontWeight: 500}}>{expiring.length} Certificate{expiring.length > 1 ? 's' : ''} Expiring Within 30 Days</span>
+            </div>
+            <div style={{display: 'flex', flexDirection: 'column', gap: '8px'}}>
+              {expiring.map(c => {
+                const daysLeft = Math.ceil((new Date(c.expires_at) - Date.now()) / (1000*60*60*24));
+                return (
+                  <div key={c.id} style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(0,0,0,0.15)', borderRadius: '8px', padding: '10px 14px'}}>
+                    <div>
+                      <span style={{color: styles.textPrimary, fontWeight: 500, fontSize: '13px'}}>{c.system_name}</span>
+                      <span style={{color: styles.textTertiary, fontSize: '12px', marginLeft: '12px'}}>{c.organization_name}</span>
+                    </div>
+                    <div style={{display: 'flex', alignItems: 'center', gap: '12px'}}>
+                      <span style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', color: daysLeft <= 7 ? '#D65C5C' : '#D6A05C', fontWeight: 500}}>{daysLeft}d remaining</span>
+                      <Link to={`/verify?cert=${c.certificate_number}`} style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', color: styles.purpleBright, textDecoration: 'none'}}>{c.certificate_number}</Link>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })()}
+
+      {/* Recent Certificates */}
+      {recentCerts.length > 0 && (
+        <Panel>
+          <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px'}}>
+            <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, margin: 0}}>Recent Certificates</h2>
+            <Link to="/certificates" style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', color: styles.purpleBright, textDecoration: 'none'}}>View All →</Link>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr style={{borderBottom: `1px solid ${styles.borderGlass}`}}>
+                  {['Certificate', 'System', 'Status', 'Issued', 'Expires'].map(h => (
+                    <th key={h} className="px-4 py-3 text-left" style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {recentCerts.slice(0, 5).map(c => (
+                  <tr key={c.id} style={{borderBottom: `1px solid ${styles.borderGlass}`}}>
+                    <td className="px-4 py-3"><Link to={`/verify?cert=${c.certificate_number}`} style={{color: styles.purpleBright, textDecoration: 'none', fontFamily: "'IBM Plex Mono', monospace", fontSize: '12px'}}>{c.certificate_number}</Link></td>
+                    <td className="px-4 py-3"><span style={{color: styles.textPrimary, fontSize: '13px'}}>{c.system_name}</span><span style={{color: styles.textTertiary, fontSize: '11px', marginLeft: '8px'}}>{c.organization_name}</span></td>
+                    <td className="px-4 py-3"><span style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', padding: '2px 8px', borderRadius: '4px', background: c.state === 'conformant' ? 'rgba(92,214,133,0.15)' : 'rgba(214,92,92,0.15)', color: c.state === 'conformant' ? styles.accentGreen : '#D65C5C'}}>{c.state}</span></td>
+                    <td className="px-4 py-3" style={{color: styles.textTertiary, fontSize: '13px'}}>{c.issued_at ? new Date(c.issued_at).toLocaleDateString() : '-'}</td>
+                    <td className="px-4 py-3" style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '12px', color: c.expires_at && new Date(c.expires_at) < new Date(Date.now() + 30*24*60*60*1000) ? '#D6A05C' : styles.textTertiary}}>{c.expires_at ? new Date(c.expires_at).toLocaleDateString() : '-'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </Panel>
       )}
