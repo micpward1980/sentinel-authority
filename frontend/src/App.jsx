@@ -2097,15 +2097,24 @@ function CertificatesPage() {
                 </td>
                 <td className="px-4 py-4" style={{color: styles.textTertiary, fontSize: '14px'}}>{cert.expires_at ? new Date(cert.expires_at).toLocaleDateString() : '-'}</td>
                 <td className="px-4 py-4">
-                  <a 
-                    href={`https://sentinel-authority-production.up.railway.app/api/certificates/${cert.certificate_number}/pdf`} 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    className="px-3 py-1 rounded transition-colors no-underline"
-                    style={{background: styles.purplePrimary, border: `1px solid ${styles.purpleBright}`, color: '#fff', fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase'}}
-                  >
-                    Download PDF
-                  </a>
+                  <div style={{display: 'flex', gap: '8px', alignItems: 'center'}}>
+                    {cert.state !== 'revoked' && cert.state !== 'suspended' ? (
+                      <a 
+                        href={`${API_BASE}/api/certificates/${cert.certificate_number}/pdf`} 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        className="px-3 py-1 rounded transition-colors no-underline"
+                        style={{background: styles.purplePrimary, border: `1px solid ${styles.purpleBright}`, color: '#fff', fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase'}}
+                      >
+                        Download PDF
+                      </a>
+                    ) : (
+                      <span style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary, letterSpacing: '1px', textTransform: 'uppercase'}}>
+                        {cert.state === 'revoked' ? 'Revoked' : 'Suspended'}
+                      </span>
+                    )}
+                    <Link to={`/verify?cert=${cert.certificate_number}`} className="px-2 py-1 rounded no-underline" style={{background: 'rgba(255,255,255,0.05)', border: `1px solid ${styles.borderGlass}`, color: styles.textSecondary, fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '0.5px', textTransform: 'uppercase'}}>Verify</Link>
+                  </div>
                 </td>
               </tr>
             ))}
@@ -2634,6 +2643,21 @@ function VerifyPage() {
                   }}>
                     {showQR ? '▾ Hide QR' : '◱ QR Code'}
                   </button>
+                  {isValid && (
+                    <a 
+                      href={`${API_BASE}/api/certificates/${certNumber}/pdf`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        padding: '8px 16px', background: 'rgba(92,214,133,0.1)', border: '1px solid rgba(92,214,133,0.3)',
+                        borderRadius: '8px', color: styles.accentGreen, cursor: 'pointer',
+                        fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase',
+                        display: 'flex', alignItems: 'center', gap: '6px', textDecoration: 'none'
+                      }}
+                    >
+                      <Download size={12} /> Certificate PDF
+                    </a>
+                  )}
                   {isValid && (
                     <button onClick={fetchEvidence} style={{
                       padding: '8px 16px', background: 'rgba(91,75,138,0.15)', border: '1px solid rgba(91,75,138,0.3)',
