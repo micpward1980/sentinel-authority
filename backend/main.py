@@ -487,6 +487,16 @@ async def custom_swagger_ui():
 # Start auto-evaluator background task
 @app.on_event("startup")
 async def start_auto_evaluator():
+    # Auto-migrate: ensure email_preferences column exists
+    try:
+        from sqlalchemy import text
+        from app.core.database import engine
+        async with engine.begin() as conn:
+            await conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS email_preferences JSON"))
+        logger.info('Migration: email_preferences column OK')
+    except Exception as e:
+        logger.warning(f'Migration check: {e}')
+
     import asyncio
     from app.services.auto_evaluator import run_auto_evaluator
     asyncio.create_task(run_auto_evaluator())
