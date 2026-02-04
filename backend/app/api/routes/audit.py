@@ -1,3 +1,4 @@
+import hashlib, json
 """Audit log API endpoints"""
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -98,3 +99,49 @@ async def get_resource_types(
     )
     types = [r[0] for r in result.all() if r[0]]
     return {"resource_types": types}
+
+@router.get("/verify", summary="Verify audit log integrity")
+async def verify_audit_integrity(
+    limit: int = Query(1000, le=5000),
+    db: AsyncSession = Depends(get_db),
+    user: dict = Depends(require_role(["admin"])),
+):
+    """Recompute hashes for audit entries and check for tampering"""
+    from datetime import datetime as dt
+    result = await db.execute(
+        select(AuditLog).order_by(AuditLog.id.desc()).limit(limit)
+    )
+    logs = result.scalars().all()
+    
+    total = len(logs)
+    valid = 0
+    invalid = 0
+    invalid_ids = []
+    
+    for log in logs:
+        content = json.dumps({
+            "action": log.action,
+            "resource_type": log.resource_type,
+            "resource_id": log.resource_id,
+            "user_id": log.user_id,
+            "user_email": log.user_email,
+            "details": log.details,
+            "timestamp": log.timestamp.isoformat() if log.timestamp else None,
+        }, sort_keys=True)
+        expected = hashlib.sha256(content.encode()).hexdigest()[:16]
+        
+        if expected == log.log_hash:
+            valid += 1
+        else:
+            invalid += 1
+            if len(invalid_ids) < 20:
+                invalid_ids.append({"id": log.id, "expected": expected, "stored": log.log_hash})
+    
+    return {
+        "total_checked": total,
+        "valid": valid,
+        "invalid": invalid,
+        "integrity": "passed" if invalid == 0 else "failed",
+        "invalid_entries": invalid_ids,
+    }
+

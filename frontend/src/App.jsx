@@ -5648,6 +5648,18 @@ function ActivityPage() {
   const [page, setPage] = useState(0);
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
+  const [verifyResult, setVerifyResult] = useState(null);
+  const [verifying, setVerifying] = useState(false);
+
+  const verifyIntegrity = async () => {
+    setVerifying(true);
+    try {
+      const res = await api.get('/api/audit/verify?limit=5000');
+      setVerifyResult(res.data);
+      toast.show(res.data.integrity === 'passed' ? `Integrity verified — ${res.data.valid} entries valid` : `Integrity check FAILED — ${res.data.invalid} tampered entries`, res.data.integrity === 'passed' ? 'success' : 'error');
+    } catch (err) { toast.show('Verification failed', 'error'); }
+    setVerifying(false);
+  };
   const [actions, setActions] = useState([]);
   const [resourceTypes, setResourceTypes] = useState([]);
   const PAGE_SIZE = 50;
@@ -5737,6 +5749,9 @@ function ActivityPage() {
           <input type="date" value={dateTo} onChange={e => { setDateTo(e.target.value); setPage(0); }} style={{background: styles.bgDeep, border: `1px solid ${styles.borderGlass}`, borderRadius: '8px', padding: '8px 12px', color: styles.textPrimary, fontSize: '12px', fontFamily: "'IBM Plex Mono', monospace", colorScheme: 'dark'}} />
           <span style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', color: styles.textTertiary}}>{total.toLocaleString()} entries</span>
           <button onClick={exportCSV} style={{padding: '6px 14px', background: 'rgba(157,140,207,0.12)', border: '1px solid ' + 'rgba(157,140,207,0.3)', borderRadius: '8px', color: styles.purpleBright, fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', cursor: 'pointer', letterSpacing: '1px', textTransform: 'uppercase'}}>Export CSV</button>
+          <button onClick={verifyIntegrity} disabled={verifying} style={{padding: '6px 14px', background: verifyResult ? (verifyResult.integrity === 'passed' ? 'rgba(92,214,133,0.12)' : 'rgba(214,92,92,0.12)') : 'rgba(157,140,207,0.12)', border: '1px solid ' + (verifyResult ? (verifyResult.integrity === 'passed' ? 'rgba(92,214,133,0.3)' : 'rgba(214,92,92,0.3)') : 'rgba(157,140,207,0.3)'), borderRadius: '8px', color: verifyResult ? (verifyResult.integrity === 'passed' ? styles.accentGreen : '#D65C5C') : styles.purpleBright, fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', cursor: verifying ? 'wait' : 'pointer', letterSpacing: '1px', textTransform: 'uppercase'}}>
+            {verifying ? 'Verifying...' : verifyResult ? (verifyResult.integrity === 'passed' ? `✓ ${verifyResult.valid} Verified` : `✗ ${verifyResult.invalid} Invalid`) : '⛓ Verify Chain'}
+          </button>
         </div>
       </Panel>
 
