@@ -2,7 +2,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import FileResponse
 from pathlib import Path
-from app.core.auth import get_current_user
+from app.core.security import get_current_user
 
 router = APIRouter(prefix="/documents", tags=["documents"])
 
