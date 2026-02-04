@@ -2539,6 +2539,9 @@ function VerifyPage() {
   const [mode, setMode] = useState("verify");
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
+  const [registryStats, setRegistryStats] = useState(null);
+  const [statusFilter, setStatusFilter] = useState('conformant');
+  const [browseLoaded, setBrowseLoaded] = useState(false);
   const [certNumber, setCertNumber] = useState('');
   const [result, setResult] = useState(null);
   const [evidence, setEvidence] = useState(null);
@@ -2631,6 +2634,17 @@ function VerifyPage() {
     await doVerify();
   };
 
+  // Load registry stats + browse all on search tab
+  React.useEffect(() => {
+    if (mode === 'search' && !browseLoaded) {
+      api.get('/api/registry/stats').then(res => setRegistryStats(res.data)).catch(console.error);
+      api.get('/api/registry/search?status=conformant').then(res => {
+        setSearchResults(res.data.results || []);
+        setBrowseLoaded(true);
+      }).catch(console.error);
+    }
+  }, [mode]);
+
   const handleSearch = async (e) => {
     e.preventDefault();
     if (!searchQuery.trim()) return;
@@ -2638,7 +2652,10 @@ function VerifyPage() {
     setSearchResults([]);
     setLoading(true);
     try {
-      const res = await api.get(`/api/registry/search?q=${encodeURIComponent(searchQuery)}`);
+      const params = new URLSearchParams();
+      if (searchQuery.trim()) params.set('q', searchQuery.trim());
+      if (statusFilter) params.set('status', statusFilter);
+      const res = await api.get(`/api/registry/search?${params.toString()}`);
       setSearchResults(res.data.results || []); if (!res.data.results || res.data.results.length === 0) setError("No certificates found for that search");
     } catch (err) {
       setError("Unable to connect to registry");
@@ -2811,6 +2828,21 @@ function VerifyPage() {
           )}
 
           {mode === "search" && (<>
+          {/* Registry Stats Banner */}
+          {registryStats && (
+            <div style={{display: 'flex', justifyContent: 'center', gap: '24px', marginBottom: '24px'}}>
+              {[
+                {label: 'Active Certs', value: registryStats.active_certificates, color: styles.accentGreen},
+                {label: 'Organizations', value: registryStats.certified_organizations, color: styles.purpleBright},
+                {label: 'Last 30 Days', value: registryStats.issued_last_30_days, color: '#D6A05C'},
+              ].map(s => (
+                <div key={s.label} style={{textAlign: 'center'}}>
+                  <div style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '24px', fontWeight: 600, color: s.color}}>{s.value}</div>
+                  <div style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', color: styles.textTertiary, letterSpacing: '1px', textTransform: 'uppercase', marginTop: '2px'}}>{s.label}</div>
+                </div>
+              ))}
+            </div>
+          )}
           <form onSubmit={handleSearch} className="space-y-6">
             <div>
               <label style={{
@@ -2831,9 +2863,27 @@ function VerifyPage() {
                 }}
               />
             </div>
+            {/* Status Filter */}
+            <div style={{display: 'flex', justifyContent: 'center'}}>
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                style={{
+                  background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.08)',
+                  color: styles.textPrimary, fontFamily: "'IBM Plex Mono', monospace",
+                  fontSize: '11px', padding: '8px 16px', borderRadius: '8px', outline: 'none',
+                  letterSpacing: '1px', textTransform: 'uppercase',
+                }}
+              >
+                <option value="conformant">Conformant</option>
+                <option value="expired">Expired</option>
+                <option value="suspended">Suspended</option>
+                <option value="revoked">Revoked</option>
+              </select>
+            </div>
             <button 
               type="submit" 
-              disabled={loading || !searchQuery.trim()}
+              disabled={loading}
               className="verify-btn w-full py-4 rounded-xl font-medium"
               style={{
                 background: 'linear-gradient(135deg, #5B4B8A 0%, #7B6BAA 100%)',
@@ -2856,7 +2906,7 @@ function VerifyPage() {
                     {searchResults.length} certificate(s) found
                   </p>
                   {searchResults.map((cert) => (
-                    <div key={cert.certificate_number} onClick={() => {setCertNumber(cert.certificate_number); setMode("verify"); setTimeout(() => document.querySelector("form").requestSubmit(), 100);}} style={{
+                    <div key={cert.certificate_number} onClick={() => {setCertNumber(cert.certificate_number); setMode("verify"); setTimeout(() => document.querySelector("form")?.requestSubmit(), 100);}} style={{
                       background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)",
                       borderRadius: "12px", padding: "16px", marginBottom: "8px", cursor: "pointer",
                       transition: "all 0.2s",
