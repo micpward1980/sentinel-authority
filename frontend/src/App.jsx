@@ -1,5 +1,6 @@
 import React, { useState, useEffect, createContext, useContext } from 'react';
 import BoundaryEditor from './components/BoundaryEditor';
+import QRCode from 'qrcode';
 import { BrowserRouter, Routes, Route, Navigate, Link, useNavigate, useLocation, useParams } from 'react-router-dom';
 import { FileText, Activity, Award, Users, Home, LogOut, Menu, X, CheckCircle, AlertTriangle, Clock, Search, Plus, ArrowLeft, ExternalLink, Shield, Download, RefreshCw, Eye, EyeOff, BookOpen, } from 'lucide-react';
 import axios from 'axios';
@@ -2186,6 +2187,33 @@ function VerifyPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [qrDataUrl, setQrDataUrl] = useState(null);
+  const [showQR, setShowQR] = useState(false);
+
+  const generateQR = async (certNum) => {
+    try {
+      const url = `${window.location.origin}/verify?cert=${certNum}`;
+      const dataUrl = await QRCode.toDataURL(url, {
+        width: 256,
+        margin: 2,
+        color: { dark: '#5B4B8A', light: '#ffffff' },
+        errorCorrectionLevel: 'H',
+      });
+      setQrDataUrl(dataUrl);
+    } catch (err) {
+      console.error('QR generation failed:', err);
+    }
+  };
+
+  const downloadQR = () => {
+    if (!qrDataUrl) return;
+    const link = document.createElement('a');
+    link.href = qrDataUrl;
+    link.download = `sentinel-${certNumber}-qr.png`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   // Auto-verify from URL param
   useEffect(() => {
@@ -2210,6 +2238,7 @@ function VerifyPage() {
     try {
       const res = await api.get(`/api/verify/${cn}`);
       setResult(res.data);
+      generateQR(cn);
       // Update URL without reload
       const url = new URL(window.location);
       url.searchParams.set('cert', cn);
@@ -2597,6 +2626,14 @@ function VerifyPage() {
                   }}>
                     {copied ? '✓ Copied!' : '⎘ Share Link'}
                   </button>
+                  <button onClick={() => setShowQR(!showQR)} style={{
+                    padding: '8px 16px', background: showQR ? 'rgba(91,75,138,0.25)' : 'rgba(255,255,255,0.05)', border: showQR ? '1px solid rgba(91,75,138,0.4)' : '1px solid rgba(255,255,255,0.1)',
+                    borderRadius: '8px', color: showQR ? styles.purpleBright : styles.textSecondary, cursor: 'pointer',
+                    fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase',
+                    display: 'flex', alignItems: 'center', gap: '6px'
+                  }}>
+                    {showQR ? '▾ Hide QR' : '◱ QR Code'}
+                  </button>
                   {isValid && (
                     <button onClick={fetchEvidence} style={{
                       padding: '8px 16px', background: 'rgba(91,75,138,0.15)', border: '1px solid rgba(91,75,138,0.3)',
@@ -2609,6 +2646,27 @@ function VerifyPage() {
                   )}
                 </div>
                 
+                {/* QR Code Panel */}
+                {showQR && qrDataUrl && (
+                  <div style={{marginTop: '16px', padding: '20px', background: 'rgba(0,0,0,0.2)', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.06)', textAlign: 'center'}}>
+                    <div style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Verification QR Code</div>
+                    <div style={{display: 'inline-block', padding: '12px', background: '#fff', borderRadius: '12px', boxShadow: '0 4px 20px rgba(0,0,0,0.3)'}}>
+                      <img src={qrDataUrl} alt="Verification QR Code" style={{width: '200px', height: '200px', display: 'block'}} />
+                    </div>
+                    <div style={{marginTop: '12px', display: 'flex', justifyContent: 'center', gap: '8px'}}>
+                      <button onClick={downloadQR} style={{
+                        padding: '6px 14px', background: 'rgba(91,75,138,0.15)', border: '1px solid rgba(91,75,138,0.3)',
+                        borderRadius: '6px', color: styles.purpleBright, cursor: 'pointer',
+                        fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1px', textTransform: 'uppercase',
+                        display: 'flex', alignItems: 'center', gap: '6px'
+                      }}>
+                        <Download size={12} /> Download PNG
+                      </button>
+                    </div>
+                    <p style={{fontSize: '11px', color: styles.textTertiary, marginTop: '12px', lineHeight: '1.5'}}>Scan to verify certificate {certNumber} on any device</p>
+                  </div>
+                )}
+
                 {/* Evidence Panel */}
                 {showEvidence && evidence && (
                   <div style={{marginTop: '16px', padding: '16px', background: 'rgba(0,0,0,0.2)', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.06)'}}>
