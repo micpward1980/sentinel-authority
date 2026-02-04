@@ -8,7 +8,7 @@ from pydantic import BaseModel, EmailStr
 from typing import Optional, Dict, Any
 
 from app.core.database import get_db
-from app.core.security import get_current_user
+from app.core.security import get_current_user, require_role
 from app.models.models import Application, AuditLog, ApplicationComment
 from app.services.audit_service import write_audit_log
 from app.services.email_service import (
