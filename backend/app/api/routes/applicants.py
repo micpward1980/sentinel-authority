@@ -379,3 +379,77 @@ async def delete_application(
     await db.commit()
     
     return {"message": "Application deleted"}
+
+
+# ═══ Bulk State Operations ═══
+
+@router.post("/bulk-state")
+async def bulk_update_state(
+    body: dict,
+    db: AsyncSession = Depends(get_db),
+    user: dict = Depends(get_current_user)
+):
+    """Bulk update application states. Admin only."""
+    if user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Admin only")
+    
+    ids = body.get("ids", [])
+    new_state = body.get("new_state")
+    
+    if not ids or not new_state:
+        raise HTTPException(status_code=400, detail="ids and new_state required")
+    
+    if len(ids) > 50:
+        raise HTTPException(status_code=400, detail="Max 50 at a time")
+    
+    results = {"success": [], "failed": []}
+    
+    for app_id in ids:
+        try:
+            result = await db.execute(select(Application).where(Application.id == app_id))
+            app = result.scalar_one_or_none()
+            if not app:
+                results["failed"].append({"id": app_id, "error": "Not found"})
+                continue
+            
+            old_state = app.state.value if hasattr(app.state, 'value') else str(app.state)
+            app.state = CertificationState(new_state)
+            app.reviewed_at = datetime.utcnow()
+            results["success"].append({"id": app_id, "old_state": old_state, "new_state": new_state})
+        except Exception as e:
+            results["failed"].append({"id": app_id, "error": str(e)})
+    
+    await db.commit()
+    
+    return {
+        "message": f"{len(results['success'])} updated, {len(results['failed'])} failed",
+        "results": results
+    }
+
+
+@router.post("/bulk-delete")
+async def bulk_delete_applications(
+    body: dict,
+    db: AsyncSession = Depends(get_db),
+    user: dict = Depends(get_current_user)
+):
+    """Bulk delete applications. Admin only."""
+    if user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Admin only")
+    
+    ids = body.get("ids", [])
+    if not ids:
+        raise HTTPException(status_code=400, detail="ids required")
+    if len(ids) > 50:
+        raise HTTPException(status_code=400, detail="Max 50 at a time")
+    
+    deleted = 0
+    for app_id in ids:
+        result = await db.execute(select(Application).where(Application.id == app_id))
+        app = result.scalar_one_or_none()
+        if app:
+            await db.delete(app)
+            deleted += 1
+    
+    await db.commit()
+    return {"message": f"{deleted} applications deleted", "deleted": deleted}

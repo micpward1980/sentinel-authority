@@ -1218,6 +1218,32 @@ function ApplicationsList() {
   const { user } = useAuth();
   const [applications, setApplications] = useState([]);
   const [filter, setFilter] = useState('all');
+  const [selected, setSelected] = useState(new Set());
+  const [bulkLoading, setBulkLoading] = useState(false);
+
+  const toggleSelect = (id) => setSelected(prev => { const s = new Set(prev); s.has(id) ? s.delete(id) : s.add(id); return s; });
+  const selectAll = () => setSelected(new Set(filtered.map(a => a.id)));
+  const selectNone = () => setSelected(new Set());
+
+  const handleBulkAction = async (action, newState) => {
+    const ids = [...selected];
+    if (ids.length === 0) return;
+    const label = action === 'delete' ? `Delete ${ids.length} application(s)?` : `${action} ${ids.length} application(s)?`;
+    if (!window.confirm(label)) return;
+    setBulkLoading(true);
+    try {
+      if (action === 'delete') {
+        await api.post('/api/applications/bulk-delete', { ids });
+      } else {
+        await api.post('/api/applications/bulk-state', { ids, new_state: newState });
+      }
+      setSelected(new Set());
+      loadApps();
+    } catch (err) {
+      alert('Bulk operation failed: ' + (err.response?.data?.detail || err.message));
+    }
+    setBulkLoading(false);
+  };
 
   const loadApps = () => {
     api.get('/api/applications/').then(res => setApplications(res.data)).catch(console.error);
@@ -1291,6 +1317,7 @@ function ApplicationsList() {
         <table className="w-full">
           <thead>
             <tr style={{borderBottom: `1px solid ${styles.borderGlass}`}}>
+              {user?.role === 'admin' && <th className="px-2 py-3 text-center" style={{width: '40px'}}><input type="checkbox" checked={selected.size > 0 && selected.size === filtered.length} onChange={e => e.target.checked ? selectAll() : selectNone()} style={{cursor: 'pointer', accentColor: styles.purpleBright}} /></th>}
               <th className="px-4 py-3 text-left" style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>System Name</th>
               <th className="px-4 py-3 text-left" style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>Organization</th>
               <th className="px-4 py-3 text-left" style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>State</th>
@@ -1300,7 +1327,8 @@ function ApplicationsList() {
           </thead>
           <tbody>
             {filtered.map((app) => (
-              <tr key={app.id} className="transition-colors" style={{borderBottom: `1px solid ${styles.borderGlass}`}}>
+              <tr key={app.id} className="transition-colors" style={{borderBottom: `1px solid ${styles.borderGlass}`, background: selected.has(app.id) ? 'rgba(157,140,207,0.08)' : 'transparent'}}>
+                {user?.role === 'admin' && <td className="px-2 py-4 text-center"><input type="checkbox" checked={selected.has(app.id)} onChange={() => toggleSelect(app.id)} style={{cursor: 'pointer', accentColor: styles.purpleBright}} /></td>}
                 <td className="px-4 py-4">
                   <Link to={`/applications/${app.id}`} style={{color: styles.purpleBright, textDecoration: 'none'}}>{app.system_name}</Link>
                   <div style={{fontSize: '11px', color: styles.textTertiary, fontFamily: "'IBM Plex Mono', monospace", marginTop: '2px'}}>{app.application_number}</div>
@@ -1346,6 +1374,32 @@ function ApplicationsList() {
             ))}
           </tbody>
         </table>
+        {/* Bulk Action Bar */}
+        {selected.size > 0 && user?.role === 'admin' && (
+          <div style={{
+            position: 'sticky', bottom: '16px', zIndex: 50,
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            padding: '12px 20px', margin: '16px',
+            background: 'rgba(18,12,30,0.95)', backdropFilter: 'blur(12px)',
+            border: `1px solid ${styles.purpleBright}`, borderRadius: '12px',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
+          }}>
+            <span style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '12px', color: styles.purpleBright}}>
+              {selected.size} selected
+            </span>
+            <div style={{display: 'flex', gap: '8px', alignItems: 'center'}}>
+              <button onClick={() => handleBulkAction('approve', 'approved')} disabled={bulkLoading} style={{padding: '6px 14px', borderRadius: '6px', background: 'rgba(92,214,133,0.15)', border: '1px solid rgba(92,214,133,0.3)', color: styles.accentGreen, fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>Approve</button>
+              <button onClick={() => handleBulkAction('review', 'under_review')} disabled={bulkLoading} style={{padding: '6px 14px', borderRadius: '6px', background: 'rgba(214,160,92,0.15)', border: '1px solid rgba(214,160,92,0.3)', color: '#D6A05C', fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>Review</button>
+              <button onClick={() => handleBulkAction('suspend', 'suspended')} disabled={bulkLoading} style={{padding: '6px 14px', borderRadius: '6px', background: 'rgba(214,92,92,0.1)', border: '1px solid rgba(214,92,92,0.3)', color: '#D65C5C', fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>Suspend</button>
+              <button onClick={() => handleBulkAction('reinstate', 'pending')} disabled={bulkLoading} style={{padding: '6px 14px', borderRadius: '6px', background: 'rgba(92,214,133,0.1)', border: '1px solid rgba(92,214,133,0.3)', color: styles.accentGreen, fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>Reinstate</button>
+              <div style={{width: '1px', height: '20px', background: styles.borderGlass, margin: '0 4px'}} />
+              <button onClick={() => handleBulkAction('delete')} disabled={bulkLoading} style={{padding: '6px 14px', borderRadius: '6px', background: 'rgba(214,92,92,0.1)', border: '1px solid rgba(214,92,92,0.3)', color: '#D65C5C', fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>Delete</button>
+              <button onClick={selectNone} style={{padding: '6px 14px', borderRadius: '6px', background: 'rgba(255,255,255,0.05)', border: `1px solid ${styles.borderGlass}`, color: styles.textTertiary, fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>Cancel</button>
+              {bulkLoading && <span style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary}}>Processing...</span>}
+            </div>
+          </div>
+        )}
+
         {filtered.length === 0 && (
           <div className="text-center py-12" style={{color: styles.textTertiary}}>
             {filter === 'all' ? 'No applications yet' : `No ${filter.replace('_', ' ')} applications`}
