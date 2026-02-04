@@ -754,59 +754,130 @@ function CustomerDashboard() {
     });
   }, []);
 
+  const STAGES = [
+    { key: 'pending', label: 'Submitted' },
+    { key: 'under_review', label: 'In Review' },
+    { key: 'approved', label: 'Approved' },
+    { key: 'testing', label: 'Testing' },
+    { key: 'conformant', label: 'Conformant' },
+  ];
+
+  const stageIdx = (state) => STAGES.findIndex(s => s.key === state);
+
+  const nextAction = (state) => {
+    switch(state) {
+      case 'pending': return 'Awaiting review';
+      case 'under_review': return 'Under evaluation';
+      case 'approved': return 'Preparing CAT-72';
+      case 'testing': return 'Test in progress';
+      case 'conformant': return 'Certificate issued';
+      case 'revoked': return 'Suspended';
+      default: return 'Pending';
+    }
+  };
+
+  const stateColor = (state) => {
+    if (state === 'conformant') return styles.accentGreen;
+    if (state === 'revoked' || state === 'suspended') return styles.accentRed;
+    if (state === 'testing' || state === 'approved') return styles.purpleBright;
+    return styles.accentAmber;
+  };
+
   if (loading) return <div style={{color: styles.textTertiary, padding: '40px', textAlign: 'center'}}>Loading...</div>;
 
   return (
     <div className="space-y-6">
-      <div>
-        <p style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', color: styles.purpleBright, marginBottom: '8px'}}>Welcome</p>
-        <h1 style={{fontFamily: "'Source Serif 4', serif", fontSize: '36px', fontWeight: 200, margin: 0}}>Your Dashboard</h1>
-        <p style={{color: styles.textSecondary, marginTop: '8px'}}>Track your ODDC certification progress</p>
+      {/* Header */}
+      <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start'}}>
+        <div>
+          <p style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', color: styles.purpleBright, marginBottom: '8px'}}>ODDC Certification</p>
+          <h1 style={{fontFamily: "'Source Serif 4', serif", fontSize: '36px', fontWeight: 200, margin: 0}}>Welcome{user?.full_name ? `, ${user.full_name.split(' ')[0]}` : ''}</h1>
+          <p style={{color: styles.textSecondary, marginTop: '8px'}}>Track your certification progress and manage your systems.</p>
+        </div>
+        <Link to="/applications/new" className="flex items-center gap-2 px-5 py-3 rounded-lg no-underline" style={{background: styles.purplePrimary, border: `1px solid ${styles.purpleBright}`, color: '#fff', fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', whiteSpace: 'nowrap'}}>
+          <Plus className="w-4 h-4" />
+          New Application
+        </Link>
       </div>
 
       {/* Quick Stats */}
-      <div style={{display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px'}}>
+      <div style={{display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px'}}>
         <Panel>
-          <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px 12px'}}>
-            <div style={{fontFamily: styles.serif, fontSize: '36px', fontWeight: 200, color: styles.purpleBright, lineHeight: '43px'}}>{applications.length}</div>
-            <div style={{fontFamily: styles.mono, fontSize: '11px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px', marginTop: '8px'}}>Applications</div>
+          <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '20px 12px'}}>
+            <div style={{fontFamily: styles.serif, fontSize: '32px', fontWeight: 200, color: styles.purpleBright, lineHeight: '38px'}}>{applications.length}</div>
+            <div style={{fontFamily: styles.mono, fontSize: '10px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px', marginTop: '6px'}}>Applications</div>
           </div>
         </Panel>
         <Panel>
-          <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px 12px'}}>
-            <div style={{fontFamily: styles.serif, fontSize: '36px', fontWeight: 200, color: styles.accentGreen, lineHeight: '43px'}}>{certificates.length}</div>
-            <div style={{fontFamily: styles.mono, fontSize: '11px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px', marginTop: '8px'}}>Certificates</div>
+          <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '20px 12px'}}>
+            <div style={{fontFamily: styles.serif, fontSize: '32px', fontWeight: 200, color: styles.accentGreen, lineHeight: '38px'}}>{certificates.length}</div>
+            <div style={{fontFamily: styles.mono, fontSize: '10px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px', marginTop: '6px'}}>Certificates</div>
           </div>
         </Panel>
         <Panel>
-          <a href="https://sentinel-website-eta.vercel.app/status.html" target="_blank" rel="noopener noreferrer" style={{textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px 12px'}}>
-            <div style={{height: '43px', display: 'flex', alignItems: 'center', justifyContent: 'center'}}><Activity size={36} style={{color: styles.purpleBright}} /></div>
-            <div style={{fontFamily: styles.mono, fontSize: '11px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px', marginTop: '8px'}}>Check Test Status</div>
+          <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '20px 12px'}}>
+            <div style={{fontFamily: styles.serif, fontSize: '32px', fontWeight: 200, color: styles.accentAmber, lineHeight: '38px'}}>{applications.filter(a => a.state === 'testing').length}</div>
+            <div style={{fontFamily: styles.mono, fontSize: '10px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px', marginTop: '6px'}}>Active Tests</div>
+          </div>
+        </Panel>
+        <Panel>
+          <a href="https://sentinel-website-eta.vercel.app/status.html" target="_blank" rel="noopener noreferrer" style={{textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '20px 12px'}}>
+            <div style={{height: '38px', display: 'flex', alignItems: 'center', justifyContent: 'center'}}><Activity size={32} style={{color: styles.purpleBright}} /></div>
+            <div style={{fontFamily: styles.mono, fontSize: '10px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px', marginTop: '6px'}}>Live Status</div>
           </a>
         </Panel>
       </div>
 
-      {/* Applications */}
+      {/* Applications with Progress */}
       <Panel>
-        <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Your Applications</h2>
+        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px'}}>
+          <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, margin: 0}}>Your Applications</h2>
+          {applications.length > 0 && (
+            <Link to="/applications" style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', color: styles.purpleBright, textDecoration: 'none', letterSpacing: '1px'}}>View All →</Link>
+          )}
+        </div>
         {applications.length === 0 ? (
-          <div style={{textAlign: 'center', padding: '40px', color: styles.textTertiary}}>
-            <p style={{marginBottom: '16px'}}>No applications yet</p>
+          <div style={{textAlign: 'center', padding: '48px 20px'}}>
+            <div style={{fontSize: '48px', marginBottom: '16px', opacity: 0.3}}>⬡</div>
+            <p style={{color: styles.textSecondary, fontSize: '15px', marginBottom: '8px'}}>No applications yet</p>
+            <p style={{color: styles.textTertiary, fontSize: '13px', marginBottom: '24px'}}>Start your ODDC certification journey by submitting your first application.</p>
+            <Link to="/applications/new" className="inline-flex items-center gap-2 px-6 py-3 rounded-lg no-underline" style={{background: styles.purplePrimary, border: `1px solid ${styles.purpleBright}`, color: '#fff', fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase'}}>
+              <Plus className="w-4 h-4" />
+              Begin ODDC Certification
+            </Link>
           </div>
         ) : (
-          <div className="space-y-3">
-            {applications.map(app => (
-              <div key={app.id} style={{padding: '16px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-                <div>
-                  <div style={{fontWeight: 500, marginBottom: '4px'}}>{app.system_name}</div>
-                  <div style={{fontSize: '12px', color: styles.textTertiary}}>{app.application_number}</div>
-                </div>
-                <span style={{padding: '4px 12px', borderRadius: '4px', fontSize: '11px', fontFamily: "'IBM Plex Mono', monospace", textTransform: 'uppercase',
-                  background: app.status === 'certified' ? 'rgba(92,214,133,0.15)' : app.status === 'testing' ? 'rgba(157,140,207,0.15)' : 'rgba(214,160,92,0.15)',
-                  color: app.status === 'certified' ? styles.accentGreen : app.status === 'testing' ? styles.purpleBright : styles.accentAmber
-                }}>{app.status || 'pending'}</span>
-              </div>
-            ))}
+          <div className="space-y-4">
+            {applications.map(app => {
+              const idx = stageIdx(app.state);
+              return (
+                <Link key={app.id} to={`/applications/${app.id}`} style={{textDecoration: 'none', display: 'block'}}>
+                  <div style={{padding: '20px', background: 'rgba(0,0,0,0.2)', borderRadius: '10px', border: `1px solid ${styles.borderGlass}`, cursor: 'pointer', transition: 'border-color 0.2s'}} onMouseEnter={e => e.currentTarget.style.borderColor = styles.purpleBright} onMouseLeave={e => e.currentTarget.style.borderColor = styles.borderGlass}>
+                    {/* Top row: name + badge */}
+                    <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px'}}>
+                      <div>
+                        <div style={{fontWeight: 500, color: styles.textPrimary, fontSize: '15px', marginBottom: '4px'}}>{app.system_name}</div>
+                        <div style={{fontSize: '11px', color: styles.textTertiary, fontFamily: "'IBM Plex Mono', monospace"}}>{app.application_number} · {app.system_type?.replace(/_/g, ' ')}</div>
+                      </div>
+                      <div style={{display: 'flex', alignItems: 'center', gap: '12px'}}>
+                        <span style={{fontSize: '12px', color: styles.textTertiary}}>{nextAction(app.state)}</span>
+                        <span style={{padding: '4px 12px', borderRadius: '4px', fontSize: '10px', fontFamily: "'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '1px',
+                          background: `${stateColor(app.state)}20`,
+                          color: stateColor(app.state),
+                          border: `1px solid ${stateColor(app.state)}40`,
+                        }}>{app.state}</span>
+                      </div>
+                    </div>
+                    {/* Mini progress bar */}
+                    <div style={{display: 'flex', gap: '3px', height: '4px'}}>
+                      {STAGES.map((s, i) => (
+                        <div key={s.key} style={{flex: 1, borderRadius: '2px', background: i <= idx ? stateColor(app.state) : 'rgba(255,255,255,0.05)'}} />
+                      ))}
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         )}
       </Panel>
@@ -817,35 +888,41 @@ function CustomerDashboard() {
           <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Your Certificates</h2>
           <div className="space-y-3">
             {certificates.map(cert => (
-              <div key={cert.id} style={{padding: '16px', background: 'rgba(92,214,133,0.1)', border: '1px solid rgba(92,214,133,0.2)', borderRadius: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+              <div key={cert.id} style={{padding: '16px', background: 'rgba(92,214,133,0.08)', border: '1px solid rgba(92,214,133,0.2)', borderRadius: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
                 <div>
-                  <div style={{fontWeight: 500, color: styles.accentGreen, marginBottom: '4px'}}>{cert.certificate_number}</div>
-                  <div style={{fontSize: '12px', color: styles.textTertiary}}>Issued: {new Date(cert.issued_at).toLocaleDateString()}</div>
+                  <div style={{fontWeight: 500, color: styles.accentGreen, marginBottom: '4px', fontFamily: "'IBM Plex Mono', monospace", fontSize: '14px'}}>{cert.certificate_number}</div>
+                  <div style={{fontSize: '12px', color: styles.textTertiary}}>Issued: {new Date(cert.issued_at).toLocaleDateString()}{cert.expires_at ? ` · Expires: ${new Date(cert.expires_at).toLocaleDateString()}` : ''}</div>
                 </div>
-                <a href={`https://sentinel-authority-production.up.railway.app/api/applications/${cert.application_id}/certificate/download`} 
-                   target="_blank"
-                   style={{padding: '8px 16px', background: styles.purplePrimary, borderRadius: '6px', color: '#fff', fontSize: '11px', fontFamily: "'IBM Plex Mono', monospace", textDecoration: 'none'}}>
-                  Download PDF
-                </a>
+                <div style={{display: 'flex', gap: '8px'}}>
+                  <a href={`https://sentinel-authority-production.up.railway.app/api/applications/${cert.application_id}/certificate/download`}
+                     target="_blank"
+                     style={{padding: '8px 16px', background: styles.purplePrimary, borderRadius: '6px', color: '#fff', fontSize: '11px', fontFamily: "'IBM Plex Mono', monospace", textDecoration: 'none'}}>
+                    Download PDF
+                  </a>
+                </div>
               </div>
             ))}
           </div>
         </Panel>
       )}
 
-      {/* Help */}
+      {/* Resources */}
       <Panel>
-        <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Need Help?</h2>
-        <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px'}}>
+        <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Resources</h2>
+        <div style={{display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px'}}>
           {certificates.some(c => c.status === 'issued' || c.status === 'active') && (
-          <a href="https://sentinelauthority.org/agent.html" target="_blank" style={{padding: '16px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px', textDecoration: 'none', color: styles.textSecondary}}>
-            <div style={{fontWeight: 500, marginBottom: '4px', color: styles.textPrimary}}>ENVELO Agent Setup</div>
-            <div style={{fontSize: '12px'}}>Installation and configuration guide</div>
+          <a href="https://sentinelauthority.org/agent.html" target="_blank" style={{padding: '16px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px', textDecoration: 'none', color: styles.textSecondary, border: `1px solid ${styles.borderGlass}`}}>
+            <div style={{fontWeight: 500, marginBottom: '4px', color: styles.textPrimary, fontSize: '13px'}}>ENVELO Agent Setup</div>
+            <div style={{fontSize: '11px'}}>Installation & configuration guide</div>
           </a>
           )}
-          <a href="mailto:info@sentinelauthority.org" style={{padding: '16px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px', textDecoration: 'none', color: styles.textSecondary}}>
-            <div style={{fontWeight: 500, marginBottom: '4px', color: styles.textPrimary}}>Contact Support</div>
-            <div style={{fontSize: '12px'}}>info@sentinelauthority.org</div>
+          <a href="https://sentinelauthority.org" target="_blank" style={{padding: '16px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px', textDecoration: 'none', color: styles.textSecondary, border: `1px solid ${styles.borderGlass}`}}>
+            <div style={{fontWeight: 500, marginBottom: '4px', color: styles.textPrimary, fontSize: '13px'}}>ODDC Framework</div>
+            <div style={{fontSize: '11px'}}>Certification overview & requirements</div>
+          </a>
+          <a href="mailto:info@sentinelauthority.org" style={{padding: '16px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px', textDecoration: 'none', color: styles.textSecondary, border: `1px solid ${styles.borderGlass}`}}>
+            <div style={{fontWeight: 500, marginBottom: '4px', color: styles.textPrimary, fontSize: '13px'}}>Contact Support</div>
+            <div style={{fontSize: '11px'}}>info@sentinelauthority.org</div>
           </a>
         </div>
       </Panel>
@@ -1042,6 +1119,7 @@ function ApplicationsList() {
 
 // New Application Form — Multi-step wizard with structured boundary config
 function NewApplication() {
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const totalSteps = 6;
@@ -1054,165 +1132,136 @@ function NewApplication() {
   const [timeBounds, setTimeBounds] = useState([{ name: '', start_hour: '6', end_hour: '22', timezone: 'America/Chicago', days: [0,1,2,3,4,5,6] }]);
   const [stateBounds, setStateBounds] = useState([{ name: '', parameter: '', allowed_values: '', forbidden_values: '' }]);
   const [safety, setSafety] = useState({ violation_action: 'stop', connection_loss_action: 'stop', fail_closed: true, emergency_contact_name: '', emergency_contact_phone: '', emergency_contact_email: '', existing_safety_systems: '', escalation_triggers: '' });
-  
-  // ═══ SYSTEM TYPE TEMPLATES ═══
-  const boundaryTemplates = {
-    mobile_robot: {
-      label: 'Mobile Robot / AMR',
-      numeric: [
-        { name: 'Speed Limit', parameter: 'speed', min_value: '0', max_value: '2', hard_limit: '3', unit: 'm/s', tolerance: '0.1' },
-        { name: 'Payload Weight', parameter: 'payload_kg', min_value: '0', max_value: '500', hard_limit: '600', unit: 'kg', tolerance: '5' },
-        { name: 'Battery Level', parameter: 'battery_pct', min_value: '10', max_value: '100', hard_limit: '5', unit: '%', tolerance: '1' },
-        { name: 'Obstacle Distance', parameter: 'nearest_obstacle_m', min_value: '0.5', max_value: '100', hard_limit: '0.3', unit: 'm', tolerance: '0.05' },
-      ],
-      geo: [{ name: 'Operating Zone', boundary_type: 'circle', lat: '', lon: '', radius_meters: '500', altitude_min: '', altitude_max: '' }],
-      time: [{ name: 'Operating Hours', start_hour: '6', end_hour: '22', timezone: 'America/Chicago', days: [1,2,3,4,5] }],
-      state: [
-        { name: 'Mode Check', parameter: 'operating_mode', allowed_values: 'autonomous, semi-autonomous, idle', forbidden_values: 'manual_override, maintenance' },
-        { name: 'E-Stop Status', parameter: 'estop', allowed_values: 'released', forbidden_values: 'triggered, fault' },
-      ],
-      odd: { odd_description: 'Indoor autonomous mobile robot operating in a warehouse/logistics environment. Navigates defined paths to transport goods between stations. Operates on flat concrete surfaces with mapped routes.', deployment_type: 'indoor', environment: 'warehouse' },
-      safety: { violation_action: 'stop', connection_loss_action: 'stop', fail_closed: true },
-    },
-    industrial_arm: {
-      label: 'Industrial Robot Arm',
-      numeric: [
-        { name: 'Joint Speed', parameter: 'joint_velocity_deg_s', min_value: '0', max_value: '180', hard_limit: '250', unit: 'deg/s', tolerance: '2' },
-        { name: 'TCP Force', parameter: 'tcp_force_n', min_value: '0', max_value: '150', hard_limit: '200', unit: 'N', tolerance: '5' },
-        { name: 'Reach Radius', parameter: 'reach_mm', min_value: '0', max_value: '1500', hard_limit: '1600', unit: 'mm', tolerance: '10' },
-        { name: 'Payload', parameter: 'payload_kg', min_value: '0', max_value: '20', hard_limit: '25', unit: 'kg', tolerance: '0.5' },
-      ],
-      geo: [{ name: 'Work Cell', boundary_type: 'circle', lat: '', lon: '', radius_meters: '10', altitude_min: '', altitude_max: '' }],
-      time: [{ name: 'Production Hours', start_hour: '6', end_hour: '22', timezone: 'America/Chicago', days: [1,2,3,4,5] }],
-      state: [
-        { name: 'Safety Mode', parameter: 'safety_mode', allowed_values: 'automatic, t1_manual', forbidden_values: 'estop, fault, suspended' },
-      ],
-      odd: { odd_description: 'Industrial robot arm operating in a fixed work cell on a manufacturing floor. Performs repetitive pick-and-place, welding, or assembly tasks within a defined safety zone.', deployment_type: 'indoor', environment: 'manufacturing' },
-      safety: { violation_action: 'stop', connection_loss_action: 'stop', fail_closed: true },
-    },
-    drone: {
-      label: 'Drone / UAV',
-      numeric: [
-        { name: 'Altitude Limit', parameter: 'altitude_m', min_value: '0', max_value: '120', hard_limit: '122', unit: 'm AGL', tolerance: '2' },
-        { name: 'Ground Speed', parameter: 'ground_speed_ms', min_value: '0', max_value: '15', hard_limit: '20', unit: 'm/s', tolerance: '0.5' },
-        { name: 'Wind Speed', parameter: 'wind_speed_ms', min_value: '0', max_value: '10', hard_limit: '12', unit: 'm/s', tolerance: '0.5' },
-        { name: 'Battery Voltage', parameter: 'battery_v', min_value: '21', max_value: '25.2', hard_limit: '20', unit: 'V', tolerance: '0.2' },
-      ],
-      geo: [{ name: 'Flight Zone', boundary_type: 'circle', lat: '', lon: '', radius_meters: '1000', altitude_min: '0', altitude_max: '120' }],
-      time: [{ name: 'Daylight Operations', start_hour: '7', end_hour: '19', timezone: 'America/Chicago', days: [0,1,2,3,4,5,6] }],
-      state: [
-        { name: 'Flight Mode', parameter: 'flight_mode', allowed_values: 'autonomous, guided, rtl, loiter', forbidden_values: 'manual, acro' },
-        { name: 'GPS Fix', parameter: 'gps_fix_type', allowed_values: '3d_fix, rtk_fixed, rtk_float', forbidden_values: 'no_fix, 2d_fix' },
-      ],
-      odd: { odd_description: 'Unmanned aerial vehicle operating in controlled airspace. Performs survey, inspection, or delivery missions within a defined geographic zone during daylight hours. Subject to FAA Part 107 regulations.', deployment_type: 'outdoor', environment: 'airspace' },
-      safety: { violation_action: 'revert', connection_loss_action: 'stop', fail_closed: true },
-    },
-    autonomous_vehicle: {
-      label: 'Autonomous Vehicle',
-      numeric: [
-        { name: 'Vehicle Speed', parameter: 'speed_mph', min_value: '0', max_value: '35', hard_limit: '40', unit: 'mph', tolerance: '1' },
-        { name: 'Following Distance', parameter: 'following_dist_m', min_value: '5', max_value: '100', hard_limit: '3', unit: 'm', tolerance: '0.5' },
-        { name: 'Steering Angle', parameter: 'steering_deg', min_value: '-45', max_value: '45', hard_limit: '50', unit: 'deg', tolerance: '1' },
-        { name: 'Visibility', parameter: 'visibility_m', min_value: '50', max_value: '10000', hard_limit: '30', unit: 'm', tolerance: '5' },
-      ],
-      geo: [{ name: 'Operating Route', boundary_type: 'circle', lat: '', lon: '', radius_meters: '5000', altitude_min: '', altitude_max: '' }],
-      time: [{ name: 'Operating Hours', start_hour: '5', end_hour: '23', timezone: 'America/Chicago', days: [0,1,2,3,4,5,6] }],
-      state: [
-        { name: 'Drive Mode', parameter: 'autonomy_level', allowed_values: 'l4_autonomous, l3_conditional', forbidden_values: 'manual, disengaged, fault' },
-        { name: 'Weather', parameter: 'weather_condition', allowed_values: 'clear, cloudy, light_rain', forbidden_values: 'heavy_rain, snow, ice, fog' },
-      ],
-      odd: { odd_description: 'Autonomous vehicle operating on defined public or private roads. Navigates within a geo-fenced route with speed and weather constraints. Subject to local traffic regulations.', deployment_type: 'outdoor', environment: 'road' },
-      safety: { violation_action: 'handoff', connection_loss_action: 'degrade', fail_closed: true },
-    },
-    agv: {
-      label: 'Automated Guided Vehicle',
-      numeric: [
-        { name: 'Travel Speed', parameter: 'speed_ms', min_value: '0', max_value: '1.5', hard_limit: '2', unit: 'm/s', tolerance: '0.1' },
-        { name: 'Load Weight', parameter: 'load_kg', min_value: '0', max_value: '2000', hard_limit: '2500', unit: 'kg', tolerance: '10' },
-        { name: 'Path Deviation', parameter: 'path_deviation_mm', min_value: '0', max_value: '50', hard_limit: '100', unit: 'mm', tolerance: '5' },
-      ],
-      geo: [{ name: 'Facility Zone', boundary_type: 'circle', lat: '', lon: '', radius_meters: '200', altitude_min: '', altitude_max: '' }],
-      time: [{ name: 'Shift Hours', start_hour: '0', end_hour: '24', timezone: 'America/Chicago', days: [0,1,2,3,4,5,6] }],
-      state: [
-        { name: 'Navigation', parameter: 'nav_status', allowed_values: 'on_path, docking, charging', forbidden_values: 'lost, obstacle_stuck, fault' },
-      ],
-      odd: { odd_description: 'Automated guided vehicle following fixed paths in an indoor facility. Transports materials between predefined stations on flat surfaces along magnetic tape, painted lines, or mapped routes.', deployment_type: 'indoor', environment: 'warehouse' },
-      safety: { violation_action: 'stop', connection_loss_action: 'stop', fail_closed: true },
-    },
-    cobot: {
-      label: 'Collaborative Robot',
-      numeric: [
-        { name: 'TCP Speed', parameter: 'tcp_speed_ms', min_value: '0', max_value: '0.25', hard_limit: '0.5', unit: 'm/s', tolerance: '0.01' },
-        { name: 'Contact Force', parameter: 'contact_force_n', min_value: '0', max_value: '80', hard_limit: '150', unit: 'N', tolerance: '2' },
-        { name: 'Power Limit', parameter: 'power_w', min_value: '0', max_value: '80', hard_limit: '100', unit: 'W', tolerance: '2' },
-      ],
-      geo: [{ name: 'Workspace', boundary_type: 'circle', lat: '', lon: '', radius_meters: '5', altitude_min: '', altitude_max: '' }],
-      time: [{ name: 'Production Schedule', start_hour: '6', end_hour: '22', timezone: 'America/Chicago', days: [1,2,3,4,5] }],
-      state: [
-        { name: 'Collaboration Mode', parameter: 'collab_mode', allowed_values: 'power_force_limiting, speed_separation, hand_guiding', forbidden_values: 'full_speed, unconstrained' },
-      ],
-      odd: { odd_description: 'Collaborative robot working alongside human operators in a shared workspace. Performs assembly, inspection, or material handling tasks with ISO/TS 15066 safety compliance for human-robot interaction.', deployment_type: 'indoor', environment: 'manufacturing' },
-      safety: { violation_action: 'stop', connection_loss_action: 'stop', fail_closed: true },
-    },
-    clinical_ai: {
-      label: 'Clinical AI / Decision Support',
-      numeric: [
-        { name: 'Confidence Score', parameter: 'confidence_pct', min_value: '85', max_value: '100', hard_limit: '80', unit: '%', tolerance: '1' },
-        { name: 'Response Time', parameter: 'response_ms', min_value: '0', max_value: '5000', hard_limit: '10000', unit: 'ms', tolerance: '100' },
-        { name: 'Requests Per Minute', parameter: 'rpm', min_value: '0', max_value: '100', hard_limit: '150', unit: 'req/min', tolerance: '5' },
-      ],
-      geo: [],
-      time: [{ name: 'Clinical Hours', start_hour: '0', end_hour: '24', timezone: 'America/Chicago', days: [0,1,2,3,4,5,6] }],
-      state: [
-        { name: 'System Status', parameter: 'system_status', allowed_values: 'active, standby', forbidden_values: 'degraded, offline, training_mode' },
-        { name: 'Model Version', parameter: 'model_version_approved', allowed_values: 'true', forbidden_values: 'false' },
-      ],
-      odd: { odd_description: 'Clinical AI decision support system operating within a healthcare facility. Provides diagnostic suggestions, treatment recommendations, or clinical workflow automation. Requires human physician oversight for all patient-facing decisions.', deployment_type: 'virtual', environment: 'clinical' },
-      safety: { violation_action: 'alert', connection_loss_action: 'degrade', fail_closed: true },
-    },
-    data_center: {
-      label: 'Data Center Automation',
-      numeric: [
-        { name: 'CPU Utilization', parameter: 'cpu_pct', min_value: '0', max_value: '85', hard_limit: '95', unit: '%', tolerance: '2' },
-        { name: 'Temperature', parameter: 'ambient_temp_f', min_value: '64', max_value: '80', hard_limit: '85', unit: 'F', tolerance: '1' },
-        { name: 'API Rate', parameter: 'api_rps', min_value: '0', max_value: '10000', hard_limit: '15000', unit: 'req/s', tolerance: '100' },
-        { name: 'Memory Usage', parameter: 'memory_pct', min_value: '0', max_value: '80', hard_limit: '90', unit: '%', tolerance: '2' },
-      ],
-      geo: [],
-      time: [{ name: 'Always On', start_hour: '0', end_hour: '24', timezone: 'UTC', days: [0,1,2,3,4,5,6] }],
-      state: [
-        { name: 'Cluster Health', parameter: 'cluster_status', allowed_values: 'healthy, scaling', forbidden_values: 'degraded, split_brain, offline' },
-      ],
-      odd: { odd_description: 'Automated data center management system controlling resource allocation, scaling, and infrastructure operations. Manages compute, storage, and networking resources within defined performance and safety envelopes.', deployment_type: 'virtual', environment: 'data_center' },
-      safety: { violation_action: 'alert', connection_loss_action: 'continue', fail_closed: false },
-    },
-  };
+  const [submitted, setSubmitted] = useState(false);
 
-  const applyTemplate = (systemType) => {
-    const t = boundaryTemplates[systemType];
-    if (!t) return;
-    
-    const hasBounds = numericBounds.some(b => b.name) || geoBounds.some(b => b.name) || stateBounds.some(b => b.name);
-    if (hasBounds && !window.confirm('Load recommended boundaries for ' + t.label + '? This will replace your current entries.')) return;
-    
-    setNumericBounds(t.numeric.length > 0 ? t.numeric : [{ name: '', parameter: '', min_value: '', max_value: '', hard_limit: '', unit: '', tolerance: '' }]);
-    setGeoBounds(t.geo.length > 0 ? t.geo : [{ name: '', boundary_type: 'circle', lat: '', lon: '', radius_meters: '', altitude_min: '', altitude_max: '' }]);
-    setTimeBounds(t.time.length > 0 ? t.time : [{ name: '', start_hour: '6', end_hour: '22', timezone: 'America/Chicago', days: [0,1,2,3,4,5,6] }]);
-    setStateBounds(t.state.length > 0 ? t.state : [{ name: '', parameter: '', allowed_values: '', forbidden_values: '' }]);
-    
-    if (t.odd) {
-      setOdd(prev => ({
+  // Pre-fill org from user profile
+  useEffect(() => {
+    if (user) {
+      setOrg(prev => ({
         ...prev,
-        odd_description: prev.odd_description || t.odd.odd_description || '',
-      }));
-      setSys(prev => ({
-        ...prev,
-        deployment_type: prev.deployment_type || t.odd.deployment_type || '',
-        environment: prev.environment || t.odd.environment || '',
+        contact_name: prev.contact_name || user.full_name || '',
+        contact_email: prev.contact_email || user.email || '',
+        organization_name: prev.organization_name || user.organization_name || '',
       }));
     }
+  }, [user]);
+  
+  // ═══ SYSTEM TYPE TEMPLATES ═══
+  // boundaryTemplates moved to systemTypesData.js (124 system types)
+
+  const applyTemplate = (systemType) => {
+    const st = SYSTEM_TYPES[systemType];
+    if (!st || !st.template) return;
+    const t = st.template;
+
+    // ── Numeric Boundaries ──
+    // Template format: [{ name, min, max, unit, tolerance }]
+    // State format:    [{ name, parameter, min_value, max_value, hard_limit, unit, tolerance }]
+    if (t.numeric && t.numeric.length > 0) {
+      setNumericBounds(t.numeric.map(n => ({
+        name: n.name.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
+        parameter: n.name,
+        min_value: n.min != null ? String(n.min) : '',
+        max_value: n.max != null ? String(n.max) : '',
+        hard_limit: n.max != null ? String(n.max) : '',
+        unit: n.unit || '',
+        tolerance: n.tolerance != null ? String(n.tolerance) : '',
+      })));
+    } else {
+      setNumericBounds([{ name: '', parameter: '', min_value: '', max_value: '', hard_limit: '', unit: '', tolerance: '' }]);
+    }
+
+    // ── Geographic Boundaries ──
+    // Template format: { type, description }
+    // State format:    [{ name, boundary_type, lat, lon, radius_meters, altitude_min, altitude_max }]
+    if (t.geo) {
+      setGeoBounds([{
+        name: 'Primary Operating Zone',
+        boundary_type: (t.geo.type === 'polygon' || t.geo.type === 'polygon_3d') ? 'polygon' : 'circle',
+        lat: '', lon: '', radius_meters: '',
+        altitude_min: '', altitude_max: '',
+      }]);
+    } else {
+      setGeoBounds([{ name: '', boundary_type: 'circle', lat: '', lon: '', radius_meters: '', altitude_min: '', altitude_max: '' }]);
+    }
+
+    // ── Time Boundaries ──
+    // Template format: { operating_hours: 'HH:MM-HH:MM', operating_days: [...], timezone }
+    // State format:    [{ name, start_hour, end_hour, timezone, days }]
+    if (t.time) {
+      const [startH, endH] = (t.time.operating_hours || '0-23').split('-').map(h => String(parseInt(h)));
+      const tz = t.time.timezone || 'America/Chicago';
+      // Map generic timezone labels to IANA
+      const tzMap = { 'facility_local': 'America/Chicago', 'ops_local': 'America/Chicago', 'farm_local': 'America/Chicago',
+        'delivery_zone_local': 'America/Chicago', 'campus_local': 'America/Chicago', 'city_local': 'America/Chicago',
+        'community_local': 'America/Chicago', 'site_local': 'America/Chicago', 'hospital_local': 'America/Chicago',
+        'lab_local': 'America/Chicago', 'mine_local': 'America/Chicago', 'port_local': 'America/Chicago',
+        'airport_local': 'America/Chicago', 'transit_local': 'America/Chicago', 'incident_local': 'America/Chicago',
+        'exchange_local': 'America/New_York', 'institution_local': 'America/New_York', 'utility_local': 'America/Chicago',
+        'grid_local': 'America/Chicago', 'plant_local': 'America/Chicago', 'fab_local': 'America/Chicago',
+        'restaurant_local': 'America/Chicago', 'store_local': 'America/Chicago', 'hotel_local': 'America/Chicago',
+        'farm_local': 'America/Chicago', 'network_local': 'UTC', 'theater_local': 'UTC',
+        'patient_local': 'America/Chicago', 'student_local': 'America/Chicago', 'firm_local': 'America/New_York',
+        'mission_local': 'UTC' };
+      setTimeBounds([{
+        name: 'Operating Hours',
+        start_hour: startH,
+        end_hour: endH,
+        timezone: tzMap[tz] || tz,
+        days: t.time.operating_days || [0,1,2,3,4,5,6],
+      }]);
+    } else {
+      setTimeBounds([{ name: '', start_hour: '6', end_hour: '22', timezone: 'America/Chicago', days: [0,1,2,3,4,5,6] }]);
+    }
+
+    // ── State Boundaries ──
+    // Template format: { allowed: [...], forbidden: [...] }
+    // State format:    [{ name, parameter, allowed_values, forbidden_values }]
+    if (t.states && (t.states.allowed?.length || t.states.forbidden?.length)) {
+      setStateBounds([{
+        name: 'Operational States',
+        parameter: 'mode',
+        allowed_values: (t.states.allowed || []).join(', '),
+        forbidden_values: (t.states.forbidden || []).join(', '),
+      }]);
+    } else {
+      setStateBounds([{ name: '', parameter: '', allowed_values: '', forbidden_values: '' }]);
+    }
+
+    // ── ODD Description ──
+    if (t.odd_description) {
+      setOdd(prev => ({ ...prev, odd_description: t.odd_description }));
+    }
+
+    // ── Deployment type & environment from domain ──
+    const domainToDeployment = {
+      ground_robots: 'indoor', aerial: 'outdoor', vehicles: 'outdoor', marine: 'outdoor',
+      medical: 'indoor', financial: 'virtual', energy: 'hybrid', manufacturing: 'indoor',
+      defense: 'hybrid', agriculture: 'outdoor', space_extreme: 'outdoor',
+      telecom_digital: 'virtual', construction: 'outdoor', logistics: 'indoor',
+      retail_hospitality: 'indoor', education_research: 'indoor', legal_compliance: 'virtual', other: '',
+    };
+    const domainToEnvironment = {
+      ground_robots: 'warehouse', aerial: 'airspace', vehicles: 'road', marine: 'other',
+      medical: 'clinical', financial: 'data_center', energy: 'other', manufacturing: 'manufacturing',
+      defense: 'other', agriculture: 'agriculture', space_extreme: 'other',
+      telecom_digital: 'data_center', construction: 'construction', logistics: 'warehouse',
+      retail_hospitality: 'other', education_research: 'other', legal_compliance: 'other', other: '',
+    };
+    setSys(prev => ({
+      ...prev,
+      deployment_type: domainToDeployment[st.domain] || prev.deployment_type,
+      environment: domainToEnvironment[st.domain] || prev.environment,
+    }));
+
+    // ── Safety config ──
     if (t.safety) {
-      setSafety(prev => ({ ...prev, ...t.safety }));
+      const actionMap = { 'block': 'stop', 'warn': 'alert', 'stop': 'stop' };
+      setSafety(prev => ({
+        ...prev,
+        violation_action: actionMap[t.safety.violation_action] || t.safety.violation_action || prev.violation_action,
+        fail_closed: t.safety.fail_closed !== false,
+      }));
     }
   };
 
@@ -1252,13 +1301,27 @@ function NewApplication() {
       <div style={{display: 'flex', gap: '4px', alignItems: 'center'}}>{stepLabels.map((label, i) => (<div key={i} style={{flex: 1, textAlign: 'center'}}><div style={{height: '3px', borderRadius: '2px', background: i + 1 <= step ? styles.purpleBright : 'rgba(255,255,255,0.08)', transition: 'background 0.3s', marginBottom: '6px'}} /><span style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '8px', letterSpacing: '1px', textTransform: 'uppercase', color: i + 1 <= step ? styles.purpleBright : styles.textTertiary}}>{label}</span></div>))}</div>
       <Panel>
         {error && <div className="mb-4 p-3 rounded-lg" style={{background: 'rgba(214,92,92,0.15)', border: '1px solid rgba(214,92,92,0.3)', color: styles.accentRed}}>{error}</div>}
-        {step === 1 && (<div className="space-y-4">{sectionHead('Organization Information')}<div>{fieldLabel('Organization Name *')}<input type="text" value={org.organization_name} onChange={(e) => setOrg({...org, organization_name: e.target.value})} className="w-full px-4 py-3 rounded-lg outline-none" style={inputStyle} /></div><div>{fieldLabel('Contact Name')}<input type="text" value={org.contact_name} onChange={(e) => setOrg({...org, contact_name: e.target.value})} className="w-full px-4 py-3 rounded-lg outline-none" style={inputStyle} /></div><div className="grid grid-cols-2 gap-4"><div>{fieldLabel('Contact Email *')}<input type="email" value={org.contact_email} onChange={(e) => setOrg({...org, contact_email: e.target.value})} className="w-full px-4 py-3 rounded-lg outline-none" style={inputStyle} /></div><div>{fieldLabel('Contact Phone')}<input type="tel" value={org.contact_phone} onChange={(e) => setOrg({...org, contact_phone: e.target.value})} className="w-full px-4 py-3 rounded-lg outline-none" style={inputStyle} /></div></div></div>)}
-        {step === 2 && (<div className="space-y-4">{sectionHead('System Information')}<div className="grid grid-cols-2 gap-4"><div>{fieldLabel('System Name *')}<input type="text" value={sys.system_name} onChange={(e) => setSys({...sys, system_name: e.target.value})} className="w-full px-4 py-3 rounded-lg outline-none" style={inputStyle} /></div><div>{fieldLabel('System Type *')}<select value={sys.system_type} onChange={(e) => { setSys({...sys, system_type: e.target.value}); applyTemplate(e.target.value); }} className="w-full px-4 py-3 rounded-lg outline-none" style={inputStyle}><option value="">Select type...</option><option value="mobile_robot">Mobile Robot / AMR</option><option value="industrial_arm">Industrial Robot Arm</option><option value="drone">Drone / UAV</option><option value="autonomous_vehicle">Autonomous Vehicle</option><option value="agv">Automated Guided Vehicle (AGV)</option><option value="cobot">Collaborative Robot (Cobot)</option><option value="clinical_ai">Clinical AI / Decision Support</option><option value="data_center">Data Center Automation</option><option value="other">Other Autonomous System</option></select></div></div><div className="grid grid-cols-2 gap-4"><div>{fieldLabel('System Version')}<input type="text" value={sys.system_version} onChange={(e) => setSys({...sys, system_version: e.target.value})} className="w-full px-4 py-3 rounded-lg outline-none" style={inputStyle} placeholder="e.g., 1.0.0" /></div><div>{fieldLabel('Manufacturer')}<input type="text" value={sys.manufacturer} onChange={(e) => setSys({...sys, manufacturer: e.target.value})} className="w-full px-4 py-3 rounded-lg outline-none" style={inputStyle} /></div></div><div>{fieldLabel('System Description *')}<textarea value={sys.system_description} onChange={(e) => setSys({...sys, system_description: e.target.value})} rows={3} className="w-full px-4 py-3 rounded-lg outline-none resize-none" style={inputStyle} /></div><div className="grid grid-cols-2 gap-4"><div>{fieldLabel('Deployment Type')}<select value={sys.deployment_type} onChange={(e) => setSys({...sys, deployment_type: e.target.value})} className="w-full px-4 py-3 rounded-lg outline-none" style={inputStyle}><option value="">Select...</option><option value="indoor">Indoor</option><option value="outdoor">Outdoor</option><option value="hybrid">Indoor + Outdoor</option><option value="virtual">Virtual / Cloud</option></select></div><div>{fieldLabel('Environment')}<select value={sys.environment} onChange={(e) => setSys({...sys, environment: e.target.value})} className="w-full px-4 py-3 rounded-lg outline-none" style={inputStyle}><option value="">Select...</option><option value="warehouse">Warehouse / Logistics</option><option value="manufacturing">Manufacturing Floor</option><option value="road">Public Road</option><option value="airspace">Airspace</option><option value="clinical">Clinical / Hospital</option><option value="data_center">Data Center</option><option value="agriculture">Agriculture / Field</option><option value="construction">Construction Site</option><option value="other">Other</option></select></div></div><div className="grid grid-cols-2 gap-4"><div>{fieldLabel('Agent Deployment Method')}<select value={sys.integration_method} onChange={(e) => setSys({...sys, integration_method: e.target.value})} className="w-full px-4 py-3 rounded-lg outline-none" style={inputStyle}><option value="python">Python Package</option><option value="docker">Docker Container</option><option value="kubernetes">Kubernetes</option></select></div><div>{fieldLabel('Expected Actions / Day')}<select value={sys.expected_volume} onChange={(e) => setSys({...sys, expected_volume: e.target.value})} className="w-full px-4 py-3 rounded-lg outline-none" style={inputStyle}><option value="">Select...</option><option value="low">{"Low (< 1,000)"}</option><option value="medium">Medium (1K — 10K)</option><option value="high">High (10K — 100K)</option><option value="very_high">Very High (100K+)</option></select></div></div><div>{fieldLabel('Compliance Requirements')}<input type="text" value={sys.compliance_requirements} onChange={(e) => setSys({...sys, compliance_requirements: e.target.value})} className="w-full px-4 py-3 rounded-lg outline-none" style={inputStyle} placeholder="e.g., ISO 26262, FDA 510(k), FAA Part 107, SOC 2" />{helpText('List any regulatory or compliance frameworks your system must adhere to.')}</div></div>)}
+        
+      {submitted && (
+        <div style={{textAlign: 'center', padding: '60px 20px'}}>
+          <div style={{width: '64px', height: '64px', borderRadius: '50%', background: 'rgba(92,214,133,0.15)', border: '2px solid rgba(92,214,133,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px', fontSize: '28px'}}>✓</div>
+          <h2 style={{fontFamily: "'Source Serif 4', serif", fontSize: '28px', fontWeight: 200, margin: '0 0 12px', color: styles.textPrimary}}>Application Submitted</h2>
+          <p style={{color: styles.textSecondary, fontSize: '14px', lineHeight: '1.6', maxWidth: '480px', margin: '0 auto 8px'}}>Your application is now in the queue. Our team will review your ODD specification and boundary definitions.</p>
+          <p style={{color: styles.textTertiary, fontSize: '13px', marginBottom: '32px'}}>You'll receive email updates as your application progresses through the certification pipeline.</p>
+          <div style={{display: 'flex', gap: '12px', justifyContent: 'center'}}>
+            <Link to="/applications" className="no-underline px-6 py-3 rounded-lg" style={{background: styles.purplePrimary, border: `1px solid ${styles.purpleBright}`, color: '#fff', fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase'}}>View Applications</Link>
+            <Link to="/dashboard" className="no-underline px-6 py-3 rounded-lg" style={{background: 'transparent', border: `1px solid ${styles.borderGlass}`, color: styles.textSecondary, fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase'}}>Dashboard</Link>
+          </div>
+        </div>
+      )}
+      {!submitted && <>{step === 1 && (<div className="space-y-4">{sectionHead('Organization Information')}<div>{fieldLabel('Organization Name *')}<input type="text" value={org.organization_name} onChange={(e) => setOrg({...org, organization_name: e.target.value})} className="w-full px-4 py-3 rounded-lg outline-none" style={inputStyle} /></div><div>{fieldLabel('Contact Name')}<input type="text" value={org.contact_name} onChange={(e) => setOrg({...org, contact_name: e.target.value})} className="w-full px-4 py-3 rounded-lg outline-none" style={inputStyle} /></div><div className="grid grid-cols-2 gap-4"><div>{fieldLabel('Contact Email *')}<input type="email" value={org.contact_email} onChange={(e) => setOrg({...org, contact_email: e.target.value})} className="w-full px-4 py-3 rounded-lg outline-none" style={inputStyle} /></div><div>{fieldLabel('Contact Phone')}<input type="tel" value={org.contact_phone} onChange={(e) => setOrg({...org, contact_phone: e.target.value})} className="w-full px-4 py-3 rounded-lg outline-none" style={inputStyle} /></div></div></div>)}
+        {step === 2 && (<div className="space-y-4">{sectionHead('System Information')}<div className="grid grid-cols-2 gap-4"><div>{fieldLabel('System Name *')}<input type="text" value={sys.system_name} onChange={(e) => setSys({...sys, system_name: e.target.value})} className="w-full px-4 py-3 rounded-lg outline-none" style={inputStyle} /></div><div>{fieldLabel('System Type *')}<select value={sys.system_type} onChange={(e) => { setSys({...sys, system_type: e.target.value}); applyTemplate(e.target.value); }} className="w-full px-4 py-3 rounded-lg outline-none" style={inputStyle}><option value="">Select system type ({Object.keys(SYSTEM_TYPES).length} available)...</option>{DOMAIN_GROUPS.map(group => { const types = Object.entries(SYSTEM_TYPES).filter(([,v]) => v.domain === group.key); if (!types.length) return null; return (<optgroup key={group.key} label={group.label}>{types.map(([key, t]) => (<option key={key} value={key}>{t.label}</option>))}</optgroup>); })}</select></div></div><div className="grid grid-cols-2 gap-4"><div>{fieldLabel('System Version')}<input type="text" value={sys.system_version} onChange={(e) => setSys({...sys, system_version: e.target.value})} className="w-full px-4 py-3 rounded-lg outline-none" style={inputStyle} placeholder="e.g., 1.0.0" /></div><div>{fieldLabel('Manufacturer')}<input type="text" value={sys.manufacturer} onChange={(e) => setSys({...sys, manufacturer: e.target.value})} className="w-full px-4 py-3 rounded-lg outline-none" style={inputStyle} /></div></div><div>{fieldLabel('System Description *')}<textarea value={sys.system_description} onChange={(e) => setSys({...sys, system_description: e.target.value})} rows={3} className="w-full px-4 py-3 rounded-lg outline-none resize-none" style={inputStyle} /></div><div className="grid grid-cols-2 gap-4"><div>{fieldLabel('Deployment Type')}<select value={sys.deployment_type} onChange={(e) => setSys({...sys, deployment_type: e.target.value})} className="w-full px-4 py-3 rounded-lg outline-none" style={inputStyle}><option value="">Select...</option><option value="indoor">Indoor</option><option value="outdoor">Outdoor</option><option value="hybrid">Indoor + Outdoor</option><option value="virtual">Virtual / Cloud</option></select></div><div>{fieldLabel('Environment')}<select value={sys.environment} onChange={(e) => setSys({...sys, environment: e.target.value})} className="w-full px-4 py-3 rounded-lg outline-none" style={inputStyle}><option value="">Select...</option><option value="warehouse">Warehouse / Logistics</option><option value="manufacturing">Manufacturing Floor</option><option value="road">Public Road</option><option value="airspace">Airspace</option><option value="clinical">Clinical / Hospital</option><option value="data_center">Data Center</option><option value="agriculture">Agriculture / Field</option><option value="construction">Construction Site</option><option value="other">Other</option></select></div></div><div className="grid grid-cols-2 gap-4"><div>{fieldLabel('Agent Deployment Method')}<select value={sys.integration_method} onChange={(e) => setSys({...sys, integration_method: e.target.value})} className="w-full px-4 py-3 rounded-lg outline-none" style={inputStyle}><option value="python">Python Package</option><option value="docker">Docker Container</option><option value="kubernetes">Kubernetes</option></select></div><div>{fieldLabel('Expected Actions / Day')}<select value={sys.expected_volume} onChange={(e) => setSys({...sys, expected_volume: e.target.value})} className="w-full px-4 py-3 rounded-lg outline-none" style={inputStyle}><option value="">Select...</option><option value="low">{"Low (< 1,000)"}</option><option value="medium">Medium (1K — 10K)</option><option value="high">High (10K — 100K)</option><option value="very_high">Very High (100K+)</option></select></div></div><div>{fieldLabel('Compliance Requirements')}<input type="text" value={sys.compliance_requirements} onChange={(e) => setSys({...sys, compliance_requirements: e.target.value})} className="w-full px-4 py-3 rounded-lg outline-none" style={inputStyle} placeholder="e.g., ISO 26262, FDA 510(k), FAA Part 107, SOC 2" />{helpText('List any regulatory or compliance frameworks your system must adhere to.')}</div></div>)}
         {step === 3 && (<div className="space-y-4">{sectionHead('Operational Design Domain')}<div>{fieldLabel('ODD Description *')}<textarea value={odd.odd_description} onChange={(e) => setOdd({...odd, odd_description: e.target.value})} rows={5} className="w-full px-4 py-3 rounded-lg outline-none resize-none" style={inputStyle} placeholder="Describe the operating domain in plain language: where, how, and under what conditions the system operates." />{helpText("This is the human-readable description of your system's intended operating domain. Specific numeric limits will be defined in the next step.")}</div><div className="grid grid-cols-2 gap-4"><div>{fieldLabel('Facility / Deployment Location')}<input type="text" value={odd.facility_location} onChange={(e) => setOdd({...odd, facility_location: e.target.value})} className="w-full px-4 py-3 rounded-lg outline-none" style={inputStyle} placeholder="Address or region" /></div><div>{fieldLabel('Preferred Test Start Date')}<input type="date" value={odd.preferred_test_date} onChange={(e) => setOdd({...odd, preferred_test_date: e.target.value})} className="w-full px-4 py-3 rounded-lg outline-none" style={inputStyle} /></div></div><div style={{borderTop: `1px solid ${styles.borderGlass}`, paddingTop: '16px', marginTop: '8px'}}>{sectionHead('Environmental Conditions')}</div><div className="grid grid-cols-3 gap-4"><div>{fieldLabel('Temp Min')}<input type="number" value={odd.temp_min} onChange={(e) => setOdd({...odd, temp_min: e.target.value})} className="w-full px-4 py-3 rounded-lg outline-none" style={inputStyle} placeholder="e.g., 32" /></div><div>{fieldLabel('Temp Max')}<input type="number" value={odd.temp_max} onChange={(e) => setOdd({...odd, temp_max: e.target.value})} className="w-full px-4 py-3 rounded-lg outline-none" style={inputStyle} placeholder="e.g., 110" /></div><div>{fieldLabel('Unit')}<select value={odd.temp_unit} onChange={(e) => setOdd({...odd, temp_unit: e.target.value})} className="w-full px-4 py-3 rounded-lg outline-none" style={inputStyle}><option value="F">°F</option><option value="C">°C</option></select></div></div><div>{fieldLabel('Surface / Terrain Type')}<input type="text" value={odd.surface_type} onChange={(e) => setOdd({...odd, surface_type: e.target.value})} className="w-full px-4 py-3 rounded-lg outline-none" style={inputStyle} placeholder="e.g., flat concrete, paved road, gravel" /></div><div>{fieldLabel('Weather Constraints')}<input type="text" value={odd.weather_constraints} onChange={(e) => setOdd({...odd, weather_constraints: e.target.value})} className="w-full px-4 py-3 rounded-lg outline-none" style={inputStyle} placeholder="e.g., no operation in rain/snow, wind < 25 mph" /></div><div>{fieldLabel('Additional Notes')}<textarea value={odd.notes} onChange={(e) => setOdd({...odd, notes: e.target.value})} rows={2} className="w-full px-4 py-3 rounded-lg outline-none resize-none" style={inputStyle} placeholder="Anything else relevant to the operating domain" /></div></div>)}
-        {step === 4 && (<div className="space-y-6">{sys.system_type && boundaryTemplates[sys.system_type] && (<div style={{padding: '12px 16px', background: 'rgba(92,214,133,0.1)', border: '1px solid rgba(92,214,133,0.2)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px'}}><div style={{display: 'flex', alignItems: 'center', gap: '8px'}}><CheckCircle size={16} style={{color: styles.accentGreen}} /><span style={{color: styles.accentGreen, fontSize: '13px'}}>Loaded recommended boundaries for {boundaryTemplates[sys.system_type].label}</span></div><button onClick={() => applyTemplate(sys.system_type)} style={{background: 'transparent', border: '1px solid rgba(92,214,133,0.3)', borderRadius: '6px', padding: '4px 12px', color: styles.accentGreen, fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', cursor: 'pointer'}}>Reload Defaults</button></div>)}<div>{sectionHead('Numeric Boundaries')}{helpText('Define measurable limits: speed, temperature, altitude, weight, pressure, distance, etc.')}{numericBounds.map((b, i) => (<div key={i} style={{background: 'rgba(255,255,255,0.02)', border: `1px solid ${styles.borderGlass}`, borderRadius: '8px', padding: '12px', marginTop: '8px'}}><div className="grid grid-cols-2 gap-3" style={{marginBottom: '8px'}}><input type="text" value={b.name} onChange={(e) => updateRow(numericBounds, setNumericBounds, i, 'name', e.target.value)} className="px-3 py-2 rounded-lg outline-none" style={{...inputStyle, fontSize: '13px'}} placeholder="Name (e.g., Speed Limit)" /><input type="text" value={b.parameter} onChange={(e) => updateRow(numericBounds, setNumericBounds, i, 'parameter', e.target.value)} className="px-3 py-2 rounded-lg outline-none" style={{...inputStyle, fontSize: '13px'}} placeholder="Parameter (e.g., speed)" /></div><div className="grid grid-cols-5 gap-3"><input type="number" value={b.min_value} onChange={(e) => updateRow(numericBounds, setNumericBounds, i, 'min_value', e.target.value)} className="px-3 py-2 rounded-lg outline-none" style={{...inputStyle, fontSize: '13px'}} placeholder="Min" /><input type="number" value={b.max_value} onChange={(e) => updateRow(numericBounds, setNumericBounds, i, 'max_value', e.target.value)} className="px-3 py-2 rounded-lg outline-none" style={{...inputStyle, fontSize: '13px'}} placeholder="Max" /><input type="number" value={b.hard_limit} onChange={(e) => updateRow(numericBounds, setNumericBounds, i, 'hard_limit', e.target.value)} className="px-3 py-2 rounded-lg outline-none" style={{...inputStyle, fontSize: '13px'}} placeholder="Hard limit" /><input type="text" value={b.unit} onChange={(e) => updateRow(numericBounds, setNumericBounds, i, 'unit', e.target.value)} className="px-3 py-2 rounded-lg outline-none" style={{...inputStyle, fontSize: '13px'}} placeholder="Unit" /><div style={{display: 'flex', gap: '4px'}}><input type="number" value={b.tolerance} onChange={(e) => updateRow(numericBounds, setNumericBounds, i, 'tolerance', e.target.value)} className="px-3 py-2 rounded-lg outline-none" style={{...inputStyle, fontSize: '13px', flex: 1}} placeholder="±Tol" />{numericBounds.length > 1 && <button onClick={() => removeRow(numericBounds, setNumericBounds, i)} style={{background: 'rgba(214,92,92,0.15)', border: 'none', borderRadius: '6px', color: styles.accentRed, cursor: 'pointer', padding: '0 8px', fontSize: '14px'}}>×</button>}</div></div></div>))}<button onClick={() => addRow(numericBounds, setNumericBounds, { name: '', parameter: '', min_value: '', max_value: '', hard_limit: '', unit: '', tolerance: '' })} style={{marginTop: '8px', background: 'transparent', border: `1px dashed ${styles.borderGlass}`, borderRadius: '6px', padding: '8px 16px', color: styles.purpleBright, cursor: 'pointer', fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', width: '100%'}}>+ Add Numeric Boundary</button></div><div style={{borderTop: `1px solid ${styles.borderGlass}`, paddingTop: '16px'}}>{sectionHead('Geographic Boundaries')}{helpText('Define the physical operating zone. Enter center coordinates and radius.')}{geoBounds.map((b, i) => (<div key={i} style={{background: 'rgba(255,255,255,0.02)', border: `1px solid ${styles.borderGlass}`, borderRadius: '8px', padding: '12px', marginTop: '8px'}}><div className="grid grid-cols-2 gap-3" style={{marginBottom: '8px'}}><input type="text" value={b.name} onChange={(e) => updateRow(geoBounds, setGeoBounds, i, 'name', e.target.value)} className="px-3 py-2 rounded-lg outline-none" style={{...inputStyle, fontSize: '13px'}} placeholder="Name (e.g., Operating Zone)" /><select value={b.boundary_type} onChange={(e) => updateRow(geoBounds, setGeoBounds, i, 'boundary_type', e.target.value)} className="px-3 py-2 rounded-lg outline-none" style={{...inputStyle, fontSize: '13px'}}><option value="circle">Radius from Point</option><option value="polygon">Polygon (contact us)</option></select></div><div className="grid grid-cols-4 gap-3"><input type="number" step="any" value={b.lat} onChange={(e) => updateRow(geoBounds, setGeoBounds, i, 'lat', e.target.value)} className="px-3 py-2 rounded-lg outline-none" style={{...inputStyle, fontSize: '13px'}} placeholder="Latitude" /><input type="number" step="any" value={b.lon} onChange={(e) => updateRow(geoBounds, setGeoBounds, i, 'lon', e.target.value)} className="px-3 py-2 rounded-lg outline-none" style={{...inputStyle, fontSize: '13px'}} placeholder="Longitude" /><input type="number" value={b.radius_meters} onChange={(e) => updateRow(geoBounds, setGeoBounds, i, 'radius_meters', e.target.value)} className="px-3 py-2 rounded-lg outline-none" style={{...inputStyle, fontSize: '13px'}} placeholder="Radius (m)" /><div style={{display: 'flex', gap: '4px'}}><input type="number" value={b.altitude_max} onChange={(e) => updateRow(geoBounds, setGeoBounds, i, 'altitude_max', e.target.value)} className="px-3 py-2 rounded-lg outline-none" style={{...inputStyle, fontSize: '13px', flex: 1}} placeholder="Alt max (m)" />{geoBounds.length > 1 && <button onClick={() => removeRow(geoBounds, setGeoBounds, i)} style={{background: 'rgba(214,92,92,0.15)', border: 'none', borderRadius: '6px', color: styles.accentRed, cursor: 'pointer', padding: '0 8px', fontSize: '14px'}}>×</button>}</div></div></div>))}<button onClick={() => addRow(geoBounds, setGeoBounds, { name: '', boundary_type: 'circle', lat: '', lon: '', radius_meters: '', altitude_min: '', altitude_max: '' })} style={{marginTop: '8px', background: 'transparent', border: `1px dashed ${styles.borderGlass}`, borderRadius: '6px', padding: '8px 16px', color: styles.purpleBright, cursor: 'pointer', fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', width: '100%'}}>+ Add Geographic Boundary</button></div><div style={{borderTop: `1px solid ${styles.borderGlass}`, paddingTop: '16px'}}>{sectionHead('Time Boundaries')}{helpText('Define allowed operating hours and days.')}{timeBounds.map((b, i) => (<div key={i} style={{background: 'rgba(255,255,255,0.02)', border: `1px solid ${styles.borderGlass}`, borderRadius: '8px', padding: '12px', marginTop: '8px'}}><div className="grid grid-cols-4 gap-3" style={{marginBottom: '8px'}}><input type="text" value={b.name} onChange={(e) => updateRow(timeBounds, setTimeBounds, i, 'name', e.target.value)} className="px-3 py-2 rounded-lg outline-none" style={{...inputStyle, fontSize: '13px'}} placeholder="Name" /><input type="number" min="0" max="23" value={b.start_hour} onChange={(e) => updateRow(timeBounds, setTimeBounds, i, 'start_hour', e.target.value)} className="px-3 py-2 rounded-lg outline-none" style={{...inputStyle, fontSize: '13px'}} placeholder="Start hour" /><input type="number" min="0" max="23" value={b.end_hour} onChange={(e) => updateRow(timeBounds, setTimeBounds, i, 'end_hour', e.target.value)} className="px-3 py-2 rounded-lg outline-none" style={{...inputStyle, fontSize: '13px'}} placeholder="End hour" /><select value={b.timezone} onChange={(e) => updateRow(timeBounds, setTimeBounds, i, 'timezone', e.target.value)} className="px-3 py-2 rounded-lg outline-none" style={{...inputStyle, fontSize: '13px'}}><option value="America/New_York">Eastern</option><option value="America/Chicago">Central</option><option value="America/Denver">Mountain</option><option value="America/Los_Angeles">Pacific</option><option value="UTC">UTC</option><option value="Europe/London">UK</option><option value="Europe/Berlin">CET</option><option value="Asia/Tokyo">JST</option></select></div><div style={{display: 'flex', gap: '6px', flexWrap: 'wrap', alignItems: 'center'}}><span style={{color: styles.textTertiary, fontSize: '11px', marginRight: '4px'}}>Days:</span>{dayNames.map((d, di) => (<label key={di} style={{display: 'flex', alignItems: 'center', gap: '3px', cursor: 'pointer', fontSize: '11px', color: b.days.includes(di) ? styles.purpleBright : styles.textTertiary}}><input type="checkbox" checked={b.days.includes(di)} onChange={(e) => { const newDays = e.target.checked ? [...b.days, di].sort() : b.days.filter(x => x !== di); updateRow(timeBounds, setTimeBounds, i, 'days', newDays); }} style={{accentColor: styles.purpleBright, width: '12px', height: '12px'}} />{d}</label>))}{timeBounds.length > 1 && <button onClick={() => removeRow(timeBounds, setTimeBounds, i)} style={{marginLeft: 'auto', background: 'rgba(214,92,92,0.15)', border: 'none', borderRadius: '6px', color: styles.accentRed, cursor: 'pointer', padding: '2px 8px', fontSize: '14px'}}>×</button>}</div></div>))}<button onClick={() => addRow(timeBounds, setTimeBounds, { name: '', start_hour: '6', end_hour: '22', timezone: 'America/Chicago', days: [0,1,2,3,4,5,6] })} style={{marginTop: '8px', background: 'transparent', border: `1px dashed ${styles.borderGlass}`, borderRadius: '6px', padding: '8px 16px', color: styles.purpleBright, cursor: 'pointer', fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', width: '100%'}}>+ Add Time Boundary</button></div><div style={{borderTop: `1px solid ${styles.borderGlass}`, paddingTop: '16px'}}>{sectionHead('State Boundaries')}{helpText('Define allowed/forbidden operational states and modes.')}{stateBounds.map((b, i) => (<div key={i} style={{background: 'rgba(255,255,255,0.02)', border: `1px solid ${styles.borderGlass}`, borderRadius: '8px', padding: '12px', marginTop: '8px'}}><div className="grid grid-cols-2 gap-3" style={{marginBottom: '8px'}}><input type="text" value={b.name} onChange={(e) => updateRow(stateBounds, setStateBounds, i, 'name', e.target.value)} className="px-3 py-2 rounded-lg outline-none" style={{...inputStyle, fontSize: '13px'}} placeholder="Name (e.g., Mode Check)" /><input type="text" value={b.parameter} onChange={(e) => updateRow(stateBounds, setStateBounds, i, 'parameter', e.target.value)} className="px-3 py-2 rounded-lg outline-none" style={{...inputStyle, fontSize: '13px'}} placeholder="Parameter (e.g., mode)" /></div><div className="grid grid-cols-2 gap-3"><div><input type="text" value={b.allowed_values} onChange={(e) => updateRow(stateBounds, setStateBounds, i, 'allowed_values', e.target.value)} className="w-full px-3 py-2 rounded-lg outline-none" style={{...inputStyle, fontSize: '13px'}} placeholder="Allowed (comma-sep)" /><span style={{fontSize: '9px', color: styles.textTertiary}}>e.g., autonomous, semi-autonomous</span></div><div style={{display: 'flex', gap: '4px'}}><div style={{flex: 1}}><input type="text" value={b.forbidden_values} onChange={(e) => updateRow(stateBounds, setStateBounds, i, 'forbidden_values', e.target.value)} className="w-full px-3 py-2 rounded-lg outline-none" style={{...inputStyle, fontSize: '13px'}} placeholder="Forbidden (comma-sep)" /><span style={{fontSize: '9px', color: styles.textTertiary}}>e.g., manual_override, degraded</span></div>{stateBounds.length > 1 && <button onClick={() => removeRow(stateBounds, setStateBounds, i)} style={{background: 'rgba(214,92,92,0.15)', border: 'none', borderRadius: '6px', color: styles.accentRed, cursor: 'pointer', padding: '0 8px', fontSize: '14px', alignSelf: 'flex-start'}}>×</button>}</div></div></div>))}<button onClick={() => addRow(stateBounds, setStateBounds, { name: '', parameter: '', allowed_values: '', forbidden_values: '' })} style={{marginTop: '8px', background: 'transparent', border: `1px dashed ${styles.borderGlass}`, borderRadius: '6px', padding: '8px 16px', color: styles.purpleBright, cursor: 'pointer', fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', width: '100%'}}>+ Add State Boundary</button></div></div>)}
+        {step === 4 && (<div className="space-y-6">{sys.system_type && SYSTEM_TYPES[sys.system_type] && (<div style={{padding: '12px 16px', background: 'rgba(92,214,133,0.1)', border: '1px solid rgba(92,214,133,0.2)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px'}}><div style={{display: 'flex', alignItems: 'center', gap: '8px'}}><CheckCircle size={16} style={{color: styles.accentGreen}} /><span style={{color: styles.accentGreen, fontSize: '13px'}}>Loaded recommended boundaries for {SYSTEM_TYPES[sys.system_type].label}</span></div><button onClick={() => applyTemplate(sys.system_type)} style={{background: 'transparent', border: '1px solid rgba(92,214,133,0.3)', borderRadius: '6px', padding: '4px 12px', color: styles.accentGreen, fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', cursor: 'pointer'}}>Reload Defaults</button></div>)}<div>{sectionHead('Numeric Boundaries')}{helpText('Define measurable limits: speed, temperature, altitude, weight, pressure, distance, etc.')}{numericBounds.map((b, i) => (<div key={i} style={{background: 'rgba(255,255,255,0.02)', border: `1px solid ${styles.borderGlass}`, borderRadius: '8px', padding: '12px', marginTop: '8px'}}><div className="grid grid-cols-2 gap-3" style={{marginBottom: '8px'}}><input type="text" value={b.name} onChange={(e) => updateRow(numericBounds, setNumericBounds, i, 'name', e.target.value)} className="px-3 py-2 rounded-lg outline-none" style={{...inputStyle, fontSize: '13px'}} placeholder="Name (e.g., Speed Limit)" /><input type="text" value={b.parameter} onChange={(e) => updateRow(numericBounds, setNumericBounds, i, 'parameter', e.target.value)} className="px-3 py-2 rounded-lg outline-none" style={{...inputStyle, fontSize: '13px'}} placeholder="Parameter (e.g., speed)" /></div><div className="grid grid-cols-5 gap-3"><input type="number" value={b.min_value} onChange={(e) => updateRow(numericBounds, setNumericBounds, i, 'min_value', e.target.value)} className="px-3 py-2 rounded-lg outline-none" style={{...inputStyle, fontSize: '13px'}} placeholder="Min" /><input type="number" value={b.max_value} onChange={(e) => updateRow(numericBounds, setNumericBounds, i, 'max_value', e.target.value)} className="px-3 py-2 rounded-lg outline-none" style={{...inputStyle, fontSize: '13px'}} placeholder="Max" /><input type="number" value={b.hard_limit} onChange={(e) => updateRow(numericBounds, setNumericBounds, i, 'hard_limit', e.target.value)} className="px-3 py-2 rounded-lg outline-none" style={{...inputStyle, fontSize: '13px'}} placeholder="Hard limit" /><input type="text" value={b.unit} onChange={(e) => updateRow(numericBounds, setNumericBounds, i, 'unit', e.target.value)} className="px-3 py-2 rounded-lg outline-none" style={{...inputStyle, fontSize: '13px'}} placeholder="Unit" /><div style={{display: 'flex', gap: '4px'}}><input type="number" value={b.tolerance} onChange={(e) => updateRow(numericBounds, setNumericBounds, i, 'tolerance', e.target.value)} className="px-3 py-2 rounded-lg outline-none" style={{...inputStyle, fontSize: '13px', flex: 1}} placeholder="±Tol" />{numericBounds.length > 1 && <button onClick={() => removeRow(numericBounds, setNumericBounds, i)} style={{background: 'rgba(214,92,92,0.15)', border: 'none', borderRadius: '6px', color: styles.accentRed, cursor: 'pointer', padding: '0 8px', fontSize: '14px'}}>×</button>}</div></div></div>))}<button onClick={() => addRow(numericBounds, setNumericBounds, { name: '', parameter: '', min_value: '', max_value: '', hard_limit: '', unit: '', tolerance: '' })} style={{marginTop: '8px', background: 'transparent', border: `1px dashed ${styles.borderGlass}`, borderRadius: '6px', padding: '8px 16px', color: styles.purpleBright, cursor: 'pointer', fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', width: '100%'}}>+ Add Numeric Boundary</button></div><div style={{borderTop: `1px solid ${styles.borderGlass}`, paddingTop: '16px'}}>{sectionHead('Geographic Boundaries')}{helpText('Define the physical operating zone. Enter center coordinates and radius.')}{geoBounds.map((b, i) => (<div key={i} style={{background: 'rgba(255,255,255,0.02)', border: `1px solid ${styles.borderGlass}`, borderRadius: '8px', padding: '12px', marginTop: '8px'}}><div className="grid grid-cols-2 gap-3" style={{marginBottom: '8px'}}><input type="text" value={b.name} onChange={(e) => updateRow(geoBounds, setGeoBounds, i, 'name', e.target.value)} className="px-3 py-2 rounded-lg outline-none" style={{...inputStyle, fontSize: '13px'}} placeholder="Name (e.g., Operating Zone)" /><select value={b.boundary_type} onChange={(e) => updateRow(geoBounds, setGeoBounds, i, 'boundary_type', e.target.value)} className="px-3 py-2 rounded-lg outline-none" style={{...inputStyle, fontSize: '13px'}}><option value="circle">Radius from Point</option><option value="polygon">Polygon (contact us)</option></select></div><div className="grid grid-cols-4 gap-3"><input type="number" step="any" value={b.lat} onChange={(e) => updateRow(geoBounds, setGeoBounds, i, 'lat', e.target.value)} className="px-3 py-2 rounded-lg outline-none" style={{...inputStyle, fontSize: '13px'}} placeholder="Latitude" /><input type="number" step="any" value={b.lon} onChange={(e) => updateRow(geoBounds, setGeoBounds, i, 'lon', e.target.value)} className="px-3 py-2 rounded-lg outline-none" style={{...inputStyle, fontSize: '13px'}} placeholder="Longitude" /><input type="number" value={b.radius_meters} onChange={(e) => updateRow(geoBounds, setGeoBounds, i, 'radius_meters', e.target.value)} className="px-3 py-2 rounded-lg outline-none" style={{...inputStyle, fontSize: '13px'}} placeholder="Radius (m)" /><div style={{display: 'flex', gap: '4px'}}><input type="number" value={b.altitude_max} onChange={(e) => updateRow(geoBounds, setGeoBounds, i, 'altitude_max', e.target.value)} className="px-3 py-2 rounded-lg outline-none" style={{...inputStyle, fontSize: '13px', flex: 1}} placeholder="Alt max (m)" />{geoBounds.length > 1 && <button onClick={() => removeRow(geoBounds, setGeoBounds, i)} style={{background: 'rgba(214,92,92,0.15)', border: 'none', borderRadius: '6px', color: styles.accentRed, cursor: 'pointer', padding: '0 8px', fontSize: '14px'}}>×</button>}</div></div></div>))}<button onClick={() => addRow(geoBounds, setGeoBounds, { name: '', boundary_type: 'circle', lat: '', lon: '', radius_meters: '', altitude_min: '', altitude_max: '' })} style={{marginTop: '8px', background: 'transparent', border: `1px dashed ${styles.borderGlass}`, borderRadius: '6px', padding: '8px 16px', color: styles.purpleBright, cursor: 'pointer', fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', width: '100%'}}>+ Add Geographic Boundary</button></div><div style={{borderTop: `1px solid ${styles.borderGlass}`, paddingTop: '16px'}}>{sectionHead('Time Boundaries')}{helpText('Define allowed operating hours and days.')}{timeBounds.map((b, i) => (<div key={i} style={{background: 'rgba(255,255,255,0.02)', border: `1px solid ${styles.borderGlass}`, borderRadius: '8px', padding: '12px', marginTop: '8px'}}><div className="grid grid-cols-4 gap-3" style={{marginBottom: '8px'}}><input type="text" value={b.name} onChange={(e) => updateRow(timeBounds, setTimeBounds, i, 'name', e.target.value)} className="px-3 py-2 rounded-lg outline-none" style={{...inputStyle, fontSize: '13px'}} placeholder="Name" /><input type="number" min="0" max="23" value={b.start_hour} onChange={(e) => updateRow(timeBounds, setTimeBounds, i, 'start_hour', e.target.value)} className="px-3 py-2 rounded-lg outline-none" style={{...inputStyle, fontSize: '13px'}} placeholder="Start hour" /><input type="number" min="0" max="23" value={b.end_hour} onChange={(e) => updateRow(timeBounds, setTimeBounds, i, 'end_hour', e.target.value)} className="px-3 py-2 rounded-lg outline-none" style={{...inputStyle, fontSize: '13px'}} placeholder="End hour" /><select value={b.timezone} onChange={(e) => updateRow(timeBounds, setTimeBounds, i, 'timezone', e.target.value)} className="px-3 py-2 rounded-lg outline-none" style={{...inputStyle, fontSize: '13px'}}><option value="America/New_York">Eastern</option><option value="America/Chicago">Central</option><option value="America/Denver">Mountain</option><option value="America/Los_Angeles">Pacific</option><option value="UTC">UTC</option><option value="Europe/London">UK</option><option value="Europe/Berlin">CET</option><option value="Asia/Tokyo">JST</option></select></div><div style={{display: 'flex', gap: '6px', flexWrap: 'wrap', alignItems: 'center'}}><span style={{color: styles.textTertiary, fontSize: '11px', marginRight: '4px'}}>Days:</span>{dayNames.map((d, di) => (<label key={di} style={{display: 'flex', alignItems: 'center', gap: '3px', cursor: 'pointer', fontSize: '11px', color: b.days.includes(di) ? styles.purpleBright : styles.textTertiary}}><input type="checkbox" checked={b.days.includes(di)} onChange={(e) => { const newDays = e.target.checked ? [...b.days, di].sort() : b.days.filter(x => x !== di); updateRow(timeBounds, setTimeBounds, i, 'days', newDays); }} style={{accentColor: styles.purpleBright, width: '12px', height: '12px'}} />{d}</label>))}{timeBounds.length > 1 && <button onClick={() => removeRow(timeBounds, setTimeBounds, i)} style={{marginLeft: 'auto', background: 'rgba(214,92,92,0.15)', border: 'none', borderRadius: '6px', color: styles.accentRed, cursor: 'pointer', padding: '2px 8px', fontSize: '14px'}}>×</button>}</div></div>))}<button onClick={() => addRow(timeBounds, setTimeBounds, { name: '', start_hour: '6', end_hour: '22', timezone: 'America/Chicago', days: [0,1,2,3,4,5,6] })} style={{marginTop: '8px', background: 'transparent', border: `1px dashed ${styles.borderGlass}`, borderRadius: '6px', padding: '8px 16px', color: styles.purpleBright, cursor: 'pointer', fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', width: '100%'}}>+ Add Time Boundary</button></div><div style={{borderTop: `1px solid ${styles.borderGlass}`, paddingTop: '16px'}}>{sectionHead('State Boundaries')}{helpText('Define allowed/forbidden operational states and modes.')}{stateBounds.map((b, i) => (<div key={i} style={{background: 'rgba(255,255,255,0.02)', border: `1px solid ${styles.borderGlass}`, borderRadius: '8px', padding: '12px', marginTop: '8px'}}><div className="grid grid-cols-2 gap-3" style={{marginBottom: '8px'}}><input type="text" value={b.name} onChange={(e) => updateRow(stateBounds, setStateBounds, i, 'name', e.target.value)} className="px-3 py-2 rounded-lg outline-none" style={{...inputStyle, fontSize: '13px'}} placeholder="Name (e.g., Mode Check)" /><input type="text" value={b.parameter} onChange={(e) => updateRow(stateBounds, setStateBounds, i, 'parameter', e.target.value)} className="px-3 py-2 rounded-lg outline-none" style={{...inputStyle, fontSize: '13px'}} placeholder="Parameter (e.g., mode)" /></div><div className="grid grid-cols-2 gap-3"><div><input type="text" value={b.allowed_values} onChange={(e) => updateRow(stateBounds, setStateBounds, i, 'allowed_values', e.target.value)} className="w-full px-3 py-2 rounded-lg outline-none" style={{...inputStyle, fontSize: '13px'}} placeholder="Allowed (comma-sep)" /><span style={{fontSize: '9px', color: styles.textTertiary}}>e.g., autonomous, semi-autonomous</span></div><div style={{display: 'flex', gap: '4px'}}><div style={{flex: 1}}><input type="text" value={b.forbidden_values} onChange={(e) => updateRow(stateBounds, setStateBounds, i, 'forbidden_values', e.target.value)} className="w-full px-3 py-2 rounded-lg outline-none" style={{...inputStyle, fontSize: '13px'}} placeholder="Forbidden (comma-sep)" /><span style={{fontSize: '9px', color: styles.textTertiary}}>e.g., manual_override, degraded</span></div>{stateBounds.length > 1 && <button onClick={() => removeRow(stateBounds, setStateBounds, i)} style={{background: 'rgba(214,92,92,0.15)', border: 'none', borderRadius: '6px', color: styles.accentRed, cursor: 'pointer', padding: '0 8px', fontSize: '14px', alignSelf: 'flex-start'}}>×</button>}</div></div></div>))}<button onClick={() => addRow(stateBounds, setStateBounds, { name: '', parameter: '', allowed_values: '', forbidden_values: '' })} style={{marginTop: '8px', background: 'transparent', border: `1px dashed ${styles.borderGlass}`, borderRadius: '6px', padding: '8px 16px', color: styles.purpleBright, cursor: 'pointer', fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', width: '100%'}}>+ Add State Boundary</button></div></div>)}
         {step === 5 && (<div className="space-y-4">{sectionHead('Safety & Failure Mode')}<div className="grid grid-cols-2 gap-4"><div>{fieldLabel('On Boundary Violation *')}<select value={safety.violation_action} onChange={(e) => setSafety({...safety, violation_action: e.target.value})} className="w-full px-4 py-3 rounded-lg outline-none" style={inputStyle}><option value="stop">Full Stop</option><option value="slow">Slow / Degrade</option><option value="alert">Alert Only (log + notify)</option><option value="revert">Revert to Last Safe State</option><option value="handoff">Hand Off to Human Operator</option></select></div><div>{fieldLabel('On Connection Loss *')}<select value={safety.connection_loss_action} onChange={(e) => setSafety({...safety, connection_loss_action: e.target.value})} className="w-full px-4 py-3 rounded-lg outline-none" style={inputStyle}><option value="stop">Full Stop</option><option value="continue">Continue (local enforcement)</option><option value="degrade">Degrade to Reduced Capability</option></select></div></div><div><label style={{display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', color: styles.textSecondary, fontSize: '14px'}}><input type="checkbox" checked={safety.fail_closed} onChange={(e) => setSafety({...safety, fail_closed: e.target.checked})} style={{accentColor: styles.purpleBright}} />Fail-Closed Mode (recommended)</label>{helpText('When enabled, the agent blocks ALL actions if it cannot verify boundaries.')}</div><div style={{borderTop: `1px solid ${styles.borderGlass}`, paddingTop: '16px'}}>{sectionHead('Emergency Contact')}</div><div className="grid grid-cols-3 gap-4"><div>{fieldLabel('Name')}<input type="text" value={safety.emergency_contact_name} onChange={(e) => setSafety({...safety, emergency_contact_name: e.target.value})} className="w-full px-4 py-3 rounded-lg outline-none" style={inputStyle} /></div><div>{fieldLabel('Phone')}<input type="tel" value={safety.emergency_contact_phone} onChange={(e) => setSafety({...safety, emergency_contact_phone: e.target.value})} className="w-full px-4 py-3 rounded-lg outline-none" style={inputStyle} /></div><div>{fieldLabel('Email')}<input type="email" value={safety.emergency_contact_email} onChange={(e) => setSafety({...safety, emergency_contact_email: e.target.value})} className="w-full px-4 py-3 rounded-lg outline-none" style={inputStyle} /></div></div><div>{fieldLabel('Escalation Triggers')}<textarea value={safety.escalation_triggers} onChange={(e) => setSafety({...safety, escalation_triggers: e.target.value})} rows={2} className="w-full px-4 py-3 rounded-lg outline-none resize-none" style={inputStyle} placeholder="Conditions requiring immediate human takeover (e.g., sensor failure, repeated violations)" /></div><div>{fieldLabel('Existing Safety Systems')}<textarea value={safety.existing_safety_systems} onChange={(e) => setSafety({...safety, existing_safety_systems: e.target.value})} rows={2} className="w-full px-4 py-3 rounded-lg outline-none resize-none" style={inputStyle} placeholder="Other safety mechanisms in place (e.g., physical e-stop, LIDAR, safety PLC)" /></div></div>)}
         {step === 6 && (<div className="space-y-4">{sectionHead('Review Application')}<p style={{color: styles.textSecondary, fontSize: '13px', lineHeight: '1.5'}}>Review your application. After submission, our team will review your boundary definitions and configure the ENVELO agent for your system.</p><div style={{background: 'rgba(255,255,255,0.02)', border: `1px solid ${styles.borderGlass}`, borderRadius: '8px', padding: '16px'}}><div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px'}}><div><span style={{color: styles.textTertiary, fontSize: '11px'}}>Organization</span><br/><span style={{color: styles.textPrimary, fontSize: '14px'}}>{org.organization_name}</span></div><div><span style={{color: styles.textTertiary, fontSize: '11px'}}>Contact</span><br/><span style={{color: styles.textPrimary, fontSize: '14px'}}>{org.contact_name || org.contact_email}</span></div><div><span style={{color: styles.textTertiary, fontSize: '11px'}}>System</span><br/><span style={{color: styles.textPrimary, fontSize: '14px'}}>{sys.system_name} ({sys.system_type})</span></div><div><span style={{color: styles.textTertiary, fontSize: '11px'}}>Deployment</span><br/><span style={{color: styles.textPrimary, fontSize: '14px'}}>{sys.deployment_type || 'Not specified'} — {sys.environment || 'Not specified'}</span></div></div></div><div style={{background: 'rgba(255,255,255,0.02)', border: `1px solid ${styles.borderGlass}`, borderRadius: '8px', padding: '16px'}}><span style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', color: styles.purpleBright}}>Boundary Summary</span><div style={{display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px', marginTop: '12px'}}><div style={{textAlign: 'center', padding: '12px', background: 'rgba(91,75,138,0.1)', borderRadius: '6px'}}><div style={{fontSize: '20px', fontWeight: 'bold', color: styles.purpleBright}}>{numericBounds.filter(b => b.name).length}</div><div style={{fontSize: '10px', color: styles.textTertiary, marginTop: '2px'}}>Numeric</div></div><div style={{textAlign: 'center', padding: '12px', background: 'rgba(91,75,138,0.1)', borderRadius: '6px'}}><div style={{fontSize: '20px', fontWeight: 'bold', color: styles.purpleBright}}>{geoBounds.filter(b => b.name).length}</div><div style={{fontSize: '10px', color: styles.textTertiary, marginTop: '2px'}}>Geographic</div></div><div style={{textAlign: 'center', padding: '12px', background: 'rgba(91,75,138,0.1)', borderRadius: '6px'}}><div style={{fontSize: '20px', fontWeight: 'bold', color: styles.purpleBright}}>{timeBounds.filter(b => b.name).length}</div><div style={{fontSize: '10px', color: styles.textTertiary, marginTop: '2px'}}>Time</div></div><div style={{textAlign: 'center', padding: '12px', background: 'rgba(91,75,138,0.1)', borderRadius: '6px'}}><div style={{fontSize: '20px', fontWeight: 'bold', color: styles.purpleBright}}>{stateBounds.filter(b => b.name).length}</div><div style={{fontSize: '10px', color: styles.textTertiary, marginTop: '2px'}}>State</div></div></div></div><div style={{background: 'rgba(255,255,255,0.02)', border: `1px solid ${styles.borderGlass}`, borderRadius: '8px', padding: '16px'}}><span style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', color: styles.purpleBright}}>Safety Configuration</span><div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginTop: '12px'}}><div><span style={{color: styles.textTertiary, fontSize: '11px'}}>On Violation</span><br/><span style={{color: styles.textPrimary, fontSize: '13px'}}>{safety.violation_action}</span></div><div><span style={{color: styles.textTertiary, fontSize: '11px'}}>On Connection Loss</span><br/><span style={{color: styles.textPrimary, fontSize: '13px'}}>{safety.connection_loss_action}</span></div><div><span style={{color: styles.textTertiary, fontSize: '11px'}}>Fail-Closed</span><br/><span style={{color: safety.fail_closed ? '#5CD685' : styles.accentRed, fontSize: '13px'}}>{safety.fail_closed ? 'Enabled' : 'Disabled'}</span></div><div><span style={{color: styles.textTertiary, fontSize: '11px'}}>Agent Method</span><br/><span style={{color: styles.textPrimary, fontSize: '13px'}}>{sys.integration_method}</span></div></div></div></div>)}
         <div style={{display: 'flex', justifyContent: 'space-between', marginTop: '24px', paddingTop: '16px', borderTop: `1px solid ${styles.borderGlass}`}}>{step > 1 ? (<button onClick={() => setStep(step - 1)} style={{background: 'transparent', border: `1px solid ${styles.borderGlass}`, borderRadius: '8px', padding: '10px 24px', color: styles.textSecondary, cursor: 'pointer', fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase'}}>Back</button>) : <div />}{step < totalSteps ? (<button onClick={() => canNext() && setStep(step + 1)} disabled={!canNext()} style={{background: canNext() ? styles.purplePrimary : 'rgba(255,255,255,0.05)', border: `1px solid ${canNext() ? styles.purpleBright : styles.borderGlass}`, borderRadius: '8px', padding: '10px 32px', color: canNext() ? '#fff' : styles.textTertiary, cursor: canNext() ? 'pointer' : 'not-allowed', fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase'}}>Continue</button>) : (<button onClick={handleSubmit} style={{background: '#5CD685', border: '1px solid #5CD685', borderRadius: '8px', padding: '10px 32px', color: '#1a1f2e', cursor: 'pointer', fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', fontWeight: 'bold'}}>Submit Application</button>)}</div>
+      </>}
       </Panel>
     </div>
   );
@@ -1267,6 +1330,7 @@ function NewApplication() {
 // Application Detail
 function ApplicationDetail() {
   const { id } = useParams();
+  const { user } = useAuth();
   const [app, setApp] = useState(null);
   const [scheduling, setScheduling] = useState(false);
   const [testCreated, setTestCreated] = useState(null);
@@ -1303,6 +1367,48 @@ function ApplicationDetail() {
     }
   };
 
+  const handleApprove = async () => {
+    if (!window.confirm('Approve this application and grant ENVELO agent access?')) return;
+    try {
+      await api.patch(`/api/applications/${id}/state?new_state=approved`);
+      setApp({...app, state: 'approved'});
+    } catch (err) {
+      alert('Failed to approve: ' + (err.response?.data?.detail || err.message));
+    }
+  };
+
+  const handleAdvanceToReview = async () => {
+    try {
+      await api.patch(`/api/applications/${id}/state?new_state=under_review`);
+      setApp({...app, state: 'under_review'});
+    } catch (err) {
+      alert('Failed to update: ' + (err.response?.data?.detail || err.message));
+    }
+  };
+
+  // Certification pipeline stages
+  const PIPELINE_STAGES = [
+    { key: 'pending', label: 'Submitted', icon: '1' },
+    { key: 'under_review', label: 'Under Review', icon: '2' },
+    { key: 'approved', label: 'Approved', icon: '3' },
+    { key: 'testing', label: 'CAT-72 Testing', icon: '4' },
+    { key: 'conformant', label: 'Conformant', icon: '✓' },
+  ];
+  const currentStageIdx = PIPELINE_STAGES.findIndex(s => s.key === app?.state);
+  const isSuspended = app?.state === 'revoked' || app?.state === 'suspended';
+
+  const nextStepText = () => {
+    switch(app?.state) {
+      case 'pending': return 'Your application is queued for review by the Sentinel Authority team.';
+      case 'under_review': return 'Our team is evaluating your ODD specification and boundary definitions.';
+      case 'approved': return 'Your system is approved. The ENVELO agent is being configured for CAT-72 testing.';
+      case 'testing': return 'CAT-72 continuous conformance test is in progress (72-hour minimum).';
+      case 'conformant': return 'Your system has achieved ODDC Conformance. Your certificate and ENVELO agent credentials are active.';
+      case 'revoked': return 'This application has been suspended. Contact info@sentinelauthority.org for remediation steps.';
+      default: return '';
+    }
+  };
+
   if (!app) return <div style={{color: styles.textTertiary}}>Loading...</div>;
 
   return (
@@ -1312,35 +1418,69 @@ function ApplicationDetail() {
           <ArrowLeft className="w-4 h-4" />
           Back to Applications
         </Link>
+        {user?.role === 'admin' && (
         <div style={{display: 'flex', gap: '12px'}}>
+          {app.state === 'pending' && (
+            <button onClick={handleAdvanceToReview} className="px-4 py-2 rounded-lg transition-all" style={{background: 'rgba(214,160,92,0.15)', border: '1px solid rgba(214,160,92,0.4)', color: styles.accentAmber, fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>
+              Begin Review
+            </button>
+          )}
           {(app.state === 'pending' || app.state === 'under_review') && (
-            <button
-              onClick={handleApprove}
-              className="px-4 py-2 rounded-lg transition-all"
-              style={{background: 'rgba(92,214,133,0.15)', border: '1px solid rgba(92,214,133,0.4)', color: styles.accentGreen, fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}
-            >
+            <button onClick={handleApprove} className="px-4 py-2 rounded-lg transition-all" style={{background: 'rgba(92,214,133,0.15)', border: '1px solid rgba(92,214,133,0.4)', color: styles.accentGreen, fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>
               Approve Application
             </button>
           )}
           {app.state === 'approved' && (
-            <button
-              onClick={handleScheduleTest}
-              disabled={scheduling}
-              className="px-4 py-2 rounded-lg transition-all"
-              style={{background: styles.purplePrimary, border: `1px solid ${styles.purpleBright}`, color: '#fff', fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: scheduling ? 'wait' : 'pointer', opacity: scheduling ? 0.7 : 1}}
-            >
+            <button onClick={handleScheduleTest} disabled={scheduling} className="px-4 py-2 rounded-lg transition-all" style={{background: styles.purplePrimary, border: `1px solid ${styles.purpleBright}`, color: '#fff', fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: scheduling ? 'wait' : 'pointer', opacity: scheduling ? 0.7 : 1}}>
               {scheduling ? 'Scheduling...' : 'Schedule CAT-72 Test'}
             </button>
           )}
-          <button
-            onClick={handleDeleteApplication}
-            className="px-4 py-2 rounded-lg transition-all"
-            style={{background: 'rgba(214,92,92,0.1)', border: '1px solid rgba(214,92,92,0.3)', color: '#D65C5C', fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}
-          >
+          <button onClick={handleDeleteApplication} className="px-4 py-2 rounded-lg transition-all" style={{background: 'rgba(214,92,92,0.1)', border: '1px solid rgba(214,92,92,0.3)', color: '#D65C5C', fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>
             Delete
           </button>
         </div>
+        )}
       </div>
+      
+      {/* ── Progress Pipeline ── */}
+      <Panel>
+        <div style={{padding: '8px 0'}}>
+          <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px'}}>
+            {PIPELINE_STAGES.map((stage, i) => {
+              const isActive = stage.key === app.state;
+              const isComplete = currentStageIdx > i;
+              const isPending = currentStageIdx < i;
+              return (
+                <React.Fragment key={stage.key}>
+                  {i > 0 && <div style={{flex: 1, height: '2px', background: isComplete ? styles.accentGreen : styles.borderGlass, margin: '0 8px'}} />}
+                  <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', minWidth: '80px'}}>
+                    <div style={{
+                      width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontFamily: "'IBM Plex Mono', monospace", fontSize: '12px', fontWeight: 'bold',
+                      background: isComplete ? 'rgba(92,214,133,0.2)' : isActive ? 'rgba(157,140,207,0.25)' : 'rgba(255,255,255,0.03)',
+                      border: `2px solid ${isComplete ? styles.accentGreen : isActive ? styles.purpleBright : styles.borderGlass}`,
+                      color: isComplete ? styles.accentGreen : isActive ? styles.purpleBright : styles.textTertiary,
+                    }}>
+                      {isComplete ? '✓' : stage.icon}
+                    </div>
+                    <span style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '0.5px', textTransform: 'uppercase', color: isActive ? styles.purpleBright : isComplete ? styles.accentGreen : styles.textTertiary, textAlign: 'center'}}>
+                      {stage.label}
+                    </span>
+                  </div>
+                </React.Fragment>
+              );
+            })}
+          </div>
+          {isSuspended && (
+            <div style={{padding: '12px 16px', background: 'rgba(214,92,92,0.1)', border: '1px solid rgba(214,92,92,0.3)', borderRadius: '8px', marginBottom: '12px'}}>
+              <span style={{color: styles.accentRed, fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px'}}>⚠ SUSPENDED — This application has been suspended pending review.</span>
+            </div>
+          )}
+          <div style={{padding: '12px 16px', background: 'rgba(157,140,207,0.08)', border: `1px solid ${styles.borderGlass}`, borderRadius: '8px'}}>
+            <span style={{color: styles.textSecondary, fontSize: '13px', lineHeight: '1.5'}}>{nextStepText()}</span>
+          </div>
+        </div>
+      </Panel>
       
       {testCreated && (
         <div className="p-4 rounded-lg" style={{background: 'rgba(92,214,133,0.1)', border: '1px solid rgba(157,140,207,0.3)'}}>
@@ -1377,6 +1517,7 @@ function ApplicationDetail() {
             }}>
               {app.state}
             </span>
+            {user?.role === 'admin' && (
             <select 
               value={app.state}
               onChange={async (e) => {
@@ -1385,8 +1526,6 @@ function ApplicationDetail() {
                 try {
                   await api.patch(`/api/applications/${id}/state?new_state=${newState}`);
                   setApp({...app, state: newState});
-                  // Show auto-generated API key
-                  
                 } catch (err) {
                   alert('Failed to update state: ' + (err.response?.data?.detail || err.message));
                 }
@@ -1401,6 +1540,7 @@ function ApplicationDetail() {
               <option value="conformant">Conformant</option>
               <option value="revoked">Revoked</option>
             </select>
+            )}
           </div>
           <p style={{color: styles.textSecondary}}><strong>Submitted:</strong> {app.submitted_at ? new Date(app.submitted_at).toLocaleString() : 'N/A'}</p>
         </Panel>
@@ -1421,7 +1561,7 @@ function ApplicationDetail() {
       </div>
 
       {/* Boundary Editor - Admin Only */}
-      <BoundaryEditor
+      {user?.role === 'admin' && <BoundaryEditor
         applicationId={app.id}
         initialBoundaries={app.envelope_definition || {}}
         onSave={async (boundaries) => {
@@ -1429,11 +1569,11 @@ function ApplicationDetail() {
             await api.patch(`/api/applicants/${app.id}`, { envelope_definition: boundaries });
             alert("Boundaries saved!");
             setApp({...app, envelope_definition: boundaries});
-          } catch (e) {
+          } catch (e) {/* boundary save error */
             alert("Failed to save: " + e.message);
           }
         }}
-      />
+      />}
 
       <Panel>
         <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>ODD Specification</h2>
@@ -3206,6 +3346,7 @@ class EnveloAgent:
         print("[ENVELO] Session ended")
 
 import uuid
+import { SYSTEM_TYPES, DOMAIN_GROUPS } from './systemTypesData';
 
 if __name__ == "__main__":
     print("=" * 60)
