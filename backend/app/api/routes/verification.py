@@ -166,7 +166,7 @@ async def get_test_status(
     if not sessions:
         # Check if certificate exists
         result = await db.execute(
-            select(Certificate).where(Certificate.certificate_number == certificate_id)
+            select(Certificate).where(Certificate.certificate_number == certificate_number)
         )
         cert = result.scalar_one_or_none()
         
