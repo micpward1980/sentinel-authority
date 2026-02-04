@@ -205,6 +205,19 @@ class AuditLog(Base):
 
 
 # ENVELO API Keys
+
+class ApplicationComment(Base):
+    __tablename__ = "application_comments"
+    id = Column(Integer, primary_key=True, index=True)
+    application_id = Column(Integer, ForeignKey("applications.id"), index=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    user_email = Column(String(255))
+    user_role = Column(String(50))
+    content = Column(Text, nullable=False)
+    is_internal = Column(Boolean, default=False)  # Internal notes not shown to applicant
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+
 class APIKey(Base):
     __tablename__ = "api_keys"
     

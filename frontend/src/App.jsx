@@ -1689,11 +1689,16 @@ function ApplicationDetail() {
   const [scheduling, setScheduling] = useState(false);
   const [testCreated, setTestCreated] = useState(null);
   const [history, setHistory] = useState([]);
+  const [comments, setComments] = useState([]);
+  const [newComment, setNewComment] = useState('');
+  const [isInternal, setIsInternal] = useState(false);
+  const [postingComment, setPostingComment] = useState(false);
 
   useEffect(() => {
     if (id) {
       api.get(`/api/applications/${id}`).then(res => setApp(res.data)).catch(console.error);
       api.get(`/api/applications/${id}/history`).then(res => setHistory(res.data)).catch(console.error);
+      api.get(`/api/applications/${id}/comments`).then(res => setComments(res.data)).catch(console.error);
     }
   }, [id]);
 
@@ -1740,6 +1745,31 @@ function ApplicationDetail() {
       api.get(`/api/applications/${id}/history`).then(res => setHistory(res.data)).catch(console.error);
     } catch (err) {
       console.error('Failed to refresh:', err);
+    }
+  };
+
+  const handlePostComment = async () => {
+    if (!newComment.trim()) return;
+    setPostingComment(true);
+    try {
+      const res = await api.post(`/api/applications/${id}/comments`, { content: newComment, is_internal: isInternal });
+      setComments(prev => [res.data, ...prev]);
+      setNewComment('');
+      setIsInternal(false);
+      toast.show('Comment added', 'success');
+    } catch (err) {
+      toast.show('Failed to post comment: ' + (err.response?.data?.detail || err.message), 'error');
+    }
+    setPostingComment(false);
+  };
+
+  const handleDeleteComment = async (commentId) => {
+    try {
+      await api.delete(`/api/applications/${id}/comments/${commentId}`);
+      setComments(prev => prev.filter(c => c.id !== commentId));
+      toast.show('Comment deleted', 'success');
+    } catch (err) {
+      toast.show('Failed to delete comment: ' + (err.response?.data?.detail || err.message), 'error');
     }
   };
 
@@ -2037,9 +2067,74 @@ function ApplicationDetail() {
         <p style={{color: styles.textSecondary, lineHeight: 1.7, whiteSpace: 'pre-wrap'}}>{typeof app.odd_specification === 'object' ? (app.odd_specification?.description || JSON.stringify(app.odd_specification, null, 2)) : app.odd_specification}</p>
       </Panel>
 
+      {/* Comments Thread */}
+      <Panel>
+        <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Comments & Notes</h2>
+        
+        {/* New Comment Form */}
+        <div style={{marginBottom: comments.length > 0 ? '20px' : '0'}}>
+          <textarea
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
+            rows={3}
+            placeholder="Add a comment or note..."
+            className="w-full px-4 py-3 rounded-lg outline-none resize-none"
+            style={{background: 'rgba(255,255,255,0.03)', border: `1px solid ${styles.borderGlass}`, color: styles.textPrimary, fontSize: '13px', fontFamily: 'inherit', transition: 'border-color 0.2s'}}
+            onFocus={(e) => e.target.style.borderColor = styles.purpleBright}
+            onBlur={(e) => e.target.style.borderColor = styles.borderGlass}
+          />
+          <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px'}}>
+            <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+              {user?.role === 'admin' && (
+                <label style={{display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer'}}>
+                  <input type="checkbox" checked={isInternal} onChange={(e) => setIsInternal(e.target.checked)} style={{accentColor: styles.purpleBright}} />
+                  <span style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary, letterSpacing: '0.5px', textTransform: 'uppercase'}}>Internal only</span>
+                </label>
+              )}
+            </div>
+            <button
+              onClick={handlePostComment}
+              disabled={postingComment || !newComment.trim()}
+              className="px-4 py-2 rounded-lg"
+              style={{background: newComment.trim() ? styles.purplePrimary : 'rgba(255,255,255,0.05)', border: `1px solid ${newComment.trim() ? styles.purpleBright : styles.borderGlass}`, color: newComment.trim() ? '#fff' : styles.textTertiary, fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: newComment.trim() ? 'pointer' : 'default', opacity: postingComment ? 0.6 : 1}}
+            >
+              {postingComment ? 'Posting...' : 'Post Comment'}
+            </button>
+          </div>
+        </div>
+        
+        {/* Comment List */}
+        {comments.length > 0 && (
+          <div style={{borderTop: `1px solid ${styles.borderGlass}`, paddingTop: '16px'}}>
+            {comments.map((c) => (
+              <div key={c.id} style={{padding: '12px 0', borderBottom: `1px solid rgba(255,255,255,0.04)`}}>
+                <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '6px'}}>
+                  <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+                    <span style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '12px', color: c.user_role === 'admin' ? styles.purpleBright : styles.textSecondary, fontWeight: 500}}>{c.user_email}</span>
+                    {c.user_role === 'admin' && <span style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', padding: '2px 6px', borderRadius: '4px', background: 'rgba(157,140,207,0.15)', color: styles.purpleBright, textTransform: 'uppercase', letterSpacing: '0.5px'}}>Admin</span>}
+                    {c.is_internal && <span style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', padding: '2px 6px', borderRadius: '4px', background: 'rgba(214,160,92,0.15)', color: styles.accentAmber, textTransform: 'uppercase', letterSpacing: '0.5px'}}>Internal</span>}
+                  </div>
+                  <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+                    <span style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary}}>{c.created_at ? new Date(c.created_at).toLocaleString() : ''}</span>
+                    {(user?.role === 'admin' || user?.email === c.user_email) && (
+                      <button onClick={() => handleDeleteComment(c.id)} style={{background: 'none', border: 'none', color: styles.textTertiary, cursor: 'pointer', fontSize: '12px', padding: '0', opacity: 0.5}} title="Delete comment">×</button>
+                    )}
+                  </div>
+                </div>
+                <p style={{color: styles.textSecondary, fontSize: '13px', lineHeight: 1.6, margin: 0, whiteSpace: 'pre-wrap'}}>{c.content}</p>
+              </div>
+            ))}
+          </div>
+        )}
+        
+        {comments.length === 0 && !newComment && (
+          <p style={{color: styles.textTertiary, fontSize: '13px', fontStyle: 'italic', margin: 0}}>No comments yet</p>
+        )}
+      </Panel>
+
       {app.notes && (
         <Panel>
-          <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Notes</h2>
+          <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Applicant Notes</h2>
           <p style={{color: styles.textSecondary, lineHeight: 1.7, whiteSpace: 'pre-wrap'}}>{app.notes}</p>
         </Panel>
       )}

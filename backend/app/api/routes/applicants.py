@@ -9,7 +9,7 @@ from typing import Optional, Dict, Any
 
 from app.core.database import get_db
 from app.core.security import get_current_user
-from app.models.models import Application, AuditLog
+from app.models.models import Application, AuditLog, ApplicationComment
 from app.services.audit_service import write_audit_log
 from app.services.email_service import (
     notify_admin_new_application, send_application_received,
@@ -440,6 +440,118 @@ async def get_application_history(
         })
     
     return history
+
+
+
+
+# ═══ Application Comments ═══
+
+@router.get("/{application_id}/comments", summary="Get comments for an application")
+async def get_application_comments(
+    application_id: int,
+    db: AsyncSession = Depends(get_db),
+    user: dict = Depends(get_current_user)
+):
+    """Returns all comments for an application, newest first."""
+    result = await db.execute(select(Application).where(Application.id == application_id))
+    app = result.scalar_one_or_none()
+    if not app:
+        raise HTTPException(status_code=404, detail="Application not found")
+    
+    query = select(ApplicationComment).where(
+        ApplicationComment.application_id == application_id
+    ).order_by(ApplicationComment.created_at.desc())
+    
+    # Non-admin users don't see internal notes
+    if user.get("role") != "admin":
+        query = query.where(ApplicationComment.is_internal == False)
+    
+    result = await db.execute(query)
+    comments = result.scalars().all()
+    
+    return [
+        {
+            "id": c.id,
+            "user_email": c.user_email,
+            "user_role": c.user_role,
+            "content": c.content,
+            "is_internal": c.is_internal,
+            "created_at": c.created_at.isoformat() if c.created_at else None,
+        }
+        for c in comments
+    ]
+
+
+@router.post("/{application_id}/comments", summary="Add comment to an application")
+async def add_application_comment(
+    application_id: int,
+    body: dict,
+    db: AsyncSession = Depends(get_db),
+    user: dict = Depends(get_current_user)
+):
+    """Add a comment or internal note to an application."""
+    content = body.get("content", "").strip()
+    if not content:
+        raise HTTPException(status_code=400, detail="Comment content is required")
+    if len(content) > 5000:
+        raise HTTPException(status_code=400, detail="Comment too long (max 5000 chars)")
+    
+    result = await db.execute(select(Application).where(Application.id == application_id))
+    app = result.scalar_one_or_none()
+    if not app:
+        raise HTTPException(status_code=404, detail="Application not found")
+    
+    is_internal = body.get("is_internal", False)
+    # Only admins can post internal notes
+    if is_internal and user.get("role") != "admin":
+        is_internal = False
+    
+    comment = ApplicationComment(
+        application_id=application_id,
+        user_id=user.get("id"),
+        user_email=user.get("email"),
+        user_role=user.get("role", "applicant"),
+        content=content,
+        is_internal=is_internal,
+    )
+    db.add(comment)
+    await db.commit()
+    await db.refresh(comment)
+    
+    return {
+        "id": comment.id,
+        "user_email": comment.user_email,
+        "user_role": comment.user_role,
+        "content": comment.content,
+        "is_internal": comment.is_internal,
+        "created_at": comment.created_at.isoformat() if comment.created_at else None,
+    }
+
+
+@router.delete("/{application_id}/comments/{comment_id}", summary="Delete a comment")
+async def delete_application_comment(
+    application_id: int,
+    comment_id: int,
+    db: AsyncSession = Depends(get_db),
+    user: dict = Depends(get_current_user)
+):
+    """Delete a comment. Admins can delete any, users can delete their own."""
+    result = await db.execute(
+        select(ApplicationComment).where(
+            ApplicationComment.id == comment_id,
+            ApplicationComment.application_id == application_id,
+        )
+    )
+    comment = result.scalar_one_or_none()
+    if not comment:
+        raise HTTPException(status_code=404, detail="Comment not found")
+    
+    if user.get("role") != "admin" and comment.user_id != user.get("id"):
+        raise HTTPException(status_code=403, detail="Cannot delete another user's comment")
+    
+    await db.delete(comment)
+    await db.commit()
+    return {"message": "Comment deleted"}
 
 
 # ═══ Bulk State Operations ═══

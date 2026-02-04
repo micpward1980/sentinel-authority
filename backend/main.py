@@ -526,6 +526,19 @@ async def start_auto_evaluator():
         from app.core.database import engine
         async with engine.begin() as conn:
             await conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS email_preferences JSON"))
+        await conn.execute(text("""
+            CREATE TABLE IF NOT EXISTS application_comments (
+                id SERIAL PRIMARY KEY,
+                application_id INTEGER REFERENCES applications(id),
+                user_id INTEGER REFERENCES users(id),
+                user_email VARCHAR(255),
+                user_role VARCHAR(50),
+                content TEXT NOT NULL,
+                is_internal BOOLEAN DEFAULT FALSE,
+                created_at TIMESTAMP DEFAULT NOW()
+            )
+        """))
+        await conn.execute(text("CREATE INDEX IF NOT EXISTS idx_comments_app_id ON application_comments(application_id)"))
         logger.info('Migration: email_preferences column OK')
     except Exception as e:
         logger.warning(f'Migration check: {e}')
