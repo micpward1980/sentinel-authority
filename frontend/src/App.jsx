@@ -5792,6 +5792,24 @@ function SettingsPage() {
   const [prefs, setPrefs] = useState(null);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [pwForm, setPwForm] = useState({ current: '', new_pw: '', confirm: '' });
+  const [pwSaving, setPwSaving] = useState(false);
+  const [pwError, setPwError] = useState('');
+  const toast = useToast();
+
+  const handleChangePassword = async () => {
+    setPwError('');
+    if (pwForm.current === '' || pwForm.new_pw === '' || pwForm.confirm === '') { setPwError('All fields required'); return; }
+    if (pwForm.new_pw !== pwForm.confirm) { setPwError('Passwords do not match'); return; }
+    if (pwForm.new_pw.length < 8) { setPwError('Min 8 characters'); return; }
+    setPwSaving(true);
+    try {
+      await api.post('/api/auth/change-password', { current_password: pwForm.current, new_password: pwForm.new_pw });
+      toast.show('Password changed successfully', 'success');
+      setPwForm({ current: '', new_pw: '', confirm: '' });
+    } catch (err) { setPwError(err.response?.data?.detail || 'Failed to change password'); }
+    setPwSaving(false);
+  };
 
   useEffect(() => {
     api.get('/api/users/email-preferences').then(res => setPrefs(res.data.preferences || {})).catch(() => {
@@ -5831,6 +5849,29 @@ function SettingsPage() {
           <div><span style={{fontSize: '11px', color: styles.textTertiary}}>Email</span><div style={{color: styles.textPrimary, marginTop: '4px'}}>{user?.email || '-'}</div></div>
           <div><span style={{fontSize: '11px', color: styles.textTertiary}}>Role</span><div style={{color: styles.purpleBright, marginTop: '4px', fontFamily: "'IBM Plex Mono', monospace", fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1px'}}>{user?.role || '-'}</div></div>
           <div><span style={{fontSize: '11px', color: styles.textTertiary}}>Organization</span><div style={{color: styles.textPrimary, marginTop: '4px'}}>{user?.organization || '-'}</div></div>
+        </div>
+      </Panel>
+
+      <Panel>
+        <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Change Password</h2>
+        <div style={{display: 'flex', flexDirection: 'column', gap: '12px', maxWidth: '400px'}}>
+          <div>
+            <label style={{fontSize: '11px', color: styles.textTertiary, display: 'block', marginBottom: '4px'}}>Current Password</label>
+            <input type="password" value={pwForm.current} onChange={e => setPwForm({...pwForm, current: e.target.value})} className="w-full px-4 py-3 rounded-lg outline-none sexy-input" style={{background: 'rgba(255,255,255,0.03)', border: `1px solid ${styles.borderGlass}`, color: styles.textPrimary, fontSize: '13px'}} />
+          </div>
+          <div>
+            <label style={{fontSize: '11px', color: styles.textTertiary, display: 'block', marginBottom: '4px'}}>New Password</label>
+            <input type="password" value={pwForm.new_pw} onChange={e => setPwForm({...pwForm, new_pw: e.target.value})} className="w-full px-4 py-3 rounded-lg outline-none sexy-input" style={{background: 'rgba(255,255,255,0.03)', border: `1px solid ${styles.borderGlass}`, color: styles.textPrimary, fontSize: '13px'}} />
+          </div>
+          <div>
+            <label style={{fontSize: '11px', color: styles.textTertiary, display: 'block', marginBottom: '4px'}}>Confirm New Password</label>
+            <input type="password" value={pwForm.confirm} onChange={e => setPwForm({...pwForm, confirm: e.target.value})} className="w-full px-4 py-3 rounded-lg outline-none sexy-input" style={{background: 'rgba(255,255,255,0.03)', border: `1px solid ${styles.borderGlass}`, color: styles.textPrimary, fontSize: '13px'}} />
+          </div>
+          {pwError && <div style={{color: '#D65C5C', fontSize: '12px'}}>{pwError}</div>}
+          <div style={{fontSize: '11px', color: styles.textTertiary}}>Min 8 chars, 1 uppercase, 1 lowercase, 1 number</div>
+          <button onClick={handleChangePassword} disabled={pwSaving} className="sexy-btn" style={{padding: '10px 24px', borderRadius: '10px', background: styles.purplePrimary, border: `1px solid ${styles.purpleBright}`, color: '#fff', fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: pwSaving ? 'wait' : 'pointer', opacity: pwSaving ? 0.7 : 1, alignSelf: 'flex-start'}}>
+            {pwSaving ? 'Changing...' : 'Change Password'}
+          </button>
         </div>
       </Panel>
 

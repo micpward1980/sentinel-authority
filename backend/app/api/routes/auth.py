@@ -59,6 +59,31 @@ class ResetPasswordRequest(BaseModel):
     new_password: str
 
 
+
+
+class ChangePasswordRequest(BaseModel):
+    current_password: str
+    new_password: str
+
+@router.post('/change-password', summary='Change password')
+async def change_password(
+    body: ChangePasswordRequest,
+    db: AsyncSession = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    result = await db.execute(select(User).where(User.id == current_user.get('id')))
+    user = result.scalar_one_or_none()
+    if not user:
+        raise HTTPException(status_code=404, detail='User not found')
+    if not verify_password(body.current_password, user.hashed_password):
+        raise HTTPException(status_code=400, detail='Current password is incorrect')
+    valid, msg = validate_password_strength(body.new_password)
+    if not valid:
+        raise HTTPException(status_code=400, detail=msg)
+    user.hashed_password = get_password_hash(body.new_password)
+    await db.commit()
+    return {'message': 'Password changed successfully'}
+
 @router.post("/register", response_model=TokenResponse, summary="Register new user")
 @limiter.limit("3/minute")
 async def register(request: Request, user_data: UserCreate, db: AsyncSession = Depends(get_db)):
