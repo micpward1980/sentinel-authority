@@ -292,7 +292,7 @@ async def get_me(current_user: dict = Depends(get_current_user), db: AsyncSessio
     user = result.scalar_one_or_none()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
-    return {"id": user.id, "email": user.email, "full_name": user.full_name, "organization": user.organization, "role": user.role.value}
+    return {"id": user.id, "email": user.email, "full_name": user.full_name, "organization": user.organization, "role": user.role.value, "totp_enabled": user.totp_enabled or False}
 
 @router.post("/forgot-password", summary="Request password reset email")
 @limiter.limit("3/minute")

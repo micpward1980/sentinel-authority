@@ -6004,7 +6004,7 @@ function SettingsPage() {
 
   useEffect(() => {
     api.get('/api/auth/me').then(res => {
-      api.get('/api/users/' + res.data.id).then(r => setTwoFA(prev => ({...prev, enabled: r.data.totp_enabled || false, loading: false}))).catch(() => setTwoFA(prev => ({...prev, loading: false})));
+      setTwoFA(prev => ({...prev, enabled: res.data.totp_enabled || false, loading: false}));
     }).catch(() => setTwoFA(prev => ({...prev, loading: false})));
   }, []);
 
