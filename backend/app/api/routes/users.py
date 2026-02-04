@@ -226,6 +226,35 @@ DEFAULT_EMAIL_PREFS = {
     "certificate_alerts": True, "agent_alerts": True, "marketing": False,
 }
 
+
+
+@router.post("/{user_id}/approve", summary="Approve pending user")
+async def approve_user(user_id: int, db: AsyncSession = Depends(get_db), admin: dict = Depends(get_current_user)):
+    if admin.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Admin only")
+    result = await db.execute(select(User).where(User.id == user_id))
+    user = result.scalar_one_or_none()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    user.is_active = True
+    user.role = UserRole.APPLICANT
+    await db.commit()
+    await db.refresh(user)
+    return {"message": "User approved", "id": user.id, "email": user.email}
+
+
+@router.post("/{user_id}/reject", summary="Reject pending user")
+async def reject_user(user_id: int, db: AsyncSession = Depends(get_db), admin: dict = Depends(get_current_user)):
+    if admin.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Admin only")
+    result = await db.execute(select(User).where(User.id == user_id))
+    user = result.scalar_one_or_none()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    user.is_active = False
+    await db.commit()
+    return {"message": "User rejected", "id": user.id, "email": user.email}
+
 @router.get("/email-preferences", summary="Get email preferences")
 async def get_email_preferences(
     db: AsyncSession = Depends(get_db),
