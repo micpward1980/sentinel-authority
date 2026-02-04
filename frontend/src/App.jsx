@@ -150,25 +150,25 @@ function Layout({ children }) {
   const location = useLocation();
   const [notifs, setNotifs] = useState([]);
   const [notifOpen, setNotifOpen] = useState(false);
-  const [lastSeen, setLastSeen] = useState(() => { try { return localStorage.getItem('sa_notif_seen') || ''; } catch(e) { return ''; } });
+  const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
     if (user) {
       api.get('/api/certificates/').then(res => setUserCerts(res.data || [])).catch(() => setUserCerts([]));
       api.get('/api/applications/').then(res => setUserApps(res.data || [])).catch(() => setUserApps([]));
-      api.get('/api/notifications').then(res => setNotifs(res.data.notifications || [])).catch(() => {});
+      api.get('/api/notifications').then(res => { setNotifs(res.data.notifications || []); setUnreadCount(res.data.unread_count || 0); }).catch(() => {});
     }
   }, [user]);
 
   // Poll notifications
   useEffect(() => {
     if (!user) return;
-    const iv = setInterval(() => api.get('/api/notifications').then(r => setNotifs(r.data.notifications || [])).catch(() => {}), 60000);
+    const iv = setInterval(() => api.get('/api/notifications').then(r => { setNotifs(r.data.notifications || []); setUnreadCount(r.data.unread_count || 0); }).catch(() => {}), 60000);
     return () => clearInterval(iv);
   }, [user]);
 
-  const unreadCount = notifs.filter(n => n.timestamp && n.timestamp > lastSeen).length;
-  const markAllRead = () => { const now = new Date().toISOString(); setLastSeen(now); try { localStorage.setItem('sa_notif_seen', now); } catch(e) {} setNotifOpen(false); };
+  
+  const markAllRead = () => { api.post('/api/notifications/mark-read').then(() => setUnreadCount(0)).catch(() => {}); setNotifOpen(false); };
 
   const navigation = [
     { name: 'Dashboard', href: '/dashboard', icon: Home, roles: ['admin', 'applicant'] },
@@ -345,7 +345,7 @@ function Layout({ children }) {
                 {notifs.length === 0 ? (
                   <div style={{padding: '32px 16px', textAlign: 'center', color: styles.textTertiary, fontSize: '13px', fontStyle: 'italic'}}>No recent activity</div>
                 ) : notifs.map((n, i) => {
-                  const isUnread = n.timestamp && n.timestamp > lastSeen;
+                  const isUnread = !n.read;
                   const typeColor = {success: styles.accentGreen, warning: '#D6A05C', info: styles.purpleBright, error: '#D65C5C'}[n.type] || styles.purpleBright;
                   const typeIcon = {success: '✓', warning: '⚠', info: '●', error: '✗'}[n.type] || '●';
                   return (

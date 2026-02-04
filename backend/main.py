@@ -131,9 +131,11 @@ async def get_notifications(
     current_user: dict = Depends(get_current_user)
 ):
     from sqlalchemy import select, desc
-    from app.models.models import AuditLog, Application
+    from app.models.models import AuditLog, Application, User
     from datetime import timedelta
     
+    user_result = await db.execute(select(User).where(User.id == int(current_user.get("sub"))))
+    user_obj = user_result.scalar_one_or_none()
     notifications = []
     cutoff = datetime.utcnow() - timedelta(days=7)
     
@@ -165,7 +167,7 @@ async def get_notifications(
                 "id": log.id, "message": msg, "type": ntype,
                 "timestamp": log.timestamp.isoformat() if log.timestamp else None,
                 "resource_type": log.resource_type, "resource_id": log.resource_id,
-                "user_email": log.user_email,
+                "user_email": log.user_email, "read": user_obj.notifications_read_at is not None and log.timestamp is not None and log.timestamp <= user_obj.notifications_read_at,
             })
         # Pending count
         result = await db.execute(select(Application).where(Application.state == "pending"))
@@ -198,9 +200,25 @@ async def get_notifications(
             notifications.append({
                 "id": log.id, "message": msg, "type": ntype,
                 "timestamp": log.timestamp.isoformat() if log.timestamp else None,
-                "resource_type": log.resource_type, "resource_id": log.resource_id, "user_email": None,
+                "resource_type": log.resource_type, "resource_id": log.resource_id, "user_email": None, "read": user_obj.notifications_read_at is not None and log.timestamp is not None and log.timestamp <= user_obj.notifications_read_at,
             })
-    return {"notifications": notifications[:20]}
+    unread = sum(1 for n in notifications if not n.get("read", False))
+    return {"notifications": notifications[:20], "unread_count": unread}
+
+@app.post("/api/notifications/mark-read", tags=["System"], summary="Mark all notifications as read")
+async def mark_notifications_read(
+    db: AsyncSession = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    from app.models.models import User
+    result = await db.execute(select(User).where(User.id == int(current_user.get("sub"))))
+    user = result.scalar_one_or_none()
+    if user:
+        user.notifications_read_at = datetime.utcnow()
+        await db.commit()
+    return {"message": "Notifications marked as read"}
+
+
 
 @app.get("/docs", include_in_schema=False)
 async def custom_swagger_ui():
@@ -623,6 +641,11 @@ async def start_auto_evaluator():
             try:
                 await conn.execute(text("ALTER TABLE users ADD COLUMN totp_backup_codes TEXT"))
                 print("Added totp_backup_codes column")
+            except Exception:
+                pass
+            try:
+                await conn.execute(text("ALTER TABLE users ADD COLUMN notifications_read_at TIMESTAMP"))
+                print("Added notifications_read_at column")
             except Exception:
                 pass
             CREATE TABLE IF NOT EXISTS application_comments (
