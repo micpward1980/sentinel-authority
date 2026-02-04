@@ -7,6 +7,7 @@ from app.services.email_service import notify_admin_new_registration
 from datetime import datetime, timedelta
 import secrets
 from fastapi import APIRouter, Depends, HTTPException, status, Request, Query
+from fastapi.responses import Response as FastAPIResponse
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 import re

@@ -1,13 +1,13 @@
 """User Management routes (Admin only)."""
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from pydantic import BaseModel, EmailStr
 from typing import Optional, List
 
 from app.core.database import get_db
-from app.core.security import get_password_hash, get_current_user
+from app.core.security import get_password_hash, get_current_user, require_admin
 from app.models.models import User, UserRole
 
 router = APIRouter()

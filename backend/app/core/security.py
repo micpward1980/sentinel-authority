@@ -47,3 +47,8 @@ def require_role(allowed_roles: list):
             raise HTTPException(status_code=403, detail="Insufficient permissions")
         return user
     return checker
+
+
+def require_admin():
+    """Dependency that requires admin role."""
+    return require_role(["admin"])
