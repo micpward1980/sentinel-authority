@@ -46,7 +46,7 @@ async def generate_application_number(db: AsyncSession) -> str:
     return f"APP-{year}-{count:05d}"
 
 
-@router.post("/")
+@router.post("/", summary="Submit new application")
 async def create_application(
     app_data: ApplicationCreate,
     db: AsyncSession = Depends(get_db),
@@ -106,7 +106,7 @@ async def create_application(
     }
 
 
-@router.get("/")
+@router.get("/", summary="List all applications")
 async def list_applications(
     db: AsyncSession = Depends(get_db),
     user: dict = Depends(get_current_user)
@@ -135,7 +135,7 @@ async def list_applications(
     ]
 
 
-@router.get("/{application_id}")
+@router.get("/{application_id}", summary="Get application details")
 async def get_application(
     application_id: int,
     db: AsyncSession = Depends(get_db),
@@ -171,7 +171,7 @@ async def get_application(
     }
 
 
-@router.patch("/{application_id}/state")
+@router.patch("/{application_id}/state", summary="Update application state")
 async def update_application_state(
     application_id: int,
     new_state: str,
@@ -312,7 +312,7 @@ async def update_application_state(
         raise HTTPException(status_code=400, detail=f"Invalid state: {new_state}")
 
 
-@router.post("/document-download")
+@router.post("/document-download", summary="Request document download")
 async def document_download(
     request: Request,
     db: AsyncSession = Depends(get_db)
@@ -359,7 +359,7 @@ async def document_download(
         return {"success": True, "message": "Download tracked (email failed)"}
 
 
-@router.delete("/{app_id}")
+@router.delete("/{app_id}", summary="Delete application")
 async def delete_application(
     app_id: int,
     db: AsyncSession = Depends(get_db),
@@ -383,7 +383,7 @@ async def delete_application(
 
 # ═══ Bulk State Operations ═══
 
-@router.post("/bulk-state")
+@router.post("/bulk-state", summary="Bulk update application states")
 async def bulk_update_state(
     body: dict,
     db: AsyncSession = Depends(get_db),
@@ -427,7 +427,7 @@ async def bulk_update_state(
     }
 
 
-@router.post("/bulk-delete")
+@router.post("/bulk-delete", summary="Bulk delete applications")
 async def bulk_delete_applications(
     body: dict,
     db: AsyncSession = Depends(get_db),

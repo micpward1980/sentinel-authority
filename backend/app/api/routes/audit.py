@@ -9,7 +9,7 @@ from app.models.models import AuditLog
 router = APIRouter(prefix="/api/audit", tags=["audit"])
 
 
-@router.get("/logs")
+@router.get("/logs", summary="Query audit logs")
 async def get_audit_logs(
     action: str = Query(None),
     resource_type: str = Query(None),
@@ -59,7 +59,7 @@ async def get_audit_logs(
     }
 
 
-@router.get("/actions")
+@router.get("/actions", summary="List distinct audit actions")
 async def get_action_types(
     db: AsyncSession = Depends(get_db),
     user: dict = Depends(require_role(["admin"])),
@@ -72,7 +72,7 @@ async def get_action_types(
     return {"actions": actions}
 
 
-@router.get("/resource-types")
+@router.get("/resource-types", summary="List distinct resource types")
 async def get_resource_types(
     db: AsyncSession = Depends(get_db),
     user: dict = Depends(require_role(["admin"])),

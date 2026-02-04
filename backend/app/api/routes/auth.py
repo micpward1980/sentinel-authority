@@ -59,7 +59,7 @@ class ResetPasswordRequest(BaseModel):
     new_password: str
 
 
-@router.post("/register", response_model=TokenResponse)
+@router.post("/register", response_model=TokenResponse, summary="Register new user")
 @limiter.limit("3/minute")
 async def register(request: Request, user_data: UserCreate, db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(User).where(User.email == user_data.email))
@@ -92,7 +92,7 @@ async def register(request: Request, user_data: UserCreate, db: AsyncSession = D
     }
 
 
-@router.post("/login", response_model=TokenResponse)
+@router.post("/login", response_model=TokenResponse, summary="Login and get JWT token")
 @limiter.limit("5/minute")
 async def login(request: Request, credentials: UserLogin, db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(User).where(User.email == credentials.email))
@@ -129,7 +129,7 @@ async def login(request: Request, credentials: UserLogin, db: AsyncSession = Dep
     }
 
 
-@router.get("/me")
+@router.get("/me", summary="Get current user profile")
 async def get_me(current_user: dict = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(User).where(User.id == int(current_user["sub"])))
     user = result.scalar_one_or_none()
@@ -137,7 +137,7 @@ async def get_me(current_user: dict = Depends(get_current_user), db: AsyncSessio
         raise HTTPException(status_code=404, detail="User not found")
     return {"id": user.id, "email": user.email, "full_name": user.full_name, "organization": user.organization, "role": user.role.value}
 
-@router.post("/forgot-password")
+@router.post("/forgot-password", summary="Request password reset email")
 @limiter.limit("3/minute")
 async def forgot_password(request: Request, req: ForgotPasswordRequest, db: AsyncSession = Depends(get_db)):
     """Request a password reset email"""
@@ -161,7 +161,7 @@ async def forgot_password(request: Request, req: ForgotPasswordRequest, db: Asyn
     return {"message": "If an account exists with this email, a reset link has been sent."}
 
 
-@router.post("/reset-password")
+@router.post("/reset-password", summary="Reset password with token")
 async def reset_password(request: ResetPasswordRequest, db: AsyncSession = Depends(get_db)):
     """Reset password using token"""
     result = await db.execute(
@@ -189,7 +189,7 @@ async def reset_password(request: ResetPasswordRequest, db: AsyncSession = Depen
     return {"message": "Password has been reset successfully"}
 
 
-@router.get("/verify-reset-token/{token}")
+@router.get("/verify-reset-token/{token}", summary="Verify reset token validity")
 async def verify_reset_token(token: str, db: AsyncSession = Depends(get_db)):
     """Verify if a reset token is valid"""
     result = await db.execute(

@@ -126,7 +126,7 @@ async def generate_test_id(db: AsyncSession) -> str:
 # ROUTES
 # =============================================================================
 
-@router.post("/tests")
+@router.post("/tests", summary="Create new CAT-72 test")
 async def create_test(
     data: TestCreate,
     db: AsyncSession = Depends(get_db),
@@ -183,7 +183,7 @@ async def create_test(
     }
 
 
-@router.get("/tests")
+@router.get("/tests", summary="List CAT-72 tests")
 async def list_tests(
     db: AsyncSession = Depends(get_db),
     user: dict = Depends(get_current_user)
@@ -213,7 +213,7 @@ async def list_tests(
     ]
 
 
-@router.get("/tests/{test_id}")
+@router.get("/tests/{test_id}", summary="Get test details")
 async def get_test(
     test_id: str,
     db: AsyncSession = Depends(get_db),
@@ -248,7 +248,7 @@ async def get_test(
     }
 
 
-@router.post("/tests/{test_id}/start")
+@router.post("/tests/{test_id}/start", summary="Start CAT-72 test execution")
 async def start_test(
     test_id: str,
     db: AsyncSession = Depends(get_db),
@@ -303,7 +303,7 @@ async def start_test(
     }
 
 
-@router.post("/tests/{test_id}/telemetry")
+@router.post("/tests/{test_id}/telemetry", summary="Submit test telemetry data")
 async def ingest_telemetry(
     test_id: str,
     data: TelemetryInput,
@@ -411,7 +411,7 @@ async def ingest_telemetry(
     }
 
 
-@router.post("/tests/{test_id}/stop")
+@router.post("/tests/{test_id}/stop", summary="Stop running test")
 async def stop_test(
     test_id: str,
     db: AsyncSession = Depends(get_db),
@@ -516,7 +516,7 @@ async def stop_test(
     }
 
 
-@router.get("/tests/{test_id}/metrics")
+@router.get("/tests/{test_id}/metrics", summary="Get test metrics summary")
 async def get_test_metrics(
     test_id: str,
     db: AsyncSession = Depends(get_db),
@@ -558,7 +558,7 @@ async def get_test_metrics(
     }
 
 
-@router.get("/tests/{test_id}/interlock-events")
+@router.get("/tests/{test_id}/interlock-events", summary="Get interlock event log")
 async def get_interlock_events(
     test_id: str,
     db: AsyncSession = Depends(get_db),
@@ -592,7 +592,7 @@ async def get_interlock_events(
     ]
 
 
-@router.get("/tests/{test_id}/evidence")
+@router.get("/tests/{test_id}/evidence", summary="Get test evidence package")
 async def get_evidence_chain(
     test_id: str,
     db: AsyncSession = Depends(get_db),

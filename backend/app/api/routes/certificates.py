@@ -20,7 +20,7 @@ async def generate_certificate_number(db: AsyncSession) -> str:
     count = (result.scalar() or 0) + 1
     return f"{settings.CERTIFICATE_PREFIX}-{year}-{count:05d}"
 
-@router.post("/issue/{test_id}")
+@router.post("/issue/{test_id}", summary="Issue certificate for passed test")
 async def issue_certificate(test_id: str, db: AsyncSession = Depends(get_db), user: dict = Depends(require_role(["admin", "operator"]))):
     result = await db.execute(select(CAT72Test).where(CAT72Test.test_id == test_id))
     test = result.scalar_one_or_none()
@@ -71,7 +71,7 @@ async def issue_certificate(test_id: str, db: AsyncSession = Depends(get_db), us
     await notify_certificate_issued(application.contact_email, certificate.system_name, certificate.certificate_number, certificate.organization_name)
     return {"certificate_number": certificate.certificate_number, "organization_name": certificate.organization_name, "system_name": certificate.system_name, "state": certificate.state.value, "issued_at": certificate.issued_at.isoformat(), "expires_at": certificate.expires_at.isoformat(), "verification_url": certificate.verification_url}
 
-@router.get("/")
+@router.get("/", summary="List all certificates")
 async def list_certificates(db: AsyncSession = Depends(get_db), user: dict = Depends(get_current_user)):
     # Admins see all, applicants see only their organization's certificates
     if user.get("role") in ["admin", "operator"]:
@@ -95,14 +95,14 @@ async def list_certificates(db: AsyncSession = Depends(get_db), user: dict = Dep
     
     return [{"id": c.id, "certificate_number": c.certificate_number, "organization_name": c.organization_name, "system_name": c.system_name, "state": c.state.value, "issued_at": c.issued_at.isoformat() if c.issued_at else None, "expires_at": c.expires_at.isoformat() if c.expires_at else None} for c in result.scalars().all()]
 
-@router.get("/{certificate_number}")
+@router.get("/{certificate_number}", summary="Get certificate details")
 async def get_certificate(certificate_number: str, db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(Certificate).where(Certificate.certificate_number == certificate_number))
     cert = result.scalar_one_or_none()
     if not cert: raise HTTPException(status_code=404, detail="Certificate not found")
     return {"certificate_number": cert.certificate_number, "organization_name": cert.organization_name, "system_name": cert.system_name, "state": cert.state.value, "issued_at": cert.issued_at.isoformat() if cert.issued_at else None, "expires_at": cert.expires_at.isoformat() if cert.expires_at else None, "convergence_score": cert.convergence_score, "evidence_hash": cert.evidence_hash}
 
-@router.get("/{certificate_number}/pdf")
+@router.get("/{certificate_number}/pdf", summary="Download certificate PDF")
 async def download_pdf(certificate_number: str, db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(Certificate).where(Certificate.certificate_number == certificate_number))
     cert = result.scalar_one_or_none()
@@ -117,7 +117,7 @@ async def download_pdf(certificate_number: str, db: AsyncSession = Depends(get_d
 
 
 
-@router.post("/{certificate_number}/regenerate-pdf")
+@router.post("/{certificate_number}/regenerate-pdf", summary="Regenerate certificate PDF")
 async def regenerate_pdf(certificate_number: str, db: AsyncSession = Depends(get_db), user: dict = Depends(require_role(["admin"]))):
     """Regenerate PDF for an existing certificate (admin only)"""
     result = await db.execute(select(Certificate).where(Certificate.certificate_number == certificate_number))
@@ -137,7 +137,7 @@ async def regenerate_pdf(certificate_number: str, db: AsyncSession = Depends(get
     await db.commit()
     return {"message": f"PDF regenerated for {cert.certificate_number}", "size_bytes": len(pdf_bytes)}
 
-@router.post("/regenerate-all-pdfs")
+@router.post("/regenerate-all-pdfs", summary="Regenerate all certificate PDFs")
 async def regenerate_all_pdfs(db: AsyncSession = Depends(get_db), user: dict = Depends(require_role(["admin"]))):
     """Regenerate PDFs for all certificates missing them (admin only)"""
     result = await db.execute(select(Certificate).where(Certificate.certificate_pdf == None))
@@ -163,7 +163,7 @@ async def regenerate_all_pdfs(db: AsyncSession = Depends(get_db), user: dict = D
     await db.commit()
     return {"regenerated": regenerated, "errors": errors, "total_missing": len(certs)}
 
-@router.patch("/{certificate_number}/suspend")
+@router.patch("/{certificate_number}/suspend", summary="Suspend certificate")
 async def suspend_certificate(certificate_number: str, reason: str, db: AsyncSession = Depends(get_db), user: dict = Depends(require_role(["admin"]))):
     result = await db.execute(select(Certificate).where(Certificate.certificate_number == certificate_number))
     cert = result.scalar_one_or_none()
@@ -173,7 +173,7 @@ async def suspend_certificate(certificate_number: str, reason: str, db: AsyncSes
     await db.commit()
     return {"message": "Certificate suspended", "state": cert.state.value}
 
-@router.patch("/{certificate_number}/revoke")
+@router.patch("/{certificate_number}/revoke", summary="Revoke certificate")
 async def revoke_certificate(certificate_number: str, reason: str, db: AsyncSession = Depends(get_db), user: dict = Depends(require_role(["admin"]))):
     result = await db.execute(select(Certificate).where(Certificate.certificate_number == certificate_number))
     cert = result.scalar_one_or_none()
@@ -183,7 +183,7 @@ async def revoke_certificate(certificate_number: str, reason: str, db: AsyncSess
     await db.commit()
     return {"message": "Certificate revoked", "state": cert.state.value}
 
-@router.patch("/{certificate_number}/reinstate")
+@router.patch("/{certificate_number}/reinstate", summary="Reinstate suspended certificate")
 async def reinstate_certificate(certificate_number: str, db: AsyncSession = Depends(get_db), user: dict = Depends(require_role(["admin"]))):
     result = await db.execute(select(Certificate).where(Certificate.certificate_number == certificate_number))
     cert = result.scalar_one_or_none()

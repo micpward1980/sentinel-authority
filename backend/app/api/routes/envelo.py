@@ -62,7 +62,7 @@ async def get_api_key_from_header(
     return api_key
 
 
-@router.post("/sessions")
+@router.post("/sessions", summary="Start new agent session")
 async def register_session(
     data: SessionCreate,
     db: AsyncSession = Depends(get_db),
@@ -102,7 +102,7 @@ async def register_session(
     return {"status": "registered", "session_id": data.session_id}
 
 
-@router.post("/telemetry")
+@router.post("/telemetry", summary="Submit agent telemetry")
 async def receive_telemetry(
     data: TelemetryBatch,
     db: AsyncSession = Depends(get_db),
@@ -172,7 +172,7 @@ async def receive_telemetry(
     
 
 
-@router.post("/sessions/{session_id}/end")
+@router.post("/sessions/{session_id}/end", summary="End agent session")
 async def end_session(
     session_id: str,
     data: SessionEnd,
@@ -204,7 +204,7 @@ async def end_session(
     return {"status": "ended", "session_id": session_id}
 
 
-@router.get("/sessions")
+@router.get("/sessions", summary="List my sessions")
 async def list_sessions(
     db: AsyncSession = Depends(get_db),
     api_key: APIKey = Depends(get_api_key_from_header)
@@ -236,7 +236,7 @@ async def list_sessions(
     }
 
 
-@router.get("/sessions/{session_id}")
+@router.get("/sessions/{session_id}", summary="Get session details")
 async def get_session(
     session_id: str,
     db: AsyncSession = Depends(get_db),
@@ -272,7 +272,7 @@ async def get_session(
     }
 
 
-@router.get("/sessions/{session_id}/telemetry")
+@router.get("/sessions/{session_id}/telemetry", summary="Get session telemetry history")
 async def get_session_telemetry(
     session_id: str,
     limit: int = 100,
@@ -324,7 +324,7 @@ async def get_session_telemetry(
     }
 
 
-@router.get("/sessions/{session_id}/violations")
+@router.get("/sessions/{session_id}/violations", summary="Get session violations")
 async def get_session_violations(
     session_id: str,
     db: AsyncSession = Depends(get_db),
@@ -362,7 +362,7 @@ async def get_session_violations(
     }
 
 
-@router.get("/live")
+@router.get("/live", summary="Live telemetry feed")
 async def get_live_sessions(
     db: AsyncSession = Depends(get_db),
     api_key: APIKey = Depends(get_api_key_from_header)
@@ -392,7 +392,7 @@ async def get_live_sessions(
     }
 
 
-@router.get("/stats")
+@router.get("/stats", summary="Agent statistics summary")
 async def get_global_stats(db: AsyncSession = Depends(get_db)):
     """Get global ENVELO statistics (public endpoint)"""
     
@@ -422,7 +422,7 @@ async def get_global_stats(db: AsyncSession = Depends(get_db)):
     }
 
 
-@router.get("/admin/sessions")
+@router.get("/admin/sessions", summary="Admin: list all sessions")
 async def list_all_sessions(
     db: AsyncSession = Depends(get_db),
     current_user: dict = Depends(get_current_user)
@@ -577,7 +577,7 @@ async def download_session_report(
     )
 
 
-@router.post("/heartbeat")
+@router.post("/heartbeat", summary="Agent heartbeat ping")
 async def receive_heartbeat(
     db: AsyncSession = Depends(get_db),
     api_key: APIKey = Depends(get_api_key_from_header)
@@ -611,7 +611,7 @@ async def receive_heartbeat(
     return {"status": "ok", "timestamp": now.isoformat(), "sessions_updated": len(sessions)}
 
 
-@router.get("/monitoring/overview")
+@router.get("/monitoring/overview", summary="Monitoring dashboard overview")
 async def get_monitoring_overview(
     db: AsyncSession = Depends(get_db),
     current_user: dict = Depends(get_current_user)
@@ -750,7 +750,7 @@ async def get_session_timeline(
     }
 
 
-@router.get("/monitoring/alerts")
+@router.get("/monitoring/alerts", summary="Active monitoring alerts")
 async def get_alerts(
     db: AsyncSession = Depends(get_db),
     current_user: dict = Depends(get_current_user)
@@ -815,7 +815,7 @@ async def get_alerts(
     return {"alerts": alerts, "total": len(alerts)}
 
 
-@router.post("/check-offline")
+@router.post("/check-offline", summary="Check for offline agents")
 async def check_offline_agents(
     db: AsyncSession = Depends(get_db),
     current_user: dict = Depends(get_current_user)
@@ -905,7 +905,7 @@ async def check_offline_agents(
     return {"notifications_sent": notifications_sent}
 
 
-@router.post("/check-violations")
+@router.post("/check-violations", summary="Check violation thresholds")
 async def check_violation_rates(
     db: AsyncSession = Depends(get_db),
     current_user: dict = Depends(get_current_user)

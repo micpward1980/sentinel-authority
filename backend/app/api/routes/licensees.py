@@ -32,7 +32,7 @@ async def generate_license_number(db: AsyncSession) -> str:
     return f"LIC-{year}-{count:05d}"
 
 
-@router.post("/")
+@router.post("/", summary="Register new licensee")
 async def create_licensee(
     data: LicenseeCreate,
     db: AsyncSession = Depends(get_db),
@@ -69,7 +69,7 @@ async def create_licensee(
     }
 
 
-@router.get("/")
+@router.get("/", summary="List all licensees")
 async def list_licensees(
     db: AsyncSession = Depends(get_db),
     user: dict = Depends(require_role(["admin"]))
@@ -94,7 +94,7 @@ async def list_licensees(
     ]
 
 
-@router.get("/me")
+@router.get("/me", summary="Get current licensee info")
 async def get_my_license(
     db: AsyncSession = Depends(get_db),
     user: dict = Depends(get_current_user)
@@ -118,7 +118,7 @@ async def get_my_license(
     }
 
 
-@router.get("/docs")
+@router.get("/docs", summary="Get licensee documentation")
 async def get_documentation(
     user: dict = Depends(get_current_user)
 ):
@@ -155,7 +155,7 @@ async def get_documentation(
     }
 
 
-@router.patch("/{license_number}/deactivate")
+@router.patch("/{license_number}/deactivate", summary="Deactivate licensee")
 async def deactivate_licensee(
     license_number: str,
     db: AsyncSession = Depends(get_db),
@@ -176,7 +176,7 @@ async def deactivate_licensee(
     return {"message": "Licensee deactivated", "license_number": license_number}
 
 
-@router.post("/{license_number}/rotate-key")
+@router.post("/{license_number}/rotate-key", summary="Rotate licensee API key")
 async def rotate_api_key(
     license_number: str,
     db: AsyncSession = Depends(get_db),

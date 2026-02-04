@@ -21,7 +21,7 @@ class DashboardStats(BaseModel):
     certificates_active: int
 
 
-@router.get("/stats")
+@router.get("/stats", summary="Dashboard statistics")
 async def get_stats(db: AsyncSession = Depends(get_db), user: dict = Depends(get_current_user)):
     if user.get("role") == "applicant":
         org = user.get("organization")
@@ -46,7 +46,7 @@ async def get_stats(db: AsyncSession = Depends(get_db), user: dict = Depends(get
     }
 
 
-@router.get("/recent-applications")
+@router.get("/recent-applications", summary="Recent applications list")
 async def get_recent_applications(db: AsyncSession = Depends(get_db), user: dict = Depends(get_current_user)):
     if user.get("role") == "applicant":
         result = await db.execute(
@@ -69,7 +69,7 @@ async def get_recent_applications(db: AsyncSession = Depends(get_db), user: dict
     ]
 
 
-@router.get("/active-tests")
+@router.get("/active-tests", summary="Currently running CAT-72 tests")
 async def get_active_tests(db: AsyncSession = Depends(get_db), user: dict = Depends(get_current_user)):
     result = await db.execute(
         select(CAT72Test, Application).join(Application, CAT72Test.application_id == Application.id).where(CAT72Test.state == TestState.RUNNING).order_by(CAT72Test.started_at.desc())
@@ -91,7 +91,7 @@ async def get_active_tests(db: AsyncSession = Depends(get_db), user: dict = Depe
     ]
 
 
-@router.get("/recent-certificates")
+@router.get("/recent-certificates", summary="Recently issued certificates")
 async def get_recent_certificates(db: AsyncSession = Depends(get_db), user: dict = Depends(get_current_user)):
     if user.get("role") == "applicant":
         result = await db.execute(

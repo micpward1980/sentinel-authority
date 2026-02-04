@@ -51,7 +51,7 @@ def require_admin(current_user: dict = Depends(get_current_user)):
     return current_user
 
 
-@router.get("/", response_model=List[UserResponse])
+@router.get("/", response_model=List[UserResponse], summary="List all users")
 async def list_users(
     db: AsyncSession = Depends(get_db),
     current_user: dict = Depends(require_admin)
@@ -73,7 +73,7 @@ async def list_users(
     ]
 
 
-@router.get("/{user_id}", response_model=UserResponse)
+@router.get("/{user_id}", response_model=UserResponse, summary="Get user by ID")
 async def get_user(
     user_id: int,
     db: AsyncSession = Depends(get_db),
@@ -95,7 +95,7 @@ async def get_user(
     )
 
 
-@router.post("/", response_model=UserResponse)
+@router.post("/", response_model=UserResponse, summary="Create user")
 async def create_user(
     user_data: UserCreate,
     db: AsyncSession = Depends(get_db),
@@ -133,7 +133,7 @@ async def create_user(
     )
 
 
-@router.patch("/{user_id}", response_model=UserResponse)
+@router.patch("/{user_id}", response_model=UserResponse, summary="Update user")
 async def update_user(
     user_id: int,
     user_data: UserUpdate,
@@ -174,7 +174,7 @@ async def update_user(
     )
 
 
-@router.delete("/{user_id}")
+@router.delete("/{user_id}", summary="Delete user")
 async def delete_user(
     user_id: int,
     db: AsyncSession = Depends(get_db),
@@ -196,7 +196,7 @@ async def delete_user(
     return {"message": "User deleted", "id": user_id}
 
 
-@router.post("/{user_id}/reset-password")
+@router.post("/{user_id}/reset-password", summary="Admin: reset user password")
 async def reset_password(
     user_id: int,
     db: AsyncSession = Depends(get_db),
@@ -226,7 +226,7 @@ DEFAULT_EMAIL_PREFS = {
     "certificate_alerts": True, "agent_alerts": True, "marketing": False,
 }
 
-@router.get("/email-preferences")
+@router.get("/email-preferences", summary="Get email preferences")
 async def get_email_preferences(
     db: AsyncSession = Depends(get_db),
     current_user: dict = Depends(get_current_user),
@@ -239,7 +239,7 @@ async def get_email_preferences(
     return {"preferences": user.email_preferences or DEFAULT_EMAIL_PREFS}
 
 
-@router.put("/email-preferences")
+@router.put("/email-preferences", summary="Update email preferences")
 async def update_email_preferences(
     preferences: dict,
     db: AsyncSession = Depends(get_db),

@@ -30,7 +30,7 @@ class VerificationResponse(BaseModel):
     message: str
 
 
-@router.get("/{certificate_number}", response_model=VerificationResponse)
+@router.get("/{certificate_number}", response_model=VerificationResponse, summary="Verify certificate by number")
 async def verify_certificate(
     certificate_number: str,
     db: AsyncSession = Depends(get_db)
@@ -87,7 +87,7 @@ async def verify_certificate(
     )
 
 
-@router.get("/{certificate_number}/evidence")
+@router.get("/{certificate_number}/evidence", summary="Get certificate evidence package")
 async def get_public_evidence(
     certificate_number: str,
     db: AsyncSession = Depends(get_db)
@@ -121,7 +121,7 @@ async def get_public_evidence(
     }
 
 
-@router.get("/")
+@router.get("/", summary="Verification portal info")
 async def verification_info():
     """Information about the verification API."""
     return {
@@ -136,7 +136,7 @@ async def verification_info():
     }
 
 
-@router.get("/status/{certificate_number}")
+@router.get("/status/{certificate_number}", summary="Quick certificate status check")
 async def get_test_status(
     certificate_number: str,
     db: AsyncSession = Depends(get_db)

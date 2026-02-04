@@ -33,13 +33,45 @@ async def lifespan(app: FastAPI):
 
 limiter = Limiter(key_func=get_remote_address)
 
+OPENAPI_TAGS = [
+    {"name": "System", "description": "Health checks and service info"},
+    {"name": "Authentication", "description": "User registration, login, password reset, and token management"},
+    {"name": "Dashboard", "description": "Admin dashboard statistics, recent applications, active tests, and certificate summaries"},
+    {"name": "Applicant Portal", "description": "Submit, track, and manage ODDC certification applications"},
+    {"name": "CAT-72 Console", "description": "Create, schedule, and monitor CAT-72 conformance tests"},
+    {"name": "Certification Registry", "description": "Issue, manage, suspend, and revoke ODDC certificates"},
+    {"name": "Public Verification", "description": "Publicly accessible certificate verification and evidence endpoints"},
+    {"name": "Licensee Portal", "description": "ENVELO technology licensee management and API key provisioning"},
+    {"name": "ENVELO Agent", "description": "Agent session lifecycle, telemetry ingestion, monitoring, and violation tracking"},
+    {"name": "ENVELO Boundaries", "description": "Configure and test ENVELO boundary definitions and enforcement parameters"},
+    {"name": "API Keys", "description": "Generate, list, and revoke API keys for programmatic access"},
+    {"name": "Registry", "description": "Public registry search for certified autonomous systems"},
+    {"name": "User Management", "description": "Admin user CRUD, role management, email preferences, and password resets"},
+    {"name": "Documents", "description": "Upload, list, and download certification-related documents"},
+    {"name": "One-Command Deploy", "description": "Single-command ENVELO agent deployment configuration"},
+    {"name": "Audit Log", "description": "Tamper-evident audit trail of all platform actions"},
+]
+
 app = FastAPI(
     title="Sentinel Authority API",
-    description="Certification platform for autonomous systems under ENVELO framework",
+    description="""
+## Sentinel Authority Platform
+
+Certification platform for autonomous systems operating under the **ENVELO™** (Enforced Non-Violable Execution-Limit Override) framework.
+
+### Core Concepts
+- **ODDC**: Operational Design Domain Conformance certification
+- **CAT-72**: 72-hour Conformance Assessment Test
+- **ENVELO**: Runtime safety boundary enforcement for AI agents
+
+### Authentication
+All authenticated endpoints require a Bearer token obtained via `/api/auth/login`.
+    """.strip(),
     version="1.0.0",
     lifespan=lifespan,
     docs_url=None,
     redoc_url="/redoc",
+    openapi_tags=OPENAPI_TAGS,
 )
 
 app.state.limiter = limiter
@@ -64,19 +96,19 @@ app.include_router(licensees.router, prefix="/api/licensees", tags=["Licensee Po
 app.include_router(envelo.router, prefix="/api/envelo", tags=["ENVELO Agent"])
 app.include_router(envelo_boundaries.router, prefix="/api/envelo/boundaries", tags=["ENVELO Boundaries"])
 app.include_router(apikeys.router, prefix="/api/apikeys", tags=["API Keys"])
-app.include_router(registry.router)
+app.include_router(registry.router, tags=["Registry"])
 app.include_router(users.router, prefix="/api/users", tags=["User Management"])
 app.include_router(documents.router, prefix="/api/documents", tags=["Documents"])
 app.include_router(deploy.router, prefix="/api", tags=["One-Command Deploy"])
 app.include_router(audit_routes.router, prefix="/api/audit", tags=["Audit Log"])
 
 
-@app.get("/health")
+@app.get("/health", tags=["System"], summary="Health check")
 async def health_check():
     return {"status": "healthy", "service": "sentinel-authority"}
 
 
-@app.get("/")
+@app.get("/", tags=["System"], summary="Service info")
 async def root():
     return {
         "name": "Sentinel Authority Platform",

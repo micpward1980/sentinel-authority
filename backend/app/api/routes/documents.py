@@ -18,7 +18,7 @@ AVAILABLE_DOCS = {
 }
 
 
-@router.get("/")
+@router.get("/", summary="List documents")
 async def list_documents(current_user: dict = Depends(get_current_user)):
     role = current_user.get("role", "applicant")
     return [
@@ -28,7 +28,7 @@ async def list_documents(current_user: dict = Depends(get_current_user)):
     ]
 
 
-@router.get("/{doc_id}/download")
+@router.get("/{doc_id}/download", summary="Download document")
 async def download_document(doc_id: str, current_user: dict = Depends(get_current_user)):
     doc = AVAILABLE_DOCS.get(doc_id)
     if not doc:

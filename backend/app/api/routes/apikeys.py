@@ -35,7 +35,7 @@ class APIKeyCreate(BaseModel):
     certificate_id: Optional[int] = None
 
 
-@router.post("/generate")
+@router.post("/generate", summary="Generate new API key")
 async def generate_new_key(
     data: APIKeyCreate,
     db: AsyncSession = Depends(get_db),
@@ -86,7 +86,7 @@ async def generate_new_key(
     }
 
 
-@router.get("/")
+@router.get("/", summary="List my API keys")
 async def list_keys(
     db: AsyncSession = Depends(get_db),
     current_user: dict = Depends(get_current_user)
@@ -120,7 +120,7 @@ async def list_keys(
     ]
 
 
-@router.delete("/{key_id}")
+@router.delete("/{key_id}", summary="Revoke API key")
 async def revoke_key(
     key_id: int,
     db: AsyncSession = Depends(get_db),
@@ -173,7 +173,7 @@ async def validate_api_key(key: str, db: AsyncSession) -> Optional[APIKey]:
     return api_key
 
 
-@router.post("/admin/provision")
+@router.post("/admin/provision", summary="Admin: provision API key for user")
 async def provision_customer_agent(
     user_id: int,
     certificate_id: int,
