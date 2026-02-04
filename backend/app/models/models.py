@@ -13,6 +13,7 @@ class UserRole(str, enum.Enum):
     APPLICANT = "applicant"
     SUBSCRIBER = "subscriber"
     LICENSEE = "licensee"
+    PENDING = "pending"
 
 
 class CertificationState(str, enum.Enum):

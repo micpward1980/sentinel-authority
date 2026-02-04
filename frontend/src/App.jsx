@@ -2731,29 +2731,50 @@ def your_action(**params):
 // ENVELO Agent Page
 
 
+
+
+function PendingPage() {
+  const { user, logout } = useAuth();
+  return (
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: styles.bgPrimary || '#0d0f14', padding: '20px' }}>
+      <div style={{ maxWidth: '500px', textAlign: 'center' }}>
+        <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: 'rgba(245,158,11,0.1)', border: '2px solid rgba(245,158,11,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
+          <Clock style={{ width: '36px', height: '36px', color: '#f59e0b' }} />
+        </div>
+        <p style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: '#f59e0b', marginBottom: '12px' }}>APPLICATION UNDER REVIEW</p>
+        <h1 style={{ fontFamily: "'Source Serif 4', serif", fontSize: '28px', fontWeight: 200, color: styles.textPrimary || '#e8e6f0', margin: '0 0 16px' }}>Welcome to Sentinel Authority</h1>
+        <p style={{ color: styles.textTertiary || '#596270', fontSize: '15px', lineHeight: '1.6', marginBottom: '32px' }}>
+          Your account is being reviewed by our team. You will receive full portal access once approved. This typically takes 1-2 business days.
+        </p>
+        <div style={{ padding: '20px', borderRadius: '12px', border: '1px solid ' + (styles.borderGlass || 'rgba(255,255,255,0.06)'), background: 'rgba(255,255,255,0.02)', marginBottom: '24px', textAlign: 'left' }}>
+          <p style={{ color: styles.textTertiary || '#596270', fontSize: '13px', marginBottom: '8px' }}>Registered as:</p>
+          <p style={{ color: styles.textPrimary || '#e8e6f0', fontWeight: 500 }}>{user?.full_name}</p>
+          <p style={{ color: styles.textTertiary || '#596270', fontSize: '13px' }}>{user?.email}</p>
+        </div>
+        <p style={{ color: styles.textTertiary || '#596270', fontSize: '13px', marginBottom: '24px' }}>
+          Questions? Contact <a href="mailto:info@sentinelauthority.org" style={{ color: styles.purpleBright || '#9d8ccf' }}>info@sentinelauthority.org</a>
+        </p>
+        <button onClick={logout} style={{ padding: '10px 24px', borderRadius: '8px', background: 'transparent', border: '1px solid ' + (styles.borderGlass || 'rgba(255,255,255,0.06)'), color: styles.textTertiary || '#596270', fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer' }}>Sign Out</button>
+      </div>
+    </div>
+  );
+}
+
 function ResourcesPage() {
-  const { user, token } = useAuth();
-  const API = import.meta.env.VITE_API_URL || '';
+  const { user } = useAuth();
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(API + '/api/documents/', {
-      headers: { 'Authorization': 'Bearer ' + token }
-    })
-      .then(function(r) { return r.json(); })
-      .then(function(data) { setDocuments(Array.isArray(data) ? data : []); setLoading(false); })
-      .catch(function() { setLoading(false); });
+    api.get('/api/documents/')
+      .then(res => { setDocuments(Array.isArray(res.data) ? res.data : []); setLoading(false); })
+      .catch(() => setLoading(false));
   }, []);
 
   const handleDownload = async (docId, title) => {
     try {
-      const response = await fetch(API + '/api/documents/' + docId + '/download', {
-        headers: { 'Authorization': 'Bearer ' + token }
-      });
-      if (!response.ok) throw new Error('Download failed');
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
+      const response = await api.get('/api/documents/' + docId + '/download', { responseType: 'blob' });
+      const url = window.URL.createObjectURL(response.data);
       const a = document.createElement('a');
       a.href = url;
       a.download = title.replace(/\s+/g, '_') + '.pdf';
@@ -3084,7 +3105,7 @@ if __name__ == "__main__":
       </div>
 
       {/* Stats Grid - Always visible */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         <Panel>
           <p style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '12px'}}>Active Sessions</p>
           <p style={{fontSize: '36px', fontWeight: 200, color: styles.accentGreen}}>{activeSessions.length}</p>
@@ -3947,6 +3968,7 @@ function UserManagementPage() {
     total: users.length,
     admins: users.filter(u => u.role === 'admin').length,
     applicants: users.filter(u => u.role === 'applicant').length,
+    pending: users.filter(u => u.role === 'pending').length,
     inactive: users.filter(u => u.is_active === false).length,
   };
 
@@ -4000,6 +4022,28 @@ function UserManagementPage() {
     }
   };
 
+  const handleApproveUser = async (userId, email) => {
+    if (!window.confirm('Approve ' + email + ' as an applicant?')) return;
+    try {
+      await api.post('/api/users/' + userId + '/approve');
+      loadUsers();
+      setShowEditModal(false);
+    } catch (err) {
+      alert('Failed to approve: ' + (err.response?.data?.detail || err.message));
+    }
+  };
+
+  const handleRejectUser = async (userId, email) => {
+    if (!window.confirm('Reject ' + email + '? Their account will be deactivated.')) return;
+    try {
+      await api.post('/api/users/' + userId + '/reject');
+      loadUsers();
+      setShowEditModal(false);
+    } catch (err) {
+      alert('Failed to reject: ' + (err.response?.data?.detail || err.message));
+    }
+  };
+
   const handleDeleteUser = async (userId, email) => {
     if (!window.confirm('DELETE user ' + email + '? This cannot be undone.')) return;
     try {
@@ -4016,10 +4060,11 @@ function UserManagementPage() {
       <SectionHeader label="Administration" title="User Management" description="Manage admin and applicant accounts"
         action={<button onClick={() => setShowInviteModal(true)} className="sexy-btn px-4 py-2 rounded-lg flex items-center gap-2" style={{background: styles.purplePrimary, border: '1px solid ' + styles.purpleBright, color: '#fff'}}><Plus className="w-4 h-4" /> Invite User</button>}
       />
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         <StatCard label="Total Users" value={stats.total} color={styles.textPrimary} />
         <StatCard label="Admins" value={stats.admins} color={styles.purpleBright} />
         <StatCard label="Applicants" value={stats.applicants} color={styles.accentGreen} />
+        <StatCard label="Pending" value={stats.pending} color={styles.accentAmber || '#f59e0b'} />
         <StatCard label="Inactive" value={stats.inactive} color={styles.accentRed} />
       </div>
       <Panel>
@@ -4047,7 +4092,13 @@ function UserManagementPage() {
                   {user.company && <p style={{color: styles.textTertiary, fontSize: '12px'}}>{user.company}</p>}
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="px-2 py-1 rounded text-xs" style={{background: user.role === 'admin' ? 'rgba(157,140,207,0.2)' : 'rgba(255,255,255,0.1)', color: user.role === 'admin' ? styles.purpleBright : styles.textTertiary, fontFamily: "'IBM Plex Mono', monospace", textTransform: 'uppercase'}}>{user.role}</span>
+                  <span className="px-2 py-1 rounded text-xs" style={{background: user.role === 'admin' ? 'rgba(157,140,207,0.2)' : user.role === 'pending' ? 'rgba(245,158,11,0.15)' : 'rgba(255,255,255,0.1)', color: user.role === 'admin' ? styles.purpleBright : user.role === 'pending' ? '#f59e0b' : styles.textTertiary, fontFamily: "'IBM Plex Mono', monospace", textTransform: 'uppercase'}}>{user.role}</span>
+                  {user.role === 'pending' && (
+                    <div className="flex gap-1" onClick={e => e.stopPropagation()}>
+                      <button onClick={() => handleApproveUser(user.id, user.email)} className="px-2 py-1 rounded text-xs" style={{background: 'rgba(34,197,94,0.15)', color: '#22c55e', border: '1px solid rgba(34,197,94,0.3)', cursor: 'pointer'}}>Approve</button>
+                      <button onClick={() => handleRejectUser(user.id, user.email)} className="px-2 py-1 rounded text-xs" style={{background: 'rgba(214,92,92,0.15)', color: '#d65c5c', border: '1px solid rgba(214,92,92,0.3)', cursor: 'pointer'}}>Reject</button>
+                    </div>
+                  )}
                   {user.is_active === false && <span className="px-2 py-1 rounded text-xs" style={{background: 'rgba(214,92,92,0.15)', color: styles.accentRed}}>Inactive</span>}
                 </div>
               </div>
@@ -4120,6 +4171,7 @@ function App() {
           <Route path="/applications/:id" element={<ProtectedRoute><Layout><ApplicationDetail /></Layout></ProtectedRoute>} />
           <Route path="/cat72" element={<ProtectedRoute roles={['admin', 'operator']}><Layout><CAT72Console /></Layout></ProtectedRoute>} />
           <Route path="/certificates" element={<ProtectedRoute><Layout><CertificatesPage /></Layout></ProtectedRoute>} />
+          <Route path="/pending" element={<PendingPage />} />
           <Route path="/resources" element={<ProtectedRoute><Layout><ResourcesPage /></Layout></ProtectedRoute>} />
           <Route path="/envelo" element={<ProtectedRoute><Layout><EnveloPage /></Layout></ProtectedRoute>} />
           <Route path="/monitoring" element={<ProtectedRoute><Layout><MonitoringPage /></Layout></ProtectedRoute>} />
