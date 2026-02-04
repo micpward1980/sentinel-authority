@@ -99,7 +99,7 @@ app.include_router(licensees.router, prefix="/api/licensees", tags=["Licensee Po
 app.include_router(envelo.router, prefix="/api/envelo", tags=["ENVELO Agent"])
 app.include_router(envelo_boundaries.router, prefix="/api/envelo/boundaries", tags=["ENVELO Boundaries"])
 app.include_router(apikeys.router, prefix="/api/apikeys", tags=["API Keys"])
-app.include_router(registry.router, tags=["Registry"])
+app.include_router(registry.router, prefix="/api/registry", tags=["Registry"])
 app.include_router(users.router, prefix="/api/users", tags=["User Management"])
 app.include_router(documents.router, prefix="/api/documents", tags=["Documents"])
 app.include_router(deploy.router, prefix="/api", tags=["One-Command Deploy"])
