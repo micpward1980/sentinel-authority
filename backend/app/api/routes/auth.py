@@ -78,19 +78,18 @@ class TOTPVerifyRequest(BaseModel):
 class DisableTOTPRequest(BaseModel):
     current_password: str
 
-@limiter.limit("5/minute")
-
-
 def generate_backup_codes(count=10):
     """Generate plaintext backup codes and their hashes."""
     codes = []
     hashes = []
     for _ in range(count):
-        code = secrets.token_hex(4).upper()  # 8-char hex codes like "A1B2C3D4"
+        code = secrets.token_hex(4).upper()
         codes.append(code)
         hashes.append(hashlib.sha256(code.encode()).hexdigest())
     return codes, hashes
 
+
+@limiter.limit("5/minute")
 @router.post("/2fa/setup", response_model=TOTPSetupResponse, summary="Generate TOTP secret for 2FA setup")
 async def setup_2fa(
     request: Request,
