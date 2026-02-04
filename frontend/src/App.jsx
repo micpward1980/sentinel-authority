@@ -4415,6 +4415,47 @@ function MonitoringPage() {
     }
   }, [selectedSession]);
 
+  const exportSessionsCSV = () => {
+    const rows = filteredSessions.map(s => {
+      const total = (s.pass_count || 0) + (s.block_count || 0);
+      const passRate = total > 0 ? (s.pass_count / total * 100).toFixed(2) : '0.00';
+      return {
+        status: s.is_online ? 'Online' : s.status === 'ended' ? 'Ended' : 'Offline',
+        organization: s.organization_name || '',
+        system_name: s.system_name || '',
+        certificate: s.certificate_id || '',
+        session_id: s.session_id || '',
+        started_at: s.started_at || '',
+        ended_at: s.ended_at || '',
+        uptime_hours: s.uptime_hours?.toFixed(2) || '0',
+        pass_count: s.pass_count || 0,
+        block_count: s.block_count || 0,
+        total_actions: total,
+        pass_rate: passRate + '%',
+        agent_version: s.agent_version || '',
+        last_activity: s.last_activity || '',
+      };
+    });
+    if (rows.length === 0) { alert('No sessions to export'); return; }
+    const headers = Object.keys(rows[0]);
+    const csv = [
+      headers.join(','),
+      ...rows.map(r => headers.map(h => {
+        const val = String(r[h]).replace(/"/g, '""');
+        return val.includes(',') || val.includes('"') || val.includes('\n') ? `"${val}"` : val;
+      }).join(','))
+    ].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `envelo-sessions-${new Date().toISOString().slice(0,10)}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   if (loading) {
     return (
       <div style={{padding: '40px', textAlign: 'center'}}>
@@ -4463,6 +4504,17 @@ function MonitoringPage() {
             }}
           >
             <RefreshCw size={14} style={refreshing ? {animation: "spin 1s linear infinite"} : {}} /> {refreshing ? "Refreshing..." : "Refresh"}
+          </button>
+          <button 
+            onClick={exportSessionsCSV}
+            style={{
+              background: styles.bgPanel, border: `1px solid ${styles.borderGlass}`,
+              borderRadius: '8px', padding: '8px 16px', color: styles.textPrimary,
+              cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px',
+              fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '0.5px'
+            }}
+          >
+            <Download size={14} /> Export CSV
           </button>
         </div>
       </div>
