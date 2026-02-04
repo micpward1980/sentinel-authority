@@ -184,8 +184,8 @@ function Layout({ children }) {
     { name: 'Settings', href: '/settings', icon: Settings, roles: ['admin', 'applicant'] },
   ];
 
-  const hasCert = userCerts.some(c => c.state === 'conformant' || c.state === 'active' || c.state === 'issued');
-  const hasApprovedApp = userApps.some(a => a.state === 'approved' || a.state === 'testing');
+  const hasCert = Array.isArray(userCerts) && userCerts.some(c => c.state === 'conformant' || c.state === 'active' || c.state === 'issued');
+  const hasApprovedApp = Array.isArray(userApps) && userApps.some(a => a.state === 'approved' || a.state === 'testing');
   const canAccessAgent = hasCert || hasApprovedApp;
   const filteredNav = navigation.filter(item => {
     if (!item.roles.includes(user?.role || '')) return false;
@@ -4798,12 +4798,12 @@ function EnveloCustomerView() {
     loadData();
   }, []);
 
-  const hasCert = userCerts.some(c => c.state === 'conformant' || c.state === 'active' || c.state === 'issued');
-  const hasApprovedApp = userApps.some(a => a.state === 'approved' || a.state === 'testing');
+  const hasCert = Array.isArray(userCerts) && userCerts.some(c => c.state === 'conformant' || c.state === 'active' || c.state === 'issued');
+  const hasApprovedApp = Array.isArray(userApps) && userApps.some(a => a.state === 'approved' || a.state === 'testing');
   const canAccessAgent = hasCert || hasApprovedApp;
   const isTestMode = hasApprovedApp && !hasCert;
-  const certifiedSystems = userCerts.filter(c => c.state === 'conformant' || c.state === 'active' || c.state === 'issued');
-  const approvedApps = userApps.filter(a => a.state === 'approved' || a.state === 'testing');
+  const certifiedSystems = ((Array.isArray(userCerts) ? userCerts : [])).filter(c => c.state === 'conformant' || c.state === 'active' || c.state === 'issued');
+  const approvedApps = ((Array.isArray(userApps) ? userApps : [])).filter(a => a.state === 'approved' || a.state === 'testing');
 
   const getDeployCommand = (caseId, apiKey) => {
     return 'curl -sSL "${API_BASE}/api/deploy/' + caseId + '?key=' + apiKey + '" | bash';
