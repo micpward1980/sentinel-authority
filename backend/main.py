@@ -496,4 +496,9 @@ async def start_auto_evaluator():
     from app.core.database import get_db
     asyncio.create_task(check_offline_agents_task(get_db))
     logger.info("Offline agent monitor started")
+
+    # Start certificate expiry monitor
+    from app.services.background_tasks import check_certificate_expiry_task
+    asyncio.create_task(check_certificate_expiry_task())
+    logger.info("Certificate expiry monitor started (checks every 6 hours)")
     logger.info("Auto-evaluator background task started")

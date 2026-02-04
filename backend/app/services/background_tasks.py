@@ -290,3 +290,157 @@ async def auto_revoke_certificate(
         )
     except Exception as e:
         logger.error(f"Failed to send revocation notification: {e}")
+
+
+# ═══════════════════════════════════════════════════════════
+# Certificate Expiry Monitor
+# ═══════════════════════════════════════════════════════════
+
+EXPIRY_CHECK_INTERVAL = 6 * 3600  # 6 hours
+EXPIRY_WARNING_DAYS = [30, 7]  # Send warnings at these thresholds
+
+
+async def check_certificate_expiry_task():
+    """Background task that checks for expiring certificates"""
+    while True:
+        try:
+            await check_certificate_expiry()
+        except Exception as e:
+            logger.error(f"Certificate expiry check error: {e}")
+        
+        await asyncio.sleep(EXPIRY_CHECK_INTERVAL)
+
+
+async def check_certificate_expiry():
+    """Scan all active certificates and handle expiry warnings + auto-expiration"""
+    async with async_session_maker() as db:
+        now = datetime.utcnow()
+        
+        # Get all conformant certificates
+        result = await db.execute(
+            select(Certificate).where(
+                Certificate.state == CertificationState.CONFORMANT
+            )
+        )
+        certificates = result.scalars().all()
+        
+        expired_count = 0
+        warned_count = 0
+        
+        for cert in certificates:
+            if not cert.expires_at:
+                continue
+            
+            days_remaining = (cert.expires_at - now).days
+            
+            # === AUTO-EXPIRE past-due certificates ===
+            if days_remaining <= 0:
+                cert.state = CertificationState.EXPIRED
+                history = cert.history or []
+                history.append({
+                    "action": "auto_expired",
+                    "timestamp": now.isoformat(),
+                    "by": "SYSTEM",
+                    "reason": f"Certificate expired on {cert.expires_at.strftime('%Y-%m-%d')}"
+                })
+                cert.history = history
+                expired_count += 1
+                
+                # Get user email for notification
+                user = await _get_certificate_owner(db, cert)
+                if user and user.email:
+                    try:
+                        from app.services.email_service import send_email, ADMIN_EMAIL
+                        await send_email(
+                            user.email,
+                            f"🔴 Certificate Expired: {cert.certificate_number}",
+                            f"""
+                            <div style="font-family: -apple-system, BlinkMacSystemFont, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 20px;">
+                                <div style="background: #5B4B8A; padding: 20px; text-align: center; border-radius: 12px 12px 0 0;">
+                                    <h1 style="color: white; margin: 0; font-size: 18px;">SENTINEL AUTHORITY</h1>
+                                </div>
+                                <div style="padding: 30px; background: #f9f9f9; border-radius: 0 0 12px 12px;">
+                                    <h2 style="color: #D65C5C;">Certificate Has Expired</h2>
+                                    <p>Your ODDC certification has expired and is no longer valid.</p>
+                                    <p><strong>Certificate:</strong> {cert.certificate_number}<br>
+                                    <strong>System:</strong> {cert.system_name}<br>
+                                    <strong>Organization:</strong> {cert.organization_name}<br>
+                                    <strong>Expired:</strong> {cert.expires_at.strftime('%B %d, %Y')}</p>
+                                    <p>Third parties verifying your certification will now see <strong>EXPIRED</strong>.</p>
+                                    <p>To renew, contact us to schedule a new CAT-72 assessment.</p>
+                                    <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
+                                    <p style="font-size: 12px; color: #666;">Contact: info@sentinelauthority.org</p>
+                                </div>
+                            </div>
+                            """
+                        )
+                        await send_email(
+                            ADMIN_EMAIL,
+                            f"Certificate Expired: {cert.certificate_number} ({cert.organization_name})",
+                            f"<p><strong>{cert.certificate_number}</strong> for {cert.organization_name} - {cert.system_name} has expired.</p>"
+                        )
+                    except Exception as e:
+                        logger.error(f"Failed to send expiry notification for {cert.certificate_number}: {e}")
+                
+                logger.warning(f"AUTO-EXPIRED certificate {cert.certificate_number} ({cert.organization_name})")
+                continue
+            
+            # === SEND WARNINGS at 30 and 7 day thresholds ===
+            for threshold in EXPIRY_WARNING_DAYS:
+                # Only send if we're within the window (threshold to threshold-1 days)
+                # This prevents re-sending every 6 hours
+                if days_remaining == threshold or (
+                    days_remaining <= threshold and 
+                    not _already_warned(cert, threshold)
+                ):
+                    user = await _get_certificate_owner(db, cert)
+                    if user and user.email:
+                        try:
+                            from app.services.email_service import send_certificate_expiry_warning
+                            await send_certificate_expiry_warning(
+                                user.email,
+                                cert.system_name,
+                                cert.certificate_number,
+                                days_remaining
+                            )
+                            warned_count += 1
+                        except Exception as e:
+                            logger.error(f"Failed to send expiry warning for {cert.certificate_number}: {e}")
+                    
+                    # Record warning in history to prevent re-sending
+                    history = cert.history or []
+                    history.append({
+                        "action": f"expiry_warning_{threshold}d",
+                        "timestamp": now.isoformat(),
+                        "by": "SYSTEM",
+                        "days_remaining": days_remaining
+                    })
+                    cert.history = history
+                    
+                    logger.info(f"Expiry warning sent for {cert.certificate_number}: {days_remaining} days remaining")
+                    break  # Only send one warning per check
+        
+        await db.commit()
+        
+        if expired_count or warned_count:
+            logger.info(f"Expiry check complete: {expired_count} expired, {warned_count} warnings sent")
+
+
+def _already_warned(cert, threshold_days):
+    """Check if we already sent a warning for this threshold"""
+    history = cert.history or []
+    action_key = f"expiry_warning_{threshold_days}d"
+    return any(h.get("action") == action_key for h in history)
+
+
+async def _get_certificate_owner(db, cert):
+    """Find the user who owns this certificate"""
+    if not cert.applicant_id:
+        return None
+    try:
+        result = await db.execute(
+            select(User).where(User.id == cert.applicant_id)
+        )
+        return result.scalar_one_or_none()
+    except Exception:
+        return None
