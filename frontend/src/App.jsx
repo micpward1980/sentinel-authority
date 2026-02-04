@@ -5646,6 +5646,8 @@ function ActivityPage() {
   const [resourceFilter, setResourceFilter] = useState('');
   const [emailFilter, setEmailFilter] = useState('');
   const [page, setPage] = useState(0);
+  const [dateFrom, setDateFrom] = useState('');
+  const [dateTo, setDateTo] = useState('');
   const [actions, setActions] = useState([]);
   const [resourceTypes, setResourceTypes] = useState([]);
   const PAGE_SIZE = 50;
@@ -5662,6 +5664,8 @@ function ActivityPage() {
       if (actionFilter) params.set('action', actionFilter);
       if (resourceFilter) params.set('resource_type', resourceFilter);
       if (emailFilter) params.set('user_email', emailFilter);
+      if (dateFrom) params.set('date_from', new Date(dateFrom).toISOString());
+      if (dateTo) params.set('date_to', new Date(dateTo + 'T23:59:59').toISOString());
       params.set('limit', PAGE_SIZE);
       params.set('offset', page * PAGE_SIZE);
       const res = await api.get(`/api/audit/logs?${params}`);
@@ -5679,6 +5683,8 @@ function ActivityPage() {
       if (actionFilter) params.set('action', actionFilter);
       if (resourceFilter) params.set('resource_type', resourceFilter);
       if (emailFilter) params.set('user_email', emailFilter);
+      if (dateFrom) params.set('date_from', new Date(dateFrom).toISOString());
+      if (dateTo) params.set('date_to', new Date(dateTo + 'T23:59:59').toISOString());
       params.set('limit', 10000);
       params.set('offset', 0);
       const res = await api.get(`/api/audit/logs?${params}`);
@@ -5699,7 +5705,7 @@ function ActivityPage() {
     } catch (err) { toast.show('Export failed', 'error'); }
   };
 
-  useEffect(() => { fetchLogs(); }, [actionFilter, resourceFilter, emailFilter, page]);
+  useEffect(() => { fetchLogs(); }, [actionFilter, resourceFilter, emailFilter, dateFrom, dateTo, page]);
 
   const actionColor = (action) => {
     if (action?.includes('issued') || action?.includes('approved') || action?.includes('conformant')) return styles.accentGreen;
@@ -5726,6 +5732,9 @@ function ActivityPage() {
             {resourceTypes.map(t => <option key={t} value={t}>{t}</option>)}
           </select>
           <input value={emailFilter} onChange={e => { setEmailFilter(e.target.value); setPage(0); }} placeholder="Filter by email..." style={{background: styles.bgDeep, border: `1px solid ${styles.borderGlass}`, borderRadius: '8px', padding: '8px 12px', color: styles.textPrimary, fontSize: '12px', fontFamily: "'IBM Plex Mono', monospace", flex: 1, minWidth: '150px'}} />
+          <input type="date" value={dateFrom} onChange={e => { setDateFrom(e.target.value); setPage(0); }} style={{background: styles.bgDeep, border: `1px solid ${styles.borderGlass}`, borderRadius: '8px', padding: '8px 12px', color: styles.textPrimary, fontSize: '12px', fontFamily: "'IBM Plex Mono', monospace", colorScheme: 'dark'}} />
+          <span style={{fontSize: '11px', color: styles.textTertiary}}>to</span>
+          <input type="date" value={dateTo} onChange={e => { setDateTo(e.target.value); setPage(0); }} style={{background: styles.bgDeep, border: `1px solid ${styles.borderGlass}`, borderRadius: '8px', padding: '8px 12px', color: styles.textPrimary, fontSize: '12px', fontFamily: "'IBM Plex Mono', monospace", colorScheme: 'dark'}} />
           <span style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', color: styles.textTertiary}}>{total.toLocaleString()} entries</span>
           <button onClick={exportCSV} style={{padding: '6px 14px', background: 'rgba(157,140,207,0.12)', border: '1px solid ' + 'rgba(157,140,207,0.3)', borderRadius: '8px', color: styles.purpleBright, fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', cursor: 'pointer', letterSpacing: '1px', textTransform: 'uppercase'}}>Export CSV</button>
         </div>

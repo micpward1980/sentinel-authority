@@ -1,6 +1,7 @@
 """Audit log API endpoints"""
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
+from datetime import datetime
 from sqlalchemy import select, func, desc
 from app.core.database import get_db
 from app.core.security import get_current_user, require_role
@@ -14,6 +15,8 @@ async def get_audit_logs(
     action: str = Query(None),
     resource_type: str = Query(None),
     user_email: str = Query(None),
+    date_from: str = Query(None, description="Start date ISO format"),
+    date_to: str = Query(None, description="End date ISO format"),
     limit: int = Query(50, le=200),
     offset: int = Query(0),
     db: AsyncSession = Depends(get_db),
@@ -28,6 +31,18 @@ async def get_audit_logs(
         query = query.where(AuditLog.resource_type == resource_type)
     if user_email:
         query = query.where(AuditLog.user_email.ilike(f"%{user_email}%"))
+    if date_from:
+        try:
+            dt = datetime.fromisoformat(date_from.replace('Z', '+00:00'))
+            query = query.where(AuditLog.timestamp >= dt)
+        except ValueError:
+            pass
+    if date_to:
+        try:
+            dt = datetime.fromisoformat(date_to.replace('Z', '+00:00'))
+            query = query.where(AuditLog.timestamp <= dt)
+        except ValueError:
+            pass
     
     # Get total count
     count_query = select(func.count()).select_from(query.subquery())
