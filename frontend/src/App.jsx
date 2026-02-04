@@ -166,8 +166,8 @@ function Layout({ children }) {
     { name: 'User Management', href: '/users', icon: Users, roles: ['admin'] },
   ];
 
-  const hasCert = userCerts.some(c => c.status === 'issued' || c.status === 'active');
-  const hasApprovedApp = userApps.some(a => a.status === 'approved' || a.status === 'testing');
+  const hasCert = userCerts.some(c => c.state === 'conformant' || c.state === 'active' || c.state === 'issued');
+  const hasApprovedApp = userApps.some(a => a.state === 'approved' || a.state === 'testing');
   const canAccessAgent = hasCert || hasApprovedApp;
   const filteredNav = navigation.filter(item => {
     if (!item.roles.includes(user?.role || '')) return false;
@@ -910,7 +910,7 @@ function CustomerDashboard() {
       <Panel>
         <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Resources</h2>
         <div style={{display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px'}}>
-          {certificates.some(c => c.status === 'issued' || c.status === 'active') && (
+          {certificates.some(c => c.state === 'conformant' || c.state === 'active' || c.state === 'issued') && (
           <a href="https://sentinelauthority.org/agent.html" target="_blank" style={{padding: '16px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px', textDecoration: 'none', color: styles.textSecondary, border: `1px solid ${styles.borderGlass}`}}>
             <div style={{fontWeight: 500, marginBottom: '4px', color: styles.textPrimary, fontSize: '13px'}}>ENVELO Agent Setup</div>
             <div style={{fontSize: '11px'}}>Installation & configuration guide</div>
@@ -2962,10 +2962,134 @@ if __name__ == "__main__":
     setLoading(false);
   };
 
+  const [userCertificates, setUserCertificates] = useState([]);
+  const [selectedCert, setSelectedCert] = useState(null);
+
+  useEffect(() => {
+    api.get('/api/certificates/').then(res => {
+      const certs = (res.data || []).filter(c => c.state === 'conformant' || c.state === 'active' || c.state === 'issued');
+      setUserCertificates(certs);
+      if (certs.length > 0) setSelectedCert(certs[0].id);
+    }).catch(() => {});
+  }, []);
+
+  const downloadAgent = async (keyData) => {
+    try {
+      const certId = keyData.certificate_id || selectedCert;
+      if (!certId) { alert('No certificate linked to this key'); return; }
+      const res = await api.post('/api/apikeys/admin/provision', {
+        user_id: parseInt(keyData.user_id || '0'),
+        certificate_id: certId,
+        name: keyData.name,
+        send_email: false,
+      });
+      if (res.data?.agent_code) {
+        const blob = new Blob([res.data.agent_code], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'envelo_agent.py';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+    } catch (err) {
+      // Fallback: generate client-side download
+      if (keyData.key) {
+        const script = generateClientAgent(keyData.key);
+        const blob = new Blob([script], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'envelo_agent.py';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+    }
+  };
+
+  const generateClientAgent = (apiKey) => {
+    return `#!/usr/bin/env python3
+"""
+ENVELO Agent - Sentinel Authority
+Generated: ${new Date().toISOString()}
+Quick Start: pip install requests && python envelo_agent.py
+"""
+import os, sys, time, json, uuid, signal, threading
+from datetime import datetime
+try:
+    import requests
+except ImportError:
+    os.system("pip install requests"); import requests
+
+API_ENDPOINT = "${API_BASE}"
+API_KEY = "${apiKey}"
+CERTIFICATE_NUMBER = "${selectedCert ? userCertificates.find(c => c.id === selectedCert)?.certificate_number || 'PENDING' : 'PENDING'}"
+
+class EnveloAgent:
+    def __init__(self):
+        self.session_id = str(uuid.uuid4())
+        self.boundaries = {}
+        self.stats = {"pass": 0, "block": 0}
+        self.running = False
+
+    def start(self):
+        try:
+            res = requests.get(f"{API_ENDPOINT}/api/envelo/boundaries/config",
+                headers={"Authorization": f"Bearer {API_KEY}"}, timeout=10)
+            if res.ok:
+                for b in res.json().get("numeric_boundaries", []):
+                    self.boundaries[b["name"]] = b
+                print(f"[ENVELO] Loaded {len(self.boundaries)} boundaries")
+        except: pass
+        try:
+            requests.post(f"{API_ENDPOINT}/api/envelo/sessions",
+                headers={"Authorization": f"Bearer {API_KEY}"},
+                json={"certificate_id": CERTIFICATE_NUMBER, "session_id": self.session_id,
+                      "started_at": datetime.utcnow().isoformat()+"Z", "agent_version": "2.0.0"}, timeout=10)
+            self.running = True
+            print(f"[ENVELO] Session started: {self.session_id[:16]}...")
+            return True
+        except Exception as e:
+            print(f"[ENVELO] Connection error: {e}")
+            return False
+
+    def check(self, parameter, value):
+        if parameter not in self.boundaries: return True
+        b = self.boundaries[parameter]
+        if b.get("min_value") is not None and value < b["min_value"]:
+            self.stats["block"] += 1; return False
+        if b.get("max_value") is not None and value > b["max_value"]:
+            self.stats["block"] += 1; return False
+        self.stats["pass"] += 1; return True
+
+    def enforce(self, **params):
+        return all(self.check(k, v) for k, v in params.items())
+
+    def stop(self):
+        self.running = False
+        print(f"[ENVELO] Stats: {self.stats['pass']} passed, {self.stats['block']} blocked")
+
+agent = EnveloAgent()
+if __name__ == "__main__":
+    print("=" * 60)
+    print("  ENVELO Agent - Sentinel Authority")
+    print(f"  Certificate: {CERTIFICATE_NUMBER}")
+    print("=" * 60)
+    if agent.start():
+        print("[ENVELO] ✓ Running. Ctrl+C to stop.")
+        signal.signal(signal.SIGINT, lambda s,f: (agent.stop(), sys.exit(0)))
+        while agent.running: time.sleep(1)
+`;
+  };
+
   const generateKey = async () => {
     if (!newKeyName.trim()) return;
     try {
-      const res = await api.post('/api/apikeys/generate', { name: newKeyName });
+      const res = await api.post('/api/apikeys/generate', { name: newKeyName, certificate_id: selectedCert });
       setGeneratedKey(res.data);
       setNewKeyName('');
       loadKeys();
@@ -3418,8 +3542,8 @@ function EnveloAdminView() {
 
   const activeSessions = sessions.filter(s => s.status === 'active');
   const totalViolations = sessions.reduce((acc, s) => acc + (s.block_count || 0), 0);
-  const activeCerts = certificates.filter(c => c.status === 'issued' || c.status === 'active');
-  const pendingApps = applications.filter(a => a.status === 'approved' || a.status === 'testing');
+  const activeCerts = certificates.filter(c => c.state === 'conformant' || c.state === 'active' || c.state === 'issued');
+  const pendingApps = applications.filter(a => a.state === 'approved' || a.state === 'testing');
 
   const downloadAgentForCert = (cert) => {
     const agentCode = `#!/usr/bin/env python3
@@ -3841,15 +3965,15 @@ function EnveloCustomerView() {
     loadData();
   }, []);
 
-  const hasCert = userCerts.some(c => c.status === 'issued' || c.status === 'active');
-  const hasApprovedApp = userApps.some(a => a.status === 'approved' || a.status === 'testing');
+  const hasCert = userCerts.some(c => c.state === 'conformant' || c.state === 'active' || c.state === 'issued');
+  const hasApprovedApp = userApps.some(a => a.state === 'approved' || a.state === 'testing');
   const canAccessAgent = hasCert || hasApprovedApp;
   const isTestMode = hasApprovedApp && !hasCert;
-  const certifiedSystems = userCerts.filter(c => c.status === 'issued' || c.status === 'active');
-  const approvedApps = userApps.filter(a => a.status === 'approved' || a.status === 'testing');
+  const certifiedSystems = userCerts.filter(c => c.state === 'conformant' || c.state === 'active' || c.state === 'issued');
+  const approvedApps = userApps.filter(a => a.state === 'approved' || a.state === 'testing');
 
   const getDeployCommand = (caseId, apiKey) => {
-    return 'curl -sSL "https://api.sentinelauthority.org/api/deploy/' + caseId + '?key=' + apiKey + '" | bash';
+    return 'curl -sSL "${API_BASE}/api/deploy/' + caseId + '?key=' + apiKey + '" | bash';
   };
 
   const copyToClipboard = (text, id) => {
@@ -3899,7 +4023,7 @@ function EnveloCustomerView() {
         </div>
 
         {[...approvedApps, ...certifiedSystems].map((sys, idx) => {
-          const caseId = sys.case_number || sys.certificate_number;
+          const caseId = sys.application_number || sys.certificate_number;
           const sysName = sys.system_name || 'System';
           const keyId = 'deploy-' + idx;
           const apiKeyVal = activeApiKey || 'YOUR_API_KEY';
@@ -3930,7 +4054,7 @@ function EnveloCustomerView() {
                 <div style={{padding: '16px 20px', fontFamily: "'IBM Plex Mono', monospace", fontSize: '13px', lineHeight: '1.6', overflowX: 'auto', whiteSpace: 'nowrap'}}>
                   <span style={{color: styles.accentGreen}}>$</span>{' '}
                   <span style={{color: styles.textPrimary}}>curl -sSL "</span>
-                  <span style={{color: styles.purpleBright}}>{'https://api.sentinelauthority.org/api/deploy/' + caseId + '?key='}</span>
+                  <span style={{color: styles.purpleBright}}>{'${API_BASE}/api/deploy/' + caseId + '?key='}</span>
                   <span style={{color: hasKey ? styles.accentGreen : styles.accentAmber}}>{apiKeyVal}</span>
                   <span style={{color: styles.textPrimary}}>" | bash</span>
                 </div>
