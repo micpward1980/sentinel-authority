@@ -1,8 +1,8 @@
 import React, { useState, useEffect, createContext, useContext } from 'react';
 import BoundaryEditor from './components/BoundaryEditor';
 import QRCode from 'qrcode';
-import { Wifi, BrowserRouter, Routes, Route, Navigate, Link, useNavigate, useLocation, useParams } from 'react-router-dom';
-import { Bell, Settings, FileText, Activity, Award, Users, Home, LogOut, Menu, X, CheckCircle, AlertTriangle, Clock, Search, Plus, ArrowLeft, ExternalLink, Shield, Download, RefreshCw, Eye, EyeOff, BookOpen, } from 'lucide-react';
+import { BrowserRouter, Routes, Route, Navigate, Link, useNavigate, useLocation, useParams } from 'react-router-dom';
+import { Wifi, Bell, Settings, FileText, Activity, Award, Users, Home, LogOut, Menu, X, CheckCircle, AlertTriangle, Clock, Search, Plus, ArrowLeft, ExternalLink, Shield, Download, RefreshCw, Eye, EyeOff, BookOpen, } from 'lucide-react';
 import axios from 'axios';
 
 // API Configuration
@@ -920,9 +920,6 @@ function LoginPage() {
 // Customer Dashboard - simplified view for customers
 function CustomerDashboard() {
   const { user } = useAuth();
-  const toast = useToast();
-  const toast = useToast();
-  const toast = useToast();
   const toast = useToast();
   const [applications, setApplications] = useState([]);
   const [appTotal, setAppTotal] = useState(0);
@@ -5085,7 +5082,7 @@ function MonitoringPage() {
       ...rows.map(r => headers.map(h => {
         const val = String(r[h]).replace(/"/g, '""');
         return val.includes(',') || val.includes('"') || val.includes('\n') ? `"${val}"` : val;
-      }).join(','))
+      }).join('\n,'))
     ].join('\n');
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
@@ -5815,8 +5812,7 @@ function ActivityPage() {
       const csv = [header, ...rows.map(r => {
         const details = r.details ? Object.entries(r.details).map(([k,v]) => k + '=' + v).join('; ') : '';
         return [r.timestamp || '', r.user_email || '', r.action || '', r.resource_type || '', r.resource_id || '', '"' + details.replace(/"/g, '""') + '"', r.log_hash || ''].join(',');
-      })].join('
-');
+      })].join('\n');
       const blob = new Blob([csv], { type: 'text/csv' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
