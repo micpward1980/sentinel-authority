@@ -7,7 +7,7 @@ from app.models.models import Certificate, CertificationState
 from typing import Optional
 from datetime import datetime, timedelta
 
-router = APIRouter(prefix="/api/registry", tags=["registry"])
+router = APIRouter(tags=["registry"])
 
 
 @router.get("/search")
