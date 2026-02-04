@@ -50,6 +50,8 @@ class User(Base):
     role = Column(Enum(UserRole), default=UserRole.SUBSCRIBER)
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, default=datetime.utcnow)
+    totp_secret = Column(String(32), nullable=True)
+    totp_enabled = Column(Boolean, default=False)
     email_preferences = Column(JSON, default=lambda: {
         "application_updates": True, "test_notifications": True,
         "certificate_alerts": True, "agent_alerts": True, "marketing": False,

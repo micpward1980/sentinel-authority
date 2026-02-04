@@ -611,6 +611,15 @@ async def start_auto_evaluator():
         async with engine.begin() as conn:
             await conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS email_preferences JSON"))
         await conn.execute(text("""
+
+    try:
+        await conn.execute(text("ALTER TABLE users ADD COLUMN totp_secret VARCHAR(32)"))
+    except:
+        pass
+    try:
+        await conn.execute(text("ALTER TABLE users ADD COLUMN totp_enabled BOOLEAN DEFAULT FALSE"))
+    except:
+        pass
             CREATE TABLE IF NOT EXISTS application_comments (
                 id SERIAL PRIMARY KEY,
                 application_id INTEGER REFERENCES applications(id),

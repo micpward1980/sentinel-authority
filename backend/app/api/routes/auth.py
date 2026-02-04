@@ -1,3 +1,6 @@
+import pyotp
+import base64
+import io
 """Authentication routes."""
 from app.services.email_service import notify_admin_new_registration
 
@@ -60,6 +63,117 @@ class ResetPasswordRequest(BaseModel):
 
 
 
+
+
+
+class TOTPSetupResponse(BaseModel):
+    secret: str
+    uri: str
+    qr_base64: str
+
+class TOTPVerifyRequest(BaseModel):
+    code: str
+
+@router.post("/2fa/setup", response_model=TOTPSetupResponse, summary="Generate TOTP secret for 2FA setup")
+async def setup_2fa(
+    db: AsyncSession = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    result = await db.execute(select(User).where(User.id == current_user.get("id")))
+    user = result.scalar_one_or_none()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    if user.totp_enabled:
+        raise HTTPException(status_code=400, detail="2FA is already enabled")
+    
+    secret = pyotp.random_base32()
+    user.totp_secret = secret
+    await db.commit()
+    
+    totp = pyotp.TOTP(secret)
+    uri = totp.provisioning_uri(name=user.email, issuer_name="Sentinel Authority")
+    
+    # Generate QR code as base64
+    try:
+        import qrcode
+        qr = qrcode.make(uri)
+        buf = io.BytesIO()
+        qr.save(buf, format="PNG")
+        qr_b64 = base64.b64encode(buf.getvalue()).decode()
+    except ImportError:
+        qr_b64 = ""
+    
+    return {"secret": secret, "uri": uri, "qr_base64": qr_b64}
+
+
+@router.post("/2fa/enable", summary="Verify code and enable 2FA")
+async def enable_2fa(
+    body: TOTPVerifyRequest,
+    db: AsyncSession = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    result = await db.execute(select(User).where(User.id == current_user.get("id")))
+    user = result.scalar_one_or_none()
+    if not user or not user.totp_secret:
+        raise HTTPException(status_code=400, detail="Run /2fa/setup first")
+    
+    totp = pyotp.TOTP(user.totp_secret)
+    if not totp.verify(body.code, valid_window=1):
+        raise HTTPException(status_code=400, detail="Invalid code. Try again.")
+    
+    user.totp_enabled = True
+    await db.commit()
+    return {"message": "2FA enabled successfully"}
+
+
+@router.post("/2fa/disable", summary="Disable 2FA")
+async def disable_2fa(
+    body: ChangePasswordRequest,
+    db: AsyncSession = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    result = await db.execute(select(User).where(User.id == current_user.get("id")))
+    user = result.scalar_one_or_none()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    if not verify_password(body.current_password, user.hashed_password):
+        raise HTTPException(status_code=400, detail="Incorrect password")
+    
+    user.totp_enabled = False
+    user.totp_secret = None
+    await db.commit()
+    return {"message": "2FA disabled"}
+
+
+@router.post("/2fa/verify-login", summary="Verify TOTP during login")
+async def verify_2fa_login(
+    body: TOTPVerifyRequest,
+    temp_token: str = Query(..., description="Temporary token from login"),
+    db: AsyncSession = Depends(get_db)
+):
+    """Verify TOTP code to complete login when 2FA is enabled"""
+    try:
+        from app.core.security import decode_token
+        payload = decode_token(temp_token)
+        user_id = int(payload.get("sub"))
+    except Exception:
+        raise HTTPException(status_code=401, detail="Invalid or expired token")
+    
+    result = await db.execute(select(User).where(User.id == user_id))
+    user = result.scalar_one_or_none()
+    if not user or not user.totp_secret:
+        raise HTTPException(status_code=400, detail="2FA not configured")
+    
+    totp = pyotp.TOTP(user.totp_secret)
+    if not totp.verify(body.code, valid_window=1):
+        raise HTTPException(status_code=400, detail="Invalid code")
+    
+    token = create_access_token({"sub": str(user.id), "email": user.email, "role": user.role.value, "organization": user.organization})
+    return {
+        "access_token": token,
+        "token_type": "bearer",
+        "user": {"id": user.id, "email": user.email, "full_name": user.full_name, "role": user.role.value, "organization": user.organization}
+    }
 
 class ChangePasswordRequest(BaseModel):
     current_password: str
@@ -145,6 +259,15 @@ async def login(request: Request, credentials: UserLogin, db: AsyncSession = Dep
     user.failed_login_attempts = 0
     user.locked_until = None
     await db.commit()
+    
+    # Check if 2FA is enabled
+    if user.totp_enabled and user.totp_secret:
+        temp_token = create_access_token({"sub": str(user.id), "email": user.email, "role": user.role.value, "organization": user.organization}, expires_minutes=5)
+        return {
+            "requires_2fa": True,
+            "temp_token": temp_token,
+            "user": {"id": user.id, "email": user.email, "full_name": user.full_name, "role": user.role.value, "organization": user.organization}
+        }
     
     token = create_access_token({"sub": str(user.id), "email": user.email, "role": user.role.value, "organization": user.organization})
     return {

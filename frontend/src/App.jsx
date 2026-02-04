@@ -5919,6 +5919,44 @@ function SettingsPage() {
   const [pwForm, setPwForm] = useState({ current: '', new_pw: '', confirm: '' });
   const [pwSaving, setPwSaving] = useState(false);
   const [pwError, setPwError] = useState('');
+  const [twoFA, setTwoFA] = useState({ enabled: false, loading: true, setup: null, code: '', verifying: false, disablePw: '', disabling: false });
+
+  useEffect(() => {
+    api.get('/api/auth/me').then(res => {
+      api.get('/api/users/' + res.data.id).then(r => setTwoFA(prev => ({...prev, enabled: r.data.totp_enabled || false, loading: false}))).catch(() => setTwoFA(prev => ({...prev, loading: false})));
+    }).catch(() => setTwoFA(prev => ({...prev, loading: false})));
+  }, []);
+
+  const setup2FA = async () => {
+    try {
+      const res = await api.post('/api/auth/2fa/setup');
+      setTwoFA(prev => ({...prev, setup: res.data}));
+    } catch (err) { toast.show('Setup failed: ' + (err.response?.data?.detail || err.message), 'error'); }
+  };
+
+  const enable2FA = async () => {
+    setTwoFA(prev => ({...prev, verifying: true}));
+    try {
+      await api.post('/api/auth/2fa/enable', { code: twoFA.code });
+      toast.show('Two-factor authentication enabled', 'success');
+      setTwoFA(prev => ({...prev, enabled: true, setup: null, code: '', verifying: false}));
+    } catch (err) {
+      toast.show(err.response?.data?.detail || 'Invalid code', 'error');
+      setTwoFA(prev => ({...prev, verifying: false}));
+    }
+  };
+
+  const disable2FA = async () => {
+    setTwoFA(prev => ({...prev, disabling: true}));
+    try {
+      await api.post('/api/auth/2fa/disable', { current_password: twoFA.disablePw, new_password: 'unused' });
+      toast.show('Two-factor authentication disabled', 'success');
+      setTwoFA(prev => ({...prev, enabled: false, disablePw: '', disabling: false}));
+    } catch (err) {
+      toast.show(err.response?.data?.detail || 'Failed', 'error');
+      setTwoFA(prev => ({...prev, disabling: false}));
+    }
+  };
   const toast = useToast();
 
   const handleChangePassword = async () => {
@@ -5997,6 +6035,49 @@ function SettingsPage() {
             {pwSaving ? 'Changing...' : 'Change Password'}
           </button>
         </div>
+      </Panel>
+
+      <Panel>
+        <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Two-Factor Authentication</h2>
+        {twoFA.loading ? (
+          <div style={{color: styles.textTertiary, fontSize: '13px'}}>Loading...</div>
+        ) : twoFA.enabled ? (
+          <div>
+            <div style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px'}}>
+              <div style={{width: '8px', height: '8px', borderRadius: '50%', background: styles.accentGreen}} />
+              <span style={{color: styles.accentGreen, fontFamily: "'IBM Plex Mono', monospace", fontSize: '12px'}}>ENABLED</span>
+            </div>
+            <p style={{color: styles.textSecondary, fontSize: '13px', marginBottom: '12px'}}>Your account is protected with TOTP two-factor authentication.</p>
+            <div style={{display: 'flex', gap: '8px', alignItems: 'center', maxWidth: '400px'}}>
+              <input type="password" value={twoFA.disablePw} onChange={e => setTwoFA(prev => ({...prev, disablePw: e.target.value}))} placeholder="Enter password to disable" className="sexy-input" style={{flex: 1, background: 'rgba(255,255,255,0.03)', border: `1px solid ${styles.borderGlass}`, borderRadius: '8px', padding: '8px 12px', color: styles.textPrimary, fontSize: '13px'}} />
+              <button onClick={disable2FA} disabled={twoFA.disabling} style={{padding: '8px 16px', borderRadius: '8px', background: 'rgba(214,92,92,0.1)', border: '1px solid rgba(214,92,92,0.3)', color: '#D65C5C', fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', cursor: twoFA.disabling ? 'wait' : 'pointer', whiteSpace: 'nowrap'}}>
+                {twoFA.disabling ? '...' : 'Disable 2FA'}
+              </button>
+            </div>
+          </div>
+        ) : twoFA.setup ? (
+          <div style={{maxWidth: '400px'}}>
+            <p style={{color: styles.textSecondary, fontSize: '13px', marginBottom: '16px'}}>Scan this QR code with your authenticator app (Google Authenticator, Authy, 1Password):</p>
+            {twoFA.setup.qr_base64 && <div style={{textAlign: 'center', marginBottom: '16px'}}><img src={'data:image/png;base64,' + twoFA.setup.qr_base64} alt="QR Code" style={{width: '200px', height: '200px', borderRadius: '8px'}} /></div>}
+            <div style={{background: 'rgba(255,255,255,0.03)', border: `1px solid ${styles.borderGlass}`, borderRadius: '8px', padding: '12px', marginBottom: '16px'}}>
+              <div style={{fontSize: '10px', color: styles.textTertiary, marginBottom: '4px', fontFamily: "'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '1px'}}>Manual Entry Key</div>
+              <div style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '14px', color: styles.purpleBright, letterSpacing: '2px', wordBreak: 'break-all'}}>{twoFA.setup.secret}</div>
+            </div>
+            <div style={{display: 'flex', gap: '8px', alignItems: 'center'}}>
+              <input type="text" value={twoFA.code} onChange={e => setTwoFA(prev => ({...prev, code: e.target.value.replace(/\D/g, '').slice(0, 6)}))} placeholder="6-digit code" maxLength={6} className="sexy-input" style={{flex: 1, background: 'rgba(255,255,255,0.03)', border: `1px solid ${styles.borderGlass}`, borderRadius: '8px', padding: '10px 12px', color: styles.textPrimary, fontSize: '18px', fontFamily: "'IBM Plex Mono', monospace", letterSpacing: '6px', textAlign: 'center'}} />
+              <button onClick={enable2FA} disabled={twoFA.verifying || twoFA.code.length !== 6} className="sexy-btn" style={{padding: '10px 20px', borderRadius: '8px', background: styles.purplePrimary, border: `1px solid ${styles.purpleBright}`, color: '#fff', fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', cursor: twoFA.verifying ? 'wait' : 'pointer', opacity: twoFA.code.length !== 6 ? 0.5 : 1}}>
+                {twoFA.verifying ? '...' : 'Verify'}
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div>
+            <p style={{color: styles.textSecondary, fontSize: '13px', marginBottom: '16px'}}>Add an extra layer of security by requiring a code from your authenticator app when signing in.</p>
+            <button onClick={setup2FA} className="sexy-btn" style={{padding: '10px 24px', borderRadius: '10px', background: styles.purplePrimary, border: `1px solid ${styles.purpleBright}`, color: '#fff', fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>
+              Enable 2FA
+            </button>
+          </div>
+        )}
       </Panel>
 
       <Panel>

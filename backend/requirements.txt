@@ -42,3 +42,5 @@ qrcode[pil]
 qrcode[pil]
 
 slowapi==0.1.9
+pyotp
+qrcode[pil]
