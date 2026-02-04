@@ -100,6 +100,45 @@ async def get_resource_types(
     types = [r[0] for r in result.all() if r[0]]
     return {"resource_types": types}
 
+
+
+@router.get("/my-logs", summary="Get own audit log entries")
+async def get_my_audit_logs(
+    action: str = Query(None),
+    limit: int = Query(50, le=200),
+    offset: int = Query(0),
+    db: AsyncSession = Depends(get_db),
+    user: dict = Depends(get_current_user),
+):
+    """Get audit log entries for the current user"""
+    query = select(AuditLog).where(AuditLog.user_email == user.get("email"))
+    
+    if action:
+        query = query.where(AuditLog.action == action)
+    
+    count_query = select(func.count()).select_from(query.subquery())
+    total_result = await db.execute(count_query)
+    total = total_result.scalar() or 0
+    
+    query = query.order_by(desc(AuditLog.timestamp)).offset(offset).limit(limit)
+    result = await db.execute(query)
+    logs = result.scalars().all()
+    
+    return {
+        "logs": [
+            {
+                "id": log.id,
+                "timestamp": log.timestamp.isoformat() if log.timestamp else None,
+                "action": log.action,
+                "resource_type": log.resource_type,
+                "resource_id": log.resource_id,
+                "details": log.details or {},
+            }
+            for log in logs
+        ],
+        "total": total,
+    }
+
 @router.get("/verify", summary="Verify audit log integrity")
 async def verify_audit_integrity(
     limit: int = Query(1000, le=5000),

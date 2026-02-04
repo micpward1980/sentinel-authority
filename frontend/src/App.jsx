@@ -179,6 +179,7 @@ function Layout({ children }) {
     { name: 'ENVELO Agent', href: '/envelo', icon: 'brand', roles: ['admin', 'applicant'], requiresCert: true },
     { name: 'Monitoring', href: '/monitoring', icon: Activity, roles: ['admin', 'applicant'], requiresCert: true },
     { name: 'User Management', href: '/users', icon: Users, roles: ['admin'] },
+    { name: 'My Activity', href: '/my-activity', icon: Activity, roles: ['admin', 'applicant'] },
     { name: 'Activity Log', href: '/activity', icon: FileText, roles: ['admin'] },
     { name: 'Settings', href: '/settings', icon: Settings, roles: ['admin', 'applicant'] },
   ];
@@ -5811,6 +5812,96 @@ function ActivityPage() {
   );
 }
 
+
+// ═══ My Activity (User-Facing Audit Log) ═══
+
+function MyActivityPage() {
+  const { user } = useAuth();
+  const [logs, setLogs] = useState([]);
+  const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(0);
+  const PAGE_SIZE = 30;
+
+  const fetchLogs = async () => {
+    setLoading(true);
+    try {
+      const params = new URLSearchParams();
+      params.set('limit', PAGE_SIZE);
+      params.set('offset', page * PAGE_SIZE);
+      const res = await api.get(`/api/audit/my-logs?${params}`);
+      setLogs(res.data.logs || []);
+      setTotal(res.data.total || 0);
+    } catch (err) { console.error('Failed to load activity:', err); }
+    setLoading(false);
+  };
+
+  useEffect(() => { fetchLogs(); }, [page]);
+
+  const actionIcon = (action) => {
+    if (action?.includes('approved') || action?.includes('issued') || action?.includes('conformant')) return { icon: '\u2713', color: styles.accentGreen };
+    if (action?.includes('failed') || action?.includes('revoked') || action?.includes('suspended')) return { icon: '\u2717', color: '#D65C5C' };
+    if (action?.includes('pending') || action?.includes('under_review')) return { icon: '\u25CF', color: '#D6A05C' };
+    return { icon: '\u25CF', color: styles.purpleBright };
+  };
+
+  const totalPages = Math.ceil(total / PAGE_SIZE);
+
+  return (
+    <div className="space-y-6" style={{maxWidth: '800px'}}>
+      <SectionHeader label="Account" title="My Activity" />
+
+      <Panel>
+        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px'}}>
+          <span style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', color: styles.textTertiary, letterSpacing: '1px', textTransform: 'uppercase'}}>Recent Actions</span>
+          <span style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', color: styles.textTertiary}}>{total} total</span>
+        </div>
+
+        {loading ? (
+          <div style={{padding: '40px', textAlign: 'center', color: styles.textTertiary}}>Loading...</div>
+        ) : logs.length === 0 ? (
+          <div style={{padding: '40px', textAlign: 'center', color: styles.textTertiary}}>No activity yet</div>
+        ) : (
+          <div style={{display: 'flex', flexDirection: 'column', gap: '2px'}}>
+            {logs.map(log => {
+              const ai = actionIcon(log.action);
+              return (
+                <div key={log.id} style={{display: 'flex', alignItems: 'flex-start', gap: '12px', padding: '12px', borderRadius: '8px', background: 'rgba(255,255,255,0.01)', borderBottom: `1px solid ${styles.borderSubtle}`}}>
+                  <div style={{width: '28px', height: '28px', borderRadius: '50%', background: `${ai.color}15`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '2px'}}>
+                    <span style={{color: ai.color, fontSize: '13px', fontWeight: 'bold'}}>{ai.icon}</span>
+                  </div>
+                  <div style={{flex: 1, minWidth: 0}}>
+                    <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px'}}>
+                      <span style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '12px', color: ai.color, letterSpacing: '0.5px'}}>{log.action?.replace(/_/g, ' ')}</span>
+                      <span style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary, whiteSpace: 'nowrap'}}>{log.timestamp ? new Date(log.timestamp).toLocaleString() : ''}</span>
+                    </div>
+                    <div style={{fontSize: '12px', color: styles.textSecondary}}>
+                      {log.resource_type}{log.resource_id ? ` #${log.resource_id}` : ''}
+                      {log.details && Object.keys(log.details).length > 0 && (
+                        <span style={{color: styles.textTertiary, marginLeft: '8px'}}>
+                          {Object.entries(log.details).filter(([k]) => k !== 'old_state').slice(0, 3).map(([k, v]) => `${k.replace(/_/g, ' ')}: ${v}`).join(' \u00B7 ')}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {totalPages > 1 && (
+          <div style={{display: 'flex', justifyContent: 'center', gap: '8px', paddingTop: '16px', marginTop: '16px', borderTop: `1px solid ${styles.borderSubtle}`}}>
+            <button onClick={() => setPage(Math.max(0, page - 1))} disabled={page === 0} style={{padding: '6px 12px', background: styles.bgDeep, border: `1px solid ${styles.borderGlass}`, borderRadius: '6px', color: page === 0 ? styles.textTertiary : styles.textPrimary, cursor: page === 0 ? 'not-allowed' : 'pointer', fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px'}}>\u2190 Prev</button>
+            <span style={{padding: '6px 12px', fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', color: styles.textSecondary}}>{page + 1} / {totalPages}</span>
+            <button onClick={() => setPage(Math.min(totalPages - 1, page + 1))} disabled={page >= totalPages - 1} style={{padding: '6px 12px', background: styles.bgDeep, border: `1px solid ${styles.borderGlass}`, borderRadius: '6px', color: page >= totalPages - 1 ? styles.textTertiary : styles.textPrimary, cursor: page >= totalPages - 1 ? 'not-allowed' : 'pointer', fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px'}}>Next \u2192</button>
+          </div>
+        )}
+      </Panel>
+    </div>
+  );
+}
+
 function SettingsPage() {
   const { user } = useAuth();
   const [prefs, setPrefs] = useState(null);
@@ -5946,6 +6037,7 @@ function App() {
           <Route path="/envelo" element={<ProtectedRoute><Layout><EnveloPage /></Layout></ProtectedRoute>} />
           <Route path="/monitoring" element={<ProtectedRoute><Layout><MonitoringPage /></Layout></ProtectedRoute>} />
           <Route path="/activity" element={<ProtectedRoute roles={["admin"]}><Layout><ActivityPage /></Layout></ProtectedRoute>} />
+          <Route path="/my-activity" element={<ProtectedRoute><Layout><MyActivityPage /></Layout></ProtectedRoute>} />
           <Route path="/settings" element={<ProtectedRoute><Layout><SettingsPage /></Layout></ProtectedRoute>} />
           <Route path="/users" element={<ProtectedRoute roles={["admin"]}><Layout><UserManagementPage /></Layout></ProtectedRoute>} />
           <Route path="/" element={<Navigate to="/dashboard" />} />
