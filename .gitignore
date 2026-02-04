@@ -48,3 +48,5 @@ build/
 *.pid
 .vercel
 .env*.local
+patch_*.js
+patch_*.py
