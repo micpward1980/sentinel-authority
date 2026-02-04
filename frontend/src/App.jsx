@@ -322,6 +322,63 @@ function Layout({ children }) {
 }
 
 // Panel Component
+
+
+// ═══ Toast Notification System ═══
+const ToastContext = React.createContext();
+
+function ToastProvider({ children }) {
+  const [toasts, setToasts] = useState([]);
+  
+  const show = React.useCallback((message, type = 'info') => {
+    const id = Date.now() + Math.random();
+    setToasts(prev => [...prev, { id, message, type }]);
+    setTimeout(() => setToasts(prev => prev.filter(t => t.id !== id)), 4500);
+  }, []);
+  
+  const dismiss = React.useCallback((id) => {
+    setToasts(prev => prev.filter(t => t.id !== id));
+  }, []);
+  
+  return (
+    <ToastContext.Provider value={{ show }}>
+      {children}
+      {/* Toast Container */}
+      <div style={{position: 'fixed', bottom: '24px', right: '24px', zIndex: 9999, display: 'flex', flexDirection: 'column', gap: '8px', maxWidth: '420px'}}>
+        {toasts.map(t => {
+          const colors = {
+            success: { bg: 'rgba(92,214,133,0.12)', border: 'rgba(92,214,133,0.4)', text: '#5CD685', icon: '✓' },
+            error: { bg: 'rgba(214,92,92,0.12)', border: 'rgba(214,92,92,0.4)', text: '#D65C5C', icon: '✗' },
+            warning: { bg: 'rgba(214,160,92,0.12)', border: 'rgba(214,160,92,0.4)', text: '#D6A05C', icon: '⚠' },
+            info: { bg: 'rgba(157,140,207,0.12)', border: 'rgba(157,140,207,0.4)', text: '#9D8CCF', icon: 'ℹ' },
+          };
+          const c = colors[t.type] || colors.info;
+          return (
+            <div key={t.id} style={{
+              background: c.bg, backdropFilter: 'blur(12px)',
+              border: `1px solid ${c.border}`, borderRadius: '10px',
+              padding: '12px 16px', display: 'flex', alignItems: 'flex-start', gap: '10px',
+              animation: 'toastSlideIn 0.25s ease-out',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
+            }}>
+              <span style={{fontSize: '14px', lineHeight: '1', marginTop: '1px'}}>{c.icon}</span>
+              <span style={{flex: 1, color: c.text, fontSize: '13px', lineHeight: '1.4', fontFamily: "'IBM Plex Mono', monospace"}}>{t.message}</span>
+              <button onClick={() => dismiss(t.id)} style={{background: 'none', border: 'none', color: c.text, cursor: 'pointer', fontSize: '14px', padding: '0', lineHeight: '1', opacity: 0.6}}>×</button>
+            </div>
+          );
+        })}
+      </div>
+      <style>{`@keyframes toastSlideIn { from { transform: translateX(100px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }`}</style>
+    </ToastContext.Provider>
+  );
+}
+
+function useToast() {
+  const ctx = React.useContext(ToastContext);
+  if (!ctx) return { show: (msg, type) => { /* fallback */ } };
+  return ctx;
+}
+
 function Panel({ children, className = '', glow = false, accent = null }) {
   const accentColors = {
     purple: 'rgba(157,140,207,0.15)',
@@ -757,6 +814,10 @@ function LoginPage() {
 // Customer Dashboard - simplified view for customers
 function CustomerDashboard() {
   const { user } = useAuth();
+  const toast = useToast();
+  const toast = useToast();
+  const toast = useToast();
+  const toast = useToast();
   const [applications, setApplications] = useState([]);
   const [certificates, setCertificates] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -1000,7 +1061,7 @@ function Dashboard() {
       await api.patch(`/api/applications/${appId}/state?new_state=${newState}`);
       loadData();
     } catch (err) {
-      alert('Failed: ' + (err.response?.data?.detail || err.message));
+      toast.show('Failed: ' + (err.response?.data?.detail || err.message), 'error');
     }
   };
 
@@ -1240,7 +1301,7 @@ function ApplicationsList() {
       setSelected(new Set());
       loadApps();
     } catch (err) {
-      alert('Bulk operation failed: ' + (err.response?.data?.detail || err.message));
+      toast.show('Bulk operation failed: ' + (err.response?.data?.detail || err.message), 'error');
     }
     setBulkLoading(false);
   };
@@ -1257,7 +1318,7 @@ function ApplicationsList() {
       await api.patch(`/api/applications/${appId}/state?new_state=${newState}`);
       loadApps();
     } catch (err) {
-      alert('Failed: ' + (err.response?.data?.detail || err.message));
+      toast.show('Failed: ' + (err.response?.data?.detail || err.message), 'error');
     }
   };
 
@@ -1642,9 +1703,9 @@ function ApplicationDetail() {
     try {
       const res = await api.post('/api/cat72/tests', { application_id: parseInt(id) });
       setTestCreated(res.data);
-      alert(`CAT-72 Test created: ${res.data.test_id}\nGo to CAT-72 Console to start the test.`);
+      toast.show(`CAT-72 Test created: ${res.data.test_id} — Go to CAT-72 Console to start.`, 'success');
     } catch (err) {
-      alert('Failed to create test: ' + (err.response?.data?.detail || err.message));
+      toast.show('Failed to create test: ' + (err.response?.data?.detail || err.message), 'error');
     }
     setScheduling(false);
   };
@@ -1655,10 +1716,10 @@ function ApplicationDetail() {
     if (!window.confirm('Are you sure you want to delete this application? This cannot be undone.')) return;
     try {
       await api.delete(`/api/applications/${id}`);
-      alert('Application deleted');
+      toast.show('Application deleted', 'success');
       navigate('/applications');
     } catch (err) {
-      alert('Failed to delete: ' + (err.response?.data?.detail || err.message));
+      toast.show('Failed to delete: ' + (err.response?.data?.detail || err.message), 'error');
     }
   };
 
@@ -1668,7 +1729,7 @@ function ApplicationDetail() {
       await api.patch(`/api/applications/${id}/state?new_state=approved`);
       await refreshApp();
     } catch (err) {
-      alert('Failed to approve: ' + (err.response?.data?.detail || err.message));
+      toast.show('Failed to approve: ' + (err.response?.data?.detail || err.message), 'error');
     }
   };
 
@@ -1687,7 +1748,7 @@ function ApplicationDetail() {
       await api.patch(`/api/applications/${id}/state?new_state=under_review`);
       await refreshApp();
     } catch (err) {
-      alert('Failed to update: ' + (err.response?.data?.detail || err.message));
+      toast.show('Failed to update: ' + (err.response?.data?.detail || err.message), 'error');
     }
   };
 
@@ -1698,7 +1759,7 @@ function ApplicationDetail() {
       await api.patch(`/api/applications/${id}/state?new_state=suspended`);
       await refreshApp();
     } catch (err) {
-      alert('Failed to suspend: ' + (err.response?.data?.detail || err.message));
+      toast.show('Failed to suspend: ' + (err.response?.data?.detail || err.message), 'error');
     }
   };
 
@@ -1708,7 +1769,7 @@ function ApplicationDetail() {
       await api.patch(`/api/applications/${id}/state?new_state=pending`);
       await refreshApp();
     } catch (err) {
-      alert('Failed to reinstate: ' + (err.response?.data?.detail || err.message));
+      toast.show('Failed to reinstate: ' + (err.response?.data?.detail || err.message), 'error');
     }
   };
 
@@ -1868,7 +1929,7 @@ function ApplicationDetail() {
                   await api.patch(`/api/applications/${id}/state?new_state=${newState}`);
                   setApp({...app, state: newState});
                 } catch (err) {
-                  alert('Failed to update state: ' + (err.response?.data?.detail || err.message));
+                  toast.show('Failed to update state: ' + (err.response?.data?.detail || err.message), 'error');
                 }
               }}
               className="px-3 py-2 rounded-lg"
@@ -1908,10 +1969,10 @@ function ApplicationDetail() {
         onSave={async (boundaries) => {
           try {
             await api.patch(`/api/applicants/${app.id}`, { envelope_definition: boundaries });
-            alert("Boundaries saved!");
+            toast.show('Boundaries saved', 'success');
             setApp({...app, envelope_definition: boundaries});
           } catch (e) {/* boundary save error */
-            alert("Failed to save: " + e.message);
+            toast.show('Failed to save: ' + e.message, 'error');
           }
         }}
       />}
@@ -1989,6 +2050,7 @@ function ApplicationDetail() {
 // CAT-72 Console
 function CAT72Console() {
   const [tests, setTests] = useState([]);
+  const toast = useToast();
   const [loading, setLoading] = useState({});
   const [now, setNow] = useState(Date.now());
 
@@ -2010,7 +2072,7 @@ function CAT72Console() {
       await api.post(`/api/cat72/tests/${testId}/start`);
       loadTests();
     } catch (err) {
-      alert('Failed to start test: ' + (err.response?.data?.detail || err.message));
+      toast.show('Failed to start test: ' + (err.response?.data?.detail || err.message), 'error');
     }
     setLoading(prev => ({...prev, [testId]: null}));
   };
@@ -2022,7 +2084,7 @@ function CAT72Console() {
       await api.post(`/api/cat72/tests/${testId}/stop`);
       loadTests();
     } catch (err) {
-      alert('Failed to stop test: ' + (err.response?.data?.detail || err.message));
+      toast.show('Failed to stop test: ' + (err.response?.data?.detail || err.message), 'error');
     }
     setLoading(prev => ({...prev, [testId]: null}));
   };
@@ -2032,10 +2094,10 @@ function CAT72Console() {
     setLoading(prev => ({...prev, [testId]: 'issuing'}));
     try {
       const res = await api.post(`/api/certificates/issue/${testId}`);
-      alert(`Certificate issued: ${res.data.certificate_number}\nVerification URL: ${res.data.verification_url}`);
+      toast.show(`Certificate issued: ${res.data.certificate_number}`, 'success');
       loadTests();
     } catch (err) {
-      alert('Failed to issue certificate: ' + (err.response?.data?.detail || err.message));
+      toast.show('Failed to issue certificate: ' + (err.response?.data?.detail || err.message), 'error');
     }
     setLoading(prev => ({...prev, [testId]: null}));
   };
@@ -2938,7 +3000,7 @@ function AgentSimulator({ apiKey }) {
 
   const runSimulation = async () => {
     if (!apiKey) {
-      alert('Generate an API key first');
+      toast.show('Generate an API key first', 'warning');
       return;
     }
     
@@ -3442,7 +3504,7 @@ if __name__ == "__main__":
   const downloadAgent = async (keyData) => {
     try {
       const certId = keyData.certificate_id || selectedCert;
-      if (!certId) { alert('No certificate linked to this key'); return; }
+      if (!certId) { toast.show('No certificate linked to this key', 'warning'); return; }
       const res = await api.post('/api/apikeys/admin/provision', {
         user_id: parseInt(keyData.user_id || '0'),
         certificate_id: certId,
@@ -4268,7 +4330,7 @@ if __name__ == "__main__":
                       link.href = url;
                       link.download = `CAT72-Report-${selectedSession.session_id}.pdf`;
                       link.click();
-                    } catch(e) { alert('Failed: ' + e.message); }
+                    } catch(e) { toast.show('Failed: ' + e.message, 'error'); }
                   }} style={{padding: '8px 16px', background: styles.purplePrimary, border: 'none', borderRadius: '6px', color: '#fff', fontSize: '11px', cursor: 'pointer'}}>Download Report</button>
                   <button onClick={() => setSelectedSession(null)} style={{padding: '8px 16px', background: 'transparent', border: `1px solid ${styles.borderGlass}`, borderRadius: '6px', color: styles.textTertiary, cursor: 'pointer', fontSize: '11px'}}>✕ Close</button>
                 </div>
@@ -4314,8 +4376,8 @@ if __name__ == "__main__":
                               a.click();
                               URL.revokeObjectURL(url);
                             }
-                            alert(`✓ Agent provisioned!\n\nEmail sent to: ${res.data.customer_email}\nAPI Key: ${res.data.api_key_prefix}...`);
-                          } catch (e) { alert('Failed: ' + (e.response?.data?.detail || e.message)); }
+                            toast.show('Agent provisioned successfully', 'success');
+                          } catch (e) { toast.show('Failed: ' + (e.response?.data?.detail || e.message), 'error'); }
                         }} style={{padding: '8px 16px', background: styles.accentGreen, border: `1px solid ${styles.accentGreen}`, borderRadius: '6px', color: '#fff', fontSize: '11px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px'}}>
                           <ExternalLink size={12} /> Provision & Send
                         </button>
@@ -4381,9 +4443,9 @@ if __name__ == "__main__":
                 onSave={async (boundaries) => {
                   try {
                     await api.put(`/api/envelo/boundaries/config/boundaries?certificate_number=${selectedCert.certificate_number}`, boundaries);
-                    alert('Boundaries saved successfully!');
+                    toast.show('Boundaries saved','success');
                   } catch (e) {
-                    alert('Failed to save: ' + e.message);
+                    toast.show('Failed to save: ' + e.message, 'error');
                   }
                 }}
               />
@@ -4711,7 +4773,7 @@ function MonitoringPage() {
         last_activity: s.last_activity || '',
       };
     });
-    if (rows.length === 0) { alert('No sessions to export'); return; }
+    if (rows.length === 0) { toast.show('No sessions to export', 'warning'); return; }
     const headers = Object.keys(rows[0]);
     const csv = [
       headers.join(','),
@@ -5055,7 +5117,7 @@ function MonitoringPage() {
                       await api.post('/api/envelo/sessions/' + selectedSession.session_id + '/end', { ended_at: new Date().toISOString(), final_stats: { pass_count: selectedSession.pass_count, block_count: selectedSession.block_count } });
                       setSelectedSession(null);
                       fetchData();
-                    } catch (e) { alert('Failed: ' + e.message); }
+                    } catch (e) { toast.show('Failed: ' + e.message, 'error'); }
                   }}
                   style={{padding: '8px 16px', background: 'rgba(214,92,92,0.1)', border: '1px solid rgba(214,92,92,0.3)', borderRadius: '8px', color: '#D65C5C', cursor: 'pointer', fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase'}}
                 >
@@ -5189,17 +5251,17 @@ function UserManagementPage() {
   };
 
   const handleInvite = async () => {
-    if (!inviteForm.email || !inviteForm.full_name) { alert('Email and full name are required'); return; }
+    if (!inviteForm.email || !inviteForm.full_name) { toast.show('Email and full name are required', 'warning'); return; }
     setInviteLoading(true);
     try {
       const tempPassword = Math.random().toString(36).slice(-8) + 'A1!';
       await api.post('/api/users/', { ...inviteForm, password: tempPassword });
-      alert('User created!\n\nEmail: ' + inviteForm.email + '\nTemporary Password: ' + tempPassword + '\n\nShare this securely.');
+      toast.show('User created — share credentials securely','success');
       setShowInviteModal(false);
       setInviteForm({ email: '', full_name: '', company: '', role: 'applicant' });
       loadUsers();
     } catch (err) {
-      alert('Failed to create user: ' + (err.response?.data?.detail || err.message));
+      toast.show('Failed to create user: ' + (err.response?.data?.detail || err.message), 'error');
     }
     setInviteLoading(false);
   };
@@ -5211,7 +5273,7 @@ function UserManagementPage() {
       loadUsers();
       setShowEditModal(false);
     } catch (err) {
-      alert('Failed to update role: ' + (err.response?.data?.detail || err.message));
+      toast.show('Failed to update role: ' + (err.response?.data?.detail || err.message), 'error');
     }
   };
 
@@ -5223,7 +5285,7 @@ function UserManagementPage() {
       loadUsers();
       setShowEditModal(false);
     } catch (err) {
-      alert('Failed to update user: ' + (err.response?.data?.detail || err.message));
+      toast.show('Failed to update user: ' + (err.response?.data?.detail || err.message), 'error');
     }
   };
 
@@ -5232,9 +5294,9 @@ function UserManagementPage() {
     try {
       const newPassword = Math.random().toString(36).slice(-8) + 'A1!';
       await api.patch('/api/users/' + userId, { password: newPassword });
-      alert('Password reset!\n\nNew temporary password: ' + newPassword + '\n\nShare this securely.');
+      toast.show('Password reset — share credentials securely','success');
     } catch (err) {
-      alert('Failed to reset password: ' + (err.response?.data?.detail || err.message));
+      toast.show('Failed to reset password: ' + (err.response?.data?.detail || err.message), 'error');
     }
   };
 
@@ -5245,7 +5307,7 @@ function UserManagementPage() {
       loadUsers();
       setShowEditModal(false);
     } catch (err) {
-      alert('Failed to approve: ' + (err.response?.data?.detail || err.message));
+      toast.show('Failed to approve: ' + (err.response?.data?.detail || err.message), 'error');
     }
   };
 
@@ -5256,7 +5318,7 @@ function UserManagementPage() {
       loadUsers();
       setShowEditModal(false);
     } catch (err) {
-      alert('Failed to reject: ' + (err.response?.data?.detail || err.message));
+      toast.show('Failed to reject: ' + (err.response?.data?.detail || err.message), 'error');
     }
   };
 
@@ -5267,7 +5329,7 @@ function UserManagementPage() {
       loadUsers();
       setShowEditModal(false);
     } catch (err) {
-      alert('Failed to delete user: ' + (err.response?.data?.detail || err.message));
+      toast.show('Failed to delete user: ' + (err.response?.data?.detail || err.message), 'error');
     }
   };
 
@@ -5519,7 +5581,7 @@ function SettingsPage() {
     try {
       await api.put('/api/users/email-preferences', prefs);
       setSaved(true); setTimeout(() => setSaved(false), 3000);
-    } catch (err) { alert('Failed to save: ' + (err.response?.data?.detail || err.message)); }
+    } catch (err) { toast.show('Failed to save: ' + (err.response?.data?.detail || err.message), 'error'); }
     setSaving(false);
   };
 
@@ -5578,7 +5640,7 @@ function SettingsPage() {
 
 function App() {
   return (
-    <BrowserRouter>
+    <ToastProvider><BrowserRouter>
       <AuthProvider>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
@@ -5599,7 +5661,7 @@ function App() {
           <Route path="/" element={<Navigate to="/dashboard" />} />
         </Routes>
       </AuthProvider>
-    </BrowserRouter>
+    </BrowserRouter></ToastProvider>
   );
 }
 
