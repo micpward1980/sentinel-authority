@@ -10,7 +10,7 @@ from typing import Optional, Dict, Any
 from app.core.database import get_db
 from app.core.security import get_current_user
 from app.models.models import Application, AuditLog
-from app.services.audit_service import write_audit_log, User, CertificationState
+from app.services.audit_service import write_audit_log
 from app.services.email_service import (
     notify_admin_new_application, send_application_received,
     send_application_approved, send_application_under_review,
