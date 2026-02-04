@@ -82,7 +82,7 @@ async def setup_2fa(
     db: AsyncSession = Depends(get_db),
     current_user: dict = Depends(get_current_user)
 ):
-    result = await db.execute(select(User).where(User.id == current_user.get("id")))
+    result = await db.execute(select(User).where(User.id == int(current_user.get("sub"))))
     user = result.scalar_one_or_none()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
@@ -115,7 +115,7 @@ async def enable_2fa(
     db: AsyncSession = Depends(get_db),
     current_user: dict = Depends(get_current_user)
 ):
-    result = await db.execute(select(User).where(User.id == current_user.get("id")))
+    result = await db.execute(select(User).where(User.id == int(current_user.get("sub"))))
     user = result.scalar_one_or_none()
     if not user or not user.totp_secret:
         raise HTTPException(status_code=400, detail="Run /2fa/setup first")
@@ -135,7 +135,7 @@ async def disable_2fa(
     db: AsyncSession = Depends(get_db),
     current_user: dict = Depends(get_current_user)
 ):
-    result = await db.execute(select(User).where(User.id == current_user.get("id")))
+    result = await db.execute(select(User).where(User.id == int(current_user.get("sub"))))
     user = result.scalar_one_or_none()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")

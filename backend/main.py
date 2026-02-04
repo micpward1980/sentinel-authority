@@ -182,7 +182,7 @@ async def get_notifications(
             .order_by(desc(AuditLog.timestamp)).limit(20)
         )
         logs = result.scalars().all()
-        result2 = await db.execute(select(Application.id).where(Application.applicant_id == current_user.get("id")))
+        result2 = await db.execute(select(Application.id).where(Application.applicant_id == int(current_user.get("sub"))))
         user_app_ids = set(r[0] for r in result2.fetchall())
         for log in logs:
             if log.resource_id not in user_app_ids:
