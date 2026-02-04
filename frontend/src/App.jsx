@@ -1627,10 +1627,12 @@ function ApplicationDetail() {
   const [app, setApp] = useState(null);
   const [scheduling, setScheduling] = useState(false);
   const [testCreated, setTestCreated] = useState(null);
+  const [history, setHistory] = useState([]);
 
   useEffect(() => {
     if (id) {
       api.get(`/api/applications/${id}`).then(res => setApp(res.data)).catch(console.error);
+      api.get(`/api/applications/${id}/history`).then(res => setHistory(res.data)).catch(console.error);
     }
   }, [id]);
 
@@ -1674,6 +1676,7 @@ function ApplicationDetail() {
     try {
       const res = await api.get(`/api/applications/${id}`);
       setApp(res.data);
+      api.get(`/api/applications/${id}/history`).then(res => setHistory(res.data)).catch(console.error);
     } catch (err) {
       console.error('Failed to refresh:', err);
     }
@@ -1912,6 +1915,61 @@ function ApplicationDetail() {
           }
         }}
       />}
+
+      {/* State Change Timeline */}
+      {history.length > 0 && (
+        <Panel>
+          <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '20px'}}>State Change History</h2>
+          <div style={{position: 'relative', paddingLeft: '28px'}}>
+            {/* Vertical line */}
+            <div style={{position: 'absolute', left: '8px', top: '4px', bottom: '4px', width: '2px', background: styles.borderGlass}} />
+            {history.map((entry, i) => {
+              const actionColors = {
+                submitted: styles.purpleBright,
+                state_changed: (() => {
+                  const ns = entry.details?.new_state;
+                  if (ns === 'conformant') return styles.accentGreen;
+                  if (ns === 'suspended' || ns === 'revoked') return '#D65C5C';
+                  if (ns === 'approved') return styles.accentGreen;
+                  if (ns === 'under_review' || ns === 'testing') return styles.purpleBright;
+                  return '#D6A05C';
+                })(),
+                certificate_issued: styles.accentGreen,
+              };
+              const color = actionColors[entry.action] || styles.textTertiary;
+              const stateLabel = entry.details?.new_state?.replace('_', ' ') || entry.action?.replace('_', ' ');
+              const fromLabel = entry.details?.old_state?.replace('_', ' ');
+              const ts = entry.timestamp ? new Date(entry.timestamp) : null;
+              return (
+                <div key={i} style={{position: 'relative', paddingBottom: i < history.length - 1 ? '20px' : '0', marginBottom: i < history.length - 1 ? '0' : '0'}}>
+                  {/* Dot */}
+                  <div style={{position: 'absolute', left: '-24px', top: '2px', width: '12px', height: '12px', borderRadius: '50%', background: `${color}30`, border: `2px solid ${color}`}} />
+                  {/* Content */}
+                  <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start'}}>
+                    <div>
+                      <span style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '12px', fontWeight: 500, color: color, textTransform: 'uppercase', letterSpacing: '0.5px'}}>{stateLabel}</span>
+                      {fromLabel && entry.action !== 'submitted' && (
+                        <span style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary, marginLeft: '8px'}}>from {fromLabel}</span>
+                      )}
+                      <div style={{marginTop: '4px'}}>
+                        <span style={{fontSize: '12px', color: styles.textTertiary}}>{entry.user_email}</span>
+                      </div>
+                    </div>
+                    <div style={{textAlign: 'right', flexShrink: 0}}>
+                      {ts && (
+                        <>
+                          <div style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', color: styles.textTertiary}}>{ts.toLocaleDateString()}</div>
+                          <div style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary}}>{ts.toLocaleTimeString()}</div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </Panel>
+      )}
 
       <Panel>
         <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>ODD Specification</h2>

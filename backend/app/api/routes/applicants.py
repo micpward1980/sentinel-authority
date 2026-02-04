@@ -9,7 +9,8 @@ from typing import Optional, Dict, Any
 
 from app.core.database import get_db
 from app.core.security import get_current_user
-from app.models.models import Application, User, CertificationState
+from app.models.models import Application, AuditLog
+from app.services.audit_service import write_audit_log, User, CertificationState
 from app.services.email_service import (
     notify_admin_new_application, send_application_received,
     send_application_approved, send_application_under_review,
@@ -243,6 +244,16 @@ async def update_application_state(
                 )
                 db.add(new_key)
         
+        # Write audit log
+        await write_audit_log(
+            db=db,
+            action="state_changed",
+            resource_type="application",
+            resource_id=application_id,
+            user_id=user.get("id"),
+            user_email=user.get("email"),
+            details={"old_state": previous_state, "new_state": new_state, "system_name": app.system_name or ""}
+        )
         await db.commit()
         
         result = {"message": f"State updated to {new_state}", "state": new_state}
@@ -379,6 +390,56 @@ async def delete_application(
     await db.commit()
     
     return {"message": "Application deleted"}
+
+
+
+# ═══ Application History ═══
+
+@router.get("/{application_id}/history", summary="Get application state change history")
+async def get_application_history(
+    application_id: int,
+    db: AsyncSession = Depends(get_db),
+    user: dict = Depends(get_current_user)
+):
+    """Returns chronological state change history for an application."""
+    # Verify application exists
+    result = await db.execute(select(Application).where(Application.id == application_id))
+    app = result.scalar_one_or_none()
+    if not app:
+        raise HTTPException(status_code=404, detail="Application not found")
+    
+    # Check access: admin sees all, applicant sees own org
+    if user.get("role") == "applicant" and app.organization_name != user.get("organization"):
+        raise HTTPException(status_code=403, detail="Access denied")
+    
+    # Query audit log for this application
+    result = await db.execute(
+        select(AuditLog).where(
+            AuditLog.resource_type == "application",
+            AuditLog.resource_id == application_id
+        ).order_by(AuditLog.timestamp.asc())
+    )
+    logs = result.scalars().all()
+    
+    # Also include creation event from submitted_at
+    history = []
+    if app.submitted_at:
+        history.append({
+            "timestamp": app.submitted_at.isoformat(),
+            "action": "submitted",
+            "user_email": app.contact_email or "applicant",
+            "details": {"new_state": "pending", "system_name": app.system_name}
+        })
+    
+    for log in logs:
+        history.append({
+            "timestamp": log.timestamp.isoformat() if log.timestamp else None,
+            "action": log.action,
+            "user_email": log.user_email,
+            "details": log.details or {}
+        })
+    
+    return history
 
 
 # ═══ Bulk State Operations ═══
