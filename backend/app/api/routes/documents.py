@@ -4,7 +4,7 @@ from fastapi.responses import FileResponse
 from pathlib import Path
 from app.core.security import get_current_user
 
-router = APIRouter(prefix="/documents", tags=["documents"])
+router = APIRouter(tags=["documents"])
 
 DOCS_DIR = Path(__file__).resolve().parent.parent.parent.parent / "static" / "documents"
 
