@@ -110,30 +110,60 @@ async def create_application(
 @router.get("/", summary="List all applications")
 async def list_applications(
     db: AsyncSession = Depends(get_db),
-    user: dict = Depends(get_current_user)
+    user: dict = Depends(get_current_user),
+    search: Optional[str] = None,
+    state: Optional[str] = None,
+    limit: int = 200,
+    offset: int = 0,
 ):
-    if user.get("role") in ["admin", "operator"]:
-        result = await db.execute(select(Application).order_by(Application.created_at.desc()))
-    else:
-        result = await db.execute(
-            select(Application)
-            .where(Application.applicant_id == int(user["sub"]))
-            .order_by(Application.created_at.desc())
-        )
-    
+    from sqlalchemy import or_
+    query = select(Application)
+    if user.get("role") not in ["admin", "operator"]:
+        query = query.where(Application.applicant_id == int(user["sub"]))
+    if state and state != "all":
+        if state == "revoked":
+            query = query.where(Application.state.in_(["suspended", "revoked"]))
+        else:
+            query = query.where(Application.state == state)
+    if search:
+        like = f"%{search}%"
+        query = query.where(or_(
+            Application.system_name.ilike(like),
+            Application.organization_name.ilike(like),
+            Application.application_number.ilike(like),
+            Application.contact_email.ilike(like),
+        ))
+    count_query = select(func.count()).select_from(query.subquery())
+    total_result = await db.execute(count_query)
+    total = total_result.scalar()
+    # State counts (unfiltered by search/state for tab badges)
+    count_q = select(Application.state, func.count(Application.id)).group_by(Application.state)
+    if user.get("role") not in ["admin", "operator"]:
+        count_q = count_q.where(Application.applicant_id == int(user["sub"]))
+    count_result = await db.execute(count_q)
+    state_counts = {"all": 0}
+    for row in count_result.fetchall():
+        key = row[0].value if hasattr(row[0], "value") else row[0]
+        state_counts[key] = row[1]
+        state_counts["all"] += row[1]
+    result = await db.execute(query.order_by(Application.created_at.desc()).limit(limit).offset(offset))
     apps = result.scalars().all()
-    return [
-        {
-            "id": a.id,
-            "application_number": a.application_number,
-            "organization_name": a.organization_name,
-            "system_name": a.system_name,
-            "system_version": a.system_version,
-            "state": a.state.value,
-            "submitted_at": a.submitted_at.isoformat() + "Z" if a.submitted_at else None,
-        }
-        for a in apps
-    ]
+    return {
+        "applications": [
+            {
+                "id": a.id,
+                "application_number": a.application_number,
+                "organization_name": a.organization_name,
+                "system_name": a.system_name,
+                "system_version": a.system_version,
+                "state": a.state.value,
+                "contact_email": a.contact_email,
+                "submitted_at": a.submitted_at.isoformat() + "Z" if a.submitted_at else None,
+            }
+            for a in apps
+        ],
+        "total": total, "state_counts": state_counts,
+    }
 
 
 @router.get("/{application_id}", summary="Get application details")

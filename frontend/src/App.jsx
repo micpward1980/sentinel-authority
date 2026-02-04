@@ -925,6 +925,8 @@ function CustomerDashboard() {
   const toast = useToast();
   const toast = useToast();
   const [applications, setApplications] = useState([]);
+  const [appTotal, setAppTotal] = useState(0);
+  const [stateCounts, setStateCounts] = useState({});
   const [certificates, setCertificates] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -1385,6 +1387,8 @@ function ApplicationsList() {
   const { user } = useAuth();
   const confirm = useConfirm();
   const [applications, setApplications] = useState([]);
+  const [appTotal, setAppTotal] = useState(0);
+  const [stateCounts, setStateCounts] = useState({});
   const [filter, setFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [selected, setSelected] = useState(new Set());
@@ -1414,11 +1418,24 @@ function ApplicationsList() {
     setBulkLoading(false);
   };
 
-  const loadApps = () => {
-    api.get('/api/applications/').then(res => setApplications(res.data)).catch(console.error);
+  const loadApps = (search = '', state = 'all') => {
+    const params = {};
+    if (search) params.search = search;
+    if (state && state !== 'all') params.state = state;
+    api.get('/api/applications/', { params }).then(res => {
+      setApplications(res.data.applications || res.data);
+      setAppTotal(res.data.total ?? (res.data.applications || res.data).length);
+      setStateCounts(res.data.state_counts || {});
+    }).catch(console.error);
   };
 
   useEffect(() => { loadApps(); }, []);
+
+  // Debounced server-side search
+  useEffect(() => {
+    const timer = setTimeout(() => { loadApps(searchQuery, filter); }, 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery, filter]);
 
   const handleQuickAdvance = async (appId, newState, label) => {
     if (!await confirm({title: 'Confirm', message: label + '?'})) return;
@@ -1440,7 +1457,7 @@ function ApplicationsList() {
     { key: 'revoked', label: 'Suspended' },
   ];
 
-  const filtered = (filter === 'all' ? applications : applications.filter(a => a.state === filter || (filter === 'revoked' && a.state === 'suspended'))).filter(a => { if (!searchQuery) return true; const q = searchQuery.toLowerCase(); return (a.system_name || '').toLowerCase().includes(q) || (a.organization_name || '').toLowerCase().includes(q) || (a.application_number || '').toLowerCase().includes(q) || (a.contact_email || '').toLowerCase().includes(q); });
+  const filtered = applications;
 
   const stateColor = (state) => {
     if (state === 'conformant') return styles.accentGreen;
@@ -1467,14 +1484,14 @@ function ApplicationsList() {
           <Search className="w-4 h-4" style={{position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: styles.textTertiary}} />
           <input value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="Search by name, org, or ID..." style={{width: '100%', background: 'rgba(255,255,255,0.03)', border: `1px solid ${styles.borderGlass}`, borderRadius: '8px', padding: '8px 12px 8px 36px', color: styles.textPrimary, fontSize: '13px', fontFamily: "'IBM Plex Mono', monospace", outline: 'none'}} />
         </div>
-        <span style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', color: styles.textTertiary}}>{filtered.length} of {applications.length}</span>
+        <span style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', color: styles.textTertiary}}>{filtered.length} of {appTotal}</span>
       </div>
 
       {/* Filter Tabs */}
       {user?.role === 'admin' && (
         <div style={{display: 'flex', gap: '4px', flexWrap: 'wrap'}}>
           {filters.map(f => {
-            const count = f.key === 'all' ? applications.length : applications.filter(a => a.state === f.key || (f.key === 'revoked' && a.state === 'suspended')).length;
+            const count = f.key === 'all' ? (stateCounts.all || 0) : f.key === 'revoked' ? ((stateCounts.suspended || 0) + (stateCounts.revoked || 0)) : (stateCounts[f.key] || 0);
             return (
               <button key={f.key} onClick={() => setFilter(f.key)} style={{
                 padding: '6px 14px', borderRadius: '6px', cursor: 'pointer',
@@ -4322,6 +4339,8 @@ function EnveloAdminView() {
   const [sessions, setSessions] = useState([]);
   const [certificates, setCertificates] = useState([]);
   const [applications, setApplications] = useState([]);
+  const [appTotal, setAppTotal] = useState(0);
+  const [stateCounts, setStateCounts] = useState({});
   const [selectedSession, setSelectedSession] = useState(null);
   const [selectedCert, setSelectedCert] = useState(null);
   const [activeTab, setActiveTab] = useState('monitoring'); // monitoring, customers, configure
