@@ -66,6 +66,8 @@ async def send_email(to: str, subject: str, html: str, from_email: str = None) -
 
 
 async def send_application_received(to: str, app_name: str, app_id: int):
+    if not await should_send_email(to, "application_updates"):
+        return False
     """Send application received notification"""
     html = f"""
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -90,6 +92,8 @@ async def send_application_received(to: str, app_name: str, app_id: int):
 
 
 async def send_test_scheduled(to: str, app_name: str, test_start: str):
+    if not await should_send_email(to, "test_notifications"):
+        return False
     """Send test scheduled notification"""
     html = f"""
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -117,6 +121,8 @@ async def send_test_scheduled(to: str, app_name: str, test_start: str):
 
 
 async def send_test_started(to: str, app_name: str, test_id: str):
+    if not await should_send_email(to, "test_notifications"):
+        return False
     """Send test started notification"""
     html = f"""
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -140,6 +146,8 @@ async def send_test_started(to: str, app_name: str, test_id: str):
 
 
 async def send_certificate_issued(to: str, app_name: str, cert_number: str, expiry_date: str):
+    if not await should_send_email(to, "certificate_alerts"):
+        return False
     """Send certificate issued notification"""
     html = f"""
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -170,6 +178,8 @@ async def send_certificate_issued(to: str, app_name: str, cert_number: str, expi
 
 
 async def send_test_failed(to: str, app_name: str, reason: str, pass_rate: float):
+    if not await should_send_email(to, "test_notifications"):
+        return False
     """Send test failed notification"""
     html = f"""
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -336,6 +346,8 @@ async def notify_certificate_issued(to: str, system_name: str, cert_number: str,
 
 
 async def notify_agent_offline(to: str, system_name: str, session_id: str, org_name: str, minutes_offline: int):
+    if not await should_send_email(to, "agent_alerts"):
+        return False
     """Notify customer that their ENVELO agent has gone offline"""
     subject = f"⚠️ ENVELO Agent Offline: {system_name}"
     
@@ -397,6 +409,8 @@ async def notify_admin_agent_offline(system_name: str, org_name: str, session_id
 
 
 async def notify_high_violation_rate(to: str, system_name: str, org_name: str, block_count: int, block_rate: float):
+    if not await should_send_email(to, "agent_alerts"):
+        return False
     """Notify customer of high violation rate"""
     subject = f"🚨 High Violation Rate: {system_name}"
     
@@ -552,6 +566,8 @@ async def send_password_reset_email(to: str, name: str, token: str):
 
 
 async def send_application_approved(to: str, system_name: str, app_number: str):
+    if not await should_send_email(to, "application_updates"):
+        return False
     """Notify applicant their application has been approved"""
     html = f"""
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -585,6 +601,8 @@ async def send_application_approved(to: str, system_name: str, app_number: str):
 
 
 async def send_application_under_review(to: str, system_name: str, app_number: str):
+    if not await should_send_email(to, "application_updates"):
+        return False
     """Notify applicant their application is under review"""
     html = f"""
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -606,6 +624,8 @@ async def send_application_under_review(to: str, system_name: str, app_number: s
 
 
 async def send_certificate_expiry_warning(to: str, system_name: str, cert_number: str, days_remaining: int):
+    if not await should_send_email(to, "certificate_alerts"):
+        return False
     """Warn customer their certificate is expiring soon"""
     urgency = "🚨" if days_remaining <= 7 else "⚠️"
     color = "#D65C5C" if days_remaining <= 7 else "#D6A05C"
