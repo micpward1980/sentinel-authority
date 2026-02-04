@@ -1755,6 +1755,27 @@ function ApplicationDetail() {
   const [newComment, setNewComment] = useState('');
   const [isInternal, setIsInternal] = useState(false);
   const [postingComment, setPostingComment] = useState(false);
+  const [emailPreview, setEmailPreview] = useState(null);
+  const [previewLoading, setPreviewLoading] = useState(false);
+
+  const showEmailPreview = async (newState, label) => {
+    setPreviewLoading(true);
+    try {
+      const res = await api.get(`/api/applications/${id}/email-preview?new_state=${newState}`);
+      setEmailPreview({ ...res.data, label, newState });
+    } catch (err) { toast.show('Preview failed', 'error'); }
+    setPreviewLoading(false);
+  };
+
+  const confirmStateChange = async () => {
+    if (!emailPreview) return;
+    try {
+      await api.patch(`/api/applications/${id}/state?new_state=${emailPreview.newState}`);
+      setEmailPreview(null);
+      await refreshApp();
+      toast.show(`State changed to ${emailPreview.newState}`, 'success');
+    } catch (err) { toast.show('Failed: ' + (err.response?.data?.detail || err.message), 'error'); }
+  };
 
   useEffect(() => {
     if (id) {
@@ -1790,15 +1811,7 @@ function ApplicationDetail() {
     }
   };
 
-  const handleApprove = async () => {
-    if (!window.confirm('Approve this application and grant ENVELO agent access?')) return;
-    try {
-      await api.patch(`/api/applications/${id}/state?new_state=approved`);
-      await refreshApp();
-    } catch (err) {
-      toast.show('Failed to approve: ' + (err.response?.data?.detail || err.message), 'error');
-    }
-  };
+  const handleApprove = () => showEmailPreview('approved', 'Approve Application');
 
   const refreshApp = async () => {
     try {
@@ -1835,25 +1848,9 @@ function ApplicationDetail() {
     }
   };
 
-  const handleAdvanceToReview = async () => {
-    try {
-      await api.patch(`/api/applications/${id}/state?new_state=under_review`);
-      await refreshApp();
-    } catch (err) {
-      toast.show('Failed to update: ' + (err.response?.data?.detail || err.message), 'error');
-    }
-  };
+  const handleAdvanceToReview = () => showEmailPreview('under_review', 'Begin Review');
 
-  const handleSuspend = async () => {
-    const reason = window.prompt('Suspension reason (shown to applicant):');
-    if (!reason) return;
-    try {
-      await api.patch(`/api/applications/${id}/state?new_state=suspended`);
-      await refreshApp();
-    } catch (err) {
-      toast.show('Failed to suspend: ' + (err.response?.data?.detail || err.message), 'error');
-    }
-  };
+  const handleSuspend = () => showEmailPreview('suspended', 'Suspend Application');
 
   const handleReinstate = async () => {
     if (!window.confirm('Reinstate this application to pending? The applicant will need to go through review again.')) return;
@@ -1892,7 +1889,34 @@ function ApplicationDetail() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      {emailPreview && (
+        <div style={{position: 'fixed', inset: 0, zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)'}}>
+          <div style={{background: styles.bgCard, border: '1px solid ' + styles.borderGlass, borderRadius: '16px', maxWidth: '650px', width: '90%', maxHeight: '80vh', overflow: 'hidden', display: 'flex', flexDirection: 'column'}}>
+            <div style={{padding: '20px 24px', borderBottom: '1px solid ' + styles.borderGlass, display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+              <div>
+                <h3 style={{margin: 0, fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.purpleBright}}>Email Preview</h3>
+                <p style={{margin: '4px 0 0', fontSize: '12px', color: styles.textTertiary}}>This email will be sent to <strong style={{color: styles.textPrimary}}>{emailPreview.to}</strong></p>
+              </div>
+              <button onClick={() => setEmailPreview(null)} style={{background: 'none', border: 'none', color: styles.textTertiary, cursor: 'pointer', fontSize: '20px', padding: '4px 8px'}}>X</button>
+            </div>
+            <div style={{padding: '16px 24px', borderBottom: '1px solid ' + styles.borderGlass, background: 'rgba(0,0,0,0.1)'}}>
+              <div style={{fontSize: '11px', color: styles.textTertiary, marginBottom: '2px'}}>Subject</div>
+              <div style={{fontSize: '14px', color: styles.textPrimary, fontWeight: 500}}>{emailPreview.subject}</div>
+            </div>
+            <div style={{flex: 1, overflow: 'auto', padding: '20px 24px'}}>
+              <div style={{background: '#fff', borderRadius: '8px', overflow: 'hidden'}} dangerouslySetInnerHTML={{__html: emailPreview.html}} />
+            </div>
+            <div style={{padding: '16px 24px', borderTop: '1px solid ' + styles.borderGlass, display: 'flex', justifyContent: 'flex-end', gap: '10px'}}>
+              <button onClick={() => setEmailPreview(null)} style={{padding: '8px 20px', borderRadius: '8px', background: 'rgba(255,255,255,0.05)', border: '1px solid ' + styles.borderGlass, color: styles.textSecondary, fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>Cancel</button>
+              <button onClick={confirmStateChange} className="sexy-btn" style={{padding: '8px 20px', borderRadius: '8px', background: emailPreview.newState === 'suspended' ? 'rgba(214,92,92,0.2)' : styles.purplePrimary, border: '1px solid ' + (emailPreview.newState === 'suspended' ? 'rgba(214,92,92,0.4)' : styles.purpleBright), color: emailPreview.newState === 'suspended' ? '#D65C5C' : '#fff', fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>
+                {emailPreview.label} + Send Email
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+            <div className="flex items-center justify-between">
         <Link to="/applications" className="flex items-center gap-2 no-underline" style={{color: styles.textTertiary, fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase'}}>
           <ArrowLeft className="w-4 h-4" />
           Back to Applications

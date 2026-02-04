@@ -626,3 +626,95 @@ async def bulk_delete_applications(
     
     await db.commit()
     return {"message": f"{deleted} applications deleted", "deleted": deleted}
+
+@router.get("/{application_id}/email-preview", summary="Preview notification email for state change")
+async def preview_state_change_email(
+    application_id: int,
+    new_state: str,
+    db: AsyncSession = Depends(get_db),
+    user: dict = Depends(require_role(["admin"])),
+):
+    """Return HTML preview of the email that would be sent on state change"""
+    result = await db.execute(select(Application).where(Application.id == application_id))
+    app = result.scalar_one_or_none()
+    if not app:
+        raise HTTPException(status_code=404, detail="Application not found")
+    
+    # Get applicant email
+    user_result = await db.execute(select(User).where(User.id == app.applicant_id))
+    applicant = user_result.scalar_one_or_none()
+    to_email = applicant.email if applicant else "applicant@example.com"
+    app_number = app.application_number or f"SA-{app.id:04d}"
+    
+    email_html = ""
+    email_subject = ""
+    
+    if new_state == "under_review":
+        email_subject = f"Application Under Review - {app.system_name}"
+        email_html = f"""<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <div style="background: #5B4B8A; padding: 20px; text-align: center;">
+                <h1 style="color: white; margin: 0;">SENTINEL AUTHORITY</h1>
+            </div>
+            <div style="padding: 30px; background: #f9f9f9;">
+                <h2 style="color: #5B4B8A;">Application Under Review</h2>
+                <p>Your ODDC certification application is now being reviewed by our team.</p>
+                <p><strong>System:</strong> {app.system_name}<br>
+                <strong>Application:</strong> {app_number}</p>
+                <p>We typically complete reviews within 2-3 business days.</p>
+            </div>
+        </div>"""
+    elif new_state == "approved":
+        email_subject = f"Application Approved - {app.system_name}"
+        email_html = f"""<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <div style="background: #5B4B8A; padding: 20px; text-align: center;">
+                <h1 style="color: white; margin: 0;">SENTINEL AUTHORITY</h1>
+            </div>
+            <div style="padding: 30px; background: #f9f9f9;">
+                <h2 style="color: #2e7d32;">&#10003; Application Approved</h2>
+                <p>Your ODDC certification application has been approved.</p>
+                <p><strong>System:</strong> {app.system_name}<br>
+                <strong>Application:</strong> {app_number}</p>
+                <h3 style="color: #5B4B8A;">Next Steps</h3>
+                <ol>
+                    <li>Deploy the ENVELO Agent from your dashboard</li>
+                    <li>Your CAT-72 conformance test will be scheduled</li>
+                    <li>The test runs for 72 continuous hours</li>
+                </ol>
+            </div>
+        </div>"""
+    elif new_state == "suspended":
+        email_subject = f"Application Suspended - {app.system_name}"
+        email_html = f"""<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <div style="background: #5B4B8A; padding: 20px; text-align: center;">
+                <h1 style="color: white; margin: 0;">SENTINEL AUTHORITY</h1>
+            </div>
+            <div style="padding: 30px; background: #f9f9f9;">
+                <h2 style="color: #D65C5C;">Application Suspended</h2>
+                <p>Your ODDC certification application has been suspended.</p>
+                <p><strong>System:</strong> {app.system_name}<br>
+                <strong>Application:</strong> {app_number}</p>
+                <p>Please contact info@sentinelauthority.org for more information.</p>
+            </div>
+        </div>"""
+    else:
+        email_subject = f"Application Update - {app.system_name}"
+        email_html = f"""<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <div style="background: #5B4B8A; padding: 20px; text-align: center;">
+                <h1 style="color: white; margin: 0;">SENTINEL AUTHORITY</h1>
+            </div>
+            <div style="padding: 30px; background: #f9f9f9;">
+                <h2>Application Status Update</h2>
+                <p>Your application status has been updated to: <strong>{new_state}</strong></p>
+                <p><strong>System:</strong> {app.system_name}<br>
+                <strong>Application:</strong> {app_number}</p>
+            </div>
+        </div>"""
+    
+    return {
+        "to": to_email,
+        "subject": email_subject,
+        "html": email_html,
+        "new_state": new_state,
+        "system_name": app.system_name,
+    }
+
