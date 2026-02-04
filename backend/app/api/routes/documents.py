@@ -28,12 +28,6 @@ async def list_documents(current_user: dict = Depends(get_current_user)):
     ]
 
 
-@router.get("/debug")
-async def debug_documents():
-    files = list(DOCS_DIR.glob("*")) if DOCS_DIR.exists() else []
-    return {"docs_dir": str(DOCS_DIR), "exists": DOCS_DIR.exists(), "files": [f.name for f in files]}
-
-
 @router.get("/{doc_id}/download")
 async def download_document(doc_id: str, current_user: dict = Depends(get_current_user)):
     doc = AVAILABLE_DOCS.get(doc_id)

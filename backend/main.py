@@ -68,6 +68,7 @@ app.include_router(registry.router)
 app.include_router(users.router, prefix="/api/users", tags=["User Management"])
 app.include_router(documents.router, prefix="/api/documents", tags=["Documents"])
 app.include_router(deploy.router, prefix="/api", tags=["One-Command Deploy"])
+app.include_router(audit_routes.router, prefix="/api/audit", tags=["Audit Log"])
 
 
 @app.get("/health")
