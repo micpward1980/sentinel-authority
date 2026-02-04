@@ -180,8 +180,43 @@ async def update_application_state(
     try:
         app.state = CertificationState(new_state)
         app.reviewed_at = datetime.utcnow()
+        
+        # Auto-generate API key on approval
+        api_key_raw = None
+        if new_state == "approved" and app.applicant_id:
+            import secrets, hashlib
+            from app.models.models import APIKey
+            
+            # Check if key already exists for this user
+            existing = await db.execute(
+                select(APIKey).where(
+                    APIKey.user_id == app.applicant_id,
+                    APIKey.is_active == True
+                )
+            )
+            if not existing.scalar_one_or_none():
+                random_part = secrets.token_hex(20)
+                api_key_raw = f"sa_live_{random_part}"
+                key_hash = hashlib.sha256(api_key_raw.encode()).hexdigest()
+                key_prefix = api_key_raw[:12]
+                
+                new_key = APIKey(
+                    key_hash=key_hash,
+                    key_prefix=key_prefix,
+                    user_id=app.applicant_id,
+                    name=f"Auto: {app.system_name or 'ENVELO Deploy'}",
+                    is_active=True
+                )
+                db.add(new_key)
+        
         await db.commit()
-        return {"message": f"State updated to {new_state}", "state": new_state}
+        
+        result = {"message": f"State updated to {new_state}", "state": new_state}
+        if api_key_raw:
+            result["api_key_generated"] = True
+            result["api_key"] = api_key_raw
+            result["note"] = "API key auto-generated for customer deploy"
+        return result
     except ValueError:
         raise HTTPException(status_code=400, detail=f"Invalid state: {new_state}")
 

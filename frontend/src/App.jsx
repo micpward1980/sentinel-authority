@@ -1223,6 +1223,8 @@ function ApplicationDetail() {
                 try {
                   await api.patch(`/api/applications/${id}/state?new_state=${newState}`);
                   setApp({...app, state: newState});
+                  // Show auto-generated API key
+                  
                 } catch (err) {
                   alert('Failed to update state: ' + (err.response?.data?.detail || err.message));
                 }
