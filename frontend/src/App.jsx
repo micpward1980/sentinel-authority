@@ -607,6 +607,40 @@ function ActionButton({ children, variant = 'primary', size = 'md', icon, onClic
 }
 
 // Login Page
+
+// ===== CONFIRM MODAL =====
+const ConfirmContext = React.createContext();
+
+function ConfirmProvider({ children }) {
+  const [state, setState] = useState({ open: false, title: '', message: '', onConfirm: null, confirmLabel: 'Confirm', danger: false });
+  
+  const confirm = (opts) => new Promise((resolve) => {
+    setState({ open: true, title: opts.title || 'Confirm', message: opts.message || 'Are you sure?', confirmLabel: opts.confirmLabel || 'Confirm', danger: opts.danger || false, onConfirm: () => { setState(s => ({...s, open: false})); resolve(true); }, onCancel: () => { setState(s => ({...s, open: false})); resolve(false); } });
+  });
+
+  return (
+    <ConfirmContext.Provider value={confirm}>
+      {children}
+      {state.open && (
+        <div style={{position: 'fixed', inset: 0, zIndex: 99999, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)'}}>
+          <div style={{background: styles.bgCard, border: `1px solid ${styles.borderGlass}`, borderRadius: '16px', maxWidth: '420px', width: '90%', overflow: 'hidden'}}>
+            <div style={{padding: '24px 24px 16px'}}>
+              <h3 style={{margin: '0 0 8px', fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: state.danger ? '#D65C5C' : styles.purpleBright}}>{state.title}</h3>
+              <p style={{margin: 0, color: styles.textSecondary, fontSize: '14px', lineHeight: '1.5'}}>{state.message}</p>
+            </div>
+            <div style={{padding: '16px 24px', display: 'flex', justifyContent: 'flex-end', gap: '10px', borderTop: `1px solid ${styles.borderGlass}`}}>
+              <button onClick={state.onCancel} style={{padding: '8px 20px', borderRadius: '8px', background: 'rgba(255,255,255,0.05)', border: `1px solid ${styles.borderGlass}`, color: styles.textSecondary, fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>Cancel</button>
+              <button onClick={state.onConfirm} style={{padding: '8px 20px', borderRadius: '8px', background: state.danger ? 'rgba(214,92,92,0.2)' : styles.purplePrimary, border: `1px solid ${state.danger ? 'rgba(214,92,92,0.4)' : styles.purpleBright}`, color: state.danger ? '#D65C5C' : '#fff', fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>{state.confirmLabel}</button>
+            </div>
+          </div>
+        </div>
+      )}
+    </ConfirmContext.Provider>
+  );
+}
+
+const useConfirm = () => React.useContext(ConfirmContext);
+
 function LoginPage() {
   const { login, register } = useAuth();
   const navigate = useNavigate();
@@ -1128,7 +1162,7 @@ function Dashboard() {
   const needsAction = allApps.filter(a => a.state === 'pending' || a.state === 'under_review');
 
   const handleQuickAdvance = async (appId, newState, label) => {
-    if (!window.confirm(`${label}?`)) return;
+    if (!await confirm({title: 'Confirm', message: label + '?'})) return;
     try {
       await api.patch(`/api/applications/${appId}/state?new_state=${newState}`);
       loadData();
@@ -1349,6 +1383,7 @@ function Dashboard() {
 // Applications List
 function ApplicationsList() {
   const { user } = useAuth();
+  const confirm = useConfirm();
   const [applications, setApplications] = useState([]);
   const [filter, setFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -1363,7 +1398,7 @@ function ApplicationsList() {
     const ids = [...selected];
     if (ids.length === 0) return;
     const label = action === 'delete' ? `Delete ${ids.length} application(s)?` : `${action} ${ids.length} application(s)?`;
-    if (!window.confirm(label)) return;
+    if (!await confirm({title: 'Confirm', message: label})) return;
     setBulkLoading(true);
     try {
       if (action === 'delete') {
@@ -1386,7 +1421,7 @@ function ApplicationsList() {
   useEffect(() => { loadApps(); }, []);
 
   const handleQuickAdvance = async (appId, newState, label) => {
-    if (!window.confirm(`${label}?`)) return;
+    if (!await confirm({title: 'Confirm', message: label + '?'})) return;
     try {
       await api.patch(`/api/applications/${appId}/state?new_state=${newState}`);
       loadApps();
@@ -1766,6 +1801,7 @@ function NewApplication() {
 function ApplicationDetail() {
   const { id } = useParams();
   const { user } = useAuth();
+  const confirm = useConfirm();
   const [app, setApp] = useState(null);
   const [scheduling, setScheduling] = useState(false);
   const [testCreated, setTestCreated] = useState(null);
@@ -1805,7 +1841,7 @@ function ApplicationDetail() {
   }, [id]);
 
   const handleScheduleTest = async () => {
-    if (!window.confirm('Schedule a CAT-72 test for this application? The test will need to be started manually.')) return;
+    if (!await confirm({title: 'Schedule Test', message: 'Schedule a CAT-72 test for this application? The test will need to be started manually.'})) return;
     setScheduling(true);
     try {
       const res = await api.post('/api/cat72/tests', { application_id: parseInt(id) });
@@ -1820,7 +1856,7 @@ function ApplicationDetail() {
   const navigate = useNavigate();
   
   const handleDeleteApplication = async () => {
-    if (!window.confirm('Are you sure you want to delete this application? This cannot be undone.')) return;
+    if (!await confirm({title: 'Delete Application', message: 'Are you sure? This cannot be undone.', danger: true, confirmLabel: 'Delete'})) return;
     try {
       await api.delete(`/api/applications/${id}`);
       toast.show('Application deleted', 'success');
@@ -1872,7 +1908,7 @@ function ApplicationDetail() {
   const handleSuspend = () => showEmailPreview('suspended', 'Suspend Application');
 
   const handleReinstate = async () => {
-    if (!window.confirm('Reinstate this application to pending? The applicant will need to go through review again.')) return;
+    if (!await confirm({title: 'Reinstate', message: 'Reinstate this application to pending? The applicant will need to go through review again.'})) return;
     try {
       await api.patch(`/api/applications/${id}/state?new_state=pending`);
       await refreshApp();
@@ -2059,7 +2095,7 @@ function ApplicationDetail() {
               value={app.state}
               onChange={async (e) => {
                 const newState = e.target.value;
-                if (!window.confirm(`Change status to ${newState.toUpperCase()}?`)) return;
+                if (!await confirm({title: 'Change Status', message: `Change status to ${newState.toUpperCase()}?`})) return;
                 try {
                   await api.patch(`/api/applications/${id}/state?new_state=${newState}`);
                   setApp({...app, state: newState});
@@ -2266,7 +2302,7 @@ function CAT72Console() {
   }, []);
 
   const handleStart = async (testId) => {
-    if (!window.confirm('Start this CAT-72 test? The 72-hour timer will begin.')) return;
+    if (!await confirm({title: 'Start Test', message: 'Start this CAT-72 test? The 72-hour timer will begin.'})) return;
     setLoading(prev => ({...prev, [testId]: 'starting'}));
     try {
       await api.post(`/api/cat72/tests/${testId}/start`);
@@ -2278,7 +2314,7 @@ function CAT72Console() {
   };
 
   const handleStop = async (testId) => {
-    if (!window.confirm('Stop this CAT-72 test and evaluate results?')) return;
+    if (!await confirm({title: 'Stop Test', message: 'Stop this CAT-72 test and evaluate results?'})) return;
     setLoading(prev => ({...prev, [testId]: 'stopping'}));
     try {
       await api.post(`/api/cat72/tests/${testId}/stop`);
@@ -2290,7 +2326,7 @@ function CAT72Console() {
   };
 
   const handleIssueCertificate = async (testId) => {
-    if (!window.confirm('Issue ODDC certificate for this passed test?')) return;
+    if (!await confirm({title: 'Issue Certificate', message: 'Issue ODDC certificate for this passed test?'})) return;
     setLoading(prev => ({...prev, [testId]: 'issuing'}));
     try {
       const res = await api.post(`/api/certificates/issue/${testId}`);
@@ -3877,7 +3913,7 @@ if __name__ == "__main__":
   };
 
   const revokeKey = async (keyId) => {
-    if (!window.confirm('Revoke this API key? This cannot be undone.')) return;
+    if (!await confirm({title: 'Revoke Key', message: 'Revoke this API key? This cannot be undone.', danger: true, confirmLabel: 'Revoke'})) return;
     try {
      await api.delete(`/api/apikeys/${keyId}`);
       loadKeys();
@@ -5362,7 +5398,7 @@ function MonitoringPage() {
               {selectedSession.is_online && (
                 <button
                   onClick={async () => {
-                    if (!window.confirm('Force-end this session?')) return;
+                    if (!await confirm({title: 'End Session', message: 'Force-end this session?', danger: true})) return;
                     try {
                       await api.post('/api/envelo/sessions/' + selectedSession.session_id + '/end', { ended_at: new Date().toISOString(), final_stats: { pass_count: selectedSession.pass_count, block_count: selectedSession.block_count } });
                       setSelectedSession(null);
@@ -5464,6 +5500,7 @@ function MonitoringPage() {
 
 // User Management Page (Admin Only)
 function UserManagementPage() {
+  const confirm = useConfirm();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -5517,7 +5554,7 @@ function UserManagementPage() {
   };
 
   const handleUpdateRole = async (userId, newRole) => {
-    if (!window.confirm('Change user role to ' + newRole.toUpperCase() + '?')) return;
+    if (!await confirm({title: 'Change Role', message: 'Change user role to ' + newRole.toUpperCase() + '?'})) return;
     try {
       await api.patch('/api/users/' + userId, { role: newRole });
       loadUsers();
@@ -5529,7 +5566,7 @@ function UserManagementPage() {
 
   const handleToggleActive = async (userId, currentActive) => {
     const action = currentActive ? 'deactivate' : 'activate';
-    if (!window.confirm(action.charAt(0).toUpperCase() + action.slice(1) + ' this user?')) return;
+    if (!await confirm({title: action.charAt(0).toUpperCase() + action.slice(1), message: action.charAt(0).toUpperCase() + action.slice(1) + ' this user?'})) return;
     try {
       await api.patch('/api/users/' + userId, { is_active: !currentActive });
       loadUsers();
@@ -5540,7 +5577,7 @@ function UserManagementPage() {
   };
 
   const handleResetPassword = async (userId, email) => {
-    if (!window.confirm('Reset password for ' + email + '?')) return;
+    if (!await confirm({title: 'Reset Password', message: 'Reset password for ' + email + '?'})) return;
     try {
       const newPassword = Math.random().toString(36).slice(-8) + 'A1!';
       await api.patch('/api/users/' + userId, { password: newPassword });
@@ -5551,7 +5588,7 @@ function UserManagementPage() {
   };
 
   const handleApproveUser = async (userId, email) => {
-    if (!window.confirm('Approve ' + email + ' as an applicant?')) return;
+    if (!await confirm({title: 'Approve User', message: 'Approve ' + email + ' as an applicant?'})) return;
     try {
       await api.post('/api/users/' + userId + '/approve');
       loadUsers();
@@ -5562,7 +5599,7 @@ function UserManagementPage() {
   };
 
   const handleRejectUser = async (userId, email) => {
-    if (!window.confirm('Reject ' + email + '? Their account will be deactivated.')) return;
+    if (!await confirm({title: 'Reject User', message: 'Reject ' + email + '? Their account will be deactivated.', danger: true})) return;
     try {
       await api.post('/api/users/' + userId + '/reject');
       loadUsers();
@@ -5573,7 +5610,7 @@ function UserManagementPage() {
   };
 
   const handleDeleteUser = async (userId, email) => {
-    if (!window.confirm('DELETE user ' + email + '? This cannot be undone.')) return;
+    if (!await confirm({title: 'Delete User', message: 'DELETE ' + email + '? This cannot be undone.', danger: true, confirmLabel: 'Delete'})) return;
     try {
       await api.delete('/api/users/' + userId);
       loadUsers();
@@ -5956,6 +5993,7 @@ function MyActivityPage() {
 
 function SettingsPage() {
   const { user } = useAuth();
+  const confirm = useConfirm();
   const [prefs, setPrefs] = useState(null);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -6154,7 +6192,7 @@ function SettingsPage() {
 
 function App() {
   return (
-    <ToastProvider><BrowserRouter>
+    <ToastProvider><BrowserRouter><ConfirmProvider>
       <AuthProvider>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
@@ -6176,7 +6214,7 @@ function App() {
           <Route path="/" element={<Navigate to="/dashboard" />} />
         </Routes>
       </AuthProvider>
-    </BrowserRouter></ToastProvider>
+    </ConfirmProvider></BrowserRouter></ToastProvider>
   );
 }
 
