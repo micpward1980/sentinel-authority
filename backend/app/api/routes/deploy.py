@@ -15,7 +15,7 @@ Usage from dashboard:
 from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import PlainTextResponse
 from sqlalchemy import select
-from app.core.database import get_db_session
+from app.core.database import get_db as get_db_session
 from app.models.models import Application, Certificate
 import yaml
 import textwrap
