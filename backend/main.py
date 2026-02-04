@@ -14,6 +14,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 
 from app.core.config import settings
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import init_db, get_db
 from app.core.security import get_current_user
 from fastapi import Depends
