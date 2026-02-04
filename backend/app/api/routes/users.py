@@ -217,3 +217,44 @@ async def reset_password(
     await db.commit()
     
     return {"message": "Password reset", "temporary_password": new_password}
+
+
+# ═══ Email Preferences ═══
+
+DEFAULT_EMAIL_PREFS = {
+    "application_updates": True, "test_notifications": True,
+    "certificate_alerts": True, "agent_alerts": True, "marketing": False,
+}
+
+@router.get("/email-preferences")
+async def get_email_preferences(
+    db: AsyncSession = Depends(get_db),
+    current_user: dict = Depends(get_current_user),
+):
+    """Get email notification preferences"""
+    result = await db.execute(select(User).where(User.id == current_user["user_id"]))
+    user = result.scalar_one_or_none()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return {"preferences": user.email_preferences or DEFAULT_EMAIL_PREFS}
+
+
+@router.put("/email-preferences")
+async def update_email_preferences(
+    preferences: dict,
+    db: AsyncSession = Depends(get_db),
+    current_user: dict = Depends(get_current_user),
+):
+    """Update email notification preferences"""
+    result = await db.execute(select(User).where(User.id == current_user["user_id"]))
+    user = result.scalar_one_or_none()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    valid_keys = set(DEFAULT_EMAIL_PREFS.keys())
+    filtered = {k: bool(v) for k, v in preferences.items() if k in valid_keys}
+    current = user.email_preferences or DEFAULT_EMAIL_PREFS.copy()
+    current.update(filtered)
+    user.email_preferences = current
+    await db.commit()
+    return {"preferences": current, "message": "Preferences updated"}

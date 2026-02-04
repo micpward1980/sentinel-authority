@@ -11,6 +11,40 @@ RESEND_API_KEY = os.getenv("RESEND_API_KEY", "re_BkncgUC1_2uMjrza8EsxuSS8Ja6HLgC
 FROM_EMAIL = os.getenv("FROM_EMAIL", "notifications@sentinelauthority.org")
 ADMIN_EMAIL = os.getenv("ADMIN_EMAIL", "info@sentinelauthority.org")
 
+
+# ═══ Email Preference Guard ═══
+
+async def should_send_email(user_email: str, category: str) -> bool:
+    """Check if user has opted in to this email category.
+    Returns True by default (fail-open for transactional mail)."""
+    try:
+        from app.core.database import async_session_maker
+        from app.models.models import User
+        from sqlalchemy import select
+        async with async_session_maker() as db:
+            result = await db.execute(select(User).where(User.email == user_email))
+            user = result.scalar_one_or_none()
+            if not user or not user.email_preferences:
+                return True
+            default = category != "marketing"
+            return user.email_preferences.get(category, default)
+    except Exception as e:
+        import logging
+        logging.getLogger(__name__).error(f"Preference check failed: {e}")
+        return True
+
+EMAIL_CATEGORIES = {
+    "send_application_received": "application_updates",
+    "send_application_approved": "application_updates",
+    "send_application_under_review": "application_updates",
+    "send_test_scheduled": "test_notifications",
+    "send_test_completed": "test_notifications",
+    "send_certificate_issued": "certificate_alerts",
+    "send_certificate_expiry_warning": "certificate_alerts",
+    "notify_agent_offline": "agent_alerts",
+}
+
+
 async def send_email(to: str, subject: str, html: str, from_email: str = None) -> bool:
     """Send an email via Resend"""
     try:

@@ -50,6 +50,10 @@ class User(Base):
     role = Column(Enum(UserRole), default=UserRole.SUBSCRIBER)
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, default=datetime.utcnow)
+    email_preferences = Column(JSON, default=lambda: {
+        "application_updates": True, "test_notifications": True,
+        "certificate_alerts": True, "agent_alerts": True, "marketing": False,
+    })
     applications = relationship("Application", back_populates="applicant")
 
 

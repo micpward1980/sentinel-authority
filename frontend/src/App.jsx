@@ -2,7 +2,7 @@ import React, { useState, useEffect, createContext, useContext } from 'react';
 import BoundaryEditor from './components/BoundaryEditor';
 import QRCode from 'qrcode';
 import { BrowserRouter, Routes, Route, Navigate, Link, useNavigate, useLocation, useParams } from 'react-router-dom';
-import { FileText, Activity, Award, Users, Home, LogOut, Menu, X, CheckCircle, AlertTriangle, Clock, Search, Plus, ArrowLeft, ExternalLink, Shield, Download, RefreshCw, Eye, EyeOff, BookOpen, } from 'lucide-react';
+import { Settings, FileText, Activity, Award, Users, Home, LogOut, Menu, X, CheckCircle, AlertTriangle, Clock, Search, Plus, ArrowLeft, ExternalLink, Shield, Download, RefreshCw, Eye, EyeOff, BookOpen, } from 'lucide-react';
 import axios from 'axios';
 
 // API Configuration
@@ -165,6 +165,7 @@ function Layout({ children }) {
     { name: 'ENVELO Agent', href: '/envelo', icon: 'brand', roles: ['admin', 'applicant'], requiresCert: true },
     { name: 'Monitoring', href: '/monitoring', icon: Activity, roles: ['admin', 'applicant'], requiresCert: true },
     { name: 'User Management', href: '/users', icon: Users, roles: ['admin'] },
+    { name: 'Settings', href: '/settings', icon: Settings, roles: ['admin', 'applicant'] },
   ];
 
   const hasCert = userCerts.some(c => c.state === 'conformant' || c.state === 'active' || c.state === 'issued');
@@ -5181,6 +5182,84 @@ function UserManagementPage() {
   );
 }
 
+
+// ═══ Settings Page ═══
+function SettingsPage() {
+  const { user } = useAuth();
+  const [prefs, setPrefs] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    api.get('/api/users/email-preferences').then(res => setPrefs(res.data.preferences || {})).catch(() => {
+      setPrefs({ application_updates: true, test_notifications: true, certificate_alerts: true, agent_alerts: true, marketing: false });
+    });
+  }, []);
+
+  const togglePref = (key) => { setPrefs(prev => ({ ...prev, [key]: !prev[key] })); setSaved(false); };
+
+  const savePrefs = async () => {
+    setSaving(true);
+    try {
+      await api.put('/api/users/email-preferences', prefs);
+      setSaved(true); setTimeout(() => setSaved(false), 3000);
+    } catch (err) { alert('Failed to save: ' + (err.response?.data?.detail || err.message)); }
+    setSaving(false);
+  };
+
+  const cats = [
+    { key: 'application_updates', label: 'Application Updates', desc: 'Submission confirmations, review status changes, approval notifications' },
+    { key: 'test_notifications', label: 'CAT-72 Test Notifications', desc: 'Test scheduled, started, passed, and failed alerts' },
+    { key: 'certificate_alerts', label: 'Certificate Alerts', desc: 'Certificate issued, expiry warnings (30-day / 7-day), expiration notices' },
+    { key: 'agent_alerts', label: 'ENVELO Agent Alerts', desc: 'Agent offline warnings, high violation rate, suspension alerts' },
+    { key: 'marketing', label: 'Product Updates', desc: 'New features, platform updates, and industry news from Sentinel Authority' },
+  ];
+
+  if (!prefs) return <div style={{color: styles.textTertiary, padding: '40px', textAlign: 'center'}}>Loading preferences...</div>;
+
+  return (
+    <div className="space-y-6" style={{maxWidth: '700px'}}>
+      <SectionHeader label="Account" title="Settings" />
+
+      <Panel>
+        <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Account Information</h2>
+        <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px'}}>
+          <div><span style={{fontSize: '11px', color: styles.textTertiary}}>Name</span><div style={{color: styles.textPrimary, marginTop: '4px'}}>{user?.full_name || '-'}</div></div>
+          <div><span style={{fontSize: '11px', color: styles.textTertiary}}>Email</span><div style={{color: styles.textPrimary, marginTop: '4px'}}>{user?.email || '-'}</div></div>
+          <div><span style={{fontSize: '11px', color: styles.textTertiary}}>Role</span><div style={{color: styles.purpleBright, marginTop: '4px', fontFamily: "'IBM Plex Mono', monospace", fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1px'}}>{user?.role || '-'}</div></div>
+          <div><span style={{fontSize: '11px', color: styles.textTertiary}}>Organization</span><div style={{color: styles.textPrimary, marginTop: '4px'}}>{user?.organization || '-'}</div></div>
+        </div>
+      </Panel>
+
+      <Panel>
+        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px'}}>
+          <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, margin: 0}}>Email Notifications</h2>
+          <span style={{fontSize: '11px', color: styles.textTertiary}}>from notifications@sentinelauthority.org</span>
+        </div>
+        <div style={{display: 'flex', flexDirection: 'column', gap: '4px'}}>
+          {cats.map(cat => (
+            <div key={cat.key} style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', borderRadius: '10px', background: prefs[cat.key] ? 'rgba(92,214,133,0.03)' : 'rgba(255,255,255,0.01)', border: `1px solid ${prefs[cat.key] ? 'rgba(92,214,133,0.1)' : styles.borderGlass}`, transition: 'all 0.2s'}}>
+              <div style={{flex: 1}}>
+                <div style={{color: styles.textPrimary, fontWeight: 500, fontSize: '14px', marginBottom: '4px'}}>{cat.label}</div>
+                <div style={{color: styles.textTertiary, fontSize: '12px', lineHeight: '1.5'}}>{cat.desc}</div>
+              </div>
+              <button onClick={() => togglePref(cat.key)} style={{width: '48px', height: '26px', borderRadius: '13px', border: 'none', cursor: 'pointer', background: prefs[cat.key] ? styles.accentGreen : 'rgba(255,255,255,0.1)', position: 'relative', transition: 'background 0.2s', flexShrink: 0, marginLeft: '16px'}}>
+                <div style={{width: '20px', height: '20px', borderRadius: '50%', background: '#fff', position: 'absolute', top: '3px', left: prefs[cat.key] ? '25px' : '3px', transition: 'left 0.2s', boxShadow: '0 1px 3px rgba(0,0,0,0.3)'}} />
+              </button>
+            </div>
+          ))}
+        </div>
+        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '20px', paddingTop: '16px', borderTop: `1px solid ${styles.borderGlass}`}}>
+          <span style={{fontSize: '11px', color: styles.textTertiary}}>Admin and security emails are always sent.</span>
+          <button onClick={savePrefs} disabled={saving} className="sexy-btn" style={{padding: '10px 24px', borderRadius: '10px', background: saved ? 'rgba(92,214,133,0.15)' : styles.purplePrimary, border: `1px solid ${saved ? 'rgba(92,214,133,0.4)' : styles.purpleBright}`, color: saved ? styles.accentGreen : '#fff', fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: saving ? 'wait' : 'pointer', opacity: saving ? 0.7 : 1}}>
+            {saved ? '✓ Saved' : saving ? 'Saving...' : 'Save Preferences'}
+          </button>
+        </div>
+      </Panel>
+    </div>
+  );
+}
+
 function App() {
   return (
     <BrowserRouter>
@@ -5198,6 +5277,7 @@ function App() {
           <Route path="/resources" element={<ProtectedRoute><Layout><ResourcesPage /></Layout></ProtectedRoute>} />
           <Route path="/envelo" element={<ProtectedRoute><Layout><EnveloPage /></Layout></ProtectedRoute>} />
           <Route path="/monitoring" element={<ProtectedRoute><Layout><MonitoringPage /></Layout></ProtectedRoute>} />
+          <Route path="/settings" element={<ProtectedRoute><Layout><SettingsPage /></Layout></ProtectedRoute>} />
           <Route path="/users" element={<ProtectedRoute roles={["admin"]}><Layout><UserManagementPage /></Layout></ProtectedRoute>} />
           <Route path="/" element={<Navigate to="/dashboard" />} />
         </Routes>
