@@ -620,6 +620,11 @@ async def start_auto_evaluator():
         await conn.execute(text("ALTER TABLE users ADD COLUMN totp_enabled BOOLEAN DEFAULT FALSE"))
     except:
         pass
+            try:
+                await conn.execute(text("ALTER TABLE users ADD COLUMN totp_backup_codes TEXT"))
+                print("Added totp_backup_codes column")
+            except Exception:
+                pass
             CREATE TABLE IF NOT EXISTS application_comments (
                 id SERIAL PRIMARY KEY,
                 application_id INTEGER REFERENCES applications(id),

@@ -79,6 +79,18 @@ class DisableTOTPRequest(BaseModel):
     current_password: str
 
 @limiter.limit("5/minute")
+
+
+def generate_backup_codes(count=10):
+    """Generate plaintext backup codes and their hashes."""
+    codes = []
+    hashes = []
+    for _ in range(count):
+        code = secrets.token_hex(4).upper()  # 8-char hex codes like "A1B2C3D4"
+        codes.append(code)
+        hashes.append(hashlib.sha256(code.encode()).hexdigest())
+    return codes, hashes
+
 @router.post("/2fa/setup", response_model=TOTPSetupResponse, summary="Generate TOTP secret for 2FA setup")
 async def setup_2fa(
     request: Request,
@@ -131,7 +143,11 @@ async def enable_2fa(
     
     user.totp_enabled = True
     await db.commit()
-    return {"message": "2FA enabled successfully"}
+    # Generate backup codes
+    plain_codes, hashed_codes = generate_backup_codes(10)
+    user.totp_backup_codes = json.dumps(hashed_codes)
+    await db.commit()
+    return {"message": "2FA enabled successfully", "backup_codes": plain_codes}
 
 
 @router.post("/2fa/disable", summary="Disable 2FA")
@@ -176,7 +192,17 @@ async def verify_2fa_login(
     
     totp = pyotp.TOTP(user.totp_secret)
     if not totp.verify(body.code, valid_window=1):
-        raise HTTPException(status_code=400, detail="Invalid code")
+        used_backup = False
+        if user.totp_backup_codes:
+            hashed = hashlib.sha256(body.code.upper().encode()).hexdigest()
+            codes = json.loads(user.totp_backup_codes)
+            if hashed in codes:
+                codes.remove(hashed)
+                user.totp_backup_codes = json.dumps(codes)
+                await db.commit()
+                used_backup = True
+        if not used_backup:
+            raise HTTPException(status_code=400, detail="Invalid code")
     
     token = create_access_token({"sub": str(user.id), "email": user.email, "role": user.role.value, "organization": user.organization})
     return {
@@ -286,6 +312,26 @@ async def login(request: Request, credentials: UserLogin, db: AsyncSession = Dep
         "user": {"id": user.id, "email": user.email, "full_name": user.full_name, "role": user.role.value, "organization": user.organization}
     }
 
+
+
+
+@router.post("/2fa/backup-codes", summary="Regenerate 2FA backup codes")
+async def regenerate_backup_codes(
+    request: Request,
+    body: DisableTOTPRequest,
+    db: AsyncSession = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    result = await db.execute(select(User).where(User.id == int(current_user.get("sub"))))
+    user = result.scalar_one_or_none()
+    if not user or not user.totp_enabled:
+        raise HTTPException(status_code=400, detail="2FA is not enabled")
+    if not verify_password(body.current_password, user.hashed_password):
+        raise HTTPException(status_code=400, detail="Invalid password")
+    plain_codes, hashed_codes = generate_backup_codes(10)
+    user.totp_backup_codes = json.dumps(hashed_codes)
+    await db.commit()
+    return {"backup_codes": plain_codes, "message": "New backup codes generated. Previous codes are now invalid."}
 
 @router.get("/me", summary="Get current user profile")
 async def get_me(current_user: dict = Depends(get_current_user), db: AsyncSession = Depends(get_db)):

@@ -801,7 +801,7 @@ function LoginPage() {
               <Shield className="w-6 h-6" style={{color: styles.purpleBright}} />
             </div>
             <h3 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.purpleBright, marginBottom: '8px'}}>Two-Factor Authentication</h3>
-            <p style={{color: styles.textTertiary, fontSize: '13px', marginBottom: '24px'}}>Enter the 6-digit code from your authenticator app</p>
+            <p style={{color: styles.textTertiary, fontSize: '13px', marginBottom: '24px'}}>Enter the 6-digit code from your authenticator app, or a backup code</p>
             {error && <div style={{background: 'rgba(214,92,92,0.1)', border: '1px solid rgba(214,92,92,0.2)', borderRadius: '8px', padding: '10px 14px', marginBottom: '16px', color: '#D65C5C', fontSize: '13px'}}>{error}</div>}
             <form onSubmit={handle2FASubmit}>
               <input type="text" value={totpCode} onChange={e => setTotpCode(e.target.value.replace(/\D/g, '').slice(0, 6))} placeholder="000000" maxLength={6} autoFocus style={{width: '100%', background: 'rgba(255,255,255,0.03)', border: '1px solid ' + styles.borderGlass, borderRadius: '10px', padding: '14px', color: styles.textPrimary, fontSize: '24px', fontFamily: "'IBM Plex Mono', monospace", letterSpacing: '8px', textAlign: 'center', outline: 'none', marginBottom: '16px', boxSizing: 'border-box'}} />
@@ -6018,9 +6018,9 @@ function SettingsPage() {
   const enable2FA = async () => {
     setTwoFA(prev => ({...prev, verifying: true}));
     try {
-      await api.post('/api/auth/2fa/enable', { code: twoFA.code });
+      const res = await api.post('/api/auth/2fa/enable', { code: twoFA.code });
       toast.show('Two-factor authentication enabled', 'success');
-      setTwoFA(prev => ({...prev, enabled: true, setup: null, code: '', verifying: false}));
+      setTwoFA(prev => ({...prev, enabled: true, setup: null, code: '', verifying: false, backupCodes: res.data.backup_codes || []}));
     } catch (err) {
       toast.show(err.response?.data?.detail || 'Invalid code', 'error');
       setTwoFA(prev => ({...prev, verifying: false}));
@@ -6129,6 +6129,18 @@ function SettingsPage() {
               <span style={{color: styles.accentGreen, fontFamily: "'IBM Plex Mono', monospace", fontSize: '12px'}}>ENABLED</span>
             </div>
             <p style={{color: styles.textSecondary, fontSize: '13px', marginBottom: '12px'}}>Your account is protected with TOTP two-factor authentication.</p>
+            {twoFA.backupCodes && twoFA.backupCodes.length > 0 && (
+              <div style={{marginBottom: '16px', padding: '16px', background: 'rgba(214,160,92,0.1)', border: '1px solid rgba(214,160,92,0.3)', borderRadius: '8px'}}>
+                <p style={{color: styles.accentAmber, fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', marginBottom: '8px', fontWeight: 600}}>SAVE YOUR BACKUP CODES</p>
+                <p style={{color: styles.textSecondary, fontSize: '12px', marginBottom: '12px'}}>Use these if you lose your authenticator. Each code works once.</p>
+                <div style={{display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '4px'}}>
+                  {twoFA.backupCodes.map((code, i) => (
+                    <span key={i} style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '13px', color: styles.textPrimary, padding: '4px 8px', background: 'rgba(255,255,255,0.05)', borderRadius: '4px', textAlign: 'center'}}>{code}</span>
+                  ))}
+                </div>
+                <button onClick={() => {navigator.clipboard.writeText(twoFA.backupCodes.join(String.fromCharCode(10))); toast.show('Backup codes copied');}} style={{marginTop: '12px', padding: '6px 16px', background: 'rgba(214,160,92,0.15)', border: '1px solid rgba(214,160,92,0.3)', borderRadius: '6px', color: styles.accentAmber, fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', cursor: 'pointer', letterSpacing: '1px', textTransform: 'uppercase'}}>Copy All</button>
+              </div>
+            )}
             <div style={{display: 'flex', gap: '8px', alignItems: 'center', maxWidth: '400px'}}>
               <input type="password" value={twoFA.disablePw} onChange={e => setTwoFA(prev => ({...prev, disablePw: e.target.value}))} placeholder="Enter password to disable" className="sexy-input" style={{flex: 1, background: 'rgba(255,255,255,0.03)', border: `1px solid ${styles.borderGlass}`, borderRadius: '8px', padding: '8px 12px', color: styles.textPrimary, fontSize: '13px'}} />
               <button onClick={disable2FA} disabled={twoFA.disabling} style={{padding: '8px 16px', borderRadius: '8px', background: 'rgba(214,92,92,0.1)', border: '1px solid rgba(214,92,92,0.3)', color: '#D65C5C', fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', cursor: twoFA.disabling ? 'wait' : 'pointer', whiteSpace: 'nowrap'}}>
