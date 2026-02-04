@@ -3329,6 +3329,7 @@ function EnveloCustomerView() {
   const [userApps, setUserApps] = useState([]);
   const [sessions, setSessions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [copied, setCopied] = useState(null);
   const { user } = useAuth();
 
   useEffect(() => {
@@ -3357,6 +3358,16 @@ function EnveloCustomerView() {
   const certifiedSystems = userCerts.filter(c => c.status === 'issued' || c.status === 'active');
   const approvedApps = userApps.filter(a => a.status === 'approved' || a.status === 'testing');
 
+  const getDeployCommand = (caseId, apiKey) => {
+    return 'curl -sSL "https://api.sentinelauthority.org/api/deploy/' + caseId + '?key=' + apiKey + '" | bash';
+  };
+
+  const copyToClipboard = (text, id) => {
+    navigator.clipboard.writeText(text);
+    setCopied(id);
+    setTimeout(() => setCopied(null), 2000);
+  };
+
   if (loading) {
     return <div style={{color: styles.textTertiary, padding: '40px', textAlign: 'center'}}><RefreshCw size={24} style={{animation: 'spin 1s linear infinite'}} /></div>;
   }
@@ -3370,199 +3381,182 @@ function EnveloCustomerView() {
             <Award size={48} style={{color: styles.textTertiary, margin: '0 auto 16px'}} />
             <h2 style={{fontFamily: "'Source Serif 4', serif", fontSize: '24px', fontWeight: 200, marginBottom: '12px'}}>Approval Required</h2>
             <p style={{color: styles.textSecondary, marginBottom: '24px'}}>Your application must be approved before you can access the ENVELO Agent.</p>
-            <p style={{color: styles.textTertiary, fontSize: '13px'}}>Once approved, you can download the agent and begin CAT-72 testing.</p>
+            <p style={{color: styles.textTertiary, fontSize: '13px'}}>Once approved, you can deploy the agent with a single command.</p>
           </div>
         </Panel>
       </div>
     );
   }
 
-  const downloadAgentForSystem = (cert) => {
-    const agentCode = `#!/usr/bin/env python3
-"""
-ENVELO Agent - Sentinel Authority
-System: ${cert.system_name || 'Unknown'}
-Certificate: ${cert.certificate_number}
-Generated: ${new Date().toISOString()}
-"""
-
-import os, json, time, requests
-from datetime import datetime
-
-SENTINEL_API = "https://api.sentinelauthority.org"
-CERTIFICATE_NUMBER = "${cert.certificate_number}"
-
-class EnveloAgent:
-    def __init__(self, api_key):
-        self.api_key = api_key
-        self.session_id = None
-        self.boundaries = {}
-        
-    def start_session(self):
-        res = requests.post(f"{SENTINEL_API}/api/envelo/session/start", 
-            headers={"X-API-Key": self.api_key},
-            json={"certificate_number": CERTIFICATE_NUMBER})
-        if res.ok:
-            self.session_id = res.json().get("session_id")
-            print(f"[ENVELO] Session started: {self.session_id}")
-            return True
-        return False
-    
-    def add_boundary(self, name, min_val=None, max_val=None):
-        self.boundaries[name] = {"min": min_val, "max": max_val}
-    
-    def check(self, name, value):
-        if name not in self.boundaries:
-            return True
-        b = self.boundaries[name]
-        if b["min"] is not None and value < b["min"]:
-            self._violation(name, value, f"Below min {b['min']}")
-            return False
-        if b["max"] is not None and value > b["max"]:
-            self._violation(name, value, f"Above max {b['max']}")
-            return False
-        return True
-    
-    def _violation(self, name, value, reason):
-        print(f"[ENVELO] VIOLATION: {name}={value} - {reason}")
-        requests.post(f"{SENTINEL_API}/api/envelo/violation",
-            headers={"X-API-Key": self.api_key},
-            json={"session_id": self.session_id, "parameter": name, "value": value, "reason": reason})
-    
-    def shutdown(self):
-        if self.session_id:
-            requests.post(f"{SENTINEL_API}/api/envelo/session/end",
-                headers={"X-API-Key": self.api_key}, json={"session_id": self.session_id})
-        print("[ENVELO] Session ended")
-
-if __name__ == "__main__":
-    print("ENVELO Agent ready. Initialize with your API key.")
-`;
-    const blob = new Blob([agentCode], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `envelo_agent_${cert.certificate_number}.py`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  };
-
   return (
     <div className="space-y-6">
       <SectionHeader 
         label="ENVELO Agent" 
-        title="Your Systems" 
-        description="Monitor enforcement status and manage your attested systems"
+        title="Deploy & Monitor" 
+        description="One command deploys everything automatically"
       />
 
-      {/* Test Mode Banner */}
+      {/* ONE-COMMAND DEPLOY */}
+      <Panel>
+        <div style={{display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px'}}>
+          <div style={{width: '40px', height: '40px', borderRadius: '12px', background: 'linear-gradient(135deg, #5B4B8A 0%, #9d8ccf 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+            <Download size={20} color="#fff" />
+          </div>
+          <div>
+            <p style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.purpleBright, marginBottom: '2px'}}>One-Command Deploy</p>
+            <p style={{color: styles.textSecondary, fontSize: '13px', margin: 0}}>Open a terminal. Paste the command. Press Enter. Done.</p>
+          </div>
+        </div>
+
+        {[...approvedApps, ...certifiedSystems].map((sys, idx) => {
+          const caseId = sys.case_number || sys.certificate_number;
+          const sysName = sys.system_name || 'System';
+          const keyId = 'deploy-' + idx;
+          const apiKeyVal = activeApiKey || 'YOUR_API_KEY';
+          const hasKey = activeApiKey && activeApiKey !== 'YOUR_API_KEY';
+          const cmd = getDeployCommand(caseId, apiKeyVal);
+
+          return (
+            <div key={idx} style={{marginBottom: '20px'}}>
+              <p style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '8px'}}>{sysName} — {caseId}</p>
+              
+              <div style={{position: 'relative', background: 'rgba(0,0,0,0.4)', borderRadius: '12px', border: '1px solid ' + (hasKey ? styles.purpleBright : styles.borderGlass), overflow: 'hidden'}}>
+                <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 16px', background: 'rgba(0,0,0,0.3)', borderBottom: '1px solid ' + styles.borderGlass}}>
+                  <div style={{display: 'flex', alignItems: 'center', gap: '6px'}}>
+                    <div style={{width: '10px', height: '10px', borderRadius: '50%', background: '#ff5f57'}}></div>
+                    <div style={{width: '10px', height: '10px', borderRadius: '50%', background: '#febc2e'}}></div>
+                    <div style={{width: '10px', height: '10px', borderRadius: '50%', background: '#28c840'}}></div>
+                  </div>
+                  <span style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary}}>Terminal</span>
+                  <button
+                    onClick={() => copyToClipboard(cmd, keyId)}
+                    disabled={!hasKey}
+                    style={{padding: '4px 12px', background: hasKey ? styles.purplePrimary : 'rgba(255,255,255,0.05)', border: '1px solid ' + (hasKey ? styles.purpleBright : styles.borderGlass), borderRadius: '6px', color: hasKey ? '#fff' : styles.textTertiary, fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', cursor: hasKey ? 'pointer' : 'not-allowed'}}
+                  >
+                    {copied === keyId ? 'Copied!' : 'Copy'}
+                  </button>
+                </div>
+                
+                <div style={{padding: '16px 20px', fontFamily: "'IBM Plex Mono', monospace", fontSize: '13px', lineHeight: '1.6', overflowX: 'auto', whiteSpace: 'nowrap'}}>
+                  <span style={{color: styles.accentGreen}}>$</span>{' '}
+                  <span style={{color: styles.textPrimary}}>curl -sSL "</span>
+                  <span style={{color: styles.purpleBright}}>{'https://api.sentinelauthority.org/api/deploy/' + caseId + '?key='}</span>
+                  <span style={{color: hasKey ? styles.accentGreen : styles.accentAmber}}>{apiKeyVal}</span>
+                  <span style={{color: styles.textPrimary}}>" | bash</span>
+                </div>
+              </div>
+
+              {!hasKey && (
+                <p style={{color: styles.accentAmber, fontSize: '12px', marginTop: '8px', display: 'flex', alignItems: 'center', gap: '6px'}}>
+                  <AlertTriangle size={12} /> Generate an API key below first
+                </p>
+              )}
+            </div>
+          );
+        })}
+
+        <div style={{marginTop: '24px', padding: '16px', background: 'rgba(91,75,138,0.08)', borderRadius: '10px', border: '1px solid ' + styles.borderGlass}}>
+          <p style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '12px'}}>What this command does</p>
+          <div style={{display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px'}}>
+            {[
+              { num: '1', label: 'Installs agent', desc: 'Downloads ENVELO' },
+              { num: '2', label: 'Writes config', desc: 'Your approved boundaries' },
+              { num: '3', label: 'Tests everything', desc: 'Network, sources, clock' },
+              { num: '4', label: 'Activates', desc: 'Ready for CAT-72' },
+            ].map(s => (
+              <div key={s.num} style={{textAlign: 'center'}}>
+                <div style={{width: '28px', height: '28px', borderRadius: '50%', background: styles.purplePrimary, border: '1px solid ' + styles.purpleBright, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 8px', fontFamily: "'IBM Plex Mono', monospace", fontSize: '12px', fontWeight: 'bold', color: '#fff'}}>{s.num}</div>
+                <p style={{fontSize: '12px', fontWeight: 500, color: styles.textPrimary, marginBottom: '2px'}}>{s.label}</p>
+                <p style={{fontSize: '11px', color: styles.textTertiary}}>{s.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </Panel>
+
+      {/* TEST MODE BANNER */}
       {isTestMode && (
         <Panel accent="amber">
           <div style={{display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px'}}>
             <div style={{width: '10px', height: '10px', borderRadius: '50%', background: styles.accentAmber, animation: 'pulse 2s infinite'}}></div>
             <p style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.accentAmber, margin: 0}}>CAT-72 Testing Mode</p>
           </div>
-          <p style={{color: styles.textSecondary, marginBottom: '20px'}}>Your application has been approved. Deploy the ENVELO Agent and complete 72 hours of continuous operation to earn attestation.</p>
-          
-          <div style={{display: 'flex', gap: '12px', flexWrap: 'wrap'}}>
-            {approvedApps.map(app => (
-              <div key={app.id} style={{padding: '16px 20px', background: 'rgba(0,0,0,0.2)', borderRadius: '12px', border: `1px solid ${styles.borderGlass}`}}>
-                <p style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px'}}>System</p>
-                <p style={{fontSize: '14px', color: styles.textPrimary, marginBottom: '12px'}}>{app.system_name}</p>
-                <p style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', color: app.cat72_started ? styles.accentGreen : styles.accentAmber}}>
-                  {app.cat72_started ? 'CAT-72 In Progress' : 'Ready to Start'}
+          <p style={{color: styles.textSecondary, marginBottom: '8px'}}>Deploy the ENVELO Agent using the command above, then start your 72-hour test from the CAT-72 tab.</p>
+          <p style={{color: styles.textTertiary, fontSize: '12px'}}>The deploy command configures everything automatically — your approved boundaries are baked in.</p>
+        </Panel>
+      )}
+
+      {/* LIVE SYSTEMS */}
+      {certifiedSystems.length > 0 && certifiedSystems.map(cert => {
+        const session = sessions.find(s => s.certificate_id === cert.certificate_number);
+        const isOnline = session && session.status === 'active';
+        
+        return (
+          <Panel key={cert.id} glow={isOnline}>
+            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '20px'}}>
+              <div>
+                <h3 style={{fontSize: '20px', fontWeight: 500, color: styles.textPrimary, margin: '0 0 8px 0'}}>{cert.system_name || 'Unnamed System'}</h3>
+                <p style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '13px', color: styles.purpleBright, marginBottom: '4px'}}>{cert.certificate_number}</p>
+                <p style={{fontSize: '12px', color: styles.textTertiary}}>
+                  {'Attested ' + (cert.issued_at ? new Date(cert.issued_at).toLocaleDateString() : 'N/A') + ' | Expires ' + (cert.expires_at ? new Date(cert.expires_at).toLocaleDateString() : 'N/A')}
                 </p>
               </div>
-            ))}
-          </div>
-        </Panel>
-      )}
-
-      {/* Attested Systems */}
-      {certifiedSystems.length > 0 && (
-        <>
-          {certifiedSystems.map(cert => {
-            const session = sessions.find(s => s.certificate_id === cert.certificate_number);
-            const isOnline = session?.status === 'active';
+              <div style={{display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px', background: isOnline ? 'rgba(92,214,133,0.15)' : 'rgba(255,255,255,0.05)', borderRadius: '20px'}}>
+                <div style={{width: '8px', height: '8px', borderRadius: '50%', background: isOnline ? styles.accentGreen : styles.textTertiary, boxShadow: isOnline ? '0 0 8px ' + styles.accentGreen : 'none'}}></div>
+                <span style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', textTransform: 'uppercase', color: isOnline ? styles.accentGreen : styles.textTertiary}}>
+                  {isOnline ? 'ENVELO Active' : 'Offline'}
+                </span>
+              </div>
+            </div>
             
-            return (
-              <Panel key={cert.id} glow={isOnline}>
-                <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '20px'}}>
-                  <div>
-                    <h3 style={{fontSize: '20px', fontWeight: 500, color: styles.textPrimary, margin: '0 0 8px 0'}}>{cert.system_name || 'Unnamed System'}</h3>
-                    <p style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '13px', color: styles.purpleBright, marginBottom: '4px'}}>{cert.certificate_number}</p>
-                    <p style={{fontSize: '12px', color: styles.textTertiary}}>
-                      Attested {cert.issued_at ? new Date(cert.issued_at).toLocaleDateString() : 'N/A'} • 
-                      Expires {cert.expires_at ? new Date(cert.expires_at).toLocaleDateString() : 'N/A'}
-                    </p>
-                  </div>
-                  <div style={{display: 'flex', alignItems: 'center', gap: '12px'}}>
-                    <div style={{display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px', background: isOnline ? 'rgba(92,214,133,0.15)' : 'rgba(255,255,255,0.05)', borderRadius: '20px'}}>
-                      <div style={{width: '8px', height: '8px', borderRadius: '50%', background: isOnline ? styles.accentGreen : styles.textTertiary, boxShadow: isOnline ? `0 0 8px ${styles.accentGreen}` : 'none'}}></div>
-                      <span style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', textTransform: 'uppercase', color: isOnline ? styles.accentGreen : styles.textTertiary}}>
-                        {isOnline ? 'ENVELO Active' : 'Offline'}
-                      </span>
-                    </div>
-                    <button
-                      onClick={() => downloadAgentForSystem(cert)}
-                      className="sexy-btn"
-                      style={{padding: '10px 20px', background: styles.purplePrimary, border: `1px solid ${styles.purpleBright}`, borderRadius: '8px', color: '#fff', fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px'}}
-                    >
-                      <Download size={14} /> Download Agent
-                    </button>
-                  </div>
+            {session && (
+              <div style={{display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginTop: '24px', paddingTop: '24px', borderTop: '1px solid ' + styles.borderGlass}}>
+                <div style={{textAlign: 'center'}}>
+                  <p style={{fontSize: '28px', fontWeight: 200, color: styles.accentGreen}}>{session.uptime || '0h'}</p>
+                  <p style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary}}>Uptime</p>
                 </div>
-                
-                {/* Stats for this system */}
-                {session && (
-                  <div style={{display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginTop: '24px', paddingTop: '24px', borderTop: `1px solid ${styles.borderGlass}`}}>
-                    <div style={{textAlign: 'center'}}>
-                      <p style={{fontSize: '28px', fontWeight: 200, color: styles.accentGreen}}>{session.uptime || '0h'}</p>
-                      <p style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary}}>Uptime</p>
-                    </div>
-                    <div style={{textAlign: 'center'}}>
-                      <p style={{fontSize: '28px', fontWeight: 200, color: styles.purpleBright}}>{session.record_count || 0}</p>
-                      <p style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary}}>Telemetry</p>
-                    </div>
-                    <div style={{textAlign: 'center'}}>
-                      <p style={{fontSize: '28px', fontWeight: 200, color: (session.violations || 0) > 0 ? styles.accentRed : styles.accentGreen}}>{session.violations || 0}</p>
-                      <p style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary}}>Violations</p>
-                    </div>
-                  </div>
-                )}
-              </Panel>
-            );
-          })}
-        </>
-      )}
+                <div style={{textAlign: 'center'}}>
+                  <p style={{fontSize: '28px', fontWeight: 200, color: styles.purpleBright}}>{session.record_count || 0}</p>
+                  <p style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary}}>Telemetry</p>
+                </div>
+                <div style={{textAlign: 'center'}}>
+                  <p style={{fontSize: '28px', fontWeight: 200, color: (session.violations || 0) > 0 ? styles.accentRed : styles.accentGreen}}>{session.violations || 0}</p>
+                  <p style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary}}>Violations</p>
+                </div>
+              </div>
+            )}
+          </Panel>
+        );
+      })}
 
-      {certifiedSystems.length === 0 && !isTestMode && (
-        <Panel>
-          <p style={{color: styles.textTertiary, textAlign: 'center', padding: '40px'}}>No attested systems found.</p>
-        </Panel>
-      )}
-
-      {/* API Key */}
+      {/* API KEY */}
       <Panel>
         <p style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Your API Key</p>
-        <p style={{color: styles.textSecondary, marginBottom: '16px', fontSize: '14px'}}>Use this key to authenticate your ENVELO Agent. Keep it secret.</p>
+        <p style={{color: styles.textSecondary, marginBottom: '16px', fontSize: '14px'}}>Generate a key to activate the deploy command above.</p>
         <APIKeyManager onKeyGenerated={setActiveApiKey} />
       </Panel>
 
-      {/* Help */}
+      {/* HELP */}
       <Panel>
         <p style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Need Help?</p>
-        <p style={{color: styles.textSecondary, marginBottom: '16px', fontSize: '14px', lineHeight: 1.7}}>
-          If your ENVELO Agent goes offline, your system status will change within 5 minutes. 
-          Extended outages may affect your attestation status.
+        <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px'}}>
+          <div style={{padding: '16px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px'}}>
+            <p style={{fontWeight: 500, color: styles.textPrimary, marginBottom: '4px', fontSize: '14px'}}>Check Status</p>
+            <div style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '12px', color: styles.textSecondary, padding: '8px', background: 'rgba(0,0,0,0.3)', borderRadius: '6px', marginTop: '8px'}}>$ envelo status</div>
+          </div>
+          <div style={{padding: '16px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px'}}>
+            <p style={{fontWeight: 500, color: styles.textPrimary, marginBottom: '4px', fontSize: '14px'}}>Get Support</p>
+            <div style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '12px', color: styles.textSecondary, padding: '8px', background: 'rgba(0,0,0,0.3)', borderRadius: '6px', marginTop: '8px'}}>$ envelo diagnose</div>
+          </div>
+        </div>
+        <p style={{color: styles.textTertiary, fontSize: '12px', marginTop: '12px'}}>
+          Run <code style={{color: styles.purpleBright}}>envelo diagnose</code> and email the output to <a href="mailto:conformance@sentinelauthority.org" style={{color: styles.purpleBright, textDecoration: 'none'}}>conformance@sentinelauthority.org</a>
         </p>
-        <a href="https://www.sentinelauthority.org/#envelo" target="_blank" style={{color: styles.purpleBright, fontSize: '13px', textDecoration: 'none'}}>View Documentation →</a>
       </Panel>
     </div>
   );
 }
+
 // Main App
 // Monitoring Dashboard
 function MonitoringPage() {
