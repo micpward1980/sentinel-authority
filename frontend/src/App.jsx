@@ -5580,7 +5580,7 @@ function UserManagementPage() {
     if (!await confirm({title: 'Reset Password', message: 'Reset password for ' + email + '?'})) return;
     try {
       const newPassword = Math.random().toString(36).slice(-8) + 'A1!';
-      await api.patch('/api/users/' + userId, { password: newPassword });
+      await api.post('/api/users/' + userId + '/reset-password');
       toast.show('Password reset — share credentials securely','success');
     } catch (err) {
       toast.show('Failed to reset password: ' + (err.response?.data?.detail || err.message), 'error');
