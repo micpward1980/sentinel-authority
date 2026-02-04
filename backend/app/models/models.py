@@ -61,6 +61,19 @@ class User(Base):
     applications = relationship("Application", back_populates="applicant")
 
 
+class UserSession(Base):
+    __tablename__ = "user_sessions"
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), index=True)
+    session_id = Column(String(64), unique=True, index=True)
+    ip_address = Column(String(45))
+    user_agent = Column(String(500))
+    created_at = Column(DateTime, default=datetime.utcnow)
+    last_active_at = Column(DateTime, default=datetime.utcnow)
+    is_active = Column(Boolean, default=True)
+    revoked_at = Column(DateTime, nullable=True)
+
+
 class Application(Base):
     __tablename__ = "applications"
     id = Column(Integer, primary_key=True, index=True)

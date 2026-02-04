@@ -1,5 +1,6 @@
 """Dashboard routes."""
 
+from datetime import datetime
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
@@ -113,3 +114,52 @@ async def get_recent_certificates(db: AsyncSession = Depends(get_db), user: dict
         }
         for c in result.scalars().all()
     ]
+
+
+@router.get("/pipeline", summary="Application pipeline by state")
+async def get_pipeline(db: AsyncSession = Depends(get_db), user: dict = Depends(get_current_user)):
+    states = [s.value for s in CertificationState]
+    pipeline = {}
+    for state in states:
+        q = select(func.count(Application.id)).where(Application.state == state)
+        if user.get("role") == "applicant":
+            q = q.where(Application.organization_name == user.get("organization"))
+        result = await db.execute(q)
+        pipeline[state] = result.scalar() or 0
+    return {"pipeline": pipeline}
+
+
+@router.get("/approval-rates", summary="Monthly approval rates")
+async def get_approval_rates(db: AsyncSession = Depends(get_db), user: dict = Depends(get_current_user)):
+    from datetime import timedelta
+    months = []
+    now = datetime.utcnow()
+    for i in range(11, -1, -1):
+        month_start = (now.replace(day=1) - timedelta(days=30*i)).replace(day=1, hour=0, minute=0, second=0)
+        if i > 0:
+            month_end = (now.replace(day=1) - timedelta(days=30*(i-1))).replace(day=1, hour=0, minute=0, second=0)
+        else:
+            month_end = now
+        issued = await db.execute(
+            select(func.count(Certificate.id)).where(Certificate.issued_at >= month_start, Certificate.issued_at < month_end)
+        )
+        apps = await db.execute(
+            select(func.count(Application.id)).where(Application.submitted_at >= month_start, Application.submitted_at < month_end)
+        )
+        months.append({"month": month_start.strftime("%b %Y"), "certificates_issued": issued.scalar() or 0, "applications_submitted": apps.scalar() or 0})
+    return {"months": months}
+
+
+@router.get("/state-distribution", summary="Certificate state distribution")
+async def get_state_distribution(db: AsyncSession = Depends(get_db), user: dict = Depends(get_current_user)):
+    states = [s.value for s in CertificationState]
+    dist = {}
+    for state in states:
+        q = select(func.count(Certificate.id)).where(Certificate.state == state)
+        if user.get("role") == "applicant":
+            q = q.where(Certificate.organization_name == user.get("organization"))
+        result = await db.execute(q)
+        count = result.scalar() or 0
+        if count > 0:
+            dist[state] = count
+    return {"distribution": dist}

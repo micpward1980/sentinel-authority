@@ -17,23 +17,30 @@ from pydantic import BaseModel, EmailStr
 
 from app.core.database import get_db
 from app.core.security import get_password_hash, verify_password, create_access_token, get_current_user
-from app.models.models import User, UserRole
+from app.models.models import User, UserRole, UserSession
 
 router = APIRouter()
 limiter = Limiter(key_func=get_remote_address)
 
+async def _create_session_token(user, request, db):
+    """Create a DB-tracked session and return a JWT with session ID."""
+    sid = secrets.token_hex(32)
+    db.add(UserSession(
+        user_id=user.id, session_id=sid,
+        ip_address=request.client.host if request.client else 'unknown',
+        user_agent=request.headers.get('user-agent', 'unknown')[:500],
+    ))
+    await db.commit()
+    return create_access_token({
+        "sub": str(user.id), "email": user.email,
+        "role": user.role.value, "organization": user.organization,
+        "sid": sid,
+    })
 
-def validate_password_strength(password: str) -> tuple:
-    """Validate password meets security requirements"""
-    if len(password) < 8:
-        return False, "Password must be at least 8 characters"
-    if not re.search(r"[A-Z]", password):
-        return False, "Password must contain at least one uppercase letter"
-    if not re.search(r"[a-z]", password):
-        return False, "Password must contain at least one lowercase letter"
-    if not re.search(r"\d", password):
-        return False, "Password must contain at least one number"
-    return True, ""
+
+
+
+from app.core.password_validator import validate_password_strength, check_password_breach, score_password
 
 
 class UserCreate(BaseModel):
@@ -203,7 +210,7 @@ async def verify_2fa_login(
         if not used_backup:
             raise HTTPException(status_code=400, detail="Invalid code")
     
-    token = create_access_token({"sub": str(user.id), "email": user.email, "role": user.role.value, "organization": user.organization})
+    token = await _create_session_token(user, request, db)
     return {
         "access_token": token,
         "token_type": "bearer",
@@ -229,6 +236,9 @@ async def change_password(
     valid, msg = validate_password_strength(body.new_password)
     if not valid:
         raise HTTPException(status_code=400, detail=msg)
+    breached, breach_count = await check_password_breach(body.new_password)
+    if breached:
+        raise HTTPException(status_code=400, detail=f"This password appeared in {breach_count:,} data breaches — choose a different one")
     user.hashed_password = get_password_hash(body.new_password)
     await db.commit()
     return {'message': 'Password changed successfully'}
@@ -244,6 +254,9 @@ async def register(request: Request, user_data: UserCreate, db: AsyncSession = D
     valid, msg = validate_password_strength(user_data.password)
     if not valid:
         raise HTTPException(status_code=400, detail=msg)
+    breached, breach_count = await check_password_breach(user_data.password)
+    if breached:
+        raise HTTPException(status_code=400, detail=f"This password appeared in {breach_count:,} data breaches — choose a different one")
     
     user = User(
         email=user_data.email,
@@ -258,7 +271,7 @@ async def register(request: Request, user_data: UserCreate, db: AsyncSession = D
     
     await notify_admin_new_registration(user.email, user.full_name)
     
-    token = create_access_token({"sub": str(user.id), "email": user.email, "role": user.role.value, "organization": user.organization})
+    token = await _create_session_token(user, request, db)
     return {
         "access_token": token,
         "token_type": "bearer",
@@ -304,7 +317,7 @@ async def login(request: Request, credentials: UserLogin, db: AsyncSession = Dep
             "user": {"id": user.id, "email": user.email, "full_name": user.full_name, "role": user.role.value, "organization": user.organization}
         }
     
-    token = create_access_token({"sub": str(user.id), "email": user.email, "role": user.role.value, "organization": user.organization})
+    token = await _create_session_token(user, request, db)
     return {
         "access_token": token,
         "token_type": "bearer",
@@ -331,6 +344,15 @@ async def regenerate_backup_codes(
     user.totp_backup_codes = json.dumps(hashed_codes)
     await db.commit()
     return {"backup_codes": plain_codes, "message": "New backup codes generated. Previous codes are now invalid."}
+
+
+
+class PasswordScoreRequest(BaseModel):
+    password: str
+
+@router.post("/password-strength", summary="Score password strength")
+async def password_strength_score(body: PasswordScoreRequest):
+    return score_password(body.password)
 
 @router.get("/me", summary="Get current user profile")
 async def get_me(current_user: dict = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
@@ -379,8 +401,12 @@ async def reset_password(request: ResetPasswordRequest, db: AsyncSession = Depen
         raise HTTPException(status_code=400, detail="Invalid or expired reset token")
     
     # Validate password strength
-    if len(request.new_password) < 8:
-        raise HTTPException(status_code=400, detail="Password must be at least 8 characters")
+    valid, msg = validate_password_strength(request.new_password)
+    if not valid:
+        raise HTTPException(status_code=400, detail=msg)
+    breached, breach_count = await check_password_breach(request.new_password)
+    if breached:
+        raise HTTPException(status_code=400, detail=f"This password appeared in {breach_count:,} data breaches — choose a different one")
     
     # Update password and clear token
     user.hashed_password = get_password_hash(request.new_password)

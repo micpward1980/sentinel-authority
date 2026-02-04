@@ -5,8 +5,11 @@ from typing import Optional
 from passlib.context import CryptContext
 from jose import JWTError, jwt
 from fastapi import Depends, HTTPException, status
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from app.core.config import settings
+from app.core.database import get_db
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 security = HTTPBearer()
@@ -34,10 +37,21 @@ def decode_token(token: str) -> dict:
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
 
-async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)) -> dict:
+async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security), db: AsyncSession = Depends(get_db)) -> dict:
     payload = decode_token(credentials.credentials)
     if not payload.get("sub"):
         raise HTTPException(status_code=401, detail="Invalid credentials")
+    sid = payload.get("sid")
+    if sid:
+        from app.models.models import UserSession
+        result = await db.execute(
+            select(UserSession).where(UserSession.session_id == sid, UserSession.is_active == True)
+        )
+        session = result.scalar_one_or_none()
+        if not session:
+            raise HTTPException(status_code=401, detail="Session expired or revoked")
+        session.last_active_at = datetime.utcnow()
+        await db.commit()
     return payload
 
 

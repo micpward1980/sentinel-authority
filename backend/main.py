@@ -18,7 +18,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import init_db, get_db
 from app.core.security import get_current_user
 from fastapi import Depends
-from app.api.routes import audit as audit_routes, auth, dashboard, applicants, cat72, certificates, verification, licensees, envelo, apikeys, envelo_boundaries, registry, users, documents, deploy
+from app.api.routes import audit as audit_routes, auth, dashboard, applicants, cat72, certificates, verification, licensees, envelo, apikeys, envelo_boundaries, registry, users, documents, deploy, session_routes
 
 # Logging setup
 logging.basicConfig(level=logging.INFO)
@@ -90,6 +90,7 @@ app.add_middleware(
 
 # API Routes
 app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
+app.include_router(session_routes.router, prefix="/api/auth", tags=["Session Management"])
 app.include_router(dashboard.router, prefix="/api/dashboard", tags=["Dashboard"])
 app.include_router(applicants.router, prefix="/api/applications", tags=["Applicant Portal"])
 app.include_router(cat72.router, prefix="/api/cat72", tags=["CAT-72 Console"])
