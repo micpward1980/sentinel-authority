@@ -152,13 +152,23 @@ async def verify_audit_integrity(
     )
     logs = result.scalars().all()
     
+    logs = list(reversed(logs))  # oldest first for chain check
     total = len(logs)
     valid = 0
     invalid = 0
+    chain_breaks = 0
     invalid_ids = []
-    
+    prev_hash = "0" * 16
+
     for log in logs:
-        content = json.dumps({
+        # Check chain link
+        if log.prev_hash and log.prev_hash != prev_hash:
+            chain_breaks += 1
+            if len(invalid_ids) < 20:
+                invalid_ids.append({"id": log.id, "type": "chain_break", "expected_prev": prev_hash, "actual_prev": log.prev_hash})
+
+        # Check content hash (try both old format and new chained format)
+        old_content = json.dumps({
             "action": log.action,
             "resource_type": log.resource_type,
             "resource_id": log.resource_id,
@@ -167,20 +177,35 @@ async def verify_audit_integrity(
             "details": log.details,
             "timestamp": log.timestamp.isoformat() if log.timestamp else None,
         }, sort_keys=True)
-        expected = hashlib.sha256(content.encode()).hexdigest()[:16]
-        
-        if expected == log.log_hash:
+        old_expected = hashlib.sha256(old_content.encode()).hexdigest()[:16]
+
+        new_content = json.dumps({
+            "prev_hash": log.prev_hash or "0" * 16,
+            "action": log.action,
+            "resource_type": log.resource_type,
+            "resource_id": log.resource_id,
+            "user_id": log.user_id,
+            "user_email": log.user_email,
+            "details": log.details,
+            "timestamp": log.timestamp.isoformat() if log.timestamp else None,
+        }, sort_keys=True)
+        new_expected = hashlib.sha256(new_content.encode()).hexdigest()[:16]
+
+        if log.log_hash in (old_expected, new_expected):
             valid += 1
         else:
             invalid += 1
             if len(invalid_ids) < 20:
-                invalid_ids.append({"id": log.id, "expected": expected, "stored": log.log_hash})
-    
+                invalid_ids.append({"id": log.id, "type": "content_tamper", "expected": new_expected, "stored": log.log_hash})
+
+        prev_hash = log.log_hash or prev_hash
+
     return {
         "total_checked": total,
         "valid": valid,
         "invalid": invalid,
-        "integrity": "passed" if invalid == 0 else "failed",
+        "chain_breaks": chain_breaks,
+        "integrity": "passed" if invalid == 0 and chain_breaks == 0 else "failed",
         "invalid_entries": invalid_ids,
     }
 
