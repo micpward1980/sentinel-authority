@@ -74,6 +74,9 @@ class TOTPSetupResponse(BaseModel):
 class TOTPVerifyRequest(BaseModel):
     code: str
 
+class DisableTOTPRequest(BaseModel):
+    current_password: str
+
 @router.post("/2fa/setup", response_model=TOTPSetupResponse, summary="Generate TOTP secret for 2FA setup")
 async def setup_2fa(
     db: AsyncSession = Depends(get_db),
@@ -128,7 +131,7 @@ async def enable_2fa(
 
 @router.post("/2fa/disable", summary="Disable 2FA")
 async def disable_2fa(
-    body: ChangePasswordRequest,
+    body: DisableTOTPRequest,
     db: AsyncSession = Depends(get_db),
     current_user: dict = Depends(get_current_user)
 ):
