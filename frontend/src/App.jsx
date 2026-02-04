@@ -2,7 +2,7 @@ import React, { useState, useEffect, createContext, useContext } from 'react';
 import BoundaryEditor from './components/BoundaryEditor';
 import QRCode from 'qrcode';
 import { Wifi, BrowserRouter, Routes, Route, Navigate, Link, useNavigate, useLocation, useParams } from 'react-router-dom';
-import { Settings, FileText, Activity, Award, Users, Home, LogOut, Menu, X, CheckCircle, AlertTriangle, Clock, Search, Plus, ArrowLeft, ExternalLink, Shield, Download, RefreshCw, Eye, EyeOff, BookOpen, } from 'lucide-react';
+import { Bell, Settings, FileText, Activity, Award, Users, Home, LogOut, Menu, X, CheckCircle, AlertTriangle, Clock, Search, Plus, ArrowLeft, ExternalLink, Shield, Download, RefreshCw, Eye, EyeOff, BookOpen, } from 'lucide-react';
 import axios from 'axios';
 
 // API Configuration
@@ -148,13 +148,27 @@ function Layout({ children }) {
   const [userCerts, setUserCerts] = useState([]);
   const [userApps, setUserApps] = useState([]);
   const location = useLocation();
+  const [notifs, setNotifs] = useState([]);
+  const [notifOpen, setNotifOpen] = useState(false);
+  const [lastSeen, setLastSeen] = useState(() => { try { return localStorage.getItem('sa_notif_seen') || ''; } catch(e) { return ''; } });
 
   useEffect(() => {
     if (user) {
       api.get('/api/certificates/').then(res => setUserCerts(res.data || [])).catch(() => setUserCerts([]));
       api.get('/api/applications/').then(res => setUserApps(res.data || [])).catch(() => setUserApps([]));
+      api.get('/api/notifications').then(res => setNotifs(res.data.notifications || [])).catch(() => {});
     }
   }, [user]);
+
+  // Poll notifications
+  useEffect(() => {
+    if (!user) return;
+    const iv = setInterval(() => api.get('/api/notifications').then(r => setNotifs(r.data.notifications || [])).catch(() => {}), 60000);
+    return () => clearInterval(iv);
+  }, [user]);
+
+  const unreadCount = notifs.filter(n => n.timestamp && n.timestamp > lastSeen).length;
+  const markAllRead = () => { const now = new Date().toISOString(); setLastSeen(now); try { localStorage.setItem('sa_notif_seen', now); } catch(e) {} setNotifOpen(false); };
 
   const navigation = [
     { name: 'Dashboard', href: '/dashboard', icon: Home, roles: ['admin', 'applicant'] },
@@ -314,6 +328,44 @@ function Layout({ children }) {
             <Search className="w-4 h-4" />
             Verify
           </Link>
+          {/* Notification Bell */}
+          <div style={{position: 'relative'}}>
+            <button onClick={() => setNotifOpen(!notifOpen)} style={{background: 'none', border: 'none', cursor: 'pointer', position: 'relative', padding: '4px', color: notifOpen ? styles.purpleBright : styles.textTertiary, transition: 'color 0.2s'}}>
+              <Bell className="w-5 h-5" />
+              {unreadCount > 0 && <span style={{position: 'absolute', top: '-2px', right: '-2px', minWidth: '16px', height: '16px', borderRadius: '50%', background: '#D65C5C', color: '#fff', fontSize: '9px', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'IBM Plex Mono', monospace", padding: '0 3px'}}>{unreadCount > 9 ? '9+' : unreadCount}</span>}
+            </button>
+            {notifOpen && (<>
+              <div onClick={() => setNotifOpen(false)} style={{position: 'fixed', inset: 0, zIndex: 90}} />
+              <div style={{position: 'absolute', right: 0, top: '40px', width: '360px', maxHeight: '480px', overflowY: 'auto', background: 'rgba(42,47,61,0.96)', backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', boxShadow: '0 20px 60px rgba(0,0,0,0.5)', zIndex: 100}}>
+                <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', borderBottom: '1px solid rgba(255,255,255,0.06)'}}>
+                  <span style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary}}>Notifications</span>
+                  {unreadCount > 0 && <button onClick={markAllRead} style={{background: 'none', border: 'none', color: styles.purpleBright, fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', cursor: 'pointer'}}>Mark all read</button>}
+                </div>
+                {notifs.length === 0 ? (
+                  <div style={{padding: '32px 16px', textAlign: 'center', color: styles.textTertiary, fontSize: '13px', fontStyle: 'italic'}}>No recent activity</div>
+                ) : notifs.map((n, i) => {
+                  const isUnread = n.timestamp && n.timestamp > lastSeen;
+                  const typeColor = {success: styles.accentGreen, warning: '#D6A05C', info: styles.purpleBright, error: '#D65C5C'}[n.type] || styles.purpleBright;
+                  const typeIcon = {success: '✓', warning: '⚠', info: '●', error: '✗'}[n.type] || '●';
+                  return (
+                    <div key={n.id || i} onClick={() => { if (n.resource_type === 'application' && n.resource_id) { setNotifOpen(false); window.location.hash = '#/applications/' + n.resource_id; } }} style={{padding: '12px 16px', borderBottom: '1px solid rgba(255,255,255,0.04)', background: isUnread ? 'rgba(157,140,207,0.06)' : 'transparent', cursor: n.resource_id ? 'pointer' : 'default', transition: 'background 0.15s'}}>
+                      <div style={{display: 'flex', gap: '10px', alignItems: 'flex-start'}}>
+                        <span style={{color: typeColor, fontSize: '12px', marginTop: '2px', flexShrink: 0}}>{typeIcon}</span>
+                        <div style={{flex: 1, minWidth: 0}}>
+                          <p style={{margin: 0, fontSize: '13px', color: isUnread ? styles.textPrimary : styles.textSecondary, lineHeight: 1.4, fontWeight: isUnread ? 500 : 400}}>{n.message}</p>
+                          <div style={{display: 'flex', gap: '8px', marginTop: '4px', flexWrap: 'wrap'}}>
+                            <span style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary}}>{n.timestamp ? new Date(n.timestamp).toLocaleString() : ''}</span>
+                            {n.user_email && <span style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary}}>by {n.user_email}</span>}
+                          </div>
+                        </div>
+                        {isUnread && <span style={{width: '6px', height: '6px', borderRadius: '50%', background: styles.purpleBright, marginTop: '6px', flexShrink: 0}} />}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </>)}
+          </div>
         </header>
         <main className="sa-main-content" style={{padding: '32px', position: 'relative', zIndex: 1}}>{children}</main>
       </div>

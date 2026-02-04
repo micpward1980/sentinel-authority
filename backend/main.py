@@ -15,6 +15,8 @@ from fastapi.responses import HTMLResponse
 
 from app.core.config import settings
 from app.core.database import init_db
+from app.core.security import get_current_user
+from fastapi import Depends
 from app.api.routes import audit as audit_routes, auth, dashboard, applicants, cat72, certificates, verification, licensees, envelo, apikeys, envelo_boundaries, registry, users, documents, deploy
 
 # Logging setup
@@ -117,6 +119,87 @@ async def root():
         "docs": "/docs"
     }
 
+
+
+
+# ═══ Notifications (derived from audit log) ═══
+
+@app.get("/api/notifications", tags=["System"], summary="Get user notifications")
+async def get_notifications(
+    db: AsyncSession = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    from sqlalchemy import select, desc
+    from app.models.models import AuditLog, Application
+    from datetime import timedelta
+    
+    notifications = []
+    cutoff = datetime.utcnow() - timedelta(days=7)
+    
+    if current_user.get("role") == "admin":
+        result = await db.execute(
+            select(AuditLog).where(
+                AuditLog.timestamp >= cutoff,
+                AuditLog.action.in_(["state_changed", "certificate_issued", "submitted"])
+            ).order_by(desc(AuditLog.timestamp)).limit(30)
+        )
+        logs = result.scalars().all()
+        for log in logs:
+            details = log.details or {}
+            ns = details.get("new_state", "")
+            sn = details.get("system_name", "")
+            if log.action == "state_changed":
+                msg = f"{sn or 'Application'} moved to {ns.replace('_', ' ')}"
+                ntype = "success" if ns in ("conformant", "approved") else "warning" if ns in ("suspended", "revoked") else "info"
+            elif log.action == "certificate_issued":
+                msg = f"Certificate issued for {sn or 'system'}"
+                ntype = "success"
+            elif log.action == "submitted":
+                msg = f"New application: {sn or 'system'}"
+                ntype = "info"
+            else:
+                msg = log.action.replace("_", " ").title()
+                ntype = "info"
+            notifications.append({
+                "id": log.id, "message": msg, "type": ntype,
+                "timestamp": log.timestamp.isoformat() if log.timestamp else None,
+                "resource_type": log.resource_type, "resource_id": log.resource_id,
+                "user_email": log.user_email,
+            })
+        # Pending count
+        result = await db.execute(select(Application).where(Application.state == "pending"))
+        pending = result.scalars().all()
+        if len(pending) > 0:
+            notifications.insert(0, {
+                "id": "pending-apps", "message": f"{len(pending)} application(s) awaiting review",
+                "type": "warning", "timestamp": datetime.utcnow().isoformat(),
+                "resource_type": "application", "resource_id": None, "user_email": None,
+            })
+    else:
+        result = await db.execute(
+            select(AuditLog).where(AuditLog.timestamp >= cutoff, AuditLog.resource_type == "application")
+            .order_by(desc(AuditLog.timestamp)).limit(20)
+        )
+        logs = result.scalars().all()
+        result2 = await db.execute(select(Application.id).where(Application.applicant_id == current_user.get("id")))
+        user_app_ids = set(r[0] for r in result2.fetchall())
+        for log in logs:
+            if log.resource_id not in user_app_ids:
+                continue
+            details = log.details or {}
+            ns = details.get("new_state", "")
+            sn = details.get("system_name", "")
+            if ns == "approved": msg, ntype = f"Your application for {sn} has been approved", "success"
+            elif ns == "under_review": msg, ntype = f"{sn} is now under review", "info"
+            elif ns == "conformant": msg, ntype = f"{sn} achieved ODDC conformance", "success"
+            elif ns == "suspended": msg, ntype = f"{sn} has been suspended", "warning"
+            else: msg, ntype = f"{sn or 'Application'} status: {ns.replace('_', ' ')}", "info"
+            notifications.append({
+                "id": log.id, "message": msg, "type": ntype,
+                "timestamp": log.timestamp.isoformat() if log.timestamp else None,
+                "resource_type": log.resource_type, "resource_id": log.resource_id, "user_email": None,
+            })
+    return {"notifications": notifications[:20]}
 
 @app.get("/docs", include_in_schema=False)
 async def custom_swagger_ui():
