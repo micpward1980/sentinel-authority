@@ -155,7 +155,7 @@ function Layout({ children }) {
   useEffect(() => {
     if (user) {
       api.get('/api/certificates/').then(res => setUserCerts(res.data || [])).catch(() => setUserCerts([]));
-      api.get('/api/applications/').then(res => setUserApps(res.data || [])).catch(() => setUserApps([]));
+      api.get('/api/applications/').then(res => setUserApps(res.data.applications || res.data || [])).catch(() => setUserApps([]));
       api.get('/api/notifications').then(res => { setNotifs(res.data.notifications || []); setUnreadCount(res.data.unread_count || 0); }).catch(() => {});
     }
   }, [user]);
@@ -935,7 +935,7 @@ function CustomerDashboard() {
       api.get('/api/applications/').catch(() => ({ data: [] })),
       api.get('/api/certificates/').catch(() => ({ data: [] }))
     ]).then(([appsRes, certsRes]) => {
-      setApplications(appsRes.data || []);
+      setApplications(appsRes.data.applications || appsRes.data || []);
       setCertificates(certsRes.data || []);
       setLoading(false);
     });
@@ -1140,7 +1140,7 @@ function Dashboard() {
     api.get('/api/dashboard/stats').then(res => setStats(res.data)).catch(console.error);
     api.get('/api/dashboard/recent-applications').then(res => setRecentApps(res.data)).catch(console.error);
     api.get('/api/dashboard/active-tests').then(res => setActiveTests(res.data)).catch(console.error);
-    api.get('/api/applications/').then(res => setAllApps(res.data)).catch(console.error);
+    api.get('/api/applications/').then(res => setAllApps(res.data.applications || res.data || [])).catch(console.error);
     api.get('/api/dashboard/recent-certificates').then(res => setRecentCerts(res.data)).catch(console.error);
     api.get('/api/envelo/monitoring/overview').then(res => setMonitoring(res.data)).catch(console.error);
   };
@@ -4358,7 +4358,7 @@ function EnveloAdminView() {
         setStats(statsRes.data);
         setSessions(sessionsRes.data.sessions || []);
         setCertificates(certsRes.data || []);
-        setApplications(appsRes.data || []);
+        setApplications(appsRes.data.applications || appsRes.data || []);
       } catch (err) {
         console.error(err);
       }
