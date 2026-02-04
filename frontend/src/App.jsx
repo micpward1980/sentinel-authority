@@ -5586,6 +5586,7 @@ function UserManagementPage() {
 
 // ═══ Activity History / Audit Log ═══
 function ActivityPage() {
+  const toast = useToast();
   const [logs, setLogs] = useState([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -5620,6 +5621,32 @@ function ActivityPage() {
     setLoading(false);
   };
 
+  const exportCSV = async () => {
+    try {
+      const params = new URLSearchParams();
+      if (actionFilter) params.set('action', actionFilter);
+      if (resourceFilter) params.set('resource_type', resourceFilter);
+      if (emailFilter) params.set('user_email', emailFilter);
+      params.set('limit', 10000);
+      params.set('offset', 0);
+      const res = await api.get(`/api/audit/logs?${params}`);
+      const rows = res.data.logs || [];
+      if (rows.length === 0) { toast.show('No entries to export', 'warning'); return; }
+      const header = 'Timestamp,User,Action,Resource Type,Resource ID,Details,Hash';
+      const csv = [header, ...rows.map(r => {
+        const details = r.details ? Object.entries(r.details).map(([k,v]) => k + '=' + v).join('; ') : '';
+        return [r.timestamp || '', r.user_email || '', r.action || '', r.resource_type || '', r.resource_id || '', '"' + details.replace(/"/g, '""') + '"', r.log_hash || ''].join(',');
+      })].join('
+');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'audit-log-' + new Date().toISOString().split('T')[0] + '.csv';
+      a.click(); URL.revokeObjectURL(url);
+      toast.show('CSV exported (' + rows.length + ' entries)', 'success');
+    } catch (err) { toast.show('Export failed', 'error'); }
+  };
+
   useEffect(() => { fetchLogs(); }, [actionFilter, resourceFilter, emailFilter, page]);
 
   const actionColor = (action) => {
@@ -5648,6 +5675,7 @@ function ActivityPage() {
           </select>
           <input value={emailFilter} onChange={e => { setEmailFilter(e.target.value); setPage(0); }} placeholder="Filter by email..." style={{background: styles.bgDeep, border: `1px solid ${styles.borderGlass}`, borderRadius: '8px', padding: '8px 12px', color: styles.textPrimary, fontSize: '12px', fontFamily: "'IBM Plex Mono', monospace", flex: 1, minWidth: '150px'}} />
           <span style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', color: styles.textTertiary}}>{total.toLocaleString()} entries</span>
+          <button onClick={exportCSV} style={{padding: '6px 14px', background: 'rgba(157,140,207,0.12)', border: '1px solid ' + 'rgba(157,140,207,0.3)', borderRadius: '8px', color: styles.purpleBright, fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', cursor: 'pointer', letterSpacing: '1px', textTransform: 'uppercase'}}>Export CSV</button>
         </div>
       </Panel>
 
