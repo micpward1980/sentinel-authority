@@ -69,7 +69,10 @@ function CustomerDashboard() {
           <h1 style={{fontFamily: "'Source Serif 4', serif", fontSize: '36px', fontWeight: 200, margin: 0}}>Welcome{user?.full_name ? `, ${user.full_name.split(' ')[0]}` : ''}</h1>
           <p style={{color: styles.textSecondary, marginTop: '8px'}}>Track your certification progress and manage your systems.</p>
         </div>
-
+        <Link to="/applications/new" className="flex items-center gap-2 px-5 py-3 rounded-lg no-underline" style={{background: styles.purplePrimary, border: `1px solid ${styles.purpleBright}`, color: '#fff', fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', whiteSpace: 'nowrap'}}>
+          <Plus className="w-4 h-4" />
+          New Application
+        </Link>
       </div>
 
       {/* Quick Stats */}
