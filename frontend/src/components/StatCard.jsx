@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { styles } from '../config/styles';
 
-function StatCard({ label, value, trend, color = styles.purpleBright, icon, subtitle }) {
+function StatCard({ label, value, trend, color = styles.purpleBright, icon, subtitle, onClick }) {
   const [hovered, setHovered] = useState(false);
   return (
     <div
+      onClick={onClick}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
@@ -16,6 +17,7 @@ function StatCard({ label, value, trend, color = styles.purpleBright, icon, subt
           : `linear-gradient(135deg, ${color}25, transparent 50%, rgba(255,255,255,0.05))`,
         transition: 'all 0.3s ease',
         transform: hovered ? 'translateY(-2px)' : 'none',
+        cursor: onClick ? 'pointer' : 'default',
       }}
     >
       <div style={{

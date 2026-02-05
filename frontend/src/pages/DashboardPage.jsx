@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Wifi, FileText, Activity, Award, AlertTriangle, Plus, Shield, Download, RefreshCw, AlertCircle } from 'lucide-react';
 import { api, API_BASE } from '../config/api';
 import { styles } from '../config/styles';
@@ -12,6 +12,7 @@ import EmptyState from '../components/EmptyState';
 function CustomerDashboard() {
   const { user } = useAuth();
   const toast = useToast();
+  const navigate = useNavigate();
   const [applications, setApplications] = useState([]);
   const [appTotal, setAppTotal] = useState(0);
   const [stateCounts, setStateCounts] = useState({});
@@ -77,9 +78,9 @@ function CustomerDashboard() {
 
       {/* Quick Stats */}
       <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px'}}>
-        <StatCard label="Applications" value={applications.length} color={styles.purpleBright} icon={<FileText className="w-5 h-5" style={{color: styles.purpleBright}} />} subtitle={applications.filter(a => a.state === 'pending' || a.state === 'under_review').length > 0 ? `${applications.filter(a => a.state === 'pending' || a.state === 'under_review').length} in review` : null} />
-        <StatCard label="Certificates" value={certificates.length} color={styles.accentGreen} icon={<Award className="w-5 h-5" style={{color: styles.accentGreen}} />} subtitle={certificates.filter(c => c.state === 'conformant').length > 0 ? `${certificates.filter(c => c.state === 'conformant').length} active` : null} />
-        <StatCard label="Active Tests" value={applications.filter(a => a.state === 'testing').length} color={styles.accentAmber} icon={<Activity className="w-5 h-5" style={{color: styles.accentAmber}} />} />
+        <StatCard onClick={() => navigate("/applications")} label="Applications" value={applications.length} color={styles.purpleBright} icon={<FileText className="w-5 h-5" style={{color: styles.purpleBright}} />} subtitle={applications.filter(a => a.state === 'pending' || a.state === 'under_review').length > 0 ? `${applications.filter(a => a.state === 'pending' || a.state === 'under_review').length} in review` : null} />
+        <StatCard onClick={() => navigate("/certificates")} label="Certificates" value={certificates.length} color={styles.accentGreen} icon={<Award className="w-5 h-5" style={{color: styles.accentGreen}} />} subtitle={certificates.filter(c => c.state === 'conformant').length > 0 ? `${certificates.filter(c => c.state === 'conformant').length} active` : null} />
+        <StatCard onClick={() => navigate("/cat72")} label="Active Tests" value={applications.filter(a => a.state === 'testing').length} color={styles.accentAmber} icon={<Activity className="w-5 h-5" style={{color: styles.accentAmber}} />} />
         {(() => {
           const sessions = monitoring?.sessions || [];
           const online = sessions.filter(s => {
@@ -90,7 +91,7 @@ function CustomerDashboard() {
           const hasAgents = total > 0;
           const statusColor = hasAgents ? (online > 0 ? styles.accentGreen : styles.accentAmber) : styles.textTertiary;
           const statusText = hasAgents ? (online > 0 ? `${online} of ${total} online` : 'All agents offline') : 'No active agents';
-          return <StatCard label="Live Status" value={hasAgents ? online : '—'} color={statusColor} icon={<Wifi className="w-5 h-5" style={{color: statusColor}} />} subtitle={statusText} />;
+          return <StatCard onClick={() => navigate('/monitoring')} label="Live Status" value={hasAgents ? online : '—'} color={statusColor} icon={<Wifi className="w-5 h-5" style={{color: statusColor}} />} subtitle={statusText} />;
         })()}
       </div>
 
@@ -287,7 +288,7 @@ function Dashboard() {
         return (
           <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px'}}>
             <StatCard label="Total Applications" value={stats?.total_applications || 0} color={styles.purpleBright} icon={<FileText className="w-5 h-5" style={{color: styles.purpleBright}} />} />
-            <StatCard label="Active Tests" value={stats?.active_tests || 0} color={styles.accentAmber} icon={<Activity className="w-5 h-5" style={{color: styles.accentAmber}} />} />
+            <StatCard onClick={() => navigate("/cat72")} label="Active Tests" value={stats?.active_tests || 0} color={styles.accentAmber} icon={<Activity className="w-5 h-5" style={{color: styles.accentAmber}} />} />
             <StatCard label="Active Certificates" value={stats?.certificates_active || 0} color={styles.accentGreen} icon={<Shield className="w-5 h-5" style={{color: styles.accentGreen}} />} />
             <StatCard label="Online Agents" value={onlineAgents} color={onlineAgents > 0 ? styles.accentGreen : styles.textTertiary} icon={<Wifi className="w-5 h-5" style={{color: onlineAgents > 0 ? styles.accentGreen : styles.textTertiary}} />} />
             <StatCard label="Certificates Issued" value={stats?.certificates_issued || 0} color={styles.purpleBright} icon={<Award className="w-5 h-5" style={{color: styles.purpleBright}} />} />
