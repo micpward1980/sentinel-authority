@@ -186,9 +186,7 @@ function Layout({ children }) {
             <ExternalLink className="w-4 h-4" />
             Main Site
           </a>
-          {user?.role === 'admin' && (
-          
-          )}
+
           <Link to="/verify" className="flex items-center gap-2 transition-colors no-underline" style={{color: styles.textTertiary, fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1.5px', textTransform: 'uppercase'}}>
             <Search className="w-4 h-4" />
             Verify
