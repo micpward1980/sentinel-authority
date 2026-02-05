@@ -48,7 +48,6 @@ function Layout({ children }) {
     { name: 'My Activity', href: '/my-activity', icon: Activity, roles: ['admin', 'applicant'] },
     { name: 'Activity Log', href: '/activity', icon: FileText, roles: ['admin'] },
     { name: 'Settings', href: '/settings', icon: Settings, roles: ['admin', 'applicant'] },
-    { name: 'API Docs', href: '/api-docs', icon: ExternalLink, roles: ['admin'] },
   ];
 
   const hasCert = Array.isArray(userCerts) && userCerts.some(c => c.state === 'conformant' || c.state === 'active' || c.state === 'issued');
