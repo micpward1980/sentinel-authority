@@ -21,6 +21,7 @@ import UserManagementPage from './pages/UserManagementPage';
 import ActivityPage from './pages/ActivityPage';
 import MyActivityPage from './pages/MyActivityPage';
 import SettingsPage from './pages/SettingsPage';
+import ApiDocsPage from './pages/ApiDocsPage';
 
 function App() {
   return (
@@ -42,6 +43,7 @@ function App() {
           <Route path="/activity" element={<ProtectedRoute roles={["admin"]}><Layout><ActivityPage /></Layout></ProtectedRoute>} />
           <Route path="/my-activity" element={<ProtectedRoute><Layout><MyActivityPage /></Layout></ProtectedRoute>} />
           <Route path="/settings" element={<ProtectedRoute><Layout><SettingsPage /></Layout></ProtectedRoute>} />
+          <Route path="/api-docs" element={<ProtectedRoute roles={["admin"]}><Layout><ApiDocsPage /></Layout></ProtectedRoute>} />
           <Route path="/users" element={<ProtectedRoute roles={["admin"]}><Layout><UserManagementPage /></Layout></ProtectedRoute>} />
           <Route path="/" element={<Navigate to="/dashboard" />} />
         </Routes>
