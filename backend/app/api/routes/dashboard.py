@@ -72,9 +72,10 @@ async def get_recent_applications(db: AsyncSession = Depends(get_db), user: dict
 
 @router.get("/active-tests", summary="Currently running CAT-72 tests")
 async def get_active_tests(db: AsyncSession = Depends(get_db), user: dict = Depends(get_current_user)):
-    result = await db.execute(
-        select(CAT72Test, Application).join(Application, CAT72Test.application_id == Application.id).where(CAT72Test.state == TestState.RUNNING).order_by(CAT72Test.started_at.desc())
-    )
+    q = select(CAT72Test, Application).join(Application, CAT72Test.application_id == Application.id).where(CAT72Test.state == TestState.RUNNING)
+    if user.get("role") == "applicant":
+        q = q.where(Application.organization_name == user.get("organization"))
+    result = await db.execute(q.order_by(CAT72Test.started_at.desc()))
     rows = result.all()
     return [
         {

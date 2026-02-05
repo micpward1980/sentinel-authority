@@ -241,7 +241,7 @@ envelo setup --config "$INSTALL_DIR/envelo.yaml"
 ''')
 
 
-@router.get("/deploy/{{case_id}}")
+@router.get("/deploy/{case_id}")
 async def deploy_script(
     case_id: str,
     key: str = Query(..., description="API key"),
@@ -317,7 +317,7 @@ async def deploy_script(
         )
 
 
-@router.get("/deploy/{{case_id}}/config")
+@router.get("/deploy/{case_id}/config")
 async def deploy_config_only(
     case_id: str,
     key: str = Query(..., description="API key"),

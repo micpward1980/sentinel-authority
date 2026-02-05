@@ -73,7 +73,8 @@ All authenticated endpoints require a Bearer token obtained via `/api/auth/login
     version="1.0.0",
     lifespan=lifespan,
     docs_url=None,
-    redoc_url="/redoc",
+    openapi_url=None,
+    redoc_url=None,
     openapi_tags=OPENAPI_TAGS,
 )
 
@@ -87,6 +88,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Request logging
+from app.middleware.request_logging import RequestLoggingMiddleware
+app.add_middleware(RequestLoggingMiddleware)
 
 # API Routes
 app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])

@@ -73,6 +73,54 @@ async def list_users(
     ]
 
 
+
+@router.get("/notifications", summary="Get user notifications")
+async def get_notifications(
+    current_user: dict = Depends(get_current_user),
+):
+    return {"notifications": [], "unread_count": 0}
+
+
+@router.post("/notifications/mark-read", summary="Mark notifications as read")
+async def mark_notifications_read(
+    current_user: dict = Depends(get_current_user),
+):
+    return {"status": "ok"}
+
+@router.get("/email-preferences", summary="Get email preferences")
+async def get_email_preferences(
+    db: AsyncSession = Depends(get_db),
+    current_user: dict = Depends(get_current_user),
+):
+    """Get email notification preferences"""
+    result = await db.execute(select(User).where(User.id == int(current_user["sub"])))
+    user = result.scalar_one_or_none()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return {"preferences": user.email_preferences or DEFAULT_EMAIL_PREFS}
+
+
+@router.put("/email-preferences", summary="Update email preferences")
+async def update_email_preferences(
+    preferences: dict,
+    db: AsyncSession = Depends(get_db),
+    current_user: dict = Depends(get_current_user),
+):
+    """Update email notification preferences"""
+    result = await db.execute(select(User).where(User.id == int(current_user["sub"])))
+    user = result.scalar_one_or_none()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    valid_keys = set(DEFAULT_EMAIL_PREFS.keys())
+    filtered = {k: bool(v) for k, v in preferences.items() if k in valid_keys}
+    current = user.email_preferences or DEFAULT_EMAIL_PREFS.copy()
+    current.update(filtered)
+    user.email_preferences = current
+    await db.commit()
+    return {"preferences": current, "message": "Preferences updated"}
+
+
 @router.get("/{user_id}", response_model=UserResponse, summary="Get user by ID")
 async def get_user(
     user_id: int,
@@ -255,35 +303,3 @@ async def reject_user(user_id: int, db: AsyncSession = Depends(get_db), admin: d
     await db.commit()
     return {"message": "User rejected", "id": user.id, "email": user.email}
 
-@router.get("/email-preferences", summary="Get email preferences")
-async def get_email_preferences(
-    db: AsyncSession = Depends(get_db),
-    current_user: dict = Depends(get_current_user),
-):
-    """Get email notification preferences"""
-    result = await db.execute(select(User).where(User.id == current_user["user_id"]))
-    user = result.scalar_one_or_none()
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-    return {"preferences": user.email_preferences or DEFAULT_EMAIL_PREFS}
-
-
-@router.put("/email-preferences", summary="Update email preferences")
-async def update_email_preferences(
-    preferences: dict,
-    db: AsyncSession = Depends(get_db),
-    current_user: dict = Depends(get_current_user),
-):
-    """Update email notification preferences"""
-    result = await db.execute(select(User).where(User.id == current_user["user_id"]))
-    user = result.scalar_one_or_none()
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-    
-    valid_keys = set(DEFAULT_EMAIL_PREFS.keys())
-    filtered = {k: bool(v) for k, v in preferences.items() if k in valid_keys}
-    current = user.email_preferences or DEFAULT_EMAIL_PREFS.copy()
-    current.update(filtered)
-    user.email_preferences = current
-    await db.commit()
-    return {"preferences": current, "message": "Preferences updated"}

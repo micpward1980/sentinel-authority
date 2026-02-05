@@ -3,6 +3,7 @@ import base64
 import io
 """Authentication routes."""
 from app.services.email_service import notify_admin_new_registration
+from app.services.audit_service import write_audit_log
 
 from datetime import datetime, timedelta
 import secrets
@@ -16,6 +17,7 @@ from sqlalchemy import select
 from pydantic import BaseModel, EmailStr
 
 from app.core.database import get_db
+
 from app.core.security import get_password_hash, verify_password, create_access_token, get_current_user
 from app.models.models import User, UserRole, UserSession
 
@@ -211,6 +213,11 @@ async def verify_2fa_login(
             raise HTTPException(status_code=400, detail="Invalid code")
     
     token = await _create_session_token(user, request, db)
+    
+    await write_audit_log(db, action="user_login", resource_type="user", resource_id=user.id,
+        user_id=user.id, user_email=user.email, details={"ip": request.client.host if request.client else "unknown", "2fa": False})
+    await db.commit()
+    
     return {
         "access_token": token,
         "token_type": "bearer",
@@ -271,7 +278,16 @@ async def register(request: Request, user_data: UserCreate, db: AsyncSession = D
     
     await notify_admin_new_registration(user.email, user.full_name)
     
+    await write_audit_log(db, action="user_registered", resource_type="user", resource_id=user.id,
+        user_id=user.id, user_email=user.email, details={"organization": user.organization, "ip": request.client.host if request.client else "unknown"})
+    await db.commit()
+    
     token = await _create_session_token(user, request, db)
+    
+    await write_audit_log(db, action="user_login", resource_type="user", resource_id=user.id,
+        user_id=user.id, user_email=user.email, details={"ip": request.client.host if request.client else "unknown", "2fa": False})
+    await db.commit()
+    
     return {
         "access_token": token,
         "token_type": "bearer",
@@ -298,6 +314,9 @@ async def login(request: Request, credentials: UserLogin, db: AsyncSession = Dep
                 user.locked_until = datetime.utcnow() + timedelta(minutes=15)
                 user.failed_login_attempts = 0
             await db.commit()
+        await write_audit_log(db, action="login_failed", resource_type="user",
+            user_email=credentials.email, details={"ip": request.client.host if request.client else "unknown", "reason": "invalid_credentials"})
+        await db.commit()
         raise HTTPException(status_code=401, detail="Invalid credentials")
     
     if not user.is_active:
@@ -318,6 +337,11 @@ async def login(request: Request, credentials: UserLogin, db: AsyncSession = Dep
         }
     
     token = await _create_session_token(user, request, db)
+    
+    await write_audit_log(db, action="user_login", resource_type="user", resource_id=user.id,
+        user_id=user.id, user_email=user.email, details={"ip": request.client.host if request.client else "unknown", "2fa": False})
+    await db.commit()
+    
     return {
         "access_token": token,
         "token_type": "bearer",

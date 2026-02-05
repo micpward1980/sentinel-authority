@@ -7,7 +7,7 @@ import httpx
 import os
 from typing import Optional
 
-RESEND_API_KEY = os.getenv("RESEND_API_KEY", "re_BkncgUC1_2uMjrza8EsxuSS8Ja6HLgCTV")
+RESEND_API_KEY = os.getenv("RESEND_API_KEY", "")
 FROM_EMAIL = os.getenv("FROM_EMAIL", "notifications@sentinelauthority.org")
 ADMIN_EMAIL = os.getenv("ADMIN_EMAIL", "info@sentinelauthority.org")
 
