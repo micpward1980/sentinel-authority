@@ -294,7 +294,7 @@ function MonitoringPage() {
         </div>        
         {filteredSessions.length === 0 ? (
           <div style={{padding: '40px', textAlign: 'center', color: styles.textSecondary}}>
-            {user?.role === 'admin' ? 'No ENVELO sessions found. Deploy an agent to begin monitoring.' : 'No active sessions. Once your system is certified and running the ENVELO agent, sessions will appear here.'}
+            {user?.role === 'admin' ? '{user?.role === 'admin' ? 'No ENVELO sessions found. Deploy an agent to begin monitoring.' : 'No active systems. Once your system is ODDC certified and running the ENVELO agent, real-time monitoring data will appear here.'}' : 'No active sessions. Once your system is certified and running the ENVELO agent, sessions will appear here.'}
           </div>
         ) : (
           <div style={{overflowX: 'auto'}}>
