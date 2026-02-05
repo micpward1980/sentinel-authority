@@ -276,7 +276,7 @@ function MonitoringPage() {
       {/* Sessions Table */}
       <div style={{background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '16px', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', overflow: 'hidden'}}>
         <div style={{padding: '16px 20px', borderBottom: `1px solid ${styles.borderSubtle}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-          <h2 style={{margin: 0, fontSize: '14px', fontFamily: "'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '2px', color: styles.textTertiary}}>{user?.role === 'admin' ? 'Agent Sessions' : 'My Agent Sessions'}</h2>
+          <h2 style={{margin: 0, fontSize: '14px', fontFamily: "'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '2px', color: styles.textTertiary}}>{user?.role === 'admin' ? 'Agent Sessions' : 'System Monitoring'}</h2>
           <div style={{display: 'flex', gap: '12px', alignItems: 'center'}}>
             {user?.role === 'admin' && <select value={customerFilter} onChange={(e) => setCustomerFilter(e.target.value)} style={{background: styles.bgDeep, border: `1px solid ${styles.borderGlass}`, borderRadius: '6px', padding: '6px 10px', color: styles.textPrimary, fontSize: '12px'}}>
               <option value="">All Customers</option>
@@ -294,7 +294,7 @@ function MonitoringPage() {
         </div>        
         {filteredSessions.length === 0 ? (
           <div style={{padding: '40px', textAlign: 'center', color: styles.textSecondary}}>
-            {user?.role === 'admin' ? '{user?.role === 'admin' ? 'No ENVELO sessions found. Deploy an agent to begin monitoring.' : 'No active systems. Once your system is ODDC certified and running the ENVELO agent, real-time monitoring data will appear here.'}' : 'No active sessions. Once your system is certified and running the ENVELO agent, sessions will appear here.'}
+            {user?.role === 'admin' ? 'No ENVELO sessions found. Deploy an agent to begin monitoring.' : 'No active systems. Once your system is ODDC certified and running the ENVELO agent, real-time monitoring data will appear here.'}
           </div>
         ) : (
           <div style={{overflowX: 'auto'}}>
