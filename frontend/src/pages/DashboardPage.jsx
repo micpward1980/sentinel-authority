@@ -142,7 +142,7 @@ function CustomerDashboard() {
       {/* Certificates */}
       
         {certificates.length === 0 && (
-          <EmptyState icon={Award} title="No Certificates Yet" description="Certificates are issued after your system passes the 72-hour CAT-72 conformance test. Submit an application to begin." actionLabel="Start Application" onAction={() => setPage('apply')} />
+          <EmptyState icon={Award} title="No Certificates Yet" description="Certificates are issued after your system passes the 72-hour CAT-72 conformance test. Submit an application to begin."  />
         )}
         {certificates.length > 0 && (
         <Panel>
@@ -312,7 +312,7 @@ function Dashboard() {
             <div style={{width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(91,75,138,0.12)', border: '1px solid rgba(157,140,207,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px'}}><FileText size={22} style={{color: styles.purpleBright, opacity: 0.6}} /></div>
             <p style={{color: styles.textSecondary, fontSize: '14px', fontWeight: 500, margin: '0 0 6px 0'}}>No applications yet</p>
             <p style={{color: styles.textTertiary, fontSize: '12px', margin: '0 0 16px 0', maxWidth: '260px'}}>Submit your first ODDC certification application to get started.</p>
-            <button onClick={() => setPage('apply')} style={{background: `linear-gradient(135deg, ${styles.purplePrimary} 0%, ${styles.purpleBright} 100%)`, border: 'none', borderRadius: '8px', padding: '8px 20px', color: '#fff', fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>Start Application</button>
+
           </div>}
         </div>
       </Panel>
