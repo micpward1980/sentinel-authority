@@ -17,14 +17,17 @@ function CustomerDashboard() {
   const [stateCounts, setStateCounts] = useState({});
   const [certificates, setCertificates] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [monitoring, setMonitoring] = useState(null);
 
   useEffect(() => {
     Promise.all([
       api.get('/api/applications/').catch(() => ({ data: [] })),
-      api.get('/api/certificates/').catch(() => ({ data: [] }))
-    ]).then(([appsRes, certsRes]) => {
+      api.get('/api/certificates/').catch(() => ({ data: [] })),
+      api.get('/api/envelo/monitoring/overview').catch(() => ({ data: null }))
+    ]).then(([appsRes, certsRes, monRes]) => {
       setApplications(appsRes.data.applications || appsRes.data || []);
       setCertificates(certsRes.data || []);
+      if (monRes.data) setMonitoring(monRes.data);
       setLoading(false);
     });
   }, []);
@@ -77,7 +80,18 @@ function CustomerDashboard() {
         <StatCard label="Applications" value={applications.length} color={styles.purpleBright} icon={<FileText className="w-5 h-5" style={{color: styles.purpleBright}} />} subtitle={applications.filter(a => a.state === 'pending' || a.state === 'under_review').length > 0 ? `${applications.filter(a => a.state === 'pending' || a.state === 'under_review').length} in review` : null} />
         <StatCard label="Certificates" value={certificates.length} color={styles.accentGreen} icon={<Award className="w-5 h-5" style={{color: styles.accentGreen}} />} subtitle={certificates.filter(c => c.state === 'conformant').length > 0 ? `${certificates.filter(c => c.state === 'conformant').length} active` : null} />
         <StatCard label="Active Tests" value={applications.filter(a => a.state === 'testing').length} color={styles.accentAmber} icon={<Activity className="w-5 h-5" style={{color: styles.accentAmber}} />} />
-        <StatCard label="Live Status" value="●" color={styles.accentGreen} icon={<Wifi className="w-5 h-5" style={{color: styles.accentGreen}} />} subtitle="All systems operational" />
+        {(() => {
+          const sessions = monitoring?.sessions || [];
+          const online = sessions.filter(s => {
+            const la = s.last_heartbeat_at || s.last_telemetry_at || s.last_activity || s.started_at;
+            return s.status === 'active' && la && (Date.now() - new Date(la).getTime()) < 120000;
+          }).length;
+          const total = monitoring?.summary?.total || 0;
+          const hasAgents = total > 0;
+          const statusColor = hasAgents ? (online > 0 ? styles.accentGreen : styles.accentAmber) : styles.textTertiary;
+          const statusText = hasAgents ? (online > 0 ? `${online} of ${total} online` : 'All agents offline') : 'No active agents';
+          return <StatCard label="Live Status" value={hasAgents ? online : '—'} color={statusColor} icon={<Wifi className="w-5 h-5" style={{color: statusColor}} />} subtitle={statusText} />;
+        })()}
       </div>
 
       {/* Applications with Progress */}
