@@ -43,7 +43,7 @@ function Layout({ children }) {
     { name: 'Certificates', href: '/certificates', icon: Award, roles: ['admin', 'applicant'] },
     { name: 'Resources', href: '/resources', icon: BookOpen, roles: ['admin', 'applicant'] },
     { name: 'ENVELO Agent', href: '/envelo', icon: 'brand', roles: ['admin', 'applicant'], requiresCert: true },
-    { name: 'Monitoring', href: '/monitoring', icon: Activity, roles: ['admin', 'applicant'], requiresCert: true },
+    { name: 'Monitoring', href: '/monitoring', icon: Activity, roles: ['admin', 'applicant'] },
     { name: 'User Management', href: '/users', icon: Users, roles: ['admin'] },
     { name: 'My Activity', href: '/my-activity', icon: Activity, roles: ['admin', 'applicant'] },
     { name: 'Activity Log', href: '/activity', icon: FileText, roles: ['admin'] },
