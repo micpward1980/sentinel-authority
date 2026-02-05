@@ -36,7 +36,7 @@ async def write_audit_log(
     }, sort_keys=True)
     log_hash = hashlib.sha256(content.encode()).hexdigest()[:16]
 
-    entry = AuditLog(
+    entry_kwargs = dict(
         timestamp=ts,
         user_id=user_id,
         user_email=user_email,
@@ -45,8 +45,10 @@ async def write_audit_log(
         resource_id=resource_id,
         details=details or {},
         log_hash=log_hash,
-        prev_hash=prev_hash,
     )
+    if hasattr(AuditLog, 'prev_hash'):
+        entry_kwargs['prev_hash'] = prev_hash
+    entry = AuditLog(**entry_kwargs)
     db.add(entry)
     # Don't commit here — let the caller's transaction handle it
     return entry
