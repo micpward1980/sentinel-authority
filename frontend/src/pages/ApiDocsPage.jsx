@@ -49,7 +49,7 @@ export default function ApiDocsPage() {
   return (
     <div style={{ width: '100%', height: 'calc(100vh - 80px)' }}>
       <iframe
-        src={`${API_URL}/api/internal-docs`}
+        src={`${API_URL}/internal-docs`}
         style={{ width: '100%', height: '100%', border: 'none', borderRadius: '8px' }}
         title="API Documentation"
       />

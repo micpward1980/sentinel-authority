@@ -72,7 +72,7 @@ All authenticated endpoints require a Bearer token obtained via `/api/auth/login
     """.strip(),
     version="1.0.0",
     lifespan=lifespan,
-    docs_url="/api/internal-docs",
+    docs_url="/internal-docs",
     openapi_url=None,
     redoc_url=None,
     openapi_tags=OPENAPI_TAGS,
