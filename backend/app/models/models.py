@@ -219,6 +219,7 @@ class AuditLog(Base):
     resource_id = Column(Integer)
     details = Column(JSON)
     log_hash = Column(String(64))
+    prev_hash = Column(String(64))
 
 
 # ENVELO API Keys

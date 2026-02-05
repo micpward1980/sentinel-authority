@@ -1,0 +1,138 @@
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { Download } from 'lucide-react';
+import { api, API_BASE } from '../config/api';
+import { styles } from '../config/styles';
+import Panel from '../components/Panel';
+
+function CertificatesPage() {
+  const [certificates, setCertificates] = useState([]);
+  const [statusFilter, setStatusFilter] = useState('active');
+
+  useEffect(() => {
+    api.get('/api/certificates/').then(res => setCertificates(res.data)).catch(console.error);
+  }, []);
+
+  const filteredCerts = certificates.filter(cert => {
+    if (statusFilter === 'all') return true;
+    if (statusFilter === 'active') return cert.state === 'conformant' || cert.state === 'active' || cert.state === 'issued';
+    return cert.state === statusFilter;
+  });
+
+  const counts = {
+    all: certificates.length,
+    active: certificates.filter(c => c.state === 'conformant' || c.state === 'active' || c.state === 'issued').length,
+    suspended: certificates.filter(c => c.state === 'suspended').length,
+    revoked: certificates.filter(c => c.state === 'revoked').length,
+  };
+
+  const filterTabs = [
+    { key: 'active', label: 'Active' },
+    { key: 'suspended', label: 'Suspended' },
+    { key: 'revoked', label: 'Revoked' },
+    { key: 'all', label: 'All Records' },
+  ];
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <p style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', color: styles.purpleBright, marginBottom: '8px'}}>Records</p>
+        <h1 style={{fontFamily: "'Source Serif 4', serif", fontSize: '36px', fontWeight: 200, margin: 0}}>Certificates</h1>
+        <p style={{color: styles.textSecondary, marginTop: '8px'}}>Issued ODDC conformance determinations</p>
+      </div>
+
+      {/* Filter Tabs */}
+      <div style={{display: 'flex', gap: '4px', background: 'rgba(255,255,255,0.03)', borderRadius: '8px', padding: '4px', border: `1px solid ${styles.borderGlass}`}}>
+        {filterTabs.map(tab => (
+          <button
+            key={tab.key}
+            onClick={() => setStatusFilter(tab.key)}
+            style={{
+              flex: 1,
+              padding: '8px 16px',
+              borderRadius: '6px',
+              border: 'none',
+              cursor: 'pointer',
+              fontFamily: "'IBM Plex Mono', monospace",
+              fontSize: '10px',
+              letterSpacing: '1.5px',
+              textTransform: 'uppercase',
+              transition: 'all 0.2s',
+              background: statusFilter === tab.key ? styles.purplePrimary : 'transparent',
+              color: statusFilter === tab.key ? '#fff' : styles.textTertiary,
+            }}
+          >
+            {tab.label} {counts[tab.key] > 0 ? `(${counts[tab.key]})` : ''}
+          </button>
+        ))}
+      </div>
+
+      <Panel>
+        <table className="w-full">
+          <thead>
+            <tr style={{borderBottom: `1px solid ${styles.borderGlass}`}}>
+              <th className="px-4 py-3 text-left" style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>Certificate #</th>
+              <th className="px-4 py-3 text-left" style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>System</th>
+              <th className="px-4 py-3 text-left" style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>Organization</th>
+              <th className="px-4 py-3 text-left" style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>Status</th>
+              <th className="px-4 py-3 text-left" style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>Expires</th>
+              <th className="px-4 py-3 text-left" style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredCerts.map((cert) => (
+              <tr key={cert.id} style={{borderBottom: `1px solid ${styles.borderGlass}`}}>
+                <td className="px-4 py-4" style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '12px', color: styles.purpleBright}}>{cert.certificate_number}</td>
+                <td className="px-4 py-4" style={{color: styles.textPrimary}}>{cert.system_name}</td>
+                <td className="px-4 py-4" style={{color: styles.textSecondary}}>{cert.organization_name}</td>
+                <td className="px-4 py-4">
+                  <span className="px-2 py-1 rounded" style={{
+                    background: cert.state === 'conformant' ? 'rgba(92,214,133,0.15)' : cert.state === 'suspended' ? 'rgba(214,160,92,0.15)' : 'rgba(214,92,92,0.15)',
+                    color: cert.state === 'conformant' ? styles.accentGreen : cert.state === 'suspended' ? styles.accentAmber : styles.accentRed,
+                    fontFamily: "'IBM Plex Mono', monospace",
+                    fontSize: '10px',
+                    letterSpacing: '1px',
+                    textTransform: 'uppercase',
+                  }}>
+                    {cert.state}
+                  </span>
+                </td>
+                <td className="px-4 py-4" style={{color: styles.textTertiary, fontSize: '14px'}}>{cert.expires_at ? new Date(cert.expires_at).toLocaleDateString() : '-'}</td>
+                <td className="px-4 py-4">
+                  <div style={{display: 'flex', gap: '8px', alignItems: 'center'}}>
+                    {cert.state !== 'revoked' && cert.state !== 'suspended' ? (
+                      <a 
+                        href={`${API_BASE}/api/certificates/${cert.certificate_number}/pdf`} 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        className="px-3 py-1 rounded transition-colors no-underline"
+                        style={{background: styles.purplePrimary, border: `1px solid ${styles.purpleBright}`, color: '#fff', fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase'}}
+                      >
+                        Download PDF
+                      </a>
+                    ) : (
+                      <span style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary, letterSpacing: '1px', textTransform: 'uppercase'}}>
+                        {cert.state === 'revoked' ? 'Revoked' : 'Suspended'}
+                      </span>
+                    )}
+                    <Link to={`/verify?cert=${cert.certificate_number}`} className="px-2 py-1 rounded no-underline" style={{background: 'rgba(255,255,255,0.05)', border: `1px solid ${styles.borderGlass}`, color: styles.textSecondary, fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '0.5px', textTransform: 'uppercase'}}>Verify</Link>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        {filteredCerts.length === 0 && (
+          <div className="text-center py-12" style={{color: styles.textTertiary}}>
+            {certificates.length === 0 ? 'No certificates issued' : `No ${statusFilter === 'all' ? '' : statusFilter + ' '}certificates`}
+          </div>
+        )}
+      </Panel>
+    </div>
+  );
+}
+
+// Licensees
+
+export default CertificatesPage;
+

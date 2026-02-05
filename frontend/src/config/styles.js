@@ -1,0 +1,20 @@
+export const styles = {
+  bgDeep: '#2a2f3d',
+  bgSurface: '#1e212b',
+  bgPanel: 'rgba(255,255,255,0.05)',
+  bgCard: 'rgba(255,255,255,0.08)',
+  purplePrimary: '#5B4B8A',
+  purpleBright: '#9d8ccf',
+  purpleGlow: 'rgba(157,140,207,0.20)',
+  accentGreen: '#5CD685',
+  accentAmber: '#D6A05C',
+  accentRed: '#D65C5C',
+  textPrimary: 'rgba(255,255,255,0.92)',
+  textSecondary: 'rgba(255,255,255,0.75)',
+  textTertiary: 'rgba(255,255,255,0.50)',
+  borderGlass: 'rgba(255,255,255,0.10)',
+  mono: "'IBM Plex Mono', monospace",
+  serif: "'Source Serif 4', Georgia, serif",
+  sans: "'Inter', system-ui, sans-serif",
+};
+
