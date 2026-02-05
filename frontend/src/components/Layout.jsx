@@ -48,6 +48,7 @@ function Layout({ children }) {
     { name: 'My Activity', href: '/my-activity', icon: Activity, roles: ['admin', 'applicant'] },
     { name: 'Activity Log', href: '/activity', icon: FileText, roles: ['admin'] },
     { name: 'Settings', href: '/settings', icon: Settings, roles: ['admin', 'applicant'] },
+    { name: 'API Docs', href: '/api-docs', icon: ExternalLink, roles: ['admin'] },
   ];
 
   const hasCert = Array.isArray(userCerts) && userCerts.some(c => c.state === 'conformant' || c.state === 'active' || c.state === 'issued');
@@ -186,10 +187,7 @@ function Layout({ children }) {
             Main Site
           </a>
           {user?.role === 'admin' && (
-          <a href="https://api.sentinelauthority.org/docs" target="_blank" rel="noopener noreferrer" className="sa-header-links flex items-center gap-2 transition-colors no-underline" style={{color: styles.textTertiary, fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1.5px', textTransform: 'uppercase'}}>
-            <FileText className="w-4 h-4" />
-            API Docs
-          </a>
+          
           )}
           <Link to="/verify" className="flex items-center gap-2 transition-colors no-underline" style={{color: styles.textTertiary, fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1.5px', textTransform: 'uppercase'}}>
             <Search className="w-4 h-4" />
