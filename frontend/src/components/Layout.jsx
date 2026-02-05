@@ -39,7 +39,7 @@ function Layout({ children }) {
   const navigation = [
     { name: 'Dashboard', href: '/dashboard', icon: Home, roles: ['admin', 'applicant'] },
     { name: 'Applications', href: '/applications', icon: FileText, roles: ['admin', 'applicant'] },
-    { name: 'CAT-72 Console', href: '/cat72', icon: Activity, roles: ['admin'] },
+    { name: 'CAT-72 Console', href: '/cat72', icon: Activity, roles: ['admin', 'applicant'] },
     { name: 'Certificates', href: '/certificates', icon: Award, roles: ['admin', 'applicant'] },
     { name: 'Resources', href: '/resources', icon: BookOpen, roles: ['admin', 'applicant'] },
     { name: 'ENVELO Agent', href: '/envelo', icon: 'brand', roles: ['admin', 'applicant'], requiresCert: true },
