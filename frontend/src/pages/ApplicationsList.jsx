@@ -290,7 +290,7 @@ function ApplicationsList() {
         )}
 
         {filtered.length === 0 && (
-          <EmptyState icon={FileText} title="No Applications Found" description={applications.length === 0 ? "You haven't submitted any certification applications yet. Start your ODDC certification journey." : "No applications match your current filter."} actionLabel={applications.length === 0 ? "New Application" : null} onAction={() => setPage('apply')} />
+          <EmptyState icon={FileText} title="No Applications Found" description={applications.length === 0 ? "You haven't submitted any certification applications yet. Start your ODDC certification journey." : "No applications match your current filter."}  />
         )}
       </Panel>
     </div>
