@@ -577,6 +577,146 @@ async def download_session_report(
     )
 
 
+
+
+@router.get("/my/sessions/{session_id}/telemetry")
+async def get_my_session_telemetry(
+    session_id: int,
+    limit: int = 1000,
+    db: AsyncSession = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    """Get telemetry for own session"""
+    # Verify ownership
+    key_result = await db.execute(
+        select(APIKey).where(APIKey.user_id == int(current_user["sub"]))
+    )
+    my_keys = [k.id for k in key_result.scalars().all()]
+    
+    sess_result = await db.execute(
+        select(EnveloSession).where(EnveloSession.id == session_id)
+    )
+    session = sess_result.scalar_one_or_none()
+    if not session or session.api_key_id not in my_keys:
+        raise HTTPException(status_code=404, detail="Session not found")
+    
+    result = await db.execute(
+        select(TelemetryRecord).where(
+            TelemetryRecord.session_id == session_id
+        ).order_by(TelemetryRecord.timestamp.desc()).limit(limit)
+    )
+    records = result.scalars().all()
+    
+    return {
+        "records": [
+            {
+                "id": r.id,
+                "timestamp": r.timestamp.isoformat() if r.timestamp else None,
+                "action_id": r.action_id,
+                "action_type": r.action_type,
+                "result": r.result,
+                "execution_time_ms": r.execution_time_ms,
+                "parameters": r.parameters,
+                "boundary_evaluations": r.boundary_evaluations
+            }
+            for r in records
+        ]
+    }
+
+
+@router.get("/my/sessions/{session_id}/violations")
+async def get_my_session_violations(
+    session_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    """Get violations for own session"""
+    key_result = await db.execute(
+        select(APIKey).where(APIKey.user_id == int(current_user["sub"]))
+    )
+    my_keys = [k.id for k in key_result.scalars().all()]
+    
+    sess_result = await db.execute(
+        select(EnveloSession).where(EnveloSession.id == session_id)
+    )
+    session = sess_result.scalar_one_or_none()
+    if not session or session.api_key_id not in my_keys:
+        raise HTTPException(status_code=404, detail="Session not found")
+    
+    result = await db.execute(
+        select(Violation).where(
+            Violation.session_id == session_id
+        ).order_by(Violation.timestamp.desc())
+    )
+    violations = result.scalars().all()
+    
+    return {
+        "violations": [
+            {
+                "id": v.id,
+                "timestamp": v.timestamp.isoformat() if v.timestamp else None,
+                "boundary_name": v.boundary_name,
+                "violation_message": v.violation_message,
+                "parameters": v.parameters
+            }
+            for v in violations
+        ]
+    }
+
+
+@router.get("/my/sessions/{session_id}/report")
+async def download_my_session_report(
+    session_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    """Download CAT-72 report PDF for own session"""
+    from fastapi.responses import Response
+    from app.services.cat72_report_generator import generate_cat72_report
+    
+    key_result = await db.execute(
+        select(APIKey).where(APIKey.user_id == int(current_user["sub"]))
+    )
+    my_keys = [k.id for k in key_result.scalars().all()]
+    
+    result = await db.execute(select(EnveloSession).where(EnveloSession.id == session_id))
+    session = result.scalar_one_or_none()
+    if not session or session.api_key_id not in my_keys:
+        raise HTTPException(status_code=404, detail="Session not found")
+    
+    result = await db.execute(
+        select(Violation).where(Violation.session_id == session_id).order_by(Violation.timestamp)
+    )
+    violations = result.scalars().all()
+    
+    violation_list = [
+        {"timestamp": v.timestamp.isoformat() if v.timestamp else None,
+         "boundary_name": v.boundary_name,
+         "violation_message": v.violation_message}
+        for v in violations
+    ]
+    
+    pdf_bytes = generate_cat72_report(
+        test_id=session.session_id,
+        system_name=session.certificate_id or "Unknown System",
+        organization="Customer",
+        started_at=session.started_at,
+        ended_at=session.ended_at or __import__('datetime').datetime.utcnow(),
+        total_actions=(session.pass_count or 0) + (session.block_count or 0),
+        pass_count=session.pass_count or 0,
+        block_count=session.block_count or 0,
+        pass_rate=((session.pass_count or 0) / max((session.pass_count or 0) + (session.block_count or 0), 1)) * 100,
+        result="PASS" if session.status == "passed" else "IN PROGRESS",
+        violations=violation_list
+    )
+    
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f"attachment; filename=CAT72-Report-{session.session_id}.pdf"}
+    )
+
+
 @router.post("/heartbeat", summary="Agent heartbeat ping")
 async def receive_heartbeat(
     db: AsyncSession = Depends(get_db),

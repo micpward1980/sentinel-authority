@@ -475,6 +475,69 @@ function MonitoringPage() {
               </div>
             ); })()}
 
+
+            {/* Session Data Downloads */}
+            <div style={{display: 'flex', gap: '8px', marginBottom: '24px', flexWrap: 'wrap'}}>
+              <button
+                onClick={async () => {
+                  try {
+                    const isAdmin = user?.role === 'admin';
+                    const base = isAdmin ? '/api/envelo/admin/sessions/' : '/api/envelo/my/sessions/';
+                    const res = await api.get(base + selectedSession.id + '/telemetry');
+                    const records = res.data.records || [];
+                    if (records.length === 0) { toast.show('No telemetry data yet', 'info'); return; }
+                    const headers = ['timestamp','action_id','action_type','result','execution_time_ms'];
+                    const csv = [headers.join(','), ...records.map(r => headers.map(h => JSON.stringify(r[h] ?? '')).join(','))].join('\n');
+                    const blob = new Blob([csv], {type: 'text/csv'});
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.download = `telemetry-${selectedSession.session_id}.csv`;
+                    link.click();
+                  } catch (e) { toast.show('Failed to download telemetry', 'error'); }
+                }}
+                style={{padding: '8px 16px', background: 'rgba(157,140,207,0.1)', border: '1px solid rgba(157,140,207,0.3)', borderRadius: '8px', color: styles.purpleBright, cursor: 'pointer', fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px'}}
+              >
+                ↓ Telemetry CSV
+              </button>
+              <button
+                onClick={async () => {
+                  try {
+                    const isAdmin = user?.role === 'admin';
+                    const base = isAdmin ? '/api/envelo/admin/sessions/' : '/api/envelo/my/sessions/';
+                    const res = await api.get(base + selectedSession.id + '/violations');
+                    const violations = res.data.violations || [];
+                    if (violations.length === 0) { toast.show('No violations recorded', 'info'); return; }
+                    const headers = ['timestamp','boundary_name','violation_message'];
+                    const csv = [headers.join(','), ...violations.map(v => headers.map(h => JSON.stringify(v[h] ?? '')).join(','))].join('\n');
+                    const blob = new Blob([csv], {type: 'text/csv'});
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.download = `violations-${selectedSession.session_id}.csv`;
+                    link.click();
+                  } catch (e) { toast.show('Failed to download violations', 'error'); }
+                }}
+                style={{padding: '8px 16px', background: 'rgba(214,92,92,0.08)', border: '1px solid rgba(214,92,92,0.25)', borderRadius: '8px', color: '#D65C5C', cursor: 'pointer', fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px'}}
+              >
+                ↓ Violations CSV
+              </button>
+              <button
+                onClick={async () => {
+                  try {
+                    const isAdmin = user?.role === 'admin';
+                    const base = isAdmin ? '/api/envelo/admin/sessions/' : '/api/envelo/my/sessions/';
+                    const res = await api.get(base + selectedSession.id + '/report', { responseType: 'blob' });
+                    const blob = new Blob([res.data], {type: 'application/pdf'});
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.download = `CAT72-Report-${selectedSession.session_id}.pdf`;
+                    link.click();
+                  } catch (e) { toast.show('Failed to download report', 'error'); }
+                }}
+                style={{padding: '8px 16px', background: 'rgba(92,214,133,0.08)', border: '1px solid rgba(92,214,133,0.25)', borderRadius: '8px', color: styles.accentGreen, cursor: 'pointer', fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px'}}
+              >
+                ↓ CAT-72 Report PDF
+              </button>
+            </div>
             {/* Simple Timeline Bar Chart */}
             {timeline.length > 0 && (
               <div>
