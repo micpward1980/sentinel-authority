@@ -165,19 +165,19 @@ function ApplicationsList() {
     <div className="space-y-6">
       <div className="flex justify-between items-start">
         <div>
-          <p style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', color: styles.purpleBright, marginBottom: '8px'}}>Conformance</p>
-          <h1 style={{fontFamily: "'Source Serif 4', serif", fontSize: '36px', fontWeight: 200, margin: 0}}>Applications</h1>
+          <p style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', color: styles.purpleBright, marginBottom: '8px'}}>{user?.role === 'admin' ? 'Conformance' : 'My Organization'}</p>
+          <h1 style={{fontFamily: "'Source Serif 4', serif", fontSize: '36px', fontWeight: 200, margin: 0}}>{user?.role === 'admin' ? 'Applications' : 'Certification Status'}</h1>
         </div>
         
       </div>
 
-      <div style={{display: 'flex', gap: '12px', alignItems: 'center'}}>
-        <div style={{position: 'relative', flex: 1, maxWidth: '400px'}}>
-          <Search className="w-4 h-4" style={{position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: styles.textTertiary}} />
-          <input value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="Search by name, org, or ID..." style={{width: '100%', background: 'rgba(255,255,255,0.03)', border: `1px solid ${styles.borderGlass}`, borderRadius: '8px', padding: '8px 12px 8px 36px', color: styles.textPrimary, fontSize: '13px', fontFamily: "'IBM Plex Mono', monospace", outline: 'none'}} />
+{user?.role === "admin" && <div style={{display: "flex", gap: "12px", alignItems: "center"}}>
+        <div style={{position: "relative", flex: 1, maxWidth: "400px"}}>
+          <Search className="w-4 h-4" style={{position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", color: styles.textTertiary}} />
+          <input value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="Search by name, org, or ID..." style={{width: "100%", background: "rgba(255,255,255,0.03)", border: `1px solid ${styles.borderGlass}`, borderRadius: "8px", padding: "8px 12px 8px 36px", color: styles.textPrimary, fontSize: "13px", fontFamily: "'IBM Plex Mono', monospace", outline: "none"}} />
         </div>
-        <span style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', color: styles.textTertiary}}>{filtered.length} of {appTotal}</span>
-      </div>
+        <span style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: "11px", color: styles.textTertiary}}>{filtered.length} of {appTotal}</span>
+      </div>}
 
       {/* Filter Tabs */}
       {user?.role === 'admin' && (
