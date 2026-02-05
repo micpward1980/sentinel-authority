@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { API_URL } from '../config/api';
 
-const DOCS_PASSWORD = 'sentinel-docs-2026';
+const DOCS_PASSWORD = 'goldenticket';
 
 export default function ApiDocsPage() {
   const [unlocked, setUnlocked] = useState(false);
