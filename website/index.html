@@ -2987,16 +2987,9 @@
             ctx.strokeStyle=rgb(GREEN,0.5);ctx.lineWidth=0.8;ctx.stroke();
             ctx.fillStyle=rgb(GREEN,0.02+0.015*Math.sin(time*2.2+rr*1.5+cc*0.9));ctx.fill();
           }
-          ctx.font='300 7px "IBM Plex Mono", monospace';ctx.textAlign='center';
-          ctx.fillStyle=rgb(GREEN,0.5);
-          var val=(47.2+Math.sin(time*0.7)*0.3).toFixed(1);
-          ctx.fillText('SPD:'+val+'  LD:'+(81.3+Math.sin(time*1.1)*1.2).toFixed(1)+'%',x,y+14);
-
-          // Status indicator
-          ctx.beginPath();ctx.arc(x-14,y+14,1.2,0,Math.PI*2);
+          // Status indicator only
+          ctx.beginPath();ctx.arc(x,y+10,1.5,0,Math.PI*2);
           ctx.fillStyle=rgb(GREEN,0.28+0.12*Math.sin(time*3));ctx.fill();
-          ctx.font='300 5px "IBM Plex Mono", monospace';ctx.textAlign='left';
-          ctx.fillStyle=rgb(GREEN,0.6);ctx.fillText('NOM',x-11,y+15.5);
         }
 
         // ── ENVELO INTERIOR ──
@@ -3033,21 +3026,7 @@
             ctx.strokeStyle=rgb(PURPLE,rp.alpha);ctx.lineWidth=0.6;ctx.stroke();
           }
 
-          // Right micro readouts
-          ctx.font='300 7px "IBM Plex Mono", monospace';ctx.textAlign='left';
-          ctx.fillStyle=rgb(PURPLE,0.5);
-          ctx.fillText('CONF:'+(0.994-Math.random()*0.002).toFixed(3),x+r+10,y-12);
-          ctx.fillText('DRFT:'+(Math.random()*0.01).toFixed(4),x+r+10,y-3);
-          ctx.fillStyle=rgb(PURPLE,0.38);
-          ctx.fillText('CYC:'+Math.floor(time*10)%9999,x+r+10,y+6);
-
-          // Left micro readouts
-          ctx.textAlign='right';ctx.fillStyle=rgb(PURPLE,0.55);
-          ctx.fillText('LIM:'+(120+Math.sin(time*0.5)*0.5).toFixed(1),x-r-10,y-8);
-          ctx.fillText('MODE:ENFORCE',x-r-10,y+1);
-
-          ctx.textAlign='center';ctx.font='300 7px "IBM Plex Mono", monospace';
-          ctx.fillStyle=rgb(PURPLE,0.45);ctx.fillText('INTERLOCK',x,y+r+30);
+          // Readouts removed — clean node presentation
         }
 
         // ── GATE INTERIOR ──
@@ -3162,9 +3141,7 @@
               ctx.beginPath();ctx.arc(p.trail[j].x,p.trail[j].y,p.r*(j/p.trail.length)*0.35,0,Math.PI*2);
               ctx.fillStyle=rgb(col,ta);ctx.fill();}
             if(p.state===1)p.trail=[];else drawPacket(px,py,p.r,col,p.opacity);
-            if(p.state===0&&p.labelOpacity>0.05){ctx.font='300 7px "IBM Plex Mono", monospace';
-              ctx.textAlign='left';ctx.fillStyle=rgb(GREEN,0.32*p.labelOpacity*p.opacity);
-              ctx.fillText(p.label,px+7,py-3);}
+            // packet labels removed to prevent overlap
             if(p.opacity<=0)packets.splice(i,1);
           }
           if(!anyAtGate) gateTarget=0;
@@ -3437,18 +3414,11 @@
             ctx.strokeStyle=rgb(GREEN,0.5);ctx.lineWidth=0.8;ctx.stroke();
             ctx.fillStyle=rgb(GREEN,0.02+0.015*Math.sin(time*2.2+rr*1.5+cc*0.9));ctx.fill();}
           ctx.font='300 7px "IBM Plex Mono", monospace';ctx.textAlign='center';
-          ctx.fillStyle='rgba(255,255,255,0.35)';ctx.fillText('Autonomous System',x,y+r+28);
+          // sub-label removed for clarity
 
-          // Cycling action
-          var actions=['NAVIGATE','ACCELERATE','STEER','HOLD','BRAKE','LANE_CHG'];
-          ctx.font='300 7px "IBM Plex Mono", monospace';ctx.fillStyle=rgb(GREEN,0.5);
-          ctx.fillText(actions[Math.floor(time*0.7)%actions.length],x,y+14);
-
-          // Status dot
-          ctx.beginPath();ctx.arc(x-14,y+14,1.2,0,Math.PI*2);
+          // Status dot only
+          ctx.beginPath();ctx.arc(x,y+10,1.5,0,Math.PI*2);
           ctx.fillStyle=rgb(GREEN,0.28+0.12*Math.sin(time*3));ctx.fill();
-          ctx.font='300 5px "IBM Plex Mono", monospace';ctx.textAlign='left';
-          ctx.fillStyle=rgb(GREEN,0.6);ctx.fillText('NOM',x-11,y+15.5);
         }
 
         // ── ENVELO INTERIOR ──
@@ -3481,25 +3451,9 @@
             ctx.strokeStyle=rgb(RED,sr.alpha);ctx.lineWidth=1.2;ctx.stroke();}
 
           ctx.font='300 7px "IBM Plex Mono", monospace';ctx.textAlign='center';
-          ctx.fillStyle='rgba(255,255,255,0.35)';ctx.fillText('Enforcement Agent',x,y+r+28);
+          // sub-label removed for clarity
 
-          // Right micro data
-          ctx.font='300 7px "IBM Plex Mono", monospace';ctx.textAlign='left';
-          ctx.fillStyle=rgb(PURPLE,0.5);
-          ctx.fillText('CONF:'+(0.994-Math.random()*0.002).toFixed(3),x+r+10,y-12);
-          ctx.fillText('DRFT:'+(Math.random()*0.01).toFixed(4),x+r+10,y-3);
-          ctx.fillStyle=rgb(PURPLE,0.38);ctx.fillText('CYC:'+Math.floor(time*10)%9999,x+r+10,y+6);
-
-          // Left micro data
-          ctx.textAlign='right';ctx.fillStyle=rgb(PURPLE,0.55);
-          ctx.fillText('SHLD:ACTIVE',x-r-6,y-6);
-          ctx.fillText('MODE:ENFORCE',x-r-6,y+3);
-
-          // Threat counter
-          var tAlpha=0.08+bannerFlash*0.3;
-          ctx.textAlign='right';ctx.font='300 5.5px "IBM Plex Mono", monospace';
-          ctx.fillStyle=rgb(stats.rejected>0?RED:GREEN,tAlpha+0.18);
-          ctx.fillText(stats.rejected>0?'THR:'+stats.rejected:'THR:CLR',x+r-4,y-r+8);
+          // Readouts removed — clean node presentation
         }
 
         // ── SENTINEL INTERIOR ──
@@ -3517,16 +3471,12 @@
           ctx.fillStyle=rgb(PURPLE,0.1+0.07*Math.sin(time*3));ctx.fill();
 
           ctx.font='300 7px "IBM Plex Mono", monospace';ctx.textAlign='center';
-          ctx.fillStyle='rgba(255,255,255,0.4)';ctx.fillText('Authority Registry',x,y+r+23);
+          ctx.fillStyle='rgba(255,255,255,0.3)';ctx.fillText('Authority Registry',x,y+r+28);
 
-          // Scrolling micro-hashes
-          ctx.font='300 5px "IBM Plex Mono", monospace';
-          var seed=Math.floor(time*1.5);
-          for(var i=0;i<3;i++){ctx.fillStyle=rgb(PURPLE,0.1-i*0.025);
-            ctx.fillText(rndHex(10,seed+i*5),x,y+12+i*7);}
-
-          ctx.font='300 7px "IBM Plex Mono", monospace';ctx.fillStyle=rgb(PURPLE,0.55);
-          ctx.fillText('REC:'+(stats.out+stats.rejected),x,y+r-6);
+          // Record counter only
+          ctx.font='300 7px "IBM Plex Mono", monospace';ctx.textAlign='center';
+          ctx.fillStyle=rgb(PURPLE,0.4);
+          ctx.fillText('REC:'+(stats.out+stats.rejected),x,y+8);
         }
 
         // ── PACKET ──
@@ -3590,9 +3540,7 @@
               ctx.beginPath();ctx.arc(p.trail[j].x,p.trail[j].y,p.r*(j/p.trail.length)*0.35,0,Math.PI*2);
               ctx.fillStyle=rgb(col,ta);ctx.fill();}
             if(p.state!==1)drawPacket(px,py,p.r,col,p.opacity);
-            if(p.state===0&&p.labelOpacity>0.05){ctx.font='300 7px "IBM Plex Mono", monospace';
-              ctx.textAlign='left';ctx.fillStyle=rgb(GREEN,0.32*p.labelOpacity*p.opacity);
-              ctx.fillText(p.label,px+7,py-3);}
+            // packet labels removed to prevent overlap
             if(p.opacity<=0)outPackets.splice(i,1);}
 
           // Inbound attacks
@@ -3609,9 +3557,7 @@
                 ctx.beginPath();ctx.arc(p.trail[j].x,p.trail[j].y,p.r*(j/p.trail.length)*0.4,0,Math.PI*2);
                 ctx.fillStyle=rgb(RED,ta);ctx.fill();}
               drawPacket(px,py,p.r,RED,p.opacity*0.85);
-              if(p.opacity>0.3&&p.t<0.75){ctx.font='300 7px "IBM Plex Mono", monospace';
-                ctx.textAlign='center';var labelA=0.5*p.opacity*(p.t<0.6?1:Math.max(0,(0.75-p.t)*6.67));
-                ctx.fillStyle=rgb(RED,labelA);ctx.fillText(p.label,px,py+p.r+12);}
+              // attack labels removed
               if(p.t>=0.88){p.rejected=true;bannerFlash=1;stats.rejected++;
                 var hitA=Math.atan2(py-L.envelo.y,px-L.envelo.x);
                 shieldRipples.push({r:L.envelo.r,angle:hitA,alpha:0.6});
