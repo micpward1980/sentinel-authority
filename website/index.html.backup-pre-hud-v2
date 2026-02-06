@@ -459,7 +459,9 @@
        ============================================ */
     .hero{
       position: relative;
-      padding: 80px 0 40px;
+      height: 100svh;
+      min-height: 100vh; /* fallback */
+      padding: 0;
       margin: 0;
       overflow: visible;
     }
@@ -1198,7 +1200,8 @@
         display: none !important;
       }
       #hero-canvas {
-        /* JS controlled */
+        max-height: 100vh;
+        max-height: 100dvh;
       }
       
       /* Mechanism diagram */
@@ -2402,10 +2405,10 @@
     <!-- HERO -->
     <section class="hero">
       <!-- Full-viewport canvas -->
-      <div style="display:flex;justify-content:center;margin:0 auto;max-width:880px;"><div style="width:100%;"><canvas id="hero-canvas" style="width:100%;display:block;opacity:0;transition:opacity 1.2s ease 0.15s;"></canvas></div></div>
+      <canvas id="hero-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; opacity: 0; transition: opacity 1.2s ease 0.15s;"></canvas>
       
       <!-- Hero Content -->
-      <div id="hero-text" class="hero-content-bottom" style="position: relative; z-index: 10; text-align: center; padding: 40px 16px 0; display: flex; flex-direction: column; align-items: center;">
+      <div id="hero-text" class="hero-content-bottom" style="position: absolute; bottom: 5vh; left: 0; right: 0; z-index: 10; text-align: center; padding: 0 16px; display: flex; flex-direction: column; align-items: center;">
         
         <h1 style="font-family: var(--serif); font-size: clamp(28px, 5vw, 50px); font-weight: 200; line-height: 1.15; margin-bottom: 8px; letter-spacing: -0.02em; color: #fff; max-width: 700px;">
           Operational Design Domain<br><span class="accent" style="color: #c4b8e8; font-style: italic;">Conformance</span>
@@ -2476,22 +2479,27 @@
   var lockedRadius = 0, lockedCx = 0, lockedCy = 0;
 
   function resize() {
-    var r = c.parentElement.getBoundingClientRect();
-    W = r.width;
-    H = W < 550 ? 420 : 440;
+    // Use stable small viewport height (excludes URL bar)
+    W = window.innerWidth;
+    var svh = document.documentElement.clientHeight;
+    H = svh || window.innerHeight;
     c.width = W * dpr;
     c.height = H * dpr;
-    c.style.height = H + 'px';
     ctx.setTransform(dpr,0,0,dpr,0,0);
 
     // Only recalculate layout on actual window resize, not scroll
     if (!radiusLocked || Math.abs(W - (c._lastW||0)) > 20 || Math.abs(H - (c._lastH||0)) > 20) {
       // Use fixed proportion of viewport — don't depend on text position
       cx = W * 0.5;
-      cy = H * 0.48;
-      radius = Math.min(W * 0.25, H * 0.38);
-      if (radius < 60) radius = 60;
-      if (radius > 180) radius = 180;
+      if (W < 600) {
+        cy = H * 0.35;
+        radius = Math.min(W * 0.35, H * 0.22);
+        if (radius < 80) radius = 80;
+      } else {
+        cy = H * 0.38;
+        radius = Math.min(W * 0.25, H * 0.26);
+        if (radius < 60) radius = 60;
+      }
       lockedCx = cx; lockedCy = cy; lockedRadius = radius;
       radiusLocked = true;
       c._lastW = W; c._lastH = H;
@@ -2564,9 +2572,9 @@
   }
 
   function drawBoundary(now) {
-    var g1 = ctx.createRadialGradient(cx,cy,radius*0.92, cx,cy,radius*1.06);
+    var g1 = ctx.createRadialGradient(cx,cy,radius*0.8, cx,cy,radius*1.2);
     g1.addColorStop(0, rgb(PURPLE,0));
-    g1.addColorStop(0.5, rgb(PURPLE,0.025));
+    g1.addColorStop(0.5, rgb(PURPLE,0.03));
     g1.addColorStop(1, rgb(PURPLE,0));
     ctx.fillStyle = g1;
     ctx.beginPath(); ctx.arc(cx,cy,radius*1.2,0,Math.PI*2); ctx.fill();
@@ -2583,11 +2591,11 @@
     ctx.setLineDash([]); ctx.restore();
 
     ctx.font='400 9px "IBM Plex Mono"';
-    ctx.fillStyle=rgb(PURPLE,0.85);
+    ctx.fillStyle=rgb(PURPLE,0.6);
     ctx.textAlign='center';
     ctx.fillText('ODD BOUNDARY',cx,cy-radius-28);
     ctx.font='600 8px "IBM Plex Mono"';
-    ctx.fillStyle=rgb(PURPLE,0.6);
+    ctx.fillStyle=rgb(PURPLE,0.35);
     ctx.fillText('ENVELO',cx,cy-radius-17);
   }
 
@@ -2620,7 +2628,7 @@
       }
       var col=[Math.round(r),Math.round(g),Math.round(b)];
 
-      var gl=ctx.createRadialGradient(a.x,a.y,0,a.x,a.y,a.size*2.8);
+      var gl=ctx.createRadialGradient(a.x,a.y,0,a.x,a.y,a.size*3.5);
       gl.addColorStop(0,rgb(col,al*0.25));
       gl.addColorStop(1,rgb(col,0));
       ctx.fillStyle=gl;
@@ -2669,14 +2677,14 @@
       ctx.lineWidth=0.5; ctx.stroke();
 
       if(t.alpha>0.3){
-        ctx.font='400 8px "IBM Plex Mono"';
-        ctx.fillStyle=rgb(GREEN,t.alpha*0.55);
+        ctx.font='300 8px "IBM Plex Mono"';
+        ctx.fillStyle=rgb(GREEN,t.alpha*0.35);
         ctx.textAlign=t.side>0?'left':'right';
         ctx.fillText(t.text,t.x,t.y);
       }
 
       ctx.beginPath(); ctx.arc(px,py,1.5,0,Math.PI*2);
-      ctx.fillStyle=rgb(GREEN,t.alpha*0.7);
+      ctx.fillStyle=rgb(GREEN,t.alpha*0.5);
       ctx.fill();
     }
   }
@@ -2686,16 +2694,16 @@
     var x = W<600 ? W-12 : cx+radius+55;
     var startY = cy-radius*0.4;
     var chars='0123456789abcdef';
-    ctx.font='400 7.5px "IBM Plex Mono"';
+    ctx.font='300 7px "IBM Plex Mono"';
     ctx.textAlign='right';
     for(var i=0;i<7;i++){
       var hash='';
       var seed=Math.floor(now*0.0008)+i*7;
       for(var j=0;j<14;j++) hash+=chars[(seed*(j+1)*31+j*17)%16];
-      ctx.fillStyle=rgb(PURPLE,0.55-i*0.025);
+      ctx.fillStyle=rgb(PURPLE,0.22-i*0.025);
       ctx.fillText(hash,x,startY+i*12);
     }
-    ctx.fillStyle=rgb(PURPLE,0.8);
+    ctx.fillStyle=rgb(PURPLE,0.5);
     ctx.fillText('HASH CHAIN \u25B8',x,startY-10);
   }
 
@@ -2861,27 +2869,38 @@
         }
 
         // ── GRID ──
-        function drawGrid() { /* removed */ }
+        function drawGrid() {
+          var sp = W<550?36:48;
+          ctx.strokeStyle = 'rgba(255,255,255,0.035)';
+          ctx.lineWidth = 0.5;
+          for(var x=sp;x<W;x+=sp){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+          for(var y=sp;y<H;y+=sp){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+          ctx.strokeStyle='rgba(255,255,255,0.055)';
+          for(var x=sp*2;x<W;x+=sp*2) for(var y=sp*2;y<H;y+=sp*2){
+            ctx.beginPath();ctx.moveTo(x-2,y);ctx.lineTo(x+2,y);ctx.stroke();
+            ctx.beginPath();ctx.moveTo(x,y-2);ctx.lineTo(x,y+2);ctx.stroke();
+          }
+        }
 
         // ── PERIPHERAL DATA ──
         function drawPeripheral(time,L) {
           if(L.mob) return;
-          ctx.font='400 7.5px "IBM Plex Mono", monospace';
+          ctx.font='300 6.5px "IBM Plex Mono", monospace';
 
           // Top left - system ID + clock
           ctx.textAlign='left';
           var el=Math.floor(time);
           var h=Math.floor(el/3600)%100,m=Math.floor((el%3600)/60),s=el%60;
-          ctx.fillStyle=rgb(DIM,0.88);
+          ctx.fillStyle=rgb(DIM,0.6);
           ctx.fillText('T+ '+(h<10?'0':'')+h+':'+(m<10?'0':'')+m+':'+(s<10?'0':'')+s, 8, 14);
-          ctx.fillStyle=rgb(DIM,0.88);
+          ctx.fillStyle=rgb(DIM,0.42);
           ctx.fillText('ENVELO ENFORCEMENT LAYER', 8, 24);
 
           // Top right
           ctx.textAlign='right';
-          ctx.fillStyle=rgb(DIM,0.72);
+          ctx.fillStyle=rgb(DIM,0.48);
           ctx.fillText('SID:'+sessionId.toUpperCase(), W-8, 14);
-          ctx.fillStyle=rgb(DIM,0.78);
+          ctx.fillStyle=rgb(DIM,0.18);
           ctx.fillText('FRM:'+String(frameCount).padStart(6,'0'), W-8, 24);
 
           // Left column - scrolling params
@@ -2899,7 +2918,7 @@
           for(var i=0;i<params.length;i++){
             ctx.fillStyle=rgb(DIM,0.4);
             ctx.fillText(params[i][0], 8, 42+i*11);
-            ctx.fillStyle=rgb(DIM,0.78);
+            ctx.fillStyle=rgb(DIM,0.35);
             ctx.fillText(params[i][1], 52, 42+i*11);
           }
 
@@ -2915,10 +2934,10 @@
           }
 
           // Bottom
-          ctx.textAlign='left';ctx.fillStyle=rgb(DIM,0.52);
+          ctx.textAlign='left';ctx.fillStyle=rgb(DIM,0.28);
           var d=new Date();
           ctx.fillText('UTC '+d.toISOString().substr(11,12),8,H-6);
-          ctx.textAlign='right';ctx.fillStyle=rgb(DIM,0.78);
+          ctx.textAlign='right';ctx.fillStyle=rgb(DIM,0.35);
           ctx.fillText('ENVELO-RT v4.2.1 \u00B7 NODE:PRIMARY',W-8,H-6);
         }
 
@@ -2966,7 +2985,7 @@
         // ── CIRCLE NODE ──
         function drawCircleNode(x,y,r,col,label,time) {
           // Soft radial glow wash (hero style)
-          var h=ctx.createRadialGradient(x,y,r*0.88,x,y,r*1.08);
+          var h=ctx.createRadialGradient(x,y,r*0.8,x,y,r*1.3);
           h.addColorStop(0,rgb(col,0));
           h.addColorStop(0.5,rgb(col,0.04));
           h.addColorStop(1,rgb(col,0));
@@ -3008,7 +3027,7 @@
           ctx.moveTo(rx+rr,ry);ctx.arcTo(rx+w,ry,rx+w,ry+h,rr);
           ctx.arcTo(rx+w,ry+h,rx,ry+h,rr);ctx.arcTo(rx,ry+h,rx,ry,rr);
           ctx.arcTo(rx,ry,rx+w,ry,rr);ctx.closePath();
-          ctx.fillStyle='rgba(255,255,255,0.015)';ctx.fill();
+          ctx.fillStyle='rgba(255,255,255,0.035)';ctx.fill();
           ctx.strokeStyle=rgb(col,0.28);ctx.lineWidth=0.8;ctx.stroke();
 
           ctx.beginPath();ctx.moveTo(rx+rr+3,ry+0.5);ctx.lineTo(rx+w-rr-3,ry+0.5);
@@ -3028,7 +3047,7 @@
             var sx=ox+cc*(s+g),sy=oy+rr*(s+g);
             ctx.beginPath();ctx.rect(sx,sy,s,s);
             ctx.strokeStyle=rgb(GREEN,0.7);ctx.lineWidth=0.9;ctx.stroke();
-            ctx.fillStyle=rgb(GREEN,0.04+0.02*Math.sin(time*2.2+rr*1.5+cc*0.9));ctx.fill();
+            ctx.fillStyle=rgb(GREEN,0.02+0.015*Math.sin(time*2.2+rr*1.5+cc*0.9));ctx.fill();
           }
           // Status indicator only
           ctx.beginPath();ctx.arc(x,y+10,1.5,0,Math.PI*2);
@@ -3101,7 +3120,7 @@
 
         // ── PACKET ──
         function drawPacket(px,py,size,col,opacity) {
-          var g1=ctx.createRadialGradient(px,py,0,px,py,size*2.8);
+          var g1=ctx.createRadialGradient(px,py,0,px,py,size*4.5);
           g1.addColorStop(0,rgb(col,opacity*0.28));g1.addColorStop(1,rgb(col,0));
           ctx.fillStyle=g1;ctx.beginPath();ctx.arc(px,py,size*4.5,0,Math.PI*2);ctx.fill();
           var g2=ctx.createRadialGradient(px,py,0,px,py,size*2);
@@ -3192,14 +3211,14 @@
           for(var i=bursts.length-1;i>=0;i--){var b=bursts[i];
             b.x+=b.vx;b.y+=b.vy;b.vx*=0.92;b.vy*=0.92;b.life-=0.018;
             if(b.life<=0){bursts.splice(i,1);continue;}
-            var bg=ctx.createRadialGradient(b.x,b.y,0,b.x,b.y,b.r*b.life*1.8);
+            var bg=ctx.createRadialGradient(b.x,b.y,0,b.x,b.y,b.r*b.life*2.5);
             bg.addColorStop(0,rgb(RED,b.life*0.35));bg.addColorStop(1,rgb(RED,0));
             ctx.fillStyle=bg;ctx.beginPath();ctx.arc(b.x,b.y,b.r*b.life*2.5,0,Math.PI*2);ctx.fill();
             ctx.beginPath();ctx.arc(b.x,b.y,b.r*b.life,0,Math.PI*2);
             ctx.fillStyle=rgb(RED,b.life*0.7);ctx.fill();}
 
-          ctx.font='400 7.5px "IBM Plex Mono", monospace';ctx.textAlign='center';
-          ctx.fillStyle='rgba(255,255,255,0.88)';
+          ctx.font='300 6.5px "IBM Plex Mono", monospace';ctx.textAlign='center';
+          ctx.fillStyle='rgba(255,255,255,0.6)';
           ctx.fillText('AUDIT \u00B7 '+stats.total+' CHECKED \u00B7 '+stats.exec+' PASSED \u00B7 '+stats.block+' BLOCKED',
             W/2,L.mob?H-10:H-8);
 
@@ -3334,10 +3353,10 @@
 
         // ── GRID ──
         function drawGrid(){
-          var sp=W<550?36:48;ctx.strokeStyle='rgba(255,255,255,0.015)';ctx.lineWidth=0.5;
+          var sp=W<550?36:48;ctx.strokeStyle='rgba(255,255,255,0.035)';ctx.lineWidth=0.5;
           for(var x=sp;x<W;x+=sp){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
           for(var y=sp;y<H;y+=sp){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
-          /* grid removed */
+          ctx.strokeStyle='rgba(255,255,255,0.055)';
           for(var x=sp*2;x<W;x+=sp*2)for(var y=sp*2;y<H;y+=sp*2){
             ctx.beginPath();ctx.moveTo(x-2,y);ctx.lineTo(x+2,y);ctx.stroke();
             ctx.beginPath();ctx.moveTo(x,y-2);ctx.lineTo(x,y+2);ctx.stroke();}
@@ -3346,19 +3365,19 @@
         // ── PERIPHERAL ──
         function drawPeripheral(time,L){
           if(L.mob)return;
-          ctx.font='400 7.5px "IBM Plex Mono", monospace';
+          ctx.font='300 6.5px "IBM Plex Mono", monospace';
 
           // Top left
           ctx.textAlign='left';
           var el=Math.floor(time),h=Math.floor(el/3600)%100,m=Math.floor((el%3600)/60),s=el%60;
-          ctx.fillStyle=rgb(DIM,0.88);
+          ctx.fillStyle=rgb(DIM,0.6);
           ctx.fillText('T+ '+(h<10?'0':'')+h+':'+(m<10?'0':'')+m+':'+(s<10?'0':'')+s,8,14);
-          ctx.fillStyle=rgb(DIM,0.88);ctx.fillText('SECURITY ENFORCEMENT LAYER',8,24);
+          ctx.fillStyle=rgb(DIM,0.42);ctx.fillText('SECURITY ENFORCEMENT LAYER',8,24);
 
           // Top right
-          ctx.textAlign='right';ctx.fillStyle=rgb(DIM,0.72);
+          ctx.textAlign='right';ctx.fillStyle=rgb(DIM,0.48);
           ctx.fillText('SID:'+sessionId.toUpperCase(),W-8,14);
-          ctx.fillStyle=rgb(DIM,0.78);
+          ctx.fillStyle=rgb(DIM,0.18);
           ctx.fillText('FRM:'+String(frameCount).padStart(6,'0'),W-8,24);
 
           // Left column - security parameters
@@ -3376,7 +3395,7 @@
 
           // Right column - evidence hash chain
           ctx.textAlign='right';var hx=W-8,hy=42;
-          ctx.fillStyle=rgb(PURPLE,0.8);ctx.fillText('EVIDENCE CHAIN \u25B8',hx,hy);
+          ctx.fillStyle=rgb(PURPLE,0.7);ctx.fillText('EVIDENCE CHAIN \u25B8',hx,hy);
           var seed=Math.floor(time*0.8);
           for(var i=0;i<7;i++){
             ctx.fillStyle=rgb(PURPLE,0.4-i*0.035);
@@ -3384,9 +3403,9 @@
           }
 
           // Bottom
-          ctx.textAlign='left';ctx.fillStyle=rgb(DIM,0.52);
+          ctx.textAlign='left';ctx.fillStyle=rgb(DIM,0.28);
           var d=new Date();ctx.fillText('UTC '+d.toISOString().substr(11,12),8,H-6);
-          ctx.textAlign='right';ctx.fillStyle=rgb(DIM,0.78);
+          ctx.textAlign='right';ctx.fillStyle=rgb(DIM,0.35);
           ctx.fillText('SEC-MONITOR v4.2.1 \u00B7 THREAT:LOW',W-8,H-6);
         }
 
@@ -3424,7 +3443,7 @@
         // ── CIRCLE NODE ──
         function drawCircleNode(x,y,r,col,label,time) {
           // Soft radial glow wash (hero style)
-          var h=ctx.createRadialGradient(x,y,r*0.88,x,y,r*1.08);
+          var h=ctx.createRadialGradient(x,y,r*0.8,x,y,r*1.3);
           h.addColorStop(0,rgb(col,0));
           h.addColorStop(0.5,rgb(col,0.04));
           h.addColorStop(1,rgb(col,0));
@@ -3465,7 +3484,7 @@
           for(var rr=0;rr<2;rr++)for(var cc=0;cc<2;cc++){
             var sx=ox+cc*(s+g),sy=oy+rr*(s+g);ctx.beginPath();ctx.rect(sx,sy,s,s);
             ctx.strokeStyle=rgb(GREEN,0.7);ctx.lineWidth=0.9;ctx.stroke();
-            ctx.fillStyle=rgb(GREEN,0.04+0.02*Math.sin(time*2.2+rr*1.5+cc*0.9));ctx.fill();}
+            ctx.fillStyle=rgb(GREEN,0.02+0.015*Math.sin(time*2.2+rr*1.5+cc*0.9));ctx.fill();}
           ctx.font='300 7px "IBM Plex Mono", monospace';ctx.textAlign='center';
           // sub-label removed for clarity
 
@@ -3524,7 +3543,7 @@
           ctx.fillStyle=rgb(PURPLE,0.1+0.07*Math.sin(time*3));ctx.fill();
 
           ctx.font='300 7px "IBM Plex Mono", monospace';ctx.textAlign='center';
-          ctx.fillStyle='rgba(255,255,255,0.58)';ctx.fillText('Authority Registry',x,y+r+28);
+          ctx.fillStyle='rgba(255,255,255,0.3)';ctx.fillText('Authority Registry',x,y+r+28);
 
           // Record counter only
           ctx.font='300 7px "IBM Plex Mono", monospace';ctx.textAlign='center';
@@ -3534,7 +3553,7 @@
 
         // ── PACKET ──
         function drawPacket(px,py,size,col,opacity){
-          var g1=ctx.createRadialGradient(px,py,0,px,py,size*2.8);
+          var g1=ctx.createRadialGradient(px,py,0,px,py,size*4.5);
           g1.addColorStop(0,rgb(col,opacity*0.28));g1.addColorStop(1,rgb(col,0));
           ctx.fillStyle=g1;ctx.beginPath();ctx.arc(px,py,size*4.5,0,Math.PI*2);ctx.fill();
           var g2=ctx.createRadialGradient(px,py,0,px,py,size*2);
@@ -3626,7 +3645,7 @@
           for(var i=bursts.length-1;i>=0;i--){var b=bursts[i];
             b.x+=b.vx;b.y+=b.vy;b.vx*=0.9;b.vy*=0.9;b.life-=0.02;
             if(b.life<=0){bursts.splice(i,1);continue;}
-            var bg=ctx.createRadialGradient(b.x,b.y,0,b.x,b.y,b.r*b.life*1.8);
+            var bg=ctx.createRadialGradient(b.x,b.y,0,b.x,b.y,b.r*b.life*2.5);
             bg.addColorStop(0,rgb(RED,b.life*0.35));bg.addColorStop(1,rgb(RED,0));
             ctx.fillStyle=bg;ctx.beginPath();ctx.arc(b.x,b.y,b.r*b.life*2.5,0,Math.PI*2);ctx.fill();
             ctx.beginPath();ctx.arc(b.x,b.y,b.r*b.life,0,Math.PI*2);
@@ -3651,7 +3670,7 @@
           ctx.strokeStyle=rgb(RED,bA*1.0);ctx.lineWidth=0.7;ctx.stroke();
           ctx.fillStyle=rgb(RED,bA*1.0);ctx.fillText(bT,W/2+3,bY);
 
-          ctx.font='400 7.5px "IBM Plex Mono", monospace';ctx.fillStyle='rgba(255,255,255,0.88)';
+          ctx.font='300 6.5px "IBM Plex Mono", monospace';ctx.fillStyle='rgba(255,255,255,0.6)';
           ctx.fillText(stats.out+' TELEMETRY SENT \u00B7 '+stats.rejected+' INBOUND REJECTED',
             W/2,L.mob?H-30:H-28);
 
@@ -4247,7 +4266,7 @@
         function drawBoundary(now) {
           var pc = PHASE_COLORS[phase];
 
-          var g1 = ctx.createRadialGradient(cx,cy,radius*0.92, cx,cy,radius*1.06);
+          var g1 = ctx.createRadialGradient(cx,cy,radius*0.8, cx,cy,radius*1.2);
           g1.addColorStop(0, rgb(pc,0));
           g1.addColorStop(0.5, rgb(pc,0.03));
           g1.addColorStop(1, rgb(pc,0));
@@ -4297,14 +4316,14 @@
             if (h%2===0) {
               var lx=cx+Math.cos(ta)*(radius+17), ly=cy+Math.sin(ta)*(radius+17);
               ctx.font='400 8px "IBM Plex Mono"';
-              ctx.fillStyle=passed?rgb(GREEN,0.85):'rgba(255,255,255,0.12)';
+              ctx.fillStyle=passed?rgb(GREEN,0.6):'rgba(255,255,255,0.12)';
               ctx.textAlign='center'; ctx.textBaseline='middle';
               ctx.fillText(h*6+'h',lx,ly);
             }
           }
 
           ctx.font='400 9px "IBM Plex Mono"';
-          ctx.fillStyle=rgb(pc,0.7);
+          ctx.fillStyle=rgb(pc,0.4);
           ctx.textAlign='center';
           ctx.fillText('ODD BOUNDARY',cx,cy-radius-28);
         }
@@ -4339,7 +4358,7 @@
             if (halted) al*=0.25;
             var col=[Math.round(r),Math.round(g),Math.round(b)];
 
-            var gl=ctx.createRadialGradient(a.x,a.y,0,a.x,a.y,a.size*2.8);
+            var gl=ctx.createRadialGradient(a.x,a.y,0,a.x,a.y,a.size*3.5);
             gl.addColorStop(0,rgb(col,al*0.25));
             gl.addColorStop(1,rgb(col,0));
             ctx.fillStyle=gl;
@@ -4449,7 +4468,7 @@
           ctx.fillText(ts,cx,cy-6);
 
           ctx.font='300 13px "IBM Plex Mono"';
-          ctx.fillStyle='rgba(255,255,255,0.48)';
+          ctx.fillStyle='rgba(255,255,255,0.2)';
           ctx.fillText('/ 72:00',cx,cy+22);
 
           ctx.font='400 9px "IBM Plex Mono"';
@@ -4457,7 +4476,7 @@
           ctx.fillText(PHASE_NAMES[phase],cx,cy+44);
 
           ctx.font='300 8px "IBM Plex Mono"';
-          ctx.fillStyle='rgba(255,255,255,0.48)';
+          ctx.fillStyle='rgba(255,255,255,0.2)';
           ctx.fillText('EVIDENCE BLOCKS: '+blockCount,cx,cy+60);
         }
 
@@ -4472,10 +4491,10 @@
             var hash='';
             var seed=Math.floor(now*0.0008)+i*7;
             for(var j=0;j<14;j++) hash+=chars[(seed*(j+1)*31+j*17)%16];
-            ctx.fillStyle=rgb(PURPLE,0.35-i*0.025);
+            ctx.fillStyle=rgb(PURPLE,0.22-i*0.025);
             ctx.fillText(hash,x,startY+i*12);
           }
-          ctx.fillStyle=rgb(PURPLE,0.8);
+          ctx.fillStyle=rgb(PURPLE,0.5);
           ctx.fillText('HASH CHAIN \u25B8',x,startY-10);
         }
 
@@ -4749,11 +4768,11 @@
           var r=step.r,col=step.col;
 
           // Outer glow — soft bloom
-          var h=ctx.createRadialGradient(x,y,r*0.88,x,y,r*1.08);
+          var h=ctx.createRadialGradient(x,y,r*0.6,x,y,r*1.6);
           h.addColorStop(0,rgb(col,0));
           h.addColorStop(0.4,rgb(col,step.big?0.05:0.03));
           h.addColorStop(1,rgb(col,0));
-          ctx.fillStyle=h;ctx.beginPath();ctx.arc(x,y,r*1.08,0,Math.PI*2);ctx.fill();
+          ctx.fillStyle=h;ctx.beginPath();ctx.arc(x,y,r*1.6,0,Math.PI*2);ctx.fill();
 
           var rr=r;
           if(step.big)rr=r+1.2*Math.sin(time*1.2);
@@ -4870,7 +4889,7 @@
 
           // Hot center
           ctx.beginPath();ctx.arc(cx,cy,1.2,0,Math.PI*2);
-          ctx.fillStyle='rgba(255,255,255,0.78)';ctx.fill();
+          ctx.fillStyle='rgba(255,255,255,0.5)';ctx.fill();
 
           // Breathing ring while paused
           if(!traveling){

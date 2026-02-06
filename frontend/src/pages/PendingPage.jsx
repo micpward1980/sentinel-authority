@@ -7,7 +7,7 @@ function PendingPage() {
   const { user, logout } = useAuth();
   return (
     <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: styles.bgPrimary || '#0d0f14', padding: '20px' }}>
-      <div style={{ maxWidth: '500px', textAlign: 'center' }}>
+      <div style={{ maxWidth: 'min(500px, 90vw)', textAlign: 'center' }}>
         <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: 'rgba(245,158,11,0.1)', border: '2px solid rgba(245,158,11,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
           <Clock fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} style={{ width: '36px', height: '36px', color: '#f59e0b' }} />
         </div>

@@ -158,7 +158,7 @@ function ApplicationDetail() {
     <div className="space-y-6">
       {emailPreview && (
         <div style={{position: 'fixed', inset: 0, zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)'}}>
-          <div style={{background: styles.bgCard, border: '1px solid ' + styles.borderGlass, borderRadius: '16px', maxWidth: '650px', width: '90%', maxHeight: '80vh', overflow: 'hidden', display: 'flex', flexDirection: 'column'}}>
+          <div style={{background: styles.bgCard, border: '1px solid ' + styles.borderGlass, borderRadius: '16px', maxWidth: 'min(650px, 95vw)', width: '95%', maxHeight: '80vh', overflow: 'hidden', display: 'flex', flexDirection: 'column'}}>
             <div style={{padding: '20px 24px', borderBottom: '1px solid ' + styles.borderGlass, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px'}}>
               <div>
                 <h3 style={{margin: 0, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.purpleBright}}>Email Preview</h3>
@@ -230,7 +230,7 @@ function ApplicationDetail() {
       {/* ── Progress Pipeline ── */}
       <Panel>
         <div style={{padding: '8px 0'}}>
-          <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px'}}>
+          <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px', marginBottom: '20px'}}>
             {PIPELINE_STAGES.map((stage, i) => {
               const isActive = stage.key === app.state;
               const isComplete = currentStageIdx > i;

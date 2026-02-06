@@ -72,3 +72,22 @@ input:focus, select:focus, textarea:focus {
 }
 
 @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+/* ===== MOBILE RESPONSIVE UTILITIES ===== */
+.table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.table-scroll table {
+  min-width: 500px;
+}
+
+@media (max-width: 640px) {
+  .grid-cols-3 { grid-template-columns: 1fr !important; }
+  .grid-cols-2 { grid-template-columns: 1fr !important; }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  input, select, textarea { min-height: 44px; font-size: 16px !important; }
+}
+/* ===== END MOBILE UTILITIES ===== */

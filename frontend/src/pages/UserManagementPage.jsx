@@ -151,7 +151,7 @@ function UserManagementPage() {
       <Panel>
         {loading ? (<div style={{color: styles.textTertiary, textAlign: 'center', padding: 'clamp(16px, 4vw, 40px)'}}>Loading users...</div>
         ) : filteredUsers.length === 0 ? (
-          <div style={{textAlign: 'center', padding: '60px'}}>
+          <div style={{textAlign: 'center', padding: 'clamp(24px, 5vw, 60px)'}}>
             <Users fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-12 h-12 mx-auto mb-4" style={{color: styles.textTertiary}} />
             <p style={{color: styles.textSecondary, marginBottom: '8px'}}>No users found</p>
             <p style={{color: styles.textTertiary, fontSize: '14px'}}>{users.length === 0 ? 'The /api/users/ endpoint may not be configured.' : 'Try adjusting your search.'}</p>

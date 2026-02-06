@@ -472,7 +472,7 @@ function MonitoringPage() {
                   <div style={{width: pp + '%', background: 'linear-gradient(90deg, ' + styles.accentGreen + ', #4BC87A)', transition: 'width 0.5s'}} />
                   <div style={{width: (100 - pp) + '%', background: '#D65C5C', transition: 'width 0.5s'}} />
                 </div>
-                <div style={{display: 'flex', justifyContent: 'space-between', marginTop: '4px', fontSize: '11px'}}>
+                <div style={{display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px', marginTop: '4px', fontSize: '11px'}}>
                   <span style={{color: styles.accentGreen}}>Pass: {pp.toFixed(1)}%</span>
                   <span style={{color: '#D65C5C'}}>Block: {(100 - pp).toFixed(1)}%</span>
                 </div>
@@ -569,7 +569,7 @@ function MonitoringPage() {
                     );
                   })}
                 </div>
-                <div style={{display: 'flex', justifyContent: 'space-between', marginTop: '4px', fontSize: '10px', color: styles.textTertiary}}>
+                <div style={{display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px', marginTop: '4px', fontSize: '10px', color: styles.textTertiary}}>
                   <span>24h ago</span>
                   <span>Now</span>
                 </div>

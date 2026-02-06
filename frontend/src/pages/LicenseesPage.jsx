@@ -19,7 +19,7 @@ function LicenseesPage() {
       </div>
 
       <Panel>
-        <table className="w-full">
+        <div style={{overflowX: "auto", WebkitOverflowScrolling: "touch"}}><table className="w-full" style={{minWidth: "500px"}}>
           <thead>
             <tr style={{borderBottom: `1px solid ${styles.borderGlass}`}}>
               <th className="px-4 py-3 text-left" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>Company</th>
@@ -47,7 +47,7 @@ function LicenseesPage() {
               </tr>
             ))}
           </tbody>
-        </table>
+        </table></div>
         {licensees.length === 0 && (
           <div className="text-center py-12" style={{color: styles.textTertiary}}>No licensees yet</div>
         )}

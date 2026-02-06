@@ -68,7 +68,7 @@ function CertificatesPage() {
       </div>
 
       <Panel>
-        <table className="w-full">
+        <div style={{overflowX: "auto", WebkitOverflowScrolling: "touch"}}><table className="w-full" style={{minWidth: "600px"}}>
           <thead>
             <tr style={{borderBottom: `1px solid ${styles.borderGlass}`}}>
               <th className="px-4 py-3 text-left" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>Certificate #</th>
@@ -121,7 +121,7 @@ function CertificatesPage() {
               </tr>
             ))}
           </tbody>
-        </table>
+        </table></div>
         {filteredCerts.length === 0 && (
           <div className="text-center py-12" style={{color: styles.textTertiary}}>
             {certificates.length === 0 ? 'No certificates issued' : `No ${statusFilter === 'all' ? '' : statusFilter + ' '}certificates`}

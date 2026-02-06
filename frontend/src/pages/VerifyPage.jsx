@@ -439,7 +439,7 @@ function VerifyPage() {
             return (
             <div className="mt-6 rounded-xl overflow-hidden" style={{background: cfg.bg, border: '1px solid ' + cfg.border}}>
               {/* Status Header */}
-              <div style={{padding: '16px 20px', background: cfg.headerBg, borderBottom: '1px solid ' + cfg.border, display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
+              <div style={{padding: '16px 20px', background: cfg.headerBg, borderBottom: '1px solid ' + cfg.border, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px'}}>
                 <div style={{display: 'flex', alignItems: 'center', gap: '10px'}}>
                   {isValid ? <CheckCircle fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{color: cfg.color}} /> : <AlertTriangle fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{color: cfg.color}} />}
                   <span style={{color: cfg.color, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', fontWeight: 500}}>{cfg.icon}</span>

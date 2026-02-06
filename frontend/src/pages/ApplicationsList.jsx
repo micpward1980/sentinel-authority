@@ -53,7 +53,7 @@ function BulkImportModal({ isOpen, onClose, onImport, boundaryType }) {
   if (!isOpen) return null;
   return (
     <div style={{position:'fixed',top:0,left:0,right:0,bottom:0,background:'rgba(0,0,0,0.7)',zIndex:1000,display:'flex',alignItems:'center',justifyContent:'center',padding:'20px'}} onClick={onClose}>
-      <div style={{background:'#1a1a2e',border:'1px solid rgba(157,140,207,0.2)',borderRadius:'16px',padding:'32px',maxWidth:'700px',width:'100%',maxHeight:'80vh',overflowY:'auto'}} onClick={e => e.stopPropagation()}>
+      <div style={{background:'#1a1a2e',border:'1px solid rgba(157,140,207,0.2)',borderRadius:'16px',padding:'32px',maxWidth:'min(700px, 95vw)',width:'100%',maxHeight:'80vh',overflowY:'auto'}} onClick={e => e.stopPropagation()}>
         <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'20px'}}>
           <h3 style={{fontFamily:"Georgia, 'Source Serif 4', serif",fontSize:'20px',fontWeight:200,margin:0}}>Bulk Import — {boundaryType}</h3>
           <button onClick={onClose} style={{background:'none',border:'none',color:'#6a6a80',fontSize:'20px',cursor:'pointer'}}>×</button>
@@ -174,7 +174,7 @@ function ApplicationsList() {
       </div>
 
 {user?.role === "admin" && <div style={{display: "flex", gap: "12px", alignItems: "center"}}>
-        <div style={{position: "relative", flex: 1, maxWidth: "400px"}}>
+        <div style={{position: "relative", flex: 1, maxWidth: 'min(400px, 90vw)'}}>
           <Search className="w-4 h-4" style={{position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", color: styles.textTertiary}} />
           <input value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="Search by name, org, or ID..." style={{width: "100%", background: "rgba(255,255,255,0.03)", border: `1px solid ${styles.borderGlass}`, borderRadius: "8px", padding: "8px 12px 8px 36px", color: styles.textPrimary, fontSize: "13px", fontFamily: "Consolas, 'IBM Plex Mono', monospace", outline: "none"}} />
         </div>
@@ -202,7 +202,7 @@ function ApplicationsList() {
       )}
 
       <Panel>
-        <table className="w-full">
+        <div style={{overflowX: "auto", WebkitOverflowScrolling: "touch"}}><table className="w-full" style={{minWidth: "700px"}}>
           <thead>
             <tr style={{borderBottom: `1px solid ${styles.borderGlass}`}}>
               {user?.role === 'admin' && <th className="px-2 py-3 text-center" style={{width: '40px'}}><input type="checkbox" checked={selected.size > 0 && selected.size === filtered.length} onChange={e => e.target.checked ? selectAll() : selectNone()} style={{cursor: 'pointer', accentColor: styles.purpleBright}} /></th>}
@@ -261,12 +261,12 @@ function ApplicationsList() {
               </tr>
             ))}
           </tbody>
-        </table>
+        </table></div>
         {/* Bulk Action Bar */}
         {selected.size > 0 && user?.role === 'admin' && (
           <div style={{
             position: 'sticky', bottom: '16px', zIndex: 50,
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px',
             padding: '12px 20px', margin: '16px',
             background: 'rgba(18,12,30,0.95)', backdropFilter: 'blur(12px)',
             border: `1px solid ${styles.purpleBright}`, borderRadius: '12px',

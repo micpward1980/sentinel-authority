@@ -130,7 +130,7 @@ function SettingsPage() {
             <label style={{fontSize: '11px', color: styles.textTertiary, display: 'block', marginBottom: '4px'}}>Organization</label>
             <input type="text" value={profileForm.organization} onChange={e => setProfileForm({...profileForm, organization: e.target.value})} className="w-full px-4 py-3 rounded-lg outline-none sexy-input" style={{background: 'rgba(255,255,255,0.03)', border: `1px solid ${styles.borderGlass}`, color: styles.textPrimary, fontSize: '13px'}} />
           </div>
-          <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px'}}>
+          <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '16px'}}>
             <div><span style={{fontSize: '11px', color: styles.textTertiary}}>Email</span><div style={{color: styles.textPrimary, marginTop: '4px', fontSize: '13px'}}>{user?.email || '-'}</div></div>
             <div><span style={{fontSize: '11px', color: styles.textTertiary}}>Role</span><div style={{color: styles.purpleBright, marginTop: '4px', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1px'}}>{user?.role || '-'}</div></div>
           </div>
