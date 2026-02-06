@@ -2405,7 +2405,7 @@
     <!-- HERO -->
     <section class="hero">
       <!-- Full-viewport canvas -->
-      <canvas id="hero-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; opacity: 0; transition: opacity 0.8s ease;"></canvas>
+      <canvas id="hero-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; opacity: 0; transition: opacity 1.2s ease 0.15s;"></canvas>
       
       <!-- Hero Content -->
       <div id="hero-text" class="hero-content-bottom" style="position: absolute; bottom: 5vh; left: 0; right: 0; z-index: 10; text-align: center; padding: 0 16px; display: flex; flex-direction: column; align-items: center;">
@@ -2479,8 +2479,10 @@
   var lockedRadius = 0, lockedCx = 0, lockedCy = 0;
 
   function resize() {
+    // Use stable small viewport height (excludes URL bar)
     W = window.innerWidth;
-    H = window.innerHeight;
+    var svh = document.documentElement.clientHeight;
+    H = svh || window.innerHeight;
     c.width = W * dpr;
     c.height = H * dpr;
     ctx.setTransform(dpr,0,0,dpr,0,0);
@@ -2726,18 +2728,39 @@
     requestAnimationFrame(animate);
   }
 
+  var resizeTimer = null;
   window.addEventListener('resize', function(){
-    radiusLocked = false;
-    resize();
-    initAgents();
-    for (var w=0; w<200; w++) updateAgents(16);
+    // Debounce resize to avoid thrashing during URL bar animation
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function() {
+      var oldCx = cx, oldCy = cy, oldR = radius;
+      radiusLocked = false;
+      resize();
+      // Reposition existing agents proportionally — don't recreate
+      if (oldR > 0 && agents.length > 0) {
+        var sx = cx / oldCx, sy = cy / oldCy, sr = radius / oldR;
+        for (var i = 0; i < agents.length; i++) {
+          agents[i].x = cx + (agents[i].x - oldCx) * sr;
+          agents[i].y = cy + (agents[i].y - oldCy) * sr;
+          agents[i].softMax = agents[i].isOutlier ? radius * 0.88 : radius * 0.65;
+        }
+        for (var w = 0; w < 60; w++) updateAgents(16);
+      } else {
+        initAgents();
+        for (var w = 0; w < 300; w++) updateAgents(16);
+      }
+    }, 150);
   });
 
   function startHero() {
-    resize();
-    initAgents();
-    for (var w=0; w<300; w++) updateAgents(16);
-    requestAnimationFrame(animate);
+    // Delay to let mobile viewport settle (URL bar, orientation)
+    setTimeout(function() {
+      resize();
+      initAgents();
+      // Warm up: 500 frames = ~8s simulated — agents fully settled
+      for (var w=0; w<500; w++) updateAgents(16);
+      requestAnimationFrame(animate);
+    }, 200);
   }
   if (document.readyState === 'complete') {
     startHero();
