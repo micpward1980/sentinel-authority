@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" style="scroll-behavior:smooth;">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
@@ -852,6 +852,125 @@
       -webkit-backdrop-filter: blur(8px);
       background: rgba(14,14,20,0.4);
     }
+
+
+    /* AWWWARDS LAYER */
+
+    @media (pointer: fine) {
+      * { cursor: none !important; }
+      a, button, [onclick], .btn, .hud-link, .hud-row[style*="cursor"],
+      .nav-links a, .nav-toggle, input, select, textarea {
+        cursor: none !important;
+      }
+    }
+    .sa-cursor {
+      position: fixed; top: 0; left: 0;
+      width: 8px; height: 8px;
+      background: rgba(157,140,207,0.9);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 99999;
+      mix-blend-mode: screen;
+      transition: width 0.15s ease, height 0.15s ease, background 0.15s ease, margin 0.15s ease;
+      margin: -4px 0 0 -4px;
+    }
+    .sa-cursor.hovering {
+      width: 14px; height: 14px;
+      background: rgba(157,140,207,1);
+      margin: -7px 0 0 -7px;
+    }
+    .sa-ring {
+      position: fixed; top: 0; left: 0;
+      width: 40px; height: 40px;
+      border: 1px solid rgba(157,140,207,0.25);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 99998;
+      transition: width 0.25s ease, height 0.25s ease, border-color 0.25s ease, margin 0.25s ease;
+      margin: -20px 0 0 -20px;
+    }
+    .sa-ring.hovering {
+      width: 60px; height: 60px;
+      margin: -30px 0 0 -30px;
+      border-color: rgba(157,140,207,0.5);
+    }
+    .sa-ring.clicking {
+      width: 30px; height: 30px;
+      margin: -15px 0 0 -15px;
+      border-color: rgba(157,140,207,0.7);
+    }
+    .sa-progress {
+      position: fixed; top: 0; left: 0;
+      height: 2px;
+      background: linear-gradient(90deg, rgba(157,140,207,0.6), rgba(92,214,133,0.6));
+      z-index: 99997; width: 0%;
+      pointer-events: none;
+    }
+    .sa-noise {
+      position: fixed; inset: 0;
+      pointer-events: none; z-index: 99990; opacity: 0.025;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-repeat: repeat; background-size: 256px 256px;
+    }
+    .sa-vignette {
+      position: fixed; inset: 0;
+      pointer-events: none; z-index: 99989;
+      background: radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.15) 80%, rgba(0,0,0,0.35) 100%);
+    }
+    .sa-particles {
+      position: fixed; inset: 0;
+      pointer-events: none; z-index: -1;
+    }
+    .sa-preloader {
+      position: fixed; inset: 0;
+      background: #0e0e14; z-index: 999999;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      transition: opacity 0.6s ease, visibility 0.6s ease;
+    }
+    .sa-preloader.done { opacity: 0; visibility: hidden; }
+    .sa-preloader .sa-pre-label {
+      font-family: var(--mono, 'IBM Plex Mono', monospace);
+      font-size: 9px; letter-spacing: 4px;
+      text-transform: uppercase; color: rgba(255,255,255,0.35);
+      margin-bottom: 24px;
+    }
+    .sa-preloader .sa-pre-title {
+      font-family: var(--serif, 'Source Serif 4', serif);
+      font-size: 28px; font-weight: 200;
+      color: rgba(255,255,255,0.85);
+      margin-bottom: 32px; letter-spacing: 8px;
+      text-transform: uppercase;
+    }
+    .sa-preloader .sa-pre-bar-track {
+      width: 200px; height: 1px;
+      background: rgba(255,255,255,0.06);
+      position: relative; overflow: hidden;
+    }
+    .sa-preloader .sa-pre-bar {
+      position: absolute; top: 0; left: 0;
+      height: 100%; width: 0%;
+      background: linear-gradient(90deg, rgba(157,140,207,0.5), rgba(92,214,133,0.5));
+      transition: width 0.3s ease;
+    }
+    .sa-preloader .sa-pre-pct {
+      font-family: var(--mono, 'IBM Plex Mono', monospace);
+      font-size: 10px; color: rgba(255,255,255,0.2);
+      margin-top: 12px; letter-spacing: 2px;
+    }
+    .sa-reveal-ready nav { animation: sa-fadeDown 0.8s ease 0.1s both; }
+    .sa-reveal-ready .hero-content { animation: sa-fadeUp 0.8s ease 0.3s both; }
+    .sa-reveal-ready #hero-canvas { animation: sa-fadeIn 1.2s ease 0.5s both; }
+    @keyframes sa-fadeDown { from { opacity:0; transform:translateY(-20px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes sa-fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes sa-fadeIn { from { opacity:0; } to { opacity:1; } }
+    .btn {
+      transition: color 0.2s ease, border-color 0.2s ease, transform 0.25s cubic-bezier(0.23, 1, 0.32, 1) !important;
+      will-change: transform;
+    }
+    .section { transition: filter 0.4s ease, opacity 0.4s ease; }
+    .section.sa-blur-out { filter: blur(2px); opacity: 0.7; }
+    @media (pointer: coarse) { .sa-cursor, .sa-ring { display: none !important; } }
 
     /* Hero responsive */
     @media (max-width: 600px){
@@ -2637,6 +2756,13 @@
   <div class="copy-toast" role="status" aria-live="polite">Hash copied to clipboard</div>
 
   <main id="main" role="main">
+    <div class="sa-preloader" id="sa-preloader">
+      <div class="sa-pre-label">SENTINEL AUTHORITY</div>
+      <div class="sa-pre-title">ODDC</div>
+      <div class="sa-pre-bar-track"><div class="sa-pre-bar" id="sa-pre-bar"></div></div>
+      <div class="sa-pre-pct" id="sa-pre-pct">0%</div>
+    </div>
+
     <!-- HERO -->
     <section class="hero">
       <!-- Full-viewport canvas -->
@@ -5924,6 +6050,178 @@
         pulse.style.cssText = 'display:inline-block;width:4px;height:4px;border-radius:50%;background:rgba(92,214,133,0.7);margin-left:8px;animation:hud-breathe 3s ease-in-out infinite;vertical-align:middle;';
         navBrand.appendChild(pulse);
       }
+    })();
+    </script>
+
+    <script>
+    (function() {
+      'use strict';
+      var preloader = document.getElementById('sa-preloader');
+      var preBar = document.getElementById('sa-pre-bar');
+      var prePct = document.getElementById('sa-pre-pct');
+      var progress = 0;
+      var preInt = setInterval(function() {
+        progress += Math.random() * 15 + 5;
+        if (progress > 90) progress = 90;
+        if (preBar) preBar.style.width = progress + '%';
+        if (prePct) prePct.textContent = Math.round(progress) + '%';
+      }, 120);
+      window.addEventListener('load', function() {
+        clearInterval(preInt);
+        if (preBar) preBar.style.width = '100%';
+        if (prePct) prePct.textContent = '100%';
+        setTimeout(function() {
+          if (preloader) preloader.classList.add('done');
+          document.body.classList.add('sa-reveal-ready');
+          setTimeout(function() {
+            if (preloader && preloader.parentNode) preloader.parentNode.removeChild(preloader);
+          }, 800);
+        }, 400);
+      });
+      if (window.matchMedia('(pointer: fine)').matches) {
+        var cursor = document.createElement('div');
+        cursor.className = 'sa-cursor';
+        document.body.appendChild(cursor);
+        var ring = document.createElement('div');
+        ring.className = 'sa-ring';
+        document.body.appendChild(ring);
+        var mx = 0, my = 0, rx = 0, ry = 0;
+        document.addEventListener('mousemove', function(e) {
+          mx = e.clientX; my = e.clientY;
+          cursor.style.left = mx + 'px';
+          cursor.style.top = my + 'px';
+        });
+        function followRing() {
+          rx += (mx - rx) * 0.12;
+          ry += (my - ry) * 0.12;
+          ring.style.left = rx + 'px';
+          ring.style.top = ry + 'px';
+          requestAnimationFrame(followRing);
+        }
+        followRing();
+        var hovers = 'a, button, [onclick], .btn, .hud-link, .hud-row[style*="cursor"], .nav-links a, .nav-toggle, input, select, textarea';
+        document.addEventListener('mouseover', function(e) {
+          if (e.target.closest(hovers)) { cursor.classList.add('hovering'); ring.classList.add('hovering'); }
+        });
+        document.addEventListener('mouseout', function(e) {
+          if (e.target.closest(hovers)) { cursor.classList.remove('hovering'); ring.classList.remove('hovering'); }
+        });
+        document.addEventListener('mousedown', function() { ring.classList.add('clicking'); });
+        document.addEventListener('mouseup', function() { ring.classList.remove('clicking'); });
+      }
+      var btns = document.querySelectorAll('.btn');
+      var threshold = 80;
+      for (var bi = 0; bi < btns.length; bi++) {
+        (function(btn) {
+          btn.addEventListener('mousemove', function(e) {
+            var r = btn.getBoundingClientRect();
+            var cx = r.left + r.width / 2;
+            var cy = r.top + r.height / 2;
+            var dx = e.clientX - cx;
+            var dy = e.clientY - cy;
+            var dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < threshold) {
+              var pull = (1 - dist / threshold) * 8;
+              btn.style.transform = 'translate(' + (dx / dist * pull).toFixed(1) + 'px,' + (dy / dist * pull).toFixed(1) + 'px)';
+            }
+          });
+          btn.addEventListener('mouseleave', function() { btn.style.transform = ''; });
+        })(btns[bi]);
+      }
+      var progressBar = document.createElement('div');
+      progressBar.className = 'sa-progress';
+      document.body.appendChild(progressBar);
+      window.addEventListener('scroll', function() {
+        var h = document.documentElement.scrollHeight - window.innerHeight;
+        var p = h > 0 ? (window.scrollY / h) * 100 : 0;
+        progressBar.style.width = p + '%';
+      }, { passive: true });
+      var pc = document.createElement('canvas');
+      pc.className = 'sa-particles';
+      document.body.appendChild(pc);
+      var pctx = pc.getContext('2d');
+      var particles = [];
+      var PCOUNT = 45;
+      var pW = 0, pH = 0;
+      function pResize() {
+        pW = window.innerWidth; pH = window.innerHeight;
+        pc.width = pW * (window.devicePixelRatio || 1);
+        pc.height = pH * (window.devicePixelRatio || 1);
+        pc.style.width = pW + 'px'; pc.style.height = pH + 'px';
+        pctx.setTransform(window.devicePixelRatio || 1, 0, 0, window.devicePixelRatio || 1, 0, 0);
+      }
+      pResize();
+      window.addEventListener('resize', pResize);
+      for (var pi = 0; pi < PCOUNT; pi++) {
+        particles.push({
+          x: Math.random() * pW, y: Math.random() * pH,
+          vx: (Math.random() - 0.5) * 0.15, vy: (Math.random() - 0.5) * 0.15,
+          r: 0.8 + Math.random() * 1.2, a: 0.03 + Math.random() * 0.04,
+          phase: Math.random() * Math.PI * 2
+        });
+      }
+      function pDraw() {
+        pctx.clearRect(0, 0, pW, pH);
+        for (var i = 0; i < particles.length; i++) {
+          var p = particles[i];
+          p.phase += 0.003;
+          p.x += p.vx + Math.sin(p.phase) * 0.02;
+          p.y += p.vy + Math.cos(p.phase * 0.7) * 0.02;
+          if (p.x < -10) p.x = pW + 10;
+          if (p.x > pW + 10) p.x = -10;
+          if (p.y < -10) p.y = pH + 10;
+          if (p.y > pH + 10) p.y = -10;
+          pctx.beginPath();
+          pctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          pctx.fillStyle = 'rgba(157,140,207,' + p.a + ')';
+          pctx.fill();
+          for (var j = i + 1; j < particles.length; j++) {
+            var q = particles[j];
+            var dx = p.x - q.x, dy = p.y - q.y;
+            var d = dx * dx + dy * dy;
+            if (d < 18000) {
+              pctx.beginPath();
+              pctx.moveTo(p.x, p.y);
+              pctx.lineTo(q.x, q.y);
+              pctx.strokeStyle = 'rgba(157,140,207,' + (0.02 * (1 - d / 18000)).toFixed(4) + ')';
+              pctx.lineWidth = 0.5;
+              pctx.stroke();
+            }
+          }
+        }
+        requestAnimationFrame(pDraw);
+      }
+      pDraw();
+      var noise = document.createElement('div');
+      noise.className = 'sa-noise';
+      document.body.appendChild(noise);
+      var vignette = document.createElement('div');
+      vignette.className = 'sa-vignette';
+      document.body.appendChild(vignette);
+      var allSections = document.querySelectorAll('.section');
+      var blurObs = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.remove('sa-blur-out');
+          } else {
+            var r = entry.boundingClientRect;
+            if (r.bottom < 0) entry.target.classList.add('sa-blur-out');
+            else entry.target.classList.remove('sa-blur-out');
+          }
+        });
+      }, { threshold: 0.05 });
+      for (var si = 0; si < allSections.length; si++) blurObs.observe(allSections[si]);
+      document.querySelectorAll('a[href^="#"]').forEach(function(a) {
+        a.addEventListener('click', function(e) {
+          var target = document.querySelector(this.getAttribute('href'));
+          if (target) {
+            e.preventDefault();
+            var navH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--nav-height')) || 64;
+            var top = target.getBoundingClientRect().top + window.scrollY - navH;
+            window.scrollTo({ top: top, behavior: 'smooth' });
+          }
+        });
+      });
     })();
     </script>
 </body>
