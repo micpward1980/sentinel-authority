@@ -65,7 +65,7 @@ function CustomerDashboard() {
   if (loading) return <div style={{color: styles.textTertiary, padding: '40px', textAlign: 'center'}}>Loading...</div>;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" style={{maxWidth: "1000px", margin: "0 auto"}}>
       {/* Header */}
       <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start'}}>
         <div>
@@ -243,7 +243,7 @@ function Dashboard() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" style={{maxWidth: "1200px", margin: "0 auto"}}>
       <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '28px', flexWrap: 'wrap', gap: '16px'}}>
         <div>
           <p style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', color: styles.purpleBright, marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '12px'}}>
