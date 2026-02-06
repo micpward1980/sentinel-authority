@@ -30,10 +30,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <!-- Performance: Preload critical fonts -->
-    <link rel="preload" href="https://fonts.gstatic.com/s/sourceserif4/v7/vEF42_tTDB4M7-auWDN0ahZJW1ge-w.woff2" as="font" type="font/woff2" crossorigin>
+    <!-- Georgia is a system font — no preload needed -->
     
   <link
-    href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,200;0,300;0,400;1,200;1,300&family=Inter:wght@200;400;600&family=IBM+Plex+Mono:wght@400;500&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=IBM+Plex+Mono:wght@400;500&display=swap"
     rel="stylesheet"
   />
 
@@ -89,7 +89,7 @@
       --border-subtle:rgba(255,255,255,.04);
 
       /* Typography */
-      --serif:'Source Serif 4',serif;
+      --serif:Georgia,'Source Serif 4',serif;
       --mono:'IBM Plex Mono',monospace;
       --sans:'Inter',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
 
@@ -488,10 +488,10 @@
     h1{
       font-family: var(--serif);
       font-size: clamp(44px, 7vw, 92px);
-      font-weight: 200;
+      font-weight: normal;
       line-height: .95;
       margin: 0;
-      letter-spacing: -0.04em;
+      letter-spacing: -0.02em;
     }
     h1 .accent{
       font-style: italic;
@@ -615,7 +615,7 @@
     }
 
     @media (max-width: 600px){
-      h1{ font-weight: 300; line-height: 1.0; }
+      h1{ font-weight: normal; line-height: 1.0; }
     }
     
     /* ============================================
@@ -681,13 +681,13 @@
     .section-title{
       font-family: var(--serif);
       font-size: clamp(30px, 4vw, 50px);
-      font-weight: 300;
+      font-weight: normal;
       line-height: 1.1;
       margin: 0;
-      letter-spacing: -0.03em;
+      letter-spacing: -0.01em;
     }
     @media (max-width: 600px){
-      .section-title{ font-weight: 300; }
+      .section-title{ font-weight: normal; }
     }
     .section-lead{
       max-width: 70ch;
@@ -909,12 +909,12 @@
     .node-title{
       font-family: var(--serif);
       font-size: 22px;
-      font-weight: 300;
+      font-weight: normal;
       margin: 0 0 var(--space-1);
-      letter-spacing: -0.02em;
+      letter-spacing: -0.01em;
     }
     @media (max-width: 600px){
-      .node-title{ font-weight: 300; }
+      .node-title{ font-weight: normal; }
     }
     .node-desc{
       color: var(--text-tertiary);
