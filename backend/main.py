@@ -30,6 +30,73 @@ async def lifespan(app: FastAPI):
     logger.info("Starting Sentinel Authority Platform...")
     await init_db()
     logger.info("Database initialized")
+    
+    # Organization migration
+    from app.database import engine
+    from sqlalchemy import text as raw_text
+    async with engine.begin() as conn:
+        try:
+            await conn.execute(raw_text("""
+                CREATE TABLE IF NOT EXISTS organizations (
+                    id SERIAL PRIMARY KEY,
+                    name VARCHAR(255) NOT NULL,
+                    slug VARCHAR(255) UNIQUE NOT NULL,
+                    created_at TIMESTAMP DEFAULT NOW()
+                )
+            """))
+            for tbl, col in [("users", "organization_id"), ("applications", "organization_id"), ("api_keys", "organization_id")]:
+                try:
+                    await conn.execute(raw_text(f"ALTER TABLE {tbl} ADD COLUMN {col} INTEGER REFERENCES organizations(id)"))
+                except Exception:
+                    pass
+            await conn.commit()
+        except Exception as e:
+            logger.warning(f"Org table migration: {e}")
+        
+        # Backfill users
+        try:
+            rows = await conn.execute(raw_text(
+                "SELECT DISTINCT organization FROM users WHERE organization IS NOT NULL AND organization != '' AND organization_id IS NULL"
+            ))
+            for row in rows:
+                org_name = row[0]
+                slug = org_name.lower().strip().replace(' ', '-').replace(',', '').replace('.', '')
+                await conn.execute(raw_text(
+                    "INSERT INTO organizations (name, slug) VALUES (:name, :slug) ON CONFLICT (slug) DO NOTHING"
+                ), {"name": org_name, "slug": slug})
+                org_result = await conn.execute(raw_text("SELECT id FROM organizations WHERE slug = :slug"), {"slug": slug})
+                org_row = org_result.first()
+                if org_row:
+                    await conn.execute(raw_text(
+                        "UPDATE users SET organization_id = :oid WHERE organization = :oname AND organization_id IS NULL"
+                    ), {"oid": org_row[0], "oname": org_name})
+            
+            # Backfill applications
+            rows2 = await conn.execute(raw_text(
+                "SELECT DISTINCT organization_name FROM applications WHERE organization_name IS NOT NULL AND organization_id IS NULL"
+            ))
+            for row in rows2:
+                org_name = row[0]
+                slug = org_name.lower().strip().replace(' ', '-').replace(',', '').replace('.', '')
+                await conn.execute(raw_text(
+                    "INSERT INTO organizations (name, slug) VALUES (:name, :slug) ON CONFLICT (slug) DO NOTHING"
+                ), {"name": org_name, "slug": slug})
+                org_result = await conn.execute(raw_text("SELECT id FROM organizations WHERE slug = :slug"), {"slug": slug})
+                org_row = org_result.first()
+                if org_row:
+                    await conn.execute(raw_text(
+                        "UPDATE applications SET organization_id = :oid WHERE organization_name = :oname AND organization_id IS NULL"
+                    ), {"oid": org_row[0], "oname": org_name})
+            
+            # Backfill api_keys
+            await conn.execute(raw_text(
+                "UPDATE api_keys SET organization_id = u.organization_id FROM users u WHERE api_keys.user_id = u.id AND api_keys.organization_id IS NULL AND u.organization_id IS NOT NULL"
+            ))
+            await conn.commit()
+            logger.info("Organization migration and backfill complete")
+        except Exception as e:
+            logger.warning(f"Org backfill note: {e}")
+    
     yield
     logger.info("Shutting down...")
 
@@ -230,74 +297,7 @@ async def mark_notifications_read(
 @app.on_event("startup")
 async def start_auto_evaluator():
 
-    # Auto-migrate: ensure organizations table and org_id columns exist
-    try:
-        await conn.execute(text("""
-            CREATE TABLE IF NOT EXISTS organizations (
-                id SERIAL PRIMARY KEY,
-                name VARCHAR(255) NOT NULL,
-                slug VARCHAR(255) UNIQUE NOT NULL,
-                created_at TIMESTAMP DEFAULT NOW()
-            )
-        """))
-        # Add organization_id to users if not exists
-        try:
-            await conn.execute(text("ALTER TABLE users ADD COLUMN organization_id INTEGER REFERENCES organizations(id)"))
-        except Exception:
-            pass
-        # Add organization_id to applications if not exists
-        try:
-            await conn.execute(text("ALTER TABLE applications ADD COLUMN organization_id INTEGER REFERENCES organizations(id)"))
-        except Exception:
-            pass
-        # Add organization_id to api_keys if not exists
-        try:
-            await conn.execute(text("ALTER TABLE api_keys ADD COLUMN organization_id INTEGER REFERENCES organizations(id)"))
-        except Exception:
-            pass
-        await conn.commit()
-        
-        # Backfill: create orgs from existing users and link them
-        from sqlalchemy import func as sqlfunc
-        result = await conn.execute(text(
-            "SELECT DISTINCT organization FROM users WHERE organization IS NOT NULL AND organization != '' AND organization_id IS NULL"
-        ))
-        for row in result:
-            org_name = row[0]
-            slug = org_name.lower().strip().replace(' ', '-').replace(',', '').replace('.', '')
-            # Insert org if not exists
-            await conn.execute(text(
-                "INSERT INTO organizations (name, slug) VALUES (:name, :slug) ON CONFLICT (slug) DO NOTHING"
-            ), {"name": org_name, "slug": slug})
-            # Get org id
-            org_result = await conn.execute(text("SELECT id FROM organizations WHERE slug = :slug"), {"slug": slug})
-            org_row = org_result.first()
-            if org_row:
-                await conn.execute(text(
-                    "UPDATE users SET organization_id = :oid WHERE organization = :oname AND organization_id IS NULL"
-                ), {"oid": org_row[0], "oname": org_name})
-        
-        # Backfill applications
-        result2 = await conn.execute(text(
-            "SELECT DISTINCT organization_name FROM applications WHERE organization_name IS NOT NULL AND organization_id IS NULL"
-        ))
-        for row in result2:
-            org_name = row[0]
-            slug = org_name.lower().strip().replace(' ', '-').replace(',', '').replace('.', '')
-            await conn.execute(text(
-                "INSERT INTO organizations (name, slug) VALUES (:name, :slug) ON CONFLICT (slug) DO NOTHING"
-            ), {"name": org_name, "slug": slug})
-            org_result = await conn.execute(text("SELECT id FROM organizations WHERE slug = :slug"), {"slug": slug})
-            org_row = org_result.first()
-            if org_row:
-                await conn.execute(text(
-                    "UPDATE applications SET organization_id = :oid WHERE organization_name = :oname AND organization_id IS NULL"
-                ), {"oid": org_row[0], "oname": org_name})
-        
-        # Backfill api_keys from their user's org
-        await conn.execute(text(
-            "UPDATE api_keys SET organization_id = u.organization_id FROM users u WHERE api_keys.user_id = u.id AND api_keys.organization_id IS NULL AND u.organization_id IS NOT NULL"
-        ))
+
         
         await conn.commit()
         logger.info("Organization migration and backfill complete")
