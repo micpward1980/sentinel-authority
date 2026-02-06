@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { api, API_BASE } from '../config/api';
 import { styles } from '../config/styles';
+import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import Panel from '../components/Panel';
 
 function CAT72Console() {
+  const { user } = useAuth();
   const [tests, setTests] = useState([]);
   const toast = useToast();
   const [loading, setLoading] = useState({});
@@ -74,7 +76,7 @@ function CAT72Console() {
       <div>
         <p style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', color: styles.purpleBright, marginBottom: '8px'}}>Testing</p>
         <h1 style={{fontFamily: "'Source Serif 4', serif", fontSize: '36px', fontWeight: 200, margin: 0}}>CAT-72 Console</h1>
-        <p style={{color: styles.textSecondary, marginTop: '8px'}}>72-hour Convergence Authorization Tests · Auto-refreshes every 15s</p>
+        <p style={{color: styles.textSecondary, marginTop: '8px'}}>{user?.role === 'admin' ? '72-hour Convergence Authorization Tests · Auto-refreshes every 15s' : 'Monitor your 72-hour conformance test in real time'}</p>
       </div>
 
       {/* Summary Stats */}
@@ -113,9 +115,9 @@ function CAT72Console() {
                       <div style={{fontWeight: 500, fontSize: '16px', color: styles.textPrimary, marginBottom: '4px'}}>{test.organization_name} — {test.system_name}</div>
                       <div style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', color: styles.textTertiary}}>Test ID: {test.test_id} · Duration: {test.duration_hours}h</div>
                     </div>
-                    <button onClick={() => handleStop(test.test_id)} disabled={loading[test.test_id]} className="px-4 py-2 rounded-lg" style={{background: 'rgba(214,160,92,0.15)', border: '1px solid rgba(214,160,92,0.3)', color: styles.accentAmber, fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>
+                    {user?.role === 'admin' && <button onClick={() => handleStop(test.test_id)} disabled={loading[test.test_id]} className="px-4 py-2 rounded-lg" style={{background: 'rgba(214,160,92,0.15)', border: '1px solid rgba(214,160,92,0.3)', color: styles.accentAmber, fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>
                       {loading[test.test_id] === 'stopping' ? '...' : 'Stop & Evaluate'}
-                    </button>
+                    </button>}
                   </div>
                   <div style={{display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '8px'}}>
                     <div style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '28px', fontWeight: 200, color: styles.purpleBright, letterSpacing: '2px'}}>{formatTime(test.elapsed_seconds)}</div>
@@ -149,9 +151,9 @@ function CAT72Console() {
                   <div style={{fontWeight: 500, color: styles.textPrimary, marginBottom: '2px'}}>{test.organization_name} — {test.system_name}</div>
                   <div style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', color: styles.textTertiary}}>{test.test_id} · {test.duration_hours}h test</div>
                 </div>
-                <button onClick={() => handleStart(test.test_id)} disabled={loading[test.test_id]} className="px-4 py-2 rounded-lg" style={{background: 'rgba(92,214,133,0.15)', border: '1px solid rgba(92,214,133,0.3)', color: styles.accentGreen, fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>
+                {user?.role === 'admin' && <button onClick={() => handleStart(test.test_id)} disabled={loading[test.test_id]} className="px-4 py-2 rounded-lg" style={{background: 'rgba(92,214,133,0.15)', border: '1px solid rgba(92,214,133,0.3)', color: styles.accentGreen, fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>
                   {loading[test.test_id] === 'starting' ? '...' : 'Start Test'}
-                </button>
+                </button>}
               </div>
             ))}
           </div>
@@ -184,7 +186,7 @@ function CAT72Console() {
                   <td className="px-4 py-4" style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '12px', color: styles.textSecondary}}>{formatTime(test.elapsed_seconds)}</td>
                   <td className="px-4 py-4">
                     <div className="flex gap-2">
-                      {test.result === 'PASS' && !test.certificate_issued && (
+                      {user?.role === 'admin' && test.result === 'PASS' && !test.certificate_issued && (
                         <button onClick={() => handleIssueCertificate(test.test_id)} disabled={loading[test.test_id]} className="px-3 py-1 rounded" style={{background: styles.purplePrimary, border: `1px solid ${styles.purpleBright}`, color: '#fff', fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>
                           {loading[test.test_id] === 'issuing' ? '...' : 'Issue Certificate'}
                         </button>
@@ -204,8 +206,8 @@ function CAT72Console() {
       {tests.length === 0 && (
         <Panel>
           <div className="text-center py-12" style={{color: styles.textTertiary}}>
-            <p style={{marginBottom: '8px'}}>No tests yet</p>
-            <p style={{fontSize: '13px'}}>Approve an application and schedule a CAT-72 test to get started.</p>
+            <p style={{marginBottom: '8px'}}>{user?.role === 'admin' ? 'No tests yet' : 'No active tests'}</p>
+            <p style={{fontSize: '13px'}}>{user?.role === 'admin' ? 'Approve an application and schedule a CAT-72 test to get started.' : 'When your application is approved and a CAT-72 test is scheduled, you can monitor its progress here in real time.'}</p>
           </div>
         </Panel>
       )}
