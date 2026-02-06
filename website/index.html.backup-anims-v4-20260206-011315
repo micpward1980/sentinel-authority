@@ -2738,452 +2738,500 @@
         var ctx = c.getContext('2d');
         var dpr = window.devicePixelRatio || 1;
         var W = 0, H = 0;
-                var GREEN  = [92,214,133];
-        var PURPLE = [157,140,207];
-        var RED    = [214,92,92];
-        var WHITE  = [220,220,230];
-        var DIM    = [140,145,160];
-
-        function rgb(c,a){ return 'rgba('+c[0]+','+c[1]+','+c[2]+','+a+')'; }
-        function lerp(a,b,t){ return a+(b-a)*t; }
-        function ease(t){ return t<0.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2; }
-        function clamp(t){ return Math.min(Math.max(t,0),1); }
-
-        var hexC = '0123456789abcdef';
-        function rndHex(len, seed){ var s=''; for(var i=0;i<len;i++) s+=hexC[Math.abs((seed*(i+1)*31+i*17))%16]; return s; }
-
         var packets = [];
-        var streamParticles = [];
         var bursts = [];
-        var stats = { total:0, exec:0, block:0 };
+        var stats = { total: 0, exec: 0, block: 0 };
         var lastSpawn = 0;
-        var nextDelay = 2000;
-        var enveloPhase = 0;
+        var nextDelay = 1500;
+        var enveloGlow = 0;
         var gateAngle = 0;
         var gateTarget = 0;
-        var ringPulses = [];
-        var frameCount = 0;
-        var sessionId = '';
-        for(var i=0;i<8;i++) sessionId+=hexC[Math.floor(Math.random()*16)];
+        var connPulses = [];
+
+        var GREEN  = [92,214,133];
+        var PURPLE = [157,140,207];
+        var RED    = [214,92,92];
+        var AMBER  = [214,160,92];
+        var FIELD  = [91,75,138];
 
         var dataLabels = [
-          'speed:47.2','alt:3180','temp:71.8','lat:30.41',
-          'load:81.3','rpm:2395','freq:59.98','rate:11.8',
-          'flow:3.18','angle:12.3','depth:14.8','torque:87'
+          'speed: 47mph', 'dose: 120mg', 'alt: 3200ft', 'temp: 72°F',
+          'lat: 30.41°N', 'load: 82%', 'rpm: 2400', 'psi: 34.2',
+          'freq: 60Hz', 'rate: 12/m', 'torque: 88Nm', 'flow: 3.2L/s'
         ];
+
+        function rgb(c,a) { return 'rgba('+c[0]+','+c[1]+','+c[2]+','+a+')'; }
+        function lerp(a,b,t) { return a+(b-a)*t; }
+        function ease(t) { return t<0.5?2*t*t:-1+(4-2*t)*t; }
+        function clamp(t) { return Math.min(Math.max(t,0),1); }
 
         function resize() {
           var r = c.parentElement.getBoundingClientRect();
           W = r.width;
-          H = W < 550 ? 420 : 340;
+          H = W < 550 ? 400 : 320;
           c.width = W * dpr;
           c.height = H * dpr;
           c.style.height = H + 'px';
-          ctx.setTransform(dpr,0,0,dpr,0,0);
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
         }
 
         function layout() {
           var mob = W < 550;
           if (mob) {
-            var cx = W/2;
-            return { model:{x:cx,y:58,r:34}, envelo:{x:cx,y:168,r:50}, gate:{x:cx,y:270,r:26},
-              exec:{x:cx-56,y:352,w:84,h:28}, block:{x:cx+56,y:352,w:84,h:28}, mob:true };
+            var cx = W / 2;
+            return {
+              model:   {x:cx, y:52,  w:82, h:82},
+              envelo:  {x:cx, y:162, w:112,h:112},
+              gate:    {x:cx, y:266, w:70, h:70},
+              execute: {x:cx-62, y:346, w:94,h:34},
+              blocked: {x:cx+62, y:346, w:94,h:34},
+              mob: true
+            };
           }
-          var cy=H/2-4, m=W*0.06, s=(W-m*2)/5;
-          return { model:{x:m+s*0.5,y:cy,r:38}, envelo:{x:m+s*1.85,y:cy,r:54}, gate:{x:m+s*3.1,y:cy,r:28},
-            exec:{x:m+s*4.3,y:cy-34,w:92,h:30}, block:{x:m+s*4.3,y:cy+34,w:92,h:30}, mob:false };
+          var cy = H/2 - 8;
+          var m = W*0.05;
+          var s = (W - m*2) / 5;
+          return {
+            model:   {x:m+s*0.5, y:cy, w:92, h:92},
+            envelo:  {x:m+s*1.85,y:cy, w:122,h:122},
+            gate:    {x:m+s*3.1, y:cy, w:74, h:74},
+            execute: {x:m+s*4.3, y:cy-38, w:102,h:36},
+            blocked: {x:m+s*4.3, y:cy+38, w:102,h:36},
+            mob: false
+          };
         }
 
-        function paths(L) {
-          if(!L.mob) return [
-            {ax:L.model.x+L.model.r,ay:L.model.y,bx:L.envelo.x-L.envelo.r,by:L.envelo.y},
-            {ax:L.envelo.x+L.envelo.r,ay:L.envelo.y,bx:L.gate.x-L.gate.r,by:L.gate.y},
-            {ax:L.gate.x+L.gate.r,ay:L.gate.y,bx:L.exec.x-L.exec.w/2,by:L.exec.y},
-            {ax:L.gate.x+L.gate.r,ay:L.gate.y,bx:L.block.x-L.block.w/2,by:L.block.y}
-          ];
+        function getConnPoints(L) {
+          if (!L.mob) {
+            return [
+              {ax:L.model.x+L.model.w/2, ay:L.model.y, bx:L.envelo.x-L.envelo.w/2, by:L.envelo.y, label:'ACTION'},
+              {ax:L.envelo.x+L.envelo.w/2, ay:L.envelo.y, bx:L.gate.x-L.gate.w/2, by:L.gate.y, label:'VERDICT'},
+              {ax:L.gate.x+L.gate.w/2, ay:L.gate.y, bx:L.execute.x-L.execute.w/2, by:L.execute.y, label:''},
+              {ax:L.gate.x+L.gate.w/2, ay:L.gate.y, bx:L.blocked.x-L.blocked.w/2, by:L.blocked.y, label:''}
+            ];
+          }
           return [
-            {ax:L.model.x,ay:L.model.y+L.model.r,bx:L.envelo.x,by:L.envelo.y-L.envelo.r},
-            {ax:L.envelo.x,ay:L.envelo.y+L.envelo.r,bx:L.gate.x,by:L.gate.y-L.gate.r},
-            {ax:L.gate.x,ay:L.gate.y+L.gate.r,bx:L.exec.x,by:L.exec.y-L.exec.h/2},
-            {ax:L.gate.x,ay:L.gate.y+L.gate.r,bx:L.block.x,by:L.block.y-L.block.h/2}
+            {ax:L.model.x, ay:L.model.y+L.model.h/2, bx:L.envelo.x, by:L.envelo.y-L.envelo.h/2, label:''},
+            {ax:L.envelo.x, ay:L.envelo.y+L.envelo.h/2, bx:L.gate.x, by:L.gate.y-L.gate.h/2, label:''},
+            {ax:L.gate.x, ay:L.gate.y+L.gate.h/2, bx:L.execute.x, by:L.execute.y-L.execute.h/2, label:''},
+            {ax:L.gate.x, ay:L.gate.y+L.gate.h/2, bx:L.blocked.x, by:L.blocked.y-L.blocked.h/2, label:''}
           ];
         }
 
-        // ── GRID ──
-        function drawGrid() {
-          var sp = W<550?36:48;
-          ctx.strokeStyle = 'rgba(255,255,255,0.016)';
-          ctx.lineWidth = 0.5;
-          for(var x=sp;x<W;x+=sp){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
-          for(var y=sp;y<H;y+=sp){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
-          ctx.strokeStyle='rgba(255,255,255,0.028)';
-          for(var x=sp*2;x<W;x+=sp*2) for(var y=sp*2;y<H;y+=sp*2){
-            ctx.beginPath();ctx.moveTo(x-2,y);ctx.lineTo(x+2,y);ctx.stroke();
-            ctx.beginPath();ctx.moveTo(x,y-2);ctx.lineTo(x,y+2);ctx.stroke();
-          }
-        }
+        function drawGlassNode(n, label, col, time) {
+          var x=n.x-n.w/2, y=n.y-n.h/2;
+          var r=12;
 
-        // ── PERIPHERAL DATA ──
-        function drawPeripheral(time,L) {
-          if(L.mob) return;
-          ctx.font='300 5.5px "IBM Plex Mono", monospace';
-
-          // Top left - system ID + clock
-          ctx.textAlign='left';
-          var el=Math.floor(time);
-          var h=Math.floor(el/3600)%100,m=Math.floor((el%3600)/60),s=el%60;
-          ctx.fillStyle=rgb(DIM,0.2);
-          ctx.fillText('T+ '+(h<10?'0':'')+h+':'+(m<10?'0':'')+m+':'+(s<10?'0':'')+s, 8, 14);
-          ctx.fillStyle=rgb(DIM,0.11);
-          ctx.fillText('ENVELO ENFORCEMENT LAYER', 8, 24);
-
-          // Top right
-          ctx.textAlign='right';
-          ctx.fillStyle=rgb(DIM,0.14);
-          ctx.fillText('SID:'+sessionId.toUpperCase(), W-8, 14);
-          ctx.fillStyle=rgb(DIM,0.09);
-          ctx.fillText('FRM:'+String(frameCount).padStart(6,'0'), W-8, 24);
-
-          // Left column - scrolling params
-          ctx.textAlign='left';
-          var params = [
-            ['SYS.CLK', (48271.3+time*0.1).toFixed(1)+'s'],
-            ['MEM.USE', (67.2+Math.sin(time*0.3)*2).toFixed(1)+'%'],
-            ['THR.ACT', '24/32'],
-            ['BUF.STA', 'NOM'],
-            ['NET.LAT', '<1ms'],
-            ['IO.WAIT', '0.00'],
-            ['HEAP',    (38.1+Math.sin(time*0.7)*3).toFixed(1)+'MB'],
-            ['QUEUE',   Math.floor(3+Math.sin(time)*2)+'']
-          ];
-          for(var i=0;i<params.length;i++){
-            ctx.fillStyle=rgb(DIM,0.1);
-            ctx.fillText(params[i][0], 8, 42+i*11);
-            ctx.fillStyle=rgb(DIM,0.07);
-            ctx.fillText(params[i][1], 52, 42+i*11);
-          }
-
-          // Right column - hash chain
-          ctx.textAlign='right';
-          var hx=W-8, hy=42;
-          ctx.fillStyle=rgb(PURPLE,0.14);
-          ctx.fillText('HASH CHAIN \u25B8', hx, hy);
-          var seed=Math.floor(time*0.8);
-          for(var i=0;i<7;i++){
-            ctx.fillStyle=rgb(PURPLE,0.1-i*0.012);
-            ctx.fillText(rndHex(16,seed+i*7),hx,hy+10+i*9);
-          }
-
-          // Bottom
-          ctx.textAlign='left';ctx.fillStyle=rgb(DIM,0.08);
-          var d=new Date();
-          ctx.fillText('UTC '+d.toISOString().substr(11,12),8,H-6);
-          ctx.textAlign='right';ctx.fillStyle=rgb(DIM,0.07);
-          ctx.fillText('ENVELO-RT v4.2.1 \u00B7 NODE:PRIMARY',W-8,H-6);
-        }
-
-        // ── PATH ──
-        function drawPath(p,col,alpha,label) {
-          ctx.beginPath();ctx.moveTo(p.ax,p.ay);ctx.lineTo(p.bx,p.by);
-          ctx.setLineDash([1,3]);ctx.strokeStyle=rgb(col,alpha*0.35);
-          ctx.lineWidth=0.4;ctx.stroke();ctx.setLineDash([]);
-
-          ctx.beginPath();ctx.moveTo(p.ax,p.ay);ctx.lineTo(p.bx,p.by);
-          ctx.strokeStyle=rgb(col,alpha*0.55);ctx.lineWidth=0.3;ctx.stroke();
-
-          var ang=Math.atan2(p.by-p.ay,p.bx-p.ax);
-          ctx.beginPath();ctx.moveTo(p.bx,p.by);
-          ctx.lineTo(p.bx-4*Math.cos(ang-0.3),p.by-4*Math.sin(ang-0.3));
-          ctx.lineTo(p.bx-4*Math.cos(ang+0.3),p.by-4*Math.sin(ang+0.3));
-          ctx.closePath();ctx.fillStyle=rgb(col,alpha*0.7);ctx.fill();
-
-          if(label){
-            var mx=(p.ax+p.bx)/2,my=(p.ay+p.by)/2-8;
-            ctx.font='500 5px "IBM Plex Mono", monospace';
-            ctx.textAlign='center';ctx.fillStyle=rgb(col,0.25);
-            ctx.fillText(label,mx,my);
-          }
-        }
-
-        // ── STREAMS ──
-        function updateStreams(time,ps) {
-          if(Math.random()<0.18){
-            var pi=Math.floor(Math.random()*Math.min(ps.length,2));
-            streamParticles.push({path:pi,t:0,speed:0.002+Math.random()*0.002,
-              size:0.4+Math.random()*0.3,alpha:0.09+Math.random()*0.07});
-          }
-          for(var i=streamParticles.length-1;i>=0;i--){
-            var sp=streamParticles[i];sp.t+=sp.speed;
-            if(sp.t>1){streamParticles.splice(i,1);continue;}
-            var p=ps[sp.path];if(!p){streamParticles.splice(i,1);continue;}
-            var x=lerp(p.ax,p.bx,sp.t),y=lerp(p.ay,p.by,sp.t);
-            var fade=sp.t<0.1?sp.t*10:(sp.t>0.9?(1-sp.t)*10:1);
-            ctx.beginPath();ctx.arc(x,y,sp.size,0,Math.PI*2);
-            ctx.fillStyle=rgb(sp.path===0?GREEN:PURPLE,sp.alpha*fade);ctx.fill();
-          }
-        }
-
-        // ── CIRCLE NODE ──
-        function drawCircleNode(x,y,r,col,label,time) {
-          var h=ctx.createRadialGradient(x,y,r*0.7,x,y,r*1.6);
-          h.addColorStop(0,rgb(col,0.022));h.addColorStop(1,rgb(col,0));
-          ctx.fillStyle=h;ctx.beginPath();ctx.arc(x,y,r*1.6,0,Math.PI*2);ctx.fill();
-
-          ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);
-          ctx.fillStyle='rgba(255,255,255,0.01)';ctx.fill();
-          ctx.strokeStyle=rgb(col,0.16);ctx.lineWidth=0.7;ctx.stroke();
-
-          ctx.beginPath();ctx.arc(x,y,r,-Math.PI*0.75,-Math.PI*0.25);
-          var tg=ctx.createLinearGradient(x-r,y-r,x+r,y-r);
-          tg.addColorStop(0,rgb(col,0));tg.addColorStop(0.5,rgb(col,0.14));tg.addColorStop(1,rgb(col,0));
-          ctx.strokeStyle=tg;ctx.lineWidth=0.5;ctx.stroke();
-
-          // Registration marks
-          var ml=5;
-          ctx.strokeStyle=rgb(col,0.08);ctx.lineWidth=0.4;
-          ctx.beginPath();ctx.moveTo(x-r+4,y-r);ctx.lineTo(x-r+4+ml,y-r);ctx.stroke();
-          ctx.beginPath();ctx.moveTo(x-r,y-r+4);ctx.lineTo(x-r,y-r+4+ml);ctx.stroke();
-          ctx.beginPath();ctx.moveTo(x+r-4,y-r);ctx.lineTo(x+r-4-ml,y-r);ctx.stroke();
-          ctx.beginPath();ctx.moveTo(x+r,y-r+4);ctx.lineTo(x+r,y-r+4+ml);ctx.stroke();
-          ctx.beginPath();ctx.moveTo(x-r+4,y+r);ctx.lineTo(x-r+4+ml,y+r);ctx.stroke();
-          ctx.beginPath();ctx.moveTo(x-r,y+r-4);ctx.lineTo(x-r,y+r-4-ml);ctx.stroke();
-          ctx.beginPath();ctx.moveTo(x+r-4,y+r);ctx.lineTo(x+r-4-ml,y+r);ctx.stroke();
-          ctx.beginPath();ctx.moveTo(x+r,y+r-4);ctx.lineTo(x+r,y+r-4-ml);ctx.stroke();
-
-          ctx.font='500 8px "IBM Plex Mono", monospace';
-          ctx.textAlign='center';ctx.fillStyle=rgb(col,0.65);
-          ctx.fillText(label,x,y+r+13);
-        }
-
-        // ── RECT NODE ──
-        function drawRectNode(x,y,w,h,col,label) {
-          var rx=x-w/2,ry=y-h/2,rr=5;
+          // Outer glow halo
+          var halo = ctx.createRadialGradient(n.x,n.y,n.w*0.3,n.x,n.y,n.w*0.8);
+          halo.addColorStop(0, rgb(col,0.06));
+          halo.addColorStop(1, rgb(col,0));
+          ctx.fillStyle = halo;
           ctx.beginPath();
-          ctx.moveTo(rx+rr,ry);ctx.arcTo(rx+w,ry,rx+w,ry+h,rr);
-          ctx.arcTo(rx+w,ry+h,rx,ry+h,rr);ctx.arcTo(rx,ry+h,rx,ry,rr);
-          ctx.arcTo(rx,ry,rx+w,ry,rr);ctx.closePath();
-          ctx.fillStyle='rgba(255,255,255,0.01)';ctx.fill();
-          ctx.strokeStyle=rgb(col,0.14);ctx.lineWidth=0.6;ctx.stroke();
+          ctx.arc(n.x,n.y,n.w*0.8,0,Math.PI*2);
+          ctx.fill();
 
-          ctx.beginPath();ctx.moveTo(rx+rr+3,ry+0.5);ctx.lineTo(rx+w-rr-3,ry+0.5);
-          var tl=ctx.createLinearGradient(rx,ry,rx+w,ry);
-          tl.addColorStop(0,rgb(col,0));tl.addColorStop(0.5,rgb(col,0.12));tl.addColorStop(1,rgb(col,0));
-          ctx.strokeStyle=tl;ctx.lineWidth=0.4;ctx.stroke();
+          // Glass background
+          ctx.beginPath();
+          ctx.moveTo(x+r,y); ctx.arcTo(x+n.w,y,x+n.w,y+n.h,r);
+          ctx.arcTo(x+n.w,y+n.h,x,y+n.h,r); ctx.arcTo(x,y+n.h,x,y,r);
+          ctx.arcTo(x,y,x+n.w,y,r); ctx.closePath();
+          ctx.fillStyle = 'rgba(255,255,255,0.03)';
+          ctx.fill();
 
-          ctx.font='500 7px "IBM Plex Mono", monospace';
-          ctx.textAlign='center';ctx.fillStyle=rgb(col,0.55);
-          ctx.fillText(label,x,y+2.5);
-        }
+          // Border
+          ctx.strokeStyle = rgb(col, label==='ENVELO' ? 0.35 : 0.18);
+          ctx.lineWidth = label==='ENVELO' ? 1.5 : 1;
+          ctx.stroke();
 
-        // ── MODEL INTERIOR ──
-        function drawModelInterior(x,y,r,time) {
-          var s=5,g=2,ox=x-(s+g/2),oy=y-(s+g/2)-3;
-          for(var rr=0;rr<2;rr++) for(var cc=0;cc<2;cc++){
-            var sx=ox+cc*(s+g),sy=oy+rr*(s+g);
-            ctx.beginPath();ctx.rect(sx,sy,s,s);
-            ctx.strokeStyle=rgb(GREEN,0.2);ctx.lineWidth=0.5;ctx.stroke();
-            ctx.fillStyle=rgb(GREEN,0.02+0.015*Math.sin(time*2.2+rr*1.5+cc*0.9));ctx.fill();
-          }
-          ctx.font='300 5px "IBM Plex Mono", monospace';ctx.textAlign='center';
-          ctx.fillStyle=rgb(GREEN,0.22);
-          var val=(47.2+Math.sin(time*0.7)*0.3).toFixed(1);
-          ctx.fillText('SPD:'+val+'  LD:'+(81.3+Math.sin(time*1.1)*1.2).toFixed(1)+'%',x,y+14);
+          // Top highlight line
+          ctx.beginPath();
+          ctx.moveTo(x+r+4, y+0.5); ctx.lineTo(x+n.w-r-4, y+0.5);
+          var hl = ctx.createLinearGradient(x+r,y,x+n.w-r,y);
+          hl.addColorStop(0, rgb(col,0));
+          hl.addColorStop(0.5, rgb(col,0.25));
+          hl.addColorStop(1, rgb(col,0));
+          ctx.strokeStyle = hl;
+          ctx.lineWidth = 1;
+          ctx.stroke();
 
-          // Status indicator
-          ctx.beginPath();ctx.arc(x-14,y+14,1.2,0,Math.PI*2);
-          ctx.fillStyle=rgb(GREEN,0.28+0.12*Math.sin(time*3));ctx.fill();
-          ctx.font='300 4px "IBM Plex Mono", monospace';ctx.textAlign='left';
-          ctx.fillStyle=rgb(GREEN,0.18);ctx.fillText('NOM',x-11,y+15.5);
-        }
+          // Bottom gradient line
+          ctx.beginPath();
+          ctx.moveTo(x+r+4, y+n.h-0.5); ctx.lineTo(x+n.w-r-4, y+n.h-0.5);
+          var bl = ctx.createLinearGradient(x+r,y+n.h,x+n.w-r,y+n.h);
+          bl.addColorStop(0, rgb(col,0));
+          bl.addColorStop(0.5, rgb(col,0.12));
+          bl.addColorStop(1, rgb(col,0));
+          ctx.strokeStyle = bl;
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
 
-        // ── ENVELO INTERIOR ──
-        function drawEnveloInterior(x,y,r,time,phase) {
-          var ba=0.05+phase*0.12;
-          for(var i=3;i>=1;i--){
-            var rr=r*(0.2+i*0.16),rot=time*(0.12+i*0.06)*(i%2===0?1:-1);
-            ctx.save();ctx.translate(x,y);ctx.rotate(rot);
-            ctx.beginPath();ctx.arc(0,0,rr,0,Math.PI*2);
-            ctx.setLineDash([1.5,3+i*2]);ctx.strokeStyle=rgb(PURPLE,ba-i*0.012);
-            ctx.lineWidth=0.4;ctx.stroke();ctx.setLineDash([]);
-            if(i===3){for(var t=0;t<12;t++){
-              var ta=(Math.PI/6)*t;ctx.beginPath();
-              ctx.moveTo(Math.cos(ta)*(rr-2),Math.sin(ta)*(rr-2));
-              ctx.lineTo(Math.cos(ta)*(rr+2),Math.sin(ta)*(rr+2));
-              ctx.strokeStyle=rgb(PURPLE,ba*0.4);ctx.lineWidth=0.3;ctx.stroke();
-            }}
+          // NODE-SPECIFIC INTERIORS
+          if (label==='MODEL') {
+            // Grid of small squares
+            var s=7, g=3, ox=n.x-(s+g/2), oy=n.y-18;
+            for(var rr=0;rr<2;rr++) for(var cc=0;cc<2;cc++){
+              var sx=ox+cc*(s+g), sy=oy+rr*(s+g);
+              ctx.beginPath();
+              ctx.rect(sx,sy,s,s);
+              ctx.strokeStyle=rgb(GREEN,0.35);
+              ctx.lineWidth=0.8;
+              ctx.stroke();
+              // Subtle fill
+              ctx.fillStyle=rgb(GREEN,0.04);
+              ctx.fill();
+            }
+          } else if (label==='ENVELO') {
+            // Scan lines
+            var scanAlpha = 0.05 + enveloGlow*0.15;
+            ctx.save();
+            ctx.beginPath();
+            ctx.moveTo(x+r,y); ctx.arcTo(x+n.w,y,x+n.w,y+n.h,r);
+            ctx.arcTo(x+n.w,y+n.h,x,y+n.h,r); ctx.arcTo(x,y+n.h,x,y,r);
+            ctx.arcTo(x,y,x+n.w,y,r); ctx.closePath();
+            ctx.clip();
+            var scanY = y + (time*35 % n.h);
+            var sg = ctx.createLinearGradient(x,scanY-10,x,scanY+10);
+            sg.addColorStop(0,rgb(PURPLE,0));
+            sg.addColorStop(0.5,rgb(PURPLE,scanAlpha));
+            sg.addColorStop(1,rgb(PURPLE,0));
+            ctx.fillStyle = sg;
+            ctx.fillRect(x,scanY-10,n.w,20);
+            ctx.restore();
+
+            // Eye with glow
+            var pulse = 1 + 0.12*Math.sin(time*2.5) + enveloGlow*0.5;
+            var er = 11*pulse;
+            // Eye outer glow
+            var eGlow = ctx.createRadialGradient(n.x,n.y-6,0,n.x,n.y-6,er*2.5);
+            eGlow.addColorStop(0, rgb(PURPLE,0.15*pulse));
+            eGlow.addColorStop(1, rgb(PURPLE,0));
+            ctx.fillStyle = eGlow;
+            ctx.beginPath(); ctx.arc(n.x,n.y-6,er*2.5,0,Math.PI*2); ctx.fill();
+            // Eye core
+            var eg = ctx.createRadialGradient(n.x,n.y-6,0,n.x,n.y-6,er);
+            eg.addColorStop(0,'rgba(232,224,255,0.9)');
+            eg.addColorStop(0.4,'rgba(196,184,232,0.7)');
+            eg.addColorStop(1,'rgba(123,107,170,0.3)');
+            ctx.fillStyle=eg;
+            ctx.beginPath(); ctx.arc(n.x,n.y-6,er,0,Math.PI*2); ctx.fill();
+          } else if (label==='GATE') {
+            gateAngle += (gateTarget - gateAngle) * 0.08;
+            ctx.save();
+            ctx.translate(n.x, n.y-4);
+            // Gate ring
+            ctx.beginPath(); ctx.arc(0,0,12,0,Math.PI*2);
+            ctx.strokeStyle='rgba(255,255,255,0.15)';ctx.lineWidth=1.5;ctx.stroke();
+            // Rotating bar
+            ctx.rotate(gateAngle);
+            ctx.beginPath(); ctx.moveTo(0,-11); ctx.lineTo(0,11);
+            var gc = Math.abs(gateAngle)<0.1 ? 'rgba(255,255,255,0.12)' :
+                     (gateAngle>0 ? rgb(GREEN,0.6) : rgb(RED,0.6));
+            ctx.strokeStyle=gc; ctx.lineWidth=2; ctx.stroke();
             ctx.restore();
           }
 
-          var coreR=5+phase*3;
-          var cg=ctx.createRadialGradient(x,y,0,x,y,coreR);
-          cg.addColorStop(0,rgb(PURPLE,0.35+phase*0.3));
-          cg.addColorStop(0.6,rgb(PURPLE,0.08+phase*0.1));
-          cg.addColorStop(1,rgb(PURPLE,0));
-          ctx.fillStyle=cg;ctx.beginPath();ctx.arc(x,y,coreR,0,Math.PI*2);ctx.fill();
-          ctx.beginPath();ctx.arc(x,y,1.5,0,Math.PI*2);
-          ctx.fillStyle=rgb([220,210,240],0.45+phase*0.3);ctx.fill();
+          // Labels
+          ctx.font = (n.h<=36?'400 9px':'400 10px')+' "IBM Plex Mono", monospace';
+          ctx.textAlign='center';
+          ctx.fillStyle = rgb(col,0.85);
+          var ly = n.h<=36 ? n.y+3.5 : (label==='ENVELO'?n.y+22:label==='GATE'?n.y+n.h/2-5:n.y+n.h/2-4);
+          ctx.fillText(label, n.x, ly);
 
-          for(var i=ringPulses.length-1;i>=0;i--){
-            var rp=ringPulses[i];rp.r+=1.0;rp.alpha-=0.012;
-            if(rp.alpha<=0){ringPulses.splice(i,1);continue;}
-            ctx.beginPath();ctx.arc(x,y,rp.r,0,Math.PI*2);
-            ctx.strokeStyle=rgb(PURPLE,rp.alpha);ctx.lineWidth=0.6;ctx.stroke();
+          if (label==='ENVELO') {
+            ctx.font='300 8px "IBM Plex Mono", monospace';
+            ctx.fillStyle=rgb(PURPLE,0.35);
+            ctx.fillText('Interlock', n.x, n.y+n.h/2+14);
           }
-
-          // Right micro readouts
-          ctx.font='300 5px "IBM Plex Mono", monospace';ctx.textAlign='left';
-          ctx.fillStyle=rgb(PURPLE,0.22);
-          ctx.fillText('CONF:'+(0.994-Math.random()*0.002).toFixed(3),x+r+6,y-10);
-          ctx.fillText('DRFT:'+(Math.random()*0.01).toFixed(4),x+r+6,y-1);
-          ctx.fillStyle=rgb(PURPLE,0.16);
-          ctx.fillText('CYC:'+Math.floor(time*10)%9999,x+r+6,y+8);
-
-          // Left micro readouts
-          ctx.textAlign='right';ctx.fillStyle=rgb(PURPLE,0.18);
-          ctx.fillText('LIM:'+(120+Math.sin(time*0.5)*0.5).toFixed(1),x-r-6,y-6);
-          ctx.fillText('MODE:ENFORCE',x-r-6,y+3);
-
-          ctx.textAlign='center';ctx.font='300 6px "IBM Plex Mono", monospace';
-          ctx.fillStyle=rgb(PURPLE,0.28);ctx.fillText('INTERLOCK',x,y+r+23);
         }
 
-        // ── GATE INTERIOR ──
-        function drawGateInterior(x,y,r,time) {
-          gateAngle+=(gateTarget-gateAngle)*0.06;
-          ctx.beginPath();ctx.arc(x,y,r*0.6,0,Math.PI*2);
-          ctx.strokeStyle='rgba(255,255,255,0.07)';ctx.lineWidth=0.8;ctx.stroke();
-          for(var i=0;i<8;i++){
-            var a=(Math.PI/4)*i;ctx.beginPath();
-            ctx.moveTo(x+Math.cos(a)*r*0.5,y+Math.sin(a)*r*0.5);
-            ctx.lineTo(x+Math.cos(a)*r*0.6,y+Math.sin(a)*r*0.6);
-            ctx.strokeStyle='rgba(255,255,255,0.05)';ctx.lineWidth=0.4;ctx.stroke();
-          }
-          ctx.save();ctx.translate(x,y);ctx.rotate(gateAngle);
-          ctx.beginPath();ctx.moveTo(0,-r*0.42);ctx.lineTo(0,r*0.42);
-          var gc=Math.abs(gateAngle)<0.05?'rgba(255,255,255,0.07)':
-                 (gateAngle>0?rgb(GREEN,0.4):rgb(RED,0.4));
-          ctx.strokeStyle=gc;ctx.lineWidth=1.2;ctx.stroke();
-          ctx.beginPath();ctx.arc(0,-r*0.42,1,0,Math.PI*2);ctx.fillStyle=gc;ctx.fill();
-          ctx.beginPath();ctx.arc(0,r*0.42,1,0,Math.PI*2);ctx.fillStyle=gc;ctx.fill();
-          ctx.restore();
+        function drawConn(cp, col, alpha, time) {
+          // Main line
+          ctx.beginPath();
+          ctx.moveTo(cp.ax,cp.ay); ctx.lineTo(cp.bx,cp.by);
+          ctx.strokeStyle = rgb(col,alpha);
+          ctx.lineWidth = 1;
+          ctx.stroke();
 
-          ctx.font='300 4px "IBM Plex Mono", monospace';ctx.textAlign='center';
-          var state=Math.abs(gateAngle)<0.05?'IDLE':(gateAngle>0?'PASS':'DENY');
-          ctx.fillStyle=Math.abs(gateAngle)<0.05?'rgba(255,255,255,0.12)':
-            (gateAngle>0?rgb(GREEN,0.25):rgb(RED,0.25));
-          ctx.fillText(state,x,y+r*0.72);
+          // Arrow
+          var ang = Math.atan2(cp.by-cp.ay,cp.bx-cp.ax);
+          ctx.beginPath();
+          ctx.moveTo(cp.bx,cp.by);
+          ctx.lineTo(cp.bx-6*Math.cos(ang-0.35),cp.by-6*Math.sin(ang-0.35));
+          ctx.lineTo(cp.bx-6*Math.cos(ang+0.35),cp.by-6*Math.sin(ang+0.35));
+          ctx.closePath();
+          ctx.fillStyle = rgb(col,alpha*2);
+          ctx.fill();
+
+          // Label
+          if (cp.label) {
+            var mx=(cp.ax+cp.bx)/2, my=(cp.ay+cp.by)/2-10;
+            ctx.font = '300 7px "IBM Plex Mono", monospace';
+            ctx.textAlign = 'center';
+            ctx.fillStyle = rgb(col,0.35);
+            ctx.fillText(cp.label, mx, my);
+          }
         }
 
-        // ── PACKET ──
-        function drawPacket(px,py,size,col,opacity) {
-          var g1=ctx.createRadialGradient(px,py,0,px,py,size*4.5);
-          g1.addColorStop(0,rgb(col,opacity*0.07));g1.addColorStop(1,rgb(col,0));
-          ctx.fillStyle=g1;ctx.beginPath();ctx.arc(px,py,size*4.5,0,Math.PI*2);ctx.fill();
-          var g2=ctx.createRadialGradient(px,py,0,px,py,size*2);
-          g2.addColorStop(0,rgb(col,opacity*0.2));g2.addColorStop(1,rgb(col,0));
-          ctx.fillStyle=g2;ctx.beginPath();ctx.arc(px,py,size*2,0,Math.PI*2);ctx.fill();
-          ctx.beginPath();ctx.arc(px,py,size,0,Math.PI*2);
-          ctx.fillStyle=rgb(col,opacity*0.75);ctx.fill();
-          ctx.beginPath();ctx.arc(px,py,size*0.25,0,Math.PI*2);
-          ctx.fillStyle='rgba(255,255,255,'+(opacity*0.12)+')';ctx.fill();
+        function drawConnPulses(cps, time) {
+          for (var i=connPulses.length-1;i>=0;i--) {
+            var cp = connPulses[i];
+            cp.t += cp.speed;
+            if (cp.t > 1.3) { connPulses.splice(i,1); continue; }
+            var ct = clamp(cp.t);
+            var conn = cps[cp.conn];
+            if (!conn) continue;
+            var px = lerp(conn.ax,conn.bx,ct);
+            var py = lerp(conn.ay,conn.by,ct);
+            var a = ct<0.1 ? ct*10 : (ct>0.9 ? (1-ct)*10 : 1);
+            // Glow
+            var pg = ctx.createRadialGradient(px,py,0,px,py,8);
+            pg.addColorStop(0, rgb(cp.col,a*0.3));
+            pg.addColorStop(1, rgb(cp.col,0));
+            ctx.fillStyle=pg;
+            ctx.beginPath(); ctx.arc(px,py,8,0,Math.PI*2); ctx.fill();
+            // Dot
+            ctx.beginPath(); ctx.arc(px,py,2,0,Math.PI*2);
+            ctx.fillStyle=rgb(cp.col,a*0.7);
+            ctx.fill();
+          }
+        }
+
+        function drawPacket(px, py, r, col, opacity) {
+          // Multi-layer glow like hero agents
+          var g3 = ctx.createRadialGradient(px,py,0,px,py,r*4);
+          g3.addColorStop(0, rgb(col,opacity*0.15));
+          g3.addColorStop(1, rgb(col,0));
+          ctx.fillStyle=g3;
+          ctx.beginPath(); ctx.arc(px,py,r*4,0,Math.PI*2); ctx.fill();
+
+          var g2 = ctx.createRadialGradient(px,py,0,px,py,r*2);
+          g2.addColorStop(0, rgb(col,opacity*0.3));
+          g2.addColorStop(1, rgb(col,0));
+          ctx.fillStyle=g2;
+          ctx.beginPath(); ctx.arc(px,py,r*2,0,Math.PI*2); ctx.fill();
+
+          // Core
+          ctx.beginPath(); ctx.arc(px,py,r,0,Math.PI*2);
+          ctx.fillStyle=rgb(col,opacity*0.85);
+          ctx.fill();
+
+          // Hot center
+          ctx.beginPath(); ctx.arc(px,py,r*0.35,0,Math.PI*2);
+          ctx.fillStyle='rgba(255,255,255,'+(opacity*0.2)+')';
+          ctx.fill();
         }
 
         function spawn(ts) {
-          packets.push({state:0,t:0,speed:0.00022+Math.random()*0.00012,
-            decision:Math.random()>0.2?'exec':'block',opacity:1,r:2.2+Math.random()*1,
-            trail:[],x:0,y:0,label:dataLabels[Math.floor(Math.random()*dataLabels.length)],
-            labelOpacity:1,spawned:ts});
-          nextDelay=1800+Math.random()*2200;lastSpawn=ts;
+          var label = dataLabels[Math.floor(Math.random()*dataLabels.length)];
+          packets.push({
+            state:0, t:0,
+            speed: 0.0003 + Math.random()*0.0002,
+            decision: Math.random()>0.2?'exec':'block',
+            opacity:1, r: 3+Math.random()*1.5,
+            trail:[], x:0, y:0,
+            label: label, labelOpacity: 1, spawned: ts
+          });
+          nextDelay = 1200 + Math.random()*1800;
+          lastSpawn = ts;
         }
 
-        var lastTime=0;
+        var lastTime = 0;
         function animate(ts) {
-          if(!lastTime) lastTime=ts;
-          var dt=Math.min(ts-lastTime,32);lastTime=ts;frameCount++;
-          resize();var L=layout();var ps=paths(L);var time=ts/1000;
+          if (!lastTime) lastTime = ts;
+          var dt = Math.min(ts - lastTime, 32);
+          lastTime = ts;
+          resize();
+          var L = layout();
+          var cps = getConnPoints(L);
+          var time = ts/1000;
           ctx.clearRect(0,0,W,H);
 
-          drawGrid();
-          drawPeripheral(time,L);
+          // Connections
+          drawConn(cps[0], GREEN, 0.12, time);
+          drawConn(cps[1], PURPLE, 0.10, time);
+          drawConn(cps[2], GREEN, 0.07, time);
+          drawConn(cps[3], RED, 0.07, time);
+          drawConnPulses(cps, time);
 
-          drawPath(ps[0],GREEN,0.15,'ACTION');
-          drawPath(ps[1],PURPLE,0.12,'VERDICT');
-          drawPath(ps[2],GREEN,0.07,'');
-          drawPath(ps[3],RED,0.07,'');
-          updateStreams(time,ps);
+          // Nodes
+          drawGlassNode(L.model,'MODEL',GREEN,time);
+          drawGlassNode(L.envelo,'ENVELO',PURPLE,time);
+          drawGlassNode(L.gate,'GATE',[200,200,210],time);
+          drawGlassNode(L.execute,'EXECUTE',GREEN,time);
+          drawGlassNode(L.blocked,'BLOCKED',RED,time);
 
-          drawCircleNode(L.model.x,L.model.y,L.model.r,GREEN,'MODEL',time);
-          drawModelInterior(L.model.x,L.model.y,L.model.r,time);
-          drawCircleNode(L.envelo.x,L.envelo.y,L.envelo.r,PURPLE,'ENVELO',time);
-          drawEnveloInterior(L.envelo.x,L.envelo.y,L.envelo.r,time,enveloPhase);
-          drawCircleNode(L.gate.x,L.gate.y,L.gate.r,WHITE,'GATE',time);
-          drawGateInterior(L.gate.x,L.gate.y,L.gate.r,time);
-          drawRectNode(L.exec.x,L.exec.y,L.exec.w,L.exec.h,GREEN,'EXECUTE');
-          drawRectNode(L.block.x,L.block.y,L.block.w,L.block.h,RED,'BLOCKED');
+          enveloGlow *= 0.97;
+          if (ts - lastSpawn > nextDelay) spawn(ts);
 
-          // Counters near endpoints
-          ctx.font='300 4.5px "IBM Plex Mono", monospace';
-          if(stats.exec>0){ctx.textAlign='left';ctx.fillStyle=rgb(GREEN,0.2);
-            ctx.fillText(stats.exec+'',L.exec.x+L.exec.w/2+4,L.exec.y+2);}
-          if(stats.block>0){ctx.textAlign='left';ctx.fillStyle=rgb(RED,0.2);
-            ctx.fillText(stats.block+'',L.block.x+L.block.w/2+4,L.block.y+2);}
+          var anyAtGate = false;
 
-          enveloPhase*=0.97;
-          if(ts-lastSpawn>nextDelay) spawn(ts);
-          var anyAtGate=false;
+          for (var i=packets.length-1; i>=0; i--) {
+            var p = packets[i];
+            p.t += p.speed * 16;
+            var et = ease(clamp(p.t));
+            var px, py, col;
 
-          for(var i=packets.length-1;i>=0;i--){
-            var p=packets[i];p.t+=p.speed*16;var et=ease(clamp(p.t));var px,py,col;
-            switch(p.state){
-              case 0:px=lerp(ps[0].ax,ps[0].bx,et);py=lerp(ps[0].ay,ps[0].by,et);col=GREEN;
-                p.labelOpacity=et<0.75?1:(1-et)*4;
-                if(p.t>=1){p.t=0;p.state=1;p.speed*=0.22;p.trail=[];p.labelOpacity=0;enveloPhase=1;
-                  ringPulses.push({r:4,alpha:0.25});}break;
-              case 1:px=L.envelo.x;py=L.envelo.y;col=PURPLE;p.r=Math.max(p.r*0.99,1);
-                if(Math.random()<0.025) ringPulses.push({r:3+Math.random()*8,alpha:0.1});
-                if(p.t>=1){p.t=0;p.state=2;p.speed=0.0005;p.trail=[];p.r=2.2+Math.random();stats.total++;}break;
-              case 2:px=lerp(ps[1].ax,ps[1].bx,et);py=lerp(ps[1].ay,ps[1].by,et);col=PURPLE;
-                if(p.t>=1){p.t=0;p.state=3;p.speed=0.0007;p.trail=[];}break;
-              case 3:anyAtGate=true;
-                if(p.decision==='exec'){gateTarget=Math.PI/4;px=lerp(ps[2].ax,ps[2].bx,et);
-                  py=lerp(ps[2].ay,ps[2].by,et);col=GREEN;}
-                else{gateTarget=-Math.PI/4;px=lerp(ps[3].ax,ps[3].bx,et);
-                  py=lerp(ps[3].ay,ps[3].by,et);col=RED;}
-                if(p.t>=1){p.state=4;if(p.decision==='exec')stats.exec++;
-                  else{stats.block++;for(var b=0;b<6;b++)bursts.push({x:px,y:py,
-                    vx:(Math.random()-0.5)*2.5,vy:(Math.random()-0.5)*2.5,life:1,r:0.8+Math.random()*1});}}break;
-              case 4:px=p.x;py=p.y;p.opacity-=0.02;col=p.decision==='exec'?GREEN:RED;break;
+            if (!L.mob) {
+              switch(p.state) {
+                case 0:
+                  px = lerp(L.model.x+L.model.w/2+4, L.envelo.x-L.envelo.w/2-4, et);
+                  py = L.model.y;
+                  col = GREEN;
+                  p.labelOpacity = et < 0.8 ? 1 : (1-et)*5;
+                  if (p.t>=1){ p.t=0;p.state=1;p.speed*=0.3;enveloGlow=1;p.trail=[];p.labelOpacity=0;
+                    connPulses.push({conn:0,t:0,speed:0.015,col:GREEN}); }
+                  break;
+                case 1:
+                  px = L.envelo.x; py = L.envelo.y; col = PURPLE;
+                  p.r = Math.max(p.r*0.985, 1.5);
+                  if (p.t>=1){ p.t=0;p.state=2;p.speed=0.0008;p.trail=[];p.r=3+Math.random();stats.total++; }
+                  break;
+                case 2:
+                  px = lerp(L.envelo.x+L.envelo.w/2+4, L.gate.x-L.gate.w/2-4, et);
+                  py = L.envelo.y; col = PURPLE;
+                  if (p.t>=1){p.t=0;p.state=3;p.speed=0.001;p.trail=[];}
+                  break;
+                case 3:
+                  anyAtGate = true;
+                  if (p.decision==='exec') {
+                    gateTarget = Math.PI/4;
+                    px = lerp(L.gate.x+L.gate.w/2+4, L.execute.x-L.execute.w/2-4, et);
+                    py = lerp(L.gate.y, L.execute.y, et); col = GREEN;
+                  } else {
+                    gateTarget = -Math.PI/4;
+                    px = lerp(L.gate.x+L.gate.w/2+4, L.blocked.x-L.blocked.w/2-4, et);
+                    py = lerp(L.gate.y, L.blocked.y, et); col = RED;
+                  }
+                  if (p.t>=1){
+                    p.state=4;
+                    if (p.decision==='exec'){stats.exec++;connPulses.push({conn:2,t:0,speed:0.02,col:GREEN});}
+                    else {
+                      stats.block++;connPulses.push({conn:3,t:0,speed:0.02,col:RED});
+                      for(var b=0;b<10;b++) bursts.push({
+                        x:px,y:py,vx:(Math.random()-0.5)*5,vy:(Math.random()-0.5)*5,
+                        life:1, r:1.5+Math.random()*2
+                      });
+                    }
+                  }
+                  break;
+                case 4:
+                  px=p.x;py=p.y;p.opacity-=0.03;
+                  col = p.decision==='exec'?GREEN:RED;
+                  break;
+              }
+            } else {
+              switch(p.state) {
+                case 0:
+                  px = L.model.x;
+                  py = lerp(L.model.y+L.model.h/2+4, L.envelo.y-L.envelo.h/2-4, et);
+                  col = GREEN;
+                  p.labelOpacity = et < 0.8 ? 1 : (1-et)*5;
+                  if (p.t>=1){ p.t=0;p.state=1;p.speed*=0.3;enveloGlow=1;p.trail=[];p.labelOpacity=0;
+                    connPulses.push({conn:0,t:0,speed:0.015,col:GREEN}); }
+                  break;
+                case 1:
+                  px = L.envelo.x; py = L.envelo.y; col = PURPLE;
+                  p.r = Math.max(p.r*0.985, 1.5);
+                  if (p.t>=1){ p.t=0;p.state=2;p.speed=0.0008;p.trail=[];p.r=3+Math.random();stats.total++; }
+                  break;
+                case 2:
+                  px = L.gate.x;
+                  py = lerp(L.envelo.y+L.envelo.h/2+4, L.gate.y-L.gate.h/2-4, et);
+                  col = PURPLE;
+                  if (p.t>=1){p.t=0;p.state=3;p.speed=0.001;p.trail=[];}
+                  break;
+                case 3:
+                  anyAtGate = true;
+                  if (p.decision==='exec') {
+                    gateTarget = Math.PI/4;
+                    px = lerp(L.gate.x, L.execute.x, et);
+                    py = lerp(L.gate.y+L.gate.h/2+4, L.execute.y-L.execute.h/2-4, et); col = GREEN;
+                  } else {
+                    gateTarget = -Math.PI/4;
+                    px = lerp(L.gate.x, L.blocked.x, et);
+                    py = lerp(L.gate.y+L.gate.h/2+4, L.blocked.y-L.blocked.h/2-4, et); col = RED;
+                  }
+                  if (p.t>=1){
+                    p.state=4;
+                    if (p.decision==='exec'){stats.exec++;}
+                    else {
+                      stats.block++;
+                      for(var b=0;b<10;b++) bursts.push({
+                        x:px,y:py,vx:(Math.random()-0.5)*5,vy:(Math.random()-0.5)*5,
+                        life:1, r:1.5+Math.random()*2
+                      });
+                    }
+                  }
+                  break;
+                case 4:
+                  px=p.x;py=p.y;p.opacity-=0.03;
+                  col = p.decision==='exec'?GREEN:RED;
+                  break;
+              }
             }
-            p.x=px;p.y=py;p.trail.push({x:px,y:py});if(p.trail.length>12)p.trail.shift();
-            for(var j=0;j<p.trail.length-1;j++){var ta=(j/p.trail.length)*0.06*p.opacity;
-              ctx.beginPath();ctx.arc(p.trail[j].x,p.trail[j].y,p.r*(j/p.trail.length)*0.35,0,Math.PI*2);
-              ctx.fillStyle=rgb(col,ta);ctx.fill();}
-            if(p.state===1)p.trail=[];else drawPacket(px,py,p.r,col,p.opacity);
-            if(p.state===0&&p.labelOpacity>0.05){ctx.font='300 5px "IBM Plex Mono", monospace';
-              ctx.textAlign='left';ctx.fillStyle=rgb(GREEN,0.32*p.labelOpacity*p.opacity);
-              ctx.fillText(p.label,px+7,py-3);}
-            if(p.opacity<=0)packets.splice(i,1);
+
+            p.x=px; p.y=py;
+
+            // Trail
+            p.trail.push({x:px,y:py});
+            if(p.trail.length>8) p.trail.shift();
+            for(var j=0;j<p.trail.length-1;j++){
+              var ta=(j/p.trail.length)*0.12*p.opacity;
+              ctx.beginPath();
+              ctx.arc(p.trail[j].x,p.trail[j].y,p.r*(j/p.trail.length)*0.6,0,Math.PI*2);
+              ctx.fillStyle=rgb(col,ta);
+              ctx.fill();
+            }
+
+            // Draw packet (hide during ENVELO processing)
+            if (p.state===1) { p.trail=[]; }
+            if (p.state!==1) {
+              drawPacket(px, py, p.r, col, p.opacity);
+            }
+
+            // Data label during state 0
+            if (p.state===0 && p.labelOpacity>0.05) {
+              ctx.font = '300 7px "IBM Plex Mono", monospace';
+              ctx.textAlign = 'left';
+              ctx.fillStyle = rgb(GREEN, 0.5*p.labelOpacity*p.opacity);
+              ctx.fillText(p.label, px+8, py+12);
+            }
+
+            if (p.opacity<=0) packets.splice(i,1);
           }
-          if(!anyAtGate) gateTarget=0;
 
-          for(var i=bursts.length-1;i>=0;i--){var b=bursts[i];
-            b.x+=b.vx;b.y+=b.vy;b.vx*=0.92;b.vy*=0.92;b.life-=0.018;
+          if (!anyAtGate) gateTarget = 0;
+
+          // Burst particles
+          for (var i=bursts.length-1;i>=0;i--){
+            var b=bursts[i];
+            b.x+=b.vx; b.y+=b.vy;
+            b.vx*=0.91; b.vy*=0.91;
+            b.life-=0.022;
             if(b.life<=0){bursts.splice(i,1);continue;}
-            var bg=ctx.createRadialGradient(b.x,b.y,0,b.x,b.y,b.r*b.life*2.5);
-            bg.addColorStop(0,rgb(RED,b.life*0.2));bg.addColorStop(1,rgb(RED,0));
-            ctx.fillStyle=bg;ctx.beginPath();ctx.arc(b.x,b.y,b.r*b.life*2.5,0,Math.PI*2);ctx.fill();
-            ctx.beginPath();ctx.arc(b.x,b.y,b.r*b.life,0,Math.PI*2);
-            ctx.fillStyle=rgb(RED,b.life*0.5);ctx.fill();}
+            var bg = ctx.createRadialGradient(b.x,b.y,0,b.x,b.y,b.r*b.life*3);
+            bg.addColorStop(0,rgb(RED,b.life*0.4));
+            bg.addColorStop(1,rgb(RED,0));
+            ctx.fillStyle=bg;
+            ctx.beginPath(); ctx.arc(b.x,b.y,b.r*b.life*3,0,Math.PI*2); ctx.fill();
+            ctx.beginPath(); ctx.arc(b.x,b.y,b.r*b.life,0,Math.PI*2);
+            ctx.fillStyle=rgb(RED,b.life*0.8);
+            ctx.fill();
+          }
 
-          ctx.font='300 5.5px "IBM Plex Mono", monospace';ctx.textAlign='center';
-          ctx.fillStyle='rgba(255,255,255,0.18)';
-          ctx.fillText('AUDIT \u00B7 '+stats.total+' CHECKED \u00B7 '+stats.exec+' PASSED \u00B7 '+stats.block+' BLOCKED',
-            W/2,L.mob?H-10:H-8);
+          // Audit trail
+          ctx.font='300 8px "IBM Plex Mono", monospace';
+          ctx.textAlign='center';
+          ctx.fillStyle='rgba(255,255,255,0.3)';
+          var auditY = L.mob ? H-12 : H-10;
+          ctx.fillText('AUDIT TRAIL  \u00B7  '+stats.total+' checked  \u00B7  '+stats.exec+' passed  \u00B7  '+stats.block+' blocked', W/2, auditY);
 
           requestAnimationFrame(animate);
         }
 
-        resize();window.addEventListener('resize',resize);
+        resize();
+        window.addEventListener('resize', function(){ resize(); });
         requestAnimationFrame(animate);
       })();
       </script>
@@ -3264,401 +3312,491 @@
         var ctx = c.getContext('2d');
         var dpr = window.devicePixelRatio || 1;
         var W = 0, H = 0;
-                var GREEN  = [92,214,133];
+        var outPackets = [];
+        var inPackets = [];
+        var bursts = [];
+        var stats = { out: 0, rejected: 0 };
+        var lastOutSpawn = 0;
+        var lastInSpawn = 0;
+        var nextOutDelay = 1500;
+        var nextInDelay = 4000;
+        var shieldFlash = 0;
+        var enveloGlow = 0;
+        var bannerFlash = 0;
+
+        var GREEN  = [92,214,133];
         var PURPLE = [157,140,207];
         var RED    = [214,92,92];
-        var DIM    = [140,145,160];
+        var FIELD  = [91,75,138];
 
-        function rgb(c,a){ return 'rgba('+c[0]+','+c[1]+','+c[2]+','+a+')'; }
-        function lerp(a,b,t){ return a+(b-a)*t; }
-        function ease(t){ return t<0.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2; }
-        function clamp(t){ return Math.min(Math.max(t,0),1); }
+        var telemetryLabels = [
+          'heartbeat', 'log_hash', 'cert_check', 'status_ok',
+          'audit_sync', 'config_ack', 'uptime: 99.7%', 'drift: 0.00',
+          'sig_valid', 'boundary_ok', 'tls_1.3', 'pin_match'
+        ];
 
-        var hexC='0123456789abcdef';
-        function rndHex(len,seed){var s='';for(var i=0;i<len;i++)s+=hexC[Math.abs((seed*(i+1)*31+i*17))%16];return s;}
+        var attackLabels = [
+          'SSH:22', 'RDP:3389', 'CMD:exec', 'PORT:scan',
+          'API:inject', 'ROOT:sudo', 'SHELL:rev', 'FTP:21'
+        ];
 
-        var outPackets=[];var inPackets=[];var bursts=[];var shieldRipples=[];var streamParticles=[];
-        var stats={out:0,rejected:0};
-        var lastOutSpawn=0;var lastInSpawn=0;var nextOutDelay=1500;var nextInDelay=4000;
-        var enveloGlow=0;var bannerFlash=0;var frameCount=0;
-        var sessionId='';for(var i=0;i<8;i++)sessionId+=hexC[Math.floor(Math.random()*16)];
+        function rgb(c,a) { return 'rgba('+c[0]+','+c[1]+','+c[2]+','+a+')'; }
+        function lerp(a,b,t) { return a+(b-a)*t; }
+        function ease(t) { return t<0.5?2*t*t:-1+(4-2*t)*t; }
+        function clamp(t) { return Math.min(Math.max(t,0),1); }
 
-        var telemetryLabels=['heartbeat','log_hash','cert_check','status_ok','audit_sync','config_ack',
-          'uptime:99.7%','drift:0.00','sig_valid','boundary_ok','tls_1.3','pin_match'];
-        var attackLabels=['SSH:22','RDP:3389','CMD:exec','PORT:scan','API:inject','ROOT:sudo','SHELL:rev','FTP:21'];
-
-        function resize(){
-          var r=c.parentElement.getBoundingClientRect();W=r.width;
-          H=W<550?400:320;c.width=W*dpr;c.height=H*dpr;
-          c.style.height=H+'px';ctx.setTransform(dpr,0,0,dpr,0,0);
+        function resize() {
+          var r = c.parentElement.getBoundingClientRect();
+          W = r.width;
+          H = W < 550 ? 390 : 310;
+          c.width = W * dpr;
+          c.height = H * dpr;
+          c.style.height = H + 'px';
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
         }
 
-        function layout(){
-          var mob=W<550;
-          if(mob){var cx=W/2;return{model:{x:cx,y:52,r:36},envelo:{x:cx,y:168,r:52},sentinel:{x:cx,y:295,r:36},mob:true};}
-          var cy=H/2-8,m=W*0.08,s=(W-m*2)/3;
-          return{model:{x:m+s*0.5,y:cy,r:40},envelo:{x:m+s*1.5,y:cy,r:56},sentinel:{x:m+s*2.5,y:cy,r:40},mob:false};
+        function layout() {
+          var mob = W < 550;
+          if (mob) {
+            var cx = W / 2;
+            return {
+              model:    {x:cx, y:55,  w:92, h:92},
+              envelo:   {x:cx, y:170, w:122,h:122},
+              sentinel: {x:cx, y:295, w:92, h:92},
+              mob: true
+            };
+          }
+          var cy = H/2 - 10;
+          var m = W*0.08;
+          var s = (W - m*2) / 3;
+          return {
+            model:    {x:m+s*0.5, y:cy, w:100, h:100},
+            envelo:   {x:m+s*1.5, y:cy, w:132, h:132},
+            sentinel: {x:m+s*2.5, y:cy, w:100, h:100},
+            mob: false
+          };
         }
 
-        function getConns(L){
-          if(!L.mob)return[
-            {ax:L.model.x+L.model.r,ay:L.model.y,bx:L.envelo.x-L.envelo.r,by:L.envelo.y},
-            {ax:L.envelo.x+L.envelo.r,ay:L.envelo.y,bx:L.sentinel.x-L.sentinel.r,by:L.sentinel.y}];
-          return[
-            {ax:L.model.x,ay:L.model.y+L.model.r,bx:L.envelo.x,by:L.envelo.y-L.envelo.r},
-            {ax:L.envelo.x,ay:L.envelo.y+L.envelo.r,bx:L.sentinel.x,by:L.sentinel.y-L.sentinel.r}];
-        }
-
-        // ── GRID ──
-        function drawGrid(){
-          var sp=W<550?36:48;ctx.strokeStyle='rgba(255,255,255,0.016)';ctx.lineWidth=0.5;
-          for(var x=sp;x<W;x+=sp){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
-          for(var y=sp;y<H;y+=sp){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
-          ctx.strokeStyle='rgba(255,255,255,0.028)';
-          for(var x=sp*2;x<W;x+=sp*2)for(var y=sp*2;y<H;y+=sp*2){
-            ctx.beginPath();ctx.moveTo(x-2,y);ctx.lineTo(x+2,y);ctx.stroke();
-            ctx.beginPath();ctx.moveTo(x,y-2);ctx.lineTo(x,y+2);ctx.stroke();}
-        }
-
-        // ── PERIPHERAL ──
-        function drawPeripheral(time,L){
-          if(L.mob)return;
-          ctx.font='300 5.5px "IBM Plex Mono", monospace';
-
-          // Top left
-          ctx.textAlign='left';
-          var el=Math.floor(time),h=Math.floor(el/3600)%100,m=Math.floor((el%3600)/60),s=el%60;
-          ctx.fillStyle=rgb(DIM,0.2);
-          ctx.fillText('T+ '+(h<10?'0':'')+h+':'+(m<10?'0':'')+m+':'+(s<10?'0':'')+s,8,14);
-          ctx.fillStyle=rgb(DIM,0.11);ctx.fillText('SECURITY ENFORCEMENT LAYER',8,24);
-
-          // Top right
-          ctx.textAlign='right';ctx.fillStyle=rgb(DIM,0.14);
-          ctx.fillText('SID:'+sessionId.toUpperCase(),W-8,14);
-          ctx.fillStyle=rgb(DIM,0.09);
-          ctx.fillText('FRM:'+String(frameCount).padStart(6,'0'),W-8,24);
-
-          // Left column - security parameters
-          ctx.textAlign='left';
-          var sec=[
-            ['PORTS.OPEN','0'],['INBOUND','DENIED'],['TLS.VER','1.3'],
-            ['CERT.EXP','287d'],['HMAC','SHA-256'],['KEY.ROT','4h 12m'],
-            ['FIREWALL','ACTIVE'],['IDS','NOMINAL']
+        function getConns(L) {
+          if (!L.mob) {
+            return [
+              {ax:L.model.x+L.model.w/2, ay:L.model.y, bx:L.envelo.x-L.envelo.w/2, by:L.envelo.y, label:'REQUEST'},
+              {ax:L.envelo.x+L.envelo.w/2, ay:L.envelo.y, bx:L.sentinel.x-L.sentinel.w/2, by:L.sentinel.y, label:'TELEMETRY'}
+            ];
+          }
+          return [
+            {ax:L.model.x, ay:L.model.y+L.model.h/2, bx:L.envelo.x, by:L.envelo.y-L.envelo.h/2, label:'REQUEST'},
+            {ax:L.envelo.x, ay:L.envelo.y+L.envelo.h/2, bx:L.sentinel.x, by:L.sentinel.y-L.sentinel.h/2, label:'TELEMETRY'}
           ];
-          for(var i=0;i<sec.length;i++){
-            ctx.fillStyle=rgb(DIM,0.1);ctx.fillText(sec[i][0],8,42+i*11);
-            ctx.fillStyle=i===1?rgb(RED,0.15):rgb(DIM,0.07);
-            ctx.fillText(sec[i][1],62,42+i*11);
+        }
+
+        function drawConn(cp, col, alpha) {
+          ctx.beginPath();
+          ctx.moveTo(cp.ax,cp.ay); ctx.lineTo(cp.bx,cp.by);
+          ctx.strokeStyle = rgb(col,alpha);
+          ctx.lineWidth = 1;
+          ctx.stroke();
+          var ang = Math.atan2(cp.by-cp.ay,cp.bx-cp.ax);
+          ctx.beginPath();
+          ctx.moveTo(cp.bx,cp.by);
+          ctx.lineTo(cp.bx-6*Math.cos(ang-0.35),cp.by-6*Math.sin(ang-0.35));
+          ctx.lineTo(cp.bx-6*Math.cos(ang+0.35),cp.by-6*Math.sin(ang+0.35));
+          ctx.closePath();
+          ctx.fillStyle = rgb(col,alpha*2);
+          ctx.fill();
+          if (cp.label) {
+            var mx=(cp.ax+cp.bx)/2, my=(cp.ay+cp.by)/2-10;
+            ctx.font = '300 7px "IBM Plex Mono", monospace';
+            ctx.textAlign = 'center';
+            ctx.fillStyle = rgb(col,0.35);
+            ctx.fillText(cp.label, mx, my);
+          }
+        }
+
+        function drawGlassNode(n, label, col, time) {
+          var x=n.x-n.w/2, y=n.y-n.h/2;
+          var r=12;
+
+          // Outer glow
+          var halo = ctx.createRadialGradient(n.x,n.y,n.w*0.3,n.x,n.y,n.w*0.8);
+          halo.addColorStop(0, rgb(col,0.06));
+          halo.addColorStop(1, rgb(col,0));
+          ctx.fillStyle = halo;
+          ctx.beginPath(); ctx.arc(n.x,n.y,n.w*0.8,0,Math.PI*2); ctx.fill();
+
+          // Shield flash on ENVELO
+          if (label==='ENVELO' && shieldFlash > 0.05) {
+            ctx.beginPath();
+            ctx.moveTo(x-5+r,y-5); ctx.arcTo(x+n.w+5,y-5,x+n.w+5,y+n.h+5,r+2);
+            ctx.arcTo(x+n.w+5,y+n.h+5,x-5,y+n.h+5,r+2); ctx.arcTo(x-5,y+n.h+5,x-5,y-5,r+2);
+            ctx.arcTo(x-5,y-5,x+n.w+5,y-5,r+2); ctx.closePath();
+            ctx.strokeStyle = rgb(RED,shieldFlash*0.5);
+            ctx.lineWidth = 2; ctx.stroke();
+            // Second ring
+            ctx.beginPath();
+            ctx.moveTo(x-10+r,y-10); ctx.arcTo(x+n.w+10,y-10,x+n.w+10,y+n.h+10,r+4);
+            ctx.arcTo(x+n.w+10,y+n.h+10,x-10,y+n.h+10,r+4); ctx.arcTo(x-10,y+n.h+10,x-10,y-10,r+4);
+            ctx.arcTo(x-10,y-10,x+n.w+10,y-10,r+4); ctx.closePath();
+            ctx.strokeStyle = rgb(RED,shieldFlash*0.2);
+            ctx.lineWidth = 1; ctx.stroke();
           }
 
-          // Right column - evidence hash chain
-          ctx.textAlign='right';var hx=W-8,hy=42;
-          ctx.fillStyle=rgb(PURPLE,0.14);ctx.fillText('EVIDENCE CHAIN \u25B8',hx,hy);
-          var seed=Math.floor(time*0.8);
-          for(var i=0;i<7;i++){
-            ctx.fillStyle=rgb(PURPLE,0.1-i*0.012);
-            ctx.fillText(rndHex(16,seed+i*7),hx,hy+10+i*9);
+          // Glass background
+          ctx.beginPath();
+          ctx.moveTo(x+r,y); ctx.arcTo(x+n.w,y,x+n.w,y+n.h,r);
+          ctx.arcTo(x+n.w,y+n.h,x,y+n.h,r); ctx.arcTo(x,y+n.h,x,y,r);
+          ctx.arcTo(x,y,x+n.w,y,r); ctx.closePath();
+          ctx.fillStyle = 'rgba(255,255,255,0.03)';
+          ctx.fill();
+          ctx.strokeStyle = rgb(col, label==='ENVELO' ? 0.35 : 0.18);
+          ctx.lineWidth = label==='ENVELO' ? 1.5 : 1;
+          ctx.stroke();
+
+          // Top highlight
+          ctx.beginPath();
+          ctx.moveTo(x+r+4, y+0.5); ctx.lineTo(x+n.w-r-4, y+0.5);
+          var hl = ctx.createLinearGradient(x+r,y,x+n.w-r,y);
+          hl.addColorStop(0, rgb(col,0));
+          hl.addColorStop(0.5, rgb(col,0.25));
+          hl.addColorStop(1, rgb(col,0));
+          ctx.strokeStyle = hl; ctx.lineWidth = 1; ctx.stroke();
+
+          // Bottom line
+          ctx.beginPath();
+          ctx.moveTo(x+r+4, y+n.h-0.5); ctx.lineTo(x+n.w-r-4, y+n.h-0.5);
+          var bl = ctx.createLinearGradient(x+r,y+n.h,x+n.w-r,y+n.h);
+          bl.addColorStop(0, rgb(col,0));
+          bl.addColorStop(0.5, rgb(col,0.12));
+          bl.addColorStop(1, rgb(col,0));
+          ctx.strokeStyle = bl; ctx.lineWidth = 0.5; ctx.stroke();
+
+          // Interiors
+          if (label==='MODEL') {
+            var s=7,g=3,ox=n.x-(s+g/2),oy=n.y-18;
+            for(var rr=0;rr<2;rr++) for(var cc=0;cc<2;cc++){
+              var sx=ox+cc*(s+g), sy=oy+rr*(s+g);
+              ctx.beginPath(); ctx.rect(sx,sy,s,s);
+              ctx.strokeStyle=rgb(GREEN,0.35); ctx.lineWidth=0.8; ctx.stroke();
+              ctx.fillStyle=rgb(GREEN,0.04); ctx.fill();
+            }
+          } else if (label==='ENVELO') {
+            var scanAlpha = 0.05 + enveloGlow*0.15;
+            ctx.save();
+            ctx.beginPath();
+            ctx.moveTo(x+r,y); ctx.arcTo(x+n.w,y,x+n.w,y+n.h,r);
+            ctx.arcTo(x+n.w,y+n.h,x,y+n.h,r); ctx.arcTo(x,y+n.h,x,y,r);
+            ctx.arcTo(x,y,x+n.w,y,r); ctx.closePath();
+            ctx.clip();
+            var scanY = y + (time*35 % n.h);
+            var sg = ctx.createLinearGradient(x,scanY-10,x,scanY+10);
+            sg.addColorStop(0,rgb(PURPLE,0));
+            sg.addColorStop(0.5,rgb(PURPLE,scanAlpha));
+            sg.addColorStop(1,rgb(PURPLE,0));
+            ctx.fillStyle = sg;
+            ctx.fillRect(x,scanY-10,n.w,20);
+            ctx.restore();
+
+            var pulse = 1 + 0.12*Math.sin(time*2.5) + enveloGlow*0.5;
+            var er = 11*pulse;
+            var eGlow = ctx.createRadialGradient(n.x,n.y-6,0,n.x,n.y-6,er*2.5);
+            eGlow.addColorStop(0, rgb(PURPLE,0.15*pulse));
+            eGlow.addColorStop(1, rgb(PURPLE,0));
+            ctx.fillStyle = eGlow;
+            ctx.beginPath(); ctx.arc(n.x,n.y-6,er*2.5,0,Math.PI*2); ctx.fill();
+            var eg = ctx.createRadialGradient(n.x,n.y-6,0,n.x,n.y-6,er);
+            eg.addColorStop(0,'rgba(232,224,255,0.9)');
+            eg.addColorStop(0.4,'rgba(196,184,232,0.7)');
+            eg.addColorStop(1,'rgba(123,107,170,0.3)');
+            ctx.fillStyle=eg;
+            ctx.beginPath(); ctx.arc(n.x,n.y-6,er,0,Math.PI*2); ctx.fill();
+          } else if (label==='SENTINEL') {
+            ctx.beginPath();
+            ctx.ellipse(n.x, n.y-14, 16, 5, 0, 0, Math.PI*2);
+            ctx.strokeStyle=rgb(PURPLE,0.35); ctx.lineWidth=0.8; ctx.stroke();
+            ctx.fillStyle=rgb(PURPLE,0.03); ctx.fill();
+            ctx.beginPath();
+            ctx.moveTo(n.x-16,n.y-14); ctx.lineTo(n.x-16,n.y+2);
+            ctx.strokeStyle=rgb(PURPLE,0.2); ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(n.x+16,n.y-14); ctx.lineTo(n.x+16,n.y+2);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.ellipse(n.x, n.y+2, 16, 5, 0, 0, Math.PI);
+            ctx.strokeStyle=rgb(PURPLE,0.35); ctx.stroke();
           }
 
-          // Bottom
-          ctx.textAlign='left';ctx.fillStyle=rgb(DIM,0.08);
-          var d=new Date();ctx.fillText('UTC '+d.toISOString().substr(11,12),8,H-6);
-          ctx.textAlign='right';ctx.fillStyle=rgb(DIM,0.07);
-          ctx.fillText('SEC-MONITOR v4.2.1 \u00B7 THREAT:LOW',W-8,H-6);
+          // Labels
+          ctx.font = (label==='ENVELO'?'400 10px':'400 9px')+' "IBM Plex Mono", monospace';
+          ctx.textAlign='center';
+          ctx.fillStyle = rgb(col,0.85);
+          var ly = label==='ENVELO' ? n.y+22 : (label==='SENTINEL' ? n.y+20 : n.y+n.h/2-4);
+          ctx.fillText(label, n.x, ly);
+
+          ctx.font='300 8px "IBM Plex Mono", monospace';
+          ctx.fillStyle='rgba(255,255,255,0.25)';
+          if (label==='MODEL') ctx.fillText('Autonomous System', n.x, n.y+n.h/2+14);
+          if (label==='ENVELO') ctx.fillText('Enforcement Agent', n.x, n.y+n.h/2+14);
+          if (label==='SENTINEL') ctx.fillText('Authority Registry', n.x, n.y+n.h/2+14);
         }
 
-        // ── PATH ──
-        function drawPath(p,col,alpha,label){
-          ctx.beginPath();ctx.moveTo(p.ax,p.ay);ctx.lineTo(p.bx,p.by);
-          ctx.setLineDash([1,3]);ctx.strokeStyle=rgb(col,alpha*0.35);
-          ctx.lineWidth=0.4;ctx.stroke();ctx.setLineDash([]);
-          ctx.beginPath();ctx.moveTo(p.ax,p.ay);ctx.lineTo(p.bx,p.by);
-          ctx.strokeStyle=rgb(col,alpha*0.55);ctx.lineWidth=0.3;ctx.stroke();
-          var ang=Math.atan2(p.by-p.ay,p.bx-p.ax);
-          ctx.beginPath();ctx.moveTo(p.bx,p.by);
-          ctx.lineTo(p.bx-4*Math.cos(ang-0.3),p.by-4*Math.sin(ang-0.3));
-          ctx.lineTo(p.bx-4*Math.cos(ang+0.3),p.by-4*Math.sin(ang+0.3));
-          ctx.closePath();ctx.fillStyle=rgb(col,alpha*0.7);ctx.fill();
-          if(label){var mx=(p.ax+p.bx)/2,my=(p.ay+p.by)/2-8;
-            ctx.font='500 5px "IBM Plex Mono", monospace';ctx.textAlign='center';
-            ctx.fillStyle=rgb(col,0.25);ctx.fillText(label,mx,my);}
+        function drawPacket(px, py, r, col, opacity) {
+          var g3 = ctx.createRadialGradient(px,py,0,px,py,r*4);
+          g3.addColorStop(0, rgb(col,opacity*0.15));
+          g3.addColorStop(1, rgb(col,0));
+          ctx.fillStyle=g3;
+          ctx.beginPath(); ctx.arc(px,py,r*4,0,Math.PI*2); ctx.fill();
+          var g2 = ctx.createRadialGradient(px,py,0,px,py,r*2);
+          g2.addColorStop(0, rgb(col,opacity*0.3));
+          g2.addColorStop(1, rgb(col,0));
+          ctx.fillStyle=g2;
+          ctx.beginPath(); ctx.arc(px,py,r*2,0,Math.PI*2); ctx.fill();
+          ctx.beginPath(); ctx.arc(px,py,r,0,Math.PI*2);
+          ctx.fillStyle=rgb(col,opacity*0.85);
+          ctx.fill();
+          ctx.beginPath(); ctx.arc(px,py,r*0.35,0,Math.PI*2);
+          ctx.fillStyle='rgba(255,255,255,'+(opacity*0.2)+')';
+          ctx.fill();
         }
 
-        // ── STREAMS ──
-        function updateStreams(time,conns){
-          if(Math.random()<0.14){var ci=Math.floor(Math.random()*conns.length);
-            streamParticles.push({conn:ci,t:0,speed:0.002+Math.random()*0.002,
-              size:0.4+Math.random()*0.3,alpha:0.09+Math.random()*0.07});}
-          for(var i=streamParticles.length-1;i>=0;i--){var sp=streamParticles[i];sp.t+=sp.speed;
-            if(sp.t>1){streamParticles.splice(i,1);continue;}
-            var cn=conns[sp.conn];if(!cn){streamParticles.splice(i,1);continue;}
-            var x=lerp(cn.ax,cn.bx,sp.t),y=lerp(cn.ay,cn.by,sp.t);
-            var fade=sp.t<0.1?sp.t*10:(sp.t>0.9?(1-sp.t)*10:1);
-            ctx.beginPath();ctx.arc(x,y,sp.size,0,Math.PI*2);
-            ctx.fillStyle=rgb(sp.conn===0?GREEN:PURPLE,sp.alpha*fade);ctx.fill();}
+        function spawnOut(ts) {
+          var label = telemetryLabels[Math.floor(Math.random()*telemetryLabels.length)];
+          outPackets.push({
+            state:0, t:0, speed: 0.0003 + Math.random()*0.0002,
+            opacity:1, r:3+Math.random()*1.5,
+            trail:[], x:0, y:0, label: label, labelOpacity:1
+          });
+          nextOutDelay = 1200 + Math.random()*1800;
+          lastOutSpawn = ts;
         }
 
-        // ── CIRCLE NODE ──
-        function drawCircleNode(x,y,r,col,label,time){
-          var h=ctx.createRadialGradient(x,y,r*0.7,x,y,r*1.6);
-          h.addColorStop(0,rgb(col,0.022));h.addColorStop(1,rgb(col,0));
-          ctx.fillStyle=h;ctx.beginPath();ctx.arc(x,y,r*1.6,0,Math.PI*2);ctx.fill();
-          ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);
-          ctx.fillStyle='rgba(255,255,255,0.01)';ctx.fill();
-          ctx.strokeStyle=rgb(col,0.16);ctx.lineWidth=0.7;ctx.stroke();
-          ctx.beginPath();ctx.arc(x,y,r,-Math.PI*0.75,-Math.PI*0.25);
-          var tg=ctx.createLinearGradient(x-r,y-r,x+r,y-r);
-          tg.addColorStop(0,rgb(col,0));tg.addColorStop(0.5,rgb(col,0.14));tg.addColorStop(1,rgb(col,0));
-          ctx.strokeStyle=tg;ctx.lineWidth=0.5;ctx.stroke();
-
-          // Registration marks
-          var ml=5;ctx.strokeStyle=rgb(col,0.08);ctx.lineWidth=0.4;
-          ctx.beginPath();ctx.moveTo(x-r+4,y-r);ctx.lineTo(x-r+4+ml,y-r);ctx.stroke();
-          ctx.beginPath();ctx.moveTo(x-r,y-r+4);ctx.lineTo(x-r,y-r+4+ml);ctx.stroke();
-          ctx.beginPath();ctx.moveTo(x+r-4,y-r);ctx.lineTo(x+r-4-ml,y-r);ctx.stroke();
-          ctx.beginPath();ctx.moveTo(x+r,y-r+4);ctx.lineTo(x+r,y-r+4+ml);ctx.stroke();
-          ctx.beginPath();ctx.moveTo(x-r+4,y+r);ctx.lineTo(x-r+4+ml,y+r);ctx.stroke();
-          ctx.beginPath();ctx.moveTo(x-r,y+r-4);ctx.lineTo(x-r,y+r-4-ml);ctx.stroke();
-          ctx.beginPath();ctx.moveTo(x+r-4,y+r);ctx.lineTo(x+r-4-ml,y+r);ctx.stroke();
-          ctx.beginPath();ctx.moveTo(x+r,y+r-4);ctx.lineTo(x+r,y+r-4-ml);ctx.stroke();
-
-          ctx.font='500 8px "IBM Plex Mono", monospace';ctx.textAlign='center';
-          ctx.fillStyle=rgb(col,0.65);ctx.fillText(label,x,y+r+13);
+        function spawnIn(ts) {
+          var label = attackLabels[Math.floor(Math.random()*attackLabels.length)];
+          inPackets.push({
+            t: 0, speed: 0.0002 + Math.random()*0.0001,
+            opacity: 1, r: 3+Math.random()*1.5,
+            trail: [], x:0, y:0, label: label, rejected: false
+          });
+          nextInDelay = 3500 + Math.random()*4000;
+          lastInSpawn = ts;
         }
 
-        // ── MODEL INTERIOR ──
-        function drawModelInterior(x,y,r,time){
-          var s=5,g=2,ox=x-(s+g/2),oy=y-(s+g/2)-3;
-          for(var rr=0;rr<2;rr++)for(var cc=0;cc<2;cc++){
-            var sx=ox+cc*(s+g),sy=oy+rr*(s+g);ctx.beginPath();ctx.rect(sx,sy,s,s);
-            ctx.strokeStyle=rgb(GREEN,0.2);ctx.lineWidth=0.5;ctx.stroke();
-            ctx.fillStyle=rgb(GREEN,0.02+0.015*Math.sin(time*2.2+rr*1.5+cc*0.9));ctx.fill();}
-          ctx.font='300 6px "IBM Plex Mono", monospace';ctx.textAlign='center';
-          ctx.fillStyle='rgba(255,255,255,0.16)';ctx.fillText('Autonomous System',x,y+r+23);
-
-          // Cycling action
-          var actions=['NAVIGATE','ACCELERATE','STEER','HOLD','BRAKE','LANE_CHG'];
-          ctx.font='300 5px "IBM Plex Mono", monospace';ctx.fillStyle=rgb(GREEN,0.22);
-          ctx.fillText(actions[Math.floor(time*0.7)%actions.length],x,y+14);
-
-          // Status dot
-          ctx.beginPath();ctx.arc(x-14,y+14,1.2,0,Math.PI*2);
-          ctx.fillStyle=rgb(GREEN,0.28+0.12*Math.sin(time*3));ctx.fill();
-          ctx.font='300 4px "IBM Plex Mono", monospace';ctx.textAlign='left';
-          ctx.fillStyle=rgb(GREEN,0.18);ctx.fillText('NOM',x-11,y+15.5);
-        }
-
-        // ── ENVELO INTERIOR ──
-        function drawEnveloInterior(x,y,r,time,phase){
-          var ba=0.05+phase*0.12;
-          for(var i=3;i>=1;i--){
-            var rr=r*(0.2+i*0.16),rot=time*(0.12+i*0.06)*(i%2===0?1:-1);
-            ctx.save();ctx.translate(x,y);ctx.rotate(rot);
-            ctx.beginPath();ctx.arc(0,0,rr,0,Math.PI*2);
-            ctx.setLineDash([1.5,3+i*2]);ctx.strokeStyle=rgb(PURPLE,ba-i*0.012);
-            ctx.lineWidth=0.4;ctx.stroke();ctx.setLineDash([]);
-            if(i===3){for(var t=0;t<12;t++){var ta=(Math.PI/6)*t;ctx.beginPath();
-              ctx.moveTo(Math.cos(ta)*(rr-2),Math.sin(ta)*(rr-2));
-              ctx.lineTo(Math.cos(ta)*(rr+2),Math.sin(ta)*(rr+2));
-              ctx.strokeStyle=rgb(PURPLE,ba*0.4);ctx.lineWidth=0.3;ctx.stroke();}}
-            ctx.restore();}
-
-          var coreR=5+phase*3;
-          var cg=ctx.createRadialGradient(x,y,0,x,y,coreR);
-          cg.addColorStop(0,rgb(PURPLE,0.35+phase*0.3));
-          cg.addColorStop(0.6,rgb(PURPLE,0.08+phase*0.1));cg.addColorStop(1,rgb(PURPLE,0));
-          ctx.fillStyle=cg;ctx.beginPath();ctx.arc(x,y,coreR,0,Math.PI*2);ctx.fill();
-          ctx.beginPath();ctx.arc(x,y,1.5,0,Math.PI*2);
-          ctx.fillStyle=rgb([220,210,240],0.45+phase*0.3);ctx.fill();
-
-          // Shield ripples
-          for(var i=shieldRipples.length-1;i>=0;i--){var sr=shieldRipples[i];
-            sr.r+=1.2;sr.alpha-=0.01;if(sr.alpha<=0){shieldRipples.splice(i,1);continue;}
-            ctx.beginPath();ctx.arc(x,y,sr.r,sr.angle-0.5,sr.angle+0.5);
-            ctx.strokeStyle=rgb(RED,sr.alpha);ctx.lineWidth=1.2;ctx.stroke();}
-
-          ctx.font='300 6px "IBM Plex Mono", monospace';ctx.textAlign='center';
-          ctx.fillStyle='rgba(255,255,255,0.16)';ctx.fillText('Enforcement Agent',x,y+r+23);
-
-          // Right micro data
-          ctx.font='300 5px "IBM Plex Mono", monospace';ctx.textAlign='left';
-          ctx.fillStyle=rgb(PURPLE,0.22);
-          ctx.fillText('CONF:'+(0.994-Math.random()*0.002).toFixed(3),x+r+6,y-10);
-          ctx.fillText('DRFT:'+(Math.random()*0.01).toFixed(4),x+r+6,y-1);
-          ctx.fillStyle=rgb(PURPLE,0.16);ctx.fillText('CYC:'+Math.floor(time*10)%9999,x+r+6,y+8);
-
-          // Left micro data
-          ctx.textAlign='right';ctx.fillStyle=rgb(PURPLE,0.18);
-          ctx.fillText('SHLD:ACTIVE',x-r-6,y-6);
-          ctx.fillText('MODE:ENFORCE',x-r-6,y+3);
-
-          // Threat counter
-          var tAlpha=0.08+bannerFlash*0.3;
-          ctx.textAlign='right';ctx.font='300 4.5px "IBM Plex Mono", monospace';
-          ctx.fillStyle=rgb(stats.rejected>0?RED:GREEN,tAlpha+0.08);
-          ctx.fillText(stats.rejected>0?'THR:'+stats.rejected:'THR:CLR',x+r-4,y-r+8);
-        }
-
-        // ── SENTINEL INTERIOR ──
-        function drawSentinelInterior(x,y,r,time){
-          ctx.beginPath();ctx.ellipse(x,y-10,12,4,0,0,Math.PI*2);
-          ctx.strokeStyle=rgb(PURPLE,0.18);ctx.lineWidth=0.6;ctx.stroke();
-          ctx.fillStyle=rgb(PURPLE,0.012);ctx.fill();
-          ctx.beginPath();ctx.moveTo(x-12,y-10);ctx.lineTo(x-12,y+4);
-          ctx.strokeStyle=rgb(PURPLE,0.1);ctx.lineWidth=0.5;ctx.stroke();
-          ctx.beginPath();ctx.moveTo(x+12,y-10);ctx.lineTo(x+12,y+4);ctx.stroke();
-          ctx.beginPath();ctx.ellipse(x,y+4,12,4,0,0,Math.PI);
-          ctx.strokeStyle=rgb(PURPLE,0.18);ctx.stroke();
-
-          ctx.beginPath();ctx.arc(x,y-3,1.2,0,Math.PI*2);
-          ctx.fillStyle=rgb(PURPLE,0.1+0.07*Math.sin(time*3));ctx.fill();
-
-          ctx.font='300 6px "IBM Plex Mono", monospace';ctx.textAlign='center';
-          ctx.fillStyle='rgba(255,255,255,0.16)';ctx.fillText('Authority Registry',x,y+r+23);
-
-          // Scrolling micro-hashes
-          ctx.font='300 4px "IBM Plex Mono", monospace';
-          var seed=Math.floor(time*1.5);
-          for(var i=0;i<3;i++){ctx.fillStyle=rgb(PURPLE,0.1-i*0.025);
-            ctx.fillText(rndHex(10,seed+i*5),x,y+12+i*7);}
-
-          ctx.font='300 5px "IBM Plex Mono", monospace';ctx.fillStyle=rgb(PURPLE,0.18);
-          ctx.fillText('REC:'+(stats.out+stats.rejected),x,y+r-6);
-        }
-
-        // ── PACKET ──
-        function drawPacket(px,py,size,col,opacity){
-          var g1=ctx.createRadialGradient(px,py,0,px,py,size*4.5);
-          g1.addColorStop(0,rgb(col,opacity*0.07));g1.addColorStop(1,rgb(col,0));
-          ctx.fillStyle=g1;ctx.beginPath();ctx.arc(px,py,size*4.5,0,Math.PI*2);ctx.fill();
-          var g2=ctx.createRadialGradient(px,py,0,px,py,size*2);
-          g2.addColorStop(0,rgb(col,opacity*0.2));g2.addColorStop(1,rgb(col,0));
-          ctx.fillStyle=g2;ctx.beginPath();ctx.arc(px,py,size*2,0,Math.PI*2);ctx.fill();
-          ctx.beginPath();ctx.arc(px,py,size,0,Math.PI*2);ctx.fillStyle=rgb(col,opacity*0.75);ctx.fill();
-          ctx.beginPath();ctx.arc(px,py,size*0.25,0,Math.PI*2);
-          ctx.fillStyle='rgba(255,255,255,'+(opacity*0.12)+')';ctx.fill();
-        }
-
-        function spawnOut(ts){outPackets.push({state:0,t:0,speed:0.00025+Math.random()*0.00015,
-          opacity:1,r:2.2+Math.random()*1,trail:[],x:0,y:0,
-          label:telemetryLabels[Math.floor(Math.random()*telemetryLabels.length)],labelOpacity:1});
-          nextOutDelay=1200+Math.random()*1800;lastOutSpawn=ts;}
-        function spawnIn(ts){inPackets.push({t:0,speed:0.00018+Math.random()*0.0001,
-          opacity:1,r:2.2+Math.random()*1.2,trail:[],x:0,y:0,
-          label:attackLabels[Math.floor(Math.random()*attackLabels.length)],
-          rejected:false,offset:(Math.random()-0.5)*25});
-          nextInDelay=3500+Math.random()*4000;lastInSpawn=ts;}
-
-        var lastTime=0;
-        function animate(ts){
-          if(!lastTime)lastTime=ts;var dt=Math.min(ts-lastTime,32);lastTime=ts;frameCount++;
-          resize();var L=layout();var conns=getConns(L);var time=ts/1000;
+        var lastTime = 0;
+        function animate(ts) {
+          if (!lastTime) lastTime = ts;
+          var dt = Math.min(ts - lastTime, 32);
+          lastTime = ts;
+          resize();
+          var L = layout();
+          var conns = getConns(L);
+          var time = ts/1000;
           ctx.clearRect(0,0,W,H);
 
-          drawGrid();drawPeripheral(time,L);
-          drawPath(conns[0],GREEN,0.14,'REQUEST');
-          drawPath(conns[1],PURPLE,0.12,'TELEMETRY');
-          updateStreams(time,conns);
+          drawConn(conns[0], GREEN, 0.12);
+          drawConn(conns[1], PURPLE, 0.12);
 
-          drawCircleNode(L.model.x,L.model.y,L.model.r,GREEN,'MODEL',time);
-          drawModelInterior(L.model.x,L.model.y,L.model.r,time);
-          drawCircleNode(L.envelo.x,L.envelo.y,L.envelo.r,PURPLE,'ENVELO',time);
-          drawEnveloInterior(L.envelo.x,L.envelo.y,L.envelo.r,time,enveloGlow);
-          drawCircleNode(L.sentinel.x,L.sentinel.y,L.sentinel.r,PURPLE,'SENTINEL',time);
-          drawSentinelInterior(L.sentinel.x,L.sentinel.y,L.sentinel.r,time);
+          drawGlassNode(L.model,'MODEL',GREEN,time);
+          drawGlassNode(L.envelo,'ENVELO',PURPLE,time);
+          drawGlassNode(L.sentinel,'SENTINEL',PURPLE,time);
 
-          enveloGlow*=0.97;bannerFlash*=0.98;
-          if(ts-lastOutSpawn>nextOutDelay)spawnOut(ts);
-          if(ts-lastInSpawn>nextInDelay)spawnIn(ts);
+          shieldFlash *= 0.96;
+          enveloGlow *= 0.97;
+          bannerFlash *= 0.98;
 
-          // Outbound
-          for(var i=outPackets.length-1;i>=0;i--){
-            var p=outPackets[i];p.t+=p.speed*16;var et=ease(clamp(p.t));var px,py,col;
-            if(p.state===0){px=lerp(conns[0].ax,conns[0].bx,et);py=lerp(conns[0].ay,conns[0].by,et);col=GREEN;
-              p.labelOpacity=et<0.7?1:(1-et)*3.3;
-              if(p.t>=1){p.t=0;p.state=1;p.speed*=0.3;p.trail=[];p.labelOpacity=0;enveloGlow=1;}}
-            else if(p.state===1){px=L.envelo.x;py=L.envelo.y;col=PURPLE;p.r=Math.max(p.r*0.985,1);
-              if(p.t>=1){p.t=0;p.state=2;p.speed=0.0005;p.trail=[];p.r=2.2+Math.random();stats.out++;}}
-            else if(p.state===2){px=lerp(conns[1].ax,conns[1].bx,et);py=lerp(conns[1].ay,conns[1].by,et);col=PURPLE;
-              if(p.t>=1)p.state=3;}
-            else{px=p.x;py=p.y;p.opacity-=0.03;col=PURPLE;}
-            p.x=px;p.y=py;p.trail.push({x:px,y:py});if(p.trail.length>12)p.trail.shift();
-            for(var j=0;j<p.trail.length-1;j++){var ta=(j/p.trail.length)*0.06*p.opacity;
-              ctx.beginPath();ctx.arc(p.trail[j].x,p.trail[j].y,p.r*(j/p.trail.length)*0.35,0,Math.PI*2);
-              ctx.fillStyle=rgb(col,ta);ctx.fill();}
-            if(p.state!==1)drawPacket(px,py,p.r,col,p.opacity);
-            if(p.state===0&&p.labelOpacity>0.05){ctx.font='300 5px "IBM Plex Mono", monospace';
-              ctx.textAlign='left';ctx.fillStyle=rgb(GREEN,0.32*p.labelOpacity*p.opacity);
-              ctx.fillText(p.label,px+7,py-3);}
-            if(p.opacity<=0)outPackets.splice(i,1);}
+          if (ts - lastOutSpawn > nextOutDelay) spawnOut(ts);
+          if (ts - lastInSpawn > nextInDelay) spawnIn(ts);
 
-          // Inbound attacks
-          for(var i=inPackets.length-1;i>=0;i--){
-            var p=inPackets[i];p.t+=p.speed*16;var et=ease(clamp(p.t));var px,py;
-            if(!L.mob){var wX=L.envelo.x+L.envelo.r+4,wY=L.envelo.y;
-              px=lerp(W+30,wX,et);py=lerp(L.envelo.y+p.offset,wY,et);}
-            else{var wX=L.envelo.x,wY=L.envelo.y+L.envelo.r+4;
-              px=lerp(L.envelo.x+p.offset,wX,et);py=lerp(H+30,wY,et);}
-            p.x=px;p.y=py;
-            if(!p.rejected){
-              p.trail.push({x:px,y:py});if(p.trail.length>8)p.trail.shift();
-              for(var j=0;j<p.trail.length-1;j++){var ta=(j/p.trail.length)*0.08*p.opacity;
-                ctx.beginPath();ctx.arc(p.trail[j].x,p.trail[j].y,p.r*(j/p.trail.length)*0.4,0,Math.PI*2);
-                ctx.fillStyle=rgb(RED,ta);ctx.fill();}
-              drawPacket(px,py,p.r,RED,p.opacity*0.85);
-              if(p.opacity>0.3){ctx.font='300 5px "IBM Plex Mono", monospace';
-                ctx.textAlign=L.mob?'left':'right';ctx.fillStyle=rgb(RED,0.3*p.opacity);
-                ctx.fillText(p.label,L.mob?px+8:px-8,py-4);}
-              if(p.t>=0.88){p.rejected=true;bannerFlash=1;stats.rejected++;
-                var hitA=Math.atan2(py-L.envelo.y,px-L.envelo.x);
-                shieldRipples.push({r:L.envelo.r,angle:hitA,alpha:0.4});
-                shieldRipples.push({r:L.envelo.r+6,angle:hitA,alpha:0.2});
-                for(var b=0;b<5;b++){var ba=hitA+(Math.random()-0.5)*1;
-                  bursts.push({x:px,y:py,vx:Math.cos(ba)*(1.5+Math.random()*2),
-                    vy:Math.sin(ba)*(1.5+Math.random()*2),life:1,r:0.7+Math.random()*1});}}}
-            else p.opacity-=0.04;
-            if(p.opacity<=0)inPackets.splice(i,1);}
+          // Outbound packets
+          for (var i=outPackets.length-1; i>=0; i--) {
+            var p = outPackets[i];
+            p.t += p.speed * 16;
+            var et = ease(clamp(p.t));
+            var px, py, col;
 
-          // Bursts
-          for(var i=bursts.length-1;i>=0;i--){var b=bursts[i];
-            b.x+=b.vx;b.y+=b.vy;b.vx*=0.9;b.vy*=0.9;b.life-=0.02;
+            if (!L.mob) {
+              if (p.state===0) {
+                px = lerp(L.model.x+L.model.w/2+4, L.envelo.x-L.envelo.w/2-4, et);
+                py = L.model.y; col = GREEN;
+                p.labelOpacity = et < 0.7 ? 1 : (1-et)*3.3;
+                if (p.t>=1) { p.t=0; p.state=1; p.speed*=0.35; p.trail=[]; p.labelOpacity=0; enveloGlow=1; }
+              } else if (p.state===1) {
+                px = L.envelo.x; py = L.envelo.y; col = PURPLE;
+                p.r = Math.max(p.r*0.985, 1.5);
+                if (p.t>=1) { p.t=0; p.state=2; p.speed=0.0006; p.trail=[]; p.r=3+Math.random(); stats.out++; }
+              } else if (p.state===2) {
+                px = lerp(L.envelo.x+L.envelo.w/2+4, L.sentinel.x-L.sentinel.w/2-4, et);
+                py = L.envelo.y; col = PURPLE;
+                if (p.t>=1) { p.state=3; }
+              } else {
+                px=p.x; py=p.y; p.opacity-=0.04; col = PURPLE;
+              }
+            } else {
+              if (p.state===0) {
+                px = L.model.x;
+                py = lerp(L.model.y+L.model.h/2+4, L.envelo.y-L.envelo.h/2-4, et);
+                col = GREEN;
+                p.labelOpacity = et < 0.7 ? 1 : (1-et)*3.3;
+                if (p.t>=1) { p.t=0; p.state=1; p.speed*=0.35; p.trail=[]; p.labelOpacity=0; enveloGlow=1; }
+              } else if (p.state===1) {
+                px = L.envelo.x; py = L.envelo.y; col = PURPLE;
+                p.r = Math.max(p.r*0.985, 1.5);
+                if (p.t>=1) { p.t=0; p.state=2; p.speed=0.0006; p.trail=[]; p.r=3+Math.random(); stats.out++; }
+              } else if (p.state===2) {
+                px = L.envelo.x;
+                py = lerp(L.envelo.y+L.envelo.h/2+4, L.sentinel.y-L.sentinel.h/2-4, et);
+                col = PURPLE;
+                if (p.t>=1) { p.state=3; }
+              } else {
+                px=p.x; py=p.y; p.opacity-=0.04; col = PURPLE;
+              }
+            }
+
+            p.x=px; p.y=py;
+            p.trail.push({x:px,y:py});
+            if(p.trail.length>8) p.trail.shift();
+            for(var j=0;j<p.trail.length-1;j++){
+              var ta=(j/p.trail.length)*0.12*p.opacity;
+              ctx.beginPath();
+              ctx.arc(p.trail[j].x,p.trail[j].y,p.r*(j/p.trail.length)*0.6,0,Math.PI*2);
+              ctx.fillStyle=rgb(col,ta);
+              ctx.fill();
+            }
+            if (p.state!==1) { drawPacket(px, py, p.r, col, p.opacity); }
+            if (p.state===0 && p.labelOpacity>0.05) {
+              ctx.font = '300 7px "IBM Plex Mono", monospace';
+              ctx.textAlign = 'left';
+              ctx.fillStyle = rgb(GREEN, 0.5*p.labelOpacity*p.opacity);
+              ctx.fillText(p.label, px+8, py+12);
+            }
+            if (p.opacity<=0) outPackets.splice(i,1);
+          }
+
+          // Inbound attack packets
+          for (var i=inPackets.length-1; i>=0; i--) {
+            var p = inPackets[i];
+            p.t += p.speed * 16;
+            var et = ease(clamp(p.t));
+            var px, py, wallX, wallY;
+
+            if (!L.mob) {
+              wallX = L.envelo.x + L.envelo.w/2 + 6;
+              wallY = L.envelo.y;
+              px = lerp(W+20, wallX, et);
+              py = lerp(L.envelo.y + Math.sin(i*2.7)*20, wallY, et);
+            } else {
+              wallX = L.envelo.x;
+              wallY = L.envelo.y + L.envelo.h/2 + 6;
+              px = lerp(L.envelo.x + Math.sin(i*2.7)*20, wallX, et);
+              py = lerp(H+20, wallY, et);
+            }
+
+            p.x = px; p.y = py;
+
+            if (!p.rejected) {
+              p.trail.push({x:px,y:py});
+              if(p.trail.length>8) p.trail.shift();
+              for(var j=0;j<p.trail.length-1;j++){
+                var ta=(j/p.trail.length)*0.15*p.opacity;
+                ctx.beginPath();
+                ctx.arc(p.trail[j].x,p.trail[j].y,p.r*(j/p.trail.length)*0.5,0,Math.PI*2);
+                ctx.fillStyle=rgb(RED,ta);
+                ctx.fill();
+              }
+              drawPacket(px, py, p.r, RED, p.opacity);
+
+              if (p.opacity > 0.3) {
+                ctx.font = '300 7px "IBM Plex Mono", monospace';
+                ctx.textAlign = L.mob ? 'left' : 'right';
+                ctx.fillStyle = rgb(RED, 0.45*p.opacity);
+                ctx.fillText(p.label, L.mob ? px+8 : px-8, py+12);
+              }
+
+              if (p.t >= 0.85) {
+                p.rejected = true;
+                shieldFlash = 1;
+                bannerFlash = 1;
+                stats.rejected++;
+                for(var b=0;b<12;b++) {
+                  var angle = Math.random()*Math.PI*2;
+                  var spd = 2 + Math.random()*4;
+                  bursts.push({
+                    x:px, y:py,
+                    vx: Math.cos(angle)*spd,
+                    vy: Math.sin(angle)*spd,
+                    life:1, r:1+Math.random()*2
+                  });
+                }
+              }
+            } else {
+              p.opacity -= 0.05;
+            }
+
+            if (p.opacity<=0) inPackets.splice(i,1);
+          }
+
+          // Burst particles
+          for (var i=bursts.length-1;i>=0;i--){
+            var b=bursts[i];
+            b.x+=b.vx; b.y+=b.vy;
+            b.vx*=0.9; b.vy*=0.9;
+            b.life-=0.025;
             if(b.life<=0){bursts.splice(i,1);continue;}
-            var bg=ctx.createRadialGradient(b.x,b.y,0,b.x,b.y,b.r*b.life*2.5);
-            bg.addColorStop(0,rgb(RED,b.life*0.2));bg.addColorStop(1,rgb(RED,0));
-            ctx.fillStyle=bg;ctx.beginPath();ctx.arc(b.x,b.y,b.r*b.life*2.5,0,Math.PI*2);ctx.fill();
-            ctx.beginPath();ctx.arc(b.x,b.y,b.r*b.life,0,Math.PI*2);
-            ctx.fillStyle=rgb(RED,b.life*0.45);ctx.fill();}
+            var bg = ctx.createRadialGradient(b.x,b.y,0,b.x,b.y,b.r*b.life*3);
+            bg.addColorStop(0,rgb(RED,b.life*0.4));
+            bg.addColorStop(1,rgb(RED,0));
+            ctx.fillStyle=bg;
+            ctx.beginPath(); ctx.arc(b.x,b.y,b.r*b.life*3,0,Math.PI*2); ctx.fill();
+            ctx.beginPath(); ctx.arc(b.x,b.y,b.r*b.life,0,Math.PI*2);
+            ctx.fillStyle=rgb(RED,b.life*0.8);
+            ctx.fill();
+          }
 
-          // Banner
-          var bA=0.08+bannerFlash*0.5;
-          var bT='NO INBOUND ACCESS \u2014 ONE-WAY DATA FLOW';
-          var bY=L.mob?H-14:H-12;
-          ctx.font='400 6px "IBM Plex Mono", monospace';ctx.textAlign='center';
-          var tw=ctx.measureText(bT).width;
-          var px1=W/2-tw/2-8,py1=bY-8,pw=tw+16,ph=14,pr=7;
-          ctx.beginPath();ctx.moveTo(px1+pr,py1);ctx.arcTo(px1+pw,py1,px1+pw,py1+ph,pr);
-          ctx.arcTo(px1+pw,py1+ph,px1,py1+ph,pr);ctx.arcTo(px1,py1+ph,px1,py1,pr);
-          ctx.arcTo(px1,py1,px1+pw,py1,pr);ctx.closePath();
-          ctx.fillStyle=rgb(RED,bA*0.04);ctx.fill();
-          ctx.strokeStyle=rgb(RED,bA*0.18);ctx.lineWidth=0.4;ctx.stroke();
+          // No Inbound banner
+          var bannerAlpha = 0.12 + bannerFlash * 0.6;
+          ctx.font = '300 8px "IBM Plex Mono", monospace';
+          ctx.textAlign = 'center';
+          var bannerText = 'NO INBOUND ACCESS \u2014 ONE-WAY DATA FLOW ONLY';
+          var bannerY = L.mob ? H-14 : H-12;
+          var tw = ctx.measureText(bannerText).width;
 
-          var ix=W/2-tw/2-1;
-          ctx.beginPath();ctx.moveTo(ix-2.5,bY-2.5);ctx.lineTo(ix+1.5,bY+1.5);
-          ctx.moveTo(ix+1.5,bY-2.5);ctx.lineTo(ix-2.5,bY+1.5);
-          ctx.strokeStyle=rgb(RED,bA*0.6);ctx.lineWidth=0.7;ctx.stroke();
-          ctx.fillStyle=rgb(RED,bA*0.6);ctx.fillText(bT,W/2+3,bY);
+          // Pill background
+          ctx.beginPath();
+          var px1=W/2-tw/2-12, py1=bannerY-10, pw=tw+24, ph=18, pr=9;
+          ctx.moveTo(px1+pr,py1); ctx.arcTo(px1+pw,py1,px1+pw,py1+ph,pr);
+          ctx.arcTo(px1+pw,py1+ph,px1,py1+ph,pr); ctx.arcTo(px1,py1+ph,px1,py1,pr);
+          ctx.arcTo(px1,py1,px1+pw,py1,pr); ctx.closePath();
+          ctx.fillStyle = rgb(RED,bannerAlpha*0.06);
+          ctx.fill();
+          ctx.strokeStyle = rgb(RED,bannerAlpha*0.25);
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
 
-          ctx.font='300 5.5px "IBM Plex Mono", monospace';ctx.fillStyle='rgba(255,255,255,0.18)';
-          ctx.fillText(stats.out+' TELEMETRY SENT \u00B7 '+stats.rejected+' INBOUND REJECTED',
-            W/2,L.mob?H-30:H-28);
+          // X icon
+          var iconX = W/2-tw/2-2;
+          ctx.beginPath();
+          ctx.moveTo(iconX-4,bannerY-4); ctx.lineTo(iconX+2,bannerY+2);
+          ctx.moveTo(iconX+2,bannerY-4); ctx.lineTo(iconX-4,bannerY+2);
+          ctx.strokeStyle=rgb(RED,bannerAlpha*0.8);
+          ctx.lineWidth=1; ctx.stroke();
+
+          ctx.fillStyle = rgb(RED,bannerAlpha*0.8);
+          ctx.fillText(bannerText, W/2+6, bannerY+1);
+
+          // Status line
+          ctx.font='300 8px "IBM Plex Mono", monospace';
+          ctx.fillStyle='rgba(255,255,255,0.2)';
+          var statusY = L.mob ? H-32 : H-30;
+          ctx.fillText(stats.out+' telemetry sent  \u00B7  '+stats.rejected+' inbound rejected', W/2, statusY);
 
           requestAnimationFrame(animate);
         }
 
-        resize();window.addEventListener('resize',resize);
+        resize();
+        window.addEventListener('resize', function(){ resize(); });
         requestAnimationFrame(animate);
       })();
       </script>
+
+      
 
       <!-- Three Security Pillars -->
       <div class="reveal" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; margin-bottom: var(--space-4);">
