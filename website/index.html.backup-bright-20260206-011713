@@ -2681,7 +2681,7 @@
       ctx.fillStyle=rgb(PURPLE,0.22-i*0.025);
       ctx.fillText(hash,x,startY+i*12);
     }
-    ctx.fillStyle=rgb(PURPLE,0.35);
+    ctx.fillStyle=rgb(PURPLE,0.22);
     ctx.fillText('HASH CHAIN \u25B8',x,startY-10);
   }
 
@@ -2786,12 +2786,12 @@
           var mob = W < 550;
           if (mob) {
             var cx = W/2;
-            return { model:{x:cx,y:58,r:42}, envelo:{x:cx,y:172,r:60}, gate:{x:cx,y:278,r:32},
-              exec:{x:cx-60,y:365,w:100,h:32}, block:{x:cx+60,y:365,w:100,h:32}, mob:true };
+            return { model:{x:cx,y:58,r:34}, envelo:{x:cx,y:168,r:50}, gate:{x:cx,y:270,r:26},
+              exec:{x:cx-56,y:352,w:84,h:28}, block:{x:cx+56,y:352,w:84,h:28}, mob:true };
           }
           var cy=H/2-4, m=W*0.06, s=(W-m*2)/5;
-          return { model:{x:m+s*0.5,y:cy,r:46}, envelo:{x:m+s*1.85,y:cy,r:64}, gate:{x:m+s*3.1,y:cy,r:34},
-            exec:{x:m+s*4.3,y:cy-38,w:108,h:34}, block:{x:m+s*4.3,y:cy+38,w:108,h:34}, mob:false };
+          return { model:{x:m+s*0.5,y:cy,r:38}, envelo:{x:m+s*1.85,y:cy,r:54}, gate:{x:m+s*3.1,y:cy,r:28},
+            exec:{x:m+s*4.3,y:cy-34,w:92,h:30}, block:{x:m+s*4.3,y:cy+34,w:92,h:30}, mob:false };
         }
 
         function paths(L) {
@@ -2812,11 +2812,11 @@
         // ── GRID ──
         function drawGrid() {
           var sp = W<550?36:48;
-          ctx.strokeStyle = 'rgba(255,255,255,0.025)';
+          ctx.strokeStyle = 'rgba(255,255,255,0.016)';
           ctx.lineWidth = 0.5;
           for(var x=sp;x<W;x+=sp){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
           for(var y=sp;y<H;y+=sp){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
-          ctx.strokeStyle='rgba(255,255,255,0.04)';
+          ctx.strokeStyle='rgba(255,255,255,0.028)';
           for(var x=sp*2;x<W;x+=sp*2) for(var y=sp*2;y<H;y+=sp*2){
             ctx.beginPath();ctx.moveTo(x-2,y);ctx.lineTo(x+2,y);ctx.stroke();
             ctx.beginPath();ctx.moveTo(x,y-2);ctx.lineTo(x,y+2);ctx.stroke();
@@ -2826,20 +2826,20 @@
         // ── PERIPHERAL DATA ──
         function drawPeripheral(time,L) {
           if(L.mob) return;
-          ctx.font='300 6.5px "IBM Plex Mono", monospace';
+          ctx.font='300 5.5px "IBM Plex Mono", monospace';
 
           // Top left - system ID + clock
           ctx.textAlign='left';
           var el=Math.floor(time);
           var h=Math.floor(el/3600)%100,m=Math.floor((el%3600)/60),s=el%60;
-          ctx.fillStyle=rgb(DIM,0.32);
+          ctx.fillStyle=rgb(DIM,0.2);
           ctx.fillText('T+ '+(h<10?'0':'')+h+':'+(m<10?'0':'')+m+':'+(s<10?'0':'')+s, 8, 14);
-          ctx.fillStyle=rgb(DIM,0.18);
+          ctx.fillStyle=rgb(DIM,0.11);
           ctx.fillText('ENVELO ENFORCEMENT LAYER', 8, 24);
 
           // Top right
           ctx.textAlign='right';
-          ctx.fillStyle=rgb(DIM,0.22);
+          ctx.fillStyle=rgb(DIM,0.14);
           ctx.fillText('SID:'+sessionId.toUpperCase(), W-8, 14);
           ctx.fillStyle=rgb(DIM,0.09);
           ctx.fillText('FRM:'+String(frameCount).padStart(6,'0'), W-8, 24);
@@ -2857,9 +2857,9 @@
             ['QUEUE',   Math.floor(3+Math.sin(time)*2)+'']
           ];
           for(var i=0;i<params.length;i++){
-            ctx.fillStyle=rgb(DIM,0.16);
+            ctx.fillStyle=rgb(DIM,0.1);
             ctx.fillText(params[i][0], 8, 42+i*11);
-            ctx.fillStyle=rgb(DIM,0.12);
+            ctx.fillStyle=rgb(DIM,0.07);
             ctx.fillText(params[i][1], 52, 42+i*11);
           }
 
@@ -2870,7 +2870,7 @@
           ctx.fillText('HASH CHAIN \u25B8', hx, hy);
           var seed=Math.floor(time*0.8);
           for(var i=0;i<7;i++){
-            ctx.fillStyle=rgb(PURPLE,0.16-i*0.018);
+            ctx.fillStyle=rgb(PURPLE,0.1-i*0.012);
             ctx.fillText(rndHex(16,seed+i*7),hx,hy+10+i*9);
           }
 
@@ -2878,29 +2878,29 @@
           ctx.textAlign='left';ctx.fillStyle=rgb(DIM,0.08);
           var d=new Date();
           ctx.fillText('UTC '+d.toISOString().substr(11,12),8,H-6);
-          ctx.textAlign='right';ctx.fillStyle=rgb(DIM,0.12);
+          ctx.textAlign='right';ctx.fillStyle=rgb(DIM,0.07);
           ctx.fillText('ENVELO-RT v4.2.1 \u00B7 NODE:PRIMARY',W-8,H-6);
         }
 
         // ── PATH ──
         function drawPath(p,col,alpha,label) {
           ctx.beginPath();ctx.moveTo(p.ax,p.ay);ctx.lineTo(p.bx,p.by);
-          ctx.setLineDash([1,3]);ctx.strokeStyle=rgb(col,alpha*0.55);
+          ctx.setLineDash([1,3]);ctx.strokeStyle=rgb(col,alpha*0.35);
           ctx.lineWidth=0.4;ctx.stroke();ctx.setLineDash([]);
 
           ctx.beginPath();ctx.moveTo(p.ax,p.ay);ctx.lineTo(p.bx,p.by);
-          ctx.strokeStyle=rgb(col,alpha*0.75);ctx.lineWidth=0.5;ctx.stroke();
+          ctx.strokeStyle=rgb(col,alpha*0.55);ctx.lineWidth=0.3;ctx.stroke();
 
           var ang=Math.atan2(p.by-p.ay,p.bx-p.ax);
           ctx.beginPath();ctx.moveTo(p.bx,p.by);
           ctx.lineTo(p.bx-4*Math.cos(ang-0.3),p.by-4*Math.sin(ang-0.3));
           ctx.lineTo(p.bx-4*Math.cos(ang+0.3),p.by-4*Math.sin(ang+0.3));
-          ctx.closePath();ctx.fillStyle=rgb(col,alpha*1.0);ctx.fill();
+          ctx.closePath();ctx.fillStyle=rgb(col,alpha*0.7);ctx.fill();
 
           if(label){
             var mx=(p.ax+p.bx)/2,my=(p.ay+p.by)/2-8;
-            ctx.font='500 6px "IBM Plex Mono", monospace';
-            ctx.textAlign='center';ctx.fillStyle=rgb(col,0.4);
+            ctx.font='500 5px "IBM Plex Mono", monospace';
+            ctx.textAlign='center';ctx.fillStyle=rgb(col,0.25);
             ctx.fillText(label,mx,my);
           }
         }
@@ -2910,7 +2910,7 @@
           if(Math.random()<0.18){
             var pi=Math.floor(Math.random()*Math.min(ps.length,2));
             streamParticles.push({path:pi,t:0,speed:0.002+Math.random()*0.002,
-              size:0.4+Math.random()*0.3,alpha:0.15+Math.random()*0.1});
+              size:0.4+Math.random()*0.3,alpha:0.09+Math.random()*0.07});
           }
           for(var i=streamParticles.length-1;i>=0;i--){
             var sp=streamParticles[i];sp.t+=sp.speed;
@@ -2931,16 +2931,16 @@
 
           ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);
           ctx.fillStyle='rgba(255,255,255,0.01)';ctx.fill();
-          ctx.strokeStyle=rgb(col,0.28);ctx.lineWidth=1.0;ctx.stroke();
+          ctx.strokeStyle=rgb(col,0.16);ctx.lineWidth=0.7;ctx.stroke();
 
           ctx.beginPath();ctx.arc(x,y,r,-Math.PI*0.75,-Math.PI*0.25);
           var tg=ctx.createLinearGradient(x-r,y-r,x+r,y-r);
-          tg.addColorStop(0,rgb(col,0));tg.addColorStop(0.5,rgb(col,0.25));tg.addColorStop(1,rgb(col,0));
+          tg.addColorStop(0,rgb(col,0));tg.addColorStop(0.5,rgb(col,0.14));tg.addColorStop(1,rgb(col,0));
           ctx.strokeStyle=tg;ctx.lineWidth=0.5;ctx.stroke();
 
           // Registration marks
           var ml=5;
-          ctx.strokeStyle=rgb(col,0.14);ctx.lineWidth=0.5;
+          ctx.strokeStyle=rgb(col,0.08);ctx.lineWidth=0.4;
           ctx.beginPath();ctx.moveTo(x-r+4,y-r);ctx.lineTo(x-r+4+ml,y-r);ctx.stroke();
           ctx.beginPath();ctx.moveTo(x-r,y-r+4);ctx.lineTo(x-r,y-r+4+ml);ctx.stroke();
           ctx.beginPath();ctx.moveTo(x+r-4,y-r);ctx.lineTo(x+r-4-ml,y-r);ctx.stroke();
@@ -2950,8 +2950,8 @@
           ctx.beginPath();ctx.moveTo(x+r-4,y+r);ctx.lineTo(x+r-4-ml,y+r);ctx.stroke();
           ctx.beginPath();ctx.moveTo(x+r,y+r-4);ctx.lineTo(x+r,y+r-4-ml);ctx.stroke();
 
-          ctx.font='500 9px "IBM Plex Mono", monospace';
-          ctx.textAlign='center';ctx.fillStyle=rgb(col,0.85);
+          ctx.font='500 8px "IBM Plex Mono", monospace';
+          ctx.textAlign='center';ctx.fillStyle=rgb(col,0.65);
           ctx.fillText(label,x,y+r+13);
         }
 
@@ -2970,7 +2970,7 @@
           tl.addColorStop(0,rgb(col,0));tl.addColorStop(0.5,rgb(col,0.12));tl.addColorStop(1,rgb(col,0));
           ctx.strokeStyle=tl;ctx.lineWidth=0.4;ctx.stroke();
 
-          ctx.font='500 8px "IBM Plex Mono", monospace';
+          ctx.font='500 7px "IBM Plex Mono", monospace';
           ctx.textAlign='center';ctx.fillStyle=rgb(col,0.55);
           ctx.fillText(label,x,y+2.5);
         }
@@ -2981,19 +2981,19 @@
           for(var rr=0;rr<2;rr++) for(var cc=0;cc<2;cc++){
             var sx=ox+cc*(s+g),sy=oy+rr*(s+g);
             ctx.beginPath();ctx.rect(sx,sy,s,s);
-            ctx.strokeStyle=rgb(GREEN,0.35);ctx.lineWidth=0.7;ctx.stroke();
+            ctx.strokeStyle=rgb(GREEN,0.2);ctx.lineWidth=0.5;ctx.stroke();
             ctx.fillStyle=rgb(GREEN,0.02+0.015*Math.sin(time*2.2+rr*1.5+cc*0.9));ctx.fill();
           }
-          ctx.font='300 7px "IBM Plex Mono", monospace';ctx.textAlign='center';
-          ctx.fillStyle=rgb(GREEN,0.35);
+          ctx.font='300 5px "IBM Plex Mono", monospace';ctx.textAlign='center';
+          ctx.fillStyle=rgb(GREEN,0.22);
           var val=(47.2+Math.sin(time*0.7)*0.3).toFixed(1);
           ctx.fillText('SPD:'+val+'  LD:'+(81.3+Math.sin(time*1.1)*1.2).toFixed(1)+'%',x,y+14);
 
           // Status indicator
           ctx.beginPath();ctx.arc(x-14,y+14,1.2,0,Math.PI*2);
           ctx.fillStyle=rgb(GREEN,0.28+0.12*Math.sin(time*3));ctx.fill();
-          ctx.font='300 5px "IBM Plex Mono", monospace';ctx.textAlign='left';
-          ctx.fillStyle=rgb(GREEN,0.28);ctx.fillText('NOM',x-11,y+15.5);
+          ctx.font='300 4px "IBM Plex Mono", monospace';ctx.textAlign='left';
+          ctx.fillStyle=rgb(GREEN,0.18);ctx.fillText('NOM',x-11,y+15.5);
         }
 
         // ── ENVELO INTERIOR ──
@@ -3031,20 +3031,20 @@
           }
 
           // Right micro readouts
-          ctx.font='300 7px "IBM Plex Mono", monospace';ctx.textAlign='left';
-          ctx.fillStyle=rgb(PURPLE,0.35);
+          ctx.font='300 5px "IBM Plex Mono", monospace';ctx.textAlign='left';
+          ctx.fillStyle=rgb(PURPLE,0.22);
           ctx.fillText('CONF:'+(0.994-Math.random()*0.002).toFixed(3),x+r+6,y-10);
           ctx.fillText('DRFT:'+(Math.random()*0.01).toFixed(4),x+r+6,y-1);
-          ctx.fillStyle=rgb(PURPLE,0.26);
+          ctx.fillStyle=rgb(PURPLE,0.16);
           ctx.fillText('CYC:'+Math.floor(time*10)%9999,x+r+6,y+8);
 
           // Left micro readouts
-          ctx.textAlign='right';ctx.fillStyle=rgb(PURPLE,0.3);
+          ctx.textAlign='right';ctx.fillStyle=rgb(PURPLE,0.18);
           ctx.fillText('LIM:'+(120+Math.sin(time*0.5)*0.5).toFixed(1),x-r-6,y-6);
           ctx.fillText('MODE:ENFORCE',x-r-6,y+3);
 
-          ctx.textAlign='center';ctx.font='300 7px "IBM Plex Mono", monospace';
-          ctx.fillStyle=rgb(PURPLE,0.42);ctx.fillText('INTERLOCK',x,y+r+23);
+          ctx.textAlign='center';ctx.font='300 6px "IBM Plex Mono", monospace';
+          ctx.fillStyle=rgb(PURPLE,0.28);ctx.fillText('INTERLOCK',x,y+r+23);
         }
 
         // ── GATE INTERIOR ──
@@ -3067,7 +3067,7 @@
           ctx.beginPath();ctx.arc(0,r*0.42,1,0,Math.PI*2);ctx.fillStyle=gc;ctx.fill();
           ctx.restore();
 
-          ctx.font='300 5px "IBM Plex Mono", monospace';ctx.textAlign='center';
+          ctx.font='300 4px "IBM Plex Mono", monospace';ctx.textAlign='center';
           var state=Math.abs(gateAngle)<0.05?'IDLE':(gateAngle>0?'PASS':'DENY');
           ctx.fillStyle=Math.abs(gateAngle)<0.05?'rgba(255,255,255,0.12)':
             (gateAngle>0?rgb(GREEN,0.25):rgb(RED,0.25));
@@ -3077,13 +3077,13 @@
         // ── PACKET ──
         function drawPacket(px,py,size,col,opacity) {
           var g1=ctx.createRadialGradient(px,py,0,px,py,size*4.5);
-          g1.addColorStop(0,rgb(col,opacity*0.12));g1.addColorStop(1,rgb(col,0));
+          g1.addColorStop(0,rgb(col,opacity*0.07));g1.addColorStop(1,rgb(col,0));
           ctx.fillStyle=g1;ctx.beginPath();ctx.arc(px,py,size*4.5,0,Math.PI*2);ctx.fill();
           var g2=ctx.createRadialGradient(px,py,0,px,py,size*2);
-          g2.addColorStop(0,rgb(col,opacity*0.35));g2.addColorStop(1,rgb(col,0));
+          g2.addColorStop(0,rgb(col,opacity*0.2));g2.addColorStop(1,rgb(col,0));
           ctx.fillStyle=g2;ctx.beginPath();ctx.arc(px,py,size*2,0,Math.PI*2);ctx.fill();
           ctx.beginPath();ctx.arc(px,py,size,0,Math.PI*2);
-          ctx.fillStyle=rgb(col,opacity*0.9);ctx.fill();
+          ctx.fillStyle=rgb(col,opacity*0.75);ctx.fill();
           ctx.beginPath();ctx.arc(px,py,size*0.25,0,Math.PI*2);
           ctx.fillStyle='rgba(255,255,255,'+(opacity*0.12)+')';ctx.fill();
         }
@@ -3122,7 +3122,7 @@
           drawRectNode(L.block.x,L.block.y,L.block.w,L.block.h,RED,'BLOCKED');
 
           // Counters near endpoints
-          ctx.font='300 5.5px "IBM Plex Mono", monospace';
+          ctx.font='300 4.5px "IBM Plex Mono", monospace';
           if(stats.exec>0){ctx.textAlign='left';ctx.fillStyle=rgb(GREEN,0.2);
             ctx.fillText(stats.exec+'',L.exec.x+L.exec.w/2+4,L.exec.y+2);}
           if(stats.block>0){ctx.textAlign='left';ctx.fillStyle=rgb(RED,0.2);
@@ -3159,7 +3159,7 @@
               ctx.beginPath();ctx.arc(p.trail[j].x,p.trail[j].y,p.r*(j/p.trail.length)*0.35,0,Math.PI*2);
               ctx.fillStyle=rgb(col,ta);ctx.fill();}
             if(p.state===1)p.trail=[];else drawPacket(px,py,p.r,col,p.opacity);
-            if(p.state===0&&p.labelOpacity>0.05){ctx.font='300 7px "IBM Plex Mono", monospace';
+            if(p.state===0&&p.labelOpacity>0.05){ctx.font='300 5px "IBM Plex Mono", monospace';
               ctx.textAlign='left';ctx.fillStyle=rgb(GREEN,0.32*p.labelOpacity*p.opacity);
               ctx.fillText(p.label,px+7,py-3);}
             if(p.opacity<=0)packets.splice(i,1);
@@ -3175,8 +3175,8 @@
             ctx.beginPath();ctx.arc(b.x,b.y,b.r*b.life,0,Math.PI*2);
             ctx.fillStyle=rgb(RED,b.life*0.5);ctx.fill();}
 
-          ctx.font='300 6.5px "IBM Plex Mono", monospace';ctx.textAlign='center';
-          ctx.fillStyle='rgba(255,255,255,0.3)';
+          ctx.font='300 5.5px "IBM Plex Mono", monospace';ctx.textAlign='center';
+          ctx.fillStyle='rgba(255,255,255,0.18)';
           ctx.fillText('AUDIT \u00B7 '+stats.total+' CHECKED \u00B7 '+stats.exec+' PASSED \u00B7 '+stats.block+' BLOCKED',
             W/2,L.mob?H-10:H-8);
 
@@ -3289,15 +3289,15 @@
 
         function resize(){
           var r=c.parentElement.getBoundingClientRect();W=r.width;
-          H=W<550?420:340;c.width=W*dpr;c.height=H*dpr;
+          H=W<550?400:320;c.width=W*dpr;c.height=H*dpr;
           c.style.height=H+'px';ctx.setTransform(dpr,0,0,dpr,0,0);
         }
 
         function layout(){
           var mob=W<550;
-          if(mob){var cx=W/2;return{model:{x:cx,y:52,r:44},envelo:{x:cx,y:172,r:62},sentinel:{x:cx,y:305,r:44},mob:true};}
+          if(mob){var cx=W/2;return{model:{x:cx,y:52,r:36},envelo:{x:cx,y:168,r:52},sentinel:{x:cx,y:295,r:36},mob:true};}
           var cy=H/2-8,m=W*0.08,s=(W-m*2)/3;
-          return{model:{x:m+s*0.5,y:cy,r:48},envelo:{x:m+s*1.5,y:cy,r:66},sentinel:{x:m+s*2.5,y:cy,r:48},mob:false};
+          return{model:{x:m+s*0.5,y:cy,r:40},envelo:{x:m+s*1.5,y:cy,r:56},sentinel:{x:m+s*2.5,y:cy,r:40},mob:false};
         }
 
         function getConns(L){
@@ -3311,10 +3311,10 @@
 
         // ── GRID ──
         function drawGrid(){
-          var sp=W<550?36:48;ctx.strokeStyle='rgba(255,255,255,0.025)';ctx.lineWidth=0.5;
+          var sp=W<550?36:48;ctx.strokeStyle='rgba(255,255,255,0.016)';ctx.lineWidth=0.5;
           for(var x=sp;x<W;x+=sp){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
           for(var y=sp;y<H;y+=sp){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
-          ctx.strokeStyle='rgba(255,255,255,0.04)';
+          ctx.strokeStyle='rgba(255,255,255,0.028)';
           for(var x=sp*2;x<W;x+=sp*2)for(var y=sp*2;y<H;y+=sp*2){
             ctx.beginPath();ctx.moveTo(x-2,y);ctx.lineTo(x+2,y);ctx.stroke();
             ctx.beginPath();ctx.moveTo(x,y-2);ctx.lineTo(x,y+2);ctx.stroke();}
@@ -3323,17 +3323,17 @@
         // ── PERIPHERAL ──
         function drawPeripheral(time,L){
           if(L.mob)return;
-          ctx.font='300 6.5px "IBM Plex Mono", monospace';
+          ctx.font='300 5.5px "IBM Plex Mono", monospace';
 
           // Top left
           ctx.textAlign='left';
           var el=Math.floor(time),h=Math.floor(el/3600)%100,m=Math.floor((el%3600)/60),s=el%60;
-          ctx.fillStyle=rgb(DIM,0.32);
+          ctx.fillStyle=rgb(DIM,0.2);
           ctx.fillText('T+ '+(h<10?'0':'')+h+':'+(m<10?'0':'')+m+':'+(s<10?'0':'')+s,8,14);
-          ctx.fillStyle=rgb(DIM,0.18);ctx.fillText('SECURITY ENFORCEMENT LAYER',8,24);
+          ctx.fillStyle=rgb(DIM,0.11);ctx.fillText('SECURITY ENFORCEMENT LAYER',8,24);
 
           // Top right
-          ctx.textAlign='right';ctx.fillStyle=rgb(DIM,0.22);
+          ctx.textAlign='right';ctx.fillStyle=rgb(DIM,0.14);
           ctx.fillText('SID:'+sessionId.toUpperCase(),W-8,14);
           ctx.fillStyle=rgb(DIM,0.09);
           ctx.fillText('FRM:'+String(frameCount).padStart(6,'0'),W-8,24);
@@ -3346,49 +3346,49 @@
             ['FIREWALL','ACTIVE'],['IDS','NOMINAL']
           ];
           for(var i=0;i<sec.length;i++){
-            ctx.fillStyle=rgb(DIM,0.16);ctx.fillText(sec[i][0],8,42+i*11);
+            ctx.fillStyle=rgb(DIM,0.1);ctx.fillText(sec[i][0],8,42+i*11);
             ctx.fillStyle=i===1?rgb(RED,0.15):rgb(DIM,0.07);
             ctx.fillText(sec[i][1],62,42+i*11);
           }
 
           // Right column - evidence hash chain
           ctx.textAlign='right';var hx=W-8,hy=42;
-          ctx.fillStyle=rgb(PURPLE,0.35);ctx.fillText('EVIDENCE CHAIN \u25B8',hx,hy);
+          ctx.fillStyle=rgb(PURPLE,0.14);ctx.fillText('EVIDENCE CHAIN \u25B8',hx,hy);
           var seed=Math.floor(time*0.8);
           for(var i=0;i<7;i++){
-            ctx.fillStyle=rgb(PURPLE,0.16-i*0.018);
+            ctx.fillStyle=rgb(PURPLE,0.1-i*0.012);
             ctx.fillText(rndHex(16,seed+i*7),hx,hy+10+i*9);
           }
 
           // Bottom
           ctx.textAlign='left';ctx.fillStyle=rgb(DIM,0.08);
           var d=new Date();ctx.fillText('UTC '+d.toISOString().substr(11,12),8,H-6);
-          ctx.textAlign='right';ctx.fillStyle=rgb(DIM,0.12);
+          ctx.textAlign='right';ctx.fillStyle=rgb(DIM,0.07);
           ctx.fillText('SEC-MONITOR v4.2.1 \u00B7 THREAT:LOW',W-8,H-6);
         }
 
         // ── PATH ──
         function drawPath(p,col,alpha,label){
           ctx.beginPath();ctx.moveTo(p.ax,p.ay);ctx.lineTo(p.bx,p.by);
-          ctx.setLineDash([1,3]);ctx.strokeStyle=rgb(col,alpha*0.55);
+          ctx.setLineDash([1,3]);ctx.strokeStyle=rgb(col,alpha*0.35);
           ctx.lineWidth=0.4;ctx.stroke();ctx.setLineDash([]);
           ctx.beginPath();ctx.moveTo(p.ax,p.ay);ctx.lineTo(p.bx,p.by);
-          ctx.strokeStyle=rgb(col,alpha*0.75);ctx.lineWidth=0.5;ctx.stroke();
+          ctx.strokeStyle=rgb(col,alpha*0.55);ctx.lineWidth=0.3;ctx.stroke();
           var ang=Math.atan2(p.by-p.ay,p.bx-p.ax);
           ctx.beginPath();ctx.moveTo(p.bx,p.by);
           ctx.lineTo(p.bx-4*Math.cos(ang-0.3),p.by-4*Math.sin(ang-0.3));
           ctx.lineTo(p.bx-4*Math.cos(ang+0.3),p.by-4*Math.sin(ang+0.3));
-          ctx.closePath();ctx.fillStyle=rgb(col,alpha*1.0);ctx.fill();
+          ctx.closePath();ctx.fillStyle=rgb(col,alpha*0.7);ctx.fill();
           if(label){var mx=(p.ax+p.bx)/2,my=(p.ay+p.by)/2-8;
-            ctx.font='500 6px "IBM Plex Mono", monospace';ctx.textAlign='center';
-            ctx.fillStyle=rgb(col,0.4);ctx.fillText(label,mx,my);}
+            ctx.font='500 5px "IBM Plex Mono", monospace';ctx.textAlign='center';
+            ctx.fillStyle=rgb(col,0.25);ctx.fillText(label,mx,my);}
         }
 
         // ── STREAMS ──
         function updateStreams(time,conns){
           if(Math.random()<0.14){var ci=Math.floor(Math.random()*conns.length);
             streamParticles.push({conn:ci,t:0,speed:0.002+Math.random()*0.002,
-              size:0.4+Math.random()*0.3,alpha:0.15+Math.random()*0.1});}
+              size:0.4+Math.random()*0.3,alpha:0.09+Math.random()*0.07});}
           for(var i=streamParticles.length-1;i>=0;i--){var sp=streamParticles[i];sp.t+=sp.speed;
             if(sp.t>1){streamParticles.splice(i,1);continue;}
             var cn=conns[sp.conn];if(!cn){streamParticles.splice(i,1);continue;}
@@ -3405,14 +3405,14 @@
           ctx.fillStyle=h;ctx.beginPath();ctx.arc(x,y,r*1.6,0,Math.PI*2);ctx.fill();
           ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);
           ctx.fillStyle='rgba(255,255,255,0.01)';ctx.fill();
-          ctx.strokeStyle=rgb(col,0.28);ctx.lineWidth=1.0;ctx.stroke();
+          ctx.strokeStyle=rgb(col,0.16);ctx.lineWidth=0.7;ctx.stroke();
           ctx.beginPath();ctx.arc(x,y,r,-Math.PI*0.75,-Math.PI*0.25);
           var tg=ctx.createLinearGradient(x-r,y-r,x+r,y-r);
-          tg.addColorStop(0,rgb(col,0));tg.addColorStop(0.5,rgb(col,0.25));tg.addColorStop(1,rgb(col,0));
+          tg.addColorStop(0,rgb(col,0));tg.addColorStop(0.5,rgb(col,0.14));tg.addColorStop(1,rgb(col,0));
           ctx.strokeStyle=tg;ctx.lineWidth=0.5;ctx.stroke();
 
           // Registration marks
-          var ml=5;ctx.strokeStyle=rgb(col,0.14);ctx.lineWidth=0.5;
+          var ml=5;ctx.strokeStyle=rgb(col,0.08);ctx.lineWidth=0.4;
           ctx.beginPath();ctx.moveTo(x-r+4,y-r);ctx.lineTo(x-r+4+ml,y-r);ctx.stroke();
           ctx.beginPath();ctx.moveTo(x-r,y-r+4);ctx.lineTo(x-r,y-r+4+ml);ctx.stroke();
           ctx.beginPath();ctx.moveTo(x+r-4,y-r);ctx.lineTo(x+r-4-ml,y-r);ctx.stroke();
@@ -3422,8 +3422,8 @@
           ctx.beginPath();ctx.moveTo(x+r-4,y+r);ctx.lineTo(x+r-4-ml,y+r);ctx.stroke();
           ctx.beginPath();ctx.moveTo(x+r,y+r-4);ctx.lineTo(x+r,y+r-4-ml);ctx.stroke();
 
-          ctx.font='500 9px "IBM Plex Mono", monospace';ctx.textAlign='center';
-          ctx.fillStyle=rgb(col,0.85);ctx.fillText(label,x,y+r+13);
+          ctx.font='500 8px "IBM Plex Mono", monospace';ctx.textAlign='center';
+          ctx.fillStyle=rgb(col,0.65);ctx.fillText(label,x,y+r+13);
         }
 
         // ── MODEL INTERIOR ──
@@ -3431,21 +3431,21 @@
           var s=5,g=2,ox=x-(s+g/2),oy=y-(s+g/2)-3;
           for(var rr=0;rr<2;rr++)for(var cc=0;cc<2;cc++){
             var sx=ox+cc*(s+g),sy=oy+rr*(s+g);ctx.beginPath();ctx.rect(sx,sy,s,s);
-            ctx.strokeStyle=rgb(GREEN,0.35);ctx.lineWidth=0.7;ctx.stroke();
+            ctx.strokeStyle=rgb(GREEN,0.2);ctx.lineWidth=0.5;ctx.stroke();
             ctx.fillStyle=rgb(GREEN,0.02+0.015*Math.sin(time*2.2+rr*1.5+cc*0.9));ctx.fill();}
-          ctx.font='300 7px "IBM Plex Mono", monospace';ctx.textAlign='center';
-          ctx.fillStyle='rgba(255,255,255,0.28)';ctx.fillText('Autonomous System',x,y+r+23);
+          ctx.font='300 6px "IBM Plex Mono", monospace';ctx.textAlign='center';
+          ctx.fillStyle='rgba(255,255,255,0.16)';ctx.fillText('Autonomous System',x,y+r+23);
 
           // Cycling action
           var actions=['NAVIGATE','ACCELERATE','STEER','HOLD','BRAKE','LANE_CHG'];
-          ctx.font='300 7px "IBM Plex Mono", monospace';ctx.fillStyle=rgb(GREEN,0.35);
+          ctx.font='300 5px "IBM Plex Mono", monospace';ctx.fillStyle=rgb(GREEN,0.22);
           ctx.fillText(actions[Math.floor(time*0.7)%actions.length],x,y+14);
 
           // Status dot
           ctx.beginPath();ctx.arc(x-14,y+14,1.2,0,Math.PI*2);
           ctx.fillStyle=rgb(GREEN,0.28+0.12*Math.sin(time*3));ctx.fill();
-          ctx.font='300 5px "IBM Plex Mono", monospace';ctx.textAlign='left';
-          ctx.fillStyle=rgb(GREEN,0.28);ctx.fillText('NOM',x-11,y+15.5);
+          ctx.font='300 4px "IBM Plex Mono", monospace';ctx.textAlign='left';
+          ctx.fillStyle=rgb(GREEN,0.18);ctx.fillText('NOM',x-11,y+15.5);
         }
 
         // ── ENVELO INTERIOR ──
@@ -3477,24 +3477,24 @@
             ctx.beginPath();ctx.arc(x,y,sr.r,sr.angle-0.5,sr.angle+0.5);
             ctx.strokeStyle=rgb(RED,sr.alpha);ctx.lineWidth=1.2;ctx.stroke();}
 
-          ctx.font='300 7px "IBM Plex Mono", monospace';ctx.textAlign='center';
-          ctx.fillStyle='rgba(255,255,255,0.28)';ctx.fillText('Enforcement Agent',x,y+r+23);
+          ctx.font='300 6px "IBM Plex Mono", monospace';ctx.textAlign='center';
+          ctx.fillStyle='rgba(255,255,255,0.16)';ctx.fillText('Enforcement Agent',x,y+r+23);
 
           // Right micro data
-          ctx.font='300 7px "IBM Plex Mono", monospace';ctx.textAlign='left';
-          ctx.fillStyle=rgb(PURPLE,0.35);
+          ctx.font='300 5px "IBM Plex Mono", monospace';ctx.textAlign='left';
+          ctx.fillStyle=rgb(PURPLE,0.22);
           ctx.fillText('CONF:'+(0.994-Math.random()*0.002).toFixed(3),x+r+6,y-10);
           ctx.fillText('DRFT:'+(Math.random()*0.01).toFixed(4),x+r+6,y-1);
-          ctx.fillStyle=rgb(PURPLE,0.26);ctx.fillText('CYC:'+Math.floor(time*10)%9999,x+r+6,y+8);
+          ctx.fillStyle=rgb(PURPLE,0.16);ctx.fillText('CYC:'+Math.floor(time*10)%9999,x+r+6,y+8);
 
           // Left micro data
-          ctx.textAlign='right';ctx.fillStyle=rgb(PURPLE,0.3);
+          ctx.textAlign='right';ctx.fillStyle=rgb(PURPLE,0.18);
           ctx.fillText('SHLD:ACTIVE',x-r-6,y-6);
           ctx.fillText('MODE:ENFORCE',x-r-6,y+3);
 
           // Threat counter
           var tAlpha=0.08+bannerFlash*0.3;
-          ctx.textAlign='right';ctx.font='300 5.5px "IBM Plex Mono", monospace';
+          ctx.textAlign='right';ctx.font='300 4.5px "IBM Plex Mono", monospace';
           ctx.fillStyle=rgb(stats.rejected>0?RED:GREEN,tAlpha+0.08);
           ctx.fillText(stats.rejected>0?'THR:'+stats.rejected:'THR:CLR',x+r-4,y-r+8);
         }
@@ -3502,7 +3502,7 @@
         // ── SENTINEL INTERIOR ──
         function drawSentinelInterior(x,y,r,time){
           ctx.beginPath();ctx.ellipse(x,y-10,12,4,0,0,Math.PI*2);
-          ctx.strokeStyle=rgb(PURPLE,0.3);ctx.lineWidth=0.8;ctx.stroke();
+          ctx.strokeStyle=rgb(PURPLE,0.18);ctx.lineWidth=0.6;ctx.stroke();
           ctx.fillStyle=rgb(PURPLE,0.012);ctx.fill();
           ctx.beginPath();ctx.moveTo(x-12,y-10);ctx.lineTo(x-12,y+4);
           ctx.strokeStyle=rgb(PURPLE,0.1);ctx.lineWidth=0.5;ctx.stroke();
@@ -3513,28 +3513,28 @@
           ctx.beginPath();ctx.arc(x,y-3,1.2,0,Math.PI*2);
           ctx.fillStyle=rgb(PURPLE,0.1+0.07*Math.sin(time*3));ctx.fill();
 
-          ctx.font='300 7px "IBM Plex Mono", monospace';ctx.textAlign='center';
-          ctx.fillStyle='rgba(255,255,255,0.28)';ctx.fillText('Authority Registry',x,y+r+23);
+          ctx.font='300 6px "IBM Plex Mono", monospace';ctx.textAlign='center';
+          ctx.fillStyle='rgba(255,255,255,0.16)';ctx.fillText('Authority Registry',x,y+r+23);
 
           // Scrolling micro-hashes
-          ctx.font='300 5px "IBM Plex Mono", monospace';
+          ctx.font='300 4px "IBM Plex Mono", monospace';
           var seed=Math.floor(time*1.5);
           for(var i=0;i<3;i++){ctx.fillStyle=rgb(PURPLE,0.1-i*0.025);
             ctx.fillText(rndHex(10,seed+i*5),x,y+12+i*7);}
 
-          ctx.font='300 7px "IBM Plex Mono", monospace';ctx.fillStyle=rgb(PURPLE,0.3);
+          ctx.font='300 5px "IBM Plex Mono", monospace';ctx.fillStyle=rgb(PURPLE,0.18);
           ctx.fillText('REC:'+(stats.out+stats.rejected),x,y+r-6);
         }
 
         // ── PACKET ──
         function drawPacket(px,py,size,col,opacity){
           var g1=ctx.createRadialGradient(px,py,0,px,py,size*4.5);
-          g1.addColorStop(0,rgb(col,opacity*0.12));g1.addColorStop(1,rgb(col,0));
+          g1.addColorStop(0,rgb(col,opacity*0.07));g1.addColorStop(1,rgb(col,0));
           ctx.fillStyle=g1;ctx.beginPath();ctx.arc(px,py,size*4.5,0,Math.PI*2);ctx.fill();
           var g2=ctx.createRadialGradient(px,py,0,px,py,size*2);
-          g2.addColorStop(0,rgb(col,opacity*0.35));g2.addColorStop(1,rgb(col,0));
+          g2.addColorStop(0,rgb(col,opacity*0.2));g2.addColorStop(1,rgb(col,0));
           ctx.fillStyle=g2;ctx.beginPath();ctx.arc(px,py,size*2,0,Math.PI*2);ctx.fill();
-          ctx.beginPath();ctx.arc(px,py,size,0,Math.PI*2);ctx.fillStyle=rgb(col,opacity*0.9);ctx.fill();
+          ctx.beginPath();ctx.arc(px,py,size,0,Math.PI*2);ctx.fillStyle=rgb(col,opacity*0.75);ctx.fill();
           ctx.beginPath();ctx.arc(px,py,size*0.25,0,Math.PI*2);
           ctx.fillStyle='rgba(255,255,255,'+(opacity*0.12)+')';ctx.fill();
         }
@@ -3587,7 +3587,7 @@
               ctx.beginPath();ctx.arc(p.trail[j].x,p.trail[j].y,p.r*(j/p.trail.length)*0.35,0,Math.PI*2);
               ctx.fillStyle=rgb(col,ta);ctx.fill();}
             if(p.state!==1)drawPacket(px,py,p.r,col,p.opacity);
-            if(p.state===0&&p.labelOpacity>0.05){ctx.font='300 7px "IBM Plex Mono", monospace';
+            if(p.state===0&&p.labelOpacity>0.05){ctx.font='300 5px "IBM Plex Mono", monospace';
               ctx.textAlign='left';ctx.fillStyle=rgb(GREEN,0.32*p.labelOpacity*p.opacity);
               ctx.fillText(p.label,px+7,py-3);}
             if(p.opacity<=0)outPackets.splice(i,1);}
@@ -3606,7 +3606,7 @@
                 ctx.beginPath();ctx.arc(p.trail[j].x,p.trail[j].y,p.r*(j/p.trail.length)*0.4,0,Math.PI*2);
                 ctx.fillStyle=rgb(RED,ta);ctx.fill();}
               drawPacket(px,py,p.r,RED,p.opacity*0.85);
-              if(p.opacity>0.3){ctx.font='300 7px "IBM Plex Mono", monospace';
+              if(p.opacity>0.3){ctx.font='300 5px "IBM Plex Mono", monospace';
                 ctx.textAlign=L.mob?'left':'right';ctx.fillStyle=rgb(RED,0.3*p.opacity);
                 ctx.fillText(p.label,L.mob?px+8:px-8,py-4);}
               if(p.t>=0.88){p.rejected=true;bannerFlash=1;stats.rejected++;
@@ -3639,16 +3639,16 @@
           ctx.beginPath();ctx.moveTo(px1+pr,py1);ctx.arcTo(px1+pw,py1,px1+pw,py1+ph,pr);
           ctx.arcTo(px1+pw,py1+ph,px1,py1+ph,pr);ctx.arcTo(px1,py1+ph,px1,py1,pr);
           ctx.arcTo(px1,py1,px1+pw,py1,pr);ctx.closePath();
-          ctx.fillStyle=rgb(RED,bA*0.08);ctx.fill();
-          ctx.strokeStyle=rgb(RED,bA*0.3);ctx.lineWidth=0.4;ctx.stroke();
+          ctx.fillStyle=rgb(RED,bA*0.04);ctx.fill();
+          ctx.strokeStyle=rgb(RED,bA*0.18);ctx.lineWidth=0.4;ctx.stroke();
 
           var ix=W/2-tw/2-1;
           ctx.beginPath();ctx.moveTo(ix-2.5,bY-2.5);ctx.lineTo(ix+1.5,bY+1.5);
           ctx.moveTo(ix+1.5,bY-2.5);ctx.lineTo(ix-2.5,bY+1.5);
-          ctx.strokeStyle=rgb(RED,bA*0.85);ctx.lineWidth=0.7;ctx.stroke();
-          ctx.fillStyle=rgb(RED,bA*0.85);ctx.fillText(bT,W/2+3,bY);
+          ctx.strokeStyle=rgb(RED,bA*0.6);ctx.lineWidth=0.7;ctx.stroke();
+          ctx.fillStyle=rgb(RED,bA*0.6);ctx.fillText(bT,W/2+3,bY);
 
-          ctx.font='300 6.5px "IBM Plex Mono", monospace';ctx.fillStyle='rgba(255,255,255,0.3)';
+          ctx.font='300 5.5px "IBM Plex Mono", monospace';ctx.fillStyle='rgba(255,255,255,0.18)';
           ctx.fillText(stats.out+' TELEMETRY SENT \u00B7 '+stats.rejected+' INBOUND REJECTED',
             W/2,L.mob?H-30:H-28);
 
@@ -4472,7 +4472,7 @@
             ctx.fillStyle=rgb(PURPLE,0.22-i*0.025);
             ctx.fillText(hash,x,startY+i*12);
           }
-          ctx.fillStyle=rgb(PURPLE,0.35);
+          ctx.fillStyle=rgb(PURPLE,0.22);
           ctx.fillText('HASH CHAIN \u25B8',x,startY-10);
         }
 
