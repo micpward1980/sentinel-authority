@@ -32,7 +32,7 @@ async def lifespan(app: FastAPI):
     logger.info("Database initialized")
     
     # Organization migration
-    from app.database import engine
+    from app.core.database import engine
     from sqlalchemy import text as raw_text
     async with engine.begin() as conn:
         try:
