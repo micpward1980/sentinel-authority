@@ -53,49 +53,32 @@ async def lifespan(app: FastAPI):
         except Exception as e:
             logger.warning(f"Org table migration: {e}")
         
-        # Backfill users
+            logger.info("Org schema migration complete")
+        except Exception as e:
+            logger.warning(f"Org schema note: {e}")
+    
+    # Backfill in separate connection
+    async with engine.begin() as conn2:
         try:
-            rows = await conn.execute(raw_text(
+            rows = await conn2.execute(raw_text(
                 "SELECT DISTINCT organization FROM users WHERE organization IS NOT NULL AND organization != '' AND organization_id IS NULL"
             ))
             for row in rows:
                 org_name = row[0]
                 slug = org_name.lower().strip().replace(' ', '-').replace(',', '').replace('.', '')
-                await conn.execute(raw_text(
+                await conn2.execute(raw_text(
                     "INSERT INTO organizations (name, slug) VALUES (:name, :slug) ON CONFLICT (slug) DO NOTHING"
                 ), {"name": org_name, "slug": slug})
-                org_result = await conn.execute(raw_text("SELECT id FROM organizations WHERE slug = :slug"), {"slug": slug})
+                org_result = await conn2.execute(raw_text("SELECT id FROM organizations WHERE slug = :slug"), {"slug": slug})
                 org_row = org_result.first()
                 if org_row:
-                    await conn.execute(raw_text(
+                    await conn2.execute(raw_text(
                         "UPDATE users SET organization_id = :oid WHERE organization = :oname AND organization_id IS NULL"
                     ), {"oid": org_row[0], "oname": org_name})
-            
-            # Backfill applications
-            rows2 = await conn.execute(raw_text(
-                "SELECT DISTINCT organization_name FROM applications WHERE organization_name IS NOT NULL AND organization_id IS NULL"
-            ))
-            for row in rows2:
-                org_name = row[0]
-                slug = org_name.lower().strip().replace(' ', '-').replace(',', '').replace('.', '')
-                await conn.execute(raw_text(
-                    "INSERT INTO organizations (name, slug) VALUES (:name, :slug) ON CONFLICT (slug) DO NOTHING"
-                ), {"name": org_name, "slug": slug})
-                org_result = await conn.execute(raw_text("SELECT id FROM organizations WHERE slug = :slug"), {"slug": slug})
-                org_row = org_result.first()
-                if org_row:
-                    await conn.execute(raw_text(
-                        "UPDATE applications SET organization_id = :oid WHERE organization_name = :oname AND organization_id IS NULL"
-                    ), {"oid": org_row[0], "oname": org_name})
-            
-            # Backfill api_keys
-            await conn.execute(raw_text(
-                "UPDATE api_keys SET organization_id = u.organization_id FROM users u WHERE api_keys.user_id = u.id AND api_keys.organization_id IS NULL AND u.organization_id IS NOT NULL"
-            ))
-            await conn.commit()
-            logger.info("Organization migration and backfill complete")
+            await conn2.commit()
+            logger.info("User org backfill complete")
         except Exception as e:
-            logger.warning(f"Org backfill note: {e}")
+            logger.warning(f"User backfill: {e}")
     
     yield
     logger.info("Shutting down...")
