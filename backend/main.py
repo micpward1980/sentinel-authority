@@ -4,6 +4,9 @@ Unified certification platform for autonomous systems operating under ENVELO
 """
 
 import logging
+import hashlib
+import os
+from datetime import datetime
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -142,6 +145,44 @@ async def lifespan(app: FastAPI):
             logger.info("Tamper-proof audit triggers installed")
         except Exception as e:
             logger.warning(f"Audit trigger setup: {e}")
+    # Auto-create daily audit anchor
+    async with engine.begin() as anchor_conn:
+        try:
+            # Check if anchor exists for today
+            last_anchor = await anchor_conn.execute(raw_text(
+                "SELECT created_at FROM audit_anchors ORDER BY id DESC LIMIT 1"
+            ))
+            last_row = last_anchor.first()
+            need_anchor = True
+            if last_row and last_row[0]:
+                from datetime import timedelta
+                if (datetime.utcnow() - last_row[0]) < timedelta(hours=24):
+                    need_anchor = False
+            
+            if need_anchor:
+                latest = await anchor_conn.execute(raw_text(
+                    "SELECT id, log_hash FROM audit_log ORDER BY id DESC LIMIT 1"
+                ))
+                latest_row = latest.first()
+                if latest_row:
+                    count_result = await anchor_conn.execute(raw_text("SELECT COUNT(*) FROM audit_log"))
+                    total = count_result.scalar()
+                    import hmac as hmac_mod
+                    secret = os.environ.get("SECRET_KEY", "sentinel-authority-secret")
+                    sig_payload = f"{latest_row[0]}:{latest_row[1]}:{total}:{datetime.utcnow().isoformat()}"
+                    signature = hmac_mod.new(secret.encode(), sig_payload.encode(), hashlib.sha256).hexdigest()
+                    await anchor_conn.execute(raw_text(
+                        "INSERT INTO audit_anchors (last_audit_id, chain_hash, entry_count, anchor_signature) VALUES (:aid, :hash, :count, :sig)"
+                    ), {"aid": latest_row[0], "hash": latest_row[1], "count": total, "sig": signature})
+                    await anchor_conn.commit()
+                    logger.info(f"Daily audit anchor created at entry #{latest_row[0]}")
+                else:
+                    logger.info("No audit entries yet, skipping anchor")
+            else:
+                logger.info("Recent anchor exists, skipping")
+        except Exception as e:
+            logger.warning(f"Auto-anchor: {e}")
+
 
     yield
     logger.info("Shutting down...")

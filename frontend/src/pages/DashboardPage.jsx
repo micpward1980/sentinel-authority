@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Wifi, FileText, Activity, Award, AlertTriangle, Plus, Shield, Download, RefreshCw, AlertCircle } from 'lucide-react';
+import { Wifi, FileText, Activity, Award, AlertTriangle, Plus, Shield, Download, RefreshCw, AlertCircle, Clock } from 'lucide-react';
 import { api, API_BASE } from '../config/api';
 import { styles } from '../config/styles';
 import { useAuth } from '../context/AuthContext';
@@ -19,16 +19,19 @@ function CustomerDashboard() {
   const [certificates, setCertificates] = useState([]);
   const [loading, setLoading] = useState(true);
   const [monitoring, setMonitoring] = useState(null);
+  const [recentActivity, setRecentActivity] = useState([]);
 
   useEffect(() => {
     Promise.all([
       api.get('/api/applications/').catch(() => ({ data: [] })),
       api.get('/api/certificates/').catch(() => ({ data: [] })),
-      api.get('/api/envelo/monitoring/overview').catch(() => ({ data: null }))
-    ]).then(([appsRes, certsRes, monRes]) => {
+      api.get('/api/envelo/monitoring/overview').catch(() => ({ data: null })),
+      api.get('/api/audit/my-logs?limit=5&offset=0').catch(() => ({ data: { logs: [] } }))
+    ]).then(([appsRes, certsRes, monRes, actRes]) => {
       setApplications(appsRes.data.applications || appsRes.data || []);
       setCertificates(certsRes.data || []);
       if (monRes.data) setMonitoring(monRes.data);
+      setRecentActivity(actRes.data.logs || actRes.data || []);
       setLoading(false);
     });
   }, []);
@@ -179,6 +182,81 @@ function CustomerDashboard() {
         </Panel>
       )}
 
+
+
+      {/* Recent Activity */}
+      <Panel>
+        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px'}}>
+          <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, margin: 0}}>Recent Activity</h2>
+          <Link to="/activity" style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', color: styles.purpleBright, textDecoration: 'none', letterSpacing: '1px'}}>View All →</Link>
+        </div>
+        {recentActivity.length === 0 ? (
+          <p style={{color: styles.textTertiary, fontSize: '13px', textAlign: 'center', padding: '20px 0'}}>No activity yet</p>
+        ) : (
+          <div style={{display: 'flex', flexDirection: 'column', gap: '1px'}}>
+            {recentActivity.map((log, i) => {
+              const actionLabels = {
+                user_login: 'Signed in',
+                user_registered: 'Account created',
+                login_failed: 'Failed login attempt',
+                application_submitted: 'Application submitted',
+                application_state_changed: 'Application status updated',
+                application_deleted: 'Application deleted',
+                test_created: 'CAT-72 test scheduled',
+                test_started: 'CAT-72 test started',
+                test_completed: 'CAT-72 test completed',
+                certificate_issued: 'Certificate issued',
+                certificate_suspended: 'Certificate suspended',
+                certificate_revoked: 'Certificate revoked',
+                certificate_reinstated: 'Certificate reinstated',
+                api_key_created: 'API key created',
+                api_key_revoked: 'API key revoked',
+                password_changed: 'Password changed',
+                profile_updated: 'Profile updated',
+                '2fa_enabled': 'Two-factor authentication enabled',
+                '2fa_disabled': 'Two-factor authentication disabled',
+              };
+              const actionColors = {
+                user_login: styles.textTertiary,
+                login_failed: '#D65C5C',
+                application_submitted: styles.purpleBright,
+                application_state_changed: styles.accentAmber,
+                test_created: styles.purpleBright,
+                test_started: styles.accentAmber,
+                test_completed: styles.accentGreen,
+                certificate_issued: styles.accentGreen,
+                certificate_suspended: styles.accentAmber,
+                certificate_revoked: '#D65C5C',
+                api_key_created: styles.purpleBright,
+                api_key_revoked: '#D65C5C',
+              };
+              const label = actionLabels[log.action] || log.action.replace(/_/g, ' ');
+              const color = actionColors[log.action] || styles.textSecondary;
+              const detail = log.details?.system_name || log.details?.application_number || log.details?.test_id || log.details?.certificate_number || log.details?.key_name || '';
+              const timeAgo = (ts) => {
+                const diff = Date.now() - new Date(ts).getTime();
+                const mins = Math.floor(diff / 60000);
+                if (mins < 1) return 'just now';
+                if (mins < 60) return mins + 'm ago';
+                const hrs = Math.floor(mins / 60);
+                if (hrs < 24) return hrs + 'h ago';
+                const days = Math.floor(hrs / 24);
+                return days + 'd ago';
+              };
+              return (
+                <div key={log.id || i} style={{display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 0', borderBottom: i < recentActivity.length - 1 ? '1px solid rgba(255,255,255,0.04)' : 'none'}}>
+                  <div style={{width: '6px', height: '6px', borderRadius: '50%', background: color, flexShrink: 0}} />
+                  <div style={{flex: 1, minWidth: 0}}>
+                    <span style={{fontSize: '13px', color: styles.textPrimary}}>{label}</span>
+                    {detail && <span style={{fontSize: '12px', color: styles.textTertiary, marginLeft: '8px'}}>{detail}</span>}
+                  </div>
+                  <span style={{fontSize: '11px', color: styles.textTertiary, fontFamily: "'IBM Plex Mono', monospace", flexShrink: 0}}>{timeAgo(log.timestamp)}</span>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </Panel>
 
     </div>
   );
