@@ -12,7 +12,15 @@ function MyActivityPage() {
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(0);
+  const [dateRange, setDateRange] = useState('30');
   const PAGE_SIZE = 30;
+
+  const getDateFrom = () => {
+    if (dateRange === 'all') return '';
+    const d = new Date();
+    d.setDate(d.getDate() - parseInt(dateRange));
+    return d.toISOString();
+  };
 
   const fetchLogs = async () => {
     setLoading(true);
@@ -20,6 +28,8 @@ function MyActivityPage() {
       const params = new URLSearchParams();
       params.set('limit', PAGE_SIZE);
       params.set('offset', page * PAGE_SIZE);
+      const df = getDateFrom();
+      if (df) params.set('date_from', df);
       const res = await api.get(`/api/audit/my-logs?${params}`);
       setLogs(res.data.logs || []);
       setTotal(res.data.total || 0);
@@ -27,7 +37,7 @@ function MyActivityPage() {
     setLoading(false);
   };
 
-  useEffect(() => { fetchLogs(); }, [page]);
+  useEffect(() => { fetchLogs(); }, [page, dateRange]);
 
   const actionIcon = (action) => {
     if (action?.includes('approved') || action?.includes('issued') || action?.includes('conformant')) return { icon: '\u2713', color: styles.accentGreen };
@@ -43,9 +53,16 @@ function MyActivityPage() {
       <SectionHeader label="Account" title="My Activity" />
 
       <Panel>
-        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px'}}>
-          <span style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', color: styles.textTertiary, letterSpacing: '1px', textTransform: 'uppercase'}}>Recent Actions</span>
-          <span style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', color: styles.textTertiary}}>{total} total</span>
+        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '8px'}}>
+          <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', color: styles.textTertiary, letterSpacing: '1px', textTransform: 'uppercase'}}>Activity Log</span>
+          <div style={{display: 'flex', gap: '6px', alignItems: 'center'}}>
+            {['7', '30', '90', 'all'].map(r => (
+              <button key={r} onClick={() => { setDateRange(r); setPage(0); }} style={{padding: '4px 10px', background: dateRange === r ? 'rgba(168,150,214,0.15)' : 'transparent', border: `1px solid ${dateRange === r ? 'rgba(168,150,214,0.4)' : styles.borderGlass}`, borderRadius: '6px', color: dateRange === r ? styles.purpleBright : styles.textTertiary, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', cursor: 'pointer', letterSpacing: '0.5px', transition: 'all 0.15s ease'}}>
+                {r === 'all' ? 'All' : r + 'd'}
+              </button>
+            ))}
+            <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary, marginLeft: '8px'}}>{total} entries</span>
+          </div>
         </div>
 
         {loading ? (
@@ -63,8 +80,8 @@ function MyActivityPage() {
                   </div>
                   <div style={{flex: 1, minWidth: 0}}>
                     <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px'}}>
-                      <span style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '12px', color: ai.color, letterSpacing: '0.5px'}}>{log.action?.replace(/_/g, ' ')}</span>
-                      <span style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary, whiteSpace: 'nowrap'}}>{log.timestamp ? new Date(log.timestamp).toLocaleString() : ''}</span>
+                      <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px', color: ai.color, letterSpacing: '0.5px'}}>{log.action?.replace(/_/g, ' ')}</span>
+                      <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary, whiteSpace: 'nowrap'}}>{log.timestamp ? new Date(log.timestamp).toLocaleString() : ''}</span>
                     </div>
                     <div style={{fontSize: '12px', color: styles.textSecondary}}>
                       {log.resource_type}{log.resource_id ? ` #${log.resource_id}` : ''}
@@ -83,9 +100,9 @@ function MyActivityPage() {
 
         {totalPages > 1 && (
           <div style={{display: 'flex', justifyContent: 'center', gap: '8px', paddingTop: '16px', marginTop: '16px', borderTop: `1px solid ${styles.borderSubtle}`}}>
-            <button onClick={() => setPage(Math.max(0, page - 1))} disabled={page === 0} style={{padding: '6px 12px', background: styles.bgDeep, border: `1px solid ${styles.borderGlass}`, borderRadius: '6px', color: page === 0 ? styles.textTertiary : styles.textPrimary, cursor: page === 0 ? 'not-allowed' : 'pointer', fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px'}}>\u2190 Prev</button>
-            <span style={{padding: '6px 12px', fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', color: styles.textSecondary}}>{page + 1} / {totalPages}</span>
-            <button onClick={() => setPage(Math.min(totalPages - 1, page + 1))} disabled={page >= totalPages - 1} style={{padding: '6px 12px', background: styles.bgDeep, border: `1px solid ${styles.borderGlass}`, borderRadius: '6px', color: page >= totalPages - 1 ? styles.textTertiary : styles.textPrimary, cursor: page >= totalPages - 1 ? 'not-allowed' : 'pointer', fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px'}}>Next \u2192</button>
+            <button onClick={() => setPage(Math.max(0, page - 1))} disabled={page === 0} style={{padding: '6px 12px', background: styles.bgDeep, border: `1px solid ${styles.borderGlass}`, borderRadius: '6px', color: page === 0 ? styles.textTertiary : styles.textPrimary, cursor: page === 0 ? 'not-allowed' : 'pointer', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px'}}>\u2190 Prev</button>
+            <span style={{padding: '6px 12px', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', color: styles.textSecondary}}>{page + 1} / {totalPages}</span>
+            <button onClick={() => setPage(Math.min(totalPages - 1, page + 1))} disabled={page >= totalPages - 1} style={{padding: '6px 12px', background: styles.bgDeep, border: `1px solid ${styles.borderGlass}`, borderRadius: '6px', color: page >= totalPages - 1 ? styles.textTertiary : styles.textPrimary, cursor: page >= totalPages - 1 ? 'not-allowed' : 'pointer', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px'}}>Next \u2192</button>
           </div>
         )}
       </Panel>

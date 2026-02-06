@@ -1,4 +1,5 @@
 export const styles = {
+  bgPrimary: '#0d0f14',
   bgDeep: '#2a2f3d',
   bgSurface: '#1e212b',
   bgPanel: 'rgba(255,255,255,0.03)',
@@ -13,6 +14,7 @@ export const styles = {
   textSecondary: 'rgba(255,255,255,0.78)',
   textTertiary: 'rgba(255,255,255,0.55)',
   borderGlass: 'rgba(255,255,255,0.07)',
+  borderSubtle: 'rgba(255,255,255,0.04)',
   mono: "Consolas, 'IBM Plex Mono', monospace",
   serif: "Georgia, 'Source Serif 4', serif",
   sans: "Calibri, 'Inter', system-ui, sans-serif",

@@ -5,11 +5,13 @@ import { api, API_BASE } from '../config/api';
 import { styles } from '../config/styles';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
+import { useConfirm } from '../context/ConfirmContext';
 import Panel from '../components/Panel';
 import StatCard from '../components/StatCard';
 import EmptyState from '../components/EmptyState';
 
 function CustomerDashboard() {
+  const confirm = useConfirm();
   const { user } = useAuth();
   const toast = useToast();
   const navigate = useNavigate();
@@ -72,8 +74,8 @@ function CustomerDashboard() {
       {/* Header */}
       <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start'}}>
         <div>
-          <p style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', color: styles.purpleBright, marginBottom: '8px'}}>ODDC Certification</p>
-          <h1 style={{fontFamily: "'Source Serif 4', serif", fontSize: '36px', fontWeight: 200, margin: 0}}>Welcome{user?.full_name ? `, ${user.full_name.split(' ')[0]}` : ''}</h1>
+          <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', color: styles.purpleBright, marginBottom: '8px'}}>ODDC Certification</p>
+          <h1 style={{fontFamily: "Georgia, 'Source Serif 4', serif", fontSize: '36px', fontWeight: 200, margin: 0}}>Welcome{user?.full_name ? `, ${user.full_name.split(' ')[0]}` : ''}</h1>
           <p style={{color: styles.textSecondary, marginTop: '8px'}}>{user?.organization ? user.organization + ' · ' : ''}Track your certification progress and manage your systems.</p>
         </div>
 
@@ -81,9 +83,9 @@ function CustomerDashboard() {
 
       {/* Quick Stats */}
       <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px'}}>
-        <StatCard onClick={() => navigate("/applications")} label="Applications" value={applications.length} color={styles.purpleBright} icon={<FileText className="w-5 h-5" style={{color: styles.purpleBright}} />} subtitle={applications.filter(a => a.state === 'pending' || a.state === 'under_review').length > 0 ? `${applications.filter(a => a.state === 'pending' || a.state === 'under_review').length} in review` : null} />
-        <StatCard onClick={() => navigate("/certificates")} label="Certificates" value={certificates.length} color={styles.accentGreen} icon={<Award className="w-5 h-5" style={{color: styles.accentGreen}} />} subtitle={certificates.filter(c => c.state === 'conformant').length > 0 ? `${certificates.filter(c => c.state === 'conformant').length} active` : null} />
-        <StatCard onClick={() => navigate("/cat72")} label="Active Tests" value={applications.filter(a => a.state === 'testing').length} color={styles.accentAmber} icon={<Activity className="w-5 h-5" style={{color: styles.accentAmber}} />} />
+        <StatCard onClick={() => navigate("/applications")} label="Applications" value={applications.length} color={styles.purpleBright} icon={<FileText fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{color: styles.purpleBright}} />} subtitle={applications.filter(a => a.state === 'pending' || a.state === 'under_review').length > 0 ? `${applications.filter(a => a.state === 'pending' || a.state === 'under_review').length} in review` : null} />
+        <StatCard onClick={() => navigate("/certificates")} label="Certificates" value={certificates.length} color={styles.accentGreen} icon={<Award fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{color: styles.accentGreen}} />} subtitle={certificates.filter(c => c.state === 'conformant').length > 0 ? `${certificates.filter(c => c.state === 'conformant').length} active` : null} />
+        <StatCard onClick={() => navigate("/cat72")} label="Active Tests" value={applications.filter(a => a.state === 'testing').length} color={styles.accentAmber} icon={<Activity fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{color: styles.accentAmber}} />} />
         {(() => {
           const sessions = monitoring?.sessions || [];
           const online = sessions.filter(s => {
@@ -94,26 +96,26 @@ function CustomerDashboard() {
           const hasAgents = total > 0;
           const statusColor = hasAgents ? (online > 0 ? styles.accentGreen : styles.accentAmber) : styles.textTertiary;
           const statusText = hasAgents ? (online > 0 ? `${online} of ${total} online` : 'All systems offline') : 'No active systems';
-          return <StatCard onClick={() => navigate('/monitoring')} label="Live Status" value={hasAgents ? online : '—'} color={statusColor} icon={<Wifi className="w-5 h-5" style={{color: statusColor}} />} subtitle={statusText} />;
+          return <StatCard onClick={() => navigate('/monitoring')} label="Live Status" value={hasAgents ? online : '—'} color={statusColor} icon={<Wifi fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{color: statusColor}} />} subtitle={statusText} />;
         })()}
       </div>
 
       {/* Applications with Progress */}
       <Panel>
         <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px'}}>
-          <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, margin: 0}}>Your Applications</h2>
+          <h2 style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, margin: 0}}>Your Applications</h2>
           {applications.length > 0 && (
-            <Link to="/applications" style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', color: styles.purpleBright, textDecoration: 'none', letterSpacing: '1px'}}>View All →</Link>
+            <Link to="/applications" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.purpleBright, textDecoration: 'none', letterSpacing: '1px'}}>View All →</Link>
           )}
         </div>
         {applications.length === 0 ? (
           <div style={{textAlign: 'center', padding: '56px 20px'}}>
             <div style={{width: '72px', height: '72px', borderRadius: '20px', background: 'rgba(91,75,138,0.12)', border: '1px solid rgba(157,140,207,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px'}}>
-              <Shield size={32} style={{color: styles.purpleBright, opacity: 0.7}} />
+              <Shield fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} size={32} style={{color: styles.purpleBright, opacity: 0.7}} />
             </div>
-            <p style={{color: styles.textPrimary, fontSize: '17px', fontWeight: 500, marginBottom: '8px', fontFamily: "'Source Serif 4', serif"}}>Begin Your Certification</p>
+            <p style={{color: styles.textPrimary, fontSize: '17px', fontWeight: 500, marginBottom: '8px', fontFamily: "Georgia, 'Source Serif 4', serif"}}>Begin Your Certification</p>
             <p style={{color: styles.textTertiary, fontSize: '13px', marginBottom: '28px', maxWidth: '360px', margin: '0 auto 28px', lineHeight: '1.6'}}>Submit your autonomous system for ODDC certification. Our CAT-72 test validates real-time boundary enforcement over 72 hours.</p>
-            <Link to="/applications/new" className="inline-flex items-center gap-2 px-6 py-3 rounded-lg no-underline" style={{background: `linear-gradient(135deg, ${styles.purplePrimary} 0%, ${styles.purpleBright} 100%)`, border: 'none', color: '#fff', fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', boxShadow: '0 4px 20px rgba(91,75,138,0.3)'}}>
+            <Link to="/applications/new" className="inline-flex items-center gap-2 px-6 py-3 rounded-lg no-underline" style={{background: `linear-gradient(135deg, ${styles.purplePrimary} 0%, ${styles.purpleBright} 100%)`, border: 'none', color: '#fff', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', boxShadow: '0 4px 20px rgba(91,75,138,0.3)'}}>
               <Plus className="w-4 h-4" />
               New Application
             </Link>
@@ -129,11 +131,11 @@ function CustomerDashboard() {
                     <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px'}}>
                       <div>
                         <div style={{fontWeight: 500, color: styles.textPrimary, fontSize: '15px', marginBottom: '4px'}}>{app.system_name}</div>
-                        <div style={{fontSize: '11px', color: styles.textTertiary, fontFamily: "'IBM Plex Mono', monospace"}}>{app.application_number} · {app.system_type?.replace(/_/g, ' ')}</div>
+                        <div style={{fontSize: '11px', color: styles.textTertiary, fontFamily: "Consolas, 'IBM Plex Mono', monospace"}}>{app.application_number} · {app.system_type?.replace(/_/g, ' ')}</div>
                       </div>
                       <div style={{display: 'flex', alignItems: 'center', gap: '12px'}}>
                         <span style={{fontSize: '12px', color: styles.textTertiary}}>{nextAction(app.state)}</span>
-                        <span style={{padding: '4px 12px', borderRadius: '4px', fontSize: '10px', fontFamily: "'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '1px',
+                        <span style={{padding: '4px 12px', borderRadius: '4px', fontSize: '10px', fontFamily: "Consolas, 'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '1px',
                           background: `${stateColor(app.state)}20`,
                           color: stateColor(app.state),
                           border: `1px solid ${stateColor(app.state)}40`,
@@ -161,18 +163,18 @@ function CustomerDashboard() {
         )}
         {certificates.length > 0 && (
         <Panel>
-          <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Your Certificates</h2>
+          <h2 style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Your Certificates</h2>
           <div className="space-y-3">
             {certificates.map(cert => (
               <div key={cert.id} style={{padding: '16px', background: 'rgba(92,214,133,0.08)', border: '1px solid rgba(92,214,133,0.2)', borderRadius: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
                 <div>
-                  <div style={{fontWeight: 500, color: styles.accentGreen, marginBottom: '4px', fontFamily: "'IBM Plex Mono', monospace", fontSize: '14px'}}>{cert.certificate_number}</div>
+                  <div style={{fontWeight: 500, color: styles.accentGreen, marginBottom: '4px', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '14px'}}>{cert.certificate_number}</div>
                   <div style={{fontSize: '12px', color: styles.textTertiary}}>Issued: {new Date(cert.issued_at).toLocaleDateString()}{cert.expires_at ? ` · Expires: ${new Date(cert.expires_at).toLocaleDateString()}` : ''}</div>
                 </div>
                 <div style={{display: 'flex', gap: '8px'}}>
                   <a href={`${API_BASE}/api/certificates/${cert.certificate_number}/pdf`}
                      target="_blank"
-                     style={{padding: '8px 16px', background: styles.purplePrimary, borderRadius: '6px', color: '#fff', fontSize: '11px', fontFamily: "'IBM Plex Mono', monospace", textDecoration: 'none'}}>
+                     style={{padding: '8px 16px', background: styles.purplePrimary, borderRadius: '6px', color: '#fff', fontSize: '11px', fontFamily: "Consolas, 'IBM Plex Mono', monospace", textDecoration: 'none'}}>
                     Download PDF
                   </a>
                 </div>
@@ -187,8 +189,8 @@ function CustomerDashboard() {
       {/* Recent Activity */}
       <Panel>
         <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px'}}>
-          <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, margin: 0}}>Recent Activity</h2>
-          <Link to="/my-activity" style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', color: styles.purpleBright, textDecoration: 'none', letterSpacing: '1px'}}>View All →</Link>
+          <h2 style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, margin: 0}}>Recent Activity</h2>
+          <Link to="/my-activity" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.purpleBright, textDecoration: 'none', letterSpacing: '1px'}}>View All →</Link>
         </div>
         {recentActivity.length === 0 ? (
           <p style={{color: styles.textTertiary, fontSize: '13px', textAlign: 'center', padding: '20px 0'}}>No activity yet</p>
@@ -250,7 +252,7 @@ function CustomerDashboard() {
                     <span style={{fontSize: '13px', color: styles.textPrimary}}>{label}</span>
                     {detail && <span style={{fontSize: '12px', color: styles.textTertiary, marginLeft: '8px'}}>{detail}</span>}
                   </div>
-                  <span style={{fontSize: '11px', color: styles.textTertiary, fontFamily: "'IBM Plex Mono', monospace", flexShrink: 0}}>{timeAgo(log.timestamp)}</span>
+                  <span style={{fontSize: '11px', color: styles.textTertiary, fontFamily: "Consolas, 'IBM Plex Mono', monospace", flexShrink: 0}}>{timeAgo(log.timestamp)}</span>
                 </div>
               );
             })}
@@ -276,20 +278,26 @@ function RoleBasedDashboard() {
 
 function Dashboard() {
   const { user } = useAuth();
+  const toast = useToast();
+  const confirm = useConfirm();
+  const navigate = useNavigate();
   const [stats, setStats] = useState(null);
   const [recentApps, setRecentApps] = useState([]);
   const [activeTests, setActiveTests] = useState([]);
   const [allApps, setAllApps] = useState([]);
   const [recentCerts, setRecentCerts] = useState([]);
   const [monitoring, setMonitoring] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
 
-  const loadData = () => {
+  const loadData = (manual) => {
+    if (manual) setRefreshing(true);
     api.get('/api/dashboard/stats').then(res => setStats(res.data)).catch(console.error);
     api.get('/api/dashboard/recent-applications').then(res => setRecentApps(res.data)).catch(console.error);
     api.get('/api/dashboard/active-tests').then(res => setActiveTests(res.data)).catch(console.error);
     api.get('/api/applications/').then(res => setAllApps(res.data.applications || res.data || [])).catch(console.error);
     api.get('/api/dashboard/recent-certificates').then(res => setRecentCerts(res.data)).catch(console.error);
     api.get('/api/envelo/monitoring/overview').then(res => setMonitoring(res.data)).catch(console.error);
+    if (manual) setTimeout(() => setRefreshing(false), 800);
   };
 
   useEffect(() => {
@@ -314,6 +322,18 @@ function Dashboard() {
     if (!await confirm({title: 'Confirm', message: label + '?'})) return;
     try {
       await api.patch(`/api/applications/${appId}/state?new_state=${newState}`);
+      // Auto-provision API key when approving
+      if (newState === 'approved') {
+        try {
+          await api.post('/api/apikeys/admin/provision', null, {
+            params: { application_id: appId, send_email: true }
+          });
+          toast.show('Approved — API key provisioned and emailed to applicant', 'success');
+        } catch (provErr) {
+          // Non-fatal: key may already exist or endpoint may not support it yet
+          toast.show('Approved — applicant can generate key from their dashboard', 'success');
+        }
+      }
       loadData();
     } catch (err) {
       toast.show('Failed: ' + (err.response?.data?.detail || err.message), 'error');
@@ -324,15 +344,15 @@ function Dashboard() {
     <div className="space-y-6" style={{maxWidth: "1200px", margin: "0 auto"}}>
       <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '28px', flexWrap: 'wrap', gap: '16px'}}>
         <div>
-          <p style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', color: styles.purpleBright, marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '12px'}}>
+          <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', color: styles.purpleBright, marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '12px'}}>
             <span style={{width: '24px', height: '1px', background: styles.purpleBright}}></span>
             Administration
           </p>
-          <h1 style={{fontFamily: "'Source Serif 4', serif", fontSize: '36px', fontWeight: 200, margin: 0}}>Welcome{user?.full_name ? `, ${user.full_name.split(' ')[0]}` : ''}</h1>
-          <p style={{color: styles.textTertiary, marginTop: '6px', fontSize: '13px', fontFamily: "'IBM Plex Mono', monospace"}}>{new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</p>
+          <h1 style={{fontFamily: "Georgia, 'Source Serif 4', serif", fontSize: '36px', fontWeight: 200, margin: 0}}>Welcome{user?.full_name ? `, ${user.full_name.split(' ')[0]}` : ''}</h1>
+          <p style={{color: styles.textTertiary, marginTop: '6px', fontSize: '13px', fontFamily: "Consolas, 'IBM Plex Mono', monospace"}}>{new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</p>
         </div>
         <div style={{display: 'flex', gap: '10px'}}>
-          <button onClick={loadData} style={{background: 'rgba(255,255,255,0.03)', border: `1px solid ${styles.borderGlass}`, borderRadius: '10px', padding: '10px 16px', color: styles.textSecondary, cursor: 'pointer', fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '8px'}}><RefreshCw size={14} /> Refresh</button>
+          <button onClick={() => loadData(true)} style={{background: 'rgba(255,255,255,0.03)', border: `1px solid ${styles.borderGlass}`, borderRadius: '10px', padding: '10px 16px', color: styles.textSecondary, cursor: 'pointer', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '8px'}}><RefreshCw fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} size={14} style={refreshing ? {animation: "spin 0.8s linear infinite"} : {}} /> {refreshing ? "Refreshing..." : "Refresh"}</button>
         </div>
       </div>
 
@@ -346,12 +366,12 @@ function Dashboard() {
         const actionCount = needsAction.length + expiringCount;
         return (
           <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px'}}>
-            <StatCard label="Total Applications" value={stats?.total_applications || 0} color={styles.purpleBright} icon={<FileText className="w-5 h-5" style={{color: styles.purpleBright}} />} />
-            <StatCard onClick={() => navigate("/cat72")} label="Active Tests" value={stats?.active_tests || 0} color={styles.accentAmber} icon={<Activity className="w-5 h-5" style={{color: styles.accentAmber}} />} />
-            <StatCard label="Active Certificates" value={stats?.certificates_active || 0} color={styles.accentGreen} icon={<Shield className="w-5 h-5" style={{color: styles.accentGreen}} />} />
-            <StatCard label="Online Agents" value={onlineAgents} color={onlineAgents > 0 ? styles.accentGreen : styles.textTertiary} icon={<Wifi className="w-5 h-5" style={{color: onlineAgents > 0 ? styles.accentGreen : styles.textTertiary}} />} />
-            <StatCard label="Certificates Issued" value={stats?.certificates_issued || 0} color={styles.purpleBright} icon={<Award className="w-5 h-5" style={{color: styles.purpleBright}} />} />
-            <StatCard label="Needs Action" value={actionCount} color={actionCount > 0 ? '#D6A05C' : styles.textTertiary} icon={<AlertCircle className="w-5 h-5" style={{color: actionCount > 0 ? '#D6A05C' : styles.textTertiary}} />} />
+            <StatCard label="Total Applications" value={stats?.total_applications || 0} color={styles.purpleBright} icon={<FileText fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{color: styles.purpleBright}} />} />
+            <StatCard onClick={() => navigate("/cat72")} label="Active Tests" value={stats?.active_tests || 0} color={styles.accentAmber} icon={<Activity fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{color: styles.accentAmber}} />} />
+            <StatCard label="Active Certificates" value={stats?.certificates_active || 0} color={styles.accentGreen} icon={<Shield fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{color: styles.accentGreen}} />} />
+            <StatCard label="Online Agents" value={onlineAgents} color={onlineAgents > 0 ? styles.accentGreen : styles.textTertiary} icon={<Wifi fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{color: onlineAgents > 0 ? styles.accentGreen : styles.textTertiary}} />} />
+            <StatCard label="Certificates Issued" value={stats?.certificates_issued || 0} color={styles.purpleBright} icon={<Award fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{color: styles.purpleBright}} />} />
+            <StatCard label="Needs Action" value={actionCount} color={actionCount > 0 ? '#D6A05C' : styles.textTertiary} icon={<AlertCircle fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{color: actionCount > 0 ? '#D6A05C' : styles.textTertiary}} />} />
           </div>
         );
       })()}
@@ -359,8 +379,8 @@ function Dashboard() {
       {/* Pipeline Breakdown */}
       <Panel>
         <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px'}}>
-          <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, margin: 0}}>Certification Pipeline</h2>
-          <span style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', color: styles.textTertiary}}>{allApps.length} total</span>
+          <h2 style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, margin: 0}}>Certification Pipeline</h2>
+          <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', color: styles.textTertiary}}>{allApps.length} total</span>
         </div>
         <div style={{display: 'flex', gap: '4px', height: '32px', borderRadius: '6px', overflow: 'hidden'}}>
           {[
@@ -375,12 +395,12 @@ function Dashboard() {
             const pct = Math.max((stage.count / total) * 100, stage.count > 0 ? 8 : 0);
             return stage.count > 0 ? (
               <div key={stage.key} style={{width: `${pct}%`, background: `${stage.color}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: '48px', position: 'relative', borderLeft: `2px solid ${stage.color}`}} title={`${stage.label}: ${stage.count}`}>
-                <span style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', color: stage.color, whiteSpace: 'nowrap'}}>{stage.count} {stage.label}</span>
+                <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: stage.color, whiteSpace: 'nowrap'}}>{stage.count} {stage.label}</span>
               </div>
             ) : null;
           })}
           {allApps.length === 0 && <div style={{flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.03)', padding: '40px 20px', textAlign: 'center'}}>
-            <div style={{width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(91,75,138,0.12)', border: '1px solid rgba(157,140,207,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px'}}><FileText size={22} style={{color: styles.purpleBright, opacity: 0.6}} /></div>
+            <div style={{width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(91,75,138,0.12)', border: '1px solid rgba(157,140,207,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px'}}><FileText fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} size={22} style={{color: styles.purpleBright, opacity: 0.6}} /></div>
             <p style={{color: styles.textSecondary, fontSize: '14px', fontWeight: 500, margin: '0 0 6px 0'}}>No applications yet</p>
             <p style={{color: styles.textTertiary, fontSize: '12px', margin: '0 0 16px 0', maxWidth: '260px'}}>Submit your first ODDC certification application to get started.</p>
 
@@ -392,8 +412,8 @@ function Dashboard() {
       {needsAction.length > 0 && (
         <Panel>
           <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px'}}>
-            <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.accentAmber, margin: 0}}>⚡ Review Queue ({needsAction.length})</h2>
-            <Link to="/applications" style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', color: styles.purpleBright, textDecoration: 'none'}}>View All →</Link>
+            <h2 style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.accentAmber, margin: 0}}>⚡ Review Queue ({needsAction.length})</h2>
+            <Link to="/applications" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.purpleBright, textDecoration: 'none'}}>View All →</Link>
           </div>
           <div className="space-y-3">
             {needsAction.slice(0, 5).map(app => (
@@ -401,15 +421,15 @@ function Dashboard() {
                 <div style={{display: 'flex', alignItems: 'center', gap: '16px'}}>
                   <Link to={`/applications/${app.id}`} style={{color: styles.purpleBright, textDecoration: 'none', fontWeight: 500, fontSize: '14px'}}>{app.system_name}</Link>
                   <span style={{color: styles.textTertiary, fontSize: '12px'}}>{app.organization_name}</span>
-                  <span className="px-2 py-1 rounded" style={{background: 'rgba(214,160,92,0.15)', color: styles.accentAmber, fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1px', textTransform: 'uppercase'}}>{app.state?.replace('_', ' ')}</span>
+                  <span className="px-2 py-1 rounded" style={{background: 'rgba(214,160,92,0.15)', color: styles.accentAmber, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1px', textTransform: 'uppercase'}}>{app.state?.replace('_', ' ')}</span>
                 </div>
                 <div style={{display: 'flex', gap: '8px'}}>
                   {app.state === 'pending' && (
-                    <button onClick={() => handleQuickAdvance(app.id, 'under_review', `Begin review for ${app.system_name}`)} className="px-3 py-1 rounded" style={{background: 'rgba(214,160,92,0.15)', border: '1px solid rgba(214,160,92,0.3)', color: styles.accentAmber, fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>Begin Review</button>
+                    <button onClick={() => handleQuickAdvance(app.id, 'under_review', `Begin review for ${app.system_name}`)} className="px-3 py-1 rounded" style={{background: 'rgba(214,160,92,0.15)', border: '1px solid rgba(214,160,92,0.3)', color: styles.accentAmber, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>Begin Review</button>
                   )}
-                  <button onClick={() => handleQuickAdvance(app.id, 'approved', `Approve ${app.system_name}`)} className="px-3 py-1 rounded" style={{background: 'rgba(92,214,133,0.15)', border: '1px solid rgba(92,214,133,0.3)', color: styles.accentGreen, fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>Approve</button>
-                  <button onClick={() => handleQuickAdvance(app.id, 'suspended', `Suspend ${app.system_name}`)} className="px-3 py-1 rounded" style={{background: 'rgba(214,92,92,0.1)', border: '1px solid rgba(214,92,92,0.3)', color: styles.accentRed, fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>Suspend</button>
-                  <Link to={`/applications/${app.id}`} className="px-3 py-1 rounded no-underline" style={{background: 'rgba(157,140,207,0.1)', border: `1px solid ${styles.borderGlass}`, color: styles.purpleBright, fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1px', textTransform: 'uppercase'}}>View</Link>
+                  <button onClick={() => handleQuickAdvance(app.id, 'approved', `Approve ${app.system_name}`)} className="px-3 py-1 rounded" style={{background: 'rgba(92,214,133,0.15)', border: '1px solid rgba(92,214,133,0.3)', color: styles.accentGreen, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>Approve</button>
+                  <button onClick={() => handleQuickAdvance(app.id, 'suspended', `Suspend ${app.system_name}`)} className="px-3 py-1 rounded" style={{background: 'rgba(214,92,92,0.1)', border: '1px solid rgba(214,92,92,0.3)', color: styles.accentRed, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>Suspend</button>
+                  <Link to={`/applications/${app.id}`} className="px-3 py-1 rounded no-underline" style={{background: 'rgba(157,140,207,0.1)', border: `1px solid ${styles.borderGlass}`, color: styles.purpleBright, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1px', textTransform: 'uppercase'}}>View</Link>
                 </div>
               </div>
             ))}
@@ -421,8 +441,8 @@ function Dashboard() {
       {activeTests.length > 0 && (
         <Panel>
           <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px'}}>
-            <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, margin: 0}}>Active CAT-72 Tests</h2>
-            <Link to="/cat72" style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', color: styles.purpleBright, textDecoration: 'none'}}>Console →</Link>
+            <h2 style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, margin: 0}}>Active CAT-72 Tests</h2>
+            <Link to="/cat72" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.purpleBright, textDecoration: 'none'}}>Console →</Link>
           </div>
           <div className="space-y-3">
             {activeTests.map((test) => {
@@ -431,10 +451,10 @@ function Dashboard() {
               return (
                 <div key={test.id} className="p-4 rounded-lg" style={{background: 'rgba(255,255,255,0.03)', border: `1px solid ${styles.borderGlass}`}}>
                   <div className="flex justify-between items-center mb-2">
-                    <span style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '12px', color: styles.purpleBright}}>{test.organization_name} — {test.system_name}</span>
+                    <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px', color: styles.purpleBright}}>{test.organization_name} — {test.system_name}</span>
                     <div style={{display: 'flex', alignItems: 'center', gap: '12px'}}>
-                      <span style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', color: styles.textTertiary}}>{hoursLeft}h remaining</span>
-                      <span style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', color: styles.accentAmber}}>{pct}%</span>
+                      <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', color: styles.textTertiary}}>{hoursLeft}h remaining</span>
+                      <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', color: styles.accentAmber}}>{pct}%</span>
                     </div>
                   </div>
                   <div className="w-full h-2 rounded-full overflow-hidden" style={{background: 'rgba(255,255,255,0.1)'}}>
@@ -454,8 +474,8 @@ function Dashboard() {
         return (
           <div style={{background: 'rgba(214,160,92,0.08)', border: '1px solid rgba(214,160,92,0.25)', borderRadius: '12px', padding: '16px'}}>
             <div style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px'}}>
-              <AlertTriangle size={16} style={{color: '#D6A05C'}} />
-              <span style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', color: '#D6A05C', fontWeight: 500}}>{expiring.length} Certificate{expiring.length > 1 ? 's' : ''} Expiring Within 30 Days</span>
+              <AlertTriangle fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} size={16} style={{color: '#D6A05C'}} />
+              <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', color: '#D6A05C', fontWeight: 500}}>{expiring.length} Certificate{expiring.length > 1 ? 's' : ''} Expiring Within 30 Days</span>
             </div>
             <div style={{display: 'flex', flexDirection: 'column', gap: '8px'}}>
               {expiring.map(c => {
@@ -467,8 +487,8 @@ function Dashboard() {
                       <span style={{color: styles.textTertiary, fontSize: '12px', marginLeft: '12px'}}>{c.organization_name}</span>
                     </div>
                     <div style={{display: 'flex', alignItems: 'center', gap: '12px'}}>
-                      <span style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', color: daysLeft <= 7 ? '#D65C5C' : '#D6A05C', fontWeight: 500}}>{daysLeft}d remaining</span>
-                      <Link to={`/verify?cert=${c.certificate_number}`} style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', color: styles.purpleBright, textDecoration: 'none'}}>{c.certificate_number}</Link>
+                      <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', color: daysLeft <= 7 ? '#D65C5C' : '#D6A05C', fontWeight: 500}}>{daysLeft}d remaining</span>
+                      <Link to={`/verify?cert=${c.certificate_number}`} style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.purpleBright, textDecoration: 'none'}}>{c.certificate_number}</Link>
                     </div>
                   </div>
                 );
@@ -482,26 +502,26 @@ function Dashboard() {
       {recentCerts.length > 0 && (
         <Panel>
           <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px'}}>
-            <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, margin: 0}}>Recent Certificates</h2>
-            <Link to="/certificates" style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', color: styles.purpleBright, textDecoration: 'none'}}>View All →</Link>
+            <h2 style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, margin: 0}}>Recent Certificates</h2>
+            <Link to="/certificates" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.purpleBright, textDecoration: 'none'}}>View All →</Link>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
                 <tr style={{borderBottom: `1px solid ${styles.borderGlass}`}}>
                   {['Certificate', 'System', 'Status', 'Issued', 'Expires'].map(h => (
-                    <th key={h} className="px-4 py-3 text-left" style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>{h}</th>
+                    <th key={h} className="px-4 py-3 text-left" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
                 {recentCerts.slice(0, 5).map(c => (
                   <tr key={c.id} style={{borderBottom: `1px solid ${styles.borderGlass}`}}>
-                    <td className="px-4 py-3"><Link to={`/verify?cert=${c.certificate_number}`} style={{color: styles.purpleBright, textDecoration: 'none', fontFamily: "'IBM Plex Mono', monospace", fontSize: '12px'}}>{c.certificate_number}</Link></td>
+                    <td className="px-4 py-3"><Link to={`/verify?cert=${c.certificate_number}`} style={{color: styles.purpleBright, textDecoration: 'none', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px'}}>{c.certificate_number}</Link></td>
                     <td className="px-4 py-3"><span style={{color: styles.textPrimary, fontSize: '13px'}}>{c.system_name}</span><span style={{color: styles.textTertiary, fontSize: '11px', marginLeft: '8px'}}>{c.organization_name}</span></td>
-                    <td className="px-4 py-3"><span style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', padding: '2px 8px', borderRadius: '4px', background: c.state === 'conformant' ? 'rgba(92,214,133,0.15)' : 'rgba(214,92,92,0.15)', color: c.state === 'conformant' ? styles.accentGreen : '#D65C5C'}}>{c.state}</span></td>
+                    <td className="px-4 py-3"><span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', padding: '2px 8px', borderRadius: '4px', background: c.state === 'conformant' ? 'rgba(92,214,133,0.15)' : 'rgba(214,92,92,0.15)', color: c.state === 'conformant' ? styles.accentGreen : '#D65C5C'}}>{c.state}</span></td>
                     <td className="px-4 py-3" style={{color: styles.textTertiary, fontSize: '13px'}}>{c.issued_at ? new Date(c.issued_at).toLocaleDateString() : '-'}</td>
-                    <td className="px-4 py-3" style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '12px', color: c.expires_at && new Date(c.expires_at) < new Date(Date.now() + 30*24*60*60*1000) ? '#D6A05C' : styles.textTertiary}}>{c.expires_at ? new Date(c.expires_at).toLocaleDateString() : '-'}</td>
+                    <td className="px-4 py-3" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px', color: c.expires_at && new Date(c.expires_at) < new Date(Date.now() + 30*24*60*60*1000) ? '#D6A05C' : styles.textTertiary}}>{c.expires_at ? new Date(c.expires_at).toLocaleDateString() : '-'}</td>
                   </tr>
                 ))}
               </tbody>
@@ -513,17 +533,17 @@ function Dashboard() {
       {/* Recent Applications */}
       <Panel>
         <div className="flex justify-between items-center mb-4">
-          <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, margin: 0}}>Recent Applications</h2>
-          <Link to="/applications" style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', color: styles.purpleBright, textDecoration: 'none'}}>View All →</Link>
+          <h2 style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, margin: 0}}>Recent Applications</h2>
+          <Link to="/applications" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.purpleBright, textDecoration: 'none'}}>View All →</Link>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr style={{borderBottom: `1px solid ${styles.borderGlass}`}}>
-                <th className="px-4 py-3 text-left" style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>System</th>
-                <th className="px-4 py-3 text-left" style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>Organization</th>
-                <th className="px-4 py-3 text-left" style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>State</th>
-                <th className="px-4 py-3 text-left" style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>Submitted</th>
+                <th className="px-4 py-3 text-left" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>System</th>
+                <th className="px-4 py-3 text-left" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>Organization</th>
+                <th className="px-4 py-3 text-left" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>State</th>
+                <th className="px-4 py-3 text-left" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>Submitted</th>
               </tr>
             </thead>
             <tbody>
@@ -535,7 +555,7 @@ function Dashboard() {
                     <span className="px-2 py-1 rounded text-xs" style={{
                       background: app.state === 'conformant' ? 'rgba(92,214,133,0.15)' : app.state === 'observe' ? 'rgba(157,140,207,0.15)' : app.state === 'revoked' ? 'rgba(214,92,92,0.15)' : 'rgba(214,160,92,0.15)',
                       color: app.state === 'conformant' ? styles.accentGreen : app.state === 'observe' ? styles.purpleBright : app.state === 'revoked' ? styles.accentRed : styles.accentAmber,
-                      fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase',
+                      fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase',
                     }}>{app.state}</span>
                   </td>
                   <td className="px-4 py-3" style={{color: styles.textTertiary, fontSize: '14px'}}>{app.submitted_at ? new Date(app.submitted_at).toLocaleDateString() : "N/A"}</td>

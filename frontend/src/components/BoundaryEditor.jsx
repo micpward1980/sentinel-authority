@@ -39,7 +39,7 @@ const Button = ({ children, onClick, variant = 'primary', disabled = false, styl
       borderRadius: '8px',
       border: 'none',
       cursor: disabled ? 'not-allowed' : 'pointer',
-      fontFamily: "'IBM Plex Mono', monospace",
+      fontFamily: "Consolas, 'IBM Plex Mono', monospace",
       fontSize: '12px',
       letterSpacing: '1px',
       textTransform: 'uppercase',
@@ -73,7 +73,7 @@ const Input = ({ label, value, onChange, type = 'text', placeholder = '', style 
         textTransform: 'uppercase',
         color: styles.textTertiary,
         marginBottom: '6px',
-        fontFamily: "'IBM Plex Mono', monospace",
+        fontFamily: "Consolas, 'IBM Plex Mono', monospace",
       }}>
         {label}
       </label>
@@ -91,7 +91,7 @@ const Input = ({ label, value, onChange, type = 'text', placeholder = '', style 
         borderRadius: '6px',
         color: styles.textPrimary,
         fontSize: '14px',
-        fontFamily: "'IBM Plex Mono', monospace",
+        fontFamily: "Consolas, 'IBM Plex Mono', monospace",
       }}
     />
   </div>
@@ -107,7 +107,7 @@ const Select = ({ label, value, onChange, options, style = {} }) => (
         textTransform: 'uppercase',
         color: styles.textTertiary,
         marginBottom: '6px',
-        fontFamily: "'IBM Plex Mono', monospace",
+        fontFamily: "Consolas, 'IBM Plex Mono', monospace",
       }}>
         {label}
       </label>
@@ -123,7 +123,7 @@ const Select = ({ label, value, onChange, options, style = {} }) => (
         borderRadius: '6px',
         color: styles.textPrimary,
         fontSize: '14px',
-        fontFamily: "'IBM Plex Mono', monospace",
+        fontFamily: "Consolas, 'IBM Plex Mono', monospace",
       }}
     >
       {options.map(opt => (
@@ -140,7 +140,7 @@ const Select = ({ label, value, onChange, options, style = {} }) => (
 const NumericBoundaryEditor = ({ boundary, onChange, onRemove }) => (
   <Panel style={{ marginBottom: '12px', padding: '16px' }}>
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-      <span style={{ color: styles.purpleBright, fontSize: '12px', fontFamily: "'IBM Plex Mono', monospace" }}>
+      <span style={{ color: styles.purpleBright, fontSize: '12px', fontFamily: "Consolas, 'IBM Plex Mono', monospace" }}>
         NUMERIC BOUNDARY
       </span>
       <Button variant="danger" onClick={onRemove} style={{ padding: '4px 12px', fontSize: '10px' }}>
@@ -207,7 +207,7 @@ const NumericBoundaryEditor = ({ boundary, onChange, onRemove }) => (
 const GeoBoundaryEditor = ({ boundary, onChange, onRemove }) => (
   <Panel style={{ marginBottom: '12px', padding: '16px' }}>
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-      <span style={{ color: styles.greenBright, fontSize: '12px', fontFamily: "'IBM Plex Mono', monospace" }}>
+      <span style={{ color: styles.greenBright, fontSize: '12px', fontFamily: "Consolas, 'IBM Plex Mono', monospace" }}>
         GEOGRAPHIC BOUNDARY
       </span>
       <Button variant="danger" onClick={onRemove} style={{ padding: '4px 12px', fontSize: '10px' }}>
@@ -267,7 +267,7 @@ const GeoBoundaryEditor = ({ boundary, onChange, onRemove }) => (
 const TimeBoundaryEditor = ({ boundary, onChange, onRemove }) => (
   <Panel style={{ marginBottom: '12px', padding: '16px' }}>
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-      <span style={{ color: '#f59e0b', fontSize: '12px', fontFamily: "'IBM Plex Mono', monospace" }}>
+      <span style={{ color: '#f59e0b', fontSize: '12px', fontFamily: "Consolas, 'IBM Plex Mono', monospace" }}>
         TIME BOUNDARY
       </span>
       <Button variant="danger" onClick={onRemove} style={{ padding: '4px 12px', fontSize: '10px' }}>
@@ -305,7 +305,7 @@ const TimeBoundaryEditor = ({ boundary, onChange, onRemove }) => (
         textTransform: 'uppercase',
         color: styles.textTertiary,
         marginBottom: '8px',
-        fontFamily: "'IBM Plex Mono', monospace",
+        fontFamily: "Consolas, 'IBM Plex Mono', monospace",
       }}>
         Allowed Days
       </label>
@@ -330,7 +330,7 @@ const TimeBoundaryEditor = ({ boundary, onChange, onRemove }) => (
                 color: isSelected ? 'white' : styles.textSecondary,
                 cursor: 'pointer',
                 fontSize: '12px',
-                fontFamily: "'IBM Plex Mono', monospace",
+                fontFamily: "Consolas, 'IBM Plex Mono', monospace",
               }}
             >
               {day}
@@ -345,7 +345,7 @@ const TimeBoundaryEditor = ({ boundary, onChange, onRemove }) => (
 const StateBoundaryEditor = ({ boundary, onChange, onRemove }) => (
   <Panel style={{ marginBottom: '12px', padding: '16px' }}>
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-      <span style={{ color: '#ec4899', fontSize: '12px', fontFamily: "'IBM Plex Mono', monospace" }}>
+      <span style={{ color: '#ec4899', fontSize: '12px', fontFamily: "Consolas, 'IBM Plex Mono', monospace" }}>
         STATE BOUNDARY
       </span>
       <Button variant="danger" onClick={onRemove} style={{ padding: '4px 12px', fontSize: '10px' }}>
@@ -476,7 +476,7 @@ export default function BoundaryEditor({ applicationId, initialBoundaries, onSav
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
         <div>
           <h2 style={{ 
-            fontFamily: "'IBM Plex Mono', monospace", 
+            fontFamily: "Consolas, 'IBM Plex Mono', monospace", 
             fontSize: '11px', 
             letterSpacing: '2px', 
             textTransform: 'uppercase', 
@@ -515,7 +515,7 @@ export default function BoundaryEditor({ applicationId, initialBoundaries, onSav
               borderRadius: '6px',
               color: styles.textPrimary,
               fontSize: '13px',
-              fontFamily: "'IBM Plex Mono', monospace",
+              fontFamily: "Consolas, 'IBM Plex Mono', monospace",
               resize: 'vertical',
             }}
           />
@@ -534,7 +534,7 @@ export default function BoundaryEditor({ applicationId, initialBoundaries, onSav
               textTransform: 'uppercase', 
               color: styles.textTertiary,
               margin: '0 0 12px',
-              fontFamily: "'IBM Plex Mono', monospace",
+              fontFamily: "Consolas, 'IBM Plex Mono', monospace",
             }}>
               Add Boundary
             </p>
@@ -630,7 +630,7 @@ export default function BoundaryEditor({ applicationId, initialBoundaries, onSav
               textTransform: 'uppercase', 
               color: styles.textTertiary,
               margin: '0 0 16px',
-              fontFamily: "'IBM Plex Mono', monospace",
+              fontFamily: "Consolas, 'IBM Plex Mono', monospace",
             }}>
               Enforcement Settings
             </h3>

@@ -14,7 +14,7 @@ function ActionButton({ children, variant = 'primary', size = 'md', icon, onClic
     display: 'inline-flex', alignItems: 'center', gap: '8px',
     padding: sizes[size], borderRadius: '12px',
     background: v.bg, border: `1px solid ${v.border}`, color: v.color,
-    fontFamily: "'IBM Plex Mono', monospace", fontSize: size === 'sm' ? '10px' : '11px',
+    fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: size === 'sm' ? '10px' : '11px',
     letterSpacing: '1px', textTransform: 'uppercase',
     cursor: disabled ? 'not-allowed' : 'pointer',
     opacity: disabled ? 0.5 : 1, boxShadow: v.shadow,

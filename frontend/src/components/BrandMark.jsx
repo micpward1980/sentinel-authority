@@ -8,7 +8,7 @@ function BrandMark({ size = 24 }) {
         width: size,
         height: size,
         background: '#5B4B8A',
-        border: '2px solid #9d8ccf',
+        border: '2px solid #a896d6',
         borderRadius: 6,
       }}
     >

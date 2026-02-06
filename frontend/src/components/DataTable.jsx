@@ -11,7 +11,7 @@ function DataTable({ columns, data, onRowClick, emptyMessage = 'No data found' }
             {columns.map((col, i) => (
               <th key={i} style={{
                 padding: '14px 16px', textAlign: col.align || 'left',
-                fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px',
+                fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px',
                 letterSpacing: '1.5px', textTransform: 'uppercase',
                 color: styles.textTertiary, fontWeight: 400,
               }}>{col.label}</th>

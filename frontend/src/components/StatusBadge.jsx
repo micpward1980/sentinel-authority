@@ -23,7 +23,7 @@ function StatusBadge({ status, size = 'md' }) {
   return (
     <span style={{
       display: 'inline-flex', alignItems: 'center', gap: '6px',
-      padding, borderRadius: '20px', fontSize, fontFamily: "'IBM Plex Mono', monospace",
+      padding, borderRadius: '20px', fontSize, fontFamily: "Consolas, 'IBM Plex Mono', monospace",
       letterSpacing: '1px', textTransform: 'uppercase',
       background: config.bg, border: `1px solid ${config.border}`, color: config.color,
     }}>

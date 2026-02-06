@@ -138,11 +138,11 @@ function VerifyPage() {
     <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden" style={{background: styles.bgDeep}}>
       <Link to="/dashboard" style={{
         position: 'fixed', top: '24px', right: '32px', zIndex: 20,
-        color: styles.textTertiary, fontFamily: "'IBM Plex Mono', monospace",
+        color: styles.textTertiary, fontFamily: "Consolas, 'IBM Plex Mono', monospace",
         fontSize: '10px', letterSpacing: '1.5px', textTransform: 'uppercase',
         textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '6px',
         transition: 'color 0.2s',
-      }}><Home className="w-3.5 h-3.5" /> Dashboard</Link>
+      }}><Home fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-3.5 h-3.5" /> Dashboard</Link>
       {/* Animated background gradients */}
       <div style={{
         position: 'absolute', top: '-20%', left: '-10%', width: '600px', height: '600px',
@@ -206,7 +206,7 @@ function VerifyPage() {
             <div style={{
               width: '56px', height: '56px',
               background: 'linear-gradient(135deg, #5B4B8A 0%, #8b5cf6 100%)',
-              border: '2px solid #9d8ccf', borderRadius: '14px',
+              border: '2px solid #a896d6', borderRadius: '14px',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               boxShadow: '0 8px 32px rgba(157,140,207,0.4), inset 0 1px 0 rgba(255,255,255,0.2)',
             }}>
@@ -219,14 +219,14 @@ function VerifyPage() {
           </div>
           
           <h1 style={{
-            fontFamily: "'Source Serif 4', serif", fontSize: '36px', fontWeight: 200,
+            fontFamily: "Georgia, 'Source Serif 4', serif", fontSize: '36px', fontWeight: 200,
             color: styles.textPrimary, margin: '0 0 8px 0', letterSpacing: '-0.02em',
           }}>
             Certificate <span style={{color: styles.purpleBright, fontStyle: 'italic'}}>Verification</span>
           </h1>
           
           <p style={{
-            color: styles.textTertiary, fontFamily: "'IBM Plex Mono', monospace",
+            color: styles.textTertiary, fontFamily: "Consolas, 'IBM Plex Mono', monospace",
             fontSize: '11px', letterSpacing: '3px', textTransform: 'uppercase', marginTop: '16px',
           }}>Sentinel Authority • ODDC Registry</p>
 
@@ -234,14 +234,14 @@ function VerifyPage() {
         <div style={{display: "flex", justifyContent: "center", gap: "8px", marginTop: "24px"}}>
           <button onClick={() => setMode("verify")} style={{
             padding: "10px 24px", borderRadius: "20px", border: "none", cursor: "pointer",
-            fontFamily: "'IBM Plex Mono', monospace", fontSize: "11px", letterSpacing: "1px",
+            fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: "11px", letterSpacing: "1px",
             background: mode === "verify" ? styles.purplePrimary : "rgba(255,255,255,0.05)",
             color: mode === "verify" ? "#fff" : styles.textTertiary,
             transition: "all 0.2s"
           }}>Verify Certificate</button>
           <button onClick={() => setMode("search")} style={{
             padding: "10px 24px", borderRadius: "20px", border: "none", cursor: "pointer",
-            fontFamily: "'IBM Plex Mono', monospace", fontSize: "11px", letterSpacing: "1px",
+            fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: "11px", letterSpacing: "1px",
             background: mode === "search" ? styles.purplePrimary : "rgba(255,255,255,0.05)",
             color: mode === "search" ? "#fff" : styles.textTertiary,
             transition: "all 0.2s"
@@ -260,7 +260,7 @@ function VerifyPage() {
             <div>
               <label style={{
                 display: 'block', marginBottom: '10px', color: styles.textTertiary,
-                fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px',
+                fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px',
                 letterSpacing: '2px', textTransform: 'uppercase', textAlign: 'center',
               }}>Certificate Number</label>
               <input
@@ -271,7 +271,7 @@ function VerifyPage() {
                 className="verify-input w-full px-5 py-4 rounded-xl outline-none"
                 style={{
                   background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.08)',
-                  color: styles.textPrimary, fontFamily: "'IBM Plex Mono', monospace",
+                  color: styles.textPrimary, fontFamily: "Consolas, 'IBM Plex Mono', monospace",
                   fontSize: '18px', textAlign: 'center', letterSpacing: '2px',
                 }}
               />
@@ -283,7 +283,7 @@ function VerifyPage() {
               style={{
                 background: 'linear-gradient(135deg, #5B4B8A 0%, #7B6BAA 100%)',
                 border: '1px solid rgba(157,140,207,0.5)', color: '#fff',
-                fontFamily: "'IBM Plex Mono', monospace", fontSize: '12px',
+                fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px',
                 letterSpacing: '2px', textTransform: 'uppercase', cursor: 'pointer',
                 boxShadow: '0 4px 20px rgba(91,75,138,0.4)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
@@ -308,8 +308,8 @@ function VerifyPage() {
                 {label: 'Last 30 Days', value: registryStats.issued_last_30_days, color: '#D6A05C'},
               ].map(s => (
                 <div key={s.label} style={{textAlign: 'center'}}>
-                  <div style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '24px', fontWeight: 600, color: s.color}}>{s.value}</div>
-                  <div style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', color: styles.textTertiary, letterSpacing: '1px', textTransform: 'uppercase', marginTop: '2px'}}>{s.label}</div>
+                  <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '24px', fontWeight: 600, color: s.color}}>{s.value}</div>
+                  <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', color: styles.textTertiary, letterSpacing: '1px', textTransform: 'uppercase', marginTop: '2px'}}>{s.label}</div>
                 </div>
               ))}
             </div>
@@ -318,7 +318,7 @@ function VerifyPage() {
             <div>
               <label style={{
                 display: 'block', marginBottom: '10px', color: styles.textTertiary,
-                fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px',
+                fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px',
                 letterSpacing: '2px', textTransform: 'uppercase', textAlign: 'center',
               }}>Organization or System Name</label>
               <input
@@ -329,7 +329,7 @@ function VerifyPage() {
                 className="verify-input w-full px-5 py-4 rounded-xl outline-none"
                 style={{
                   background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.08)',
-                  color: styles.textPrimary, fontFamily: "'IBM Plex Mono', monospace",
+                  color: styles.textPrimary, fontFamily: "Consolas, 'IBM Plex Mono', monospace",
                   fontSize: '18px', textAlign: 'center', letterSpacing: '2px',
                 }}
               />
@@ -341,7 +341,7 @@ function VerifyPage() {
                 onChange={(e) => setStatusFilter(e.target.value)}
                 style={{
                   background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.08)',
-                  color: styles.textPrimary, fontFamily: "'IBM Plex Mono', monospace",
+                  color: styles.textPrimary, fontFamily: "Consolas, 'IBM Plex Mono', monospace",
                   fontSize: '11px', padding: '8px 16px', borderRadius: '8px', outline: 'none',
                   letterSpacing: '1px', textTransform: 'uppercase',
                 }}
@@ -359,7 +359,7 @@ function VerifyPage() {
               style={{
                 background: 'linear-gradient(135deg, #5B4B8A 0%, #7B6BAA 100%)',
                 border: '1px solid rgba(157,140,207,0.5)', color: '#fff',
-                fontFamily: "'IBM Plex Mono', monospace", fontSize: '12px',
+                fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px',
                 letterSpacing: '2px', textTransform: 'uppercase', cursor: 'pointer',
                 boxShadow: '0 4px 20px rgba(91,75,138,0.4)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
@@ -388,7 +388,7 @@ function VerifyPage() {
                           <div style={{color: styles.textTertiary, fontSize: "12px"}}>{cert.system_name}</div>
                         </div>
                         <div style={{textAlign: "right"}}>
-                          <div style={{color: styles.purpleBright, fontFamily: "'IBM Plex Mono', monospace", fontSize: "11px"}}>{cert.certificate_number}</div>
+                          <div style={{color: styles.purpleBright, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: "11px"}}>{cert.certificate_number}</div>
                           <div style={{color: styles.accentGreen, fontSize: "10px", textTransform: "uppercase"}}>{cert.state}</div>
                         </div>
                       </div>
@@ -403,8 +403,8 @@ function VerifyPage() {
               background: 'rgba(214,92,92,0.1)', border: '1px solid rgba(214,92,92,0.3)',
             }}>
               <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', marginBottom: '8px'}}>
-                <AlertTriangle className="w-5 h-5" style={{color: styles.accentRed}} />
-                <span style={{color: styles.accentRed, fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase'}}>Not Found</span>
+                <AlertTriangle fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{color: styles.accentRed}} />
+                <span style={{color: styles.accentRed, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase'}}>Not Found</span>
               </div>
               <p style={{color: styles.textSecondary, fontSize: '14px'}}>{error}</p>
             </div>
@@ -415,8 +415,8 @@ function VerifyPage() {
               background: 'rgba(214,92,92,0.1)', border: '1px solid rgba(214,92,92,0.3)',
             }}>
               <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', marginBottom: '8px'}}>
-                <AlertTriangle className="w-5 h-5" style={{color: styles.accentRed}} />
-                <span style={{color: styles.accentRed, fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase'}}>Certificate Not Found</span>
+                <AlertTriangle fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{color: styles.accentRed}} />
+                <span style={{color: styles.accentRed, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase'}}>Certificate Not Found</span>
               </div>
               <p style={{color: styles.textSecondary, fontSize: '14px'}}>No certificate exists with number: <strong>{result.certificate_number}</strong></p>
             </div>
@@ -433,7 +433,7 @@ function VerifyPage() {
             };
             const cfg = statusConfig[status] || statusConfig.CONFORMANT;
             const rowStyle = {display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '12px', borderBottom: '1px solid rgba(255,255,255,0.06)'};
-            const labelSt = {color: styles.textTertiary, fontSize: '12px', fontFamily: "'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '1px'};
+            const labelSt = {color: styles.textTertiary, fontSize: '12px', fontFamily: "Consolas, 'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '1px'};
             const valSt = {color: styles.textPrimary, fontSize: '14px'};
             
             return (
@@ -441,11 +441,11 @@ function VerifyPage() {
               {/* Status Header */}
               <div style={{padding: '16px 20px', background: cfg.headerBg, borderBottom: '1px solid ' + cfg.border, display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
                 <div style={{display: 'flex', alignItems: 'center', gap: '10px'}}>
-                  {isValid ? <CheckCircle className="w-5 h-5" style={{color: cfg.color}} /> : <AlertTriangle className="w-5 h-5" style={{color: cfg.color}} />}
-                  <span style={{color: cfg.color, fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', fontWeight: 500}}>{cfg.icon}</span>
+                  {isValid ? <CheckCircle fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{color: cfg.color}} /> : <AlertTriangle fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{color: cfg.color}} />}
+                  <span style={{color: cfg.color, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', fontWeight: 500}}>{cfg.icon}</span>
                 </div>
                 <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
-                  <span style={{padding: '4px 12px', borderRadius: '20px', fontSize: '10px', background: cfg.bg, color: cfg.color, fontFamily: "'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '1px', display: 'flex', alignItems: 'center', gap: '6px', border: '1px solid ' + cfg.border}}>
+                  <span style={{padding: '4px 12px', borderRadius: '20px', fontSize: '10px', background: cfg.bg, color: cfg.color, fontFamily: "Consolas, 'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '1px', display: 'flex', alignItems: 'center', gap: '6px', border: '1px solid ' + cfg.border}}>
                     <span style={{width: '6px', height: '6px', borderRadius: '50%', background: cfg.color, boxShadow: '0 0 8px ' + cfg.color}}></span>
                     {cfg.label}
                   </span>
@@ -464,7 +464,7 @@ function VerifyPage() {
                 <div style={{display: 'grid', gap: '16px'}}>
                   <div style={rowStyle}>
                     <span style={labelSt}>Certificate</span>
-                    <span style={{color: cfg.color, fontFamily: "'IBM Plex Mono', monospace", fontSize: '14px', fontWeight: 500}}>{result.certificate_number}</span>
+                    <span style={{color: cfg.color, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '14px', fontWeight: 500}}>{result.certificate_number}</span>
                   </div>
                   <div style={rowStyle}>
                     <span style={labelSt}>Organization</span>
@@ -485,13 +485,13 @@ function VerifyPage() {
                   {result.convergence_score != null && (
                     <div style={rowStyle}>
                       <span style={labelSt}>Convergence Score</span>
-                      <span style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '14px', color: result.convergence_score >= 0.95 ? styles.accentGreen : '#D6A05C'}}>{(result.convergence_score * 100).toFixed(1)}%</span>
+                      <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '14px', color: result.convergence_score >= 0.95 ? styles.accentGreen : '#D6A05C'}}>{(result.convergence_score * 100).toFixed(1)}%</span>
                     </div>
                   )}
                   {result.evidence_hash && (
                     <div style={{paddingBottom: '12px', borderBottom: '1px solid rgba(255,255,255,0.06)'}}>
                       <span style={labelSt}>Evidence Hash</span>
-                      <div style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', color: styles.textTertiary, marginTop: '6px', wordBreak: 'break-all', lineHeight: '1.5'}}>{result.evidence_hash}</div>
+                      <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', color: styles.textTertiary, marginTop: '6px', wordBreak: 'break-all', lineHeight: '1.5'}}>{result.evidence_hash}</div>
                     </div>
                   )}
                 </div>
@@ -501,7 +501,7 @@ function VerifyPage() {
                   <button onClick={copyVerificationUrl} style={{
                     padding: '8px 16px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
                     borderRadius: '8px', color: styles.textSecondary, cursor: 'pointer',
-                    fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase',
+                    fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase',
                     display: 'flex', alignItems: 'center', gap: '6px'
                   }}>
                     {copied ? '✓ Copied!' : '⎘ Share Link'}
@@ -509,7 +509,7 @@ function VerifyPage() {
                   <button onClick={() => setShowQR(!showQR)} style={{
                     padding: '8px 16px', background: showQR ? 'rgba(91,75,138,0.25)' : 'rgba(255,255,255,0.05)', border: showQR ? '1px solid rgba(91,75,138,0.4)' : '1px solid rgba(255,255,255,0.1)',
                     borderRadius: '8px', color: showQR ? styles.purpleBright : styles.textSecondary, cursor: 'pointer',
-                    fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase',
+                    fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase',
                     display: 'flex', alignItems: 'center', gap: '6px'
                   }}>
                     {showQR ? '▾ Hide QR' : '◱ QR Code'}
@@ -522,7 +522,7 @@ function VerifyPage() {
                       style={{
                         padding: '8px 16px', background: 'rgba(92,214,133,0.1)', border: '1px solid rgba(92,214,133,0.3)',
                         borderRadius: '8px', color: styles.accentGreen, cursor: 'pointer',
-                        fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase',
+                        fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase',
                         display: 'flex', alignItems: 'center', gap: '6px', textDecoration: 'none'
                       }}
                     >
@@ -533,7 +533,7 @@ function VerifyPage() {
                     <button onClick={fetchEvidence} style={{
                       padding: '8px 16px', background: 'rgba(91,75,138,0.15)', border: '1px solid rgba(91,75,138,0.3)',
                       borderRadius: '8px', color: styles.purpleBright, cursor: 'pointer',
-                      fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase',
+                      fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase',
                       display: 'flex', alignItems: 'center', gap: '6px'
                     }}>
                       {showEvidence ? '▾ Hide Evidence' : '▸ View Evidence'}
@@ -544,7 +544,7 @@ function VerifyPage() {
                 {/* QR Code Panel */}
                 {showQR && qrDataUrl && (
                   <div style={{marginTop: '16px', padding: '20px', background: 'rgba(0,0,0,0.2)', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.06)', textAlign: 'center'}}>
-                    <div style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Verification QR Code</div>
+                    <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Verification QR Code</div>
                     <div style={{display: 'inline-block', padding: '12px', background: '#fff', borderRadius: '12px', boxShadow: '0 4px 20px rgba(0,0,0,0.3)'}}>
                       <img src={qrDataUrl} alt="Verification QR Code" style={{width: '200px', height: '200px', display: 'block'}} />
                     </div>
@@ -552,7 +552,7 @@ function VerifyPage() {
                       <button onClick={downloadQR} style={{
                         padding: '6px 14px', background: 'rgba(91,75,138,0.15)', border: '1px solid rgba(91,75,138,0.3)',
                         borderRadius: '6px', color: styles.purpleBright, cursor: 'pointer',
-                        fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1px', textTransform: 'uppercase',
+                        fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1px', textTransform: 'uppercase',
                         display: 'flex', alignItems: 'center', gap: '6px'
                       }}>
                         <Download size={12} /> Download PNG
@@ -565,15 +565,15 @@ function VerifyPage() {
                 {/* Evidence Panel */}
                 {showEvidence && evidence && (
                   <div style={{marginTop: '16px', padding: '16px', background: 'rgba(0,0,0,0.2)', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.06)'}}>
-                    <div style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '12px'}}>Evidence Chain</div>
+                    <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '12px'}}>Evidence Chain</div>
                     <div style={{display: 'grid', gap: '10px'}}>
                       <div>
                         <span style={{fontSize: '11px', color: styles.textTertiary}}>Evidence Hash (SHA-256)</span>
-                        <div style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', color: styles.purpleBright, wordBreak: 'break-all', marginTop: '4px'}}>{evidence.evidence_hash || '-'}</div>
+                        <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', color: styles.purpleBright, wordBreak: 'break-all', marginTop: '4px'}}>{evidence.evidence_hash || '-'}</div>
                       </div>
                       <div>
                         <span style={{fontSize: '11px', color: styles.textTertiary}}>Convergence Score</span>
-                        <div style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '14px', color: styles.accentGreen, marginTop: '4px'}}>{evidence.convergence_score ? (evidence.convergence_score * 100).toFixed(2) + '%' : '-'}</div>
+                        <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '14px', color: styles.accentGreen, marginTop: '4px'}}>{evidence.convergence_score ? (evidence.convergence_score * 100).toFixed(2) + '%' : '-'}</div>
                       </div>
                       {evidence.odd_scope?.environment_type && (
                         <div>

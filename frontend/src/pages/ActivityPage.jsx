@@ -19,6 +19,21 @@ function ActivityPage() {
   const [dateTo, setDateTo] = useState('');
   const [verifyResult, setVerifyResult] = useState(null);
   const [verifying, setVerifying] = useState(false);
+  const [quickRange, setQuickRange] = useState('30');
+
+  const applyQuickRange = (range) => {
+    setQuickRange(range);
+    setPage(0);
+    if (range === 'all') {
+      setDateFrom('');
+      setDateTo('');
+    } else {
+      const d = new Date();
+      d.setDate(d.getDate() - parseInt(range));
+      setDateFrom(d.toISOString().split('T')[0]);
+      setDateTo('');
+    }
+  };
 
   const verifyIntegrity = async () => {
     setVerifying(true);
@@ -103,21 +118,26 @@ function ActivityPage() {
       {/* Filters */}
       <Panel>
         <div style={{display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap'}}>
-          <select value={actionFilter} onChange={e => { setActionFilter(e.target.value); setPage(0); }} style={{background: styles.bgDeep, border: `1px solid ${styles.borderGlass}`, borderRadius: '8px', padding: '8px 12px', color: styles.textPrimary, fontSize: '12px', fontFamily: "'IBM Plex Mono', monospace", minWidth: '180px'}}>
+          <select value={actionFilter} onChange={e => { setActionFilter(e.target.value); setPage(0); }} style={{background: styles.bgDeep, border: `1px solid ${styles.borderGlass}`, borderRadius: '8px', padding: '8px 12px', color: styles.textPrimary, fontSize: '12px', fontFamily: "Consolas, 'IBM Plex Mono', monospace", minWidth: '180px'}}>
             <option value="">All Actions</option>
             {actions.map(a => <option key={a} value={a}>{a}</option>)}
           </select>
-          <select value={resourceFilter} onChange={e => { setResourceFilter(e.target.value); setPage(0); }} style={{background: styles.bgDeep, border: `1px solid ${styles.borderGlass}`, borderRadius: '8px', padding: '8px 12px', color: styles.textPrimary, fontSize: '12px', fontFamily: "'IBM Plex Mono', monospace", minWidth: '150px'}}>
+          <select value={resourceFilter} onChange={e => { setResourceFilter(e.target.value); setPage(0); }} style={{background: styles.bgDeep, border: `1px solid ${styles.borderGlass}`, borderRadius: '8px', padding: '8px 12px', color: styles.textPrimary, fontSize: '12px', fontFamily: "Consolas, 'IBM Plex Mono', monospace", minWidth: '150px'}}>
             <option value="">All Resources</option>
             {resourceTypes.map(t => <option key={t} value={t}>{t}</option>)}
           </select>
-          <input value={emailFilter} onChange={e => { setEmailFilter(e.target.value); setPage(0); }} placeholder="Filter by email..." style={{background: styles.bgDeep, border: `1px solid ${styles.borderGlass}`, borderRadius: '8px', padding: '8px 12px', color: styles.textPrimary, fontSize: '12px', fontFamily: "'IBM Plex Mono', monospace", flex: 1, minWidth: '150px'}} />
-          <input type="date" value={dateFrom} onChange={e => { setDateFrom(e.target.value); setPage(0); }} style={{background: styles.bgDeep, border: `1px solid ${styles.borderGlass}`, borderRadius: '8px', padding: '8px 12px', color: styles.textPrimary, fontSize: '12px', fontFamily: "'IBM Plex Mono', monospace", colorScheme: 'dark'}} />
+          <input value={emailFilter} onChange={e => { setEmailFilter(e.target.value); setPage(0); }} placeholder="Filter by email..." style={{background: styles.bgDeep, border: `1px solid ${styles.borderGlass}`, borderRadius: '8px', padding: '8px 12px', color: styles.textPrimary, fontSize: '12px', fontFamily: "Consolas, 'IBM Plex Mono', monospace", flex: 1, minWidth: '150px'}} />
+          {['7', '30', '90', 'all'].map(r => (
+              <button key={r} onClick={() => applyQuickRange(r)} style={{padding: '5px 10px', background: quickRange === r ? 'rgba(168,150,214,0.15)' : 'transparent', border: `1px solid ${quickRange === r ? 'rgba(168,150,214,0.4)' : styles.borderGlass}`, borderRadius: '6px', color: quickRange === r ? styles.purpleBright : styles.textTertiary, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', cursor: 'pointer', letterSpacing: '0.5px', transition: 'all 0.15s ease'}}>
+                {r === 'all' ? 'All' : r + 'd'}
+              </button>
+            ))}
+          <input type="date" value={dateFrom} onChange={e => { setDateFrom(e.target.value); setPage(0); setQuickRange(''); }} style={{background: styles.bgDeep, border: `1px solid ${styles.borderGlass}`, borderRadius: '8px', padding: '8px 12px', color: styles.textPrimary, fontSize: '12px', fontFamily: "Consolas, 'IBM Plex Mono', monospace", colorScheme: 'dark'}} />
           <span style={{fontSize: '11px', color: styles.textTertiary}}>to</span>
-          <input type="date" value={dateTo} onChange={e => { setDateTo(e.target.value); setPage(0); }} style={{background: styles.bgDeep, border: `1px solid ${styles.borderGlass}`, borderRadius: '8px', padding: '8px 12px', color: styles.textPrimary, fontSize: '12px', fontFamily: "'IBM Plex Mono', monospace", colorScheme: 'dark'}} />
-          <span style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', color: styles.textTertiary}}>{total.toLocaleString()} entries</span>
-          <button onClick={exportCSV} style={{padding: '6px 14px', background: 'rgba(157,140,207,0.12)', border: '1px solid ' + 'rgba(157,140,207,0.3)', borderRadius: '8px', color: styles.purpleBright, fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', cursor: 'pointer', letterSpacing: '1px', textTransform: 'uppercase'}}>Export CSV</button>
-          <button onClick={verifyIntegrity} disabled={verifying} style={{padding: '6px 14px', background: verifyResult ? (verifyResult.integrity === 'passed' ? 'rgba(92,214,133,0.12)' : 'rgba(214,92,92,0.12)') : 'rgba(157,140,207,0.12)', border: '1px solid ' + (verifyResult ? (verifyResult.integrity === 'passed' ? 'rgba(92,214,133,0.3)' : 'rgba(214,92,92,0.3)') : 'rgba(157,140,207,0.3)'), borderRadius: '8px', color: verifyResult ? (verifyResult.integrity === 'passed' ? styles.accentGreen : '#D65C5C') : styles.purpleBright, fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', cursor: verifying ? 'wait' : 'pointer', letterSpacing: '1px', textTransform: 'uppercase'}}>
+          <input type="date" value={dateTo} onChange={e => { setDateTo(e.target.value); setPage(0); setQuickRange(''); }} style={{background: styles.bgDeep, border: `1px solid ${styles.borderGlass}`, borderRadius: '8px', padding: '8px 12px', color: styles.textPrimary, fontSize: '12px', fontFamily: "Consolas, 'IBM Plex Mono', monospace", colorScheme: 'dark'}} />
+          <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', color: styles.textTertiary}}>{total.toLocaleString()} entries</span>
+          <button onClick={exportCSV} style={{padding: '6px 14px', background: 'rgba(157,140,207,0.12)', border: '1px solid ' + 'rgba(157,140,207,0.3)', borderRadius: '8px', color: styles.purpleBright, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', cursor: 'pointer', letterSpacing: '1px', textTransform: 'uppercase'}}>Export CSV</button>
+          <button onClick={verifyIntegrity} disabled={verifying} style={{padding: '6px 14px', background: verifyResult ? (verifyResult.integrity === 'passed' ? 'rgba(92,214,133,0.12)' : 'rgba(214,92,92,0.12)') : 'rgba(157,140,207,0.12)', border: '1px solid ' + (verifyResult ? (verifyResult.integrity === 'passed' ? 'rgba(92,214,133,0.3)' : 'rgba(214,92,92,0.3)') : 'rgba(157,140,207,0.3)'), borderRadius: '8px', color: verifyResult ? (verifyResult.integrity === 'passed' ? styles.accentGreen : '#D65C5C') : styles.purpleBright, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', cursor: verifying ? 'wait' : 'pointer', letterSpacing: '1px', textTransform: 'uppercase'}}>
             {verifying ? 'Verifying...' : verifyResult ? (verifyResult.integrity === 'passed' ? `✓ ${verifyResult.valid} Verified` : `✗ ${verifyResult.invalid} Invalid`) : '⛓ Verify Chain'}
           </button>
         </div>
@@ -134,23 +154,23 @@ function ActivityPage() {
             <table style={{width: '100%', borderCollapse: 'collapse'}}>
               <thead>
                 <tr style={{background: 'rgba(0,0,0,0.2)'}}>
-                  <th style={{padding: '12px 16px', textAlign: 'left', fontSize: '10px', fontFamily: "'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '1px', color: styles.textTertiary}}>Timestamp</th>
-                  <th style={{padding: '12px 16px', textAlign: 'left', fontSize: '10px', fontFamily: "'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '1px', color: styles.textTertiary}}>User</th>
-                  <th style={{padding: '12px 16px', textAlign: 'left', fontSize: '10px', fontFamily: "'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '1px', color: styles.textTertiary}}>Action</th>
-                  <th style={{padding: '12px 16px', textAlign: 'left', fontSize: '10px', fontFamily: "'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '1px', color: styles.textTertiary}}>Resource</th>
-                  <th style={{padding: '12px 16px', textAlign: 'left', fontSize: '10px', fontFamily: "'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '1px', color: styles.textTertiary}}>Details</th>
-                  <th style={{padding: '12px 16px', textAlign: 'left', fontSize: '10px', fontFamily: "'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '1px', color: styles.textTertiary}}>Hash</th>
+                  <th style={{padding: '12px 16px', textAlign: 'left', fontSize: '10px', fontFamily: "Consolas, 'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '1px', color: styles.textTertiary}}>Timestamp</th>
+                  <th style={{padding: '12px 16px', textAlign: 'left', fontSize: '10px', fontFamily: "Consolas, 'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '1px', color: styles.textTertiary}}>User</th>
+                  <th style={{padding: '12px 16px', textAlign: 'left', fontSize: '10px', fontFamily: "Consolas, 'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '1px', color: styles.textTertiary}}>Action</th>
+                  <th style={{padding: '12px 16px', textAlign: 'left', fontSize: '10px', fontFamily: "Consolas, 'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '1px', color: styles.textTertiary}}>Resource</th>
+                  <th style={{padding: '12px 16px', textAlign: 'left', fontSize: '10px', fontFamily: "Consolas, 'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '1px', color: styles.textTertiary}}>Details</th>
+                  <th style={{padding: '12px 16px', textAlign: 'left', fontSize: '10px', fontFamily: "Consolas, 'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '1px', color: styles.textTertiary}}>Hash</th>
                 </tr>
               </thead>
               <tbody>
                 {logs.map(log => (
                   <tr key={log.id} style={{borderBottom: `1px solid ${styles.borderSubtle}`}}>
-                    <td style={{padding: '12px 16px', fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', color: styles.textSecondary, whiteSpace: 'nowrap'}}>{log.timestamp ? new Date(log.timestamp).toLocaleString() : '-'}</td>
+                    <td style={{padding: '12px 16px', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', color: styles.textSecondary, whiteSpace: 'nowrap'}}>{log.timestamp ? new Date(log.timestamp).toLocaleString() : '-'}</td>
                     <td style={{padding: '12px 16px', fontSize: '13px', color: styles.textPrimary}}>{log.user_email || '-'}</td>
                     <td style={{padding: '12px 16px'}}>
-                      <span style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', color: actionColor(log.action), letterSpacing: '0.5px'}}>{log.action}</span>
+                      <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', color: actionColor(log.action), letterSpacing: '0.5px'}}>{log.action}</span>
                     </td>
-                    <td style={{padding: '12px 16px', fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', color: styles.textTertiary}}>
+                    <td style={{padding: '12px 16px', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', color: styles.textTertiary}}>
                       {log.resource_type}{log.resource_id ? ` #${log.resource_id}` : ''}
                     </td>
                     <td style={{padding: '12px 16px', fontSize: '12px', color: styles.textTertiary, maxWidth: '300px'}}>
@@ -158,7 +178,7 @@ function ActivityPage() {
                         <span key={k} style={{marginRight: '12px'}}><span style={{color: styles.textTertiary}}>{k.replace(/_/g, ' ')}:</span> <span style={{color: styles.textSecondary}}>{String(v)}</span></span>
                       )) : '-'}
                     </td>
-                    <td style={{padding: '12px 16px', fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary, letterSpacing: '0.5px'}}>{log.log_hash || '-'}</td>
+                    <td style={{padding: '12px 16px', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary, letterSpacing: '0.5px'}}>{log.log_hash || '-'}</td>
                   </tr>
                 ))}
               </tbody>
@@ -169,9 +189,9 @@ function ActivityPage() {
         {/* Pagination */}
         {totalPages > 1 && (
           <div style={{display: 'flex', justifyContent: 'center', gap: '8px', padding: '16px', borderTop: `1px solid ${styles.borderSubtle}`}}>
-            <button onClick={() => setPage(Math.max(0, page - 1))} disabled={page === 0} style={{padding: '6px 12px', background: styles.bgDeep, border: `1px solid ${styles.borderGlass}`, borderRadius: '6px', color: page === 0 ? styles.textTertiary : styles.textPrimary, cursor: page === 0 ? 'not-allowed' : 'pointer', fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px'}}>← Prev</button>
-            <span style={{padding: '6px 12px', fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', color: styles.textSecondary}}>{page + 1} / {totalPages}</span>
-            <button onClick={() => setPage(Math.min(totalPages - 1, page + 1))} disabled={page >= totalPages - 1} style={{padding: '6px 12px', background: styles.bgDeep, border: `1px solid ${styles.borderGlass}`, borderRadius: '6px', color: page >= totalPages - 1 ? styles.textTertiary : styles.textPrimary, cursor: page >= totalPages - 1 ? 'not-allowed' : 'pointer', fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px'}}>Next →</button>
+            <button onClick={() => setPage(Math.max(0, page - 1))} disabled={page === 0} style={{padding: '6px 12px', background: styles.bgDeep, border: `1px solid ${styles.borderGlass}`, borderRadius: '6px', color: page === 0 ? styles.textTertiary : styles.textPrimary, cursor: page === 0 ? 'not-allowed' : 'pointer', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px'}}>← Prev</button>
+            <span style={{padding: '6px 12px', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', color: styles.textSecondary}}>{page + 1} / {totalPages}</span>
+            <button onClick={() => setPage(Math.min(totalPages - 1, page + 1))} disabled={page >= totalPages - 1} style={{padding: '6px 12px', background: styles.bgDeep, border: `1px solid ${styles.borderGlass}`, borderRadius: '6px', color: page >= totalPages - 1 ? styles.textTertiary : styles.textPrimary, cursor: page >= totalPages - 1 ? 'not-allowed' : 'pointer', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px'}}>Next →</button>
           </div>
         )}
       </Panel>

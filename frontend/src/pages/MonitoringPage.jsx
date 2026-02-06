@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Activity, AlertTriangle, Download, RefreshCw } from 'lucide-react';
 import { api } from '../config/api';
+import { useToast } from '../context/ToastContext';
+import { useConfirm } from '../context/ConfirmContext';
 import { styles } from '../config/styles';
 import { useAuth } from '../context/AuthContext';
 import Panel from '../components/Panel';
@@ -17,6 +19,8 @@ function MonitoringPage() {
   const [onlineOnly, setOnlineOnly] = useState(false);
   const [hideEnded, setHideEnded] = useState(true);
   const { user } = useAuth();
+  const toast = useToast();
+  const confirm = useConfirm();
 
   const fetchData = async () => {
     try {
@@ -84,7 +88,7 @@ function MonitoringPage() {
       ...rows.map(r => headers.map(h => {
         const val = String(r[h]).replace(/"/g, '""');
         return val.includes(',') || val.includes('"') || val.includes('\n') ? `"${val}"` : val;
-      }).join('\n,'))
+      }).join(','))
     ].join('\n');
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
@@ -119,7 +123,7 @@ function MonitoringPage() {
     <div style={{maxWidth: '1400px', margin: '0 auto'}}>
       <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px'}}>
         <div>
-          <h1 className="sa-page-title" style={{fontFamily: "'Source Serif 4', serif", fontSize: '28px', fontWeight: 300, margin: 0}}>
+          <h1 className="sa-page-title" style={{fontFamily: "Georgia, 'Source Serif 4', serif", fontSize: '28px', fontWeight: 300, margin: 0}}>
             System Monitoring
           </h1>
           <p style={{color: styles.textSecondary, marginTop: '4px', fontSize: '14px'}}>
@@ -152,7 +156,7 @@ function MonitoringPage() {
               background: styles.bgPanel, border: `1px solid ${styles.borderGlass}`,
               borderRadius: '8px', padding: '8px 16px', color: styles.textPrimary,
               cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px',
-              fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '0.5px'
+              fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '0.5px'
             }}
           >
             <Download size={14} /> Export CSV
@@ -170,7 +174,7 @@ function MonitoringPage() {
           marginBottom: '24px'
         }}>
           <div style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px'}}>
-            <AlertTriangle size={18} style={{color: '#D65C5C'}} />
+            <AlertTriangle fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} size={18} style={{color: '#D65C5C'}} />
             <span style={{fontWeight: 500, color: '#D65C5C'}}>{alerts.length} Active Alert{alerts.length > 1 ? 's' : ''}</span>
           </div>
           <div style={{display: 'flex', flexDirection: 'column', gap: '8px'}}>
@@ -181,7 +185,7 @@ function MonitoringPage() {
               }}>
                 <div>
                   <span style={{
-                    fontSize: '10px', fontFamily: "'IBM Plex Mono', monospace",
+                    fontSize: '10px', fontFamily: "Consolas, 'IBM Plex Mono', monospace",
                     textTransform: 'uppercase', letterSpacing: '1px',
                     color: alert.severity === 'critical' ? '#D65C5C' : '#D6A05C',
                     marginRight: '12px'
@@ -190,7 +194,7 @@ function MonitoringPage() {
                   </span>
                   <span style={{color: styles.textPrimary}}>{alert.message}</span>
                 </div>
-                <span style={{color: styles.textTertiary, fontSize: '12px', fontFamily: "'IBM Plex Mono', monospace"}}>
+                <span style={{color: styles.textTertiary, fontSize: '12px', fontFamily: "Consolas, 'IBM Plex Mono', monospace"}}>
                   {alert.session_id?.slice(0, 8)}...
                 </span>
               </div>
@@ -206,7 +210,7 @@ function MonitoringPage() {
         const totalFleet = onlineCount + offlineCount;
         const healthPct = totalFleet > 0 ? (onlineCount / totalFleet * 100) : 0;
         const cardStyle = {background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '16px', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', padding: '20px'};
-        const labelStyle = {fontSize: '10px', fontFamily: "'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '2px', color: styles.textTertiary, marginBottom: '8px'};
+        const labelStyle = {fontSize: '10px', fontFamily: "Consolas, 'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '2px', color: styles.textTertiary, marginBottom: '8px'};
         const subStyle = {fontSize: '12px', color: styles.textSecondary, marginTop: '4px'};
         return (
           <div style={{marginBottom: '32px'}}>
@@ -215,7 +219,7 @@ function MonitoringPage() {
               <div style={{marginBottom: '20px', padding: '16px 20px', ...cardStyle}}>
                 <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px'}}>
                   <div style={labelStyle}>Fleet Health</div>
-                  <div style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '13px', color: healthPct >= 90 ? styles.accentGreen : healthPct >= 70 ? '#D6A05C' : '#D65C5C', fontWeight: 500}}>
+                  <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '13px', color: healthPct >= 90 ? styles.accentGreen : healthPct >= 70 ? '#D6A05C' : '#D65C5C', fontWeight: 500}}>
                     {healthPct.toFixed(0)}% Online
                   </div>
                 </div>
@@ -275,8 +279,8 @@ function MonitoringPage() {
 
       {/* Sessions Table */}
       <div style={{background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '16px', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', overflow: 'hidden'}}>
-        <div style={{padding: '16px 20px', borderBottom: `1px solid ${styles.borderSubtle}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-          <h2 style={{margin: 0, fontSize: '14px', fontFamily: "'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '2px', color: styles.textTertiary}}>{user?.role === 'admin' ? 'Agent Sessions' : 'System Monitoring'}</h2>
+        <div style={{padding: '16px 20px', borderBottom: `1px solid ${styles.borderGlass}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+          <h2 style={{margin: 0, fontSize: '14px', fontFamily: "Consolas, 'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '2px', color: styles.textTertiary}}>{user?.role === 'admin' ? 'Agent Sessions' : 'System Monitoring'}</h2>
           <div style={{display: 'flex', gap: '12px', alignItems: 'center'}}>
             {user?.role === 'admin' && <select value={customerFilter} onChange={(e) => setCustomerFilter(e.target.value)} style={{background: styles.bgDeep, border: `1px solid ${styles.borderGlass}`, borderRadius: '6px', padding: '6px 10px', color: styles.textPrimary, fontSize: '12px'}}>
               <option value="">All Customers</option>
@@ -301,7 +305,7 @@ function MonitoringPage() {
             <table style={{width: '100%', borderCollapse: 'collapse'}}>
               <thead>
                 <tr style={{background: 'rgba(0,0,0,0.2)'}}>
-                  {(() => { const th = {padding: '12px 16px', textAlign: 'left', fontSize: '10px', fontFamily: "'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '1px', color: styles.textTertiary}; const thr = {...th, textAlign: 'right'}; return (<>
+                  {(() => { const th = {padding: '12px 16px', textAlign: 'left', fontSize: '10px', fontFamily: "Consolas, 'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '1px', color: styles.textTertiary}; const thr = {...th, textAlign: 'right'}; return (<>
                   <th style={th}>Status</th>
                   <th style={th}>Organization</th>
                   <th style={th}>System / Certificate</th>
@@ -324,7 +328,7 @@ function MonitoringPage() {
                       key={session.id}
                       onClick={() => setSelectedSession(isSelected ? null : session)}
                       style={{
-                        borderBottom: `1px solid ${styles.borderSubtle}`,
+                        borderBottom: `1px solid ${styles.borderGlass}`,
                         cursor: 'pointer',
                         background: isSelected ? 'rgba(91, 75, 138, 0.15)' : 'transparent',
                         transition: 'background 0.15s'
@@ -340,7 +344,7 @@ function MonitoringPage() {
                             boxShadow: session.is_online ? `0 0 8px ${styles.accentGreen}` : 'none'
                           }} />
                           <span style={{
-                            fontSize: '11px', fontFamily: "'IBM Plex Mono', monospace",
+                            fontSize: '11px', fontFamily: "Consolas, 'IBM Plex Mono', monospace",
                             textTransform: 'uppercase', letterSpacing: '1px',
                             color: session.is_online ? styles.accentGreen : session.status === 'ended' ? styles.textTertiary : '#D65C5C'
                           }}>
@@ -353,21 +357,21 @@ function MonitoringPage() {
                       </td>
                       <td style={{padding: '14px 16px'}}>
                         <div style={{fontSize: '13px', color: styles.textPrimary}}>{session.system_name || '-'}</div>
-                        <div style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary, marginTop: '2px'}}>{session.certificate_id || '-'}</div>
+                        <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary, marginTop: '2px'}}>{session.certificate_id || '-'}</div>
                       </td>
-                      <td style={{padding: '14px 16px', fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', color: styles.textTertiary}}>
+                      <td style={{padding: '14px 16px', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', color: styles.textTertiary}}>
                         {session.session_id?.slice(0, 12)}...
                       </td>
                       <td style={{padding: '14px 16px', color: styles.textSecondary, fontSize: '13px'}}>
                         {session.uptime_hours?.toFixed(1)}h
                       </td>
-                      <td style={{padding: '14px 16px', textAlign: 'right', color: styles.textPrimary, fontFamily: "'IBM Plex Mono', monospace", fontSize: '13px'}}>
+                      <td style={{padding: '14px 16px', textAlign: 'right', color: styles.textPrimary, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '13px'}}>
                         {total.toLocaleString()}
                       </td>
                       <td style={{padding: '14px 16px', textAlign: 'right'}}>
                         <span style={{
                           color: passRate >= 99 ? styles.accentGreen : passRate >= 95 ? '#D6A05C' : '#D65C5C',
-                          fontFamily: "'IBM Plex Mono', monospace", fontSize: '13px'
+                          fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '13px'
                         }}>
                           {passRate.toFixed(1)}%
                         </span>
@@ -393,8 +397,8 @@ function MonitoringPage() {
           borderRadius: '12px',
           overflow: 'hidden'
         }}>
-          <div style={{padding: '16px 20px', borderBottom: `1px solid ${styles.borderSubtle}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-            <h2 style={{margin: 0, fontSize: '14px', fontFamily: "'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '2px', color: styles.textTertiary}}>
+          <div style={{padding: '16px 20px', borderBottom: `1px solid ${styles.borderGlass}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+            <h2 style={{margin: 0, fontSize: '14px', fontFamily: "Consolas, 'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '2px', color: styles.textTertiary}}>
               Session Detail: {selectedSession.session_id}
             </h2>
             <button 
@@ -411,7 +415,7 @@ function MonitoringPage() {
               <div>
                 <h3 style={{margin: '0 0 4px 0', fontSize: '18px', fontWeight: 400, color: styles.textPrimary}}>{selectedSession.organization_name || 'Unknown Organization'}</h3>
                 <p style={{margin: 0, fontSize: '13px', color: styles.textSecondary}}>{selectedSession.system_name || 'Unknown System'} · {selectedSession.certificate_id || 'No certificate'}</p>
-                <p style={{margin: '4px 0 0', fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', color: styles.textTertiary}}>Agent v{selectedSession.agent_version || '1.0.0'} · Session {selectedSession.session_id}</p>
+                <p style={{margin: '4px 0 0', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', color: styles.textTertiary}}>Agent v{selectedSession.agent_version || '1.0.0'} · Session {selectedSession.session_id}</p>
               </div>
               {selectedSession.is_online && (
                 <button
@@ -423,7 +427,7 @@ function MonitoringPage() {
                       fetchData();
                     } catch (e) { toast.show('Failed: ' + e.message, 'error'); }
                   }}
-                  style={{padding: '8px 16px', background: 'rgba(214,92,92,0.1)', border: '1px solid rgba(214,92,92,0.3)', borderRadius: '8px', color: '#D65C5C', cursor: 'pointer', fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase'}}
+                  style={{padding: '8px 16px', background: 'rgba(214,92,92,0.1)', border: '1px solid rgba(214,92,92,0.3)', borderRadius: '8px', color: '#D65C5C', cursor: 'pointer', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase'}}
                 >
                   Force End Session
                 </button>
@@ -438,25 +442,25 @@ function MonitoringPage() {
               </div>
               <div style={{background: 'rgba(0,0,0,0.2)', borderRadius: '10px', padding: '14px'}}>
                 <div style={{fontSize: '10px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '6px'}}>Uptime</div>
-                <div style={{color: styles.textPrimary, fontFamily: "'IBM Plex Mono', monospace", fontSize: '18px'}}>{selectedSession.uptime_hours?.toFixed(1) || '0'}h</div>
+                <div style={{color: styles.textPrimary, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '18px'}}>{selectedSession.uptime_hours?.toFixed(1) || '0'}h</div>
               </div>
               <div style={{background: 'rgba(92,214,133,0.08)', borderRadius: '10px', padding: '14px'}}>
                 <div style={{fontSize: '10px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '6px'}}>Passed</div>
-                <div style={{color: styles.accentGreen, fontFamily: "'IBM Plex Mono', monospace", fontSize: '18px'}}>{(selectedSession.pass_count || 0).toLocaleString()}</div>
+                <div style={{color: styles.accentGreen, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '18px'}}>{(selectedSession.pass_count || 0).toLocaleString()}</div>
               </div>
               <div style={{background: 'rgba(214,92,92,0.08)', borderRadius: '10px', padding: '14px'}}>
                 <div style={{fontSize: '10px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '6px'}}>Blocked</div>
-                <div style={{color: '#D65C5C', fontFamily: "'IBM Plex Mono', monospace", fontSize: '18px'}}>{(selectedSession.block_count || 0).toLocaleString()}</div>
+                <div style={{color: '#D65C5C', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '18px'}}>{(selectedSession.block_count || 0).toLocaleString()}</div>
               </div>
               <div style={{background: 'rgba(0,0,0,0.2)', borderRadius: '10px', padding: '14px'}}>
                 <div style={{fontSize: '10px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '6px'}}>Pass Rate</div>
                 {(() => { const t = (selectedSession.pass_count || 0) + (selectedSession.block_count || 0); const r = t > 0 ? (selectedSession.pass_count / t * 100) : 0; return (
-                  <div style={{color: r >= 99 ? styles.accentGreen : r >= 95 ? '#D6A05C' : '#D65C5C', fontFamily: "'IBM Plex Mono', monospace", fontSize: '18px'}}>{r.toFixed(1)}%</div>
+                  <div style={{color: r >= 99 ? styles.accentGreen : r >= 95 ? '#D6A05C' : '#D65C5C', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '18px'}}>{r.toFixed(1)}%</div>
                 ); })()}
               </div>
               <div style={{background: 'rgba(0,0,0,0.2)', borderRadius: '10px', padding: '14px'}}>
                 <div style={{fontSize: '10px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '6px'}}>Certificate</div>
-                <div style={{color: styles.purpleBright, fontFamily: "'IBM Plex Mono', monospace", fontSize: '12px'}}>{selectedSession.certificate_id || '-'}</div>
+                <div style={{color: styles.purpleBright, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px'}}>{selectedSession.certificate_id || '-'}</div>
               </div>
             </div>
             
@@ -495,7 +499,7 @@ function MonitoringPage() {
                     link.click();
                   } catch (e) { toast.show('Failed to download telemetry', 'error'); }
                 }}
-                style={{padding: '8px 16px', background: 'rgba(157,140,207,0.1)', border: '1px solid rgba(157,140,207,0.3)', borderRadius: '8px', color: styles.purpleBright, cursor: 'pointer', fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px'}}
+                style={{padding: '8px 16px', background: 'rgba(157,140,207,0.1)', border: '1px solid rgba(157,140,207,0.3)', borderRadius: '8px', color: styles.purpleBright, cursor: 'pointer', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px'}}
               >
                 ↓ Telemetry CSV
               </button>
@@ -516,7 +520,7 @@ function MonitoringPage() {
                     link.click();
                   } catch (e) { toast.show('Failed to download violations', 'error'); }
                 }}
-                style={{padding: '8px 16px', background: 'rgba(214,92,92,0.08)', border: '1px solid rgba(214,92,92,0.25)', borderRadius: '8px', color: '#D65C5C', cursor: 'pointer', fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px'}}
+                style={{padding: '8px 16px', background: 'rgba(214,92,92,0.08)', border: '1px solid rgba(214,92,92,0.25)', borderRadius: '8px', color: '#D65C5C', cursor: 'pointer', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px'}}
               >
                 ↓ Violations CSV
               </button>
@@ -533,7 +537,7 @@ function MonitoringPage() {
                     link.click();
                   } catch (e) { toast.show('Failed to download report', 'error'); }
                 }}
-                style={{padding: '8px 16px', background: 'rgba(92,214,133,0.08)', border: '1px solid rgba(92,214,133,0.25)', borderRadius: '8px', color: styles.accentGreen, cursor: 'pointer', fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px'}}
+                style={{padding: '8px 16px', background: 'rgba(92,214,133,0.08)', border: '1px solid rgba(92,214,133,0.25)', borderRadius: '8px', color: styles.accentGreen, cursor: 'pointer', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px'}}
               >
                 ↓ CAT-72 Report PDF
               </button>

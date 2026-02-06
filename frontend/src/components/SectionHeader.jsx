@@ -6,11 +6,11 @@ function SectionHeader({ label, title, description, action }) {
     <div style={{marginBottom: '24px'}}>
       <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px'}}>
         <div>
-          {label && <p style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', color: styles.purpleBright, marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '12px'}}>
+          {label && <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', color: styles.purpleBright, marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '12px'}}>
             <span style={{width: '24px', height: '1px', background: styles.purpleBright}}></span>
             {label}
           </p>}
-          <h1 style={{fontFamily: "'Source Serif 4', serif", fontSize: '32px', fontWeight: 200, margin: 0, letterSpacing: '-0.02em'}}>{title}</h1>
+          <h1 style={{fontFamily: "Georgia, 'Source Serif 4', serif", fontSize: '32px', fontWeight: 200, margin: 0, letterSpacing: '-0.02em'}}>{title}</h1>
           {description && <p style={{color: styles.textSecondary, marginTop: '8px', fontSize: '15px'}}>{description}</p>}
         </div>
         {action}

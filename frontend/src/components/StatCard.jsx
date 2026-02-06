@@ -33,10 +33,10 @@ function StatCard({ label, value, trend, color = styles.purpleBright, icon, subt
         <div style={{position:'absolute',top:'12px',right:'12px',width:'80px',height:'80px',borderRadius:'50%',background:`radial-gradient(circle,${color}08 0%,transparent 70%)`,pointerEvents:'none'}}/>
         <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', position: 'relative'}}>
           <div>
-            <p style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '12px', margin: '0 0 12px 0'}}>{label}</p>
-            <p style={{fontFamily: "'Source Serif 4', serif", fontSize: '36px', fontWeight: 200, color: color, margin: 0, lineHeight: 1}}>{value}</p>
-            {trend != null && <p style={{fontSize: '11px', color: trend > 0 ? styles.accentGreen : trend < 0 ? styles.accentRed : styles.textTertiary, marginTop: '8px', fontFamily: "'IBM Plex Mono', monospace"}}>{trend > 0 ? '▲' : trend < 0 ? '▼' : '●'} {Math.abs(trend)}%</p>}
-            {subtitle && <p style={{fontSize: '11px', color: styles.textTertiary, marginTop: '6px', fontFamily: "'IBM Plex Mono', monospace"}}>{subtitle}</p>}
+            <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '12px', margin: '0 0 12px 0'}}>{label}</p>
+            <p style={{fontFamily: "Georgia, 'Source Serif 4', serif", fontSize: '36px', fontWeight: 200, color: color, margin: 0, lineHeight: 1}}>{value}</p>
+            {trend != null && <p style={{fontSize: '11px', color: trend > 0 ? styles.accentGreen : trend < 0 ? styles.accentRed : styles.textTertiary, marginTop: '8px', fontFamily: "Consolas, 'IBM Plex Mono', monospace"}}>{trend > 0 ? '▲' : trend < 0 ? '▼' : '●'} {Math.abs(trend)}%</p>}
+            {subtitle && <p style={{fontSize: '11px', color: styles.textTertiary, marginTop: '6px', fontFamily: "Consolas, 'IBM Plex Mono', monospace"}}>{subtitle}</p>}
           </div>
           {icon && <div style={{width: '48px', height: '48px', borderRadius: '12px', background: `${color}12`, border: `1px solid ${color}20`, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: hovered ? `0 0 20px ${color}20` : 'none', transition: 'box-shadow 0.3s'}}>{icon}</div>}
         </div>

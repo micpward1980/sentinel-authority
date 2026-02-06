@@ -3,9 +3,11 @@ import { api, API_BASE } from '../config/api';
 import { styles } from '../config/styles';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
+import { useConfirm } from '../context/ConfirmContext';
 import Panel from '../components/Panel';
 
 function CAT72Console() {
+  const confirm = useConfirm();
   const { user } = useAuth();
   const [tests, setTests] = useState([]);
   const toast = useToast();
@@ -74,8 +76,8 @@ function CAT72Console() {
   return (
     <div className="space-y-6">
       <div>
-        <p style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', color: styles.purpleBright, marginBottom: '8px'}}>Testing</p>
-        <h1 style={{fontFamily: "'Source Serif 4', serif", fontSize: '36px', fontWeight: 200, margin: 0}}>CAT-72 Console</h1>
+        <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', color: styles.purpleBright, marginBottom: '8px'}}>Testing</p>
+        <h1 style={{fontFamily: "Georgia, 'Source Serif 4', serif", fontSize: '36px', fontWeight: 200, margin: 0}}>CAT-72 Console</h1>
         <p style={{color: styles.textSecondary, marginTop: '8px'}}>{user?.role === 'admin' ? '72-hour Convergence Authorization Tests · Auto-refreshes every 15s' : 'Monitor your 72-hour conformance test in real time'}</p>
       </div>
 
@@ -102,7 +104,7 @@ function CAT72Console() {
       {/* Running Tests — Card View */}
       {runningTests.length > 0 && (
         <div>
-          <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.accentAmber, marginBottom: '12px'}}>● Live Tests</h2>
+          <h2 style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.accentAmber, marginBottom: '12px'}}>● Live Tests</h2>
           <div className="space-y-4">
             {runningTests.map(test => {
               const totalSec = test.duration_hours * 3600;
@@ -113,25 +115,25 @@ function CAT72Console() {
                   <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px'}}>
                     <div>
                       <div style={{fontWeight: 500, fontSize: '16px', color: styles.textPrimary, marginBottom: '4px'}}>{test.organization_name} — {test.system_name}</div>
-                      <div style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', color: styles.textTertiary}}>Test ID: {test.test_id} · Duration: {test.duration_hours}h</div>
+                      <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', color: styles.textTertiary}}>Test ID: {test.test_id} · Duration: {test.duration_hours}h</div>
                     </div>
-                    {user?.role === 'admin' && <button onClick={() => handleStop(test.test_id)} disabled={loading[test.test_id]} className="px-4 py-2 rounded-lg" style={{background: 'rgba(214,160,92,0.15)', border: '1px solid rgba(214,160,92,0.3)', color: styles.accentAmber, fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>
+                    {user?.role === 'admin' && <button onClick={() => handleStop(test.test_id)} disabled={loading[test.test_id]} className="px-4 py-2 rounded-lg" style={{background: 'rgba(214,160,92,0.15)', border: '1px solid rgba(214,160,92,0.3)', color: styles.accentAmber, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>
                       {loading[test.test_id] === 'stopping' ? '...' : 'Stop & Evaluate'}
                     </button>}
                   </div>
                   <div style={{display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '8px'}}>
-                    <div style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '28px', fontWeight: 200, color: styles.purpleBright, letterSpacing: '2px'}}>{formatTime(test.elapsed_seconds)}</div>
+                    <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '28px', fontWeight: 200, color: styles.purpleBright, letterSpacing: '2px'}}>{formatTime(test.elapsed_seconds)}</div>
                     <div style={{flex: 1}}>
                       <div className="w-full h-3 rounded-full overflow-hidden" style={{background: 'rgba(255,255,255,0.08)'}}>
                         <div className="h-full rounded-full transition-all" style={{width: `${pct}%`, background: pct >= 100 ? styles.accentGreen : `linear-gradient(90deg, ${styles.purplePrimary}, ${styles.purpleBright})`}} />
                       </div>
                     </div>
-                    <span style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '14px', color: pct >= 100 ? styles.accentGreen : styles.textSecondary, fontWeight: 500}}>{pct}%</span>
+                    <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '14px', color: pct >= 100 ? styles.accentGreen : styles.textSecondary, fontWeight: 500}}>{pct}%</span>
                   </div>
                   <div style={{display: 'flex', gap: '24px'}}>
-                    <span style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary}}>Remaining: {formatTime(remaining)}</span>
-                    <span style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary}}>Telemetry: {test.telemetry_count || 0} events</span>
-                    <span style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', color: test.violations_count > 0 ? styles.accentRed : styles.textTertiary}}>Violations: {test.violations_count || 0}</span>
+                    <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary}}>Remaining: {formatTime(remaining)}</span>
+                    <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary}}>Telemetry: {test.telemetry_count || 0} events</span>
+                    <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: test.violations_count > 0 ? styles.accentRed : styles.textTertiary}}>Violations: {test.violations_count || 0}</span>
                   </div>
                 </Panel>
               );
@@ -143,15 +145,15 @@ function CAT72Console() {
       {/* Scheduled Tests */}
       {scheduledTests.length > 0 && (
         <Panel>
-          <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Scheduled</h2>
+          <h2 style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Scheduled</h2>
           <div className="space-y-3">
             {scheduledTests.map(test => (
               <div key={test.id} style={{padding: '14px 16px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px', border: `1px solid ${styles.borderGlass}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
                 <div>
                   <div style={{fontWeight: 500, color: styles.textPrimary, marginBottom: '2px'}}>{test.organization_name} — {test.system_name}</div>
-                  <div style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', color: styles.textTertiary}}>{test.test_id} · {test.duration_hours}h test</div>
+                  <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', color: styles.textTertiary}}>{test.test_id} · {test.duration_hours}h test</div>
                 </div>
-                {user?.role === 'admin' && <button onClick={() => handleStart(test.test_id)} disabled={loading[test.test_id]} className="px-4 py-2 rounded-lg" style={{background: 'rgba(92,214,133,0.15)', border: '1px solid rgba(92,214,133,0.3)', color: styles.accentGreen, fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>
+                {user?.role === 'admin' && <button onClick={() => handleStart(test.test_id)} disabled={loading[test.test_id]} className="px-4 py-2 rounded-lg" style={{background: 'rgba(92,214,133,0.15)', border: '1px solid rgba(92,214,133,0.3)', color: styles.accentGreen, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>
                   {loading[test.test_id] === 'starting' ? '...' : 'Start Test'}
                 </button>}
               </div>
@@ -163,14 +165,14 @@ function CAT72Console() {
       {/* Completed Tests */}
       {completedTests.length > 0 && (
         <Panel>
-          <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Completed</h2>
+          <h2 style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Completed</h2>
           <table className="w-full">
             <thead>
               <tr style={{borderBottom: `1px solid ${styles.borderGlass}`}}>
-                <th className="px-4 py-3 text-left" style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>System</th>
-                <th className="px-4 py-3 text-left" style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>Result</th>
-                <th className="px-4 py-3 text-left" style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>Duration</th>
-                <th className="px-4 py-3 text-left" style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>Actions</th>
+                <th className="px-4 py-3 text-left" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>System</th>
+                <th className="px-4 py-3 text-left" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>Result</th>
+                <th className="px-4 py-3 text-left" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>Duration</th>
+                <th className="px-4 py-3 text-left" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -178,21 +180,21 @@ function CAT72Console() {
                 <tr key={test.id} style={{borderBottom: `1px solid ${styles.borderGlass}`}}>
                   <td className="px-4 py-4">
                     <div style={{fontWeight: 500, color: styles.textPrimary}}>{test.organization_name} — {test.system_name}</div>
-                    <div style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary, marginTop: '2px'}}>{test.test_id}</div>
+                    <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary, marginTop: '2px'}}>{test.test_id}</div>
                   </td>
                   <td className="px-4 py-4">
-                    <span style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '12px', fontWeight: 600, color: test.result === 'PASS' ? styles.accentGreen : styles.accentRed, padding: '4px 10px', borderRadius: '4px', background: test.result === 'PASS' ? 'rgba(92,214,133,0.15)' : 'rgba(214,92,92,0.15)'}}>{test.result}</span>
+                    <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px', fontWeight: 600, color: test.result === 'PASS' ? styles.accentGreen : styles.accentRed, padding: '4px 10px', borderRadius: '4px', background: test.result === 'PASS' ? 'rgba(92,214,133,0.15)' : 'rgba(214,92,92,0.15)'}}>{test.result}</span>
                   </td>
-                  <td className="px-4 py-4" style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '12px', color: styles.textSecondary}}>{formatTime(test.elapsed_seconds)}</td>
+                  <td className="px-4 py-4" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px', color: styles.textSecondary}}>{formatTime(test.elapsed_seconds)}</td>
                   <td className="px-4 py-4">
                     <div className="flex gap-2">
                       {user?.role === 'admin' && test.result === 'PASS' && !test.certificate_issued && (
-                        <button onClick={() => handleIssueCertificate(test.test_id)} disabled={loading[test.test_id]} className="px-3 py-1 rounded" style={{background: styles.purplePrimary, border: `1px solid ${styles.purpleBright}`, color: '#fff', fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>
+                        <button onClick={() => handleIssueCertificate(test.test_id)} disabled={loading[test.test_id]} className="px-3 py-1 rounded" style={{background: styles.purplePrimary, border: `1px solid ${styles.purpleBright}`, color: '#fff', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>
                           {loading[test.test_id] === 'issuing' ? '...' : 'Issue Certificate'}
                         </button>
                       )}
                       {test.certificate_issued && (
-                        <><span style={{color: styles.accentGreen, fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px'}}>✓ Certified</span><a href={`${API_BASE}/api/certificates/${test.certificate_number || test.test_id}/pdf`} target="_blank" style={{marginLeft: '8px', padding: '2px 8px', background: styles.purplePrimary, borderRadius: '4px', color: '#fff', fontFamily: "'IBM Plex Mono', monospace", fontSize: '9px', textDecoration: 'none'}}>PDF</a></>
+                        <><span style={{color: styles.accentGreen, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px'}}>✓ Certified</span><a href={`${API_BASE}/api/certificates/${test.certificate_number || test.test_id}/pdf`} target="_blank" style={{marginLeft: '8px', padding: '2px 8px', background: styles.purplePrimary, borderRadius: '4px', color: '#fff', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', textDecoration: 'none'}}>PDF</a></>
                       )}
                     </div>
                   </td>

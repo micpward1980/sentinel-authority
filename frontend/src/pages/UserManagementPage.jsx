@@ -3,12 +3,14 @@ import { Settings, Activity, Users, X, CheckCircle, Search, Plus, RefreshCw } fr
 import { api } from '../config/api';
 import { styles } from '../config/styles';
 import { useConfirm } from '../context/ConfirmContext';
+import { useToast } from '../context/ToastContext';
 import Panel from '../components/Panel';
 import SectionHeader from '../components/SectionHeader';
 import StatCard from '../components/StatCard';
 
 function UserManagementPage() {
   const confirm = useConfirm();
+  const toast = useToast();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -150,7 +152,7 @@ function UserManagementPage() {
         {loading ? (<div style={{color: styles.textTertiary, textAlign: 'center', padding: '40px'}}>Loading users...</div>
         ) : filteredUsers.length === 0 ? (
           <div style={{textAlign: 'center', padding: '60px'}}>
-            <Users className="w-12 h-12 mx-auto mb-4" style={{color: styles.textTertiary}} />
+            <Users fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-12 h-12 mx-auto mb-4" style={{color: styles.textTertiary}} />
             <p style={{color: styles.textSecondary, marginBottom: '8px'}}>No users found</p>
             <p style={{color: styles.textTertiary, fontSize: '14px'}}>{users.length === 0 ? 'The /api/users/ endpoint may not be configured.' : 'Try adjusting your search.'}</p>
           </div>
@@ -165,7 +167,7 @@ function UserManagementPage() {
                   {user.company && <p style={{color: styles.textTertiary, fontSize: '12px'}}>{user.company}</p>}
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="px-2 py-1 rounded text-xs" style={{background: user.role === 'admin' ? 'rgba(157,140,207,0.2)' : user.role === 'pending' ? 'rgba(245,158,11,0.15)' : 'rgba(255,255,255,0.1)', color: user.role === 'admin' ? styles.purpleBright : user.role === 'pending' ? '#f59e0b' : styles.textTertiary, fontFamily: "'IBM Plex Mono', monospace", textTransform: 'uppercase'}}>{user.role}</span>
+                  <span className="px-2 py-1 rounded text-xs" style={{background: user.role === 'admin' ? 'rgba(157,140,207,0.2)' : user.role === 'pending' ? 'rgba(245,158,11,0.15)' : 'rgba(255,255,255,0.1)', color: user.role === 'admin' ? styles.purpleBright : user.role === 'pending' ? '#f59e0b' : styles.textTertiary, fontFamily: "Consolas, 'IBM Plex Mono', monospace", textTransform: 'uppercase'}}>{user.role}</span>
                   {user.role === 'pending' && (
                     <div className="flex gap-1" onClick={e => e.stopPropagation()}>
                       <button onClick={() => handleApproveUser(user.id, user.email)} className="px-2 py-1 rounded text-xs" style={{background: 'rgba(34,197,94,0.15)', color: '#22c55e', border: '1px solid rgba(34,197,94,0.3)', cursor: 'pointer'}}>Approve</button>
@@ -220,7 +222,7 @@ function UserManagementPage() {
             <div className="space-y-2 mb-6">
               <label style={{color: styles.textTertiary, fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', display: 'block', marginBottom: '8px'}}>Actions</label>
               <button onClick={() => handleResetPassword(selectedUser.id, selectedUser.email)} className="w-full px-4 py-3 rounded-lg flex items-center gap-3" style={{background: 'rgba(255,255,255,0.03)', border: '1px solid ' + styles.borderGlass, color: styles.textSecondary, textAlign: 'left'}}><RefreshCw className="w-4 h-4" style={{color: styles.purpleBright}} />Reset Password</button>
-              <button onClick={() => handleToggleActive(selectedUser.id, selectedUser.is_active !== false)} className="w-full px-4 py-3 rounded-lg flex items-center gap-3" style={{background: 'rgba(255,255,255,0.03)', border: '1px solid ' + styles.borderGlass, color: selectedUser.is_active === false ? styles.accentGreen : styles.accentRed, textAlign: 'left'}}>{selectedUser.is_active === false ? <><CheckCircle className="w-4 h-4" /> Activate Account</> : <><X className="w-4 h-4" /> Deactivate Account</>}</button>
+              <button onClick={() => handleToggleActive(selectedUser.id, selectedUser.is_active !== false)} className="w-full px-4 py-3 rounded-lg flex items-center gap-3" style={{background: 'rgba(255,255,255,0.03)', border: '1px solid ' + styles.borderGlass, color: selectedUser.is_active === false ? styles.accentGreen : styles.accentRed, textAlign: 'left'}}>{selectedUser.is_active === false ? <><CheckCircle fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-4 h-4" /> Activate Account</> : <><X className="w-4 h-4" /> Deactivate Account</>}</button>
               <button onClick={() => handleDeleteUser(selectedUser.id, selectedUser.email)} className="w-full px-4 py-3 rounded-lg flex items-center gap-3" style={{background: 'rgba(214,92,92,0.1)', border: '1px solid rgba(214,92,92,0.3)', color: styles.accentRed, textAlign: 'left'}}><X className="w-4 h-4" /> Delete User</button>
             </div>
             <button onClick={() => { setShowEditModal(false); setSelectedUser(null); }} className="w-full px-4 py-3 rounded-lg" style={{background: 'transparent', border: 'none', color: styles.textTertiary}}>Close</button>

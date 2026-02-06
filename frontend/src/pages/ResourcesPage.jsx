@@ -35,12 +35,12 @@ function ResourcesPage() {
     <div style={{ padding: '32px', maxWidth: '900px', margin: '0 auto' }}>
       <div style={{ marginBottom: '32px' }}>
         <p style={{
-          fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px',
+          fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px',
           letterSpacing: '2px', textTransform: 'uppercase',
           color: styles.purpleBright, marginBottom: '8px'
         }}>RESOURCES</p>
         <h1 style={{
-          fontFamily: "'Source Serif 4', serif", fontSize: '28px',
+          fontFamily: "Georgia, 'Source Serif 4', serif", fontSize: '28px',
           fontWeight: 200, color: styles.textPrimary, margin: 0
         }}>Documents & Guides</h1>
         <p style={{ color: styles.textTertiary, marginTop: '8px', fontSize: '14px' }}>
@@ -49,7 +49,7 @@ function ResourcesPage() {
       </div>
 
       {loading ? (
-        <div style={{ color: styles.textTertiary, fontFamily: "'IBM Plex Mono', monospace", fontSize: '12px' }}>
+        <div style={{ color: styles.textTertiary, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px' }}>
           Loading documents...
         </div>
       ) : documents.length === 0 ? (
@@ -74,7 +74,7 @@ function ResourcesPage() {
                 border: '1px solid ' + styles.purplePrimary + '44',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
               }}>
-                <BookOpen style={{ width: '22px', height: '22px', color: styles.purpleBright }} />
+                <BookOpen fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} style={{ width: '22px', height: '22px', color: styles.purpleBright }} />
               </div>
               <div style={{ flex: 1 }}>
                 <div style={{ fontWeight: 600, color: styles.textPrimary, fontSize: '15px', marginBottom: '4px' }}>
@@ -84,7 +84,7 @@ function ResourcesPage() {
                   {doc.description}
                 </div>
                 <div style={{
-                  fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px',
+                  fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px',
                   color: styles.textTertiary, marginTop: '6px',
                   letterSpacing: '1px', textTransform: 'uppercase'
                 }}>
@@ -97,7 +97,7 @@ function ResourcesPage() {
                   padding: '10px 20px', borderRadius: '8px',
                   background: styles.purplePrimary,
                   border: '1px solid ' + styles.purpleBright,
-                  color: '#fff', fontFamily: "'IBM Plex Mono', monospace",
+                  color: '#fff', fontFamily: "Consolas, 'IBM Plex Mono', monospace",
                   fontSize: '11px', letterSpacing: '1px',
                   textTransform: 'uppercase', cursor: 'pointer', flexShrink: 0
                 }}
@@ -114,7 +114,7 @@ function ResourcesPage() {
           marginTop: '40px', padding: '20px', borderRadius: '10px',
           border: '1px dashed ' + styles.borderGlass,
           color: styles.textTertiary, fontSize: '12px',
-          fontFamily: "'IBM Plex Mono', monospace"
+          fontFamily: "Consolas, 'IBM Plex Mono', monospace"
         }}>
           ADMIN: To add documents, place PDFs in backend/static/documents/ and register them in documents.py
         </div>

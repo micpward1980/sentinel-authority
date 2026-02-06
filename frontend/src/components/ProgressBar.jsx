@@ -14,7 +14,7 @@ function ProgressBar({ value, max = 100, color = styles.purpleBright, showLabel 
           transition: 'width 0.5s ease',
         }}/>
       </div>
-      {showLabel && <span style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', color: styles.textTertiary, minWidth: '40px'}}>{Math.round(pct)}%</span>}
+      {showLabel && <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', color: styles.textTertiary, minWidth: '40px'}}>{Math.round(pct)}%</span>}
     </div>
   );
 }

@@ -120,7 +120,7 @@ function SettingsPage() {
       <SectionHeader label="Account" title="Settings" />
 
       <Panel>
-        <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Account Information</h2>
+        <h2 style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Account Information</h2>
         <div style={{display: 'flex', flexDirection: 'column', gap: '12px', maxWidth: '400px'}}>
           <div>
             <label style={{fontSize: '11px', color: styles.textTertiary, display: 'block', marginBottom: '4px'}}>Full Name</label>
@@ -132,16 +132,16 @@ function SettingsPage() {
           </div>
           <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px'}}>
             <div><span style={{fontSize: '11px', color: styles.textTertiary}}>Email</span><div style={{color: styles.textPrimary, marginTop: '4px', fontSize: '13px'}}>{user?.email || '-'}</div></div>
-            <div><span style={{fontSize: '11px', color: styles.textTertiary}}>Role</span><div style={{color: styles.purpleBright, marginTop: '4px', fontFamily: "'IBM Plex Mono', monospace", fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1px'}}>{user?.role || '-'}</div></div>
+            <div><span style={{fontSize: '11px', color: styles.textTertiary}}>Role</span><div style={{color: styles.purpleBright, marginTop: '4px', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1px'}}>{user?.role || '-'}</div></div>
           </div>
-          <button onClick={handleSaveProfile} disabled={profileSaving} className="sexy-btn" style={{padding: '10px 24px', borderRadius: '10px', background: styles.purplePrimary, border: `1px solid ${styles.purpleBright}`, color: '#fff', fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: profileSaving ? 'wait' : 'pointer', opacity: profileSaving ? 0.7 : 1, alignSelf: 'flex-start'}}>
+          <button onClick={handleSaveProfile} disabled={profileSaving} className="sexy-btn" style={{padding: '10px 24px', borderRadius: '10px', background: styles.purplePrimary, border: `1px solid ${styles.purpleBright}`, color: '#fff', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: profileSaving ? 'wait' : 'pointer', opacity: profileSaving ? 0.7 : 1, alignSelf: 'flex-start'}}>
             {profileSaving ? 'Saving...' : 'Save Profile'}
           </button>
         </div>
       </Panel>
 
       <Panel>
-        <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Change Password</h2>
+        <h2 style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Change Password</h2>
         <div style={{display: 'flex', flexDirection: 'column', gap: '12px', maxWidth: '400px'}}>
           <div>
             <label style={{fontSize: '11px', color: styles.textTertiary, display: 'block', marginBottom: '4px'}}>Current Password</label>
@@ -157,38 +157,38 @@ function SettingsPage() {
           </div>
           {pwError && <div style={{color: '#D65C5C', fontSize: '12px'}}>{pwError}</div>}
           <div style={{fontSize: '11px', color: styles.textTertiary}}>Min 8 chars, 1 uppercase, 1 lowercase, 1 number</div>
-          <button onClick={handleChangePassword} disabled={pwSaving} className="sexy-btn" style={{padding: '10px 24px', borderRadius: '10px', background: styles.purplePrimary, border: `1px solid ${styles.purpleBright}`, color: '#fff', fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: pwSaving ? 'wait' : 'pointer', opacity: pwSaving ? 0.7 : 1, alignSelf: 'flex-start'}}>
+          <button onClick={handleChangePassword} disabled={pwSaving} className="sexy-btn" style={{padding: '10px 24px', borderRadius: '10px', background: styles.purplePrimary, border: `1px solid ${styles.purpleBright}`, color: '#fff', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: pwSaving ? 'wait' : 'pointer', opacity: pwSaving ? 0.7 : 1, alignSelf: 'flex-start'}}>
             {pwSaving ? 'Changing...' : 'Change Password'}
           </button>
         </div>
       </Panel>
 
       <Panel>
-        <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Two-Factor Authentication</h2>
+        <h2 style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Two-Factor Authentication</h2>
         {twoFA.loading ? (
           <div style={{color: styles.textTertiary, fontSize: '13px'}}>Loading...</div>
         ) : twoFA.enabled ? (
           <div>
             <div style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px'}}>
               <div style={{width: '8px', height: '8px', borderRadius: '50%', background: styles.accentGreen}} />
-              <span style={{color: styles.accentGreen, fontFamily: "'IBM Plex Mono', monospace", fontSize: '12px'}}>ENABLED</span>
+              <span style={{color: styles.accentGreen, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px'}}>ENABLED</span>
             </div>
             <p style={{color: styles.textSecondary, fontSize: '13px', marginBottom: '12px'}}>Your account is protected with TOTP two-factor authentication.</p>
             {twoFA.backupCodes && twoFA.backupCodes.length > 0 && (
               <div style={{marginBottom: '16px', padding: '16px', background: 'rgba(214,160,92,0.1)', border: '1px solid rgba(214,160,92,0.3)', borderRadius: '8px'}}>
-                <p style={{color: styles.accentAmber, fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', marginBottom: '8px', fontWeight: 600}}>SAVE YOUR BACKUP CODES</p>
+                <p style={{color: styles.accentAmber, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', marginBottom: '8px', fontWeight: 600}}>SAVE YOUR BACKUP CODES</p>
                 <p style={{color: styles.textSecondary, fontSize: '12px', marginBottom: '12px'}}>Use these if you lose your authenticator. Each code works once.</p>
                 <div style={{display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '4px'}}>
                   {twoFA.backupCodes.map((code, i) => (
-                    <span key={i} style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '13px', color: styles.textPrimary, padding: '4px 8px', background: 'rgba(255,255,255,0.05)', borderRadius: '4px', textAlign: 'center'}}>{code}</span>
+                    <span key={i} style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '13px', color: styles.textPrimary, padding: '4px 8px', background: 'rgba(255,255,255,0.05)', borderRadius: '4px', textAlign: 'center'}}>{code}</span>
                   ))}
                 </div>
-                <button onClick={() => {navigator.clipboard.writeText(twoFA.backupCodes.join(String.fromCharCode(10))); toast.show('Backup codes copied');}} style={{marginTop: '12px', padding: '6px 16px', background: 'rgba(214,160,92,0.15)', border: '1px solid rgba(214,160,92,0.3)', borderRadius: '6px', color: styles.accentAmber, fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', cursor: 'pointer', letterSpacing: '1px', textTransform: 'uppercase'}}>Copy All</button>
+                <button onClick={() => {navigator.clipboard.writeText(twoFA.backupCodes.join(String.fromCharCode(10))); toast.show('Backup codes copied');}} style={{marginTop: '12px', padding: '6px 16px', background: 'rgba(214,160,92,0.15)', border: '1px solid rgba(214,160,92,0.3)', borderRadius: '6px', color: styles.accentAmber, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', cursor: 'pointer', letterSpacing: '1px', textTransform: 'uppercase'}}>Copy All</button>
               </div>
             )}
             <div style={{display: 'flex', gap: '8px', alignItems: 'center', maxWidth: '400px'}}>
               <input type="password" value={twoFA.disablePw} onChange={e => setTwoFA(prev => ({...prev, disablePw: e.target.value}))} placeholder="Enter password to disable" className="sexy-input" style={{flex: 1, background: 'rgba(255,255,255,0.03)', border: `1px solid ${styles.borderGlass}`, borderRadius: '8px', padding: '8px 12px', color: styles.textPrimary, fontSize: '13px'}} />
-              <button onClick={disable2FA} disabled={twoFA.disabling} style={{padding: '8px 16px', borderRadius: '8px', background: 'rgba(214,92,92,0.1)', border: '1px solid rgba(214,92,92,0.3)', color: '#D65C5C', fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', cursor: twoFA.disabling ? 'wait' : 'pointer', whiteSpace: 'nowrap'}}>
+              <button onClick={disable2FA} disabled={twoFA.disabling} style={{padding: '8px 16px', borderRadius: '8px', background: 'rgba(214,92,92,0.1)', border: '1px solid rgba(214,92,92,0.3)', color: '#D65C5C', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', cursor: twoFA.disabling ? 'wait' : 'pointer', whiteSpace: 'nowrap'}}>
                 {twoFA.disabling ? '...' : 'Disable 2FA'}
               </button>
             </div>
@@ -198,12 +198,12 @@ function SettingsPage() {
             <p style={{color: styles.textSecondary, fontSize: '13px', marginBottom: '16px'}}>Scan this QR code with your authenticator app (Google Authenticator, Authy, 1Password):</p>
             {twoFA.setup.qr_base64 && <div style={{textAlign: 'center', marginBottom: '16px'}}><img src={'data:image/png;base64,' + twoFA.setup.qr_base64} alt="QR Code" style={{width: '200px', height: '200px', borderRadius: '8px'}} /></div>}
             <div style={{background: 'rgba(255,255,255,0.03)', border: `1px solid ${styles.borderGlass}`, borderRadius: '8px', padding: '12px', marginBottom: '16px'}}>
-              <div style={{fontSize: '10px', color: styles.textTertiary, marginBottom: '4px', fontFamily: "'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '1px'}}>Manual Entry Key</div>
-              <div style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '14px', color: styles.purpleBright, letterSpacing: '2px', wordBreak: 'break-all'}}>{twoFA.setup.secret}</div>
+              <div style={{fontSize: '10px', color: styles.textTertiary, marginBottom: '4px', fontFamily: "Consolas, 'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '1px'}}>Manual Entry Key</div>
+              <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '14px', color: styles.purpleBright, letterSpacing: '2px', wordBreak: 'break-all'}}>{twoFA.setup.secret}</div>
             </div>
             <div style={{display: 'flex', gap: '8px', alignItems: 'center'}}>
-              <input type="text" value={twoFA.code} onChange={e => setTwoFA(prev => ({...prev, code: e.target.value.replace(/\D/g, '').slice(0, 6)}))} placeholder="6-digit code" maxLength={6} className="sexy-input" style={{flex: 1, background: 'rgba(255,255,255,0.03)', border: `1px solid ${styles.borderGlass}`, borderRadius: '8px', padding: '10px 12px', color: styles.textPrimary, fontSize: '18px', fontFamily: "'IBM Plex Mono', monospace", letterSpacing: '6px', textAlign: 'center'}} />
-              <button onClick={enable2FA} disabled={twoFA.verifying || twoFA.code.length !== 6} className="sexy-btn" style={{padding: '10px 20px', borderRadius: '8px', background: styles.purplePrimary, border: `1px solid ${styles.purpleBright}`, color: '#fff', fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', cursor: twoFA.verifying ? 'wait' : 'pointer', opacity: twoFA.code.length !== 6 ? 0.5 : 1}}>
+              <input type="text" value={twoFA.code} onChange={e => setTwoFA(prev => ({...prev, code: e.target.value.replace(/\D/g, '').slice(0, 6)}))} placeholder="6-digit code" maxLength={6} className="sexy-input" style={{flex: 1, background: 'rgba(255,255,255,0.03)', border: `1px solid ${styles.borderGlass}`, borderRadius: '8px', padding: '10px 12px', color: styles.textPrimary, fontSize: '18px', fontFamily: "Consolas, 'IBM Plex Mono', monospace", letterSpacing: '6px', textAlign: 'center'}} />
+              <button onClick={enable2FA} disabled={twoFA.verifying || twoFA.code.length !== 6} className="sexy-btn" style={{padding: '10px 20px', borderRadius: '8px', background: styles.purplePrimary, border: `1px solid ${styles.purpleBright}`, color: '#fff', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', cursor: twoFA.verifying ? 'wait' : 'pointer', opacity: twoFA.code.length !== 6 ? 0.5 : 1}}>
                 {twoFA.verifying ? '...' : 'Verify'}
               </button>
             </div>
@@ -211,7 +211,7 @@ function SettingsPage() {
         ) : (
           <div>
             <p style={{color: styles.textSecondary, fontSize: '13px', marginBottom: '16px'}}>Add an extra layer of security by requiring a code from your authenticator app when signing in.</p>
-            <button onClick={setup2FA} className="sexy-btn" style={{padding: '10px 24px', borderRadius: '10px', background: styles.purplePrimary, border: `1px solid ${styles.purpleBright}`, color: '#fff', fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>
+            <button onClick={setup2FA} className="sexy-btn" style={{padding: '10px 24px', borderRadius: '10px', background: styles.purplePrimary, border: `1px solid ${styles.purpleBright}`, color: '#fff', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>
               Enable 2FA
             </button>
           </div>
@@ -220,7 +220,7 @@ function SettingsPage() {
 
       <Panel>
         <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px'}}>
-          <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, margin: 0}}>Email Notifications</h2>
+          <h2 style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, margin: 0}}>Email Notifications</h2>
           <span style={{fontSize: '11px', color: styles.textTertiary}}>from notifications@sentinelauthority.org</span>
         </div>
         <div style={{display: 'flex', flexDirection: 'column', gap: '4px'}}>
@@ -238,7 +238,7 @@ function SettingsPage() {
         </div>
         <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '20px', paddingTop: '16px', borderTop: `1px solid ${styles.borderGlass}`}}>
           <span style={{fontSize: '11px', color: styles.textTertiary}}>Admin and security emails are always sent.</span>
-          <button onClick={savePrefs} disabled={saving} className="sexy-btn" style={{padding: '10px 24px', borderRadius: '10px', background: saved ? 'rgba(92,214,133,0.15)' : styles.purplePrimary, border: `1px solid ${saved ? 'rgba(92,214,133,0.4)' : styles.purpleBright}`, color: saved ? styles.accentGreen : '#fff', fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: saving ? 'wait' : 'pointer', opacity: saving ? 0.7 : 1}}>
+          <button onClick={savePrefs} disabled={saving} className="sexy-btn" style={{padding: '10px 24px', borderRadius: '10px', background: saved ? 'rgba(92,214,133,0.15)' : styles.purplePrimary, border: `1px solid ${saved ? 'rgba(92,214,133,0.4)' : styles.purpleBright}`, color: saved ? styles.accentGreen : '#fff', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: saving ? 'wait' : 'pointer', opacity: saving ? 0.7 : 1}}>
             {saved ? '✓ Saved' : saving ? 'Saving...' : 'Save Preferences'}
           </button>
         </div>

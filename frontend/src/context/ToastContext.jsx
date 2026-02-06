@@ -37,7 +37,7 @@ function ToastProvider({ children }) {
               boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
             }}>
               <span style={{fontSize: '14px', lineHeight: '1', marginTop: '1px'}}>{c.icon}</span>
-              <span style={{flex: 1, color: c.text, fontSize: '13px', lineHeight: '1.4', fontFamily: "'IBM Plex Mono', monospace"}}>{t.message}</span>
+              <span style={{flex: 1, color: c.text, fontSize: '13px', lineHeight: '1.4', fontFamily: "Consolas, 'IBM Plex Mono', monospace"}}>{t.message}</span>
               <button onClick={() => dismiss(t.id)} style={{background: 'none', border: 'none', color: c.text, cursor: 'pointer', fontSize: '14px', padding: '0', lineHeight: '1', opacity: 0.6}}>×</button>
             </div>
           );

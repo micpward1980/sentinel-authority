@@ -34,7 +34,7 @@ function LoginPage() {
     <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden" style={{background: styles.bgDeep}}>
       <Link to="/dashboard" style={{
         position: 'fixed', top: '24px', right: '32px', zIndex: 20,
-        color: styles.textTertiary, fontFamily: "'IBM Plex Mono', monospace",
+        color: styles.textTertiary, fontFamily: "Consolas, 'IBM Plex Mono', monospace",
         fontSize: '10px', letterSpacing: '1.5px', textTransform: 'uppercase',
         textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '6px',
         transition: 'color 0.2s',
@@ -101,7 +101,7 @@ function LoginPage() {
             <div style={{
               width: '56px', height: '56px',
               background: 'linear-gradient(135deg, #5B4B8A 0%, #7B6BAA 100%)',
-              border: '2px solid #9d8ccf', borderRadius: '14px',
+              border: '2px solid #a896d6', borderRadius: '14px',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               boxShadow: '0 8px 32px rgba(91,75,138,0.4), inset 0 1px 0 rgba(255,255,255,0.1)',
             }}>
@@ -115,19 +115,19 @@ function LoginPage() {
           </div>
           
           <h1 style={{
-            fontFamily: "'Source Serif 4', serif", fontSize: '36px', fontWeight: 200,
+            fontFamily: "Georgia, 'Source Serif 4', serif", fontSize: '36px', fontWeight: 200,
             color: styles.textPrimary, margin: '0 0 8px 0', letterSpacing: '-0.02em',
           }}>
             ODDC <span style={{color: styles.purpleBright, fontStyle: 'italic'}}>Portal</span>
           </h1>
           
           <p style={{
-            color: styles.textTertiary, fontFamily: "'IBM Plex Mono', monospace",
+            color: styles.textTertiary, fontFamily: "Consolas, 'IBM Plex Mono', monospace",
             fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', marginTop: '12px',
           }}>Sentinel Authority</p>
 
           <a href="https://sentinelauthority.org" style={{
-            color: styles.purpleBright, fontFamily: "'IBM Plex Mono', monospace",
+            color: styles.purpleBright, fontFamily: "Consolas, 'IBM Plex Mono', monospace",
             fontSize: '10px', letterSpacing: '1px', textDecoration: 'none',
             padding: '8px 16px', border: '1px solid rgba(157,140,207,0.2)',
             borderRadius: '20px', marginTop: '16px', display: 'inline-block',
@@ -149,14 +149,14 @@ function LoginPage() {
               flex: 1, padding: '12px', borderRadius: '10px', border: 'none',
               background: !isRegister ? styles.purplePrimary : 'transparent',
               color: !isRegister ? '#fff' : styles.textTertiary,
-              fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px',
+              fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px',
               letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer',
             }}>Sign In</button>
             <button onClick={() => setIsRegister(true)} type="button" style={{
               flex: 1, padding: '12px', borderRadius: '10px', border: 'none',
               background: isRegister ? styles.purplePrimary : 'transparent',
               color: isRegister ? '#fff' : styles.textTertiary,
-              fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px',
+              fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px',
               letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer',
             }}>Register</button>
           </div>
@@ -164,18 +164,18 @@ function LoginPage() {
                   {twoFAStep ? (
           <div style={{textAlign: 'center'}}>
             <div style={{width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(157,140,207,0.15)', border: '1px solid rgba(157,140,207,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px'}}>
-              <Shield className="w-6 h-6" style={{color: styles.purpleBright}} />
+              <Shield fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-6 h-6" style={{color: styles.purpleBright}} />
             </div>
-            <h3 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.purpleBright, marginBottom: '8px'}}>Two-Factor Authentication</h3>
+            <h3 style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.purpleBright, marginBottom: '8px'}}>Two-Factor Authentication</h3>
             <p style={{color: styles.textTertiary, fontSize: '13px', marginBottom: '24px'}}>Enter the 6-digit code from your authenticator app, or a backup code</p>
             {error && <div style={{background: 'rgba(214,92,92,0.1)', border: '1px solid rgba(214,92,92,0.2)', borderRadius: '8px', padding: '10px 14px', marginBottom: '16px', color: '#D65C5C', fontSize: '13px'}}>{error}</div>}
             <form onSubmit={handle2FASubmit}>
-              <input type="text" value={totpCode} onChange={e => setTotpCode(e.target.value.replace(/\D/g, '').slice(0, 6))} placeholder="000000" maxLength={6} autoFocus style={{width: '100%', background: 'rgba(255,255,255,0.03)', border: '1px solid ' + styles.borderGlass, borderRadius: '10px', padding: '14px', color: styles.textPrimary, fontSize: '24px', fontFamily: "'IBM Plex Mono', monospace", letterSpacing: '8px', textAlign: 'center', outline: 'none', marginBottom: '16px', boxSizing: 'border-box'}} />
-              <button type="submit" disabled={verifying2FA || totpCode.length !== 6} className="login-btn" style={{width: '100%', padding: '14px', borderRadius: '10px', background: totpCode.length === 6 ? styles.purplePrimary : 'rgba(255,255,255,0.05)', border: '1px solid ' + (totpCode.length === 6 ? styles.purpleBright : styles.borderGlass), color: totpCode.length === 6 ? '#fff' : styles.textTertiary, fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', cursor: verifying2FA ? 'wait' : 'pointer'}}>
+              <input type="text" value={totpCode} onChange={e => setTotpCode(e.target.value.replace(/\D/g, '').slice(0, 6))} placeholder="000000" maxLength={6} autoFocus style={{width: '100%', background: 'rgba(255,255,255,0.03)', border: '1px solid ' + styles.borderGlass, borderRadius: '10px', padding: '14px', color: styles.textPrimary, fontSize: '24px', fontFamily: "Consolas, 'IBM Plex Mono', monospace", letterSpacing: '8px', textAlign: 'center', outline: 'none', marginBottom: '16px', boxSizing: 'border-box'}} />
+              <button type="submit" disabled={verifying2FA || totpCode.length !== 6} className="login-btn" style={{width: '100%', padding: '14px', borderRadius: '10px', background: totpCode.length === 6 ? styles.purplePrimary : 'rgba(255,255,255,0.05)', border: '1px solid ' + (totpCode.length === 6 ? styles.purpleBright : styles.borderGlass), color: totpCode.length === 6 ? '#fff' : styles.textTertiary, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', cursor: verifying2FA ? 'wait' : 'pointer'}}>
                 {verifying2FA ? 'Verifying...' : 'Verify Code'}
               </button>
             </form>
-            <button onClick={() => { setTwoFAStep(false); setTotpCode(''); setError(''); }} style={{background: 'none', border: 'none', color: styles.textTertiary, fontSize: '12px', cursor: 'pointer', marginTop: '16px', fontFamily: "'IBM Plex Mono', monospace"}}>Back to login</button>
+            <button onClick={() => { setTwoFAStep(false); setTotpCode(''); setError(''); }} style={{background: 'none', border: 'none', color: styles.textTertiary, fontSize: '12px', cursor: 'pointer', marginTop: '16px', fontFamily: "Consolas, 'IBM Plex Mono', monospace"}}>Back to login</button>
           </div>
         ) : (<>
 {error && (
@@ -192,7 +192,7 @@ function LoginPage() {
                 <div>
                   <label style={{
                     display: 'block', marginBottom: '8px', color: styles.textTertiary,
-                    fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px',
+                    fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px',
                     letterSpacing: '1px', textTransform: 'uppercase',
                   }}>Full Name</label>
                   <input type="text" placeholder="Jane Smith" value={formData.full_name}
@@ -205,7 +205,7 @@ function LoginPage() {
                 <div>
                   <label style={{
                     display: 'block', marginBottom: '8px', color: styles.textTertiary,
-                    fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px',
+                    fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px',
                     letterSpacing: '1px', textTransform: 'uppercase',
                   }}>Organization</label>
                   <input type="text" placeholder="Acme Robotics Inc." value={formData.organization || ''}
@@ -220,7 +220,7 @@ function LoginPage() {
             <div>
               <label style={{
                 display: 'block', marginBottom: '8px', color: styles.textTertiary,
-                fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px',
+                fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px',
                 letterSpacing: '1px', textTransform: 'uppercase',
               }}>Email Address</label>
               <input type="email" placeholder="you@company.com" value={formData.email}
@@ -233,7 +233,7 @@ function LoginPage() {
             <div>
               <label style={{
                 display: 'block', marginBottom: '8px', color: styles.textTertiary,
-                fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px',
+                fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px',
                 letterSpacing: '1px', textTransform: 'uppercase',
               }}>Password</label>
               <div style={{position: "relative"}}><input type={showPassword ? "text" : "password"} placeholder="••••••••••••" value={formData.password}
@@ -250,7 +250,7 @@ function LoginPage() {
               style={{
                 background: 'linear-gradient(135deg, #5B4B8A 0%, #7B6BAA 100%)',
                 border: '1px solid rgba(157,140,207,0.5)', color: '#fff',
-                fontFamily: "'IBM Plex Mono', monospace", fontSize: '12px',
+                fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px',
                 letterSpacing: '2px', textTransform: 'uppercase', cursor: 'pointer',
                 marginTop: '8px', boxShadow: '0 4px 20px rgba(91,75,138,0.4)',
               }}>{isRegister ? 'Create Account' : 'Sign In'}</button>
@@ -269,7 +269,7 @@ function LoginPage() {
         <div className="mt-8 text-center">
           <p style={{
             color: styles.textTertiary, fontSize: '11px',
-            fontFamily: "'IBM Plex Mono', monospace", letterSpacing: '1px',
+            fontFamily: "Consolas, 'IBM Plex Mono', monospace", letterSpacing: '1px',
           }}>
             Protected by ENVELO • <a href="https://sentinelauthority.org/privacy.html" style={{color: styles.purpleBright, textDecoration: 'none'}}>Privacy</a> • <a href="https://sentinelauthority.org/terms.html" style={{color: styles.purpleBright, textDecoration: 'none'}}>Terms</a>
           </p>
