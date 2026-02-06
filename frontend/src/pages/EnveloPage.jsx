@@ -1033,7 +1033,9 @@ function EnveloAdminView() {
   const [stateCounts, setStateCounts] = useState({});
   const [selectedSession, setSelectedSession] = useState(null);
   const [selectedCert, setSelectedCert] = useState(null);
-  const [activeTab, setActiveTab] = useState('monitoring'); // monitoring, customers, configure
+  const [activeTab, setActiveTab] = useState('monitoring'); // monitoring, customers, review
+  const [reviewComment, setReviewComment] = useState('');
+  const [reviewingCert, setReviewingCert] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -1100,7 +1102,7 @@ function EnveloAdminView() {
         {[
           { id: 'monitoring', label: 'Live Monitoring' },
           { id: 'customers', label: 'Customer Systems' },
-          { id: 'configure', label: 'Configure Boundaries' }
+          { id: 'review', label: 'Review Boundaries' }
         ].map(tab => (
           <button
             key={tab.id}
@@ -1238,27 +1240,12 @@ function EnveloAdminView() {
                         <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px', color: styles.purpleBright}}>{cert.certificate_number}</p>
                       </div>
                       <div style={{display: 'flex', gap: '8px', flexWrap: 'wrap'}}>
-                        <button onClick={() => { setSelectedCert(cert); setActiveTab('configure'); }} style={{padding: '8px 16px', background: 'rgba(157,140,207,0.15)', border: `1px solid ${styles.purpleBright}`, borderRadius: '6px', color: styles.purpleBright, fontSize: '11px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px'}}>
-                          <Shield fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} size={12} /> Configure
+                        <button onClick={() => { setReviewingCert(cert); setActiveTab('review'); }} style={{padding: '8px 16px', background: 'rgba(157,140,207,0.15)', border: `1px solid ${styles.purpleBright}`, borderRadius: '6px', color: styles.purpleBright, fontSize: '11px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px'}}>
+                          <Shield fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} size={12} /> Review Boundaries
                         </button>
-                        <button onClick={async () => {
-                          if (!await confirm({title: 'Provision Agent', message: `Provision and send ENVELO agent to ${cert.organization_name}?`})) return;
-                          try {
-                            const res = await api.post('/api/apikeys/admin/provision', null, { params: { user_id: cert.applicant_id, certificate_id: cert.id, send_email: true }});
-                            if (res.data.agent_code) {
-                              const blob = new Blob([res.data.agent_code], { type: 'text/plain' });
-                              const url = URL.createObjectURL(blob);
-                              const a = document.createElement('a');
-                              a.href = url;
-                              a.download = 'envelo_agent.py';
-                              a.click();
-                              URL.revokeObjectURL(url);
-                            }
-                            toast.show('Agent provisioned successfully', 'success');
-                          } catch (e) { toast.show('Failed: ' + (e.response?.data?.detail || e.message), 'error'); }
-                        }} style={{padding: '8px 16px', background: styles.accentGreen, border: `1px solid ${styles.accentGreen}`, borderRadius: '6px', color: '#fff', fontSize: '11px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px'}}>
-                          <ExternalLink size={12} /> Provision & Send
-                        </button>
+                        <span style={{padding: '8px 16px', background: 'rgba(92,214,133,0.1)', border: '1px solid rgba(92,214,133,0.2)', borderRadius: '6px', color: styles.accentGreen, fontSize: '11px', display: 'flex', alignItems: 'center', gap: '6px'}}>
+                          ✓ Auto-provisioned on Approve
+                        </span>
                         <button onClick={() => downloadAgentForCert(cert)} style={{padding: '8px 16px', background: 'transparent', border: `1px solid ${styles.borderGlass}`, borderRadius: '6px', color: styles.textSecondary, fontSize: '11px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px'}}>
                           <Download size={12} /> Download Only
                         </button>
@@ -1302,38 +1289,217 @@ function EnveloAdminView() {
         </>
       )}
 
-      {activeTab === 'configure' && (
+      {activeTab === 'review' && (
         <>
-          {selectedCert ? (
-            <Panel glow>
-              <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px'}}>
-                <div>
-                  <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.purpleBright, marginBottom: '8px'}}>Configuring Boundaries</p>
-                  <h2 style={{fontSize: '24px', fontWeight: 200, margin: '0 0 4px 0'}}>{selectedCert.system_name}</h2>
-                  <p style={{color: styles.textSecondary}}>{selectedCert.organization_name} • {selectedCert.certificate_number}</p>
+          {reviewingCert ? (() => {
+            const env = reviewingCert.envelope_definition || {};
+            const numeric = env.numeric_boundaries || [];
+            const geo = env.geographic_boundaries || [];
+            const time = env.time_boundaries || [];
+            const state = env.state_boundaries || [];
+            const hasBoundaries = numeric.length + geo.length + time.length + state.length > 0;
+
+            return (
+              <Panel glow>
+                <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px'}}>
+                  <div>
+                    <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.purpleBright, marginBottom: '8px'}}>Boundary Review — Read Only</p>
+                    <h2 style={{fontSize: '24px', fontWeight: 200, margin: '0 0 4px 0'}}>{reviewingCert.system_name}</h2>
+                    <p style={{color: styles.textSecondary}}>{reviewingCert.organization_name} • {reviewingCert.certificate_number}</p>
+                  </div>
+                  <button onClick={() => setReviewingCert(null)} style={{padding: '8px 16px', background: 'transparent', border: `1px solid ${styles.borderGlass}`, borderRadius: '6px', color: styles.textTertiary, cursor: 'pointer', fontSize: '11px'}}>← Back</button>
                 </div>
-                <button onClick={() => setSelectedCert(null)} style={{padding: '8px 16px', background: 'transparent', border: `1px solid ${styles.borderGlass}`, borderRadius: '6px', color: styles.textTertiary, cursor: 'pointer', fontSize: '11px'}}>← Back to List</button>
-              </div>
-              
-              <BoundaryConfigurator 
-                certificateNumber={selectedCert.certificate_number}
-                initialBoundaries={selectedCert.envelope_definition || {}}
-                onSave={async (boundaries) => {
-                  try {
-                    await api.put(`/api/envelo/boundaries/config/boundaries?certificate_number=${selectedCert.certificate_number}`, boundaries);
-                    toast.show('Boundaries saved','success');
-                  } catch (e) {
-                    toast.show('Failed to save: ' + e.message, 'error');
-                  }
-                }}
-              />
-            </Panel>
-          ) : (
+
+                <div style={{padding: '12px 16px', background: 'rgba(214,160,92,0.08)', border: '1px solid rgba(214,160,92,0.2)', borderRadius: '8px', marginBottom: '24px'}}>
+                  <p style={{color: styles.accentAmber, fontSize: '13px', margin: 0}}>⚠ Sentinel Authority does not modify customer boundaries. Review and approve as submitted, or reject with required changes.</p>
+                </div>
+
+                {!hasBoundaries ? (
+                  <p style={{color: styles.textTertiary, textAlign: 'center', padding: '40px'}}>No boundaries defined in this application.</p>
+                ) : (
+                  <div className="space-y-6">
+                    {numeric.length > 0 && (
+                      <div>
+                        <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '12px'}}>Numeric Boundaries ({numeric.length})</p>
+                        <div style={{display: 'grid', gap: '8px'}}>
+                          {numeric.map((b, i) => (
+                            <div key={i} style={{padding: '14px 16px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px', border: `1px solid ${styles.borderGlass}`, display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '16px', alignItems: 'center'}}>
+                              <div>
+                                <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary, marginBottom: '2px'}}>Parameter</p>
+                                <p style={{fontWeight: 500, color: styles.textPrimary, fontSize: '14px'}}>{b.name || b.parameter || '—'}</p>
+                              </div>
+                              <div>
+                                <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary, marginBottom: '2px'}}>Range</p>
+                                <p style={{color: styles.purpleBright, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '13px'}}>{b.min_value ?? '—'} → {b.max_value ?? '—'} {b.unit || ''}</p>
+                              </div>
+                              <div>
+                                <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary, marginBottom: '2px'}}>Hard Limit</p>
+                                <p style={{color: b.hard_limit ? styles.accentRed : styles.textTertiary, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '13px'}}>{b.hard_limit ?? 'None'}</p>
+                              </div>
+                              <div>
+                                <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary, marginBottom: '2px'}}>Tolerance</p>
+                                <p style={{color: styles.textSecondary, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '13px'}}>±{b.tolerance || 0}</p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {geo.length > 0 && (
+                      <div>
+                        <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '12px'}}>Geographic Boundaries ({geo.length})</p>
+                        <div style={{display: 'grid', gap: '8px'}}>
+                          {geo.map((b, i) => (
+                            <div key={i} style={{padding: '14px 16px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px', border: `1px solid ${styles.borderGlass}`, display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '16px', alignItems: 'center'}}>
+                              <div>
+                                <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary, marginBottom: '2px'}}>Zone</p>
+                                <p style={{fontWeight: 500, color: styles.textPrimary, fontSize: '14px'}}>{b.name || '—'}</p>
+                              </div>
+                              <div>
+                                <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary, marginBottom: '2px'}}>Type</p>
+                                <p style={{color: styles.textSecondary, fontSize: '13px'}}>{b.boundary_type || 'circle'}</p>
+                              </div>
+                              <div>
+                                <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary, marginBottom: '2px'}}>Center</p>
+                                <p style={{color: styles.purpleBright, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px'}}>{(b.center?.lat || b.lat || '—')}, {(b.center?.lon || b.lon || '—')}</p>
+                              </div>
+                              <div>
+                                <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary, marginBottom: '2px'}}>Radius</p>
+                                <p style={{color: styles.textSecondary, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '13px'}}>{b.radius_meters || '—'}m</p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {time.length > 0 && (
+                      <div>
+                        <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '12px'}}>Time Boundaries ({time.length})</p>
+                        <div style={{display: 'grid', gap: '8px'}}>
+                          {time.map((b, i) => (
+                            <div key={i} style={{padding: '14px 16px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px', border: `1px solid ${styles.borderGlass}`, display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px', alignItems: 'center'}}>
+                              <div>
+                                <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary, marginBottom: '2px'}}>Schedule</p>
+                                <p style={{fontWeight: 500, color: styles.textPrimary, fontSize: '14px'}}>{b.name || '—'}</p>
+                              </div>
+                              <div>
+                                <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary, marginBottom: '2px'}}>Hours</p>
+                                <p style={{color: styles.purpleBright, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '13px'}}>{b.allowed_hours_start ?? b.start_hour ?? 0}:00 → {b.allowed_hours_end ?? b.end_hour ?? 24}:00 {b.timezone || 'UTC'}</p>
+                              </div>
+                              <div>
+                                <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary, marginBottom: '2px'}}>Days</p>
+                                <p style={{color: styles.textSecondary, fontSize: '12px'}}>{(b.allowed_days || b.days || []).map(d => ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d] || d).join(', ') || 'All'}</p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {state.length > 0 && (
+                      <div>
+                        <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '12px'}}>State Boundaries ({state.length})</p>
+                        <div style={{display: 'grid', gap: '8px'}}>
+                          {state.map((b, i) => (
+                            <div key={i} style={{padding: '14px 16px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px', border: `1px solid ${styles.borderGlass}`, display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px', alignItems: 'center'}}>
+                              <div>
+                                <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary, marginBottom: '2px'}}>Parameter</p>
+                                <p style={{fontWeight: 500, color: styles.textPrimary, fontSize: '14px'}}>{b.name || b.parameter || '—'}</p>
+                              </div>
+                              <div>
+                                <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary, marginBottom: '2px'}}>Allowed</p>
+                                <p style={{color: styles.accentGreen, fontSize: '12px'}}>{(b.allowed_values || []).join(', ') || '—'}</p>
+                              </div>
+                              <div>
+                                <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary, marginBottom: '2px'}}>Forbidden</p>
+                                <p style={{color: styles.accentRed, fontSize: '12px'}}>{(b.forbidden_values || []).join(', ') || '—'}</p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Approve / Reject Actions */}
+                <div style={{marginTop: '32px', paddingTop: '24px', borderTop: `1px solid ${styles.borderGlass}`}}>
+                  <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Review Decision</p>
+                  
+                  <textarea
+                    value={reviewComment}
+                    onChange={(e) => setReviewComment(e.target.value)}
+                    placeholder="Review notes (required for rejection, optional for approval)..."
+                    style={{
+                      width: '100%', minHeight: '80px', padding: '12px 16px',
+                      background: 'rgba(0,0,0,0.3)', border: `1px solid ${styles.borderGlass}`,
+                      borderRadius: '8px', color: styles.textPrimary, fontSize: '13px',
+                      fontFamily: "Georgia, 'Source Serif 4', serif", resize: 'vertical',
+                    }}
+                  />
+
+                  <div style={{display: 'flex', gap: '12px', marginTop: '16px'}}>
+                    <button
+                      onClick={async () => {
+                        try {
+                          await api.post(`/api/applications/${reviewingCert.application_id}/comments`, {
+                            content: '[BOUNDARY REVIEW — APPROVED] ' + (reviewComment || 'Boundaries approved as submitted.'),
+                            is_internal: false
+                          });
+                          toast.show('Boundaries approved as submitted', 'success');
+                          setReviewingCert(null);
+                          setReviewComment('');
+                        } catch (e) { toast.show('Failed: ' + (e.response?.data?.detail || e.message), 'error'); }
+                      }}
+                      style={{
+                        flex: 1, padding: '14px', background: 'rgba(92,214,133,0.1)',
+                        border: `1px solid ${styles.accentGreen}`, borderRadius: '8px',
+                        color: styles.accentGreen, fontFamily: "Consolas, 'IBM Plex Mono', monospace",
+                        fontSize: '12px', letterSpacing: '1px', textTransform: 'uppercase',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      ✓ Approve Boundaries
+                    </button>
+
+                    <button
+                      onClick={async () => {
+                        if (!reviewComment.trim()) {
+                          toast.show('Rejection requires specific feedback on what must change', 'error');
+                          return;
+                        }
+                        try {
+                          await api.post(`/api/applications/${reviewingCert.application_id}/comments`, {
+                            content: '[BOUNDARY REVIEW — CHANGES REQUIRED] ' + reviewComment,
+                            is_internal: false
+                          });
+                          toast.show('Sent back to applicant with required changes', 'success');
+                          setReviewingCert(null);
+                          setReviewComment('');
+                        } catch (e) { toast.show('Failed: ' + (e.response?.data?.detail || e.message), 'error'); }
+                      }}
+                      style={{
+                        flex: 1, padding: '14px', background: 'rgba(214,92,92,0.08)',
+                        border: '1px solid rgba(214,92,92,0.3)', borderRadius: '8px',
+                        color: styles.accentRed, fontFamily: "Consolas, 'IBM Plex Mono', monospace",
+                        fontSize: '12px', letterSpacing: '1px', textTransform: 'uppercase',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      ✗ Reject — Require Changes
+                    </button>
+                  </div>
+                </div>
+              </Panel>
+            );
+          })() : (
             <Panel>
               <div style={{textAlign: 'center', padding: '60px 20px'}}>
                 <Shield fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} size={48} style={{color: styles.textTertiary, margin: '0 auto 16px'}} />
-                <h2 style={{fontSize: '20px', fontWeight: 200, marginBottom: '8px'}}>Select a System to Configure</h2>
-                <p style={{color: styles.textSecondary, marginBottom: '24px'}}>Choose a system from the Customer Systems tab to configure its boundaries.</p>
+                <h2 style={{fontSize: '20px', fontWeight: 200, marginBottom: '8px'}}>Select a System to Review</h2>
+                <p style={{color: styles.textSecondary, marginBottom: '24px'}}>Choose a system from the Customer Systems tab to review its submitted boundaries.</p>
                 <button onClick={() => setActiveTab('customers')} style={{padding: '12px 24px', background: styles.purplePrimary, border: `1px solid ${styles.purpleBright}`, borderRadius: '8px', color: '#fff', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>View Customer Systems</button>
               </div>
             </Panel>

@@ -93,7 +93,7 @@ async def list_certificates(db: AsyncSession = Depends(get_db), user: dict = Dep
         else:
             return []
     
-    return [{"id": c.id, "certificate_number": c.certificate_number, "organization_name": c.organization_name, "system_name": c.system_name, "state": c.state.value, "issued_at": c.issued_at.isoformat() if c.issued_at else None, "expires_at": c.expires_at.isoformat() if c.expires_at else None} for c in result.scalars().all()]
+    return [{"id": c.id, "certificate_number": c.certificate_number, "organization_name": c.organization_name, "system_name": c.system_name, "state": c.state.value, "issued_at": c.issued_at.isoformat() if c.issued_at else None, "expires_at": c.expires_at.isoformat() if c.expires_at else None, "application_id": c.application_id, "envelope_definition": c.envelope_definition, "applicant_id": getattr(c, "issued_by", None)} for c in result.scalars().all()]
 
 @router.get("/{certificate_number}", summary="Get certificate details")
 async def get_certificate(certificate_number: str, db: AsyncSession = Depends(get_db)):
