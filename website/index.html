@@ -2479,14 +2479,14 @@
   var lockedRadius = 0, lockedCx = 0, lockedCy = 0;
 
   function resize() {
-    W = c.offsetWidth || window.innerWidth;
-    H = c.offsetHeight || window.innerHeight;
+    W = window.innerWidth;
+    H = window.innerHeight;
     c.width = W * dpr;
     c.height = H * dpr;
     ctx.setTransform(dpr,0,0,dpr,0,0);
 
     // Only recalculate layout on actual window resize, not scroll
-    if (!radiusLocked || Math.abs(W - c._lastW) > 20) {
+    if (!radiusLocked || Math.abs(W - (c._lastW||0)) > 20 || Math.abs(H - (c._lastH||0)) > 20) {
       // Use fixed proportion of viewport — don't depend on text position
       cx = W * 0.5;
       if (W < 600) {
@@ -2500,7 +2500,7 @@
       }
       lockedCx = cx; lockedCy = cy; lockedRadius = radius;
       radiusLocked = true;
-      c._lastW = W;
+      c._lastW = W; c._lastH = H;
     } else {
       cx = lockedCx; cy = lockedCy; radius = lockedRadius;
     }
@@ -2730,14 +2730,20 @@
     radiusLocked = false;
     resize();
     initAgents();
-    // Settle agents after resize too
     for (var w=0; w<200; w++) updateAgents(16);
   });
-  resize();
-  initAgents();
-  // Warm up: settle agents into boundary before first visible frame
-  for (var w=0; w<300; w++) updateAgents(16);
-  requestAnimationFrame(animate);
+
+  function startHero() {
+    resize();
+    initAgents();
+    for (var w=0; w<300; w++) updateAgents(16);
+    requestAnimationFrame(animate);
+  }
+  if (document.readyState === 'complete') {
+    startHero();
+  } else {
+    window.addEventListener('load', startHero);
+  }
 })();
       </script>
     </section>
