@@ -2910,10 +2910,10 @@
 
         // ── STREAMS ──
         function updateStreams(time,ps) {
-          if(Math.random()<0.18){
+          if(Math.random()<0.28){
             var pi=Math.floor(Math.random()*Math.min(ps.length,2));
             streamParticles.push({path:pi,t:0,speed:0.002+Math.random()*0.002,
-              size:0.4+Math.random()*0.3,alpha:0.35+Math.random()*0.2});
+              size:0.4+Math.random()*0.3,alpha:0.4+Math.random()*0.25});
           }
           for(var i=streamParticles.length-1;i>=0;i--){
             var sp=streamParticles[i];sp.t+=sp.speed;
@@ -3000,7 +3000,7 @@
 
         // ── ENVELO INTERIOR ──
         function drawEnveloInterior(x,y,r,time,phase) {
-          var ba=0.05+phase*0.12;
+          var ba=0.12+phase*0.15+0.04*Math.sin(time*1.5);
           for(var i=3;i>=1;i--){
             var rr=r*(0.2+i*0.16),rot=time*(0.12+i*0.06)*(i%2===0?1:-1);
             ctx.save();ctx.translate(x,y);ctx.rotate(rot);
@@ -3065,7 +3065,7 @@
         // ── PACKET ──
         function drawPacket(px,py,size,col,opacity) {
           var g1=ctx.createRadialGradient(px,py,0,px,py,size*4.5);
-          g1.addColorStop(0,rgb(col,opacity*0.28));g1.addColorStop(1,rgb(col,0));
+          g1.addColorStop(0,rgb(col,opacity*0.35));g1.addColorStop(1,rgb(col,0));
           ctx.fillStyle=g1;ctx.beginPath();ctx.arc(px,py,size*4.5,0,Math.PI*2);ctx.fill();
           var g2=ctx.createRadialGradient(px,py,0,px,py,size*2);
           g2.addColorStop(0,rgb(col,opacity*0.7));g2.addColorStop(1,rgb(col,0));
@@ -3084,6 +3084,54 @@
           nextDelay=1800+Math.random()*2200;lastSpawn=ts;
         }
 
+        // Ambient particles
+        var ambientParticles=[];
+        for(var i=0;i<40;i++) ambientParticles.push({
+          x:Math.random(),y:Math.random(),
+          vx:(Math.random()-0.5)*0.0003,vy:(Math.random()-0.5)*0.0003,
+          size:0.3+Math.random()*0.8,alpha:0.03+Math.random()*0.06,
+          phase:Math.random()*Math.PI*2});
+
+        function drawAmbient(time){
+          for(var i=0;i<ambientParticles.length;i++){
+            var p=ambientParticles[i];
+            p.phase+=0.008;
+            p.x+=p.vx+Math.sin(p.phase)*0.00008;
+            p.y+=p.vy+Math.cos(p.phase*0.7)*0.00008;
+            if(p.x<0)p.x=1;if(p.x>1)p.x=0;if(p.y<0)p.y=1;if(p.y>1)p.y=0;
+            var px=p.x*W,py=p.y*H;
+            ctx.beginPath();ctx.arc(px,py,p.size,0,Math.PI*2);
+            ctx.fillStyle=rgb(PURPLE,p.alpha*(0.7+0.3*Math.sin(p.phase)));ctx.fill();
+          }
+        }
+
+        function drawVignette(){
+          var g=ctx.createRadialGradient(W/2,H/2,Math.min(W,H)*0.25,W/2,H/2,Math.max(W,H)*0.7);
+          g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(1,'rgba(0,0,0,0.3)');
+          ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+        }
+
+        function drawScanline(x,y,r,time,col){
+          var a=time*0.8;
+          ctx.beginPath();ctx.arc(x,y,r,a,a+0.8);
+          var sg=ctx.createLinearGradient(
+            x+Math.cos(a)*r,y+Math.sin(a)*r,
+            x+Math.cos(a+0.8)*r,y+Math.sin(a+0.8)*r);
+          sg.addColorStop(0,rgb(col,0));sg.addColorStop(0.5,rgb(col,0.25));sg.addColorStop(1,rgb(col,0));
+          ctx.strokeStyle=sg;ctx.lineWidth=2;ctx.stroke();
+        }
+
+        function drawPathPulse(p,col,time,speed){
+          var t=(time*speed)%1;
+          var px=lerp(p.ax,p.bx,t),py=lerp(p.ay,p.by,t);
+          var fade=t<0.1?t*10:(t>0.85?(1-t)*6.67:1);
+          var g=ctx.createRadialGradient(px,py,0,px,py,6);
+          g.addColorStop(0,rgb(col,0.4*fade));g.addColorStop(1,rgb(col,0));
+          ctx.fillStyle=g;ctx.beginPath();ctx.arc(px,py,6,0,Math.PI*2);ctx.fill();
+          ctx.beginPath();ctx.arc(px,py,1.2,0,Math.PI*2);
+          ctx.fillStyle=rgb(col,0.7*fade);ctx.fill();
+        }
+
         var lastTime=0;
         function animate(ts) {
           if(!lastTime) lastTime=ts;
@@ -3091,7 +3139,8 @@
           resize();var L=layout();var ps=paths(L);var time=ts/1000;
           ctx.clearRect(0,0,W,H);
 
-          // drawGrid();
+          drawVignette();
+          drawAmbient(time);
           drawPeripheral(time,L);
 
           drawPath(ps[0],GREEN,0.15,'ACTION');
@@ -3104,6 +3153,9 @@
           drawModelInterior(L.model.x,L.model.y,L.model.r,time);
           drawCircleNode(L.envelo.x,L.envelo.y,L.envelo.r,PURPLE,'ENVELO',time);
           drawEnveloInterior(L.envelo.x,L.envelo.y,L.envelo.r,time,enveloPhase);
+          drawScanline(L.envelo.x,L.envelo.y,L.envelo.r,time,PURPLE);
+          drawPathPulse(ps[0],GREEN,time,0.3);
+          drawPathPulse(ps[1],PURPLE,time,0.25);
           drawCircleNode(L.gate.x,L.gate.y,L.gate.r,WHITE,'GATE',time);
           drawGateInterior(L.gate.x,L.gate.y,L.gate.r,time);
           drawRectNode(L.exec.x,L.exec.y,L.exec.w,L.exec.h,GREEN,'EXECUTE');
@@ -3138,13 +3190,13 @@
                 else{gateTarget=-Math.PI/4;px=lerp(ps[3].ax,ps[3].bx,et);
                   py=lerp(ps[3].ay,ps[3].by,et);col=RED;}
                 if(p.t>=1){p.state=4;if(p.decision==='exec')stats.exec++;
-                  else{stats.block++;for(var b=0;b<6;b++)bursts.push({x:px,y:py,
+                  else{stats.block++;for(var b=0;b<10;b++)bursts.push({x:px,y:py,
                     vx:(Math.random()-0.5)*2.5,vy:(Math.random()-0.5)*2.5,life:1,r:0.8+Math.random()*1});}}break;
               case 4:px=p.x;py=p.y;p.opacity-=0.02;col=p.decision==='exec'?GREEN:RED;break;
             }
-            p.x=px;p.y=py;p.trail.push({x:px,y:py});if(p.trail.length>12)p.trail.shift();
-            for(var j=0;j<p.trail.length-1;j++){var ta=(j/p.trail.length)*0.06*p.opacity;
-              ctx.beginPath();ctx.arc(p.trail[j].x,p.trail[j].y,p.r*(j/p.trail.length)*0.35,0,Math.PI*2);
+            p.x=px;p.y=py;p.trail.push({x:px,y:py});if(p.trail.length>20)p.trail.shift();
+            for(var j=0;j<p.trail.length-1;j++){var ta=(j/p.trail.length)*0.12*p.opacity;
+              ctx.beginPath();ctx.arc(p.trail[j].x,p.trail[j].y,p.r*(j/p.trail.length)*0.55,0,Math.PI*2);
               ctx.fillStyle=rgb(col,ta);ctx.fill();}
             if(p.state===1)p.trail=[];else drawPacket(px,py,p.r,col,p.opacity);
             // packet labels removed to prevent overlap
@@ -3372,9 +3424,9 @@
 
         // ── STREAMS ──
         function updateStreams(time,conns){
-          if(Math.random()<0.14){var ci=Math.floor(Math.random()*conns.length);
+          if(Math.random()<0.24){var ci=Math.floor(Math.random()*conns.length);
             streamParticles.push({conn:ci,t:0,speed:0.002+Math.random()*0.002,
-              size:0.4+Math.random()*0.3,alpha:0.35+Math.random()*0.2});}
+              size:0.4+Math.random()*0.3,alpha:0.4+Math.random()*0.25});}
           for(var i=streamParticles.length-1;i>=0;i--){var sp=streamParticles[i];sp.t+=sp.speed;
             if(sp.t>1){streamParticles.splice(i,1);continue;}
             var cn=conns[sp.conn];if(!cn){streamParticles.splice(i,1);continue;}
@@ -3439,7 +3491,7 @@
 
         // ── ENVELO INTERIOR ──
         function drawEnveloInterior(x,y,r,time,phase){
-          var ba=0.05+phase*0.12;
+          var ba=0.12+phase*0.15+0.04*Math.sin(time*1.5);
           for(var i=3;i>=1;i--){
             var rr=r*(0.2+i*0.16),rot=time*(0.12+i*0.06)*(i%2===0?1:-1);
             ctx.save();ctx.translate(x,y);ctx.rotate(rot);
@@ -3498,7 +3550,7 @@
         // ── PACKET ──
         function drawPacket(px,py,size,col,opacity){
           var g1=ctx.createRadialGradient(px,py,0,px,py,size*4.5);
-          g1.addColorStop(0,rgb(col,opacity*0.28));g1.addColorStop(1,rgb(col,0));
+          g1.addColorStop(0,rgb(col,opacity*0.35));g1.addColorStop(1,rgb(col,0));
           ctx.fillStyle=g1;ctx.beginPath();ctx.arc(px,py,size*4.5,0,Math.PI*2);ctx.fill();
           var g2=ctx.createRadialGradient(px,py,0,px,py,size*2);
           g2.addColorStop(0,rgb(col,opacity*0.7));g2.addColorStop(1,rgb(col,0));
@@ -3518,13 +3570,62 @@
           rejected:false,offset:(Math.random()-0.5)*25});
           nextInDelay=3500+Math.random()*4000;lastInSpawn=ts;}
 
+        // Ambient particles
+        var ambientParticles=[];
+        for(var i=0;i<40;i++) ambientParticles.push({
+          x:Math.random(),y:Math.random(),
+          vx:(Math.random()-0.5)*0.0003,vy:(Math.random()-0.5)*0.0003,
+          size:0.3+Math.random()*0.8,alpha:0.03+Math.random()*0.06,
+          phase:Math.random()*Math.PI*2});
+
+        function drawAmbient(time){
+          for(var i=0;i<ambientParticles.length;i++){
+            var p=ambientParticles[i];
+            p.phase+=0.008;
+            p.x+=p.vx+Math.sin(p.phase)*0.00008;
+            p.y+=p.vy+Math.cos(p.phase*0.7)*0.00008;
+            if(p.x<0)p.x=1;if(p.x>1)p.x=0;if(p.y<0)p.y=1;if(p.y>1)p.y=0;
+            var px=p.x*W,py=p.y*H;
+            ctx.beginPath();ctx.arc(px,py,p.size,0,Math.PI*2);
+            ctx.fillStyle=rgb(PURPLE,p.alpha*(0.7+0.3*Math.sin(p.phase)));ctx.fill();
+          }
+        }
+
+        function drawVignette(){
+          var g=ctx.createRadialGradient(W/2,H/2,Math.min(W,H)*0.25,W/2,H/2,Math.max(W,H)*0.7);
+          g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(1,'rgba(0,0,0,0.3)');
+          ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+        }
+
+        function drawScanline(x,y,r,time,col){
+          var a=time*0.8;
+          ctx.beginPath();ctx.arc(x,y,r,a,a+0.8);
+          var sg=ctx.createLinearGradient(
+            x+Math.cos(a)*r,y+Math.sin(a)*r,
+            x+Math.cos(a+0.8)*r,y+Math.sin(a+0.8)*r);
+          sg.addColorStop(0,rgb(col,0));sg.addColorStop(0.5,rgb(col,0.25));sg.addColorStop(1,rgb(col,0));
+          ctx.strokeStyle=sg;ctx.lineWidth=2;ctx.stroke();
+        }
+
+        function drawPathPulse(p,col,time,speed){
+          var t=(time*speed)%1;
+          var px=lerp(p.ax,p.bx,t),py=lerp(p.ay,p.by,t);
+          var fade=t<0.1?t*10:(t>0.85?(1-t)*6.67:1);
+          var g=ctx.createRadialGradient(px,py,0,px,py,6);
+          g.addColorStop(0,rgb(col,0.4*fade));g.addColorStop(1,rgb(col,0));
+          ctx.fillStyle=g;ctx.beginPath();ctx.arc(px,py,6,0,Math.PI*2);ctx.fill();
+          ctx.beginPath();ctx.arc(px,py,1.2,0,Math.PI*2);
+          ctx.fillStyle=rgb(col,0.7*fade);ctx.fill();
+        }
+
         var lastTime=0;
         function animate(ts){
           if(!lastTime)lastTime=ts;var dt=Math.min(ts-lastTime,32);lastTime=ts;frameCount++;
           resize();var L=layout();var conns=getConns(L);var time=ts/1000;
           ctx.clearRect(0,0,W,H);
 
-          // drawGrid();drawPeripheral(time,L);
+          drawVignette();
+          drawAmbient(time);
           drawPeripheral(time,L);
           drawPath(conns[0],GREEN,0.14,'REQUEST');
           drawPath(conns[1],PURPLE,0.12,'TELEMETRY');
@@ -3534,6 +3635,10 @@
           drawModelInterior(L.model.x,L.model.y,L.model.r,time);
           drawCircleNode(L.envelo.x,L.envelo.y,L.envelo.r,PURPLE,'ENVELO',time);
           drawEnveloInterior(L.envelo.x,L.envelo.y,L.envelo.r,time,enveloGlow);
+          drawScanline(L.envelo.x,L.envelo.y,L.envelo.r,time,PURPLE);
+          drawScanline(L.model.x,L.model.y,L.model.r,time*0.7,GREEN);
+          drawPathPulse(conns[0],GREEN,time,0.35);
+          drawPathPulse(conns[1],PURPLE,time,0.28);
           drawCircleNode(L.sentinel.x,L.sentinel.y,L.sentinel.r,PURPLE,'SENTINEL',time);
           drawSentinelInterior(L.sentinel.x,L.sentinel.y,L.sentinel.r,time);
 
@@ -3552,9 +3657,9 @@
             else if(p.state===2){px=lerp(conns[1].ax,conns[1].bx,et);py=lerp(conns[1].ay,conns[1].by,et);col=PURPLE;
               if(p.t>=1)p.state=3;}
             else{px=p.x;py=p.y;p.opacity-=0.03;col=PURPLE;}
-            p.x=px;p.y=py;p.trail.push({x:px,y:py});if(p.trail.length>12)p.trail.shift();
-            for(var j=0;j<p.trail.length-1;j++){var ta=(j/p.trail.length)*0.06*p.opacity;
-              ctx.beginPath();ctx.arc(p.trail[j].x,p.trail[j].y,p.r*(j/p.trail.length)*0.35,0,Math.PI*2);
+            p.x=px;p.y=py;p.trail.push({x:px,y:py});if(p.trail.length>20)p.trail.shift();
+            for(var j=0;j<p.trail.length-1;j++){var ta=(j/p.trail.length)*0.12*p.opacity;
+              ctx.beginPath();ctx.arc(p.trail[j].x,p.trail[j].y,p.r*(j/p.trail.length)*0.55,0,Math.PI*2);
               ctx.fillStyle=rgb(col,ta);ctx.fill();}
             if(p.state!==1)drawPacket(px,py,p.r,col,p.opacity);
             // packet labels removed to prevent overlap
@@ -3577,9 +3682,10 @@
               // attack labels removed
               if(p.t>=0.88){p.rejected=true;bannerFlash=1;stats.rejected++;
                 var hitA=Math.atan2(py-L.envelo.y,px-L.envelo.x);
-                shieldRipples.push({r:L.envelo.r,angle:hitA,alpha:0.6});
-                shieldRipples.push({r:L.envelo.r+6,angle:hitA,alpha:0.4});
-                for(var b=0;b<5;b++){var ba=hitA+(Math.random()-0.5)*1;
+                shieldRipples.push({r:L.envelo.r,angle:hitA,alpha:0.8});
+                shieldRipples.push({r:L.envelo.r+6,angle:hitA,alpha:0.6});
+                shieldRipples.push({r:L.envelo.r+12,angle:hitA,alpha:0.3});
+                for(var b=0;b<9;b++){var ba=hitA+(Math.random()-0.5)*1.4;
                   bursts.push({x:px,y:py,vx:Math.cos(ba)*(1.5+Math.random()*2),
                     vy:Math.sin(ba)*(1.5+Math.random()*2),life:1,r:0.7+Math.random()*1});}}}
             else p.opacity-=0.04;
