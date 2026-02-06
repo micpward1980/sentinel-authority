@@ -45,6 +45,10 @@ async def _create_session_token(user, request, db):
 from app.core.password_validator import validate_password_strength, check_password_breach, score_password
 
 
+class ProfileUpdate(BaseModel):
+    full_name: str = None
+    organization: str = None
+
 class UserCreate(BaseModel):
     email: EmailStr
     password: str

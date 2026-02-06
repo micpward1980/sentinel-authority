@@ -14,6 +14,8 @@ function SettingsPage() {
   const [prefs, setPrefs] = useState(null);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [profileForm, setProfileForm] = useState({ full_name: user?.full_name || '', organization: user?.organization || '' });
+  const [profileSaving, setProfileSaving] = useState(false);
   const [pwForm, setPwForm] = useState({ current: '', new_pw: '', confirm: '' });
   const [pwSaving, setPwSaving] = useState(false);
   const [pwError, setPwError] = useState('');
@@ -56,6 +58,21 @@ function SettingsPage() {
     }
   };
   const toast = useToast();
+
+  const handleSaveProfile = async () => {
+    setProfileSaving(true);
+    try {
+      const res = await api.put('/api/auth/profile', profileForm);
+      toast.show('Profile updated', 'success');
+      // Update local user context
+      if (res.data.user) {
+        window.location.reload();
+      }
+    } catch (err) {
+      toast.show('Failed to update profile: ' + (err.response?.data?.detail || err.message), 'error');
+    }
+    setProfileSaving(false);
+  };
 
   const handleChangePassword = async () => {
     setPwError('');
@@ -104,11 +121,22 @@ function SettingsPage() {
 
       <Panel>
         <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Account Information</h2>
-        <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px'}}>
-          <div><span style={{fontSize: '11px', color: styles.textTertiary}}>Name</span><div style={{color: styles.textPrimary, marginTop: '4px'}}>{user?.full_name || '-'}</div></div>
-          <div><span style={{fontSize: '11px', color: styles.textTertiary}}>Email</span><div style={{color: styles.textPrimary, marginTop: '4px'}}>{user?.email || '-'}</div></div>
-          <div><span style={{fontSize: '11px', color: styles.textTertiary}}>Role</span><div style={{color: styles.purpleBright, marginTop: '4px', fontFamily: "'IBM Plex Mono', monospace", fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1px'}}>{user?.role || '-'}</div></div>
-          <div><span style={{fontSize: '11px', color: styles.textTertiary}}>Organization</span><div style={{color: styles.textPrimary, marginTop: '4px'}}>{user?.organization || '-'}</div></div>
+        <div style={{display: 'flex', flexDirection: 'column', gap: '12px', maxWidth: '400px'}}>
+          <div>
+            <label style={{fontSize: '11px', color: styles.textTertiary, display: 'block', marginBottom: '4px'}}>Full Name</label>
+            <input type="text" value={profileForm.full_name} onChange={e => setProfileForm({...profileForm, full_name: e.target.value})} className="w-full px-4 py-3 rounded-lg outline-none sexy-input" style={{background: 'rgba(255,255,255,0.03)', border: `1px solid ${styles.borderGlass}`, color: styles.textPrimary, fontSize: '13px'}} />
+          </div>
+          <div>
+            <label style={{fontSize: '11px', color: styles.textTertiary, display: 'block', marginBottom: '4px'}}>Organization</label>
+            <input type="text" value={profileForm.organization} onChange={e => setProfileForm({...profileForm, organization: e.target.value})} className="w-full px-4 py-3 rounded-lg outline-none sexy-input" style={{background: 'rgba(255,255,255,0.03)', border: `1px solid ${styles.borderGlass}`, color: styles.textPrimary, fontSize: '13px'}} />
+          </div>
+          <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px'}}>
+            <div><span style={{fontSize: '11px', color: styles.textTertiary}}>Email</span><div style={{color: styles.textPrimary, marginTop: '4px', fontSize: '13px'}}>{user?.email || '-'}</div></div>
+            <div><span style={{fontSize: '11px', color: styles.textTertiary}}>Role</span><div style={{color: styles.purpleBright, marginTop: '4px', fontFamily: "'IBM Plex Mono', monospace", fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1px'}}>{user?.role || '-'}</div></div>
+          </div>
+          <button onClick={handleSaveProfile} disabled={profileSaving} className="sexy-btn" style={{padding: '10px 24px', borderRadius: '10px', background: styles.purplePrimary, border: `1px solid ${styles.purpleBright}`, color: '#fff', fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: profileSaving ? 'wait' : 'pointer', opacity: profileSaving ? 0.7 : 1, alignSelf: 'flex-start'}}>
+            {profileSaving ? 'Saving...' : 'Save Profile'}
+          </button>
         </div>
       </Panel>
 
