@@ -179,26 +179,7 @@ function CustomerDashboard() {
         </Panel>
       )}
 
-      {/* Resources */}
-      <Panel>
-        <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Resources</h2>
-        <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px'}}>
-          {certificates.some(c => c.state === 'conformant' || c.state === 'active' || c.state === 'issued') && (
-          <a href="https://sentinelauthority.org/agent.html" target="_blank" style={{padding: '16px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px', textDecoration: 'none', color: styles.textSecondary, border: `1px solid ${styles.borderGlass}`}}>
-            <div style={{fontWeight: 500, marginBottom: '4px', color: styles.textPrimary, fontSize: '13px'}}>ENVELO Agent Setup</div>
-            <div style={{fontSize: '11px'}}>Installation & configuration guide</div>
-          </a>
-          )}
-          <a href="https://sentinelauthority.org" target="_blank" style={{padding: '16px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px', textDecoration: 'none', color: styles.textSecondary, border: `1px solid ${styles.borderGlass}`}}>
-            <div style={{fontWeight: 500, marginBottom: '4px', color: styles.textPrimary, fontSize: '13px'}}>ODDC Framework</div>
-            <div style={{fontSize: '11px'}}>Certification overview & requirements</div>
-          </a>
-          <a href="mailto:info@sentinelauthority.org" style={{padding: '16px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px', textDecoration: 'none', color: styles.textSecondary, border: `1px solid ${styles.borderGlass}`}}>
-            <div style={{fontWeight: 500, marginBottom: '4px', color: styles.textPrimary, fontSize: '13px'}}>Contact Support</div>
-            <div style={{fontSize: '11px'}}>info@sentinelauthority.org</div>
-          </a>
-        </div>
-      </Panel>
+
     </div>
   );
 }
