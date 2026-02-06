@@ -3085,7 +3085,7 @@
           resize();var L=layout();var ps=paths(L);var time=ts/1000;
           ctx.clearRect(0,0,W,H);
 
-          drawGrid();
+          // drawGrid();
           drawPeripheral(time,L);
 
           drawPath(ps[0],GREEN,0.15,'ACTION');
@@ -3508,7 +3508,8 @@
           resize();var L=layout();var conns=getConns(L);var time=ts/1000;
           ctx.clearRect(0,0,W,H);
 
-          drawGrid();drawPeripheral(time,L);
+          // drawGrid();drawPeripheral(time,L);
+          drawPeripheral(time,L);
           drawPath(conns[0],GREEN,0.14,'REQUEST');
           drawPath(conns[1],PURPLE,0.12,'TELEMETRY');
           updateStreams(time,conns);
