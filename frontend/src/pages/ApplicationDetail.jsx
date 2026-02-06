@@ -159,7 +159,7 @@ function ApplicationDetail() {
       {emailPreview && (
         <div style={{position: 'fixed', inset: 0, zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)'}}>
           <div style={{background: styles.bgCard, border: '1px solid ' + styles.borderGlass, borderRadius: '16px', maxWidth: '650px', width: '90%', maxHeight: '80vh', overflow: 'hidden', display: 'flex', flexDirection: 'column'}}>
-            <div style={{padding: '20px 24px', borderBottom: '1px solid ' + styles.borderGlass, display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+            <div style={{padding: '20px 24px', borderBottom: '1px solid ' + styles.borderGlass, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px'}}>
               <div>
                 <h3 style={{margin: 0, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.purpleBright}}>Email Preview</h3>
                 <p style={{margin: '4px 0 0', fontSize: '12px', color: styles.textTertiary}}>This email will be sent to <strong style={{color: styles.textPrimary}}>{emailPreview.to}</strong></p>
@@ -277,7 +277,7 @@ function ApplicationDetail() {
       
       <div>
         <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', color: styles.purpleBright, marginBottom: '8px'}}>Application {app.application_number}</p>
-        <h1 style={{fontFamily: "Georgia, 'Source Serif 4', serif", fontSize: '36px', fontWeight: 200, margin: 0}}>{app.system_name}</h1>
+        <h1 style={{fontFamily: "Georgia, 'Source Serif 4', serif", fontSize: 'clamp(24px, 5vw, 36px)', fontWeight: 200, margin: 0}}>{app.system_name}</h1>
         <p style={{color: styles.textSecondary, marginTop: '8px'}}>{app.system_description}</p>
       </div>
 
@@ -399,7 +399,7 @@ function ApplicationDetail() {
                   {/* Dot */}
                   <div style={{position: 'absolute', left: '-24px', top: '2px', width: '12px', height: '12px', borderRadius: '50%', background: `${color}30`, border: `2px solid ${color}`}} />
                   {/* Content */}
-                  <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start'}}>
+                  <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px'}}>
                     <div>
                       <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px', fontWeight: 500, color: color, textTransform: 'uppercase', letterSpacing: '0.5px'}}>{stateLabel}</span>
                       {fromLabel && entry.action !== 'submitted' && (
@@ -446,7 +446,7 @@ function ApplicationDetail() {
             onFocus={(e) => e.target.style.borderColor = styles.purpleBright}
             onBlur={(e) => e.target.style.borderColor = styles.borderGlass}
           />
-          <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px'}}>
+          <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginTop: '8px'}}>
             <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
               {user?.role === 'admin' && (
                 <label style={{display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer'}}>
@@ -471,7 +471,7 @@ function ApplicationDetail() {
           <div style={{borderTop: `1px solid ${styles.borderGlass}`, paddingTop: '16px'}}>
             {comments.map((c) => (
               <div key={c.id} style={{padding: '12px 0', borderBottom: `1px solid rgba(255,255,255,0.04)`}}>
-                <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '6px'}}>
+                <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px', marginBottom: '6px'}}>
                   <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
                     <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px', color: c.user_role === 'admin' ? styles.purpleBright : styles.textSecondary, fontWeight: 500}}>{c.user_email}</span>
                     {c.user_role === 'admin' && <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', padding: '2px 6px', borderRadius: '4px', background: 'rgba(157,140,207,0.15)', color: styles.purpleBright, textTransform: 'uppercase', letterSpacing: '0.5px'}}>Admin</span>}

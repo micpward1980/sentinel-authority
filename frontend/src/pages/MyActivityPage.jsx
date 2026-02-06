@@ -49,11 +49,11 @@ function MyActivityPage() {
   const totalPages = Math.ceil(total / PAGE_SIZE);
 
   return (
-    <div className="space-y-6" style={{maxWidth: '800px', margin: '0 auto'}}>
+    <div className="space-y-6" style={{maxWidth: 'min(800px, 95vw)', margin: '0 auto'}}>
       <SectionHeader label="Account" title="My Activity" />
 
       <Panel>
-        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '8px'}}>
+        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '16px', flexWrap: 'wrap', gap: '8px'}}>
           <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', color: styles.textTertiary, letterSpacing: '1px', textTransform: 'uppercase'}}>Activity Log</span>
           <div style={{display: 'flex', gap: '6px', alignItems: 'center'}}>
             {['7', '30', '90', 'all'].map(r => (
@@ -66,9 +66,9 @@ function MyActivityPage() {
         </div>
 
         {loading ? (
-          <div style={{padding: '40px', textAlign: 'center', color: styles.textTertiary}}>Loading...</div>
+          <div style={{padding: 'clamp(16px, 4vw, 40px)', textAlign: 'center', color: styles.textTertiary}}>Loading...</div>
         ) : logs.length === 0 ? (
-          <div style={{padding: '40px', textAlign: 'center', color: styles.textTertiary}}>No activity yet</div>
+          <div style={{padding: 'clamp(16px, 4vw, 40px)', textAlign: 'center', color: styles.textTertiary}}>No activity yet</div>
         ) : (
           <div style={{display: 'flex', flexDirection: 'column', gap: '2px'}}>
             {logs.map(log => {
@@ -79,7 +79,7 @@ function MyActivityPage() {
                     <span style={{color: ai.color, fontSize: '13px', fontWeight: 'bold'}}>{ai.icon}</span>
                   </div>
                   <div style={{flex: 1, minWidth: 0}}>
-                    <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px'}}>
+                    <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '4px'}}>
                       <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px', color: ai.color, letterSpacing: '0.5px'}}>{log.action?.replace(/_/g, ' ')}</span>
                       <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary, whiteSpace: 'nowrap'}}>{log.timestamp ? new Date(log.timestamp).toLocaleString() : ''}</span>
                     </div>

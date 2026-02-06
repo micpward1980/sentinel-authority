@@ -135,7 +135,7 @@ function UserManagementPage() {
       <SectionHeader label="Administration" title="User Management" description="Manage admin and applicant accounts"
         action={<button onClick={() => setShowInviteModal(true)} className="sexy-btn px-4 py-2 rounded-lg flex items-center gap-2" style={{background: styles.purplePrimary, border: '1px solid ' + styles.purpleBright, color: '#fff'}}><Plus className="w-4 h-4" /> Invite User</button>}
       />
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+      <div className="grid gap-4" style={{gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))"}}>
         <StatCard label="Total Users" value={stats.total} color={styles.textPrimary} />
         <StatCard label="Admins" value={stats.admins} color={styles.purpleBright} />
         <StatCard label="Applicants" value={stats.applicants} color={styles.accentGreen} />
@@ -149,7 +149,7 @@ function UserManagementPage() {
         </div>
       </Panel>
       <Panel>
-        {loading ? (<div style={{color: styles.textTertiary, textAlign: 'center', padding: '40px'}}>Loading users...</div>
+        {loading ? (<div style={{color: styles.textTertiary, textAlign: 'center', padding: 'clamp(16px, 4vw, 40px)'}}>Loading users...</div>
         ) : filteredUsers.length === 0 ? (
           <div style={{textAlign: 'center', padding: '60px'}}>
             <Users fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-12 h-12 mx-auto mb-4" style={{color: styles.textTertiary}} />

@@ -493,11 +493,11 @@ function AgentSimulator({ apiKey }) {
       {stats.pass + stats.block > 0 && (
         <div style={{display: 'flex', gap: '24px', marginBottom: '16px'}}>
           <div style={{padding: '12px 20px', background: 'rgba(92,214,133,0.1)', border: '1px solid rgba(157,140,207,0.3)', borderRadius: '6px'}}>
-            <div style={{fontSize: '24px', fontWeight: 500, color: styles.accentGreen}}>{stats.pass}</div>
+            <div style={{fontSize: 'clamp(18px, 4vw, 24px)', fontWeight: 500, color: styles.accentGreen}}>{stats.pass}</div>
             <div style={{fontSize: '11px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px'}}>Passed</div>
           </div>
           <div style={{padding: '12px 20px', background: 'rgba(214,92,92,0.1)', border: '1px solid rgba(214,92,92,0.3)', borderRadius: '6px'}}>
-            <div style={{fontSize: '24px', fontWeight: 500, color: '#D65C5C'}}>{stats.block}</div>
+            <div style={{fontSize: 'clamp(18px, 4vw, 24px)', fontWeight: 500, color: '#D65C5C'}}>{stats.block}</div>
             <div style={{fontSize: '11px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px'}}>Blocked</div>
           </div>
         </div>
@@ -540,19 +540,19 @@ function SessionReport({ session }) {
     <div>
       <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '24px'}}>
         <div style={{padding: '16px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px', textAlign: 'center'}}>
-          <div style={{fontSize: '28px', fontWeight: 500, color: '#fff'}}>{(session.pass_count || 0) + (session.block_count || 0)}</div>
+          <div style={{fontSize: 'clamp(20px, 4vw, 28px)', fontWeight: 500, color: '#fff'}}>{(session.pass_count || 0) + (session.block_count || 0)}</div>
           <div style={{fontSize: '11px', color: '#888', textTransform: 'uppercase'}}>Total Actions</div>
         </div>
         <div style={{padding: '16px', background: 'rgba(92,214,133,0.1)', borderRadius: '8px', textAlign: 'center'}}>
-          <div style={{fontSize: '28px', fontWeight: 500, color: '#5CD685'}}>{session.pass_count || 0}</div>
+          <div style={{fontSize: 'clamp(20px, 4vw, 28px)', fontWeight: 500, color: '#5CD685'}}>{session.pass_count || 0}</div>
           <div style={{fontSize: '11px', color: '#888', textTransform: 'uppercase'}}>Passed</div>
         </div>
         <div style={{padding: '16px', background: 'rgba(214,92,92,0.1)', borderRadius: '8px', textAlign: 'center'}}>
-          <div style={{fontSize: '28px', fontWeight: 500, color: '#D65C5C'}}>{session.block_count || 0}</div>
+          <div style={{fontSize: 'clamp(20px, 4vw, 28px)', fontWeight: 500, color: '#D65C5C'}}>{session.block_count || 0}</div>
           <div style={{fontSize: '11px', color: '#888', textTransform: 'uppercase'}}>Blocked</div>
         </div>
         <div style={{padding: '16px', background: passRate >= 95 ? 'rgba(92,214,133,0.1)' : 'rgba(214,92,92,0.1)', borderRadius: '8px', textAlign: 'center'}}>
-          <div style={{fontSize: '28px', fontWeight: 500, color: passRate >= 95 ? '#5CD685' : '#D65C5C'}}>{passRate}%</div>
+          <div style={{fontSize: 'clamp(20px, 4vw, 28px)', fontWeight: 500, color: passRate >= 95 ? '#5CD685' : '#D65C5C'}}>{passRate}%</div>
           <div style={{fontSize: '11px', color: '#888', textTransform: 'uppercase'}}>Pass Rate</div>
         </div>
       </div>
@@ -774,7 +774,7 @@ function APIKeyManager({ onKeyGenerated }) {
         <div>
           <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary, marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '1px'}}>Your API Keys</div>
           {keys.map((k) => (
-            <div key={k.id} style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'rgba(0,0,0,0.2)', border: `1px solid ${styles.borderGlass}`, borderRadius: '6px', marginBottom: '8px'}}>
+            <div key={k.id} style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', padding: '12px 16px', background: 'rgba(0,0,0,0.2)', border: `1px solid ${styles.borderGlass}`, borderRadius: '6px', marginBottom: '8px'}}>
               <div>
                 <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '13px', color: styles.textPrimary}}>{k.name}</div>
                 <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', color: styles.textTertiary, marginTop: '4px'}}>{k.key_prefix}••••••••</div>
@@ -898,7 +898,7 @@ function BoundaryConfigurator({ certificateNumber, initialBoundaries, onSave }) 
   return (
     <div>
       {/* Summary Bar */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', padding: '12px 16px', background: dirty ? 'rgba(214,160,92,0.08)' : 'rgba(92,214,133,0.05)', border: '1px solid ' + (dirty ? 'rgba(214,160,92,0.2)' : 'rgba(92,214,133,0.15)'), borderRadius: '8px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '20px', padding: '12px 16px', background: dirty ? 'rgba(214,160,92,0.08)' : 'rgba(92,214,133,0.05)', border: '1px solid ' + (dirty ? 'rgba(214,160,92,0.2)' : 'rgba(92,214,133,0.15)'), borderRadius: '8px' }}>
         <div style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
           <span style={{ fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', color: styles.textTertiary }}>{totalCount} boundaries defined</span>
           {dirty && <span style={{ fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.accentAmber, letterSpacing: '1px', textTransform: 'uppercase' }}>● Unsaved changes</span>}
@@ -917,7 +917,7 @@ function BoundaryConfigurator({ certificateNumber, initialBoundaries, onSave }) 
             <input type="text" value={b.name} onChange={e => update('numeric', i, 'name', e.target.value)} className="px-3 py-2 rounded-lg" style={{ ...inputStyle }} placeholder="Name (e.g., Speed Limit)" />
             <input type="text" value={b.parameter} onChange={e => update('numeric', i, 'parameter', e.target.value)} className="px-3 py-2 rounded-lg" style={{ ...inputStyle }} placeholder="Parameter (e.g., speed)" />
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '8px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '8px' }}>
             <input type="number" value={b.min_value} onChange={e => update('numeric', i, 'min_value', e.target.value)} className="px-3 py-2 rounded-lg" style={{ ...inputStyle }} placeholder="Min" />
             <input type="number" value={b.max_value} onChange={e => update('numeric', i, 'max_value', e.target.value)} className="px-3 py-2 rounded-lg" style={{ ...inputStyle }} placeholder="Max" />
             <input type="number" value={b.hard_limit} onChange={e => update('numeric', i, 'hard_limit', e.target.value)} className="px-3 py-2 rounded-lg" style={{ ...inputStyle }} placeholder="Hard limit" />
@@ -943,7 +943,7 @@ function BoundaryConfigurator({ certificateNumber, initialBoundaries, onSave }) 
               <option value="polygon">Polygon (advanced)</option>
             </select>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '8px' }}>
             <input type="number" step="any" value={b.lat} onChange={e => update('geo', i, 'lat', e.target.value)} className="px-3 py-2 rounded-lg" style={{ ...inputStyle }} placeholder="Latitude" />
             <input type="number" step="any" value={b.lon} onChange={e => update('geo', i, 'lon', e.target.value)} className="px-3 py-2 rounded-lg" style={{ ...inputStyle }} placeholder="Longitude" />
             <input type="number" value={b.radius_meters} onChange={e => update('geo', i, 'radius_meters', e.target.value)} className="px-3 py-2 rounded-lg" style={{ ...inputStyle }} placeholder="Radius (m)" />
@@ -961,7 +961,7 @@ function BoundaryConfigurator({ certificateNumber, initialBoundaries, onSave }) 
       {helpText('Allowed operating hours and days of week.')}
       {bounds.time.map((b, i) => (
         <div key={i} style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid ' + styles.borderGlass, borderRadius: '8px', padding: '12px', marginBottom: '8px' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '8px', marginBottom: '8px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '8px', marginBottom: '8px' }}>
             <input type="text" value={b.name} onChange={e => update('time', i, 'name', e.target.value)} className="px-3 py-2 rounded-lg" style={{ ...inputStyle }} placeholder="Name" />
             <input type="number" min="0" max="23" value={b.start_hour} onChange={e => update('time', i, 'start_hour', e.target.value)} className="px-3 py-2 rounded-lg" style={{ ...inputStyle }} placeholder="Start hour" />
             <input type="number" min="0" max="23" value={b.end_hour} onChange={e => update('time', i, 'end_hour', e.target.value)} className="px-3 py-2 rounded-lg" style={{ ...inputStyle }} placeholder="End hour" />
@@ -1062,7 +1062,7 @@ function EnveloAdminView() {
   }, []);
 
   if (loading) {
-    return <div style={{color: styles.textTertiary, padding: '40px', textAlign: 'center'}}><RefreshCw size={24} style={{animation: 'spin 1s linear infinite'}} /></div>;
+    return <div style={{color: styles.textTertiary, padding: 'clamp(16px, 4vw, 40px)', textAlign: 'center'}}><RefreshCw size={24} style={{animation: 'spin 1s linear infinite'}} /></div>;
   }
 
   const activeSessions = sessions.filter(s => s.status === 'active');
@@ -1098,7 +1098,7 @@ function EnveloAdminView() {
       />
 
       {/* Tab Navigation */}
-      <div style={{display: 'flex', gap: '8px', borderBottom: `1px solid ${styles.borderGlass}`, paddingBottom: '16px'}}>
+      <div style={{display: 'flex', gap: '8px', borderBottom: `1px solid ${styles.borderGlass}`, paddingBottom: '16px', overflowX: 'auto', WebkitOverflowScrolling: 'touch'}}>
         {[
           { id: 'monitoring', label: 'Live Monitoring' },
           { id: 'customers', label: 'Customer Systems' },
@@ -1118,7 +1118,7 @@ function EnveloAdminView() {
               letterSpacing: '1px',
               textTransform: 'uppercase',
               cursor: 'pointer',
-              transition: 'all 0.2s'
+              transition: 'all 0.2s', whiteSpace: 'nowrap', flexShrink: 0
             }}
           >
             {tab.label}
@@ -1127,22 +1127,22 @@ function EnveloAdminView() {
       </div>
 
       {/* Stats Grid - Always visible */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+      <div className="grid gap-4" style={{gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))"}}>
         <Panel>
           <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '12px'}}>Active Sessions</p>
-          <p style={{fontSize: '36px', fontWeight: 200, color: styles.accentGreen}}>{activeSessions.length}</p>
+          <p style={{fontSize: 'clamp(24px, 5vw, 36px)', fontWeight: 200, color: styles.accentGreen}}>{activeSessions.length}</p>
         </Panel>
         <Panel>
           <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '12px'}}>Attested Systems</p>
-          <p style={{fontSize: '36px', fontWeight: 200, color: styles.purpleBright}}>{activeCerts.length}</p>
+          <p style={{fontSize: 'clamp(24px, 5vw, 36px)', fontWeight: 200, color: styles.purpleBright}}>{activeCerts.length}</p>
         </Panel>
         <Panel>
           <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '12px'}}>CAT-72 In Progress</p>
-          <p style={{fontSize: '36px', fontWeight: 200, color: styles.accentAmber}}>{pendingApps.length}</p>
+          <p style={{fontSize: 'clamp(24px, 5vw, 36px)', fontWeight: 200, color: styles.accentAmber}}>{pendingApps.length}</p>
         </Panel>
         <Panel>
           <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '12px'}}>Violations (Total)</p>
-          <p style={{fontSize: '36px', fontWeight: 200, color: totalViolations > 0 ? styles.accentRed : styles.accentGreen}}>{totalViolations}</p>
+          <p style={{fontSize: 'clamp(24px, 5vw, 36px)', fontWeight: 200, color: totalViolations > 0 ? styles.accentRed : styles.accentGreen}}>{totalViolations}</p>
         </Panel>
       </div>
 
@@ -1151,7 +1151,7 @@ function EnveloAdminView() {
         <>
           {/* Active Sessions Table */}
           <Panel glow>
-            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px'}}>
+            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '20px'}}>
               <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary}}>Active Sessions</p>
               <div style={{display: 'flex', alignItems: 'center', gap: '8px', padding: '4px 12px', background: 'rgba(92,214,133,0.15)', borderRadius: '20px'}}>
                 <div style={{width: '6px', height: '6px', borderRadius: '50%', background: styles.accentGreen, boxShadow: `0 0 8px ${styles.accentGreen}`, animation: 'pulse 2s infinite'}}></div>
@@ -1160,7 +1160,7 @@ function EnveloAdminView() {
             </div>
             
             {sessions.length > 0 ? (
-              <div style={{overflowX: 'auto'}}>
+              <div className='table-scroll' style={{overflowX: 'auto', WebkitOverflowScrolling: 'touch'}}>
                 <table className="w-full">
                   <thead>
                     <tr style={{borderBottom: `1px solid ${styles.borderGlass}`}}>
@@ -1192,14 +1192,14 @@ function EnveloAdminView() {
                 </table>
               </div>
             ) : (
-              <p style={{color: styles.textTertiary, textAlign: 'center', padding: '40px'}}>No sessions found.</p>
+              <p style={{color: styles.textTertiary, textAlign: 'center', padding: 'clamp(16px, 4vw, 40px)'}}>No sessions found.</p>
             )}
           </Panel>
 
           {/* Session Detail Modal */}
           {selectedSession && (
             <Panel accent="purple">
-              <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px'}}>
+              <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '20px'}}>
                 <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary}}>Session: {selectedSession.session_id?.substring(0, 16)}...</p>
                 <div style={{display: 'flex', gap: '12px'}}>
                   <button onClick={async () => {
@@ -1266,7 +1266,7 @@ function EnveloAdminView() {
               <div className="space-y-4">
                 {pendingApps.map(app => (
                   <div key={app.id} style={{padding: '16px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px', border: `1px solid ${styles.borderGlass}`}}>
-                    <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                    <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px'}}>
                       <div>
                         <p style={{fontSize: '14px', color: styles.textPrimary, marginBottom: '4px'}}>{app.system_name}</p>
                         <p style={{fontSize: '12px', color: styles.textSecondary}}>{app.organization_name}</p>
@@ -1304,7 +1304,7 @@ function EnveloAdminView() {
                 <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px'}}>
                   <div>
                     <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.purpleBright, marginBottom: '8px'}}>Boundary Review — Read Only</p>
-                    <h2 style={{fontSize: '24px', fontWeight: 200, margin: '0 0 4px 0'}}>{reviewingCert.system_name}</h2>
+                    <h2 style={{fontSize: 'clamp(18px, 4vw, 24px)', fontWeight: 200, margin: '0 0 4px 0'}}>{reviewingCert.system_name}</h2>
                     <p style={{color: styles.textSecondary}}>{reviewingCert.organization_name} • {reviewingCert.certificate_number}</p>
                   </div>
                   <button onClick={() => setReviewingCert(null)} style={{padding: '8px 16px', background: 'transparent', border: `1px solid ${styles.borderGlass}`, borderRadius: '6px', color: styles.textTertiary, cursor: 'pointer', fontSize: '11px'}}>← Back</button>
@@ -1315,7 +1315,7 @@ function EnveloAdminView() {
                 </div>
 
                 {!hasBoundaries ? (
-                  <p style={{color: styles.textTertiary, textAlign: 'center', padding: '40px'}}>No boundaries defined in this application.</p>
+                  <p style={{color: styles.textTertiary, textAlign: 'center', padding: 'clamp(16px, 4vw, 40px)'}}>No boundaries defined in this application.</p>
                 ) : (
                   <div className="space-y-6">
                     {numeric.length > 0 && (
@@ -1323,7 +1323,7 @@ function EnveloAdminView() {
                         <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '12px'}}>Numeric Boundaries ({numeric.length})</p>
                         <div style={{display: 'grid', gap: '8px'}}>
                           {numeric.map((b, i) => (
-                            <div key={i} style={{padding: '14px 16px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px', border: `1px solid ${styles.borderGlass}`, display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '16px', alignItems: 'center'}}>
+                            <div key={i} style={{padding: '14px 16px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px', border: `1px solid ${styles.borderGlass}`, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '16px', alignItems: 'center'}}>
                               <div>
                                 <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary, marginBottom: '2px'}}>Parameter</p>
                                 <p style={{fontWeight: 500, color: styles.textPrimary, fontSize: '14px'}}>{b.name || b.parameter || '—'}</p>
@@ -1351,7 +1351,7 @@ function EnveloAdminView() {
                         <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '12px'}}>Geographic Boundaries ({geo.length})</p>
                         <div style={{display: 'grid', gap: '8px'}}>
                           {geo.map((b, i) => (
-                            <div key={i} style={{padding: '14px 16px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px', border: `1px solid ${styles.borderGlass}`, display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '16px', alignItems: 'center'}}>
+                            <div key={i} style={{padding: '14px 16px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px', border: `1px solid ${styles.borderGlass}`, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '16px', alignItems: 'center'}}>
                               <div>
                                 <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary, marginBottom: '2px'}}>Zone</p>
                                 <p style={{fontWeight: 500, color: styles.textPrimary, fontSize: '14px'}}>{b.name || '—'}</p>
@@ -1379,7 +1379,7 @@ function EnveloAdminView() {
                         <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '12px'}}>Time Boundaries ({time.length})</p>
                         <div style={{display: 'grid', gap: '8px'}}>
                           {time.map((b, i) => (
-                            <div key={i} style={{padding: '14px 16px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px', border: `1px solid ${styles.borderGlass}`, display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px', alignItems: 'center'}}>
+                            <div key={i} style={{padding: '14px 16px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px', border: `1px solid ${styles.borderGlass}`, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '16px', alignItems: 'center'}}>
                               <div>
                                 <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary, marginBottom: '2px'}}>Schedule</p>
                                 <p style={{fontWeight: 500, color: styles.textPrimary, fontSize: '14px'}}>{b.name || '—'}</p>
@@ -1403,7 +1403,7 @@ function EnveloAdminView() {
                         <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '12px'}}>State Boundaries ({state.length})</p>
                         <div style={{display: 'grid', gap: '8px'}}>
                           {state.map((b, i) => (
-                            <div key={i} style={{padding: '14px 16px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px', border: `1px solid ${styles.borderGlass}`, display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px', alignItems: 'center'}}>
+                            <div key={i} style={{padding: '14px 16px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px', border: `1px solid ${styles.borderGlass}`, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '16px', alignItems: 'center'}}>
                               <div>
                                 <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary, marginBottom: '2px'}}>Parameter</p>
                                 <p style={{fontWeight: 500, color: styles.textPrimary, fontSize: '14px'}}>{b.name || b.parameter || '—'}</p>
@@ -1444,7 +1444,7 @@ function EnveloAdminView() {
                     <button
                       onClick={async () => {
                         try {
-                          await api.post(`/api/applications/${reviewingCert.application_id}/comments`, {
+                          await api.post(`/api/applications/${reviewingCert.application_id || "unknown"}/comments`, {
                             content: '[BOUNDARY REVIEW — APPROVED] ' + (reviewComment || 'Boundaries approved as submitted.'),
                             is_internal: false
                           });
@@ -1471,7 +1471,7 @@ function EnveloAdminView() {
                           return;
                         }
                         try {
-                          await api.post(`/api/applications/${reviewingCert.application_id}/comments`, {
+                          await api.post(`/api/applications/${reviewingCert.application_id || "unknown"}/comments`, {
                             content: '[BOUNDARY REVIEW — CHANGES REQUIRED] ' + reviewComment,
                             is_internal: false
                           });
@@ -1496,7 +1496,7 @@ function EnveloAdminView() {
             );
           })() : (
             <Panel>
-              <div style={{textAlign: 'center', padding: '60px 20px'}}>
+              <div style={{textAlign: 'center', padding: 'clamp(24px, 5vw, 60px) clamp(12px, 3vw, 20px)'}}>
                 <Shield fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} size={48} style={{color: styles.textTertiary, margin: '0 auto 16px'}} />
                 <h2 style={{fontSize: '20px', fontWeight: 200, marginBottom: '8px'}}>Select a System to Review</h2>
                 <p style={{color: styles.textSecondary, marginBottom: '24px'}}>Choose a system from the Customer Systems tab to review its submitted boundaries.</p>
@@ -1587,7 +1587,7 @@ function EnveloCustomerView() {
   };
 
   if (loading) {
-    return <div style={{color: styles.textTertiary, padding: '40px', textAlign: 'center'}}><RefreshCw size={24} style={{animation: 'spin 1s linear infinite'}} /></div>;
+    return <div style={{color: styles.textTertiary, padding: 'clamp(16px, 4vw, 40px)', textAlign: 'center'}}><RefreshCw size={24} style={{animation: 'spin 1s linear infinite'}} /></div>;
   }
 
   // ── STATE 1: Not approved yet ──────────────────────────
@@ -1596,10 +1596,10 @@ function EnveloCustomerView() {
       <div className="space-y-6">
         <SectionHeader label="ENVELO Agent" title="Application Required" />
         <Panel>
-          <div style={{textAlign: 'center', padding: '60px 20px'}}>
+          <div style={{textAlign: 'center', padding: 'clamp(24px, 5vw, 60px) clamp(12px, 3vw, 20px)'}}>
             <Shield fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} size={48} style={{color: styles.textTertiary, margin: '0 auto 16px'}} />
-            <h2 style={{fontFamily: "Georgia, 'Source Serif 4', serif", fontSize: '24px', fontWeight: 200, marginBottom: '12px'}}>Pending Approval</h2>
-            <p style={{color: styles.textSecondary, maxWidth: '400px', margin: '0 auto'}}>Your application is being reviewed. Once approved, you'll deploy the ENVELO agent with a single command.</p>
+            <h2 style={{fontFamily: "Georgia, 'Source Serif 4', serif", fontSize: 'clamp(18px, 4vw, 24px)', fontWeight: 200, marginBottom: '12px'}}>Pending Approval</h2>
+            <p style={{color: styles.textSecondary, maxWidth: 'min(400px, 90vw)', margin: '0 auto'}}>Your application is being reviewed. Once approved, you'll deploy the ENVELO agent with a single command.</p>
           </div>
         </Panel>
       </div>
@@ -1633,15 +1633,15 @@ function EnveloCustomerView() {
               {session && (
                 <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '16px', marginTop: '24px', paddingTop: '24px', borderTop: '1px solid ' + styles.borderGlass}}>
                   <div style={{textAlign: 'center'}}>
-                    <p style={{fontSize: '28px', fontWeight: 200, color: styles.accentGreen}}>{session.uptime || '0h'}</p>
+                    <p style={{fontSize: 'clamp(20px, 4vw, 28px)', fontWeight: 200, color: styles.accentGreen}}>{session.uptime || '0h'}</p>
                     <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary}}>Uptime</p>
                   </div>
                   <div style={{textAlign: 'center'}}>
-                    <p style={{fontSize: '28px', fontWeight: 200, color: styles.purpleBright}}>{session.record_count || 0}</p>
+                    <p style={{fontSize: 'clamp(20px, 4vw, 28px)', fontWeight: 200, color: styles.purpleBright}}>{session.record_count || 0}</p>
                     <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary}}>Telemetry</p>
                   </div>
                   <div style={{textAlign: 'center'}}>
-                    <p style={{fontSize: '28px', fontWeight: 200, color: (session.violations || 0) > 0 ? styles.accentRed : styles.accentGreen}}>{session.violations || 0}</p>
+                    <p style={{fontSize: 'clamp(20px, 4vw, 28px)', fontWeight: 200, color: (session.violations || 0) > 0 ? styles.accentRed : styles.accentGreen}}>{session.violations || 0}</p>
                     <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary}}>Violations</p>
                   </div>
                 </div>
@@ -1654,7 +1654,7 @@ function EnveloCustomerView() {
           const session = activeSessions[0];
           return (
             <Panel key={app.id} glow>
-              <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+              <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px'}}>
                 <div>
                   <h3 style={{fontSize: '20px', fontWeight: 500, color: styles.textPrimary, margin: '0 0 4px 0'}}>{app.system_name}</h3>
                   <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '13px', color: styles.accentAmber}}>{app.application_number} — CAT-72 Testing</p>
@@ -1665,17 +1665,17 @@ function EnveloCustomerView() {
                 </div>
               </div>
               {session && (
-                <div style={{display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginTop: '24px', paddingTop: '24px', borderTop: '1px solid ' + styles.borderGlass}}>
+                <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '16px', marginTop: '24px', paddingTop: '24px', borderTop: '1px solid ' + styles.borderGlass}}>
                   <div style={{textAlign: 'center'}}>
-                    <p style={{fontSize: '28px', fontWeight: 200, color: styles.accentGreen}}>{session.pass_count || 0}</p>
+                    <p style={{fontSize: 'clamp(20px, 4vw, 28px)', fontWeight: 200, color: styles.accentGreen}}>{session.pass_count || 0}</p>
                     <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary}}>Passed</p>
                   </div>
                   <div style={{textAlign: 'center'}}>
-                    <p style={{fontSize: '28px', fontWeight: 200, color: (session.block_count || 0) > 0 ? styles.accentRed : styles.accentGreen}}>{session.block_count || 0}</p>
+                    <p style={{fontSize: 'clamp(20px, 4vw, 28px)', fontWeight: 200, color: (session.block_count || 0) > 0 ? styles.accentRed : styles.accentGreen}}>{session.block_count || 0}</p>
                     <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary}}>Blocked</p>
                   </div>
                   <div style={{textAlign: 'center'}}>
-                    <p style={{fontSize: '28px', fontWeight: 200, color: styles.purpleBright}}>{(session.pass_count || 0) + (session.block_count || 0)}</p>
+                    <p style={{fontSize: 'clamp(20px, 4vw, 28px)', fontWeight: 200, color: styles.purpleBright}}>{(session.pass_count || 0) + (session.block_count || 0)}</p>
                     <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary}}>Total</p>
                   </div>
                 </div>
@@ -1775,12 +1775,12 @@ function EnveloCustomerView() {
       <SectionHeader label="ENVELO Agent" title="Deploy" description={'Ready to deploy ' + sysName} />
 
       <Panel glow>
-        <div style={{textAlign: 'center', padding: '40px 20px'}}>
+        <div style={{textAlign: 'center', padding: 'clamp(20px, 4vw, 40px) clamp(12px, 3vw, 20px)'}}>
           {!deployKey ? (
             <>
               <Shield fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} size={56} style={{color: styles.purpleBright, margin: '0 auto 20px'}} />
-              <h2 style={{fontFamily: "Georgia, 'Source Serif 4', serif", fontSize: '28px', fontWeight: 200, marginBottom: '12px', color: styles.textPrimary}}>One Command. That's It.</h2>
-              <p style={{color: styles.textSecondary, maxWidth: '440px', margin: '0 auto 32px', lineHeight: '1.6'}}>
+              <h2 style={{fontFamily: "Georgia, 'Source Serif 4', serif", fontSize: 'clamp(20px, 4vw, 28px)', fontWeight: 200, marginBottom: '12px', color: styles.textPrimary}}>One Command. That's It.</h2>
+              <p style={{color: styles.textSecondary, maxWidth: 'min(440px, 90vw)', margin: '0 auto 32px', lineHeight: '1.6'}}>
                 Generate your deploy command. Paste it in a terminal. The ENVELO agent installs, configures your approved boundaries, starts running, and auto-restarts on reboot.
               </p>
               <button
@@ -1811,11 +1811,11 @@ function EnveloCustomerView() {
                   <div style={{width: '8px', height: '8px', borderRadius: '50%', background: styles.accentGreen}}></div>
                   <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', color: styles.accentGreen, textTransform: 'uppercase', letterSpacing: '1px'}}>Ready to Deploy</span>
                 </div>
-                <h2 style={{fontFamily: "Georgia, 'Source Serif 4', serif", fontSize: '24px', fontWeight: 200, color: styles.textPrimary, margin: '0 0 8px 0'}}>Paste in your terminal</h2>
+                <h2 style={{fontFamily: "Georgia, 'Source Serif 4', serif", fontSize: 'clamp(18px, 4vw, 24px)', fontWeight: 200, color: styles.textPrimary, margin: '0 0 8px 0'}}>Paste in your terminal</h2>
               </div>
 
               {/* Terminal */}
-              <div style={{maxWidth: '700px', margin: '0 auto', textAlign: 'left'}}>
+              <div style={{maxWidth: 'min(700px, 95vw)', margin: '0 auto', textAlign: 'left'}}>
                 <div style={{background: 'rgba(0,0,0,0.5)', borderRadius: '12px', border: '1px solid ' + styles.purpleBright, overflow: 'hidden'}}>
                   <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 16px', background: 'rgba(0,0,0,0.3)', borderBottom: '1px solid ' + styles.borderGlass}}>
                     <div style={{display: 'flex', gap: '6px'}}>
@@ -1842,7 +1842,7 @@ function EnveloCustomerView() {
                       {copied ? '✓ Copied' : 'Copy'}
                     </button>
                   </div>
-                  <div style={{padding: '20px', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '13px', lineHeight: '1.6', overflowX: 'auto', whiteSpace: 'nowrap'}}>
+                  <div style={{padding: '20px', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '13px', lineHeight: '1.6', overflowX: 'auto', whiteSpace: 'pre-wrap', wordBreak: 'break-all'}}>
                     <span style={{color: styles.accentGreen}}>$</span>{' '}
                     <span style={{color: styles.textPrimary}}>{cmd}</span>
                   </div>
@@ -1850,7 +1850,7 @@ function EnveloCustomerView() {
 
                 <div style={{marginTop: '20px', padding: '16px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px', border: '1px solid ' + styles.borderGlass}}>
                   <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '12px'}}>What happens</p>
-                  <div style={{display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px', textAlign: 'center'}}>
+                  <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '12px', textAlign: 'center'}}>
                     {[
                       { icon: '↓', label: 'Installs' },
                       { icon: '⚙', label: 'Configures' },

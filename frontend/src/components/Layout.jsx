@@ -177,7 +177,7 @@ function Layout({ children }) {
 
       {/* Main Content */}
       <div className="lg:ml-64 relative z-10">
-        <header className="h-16 flex items-center px-6 gap-4" style={{borderBottom: '1px solid rgba(255,255,255,0.06)', background: 'rgba(42,47,61,0.88)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)'}}>
+        <header className="h-16 flex items-center px-3 sm:px-6 gap-3 sm:gap-4" style={{borderBottom: '1px solid rgba(255,255,255,0.06)', background: 'rgba(42,47,61,0.88)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)'}}>
           <button onClick={() => setSidebarOpen(!sidebarOpen)} className="lg:hidden" style={{color: styles.textSecondary, background: 'none', border: 'none'}}>
             <Menu className="w-6 h-6" />
           </button>
@@ -196,7 +196,7 @@ function Layout({ children }) {
             </button>
             {notifOpen && (<>
               <div onClick={() => setNotifOpen(false)} style={{position: 'fixed', inset: 0, zIndex: 90}} />
-              <div style={{position: 'absolute', right: 0, top: '40px', width: '360px', maxHeight: '480px', overflowY: 'auto', background: 'rgba(42,47,61,0.96)', backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', boxShadow: '0 20px 60px rgba(0,0,0,0.5)', zIndex: 100}}>
+              <div style={{position: 'absolute', right: 0, top: '40px', width: 'min(360px, 90vw)', maxHeight: '70vh', overflowY: 'auto', background: 'rgba(42,47,61,0.96)', backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', boxShadow: '0 20px 60px rgba(0,0,0,0.5)', zIndex: 100}}>
                 <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', borderBottom: '1px solid rgba(255,255,255,0.06)'}}>
                   <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary}}>Notifications</span>
                   {unreadCount > 0 && <button onClick={markAllRead} style={{background: 'none', border: 'none', color: styles.purpleBright, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', cursor: 'pointer'}}>Mark all read</button>}
@@ -227,7 +227,7 @@ function Layout({ children }) {
             </>)}
           </div>
         </header>
-        <main className="sa-main-content" style={{padding: '32px', position: 'relative', zIndex: 1}}>{children}</main>
+        <main className="sa-main-content" style={{padding: 'clamp(12px, 3vw, 32px)', position: 'relative', zIndex: 1}}>{children}</main>
       </div>
     </div>
   );

@@ -469,6 +469,15 @@
       .page-desc{ border-left:none; padding-left:0; }
     }
 
+    @media(max-width:480px){
+      .metrics-grid{ grid-template-columns:1fr !important; }
+      h1{ font-size:clamp(28px,6vw,52px); }
+      .time-display .big{ font-size:36px; }
+      .search-row input, .search-row button{ font-size:12px; }
+      .result-card{ padding:16px; }
+      .brand-name{ font-size:9px; letter-spacing:2px; }
+    }
+
     @media(prefers-reduced-motion:reduce){
       .brand-mark-inner{ animation:none; opacity:.9; }
       .ambient::before,.ambient::after{ animation:none; }

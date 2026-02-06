@@ -121,10 +121,30 @@
     footer{margin-top:var(--space-8);padding:var(--space-2);border-top:1px solid var(--border-subtle);text-align:center}
     .footer-copy{font-family:var(--mono);font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--text-tertiary);opacity:.5}
 
-    @media(max-width:600px){
+    @media(max-width:768px){
       .content-wrap{padding:calc(var(--nav-height) + 40px) 16px 60px}
-      .page-title{font-size:26px}
+      .page-title{font-size:clamp(24px,5vw,44px)}
+      .page-desc{font-size:14px}
       .core-box{padding:var(--space-2)}
+      .faq-q{font-size:14px}
+      .faq-a{font-size:13px}
+      .badge{font-size:10px;padding:6px 10px}
+      .badge-row{gap:6px}
+      .contact-box{padding:var(--space-2)}
+      footer{margin-top:var(--space-4)}
+    }
+    @media(max-width:480px){
+      .content-wrap{padding:calc(var(--nav-height) + 24px) 12px 40px}
+      .page-label{font-size:9px;letter-spacing:3px}
+      .page-label::before{width:20px}
+      .page-title{font-size:22px}
+      .page-desc{font-size:13px;margin-bottom:var(--space-3)}
+      .faq-item{padding:var(--space-1) 0}
+      .badge{font-size:9px;padding:5px 8px;gap:4px}
+    }
+    @media(max-width:360px){
+      .badge-row{flex-direction:column}
+      .badge{justify-content:center}
       .badge{font-size:10px;padding:6px 10px}
     }
   </style>

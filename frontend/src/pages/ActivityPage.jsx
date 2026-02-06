@@ -146,11 +146,11 @@ function ActivityPage() {
       {/* Logs Table */}
       <Panel noPad>
         {loading ? (
-          <div style={{padding: '40px', textAlign: 'center', color: styles.textTertiary}}>Loading...</div>
+          <div style={{padding: 'clamp(16px, 4vw, 40px)', textAlign: 'center', color: styles.textTertiary}}>Loading...</div>
         ) : logs.length === 0 ? (
-          <div style={{padding: '40px', textAlign: 'center', color: styles.textTertiary}}>No audit log entries found</div>
+          <div style={{padding: 'clamp(16px, 4vw, 40px)', textAlign: 'center', color: styles.textTertiary}}>No audit log entries found</div>
         ) : (
-          <div style={{overflowX: 'auto'}}>
+          <div className='table-scroll' style={{overflowX: 'auto', WebkitOverflowScrolling: 'touch'}}>
             <table style={{width: '100%', borderCollapse: 'collapse'}}>
               <thead>
                 <tr style={{background: 'rgba(0,0,0,0.2)'}}>

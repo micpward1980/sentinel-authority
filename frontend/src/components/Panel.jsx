@@ -9,7 +9,7 @@ function Panel({ children, className = '', glow = false, accent = null }) {
     red: 'rgba(214,92,92,0.1)',
   };
   return (
-    <div className={`rounded-2xl p-6 ${className}`} style={{
+    <div className={`rounded-2xl p-4 sm:p-6 ${className}`} style={{
       background: accent ? `linear-gradient(135deg, ${accentColors[accent] || accentColors.purple} 0%, rgba(255,255,255,0.02) 100%)` : 'rgba(255,255,255,0.03)',
       border: `1px solid ${styles.borderGlass}`,
       backdropFilter: 'blur(16px)',

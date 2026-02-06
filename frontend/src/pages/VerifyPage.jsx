@@ -219,7 +219,7 @@ function VerifyPage() {
           </div>
           
           <h1 style={{
-            fontFamily: "Georgia, 'Source Serif 4', serif", fontSize: '36px', fontWeight: 200,
+            fontFamily: "Georgia, 'Source Serif 4', serif", fontSize: 'clamp(24px, 5vw, 36px)', fontWeight: 200,
             color: styles.textPrimary, margin: '0 0 8px 0', letterSpacing: '-0.02em',
           }}>
             Certificate <span style={{color: styles.purpleBright, fontStyle: 'italic'}}>Verification</span>
@@ -252,7 +252,7 @@ function VerifyPage() {
         {/* Verification card */}
         <div style={{
           background: 'rgba(255,255,255,0.03)', backdropFilter: 'blur(20px)',
-          border: '1px solid rgba(255,255,255,0.08)', borderRadius: '24px', padding: '40px',
+          border: '1px solid rgba(255,255,255,0.08)', borderRadius: '24px', padding: 'clamp(16px, 4vw, 40px)',
           boxShadow: '0 25px 50px -12px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.05) inset', transition: 'all 0.3s ease', minHeight: '280px',
         }}>
 {mode === "verify" && (
@@ -432,7 +432,7 @@ function VerifyPage() {
               EXPIRED: { color: '#D65C5C', bg: 'rgba(214,92,92,0.08)', border: 'rgba(214,92,92,0.25)', headerBg: 'rgba(214,92,92,0.15)', icon: 'Expired', label: 'EXPIRED' },
             };
             const cfg = statusConfig[status] || statusConfig.CONFORMANT;
-            const rowStyle = {display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '12px', borderBottom: '1px solid rgba(255,255,255,0.06)'};
+            const rowStyle = {display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', paddingBottom: '12px', borderBottom: '1px solid rgba(255,255,255,0.06)'};
             const labelSt = {color: styles.textTertiary, fontSize: '12px', fontFamily: "Consolas, 'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '1px'};
             const valSt = {color: styles.textPrimary, fontSize: '14px'};
             

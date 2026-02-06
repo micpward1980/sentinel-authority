@@ -21,7 +21,7 @@ export default function ApiDocsPage() {
   if (!unlocked) {
     return (
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
-        <div style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', padding: '2rem', maxWidth: '400px', width: '100%' }}>
+        <div style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', padding: '2rem', maxWidth: 'min(400px, 90vw)', width: '100%' }}>
           <h2 style={{ color: '#fff', marginBottom: '0.5rem' }}>API Documentation</h2>
           <p style={{ color: '#a896d6', marginBottom: '1.5rem', fontSize: '0.9rem' }}>Enter the docs password to view the API reference.</p>
           <div>

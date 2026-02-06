@@ -103,7 +103,7 @@ function MonitoringPage() {
 
   if (loading) {
     return (
-      <div style={{padding: '40px', textAlign: 'center'}}>
+      <div style={{padding: 'clamp(16px, 4vw, 40px)', textAlign: 'center'}}>
         <RefreshCw size={24} style={{animation: 'spin 1s linear infinite', color: styles.purpleBright}} />
         <p style={{marginTop: '16px', color: styles.textSecondary}}>Loading monitoring data...</p>
       </div>
@@ -121,9 +121,9 @@ function MonitoringPage() {
 
   return (
     <div style={{maxWidth: '1400px', margin: '0 auto'}}>
-      <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px'}}>
+      <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '24px'}}>
         <div>
-          <h1 className="sa-page-title" style={{fontFamily: "Georgia, 'Source Serif 4', serif", fontSize: '28px', fontWeight: 300, margin: 0}}>
+          <h1 className="sa-page-title" style={{fontFamily: "Georgia, 'Source Serif 4', serif", fontSize: 'clamp(20px, 4vw, 28px)', fontWeight: 300, margin: 0}}>
             System Monitoring
           </h1>
           <p style={{color: styles.textSecondary, marginTop: '4px', fontSize: '14px'}}>
@@ -180,7 +180,7 @@ function MonitoringPage() {
           <div style={{display: 'flex', flexDirection: 'column', gap: '8px'}}>
             {alerts.map((alert, i) => (
               <div key={i} style={{
-                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px',
                 background: 'rgba(0,0,0,0.2)', borderRadius: '8px', padding: '10px 14px'
               }}>
                 <div>
@@ -217,7 +217,7 @@ function MonitoringPage() {
             {/* Fleet Health Bar */}
             {totalFleet > 0 && (
               <div style={{marginBottom: '20px', padding: '16px 20px', ...cardStyle}}>
-                <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px'}}>
+                <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '10px'}}>
                   <div style={labelStyle}>Fleet Health</div>
                   <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '13px', color: healthPct >= 90 ? styles.accentGreen : healthPct >= 70 ? '#D6A05C' : '#D65C5C', fontWeight: 500}}>
                     {healthPct.toFixed(0)}% Online
@@ -279,7 +279,7 @@ function MonitoringPage() {
 
       {/* Sessions Table */}
       <div style={{background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '16px', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', overflow: 'hidden'}}>
-        <div style={{padding: '16px 20px', borderBottom: `1px solid ${styles.borderGlass}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+        <div style={{padding: '16px 20px', borderBottom: `1px solid ${styles.borderGlass}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px'}}>
           <h2 style={{margin: 0, fontSize: '14px', fontFamily: "Consolas, 'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '2px', color: styles.textTertiary}}>{user?.role === 'admin' ? 'Agent Sessions' : 'System Monitoring'}</h2>
           <div style={{display: 'flex', gap: '12px', alignItems: 'center'}}>
             {user?.role === 'admin' && <select value={customerFilter} onChange={(e) => setCustomerFilter(e.target.value)} style={{background: styles.bgDeep, border: `1px solid ${styles.borderGlass}`, borderRadius: '6px', padding: '6px 10px', color: styles.textPrimary, fontSize: '12px'}}>
@@ -297,11 +297,11 @@ function MonitoringPage() {
           </div>
         </div>        
         {filteredSessions.length === 0 ? (
-          <div style={{padding: '40px', textAlign: 'center', color: styles.textSecondary}}>
+          <div style={{padding: 'clamp(16px, 4vw, 40px)', textAlign: 'center', color: styles.textSecondary}}>
             {user?.role === 'admin' ? 'No ENVELO sessions found. Deploy an agent to begin monitoring.' : 'No active systems. Once your system is ODDC certified and running the ENVELO agent, real-time monitoring data will appear here.'}
           </div>
         ) : (
-          <div style={{overflowX: 'auto'}}>
+          <div className='table-scroll' style={{overflowX: 'auto', WebkitOverflowScrolling: 'touch'}}>
             <table style={{width: '100%', borderCollapse: 'collapse'}}>
               <thead>
                 <tr style={{background: 'rgba(0,0,0,0.2)'}}>
@@ -397,7 +397,7 @@ function MonitoringPage() {
           borderRadius: '12px',
           overflow: 'hidden'
         }}>
-          <div style={{padding: '16px 20px', borderBottom: `1px solid ${styles.borderGlass}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+          <div style={{padding: '16px 20px', borderBottom: `1px solid ${styles.borderGlass}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px'}}>
             <h2 style={{margin: 0, fontSize: '14px', fontFamily: "Consolas, 'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '2px', color: styles.textTertiary}}>
               Session Detail: {selectedSession.session_id}
             </h2>
@@ -411,7 +411,7 @@ function MonitoringPage() {
           
           <div style={{padding: '20px'}}>
             {/* Session Info Header */}
-            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px', flexWrap: 'wrap', gap: '16px'}}>
+            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px', marginBottom: '24px', flexWrap: 'wrap', gap: '16px'}}>
               <div>
                 <h3 style={{margin: '0 0 4px 0', fontSize: '18px', fontWeight: 400, color: styles.textPrimary}}>{selectedSession.organization_name || 'Unknown Organization'}</h3>
                 <p style={{margin: 0, fontSize: '13px', color: styles.textSecondary}}>{selectedSession.system_name || 'Unknown System'} · {selectedSession.certificate_id || 'No certificate'}</p>

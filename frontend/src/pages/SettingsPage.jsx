@@ -113,15 +113,15 @@ function SettingsPage() {
     { key: 'marketing', label: 'Product Updates', desc: 'New features, platform updates, and industry news from Sentinel Authority' },
   ];
 
-  if (!prefs) return <div style={{color: styles.textTertiary, padding: '40px', textAlign: 'center'}}>Loading preferences...</div>;
+  if (!prefs) return <div style={{color: styles.textTertiary, padding: 'clamp(16px, 4vw, 40px)', textAlign: 'center'}}>Loading preferences...</div>;
 
   return (
-    <div className="space-y-6" style={{maxWidth: '700px', margin: '0 auto'}}>
+    <div className="space-y-6" style={{maxWidth: 'min(700px, 95vw)', margin: '0 auto'}}>
       <SectionHeader label="Account" title="Settings" />
 
       <Panel>
         <h2 style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Account Information</h2>
-        <div style={{display: 'flex', flexDirection: 'column', gap: '12px', maxWidth: '400px'}}>
+        <div style={{display: 'flex', flexDirection: 'column', gap: '12px', maxWidth: 'min(400px, 90vw)'}}>
           <div>
             <label style={{fontSize: '11px', color: styles.textTertiary, display: 'block', marginBottom: '4px'}}>Full Name</label>
             <input type="text" value={profileForm.full_name} onChange={e => setProfileForm({...profileForm, full_name: e.target.value})} className="w-full px-4 py-3 rounded-lg outline-none sexy-input" style={{background: 'rgba(255,255,255,0.03)', border: `1px solid ${styles.borderGlass}`, color: styles.textPrimary, fontSize: '13px'}} />
@@ -142,7 +142,7 @@ function SettingsPage() {
 
       <Panel>
         <h2 style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Change Password</h2>
-        <div style={{display: 'flex', flexDirection: 'column', gap: '12px', maxWidth: '400px'}}>
+        <div style={{display: 'flex', flexDirection: 'column', gap: '12px', maxWidth: 'min(400px, 90vw)'}}>
           <div>
             <label style={{fontSize: '11px', color: styles.textTertiary, display: 'block', marginBottom: '4px'}}>Current Password</label>
             <input type="password" value={pwForm.current} onChange={e => setPwForm({...pwForm, current: e.target.value})} className="w-full px-4 py-3 rounded-lg outline-none sexy-input" style={{background: 'rgba(255,255,255,0.03)', border: `1px solid ${styles.borderGlass}`, color: styles.textPrimary, fontSize: '13px'}} />
@@ -186,7 +186,7 @@ function SettingsPage() {
                 <button onClick={() => {navigator.clipboard.writeText(twoFA.backupCodes.join(String.fromCharCode(10))); toast.show('Backup codes copied');}} style={{marginTop: '12px', padding: '6px 16px', background: 'rgba(214,160,92,0.15)', border: '1px solid rgba(214,160,92,0.3)', borderRadius: '6px', color: styles.accentAmber, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', cursor: 'pointer', letterSpacing: '1px', textTransform: 'uppercase'}}>Copy All</button>
               </div>
             )}
-            <div style={{display: 'flex', gap: '8px', alignItems: 'center', maxWidth: '400px'}}>
+            <div style={{display: 'flex', gap: '8px', alignItems: 'center', maxWidth: 'min(400px, 90vw)'}}>
               <input type="password" value={twoFA.disablePw} onChange={e => setTwoFA(prev => ({...prev, disablePw: e.target.value}))} placeholder="Enter password to disable" className="sexy-input" style={{flex: 1, background: 'rgba(255,255,255,0.03)', border: `1px solid ${styles.borderGlass}`, borderRadius: '8px', padding: '8px 12px', color: styles.textPrimary, fontSize: '13px'}} />
               <button onClick={disable2FA} disabled={twoFA.disabling} style={{padding: '8px 16px', borderRadius: '8px', background: 'rgba(214,92,92,0.1)', border: '1px solid rgba(214,92,92,0.3)', color: '#D65C5C', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', cursor: twoFA.disabling ? 'wait' : 'pointer', whiteSpace: 'nowrap'}}>
                 {twoFA.disabling ? '...' : 'Disable 2FA'}
@@ -194,7 +194,7 @@ function SettingsPage() {
             </div>
           </div>
         ) : twoFA.setup ? (
-          <div style={{maxWidth: '400px'}}>
+          <div style={{maxWidth: 'min(400px, 90vw)'}}>
             <p style={{color: styles.textSecondary, fontSize: '13px', marginBottom: '16px'}}>Scan this QR code with your authenticator app (Google Authenticator, Authy, 1Password):</p>
             {twoFA.setup.qr_base64 && <div style={{textAlign: 'center', marginBottom: '16px'}}><img src={'data:image/png;base64,' + twoFA.setup.qr_base64} alt="QR Code" style={{width: '200px', height: '200px', borderRadius: '8px'}} /></div>}
             <div style={{background: 'rgba(255,255,255,0.03)', border: `1px solid ${styles.borderGlass}`, borderRadius: '8px', padding: '12px', marginBottom: '16px'}}>
@@ -219,13 +219,13 @@ function SettingsPage() {
       </Panel>
 
       <Panel>
-        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px'}}>
+        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '20px'}}>
           <h2 style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, margin: 0}}>Email Notifications</h2>
           <span style={{fontSize: '11px', color: styles.textTertiary}}>from notifications@sentinelauthority.org</span>
         </div>
         <div style={{display: 'flex', flexDirection: 'column', gap: '4px'}}>
           {cats.map(cat => (
-            <div key={cat.key} style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', borderRadius: '10px', background: prefs[cat.key] ? 'rgba(92,214,133,0.03)' : 'rgba(255,255,255,0.01)', border: `1px solid ${prefs[cat.key] ? 'rgba(92,214,133,0.1)' : styles.borderGlass}`, transition: 'all 0.2s'}}>
+            <div key={cat.key} style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', padding: '16px', borderRadius: '10px', background: prefs[cat.key] ? 'rgba(92,214,133,0.03)' : 'rgba(255,255,255,0.01)', border: `1px solid ${prefs[cat.key] ? 'rgba(92,214,133,0.1)' : styles.borderGlass}`, transition: 'all 0.2s'}}>
               <div style={{flex: 1}}>
                 <div style={{color: styles.textPrimary, fontWeight: 500, fontSize: '14px', marginBottom: '4px'}}>{cat.label}</div>
                 <div style={{color: styles.textTertiary, fontSize: '12px', lineHeight: '1.5'}}>{cat.desc}</div>
@@ -236,7 +236,7 @@ function SettingsPage() {
             </div>
           ))}
         </div>
-        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '20px', paddingTop: '16px', borderTop: `1px solid ${styles.borderGlass}`}}>
+        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginTop: '20px', paddingTop: '16px', borderTop: `1px solid ${styles.borderGlass}`}}>
           <span style={{fontSize: '11px', color: styles.textTertiary}}>Admin and security emails are always sent.</span>
           <button onClick={savePrefs} disabled={saving} className="sexy-btn" style={{padding: '10px 24px', borderRadius: '10px', background: saved ? 'rgba(92,214,133,0.15)' : styles.purplePrimary, border: `1px solid ${saved ? 'rgba(92,214,133,0.4)' : styles.purpleBright}`, color: saved ? styles.accentGreen : '#fff', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: saving ? 'wait' : 'pointer', opacity: saving ? 0.7 : 1}}>
             {saved ? '✓ Saved' : saving ? 'Saving...' : 'Save Preferences'}

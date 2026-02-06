@@ -288,6 +288,12 @@
     }
     
     /* Reduce motion for accessibility */
+    @media(max-width:480px){
+      .content-wrap{padding:calc(var(--nav-height) + 24px) 12px 40px !important}
+      .content-section h2{font-size:18px}
+      .toc a{font-size:11px;padding:6px 0}
+    }
+
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after {
         animation-duration: 0.01ms !important;

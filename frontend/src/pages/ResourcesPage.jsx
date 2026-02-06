@@ -40,7 +40,7 @@ function ResourcesPage() {
           color: styles.purpleBright, marginBottom: '8px'
         }}>RESOURCES</p>
         <h1 style={{
-          fontFamily: "Georgia, 'Source Serif 4', serif", fontSize: '28px',
+          fontFamily: "Georgia, 'Source Serif 4', serif", fontSize: 'clamp(20px, 4vw, 28px)',
           fontWeight: 200, color: styles.textPrimary, margin: 0
         }}>Documents & Guides</h1>
         <p style={{ color: styles.textTertiary, marginTop: '8px', fontSize: '14px' }}>
@@ -54,7 +54,7 @@ function ResourcesPage() {
         </div>
       ) : documents.length === 0 ? (
         <div style={{
-          padding: '40px', textAlign: 'center', borderRadius: '12px',
+          padding: 'clamp(16px, 4vw, 40px)', textAlign: 'center', borderRadius: '12px',
           border: '1px solid ' + styles.borderGlass, background: styles.bgCard,
           color: styles.textTertiary
         }}>

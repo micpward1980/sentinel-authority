@@ -115,7 +115,7 @@ function LoginPage() {
           </div>
           
           <h1 style={{
-            fontFamily: "Georgia, 'Source Serif 4', serif", fontSize: '36px', fontWeight: 200,
+            fontFamily: "Georgia, 'Source Serif 4', serif", fontSize: 'clamp(24px, 5vw, 36px)', fontWeight: 200,
             color: styles.textPrimary, margin: '0 0 8px 0', letterSpacing: '-0.02em',
           }}>
             ODDC <span style={{color: styles.purpleBright, fontStyle: 'italic'}}>Portal</span>
@@ -137,7 +137,7 @@ function LoginPage() {
         {/* Login card */}
         <div style={{
           background: 'rgba(255,255,255,0.03)', backdropFilter: 'blur(20px)',
-          border: '1px solid rgba(255,255,255,0.08)', borderRadius: '24px', padding: '40px',
+          border: '1px solid rgba(255,255,255,0.08)', borderRadius: '24px', padding: 'clamp(16px, 4vw, 40px)',
           boxShadow: '0 25px 50px -12px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.05) inset', transition: 'all 0.3s ease', minHeight: '280px',
         }}>
           {/* Tab switcher */}

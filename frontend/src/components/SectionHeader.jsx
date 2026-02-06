@@ -10,7 +10,7 @@ function SectionHeader({ label, title, description, action }) {
             <span style={{width: '24px', height: '1px', background: styles.purpleBright}}></span>
             {label}
           </p>}
-          <h1 style={{fontFamily: "Georgia, 'Source Serif 4', serif", fontSize: '32px', fontWeight: 200, margin: 0, letterSpacing: '-0.02em'}}>{title}</h1>
+          <h1 style={{fontFamily: "Georgia, 'Source Serif 4', serif", fontSize: 'clamp(22px, 5vw, 32px)', fontWeight: 200, margin: 0, letterSpacing: '-0.02em'}}>{title}</h1>
           {description && <p style={{color: styles.textSecondary, marginTop: '8px', fontSize: '15px'}}>{description}</p>}
         </div>
         {action}
