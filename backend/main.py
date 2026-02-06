@@ -96,18 +96,10 @@ async def lifespan(app: FastAPI):
                 END;
                 $$ LANGUAGE plpgsql;
             """))
-            await tpconn.execute(raw_text("""
-                DROP TRIGGER IF EXISTS no_audit_update ON audit_log;
-                CREATE TRIGGER no_audit_update
-                BEFORE UPDATE ON audit_log
-                FOR EACH ROW EXECUTE FUNCTION prevent_audit_modification();
-            """))
-            await tpconn.execute(raw_text("""
-                DROP TRIGGER IF EXISTS no_audit_delete ON audit_log;
-                CREATE TRIGGER no_audit_delete
-                BEFORE DELETE ON audit_log
-                FOR EACH ROW EXECUTE FUNCTION prevent_audit_modification();
-            """))
+            await tpconn.execute(raw_text("DROP TRIGGER IF EXISTS no_audit_update ON audit_log"))
+            await tpconn.execute(raw_text("CREATE TRIGGER no_audit_update BEFORE UPDATE ON audit_log FOR EACH ROW EXECUTE FUNCTION prevent_audit_modification()"))
+            await tpconn.execute(raw_text("DROP TRIGGER IF EXISTS no_audit_delete ON audit_log"))
+            await tpconn.execute(raw_text("CREATE TRIGGER no_audit_delete BEFORE DELETE ON audit_log FOR EACH ROW EXECUTE FUNCTION prevent_audit_modification()"))
             # Create anchor table for periodic hash checkpoints
             await tpconn.execute(raw_text("""
                 CREATE TABLE IF NOT EXISTS audit_anchors (
@@ -129,18 +121,10 @@ async def lifespan(app: FastAPI):
                 END;
                 $$ LANGUAGE plpgsql;
             """))
-            await tpconn.execute(raw_text("""
-                DROP TRIGGER IF EXISTS no_anchor_update ON audit_anchors;
-                CREATE TRIGGER no_anchor_update
-                BEFORE UPDATE ON audit_anchors
-                FOR EACH ROW EXECUTE FUNCTION prevent_anchor_modification();
-            """))
-            await tpconn.execute(raw_text("""
-                DROP TRIGGER IF EXISTS no_anchor_delete ON audit_anchors;
-                CREATE TRIGGER no_anchor_delete
-                BEFORE DELETE ON audit_anchors
-                FOR EACH ROW EXECUTE FUNCTION prevent_anchor_modification();
-            """))
+            await tpconn.execute(raw_text("DROP TRIGGER IF EXISTS no_anchor_update ON audit_anchors"))
+            await tpconn.execute(raw_text("CREATE TRIGGER no_anchor_update BEFORE UPDATE ON audit_anchors FOR EACH ROW EXECUTE FUNCTION prevent_anchor_modification()"))
+            await tpconn.execute(raw_text("DROP TRIGGER IF EXISTS no_anchor_delete ON audit_anchors"))
+            await tpconn.execute(raw_text("CREATE TRIGGER no_anchor_delete BEFORE DELETE ON audit_anchors FOR EACH ROW EXECUTE FUNCTION prevent_anchor_modification()"))
             await tpconn.commit()
             logger.info("Tamper-proof audit triggers installed")
         except Exception as e:
