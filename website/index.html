@@ -2507,7 +2507,7 @@
         y: cy + Math.sin(a) * r,
         vx: (Math.random()-0.5)*0.6,
         vy: (Math.random()-0.5)*0.6,
-        size: 2.0 + Math.random()*2.0,
+        size: 1.5 + Math.random()*1.8,
         phase: Math.random()*Math.PI*2,
         drift: 0.002 + Math.random()*0.003,
         softMax: isOutlier ? radius*0.88 : radius*0.65,
@@ -2561,28 +2561,28 @@
   function drawBoundary(now) {
     var g1 = ctx.createRadialGradient(cx,cy,radius*0.8, cx,cy,radius*1.2);
     g1.addColorStop(0, rgb(PURPLE,0));
-    g1.addColorStop(0.5, rgb(PURPLE,0.07));
+    g1.addColorStop(0.5, rgb(PURPLE,0.03));
     g1.addColorStop(1, rgb(PURPLE,0));
     ctx.fillStyle = g1;
     ctx.beginPath(); ctx.arc(cx,cy,radius*1.2,0,Math.PI*2); ctx.fill();
 
     ctx.beginPath(); ctx.arc(cx,cy,radius,0,Math.PI*2);
-    ctx.strokeStyle = rgb(PURPLE,0.35);
-    ctx.lineWidth = 1.8; ctx.stroke();
+    ctx.strokeStyle = rgb(PURPLE,0.18);
+    ctx.lineWidth = 1.5; ctx.stroke();
 
     ctx.save(); ctx.translate(cx,cy); ctx.rotate(now*0.00015);
     ctx.beginPath(); ctx.arc(0,0,radius*0.92,0,Math.PI*2);
     ctx.setLineDash([2,7]);
-    ctx.strokeStyle = rgb(PURPLE,0.18);
-    ctx.lineWidth = 1.2; ctx.stroke();
+    ctx.strokeStyle = rgb(PURPLE,0.08);
+    ctx.lineWidth = 1; ctx.stroke();
     ctx.setLineDash([]); ctx.restore();
 
     ctx.font='400 9px "IBM Plex Mono"';
-    ctx.fillStyle=rgb(PURPLE,0.85);
+    ctx.fillStyle=rgb(PURPLE,0.6);
     ctx.textAlign='center';
     ctx.fillText('ODD BOUNDARY',cx,cy-radius-28);
     ctx.font='600 8px "IBM Plex Mono"';
-    ctx.fillStyle=rgb(PURPLE,0.55);
+    ctx.fillStyle=rgb(PURPLE,0.35);
     ctx.fillText('ENVELO',cx,cy-radius-17);
   }
 
@@ -2593,7 +2593,7 @@
       if (p.alpha<=0) {boundaryPulses.splice(i,1);continue;}
       var bx=cx+Math.cos(p.angle)*radius, by=cy+Math.sin(p.angle)*radius;
       var g=ctx.createRadialGradient(bx,by,0,bx,by,p.spread+12);
-      g.addColorStop(0,rgb(RED,p.alpha*0.75));
+      g.addColorStop(0,rgb(RED,p.alpha*0.5));
       g.addColorStop(1,rgb(RED,0));
       ctx.fillStyle=g;
       ctx.beginPath(); ctx.arc(bx,by,p.spread+12,0,Math.PI*2); ctx.fill();
@@ -2609,14 +2609,14 @@
       var r,g,b,al;
       if (edge>0.75) {
         var t=(edge-0.75)/0.25;
-        r=92+(214-92)*t; g=214+(92-214)*t; b=133+(92-133)*t; al=0.75+t*0.25;
+        r=92+(214-92)*t; g=214+(92-214)*t; b=133+(92-133)*t; al=0.55+t*0.35;
       } else {
-        r=92; g=214; b=133; al=0.7;
+        r=92; g=214; b=133; al=0.5;
       }
       var col=[Math.round(r),Math.round(g),Math.round(b)];
 
       var gl=ctx.createRadialGradient(a.x,a.y,0,a.x,a.y,a.size*3.5);
-      gl.addColorStop(0,rgb(col,al*0.4));
+      gl.addColorStop(0,rgb(col,al*0.25));
       gl.addColorStop(1,rgb(col,0));
       ctx.fillStyle=gl;
       ctx.beginPath(); ctx.arc(a.x,a.y,a.size*3.5,0,Math.PI*2); ctx.fill();
@@ -2655,18 +2655,18 @@
       var px=t.x+(t.tx-t.x)*e, py=t.y+(t.ty-t.y)*e;
 
       ctx.beginPath(); ctx.moveTo(t.x,t.y); ctx.lineTo(px,py);
-      ctx.strokeStyle=rgb(GREEN,t.alpha*0.22);
+      ctx.strokeStyle=rgb(GREEN,t.alpha*0.1);
       ctx.lineWidth=0.5; ctx.stroke();
 
       if(t.alpha>0.3){
         ctx.font='300 8px "IBM Plex Mono"';
-        ctx.fillStyle=rgb(GREEN,t.alpha*0.55);
+        ctx.fillStyle=rgb(GREEN,t.alpha*0.35);
         ctx.textAlign=t.side>0?'left':'right';
         ctx.fillText(t.text,t.x,t.y);
       }
 
       ctx.beginPath(); ctx.arc(px,py,1.5,0,Math.PI*2);
-      ctx.fillStyle=rgb(GREEN,t.alpha*0.7);
+      ctx.fillStyle=rgb(GREEN,t.alpha*0.5);
       ctx.fill();
     }
   }
@@ -2681,10 +2681,10 @@
       var hash='';
       var seed=Math.floor(now*0.0008)+i*7;
       for(var j=0;j<14;j++) hash+=chars[(seed*(j+1)*31+j*17)%16];
-      ctx.fillStyle=rgb(PURPLE,0.38-i*0.035);
+      ctx.fillStyle=rgb(PURPLE,0.22-i*0.025);
       ctx.fillText(hash,x,startY+i*12);
     }
-    ctx.fillStyle=rgb(PURPLE,0.75);
+    ctx.fillStyle=rgb(PURPLE,0.5);
     ctx.fillText('HASH CHAIN \u25B8',x,startY-10);
   }
 
@@ -4154,7 +4154,7 @@
               y: cy + Math.sin(a) * r,
               vx: (Math.random()-0.5)*0.7,
               vy: (Math.random()-0.5)*0.7,
-              size: 2.0 + Math.random()*2.0,
+              size: 1.5 + Math.random()*1.8,
               phase: Math.random()*Math.PI*2,
               drift: 0.002 + Math.random()*0.003
             });
@@ -4263,7 +4263,7 @@
             if (p.alpha<=0) {boundaryPulses.splice(i,1);continue;}
             var bx=cx+Math.cos(p.angle)*radius, by=cy+Math.sin(p.angle)*radius;
             var g=ctx.createRadialGradient(bx,by,0,bx,by,p.spread+12);
-            g.addColorStop(0,rgb(RED,p.alpha*0.75));
+            g.addColorStop(0,rgb(RED,p.alpha*0.5));
             g.addColorStop(1,rgb(RED,0));
             ctx.fillStyle=g;
             ctx.beginPath(); ctx.arc(bx,by,p.spread+12,0,Math.PI*2); ctx.fill();
@@ -4279,15 +4279,15 @@
             var r,g,b,al;
             if (edge>0.75) {
               var t=(edge-0.75)/0.25;
-              r=92+(214-92)*t; g=214+(92-214)*t; b=133+(92-133)*t; al=0.75+t*0.25;
+              r=92+(214-92)*t; g=214+(92-214)*t; b=133+(92-133)*t; al=0.55+t*0.35;
             } else {
-              r=92; g=214; b=133; al=0.7;
+              r=92; g=214; b=133; al=0.5;
             }
             if (halted) al*=0.25;
             var col=[Math.round(r),Math.round(g),Math.round(b)];
 
             var gl=ctx.createRadialGradient(a.x,a.y,0,a.x,a.y,a.size*3.5);
-            gl.addColorStop(0,rgb(col,al*0.4));
+            gl.addColorStop(0,rgb(col,al*0.25));
             gl.addColorStop(1,rgb(col,0));
             ctx.fillStyle=gl;
             ctx.beginPath(); ctx.arc(a.x,a.y,a.size*3.5,0,Math.PI*2); ctx.fill();
@@ -4328,12 +4328,12 @@
             var px=t.x+(t.tx-t.x)*e, py=t.y+(t.ty-t.y)*e;
 
             ctx.beginPath(); ctx.moveTo(t.x,t.y); ctx.lineTo(px,py);
-            ctx.strokeStyle=rgb(GREEN,t.alpha*0.22);
+            ctx.strokeStyle=rgb(GREEN,t.alpha*0.1);
             ctx.lineWidth=0.5; ctx.stroke();
 
             if(t.alpha>0.3){
               ctx.font='300 8px "IBM Plex Mono"';
-              ctx.fillStyle=rgb(GREEN,t.alpha*0.55);
+              ctx.fillStyle=rgb(GREEN,t.alpha*0.35);
               ctx.textAlign=t.side>0?'left':'right';
               ctx.fillText(t.text,t.x,t.y);
             }
@@ -4419,7 +4419,7 @@
             var hash='';
             var seed=Math.floor(now*0.0008)+i*7;
             for(var j=0;j<14;j++) hash+=chars[(seed*(j+1)*31+j*17)%16];
-            ctx.fillStyle=rgb(PURPLE,0.38-i*0.035);
+            ctx.fillStyle=rgb(PURPLE,0.22-i*0.025);
             ctx.fillText(hash,x,startY+i*12);
           }
           ctx.fillStyle=rgb(PURPLE,0.5);
