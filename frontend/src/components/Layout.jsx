@@ -187,10 +187,7 @@ function Layout({ children }) {
             Main Site
           </a>
 
-          <Link to="/verify" className="flex items-center gap-2 transition-colors no-underline" style={{color: styles.textTertiary, fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1.5px', textTransform: 'uppercase'}}>
-            <Search className="w-4 h-4" />
-            Verify
-          </Link>
+
           {/* Notification Bell */}
           <div style={{position: 'relative'}}>
             <button onClick={() => setNotifOpen(!notifOpen)} style={{background: 'none', border: 'none', cursor: 'pointer', position: 'relative', padding: '4px', color: notifOpen ? styles.purpleBright : styles.textTertiary, transition: 'color 0.2s'}}>
