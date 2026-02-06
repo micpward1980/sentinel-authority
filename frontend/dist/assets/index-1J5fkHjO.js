@@ -254,6 +254,23 @@ class EnveloAgent:
         self.client.close()
         log.info(f"Done. {self.stats['pass']} passed, {self.stats['block']} blocked.")
 
+    def _cleanup(self):
+        """Remove PID file and disable auto-restart on key revocation."""
+        import pathlib, subprocess
+        pid_file = pathlib.Path.home() / ".envelo" / "envelo.pid"
+        if pid_file.exists():
+            pid_file.unlink()
+        try:
+            subprocess.run(["systemctl", "--user", "stop", "envelo.service"], capture_output=True)
+            subprocess.run(["systemctl", "--user", "disable", "envelo.service"], capture_output=True)
+        except: pass
+        plist = pathlib.Path.home() / "Library" / "LaunchAgents" / "org.sentinelauthority.envelo.plist"
+        if plist.exists():
+            try: subprocess.run(["launchctl", "unload", str(plist)], capture_output=True)
+            except: pass
+        log.info("Auto-restart disabled. Agent stopped cleanly.")
+
+
     # ── boundary management ───────────────────────────────────
 
     def add_boundary(self, name, min_value=None, max_value=None, unit="", tolerance=0):
