@@ -296,14 +296,6 @@ async def mark_notifications_read(
 # Start auto-evaluator background task
 @app.on_event("startup")
 async def start_auto_evaluator():
-
-
-        
-        await conn.commit()
-        logger.info("Organization migration and backfill complete")
-    except Exception as e:
-        logger.warning(f"Organization migration note: {e}")
-
     # Auto-migrate: ensure email_preferences column exists
     try:
         from sqlalchemy import text
