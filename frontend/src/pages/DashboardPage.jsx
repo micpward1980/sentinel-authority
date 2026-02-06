@@ -188,7 +188,7 @@ function CustomerDashboard() {
       <Panel>
         <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px'}}>
           <h2 style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, margin: 0}}>Recent Activity</h2>
-          <Link to="/activity" style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', color: styles.purpleBright, textDecoration: 'none', letterSpacing: '1px'}}>View All →</Link>
+          <Link to="/my-activity" style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', color: styles.purpleBright, textDecoration: 'none', letterSpacing: '1px'}}>View All →</Link>
         </div>
         {recentActivity.length === 0 ? (
           <p style={{color: styles.textTertiary, fontSize: '13px', textAlign: 'center', padding: '20px 0'}}>No activity yet</p>
