@@ -32,7 +32,7 @@ function ResourcesPage() {
   };
 
   return (
-    <div style={{ padding: '32px', maxWidth: '900px' }}>
+    <div style={{ padding: '32px', maxWidth: '900px', margin: '0 auto' }}>
       <div style={{ marginBottom: '32px' }}>
         <p style={{
           fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px',
