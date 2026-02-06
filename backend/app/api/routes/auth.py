@@ -154,6 +154,7 @@ async def enable_2fa(
         raise HTTPException(status_code=400, detail="Invalid code. Try again.")
     
     user.totp_enabled = True
+    await write_audit_log(db, action="2fa_enabled", resource_type="user", resource_id=user.id, user_email=user.email)
     await db.commit()
     # Generate backup codes
     plain_codes, hashed_codes = generate_backup_codes(10)
@@ -177,6 +178,7 @@ async def disable_2fa(
     
     user.totp_enabled = False
     user.totp_secret = None
+    await write_audit_log(db, action="2fa_disabled", resource_type="user", resource_id=user.id, user_email=user.email)
     await db.commit()
     return {"message": "2FA disabled"}
 
@@ -425,6 +427,8 @@ async def update_profile(
     await db.commit()
     await db.refresh(user)
     
+    await write_audit_log(db, action="profile_updated", resource_type="user", resource_id=user.id,
+        user_email=user.email, details={"full_name": user.full_name, "organization": user.organization})
     return {
         "message": "Profile updated",
         "user": {

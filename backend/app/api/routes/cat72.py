@@ -16,6 +16,7 @@ from app.services.email_service import (
     send_test_setup_instructions, send_test_started, send_test_failed,
     send_certificate_issued
 )
+from app.services.audit_service import write_audit_log
 from app.models.models import (
     CAT72Test, Application, Telemetry, InterlockEvent, 
     TestState, CertificationState, UserRole
@@ -162,10 +163,13 @@ async def create_test(
     
     await db.commit()
     await db.refresh(test)
+    await write_audit_log(db, action="test_created", resource_type="cat72_test", resource_id=test.id,
+        user_id=int(user["sub"]), user_email=user.get("email"), details={"test_id": test.test_id})
     
     # Notify applicant
     try:
-        from app.models.models import User
+        from app.services.audit_service import write_audit_log
+from app.models.models import User
         owner_result = await db.execute(select(User).where(User.id == application.user_id))
         owner = owner_result.scalar_one_or_none()
         if owner and owner.email:
@@ -286,7 +290,8 @@ async def start_test(
         app_result = await db.execute(select(Application).where(Application.id == test.application_id))
         application = app_result.scalar_one_or_none()
         if application:
-            from app.models.models import User
+            from app.services.audit_service import write_audit_log
+from app.models.models import User
             owner_result = await db.execute(select(User).where(User.id == application.user_id))
             owner = owner_result.scalar_one_or_none()
             if owner and owner.email:
@@ -476,7 +481,8 @@ async def stop_test(
         app_result = await db.execute(select(Application).where(Application.id == test.application_id))
         application = app_result.scalar_one_or_none()
         if application:
-            from app.models.models import User
+            from app.services.audit_service import write_audit_log
+from app.models.models import User
             owner_result = await db.execute(select(User).where(User.id == application.user_id))
             owner = owner_result.scalar_one_or_none()
             if owner and owner.email:

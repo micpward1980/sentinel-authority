@@ -13,6 +13,7 @@ from typing import Optional
 
 from app.core.database import get_db
 from app.core.security import get_current_user
+from app.services.audit_service import write_audit_log
 from app.models.models import APIKey, User, Certificate
 
 router = APIRouter()
