@@ -71,7 +71,7 @@ function CustomerDashboard() {
         <div>
           <p style={{fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', color: styles.purpleBright, marginBottom: '8px'}}>ODDC Certification</p>
           <h1 style={{fontFamily: "'Source Serif 4', serif", fontSize: '36px', fontWeight: 200, margin: 0}}>Welcome{user?.full_name ? `, ${user.full_name.split(' ')[0]}` : ''}</h1>
-          <p style={{color: styles.textSecondary, marginTop: '8px'}}>Track your certification progress and manage your systems.</p>
+          <p style={{color: styles.textSecondary, marginTop: '8px'}}>{user?.organization ? user.organization + ' · ' : ''}Track your certification progress and manage your systems.</p>
         </div>
 
       </div>

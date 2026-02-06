@@ -208,8 +208,8 @@ function LoginPage() {
                     fontFamily: "'IBM Plex Mono', monospace", fontSize: '10px',
                     letterSpacing: '1px', textTransform: 'uppercase',
                   }}>Organization</label>
-                  <input type="text" placeholder="Acme Robotics Inc." value={formData.organization_name}
-                    onChange={(e) => setFormData({...formData, organization_name: e.target.value})}
+                  <input type="text" placeholder="Acme Robotics Inc." value={formData.organization || ''}
+                    onChange={(e) => setFormData({...formData, organization: e.target.value})}
                     className="login-input w-full px-4 py-4 rounded-xl outline-none"
                     style={{ background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.08)',
                       color: styles.textPrimary, fontFamily: "'Inter', sans-serif", fontSize: '15px',
