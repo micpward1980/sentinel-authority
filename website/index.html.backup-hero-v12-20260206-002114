@@ -2445,267 +2445,280 @@
       
       <script>
         (function() {
-  var c = document.getElementById('hero-canvas');
-  if (!c) return;
-  var ctx = c.getContext('2d');
-  var dpr = window.devicePixelRatio || 1;
-  var W = 0, H = 0;
+          const canvas = document.getElementById('hero-canvas');
+          if (!canvas) return;
+          const ctx = canvas.getContext('2d');
+          let W, H, cx, cy, R, dpr;
+          const mob = () => window.innerWidth < 768;
 
-  var GREEN = [92,214,133];
-  var PURPLE = [157,140,207];
-  var RED = [214,92,92];
+          function resize() {
+            dpr = window.devicePixelRatio || 1;
+            W = canvas.offsetWidth; H = canvas.offsetHeight;
+            canvas.width = W * dpr; canvas.height = H * dpr;
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            cx = W / 2;
+            if (W < H) { cy = H * 0.32; R = Math.min(W * 0.30, H * 0.16); }
+            else if (H < 500) { cy = H * 0.38; R = Math.min(W * 0.15, H * 0.25); }
+            else { cy = H * 0.35; R = Math.min(W * 0.20, H * 0.22); }
+            if (R < 60) R = 60;
+          }
+          resize();
+          window.addEventListener('resize', resize);
 
-  var cx, cy, radius;
-  var agents = [];
-  var AGENT_COUNT = window.innerWidth < 768 ? 14 : 28;
-  var telemetry = [];
-  var lastTel = 0;
-  var boundaryPulses = [];
+          // Palette from CSS vars
+          const GREEN = [92, 214, 133];
+          const AMBER = [214, 160, 92];
+          const RED   = [214, 92, 92];
+          const PURP  = [157, 140, 207];
+          const FIELD = [91, 75, 138];
+          function rgba(c, a) { return 'rgba('+c[0]+','+c[1]+','+c[2]+','+a+')'; }
 
-  var dataLabels = [
-    'speed:62.4mph','lat:30.412\u00B0N','lng:97.741\u00B0W','heading:247\u00B0',
-    'lane:2','lidar:clean','visibility:0.8mi','brake_dist:184ft',
-    'following:2.3s','steering:0.4\u00B0','throttle:34%','yaw_rate:0.02\u00B0/s',
-    'road:dry','temp:71\u00B0F','wind:8mph_NW','grade:1.2%',
-    'obj_count:14','ped_count:0','signal:green','conf:0.994',
-    'gps_fix:RTK','imu:nominal','cam_8:clear','radar:12_trk'
-  ];
+          // Agents
+          const N = mob() ? 14 : 24;
+          const agents = [];
+          for (let i = 0; i < N; i++) {
+            const a = Math.random() * Math.PI * 2;
+            const r = 0.15 + Math.random() * 0.55;
+            agents.push({
+              x: cx + Math.cos(a) * R * r,
+              y: cy + Math.sin(a) * R * r,
+              vx: (Math.random() - 0.5) * 0.4,
+              vy: (Math.random() - 0.5) * 0.4,
+              speed: 0.2 + Math.random() * 0.4,
+              sz: mob() ? 2.2 + Math.random() * 1.3 : 2.5 + Math.random() * 2,
+              ph: Math.random() * Math.PI * 2,
+              state: 'ok', timer: 0, da: 0,
+              trail: []
+            });
+          }
 
-  function rgb(col,a){ return 'rgba('+col[0]+','+col[1]+','+col[2]+','+a+')'; }
+          const impacts = [];
+          let lastTs = 0;
 
-  function heroH() {
-    var el = document.getElementById('hero-text');
-    return el ? el.offsetHeight + 40 : 150;
-  }
+          function frame(ts) {
+            if (!lastTs) lastTs = ts;
+            const dt = Math.min((ts - lastTs) / 1000, 0.05);
+            lastTs = ts;
+            ctx.clearRect(0, 0, W, H);
 
-  function resize() {
-    W = c.offsetWidth || window.innerWidth;
-    H = c.offsetHeight || window.innerHeight;
-    c.width = W * dpr;
-    c.height = H * dpr;
-    ctx.setTransform(dpr,0,0,dpr,0,0);
+            // === ATMOSPHERE ===
+            const atm = ctx.createRadialGradient(cx, cy, 0, cx, cy, R * 2);
+            atm.addColorStop(0, rgba(FIELD, 0.10));
+            atm.addColorStop(0.35, rgba(FIELD, 0.04));
+            atm.addColorStop(1, 'transparent');
+            ctx.fillStyle = atm;
+            ctx.fillRect(0, 0, W, H);
 
-    var hh = heroH();
-    var avail = H - hh;
-    cx = W * 0.5;
-    cy = avail * 0.48;
-    radius = Math.min(W * 0.25, avail * 0.34);
-    if (radius < 60) radius = 60;
-  }
+            // === THE BOUNDARY — bold, unmistakable ===
+            const p = 1 + Math.sin(ts * 0.0012) * 0.003;
+            const bR = R * p;
 
-  function initAgents() {
-    agents = [];
-    AGENT_COUNT = window.innerWidth < 768 ? 14 : 28;
-    for (var i = 0; i < AGENT_COUNT; i++) {
-      var a = Math.random() * Math.PI * 2;
-      var isOutlier = i < 4;
-      var r = isOutlier ? (0.5 + Math.random()*0.35) * radius : Math.random() * radius * 0.5;
-      agents.push({
-        x: cx + Math.cos(a) * r,
-        y: cy + Math.sin(a) * r,
-        vx: (Math.random()-0.5)*0.6,
-        vy: (Math.random()-0.5)*0.6,
-        size: 1.5 + Math.random()*1.8,
-        phase: Math.random()*Math.PI*2,
-        drift: 0.002 + Math.random()*0.003,
-        softMax: isOutlier ? radius*0.88 : radius*0.5,
-        isOutlier: isOutlier
-      });
-    }
-  }
+            // Outer glow (wide, soft)
+            const outerGlow = ctx.createRadialGradient(cx, cy, bR * 0.85, cx, cy, bR * 1.25);
+            outerGlow.addColorStop(0, 'transparent');
+            outerGlow.addColorStop(0.6, rgba(PURP, 0.02));
+            outerGlow.addColorStop(0.85, rgba(PURP, 0.05));
+            outerGlow.addColorStop(1, 'transparent');
+            ctx.fillStyle = outerGlow;
+            ctx.beginPath(); ctx.arc(cx, cy, bR * 1.25, 0, Math.PI * 2); ctx.fill();
 
-  function updateAgents(dt) {
-    for (var i=0; i<agents.length; i++) {
-      var a = agents[i];
-      a.phase += a.drift * dt;
+            // Main ring — THE LINE
+            ctx.beginPath(); ctx.arc(cx, cy, bR, 0, Math.PI * 2);
+            ctx.strokeStyle = rgba(PURP, 0.30);
+            ctx.lineWidth = 2;
+            ctx.stroke();
 
-      a.vx += Math.cos(a.phase)*0.015*dt*0.1;
-      a.vy += Math.sin(a.phase*1.3)*0.015*dt*0.1;
+            // Inner bloom
+            ctx.beginPath(); ctx.arc(cx, cy, bR - 3, 0, Math.PI * 2);
+            ctx.strokeStyle = rgba(PURP, 0.08);
+            ctx.lineWidth = 4;
+            ctx.stroke();
 
-      var dx = a.x - cx, dy = a.y - cy;
-      var dist = Math.sqrt(dx*dx+dy*dy) || 1;
-      var nx = dx/dist, ny = dy/dist;
+            // Outer bloom
+            ctx.beginPath(); ctx.arc(cx, cy, bR + 3, 0, Math.PI * 2);
+            ctx.strokeStyle = rgba(PURP, 0.06);
+            ctx.lineWidth = 3;
+            ctx.stroke();
 
-      if (!a.isOutlier && dist > a.softMax) {
-        var over = (dist - a.softMax) / radius;
-        a.vx -= nx * over * 0.004 * dt;
-        a.vy -= ny * over * 0.004 * dt;
-      }
-      if (a.isOutlier) {
-        a.vx += nx * 0.0008 * dt * 0.1;
-        a.vy += ny * 0.0008 * dt * 0.1;
-      }
+            // Interior fill — very subtle
+            ctx.beginPath(); ctx.arc(cx, cy, bR - 1, 0, Math.PI * 2);
+            const fill = ctx.createRadialGradient(cx, cy, 0, cx, cy, bR);
+            fill.addColorStop(0, rgba(FIELD, 0.04));
+            fill.addColorStop(0.8, rgba(FIELD, 0.015));
+            fill.addColorStop(1, rgba(FIELD, 0.03));
+            ctx.fillStyle = fill;
+            ctx.fill();
 
-      a.x += a.vx*dt*0.06;
-      a.y += a.vy*dt*0.06;
+            // Tick marks at compass points
+            for (let i = 0; i < 8; i++) {
+              const a = (Math.PI / 4) * i;
+              ctx.beginPath();
+              ctx.moveTo(cx + Math.cos(a) * (bR - 5), cy + Math.sin(a) * (bR - 5));
+              ctx.lineTo(cx + Math.cos(a) * (bR + 5), cy + Math.sin(a) * (bR + 5));
+              ctx.strokeStyle = rgba(PURP, 0.15);
+              ctx.lineWidth = 0.8;
+              ctx.stroke();
+            }
 
-      dx = a.x - cx; dy = a.y - cy;
-      dist = Math.sqrt(dx*dx+dy*dy);
-      var maxR = radius*0.88;
-      if (dist > maxR) {
-        var ang = Math.atan2(dy,dx);
-        a.x = cx+Math.cos(ang)*maxR;
-        a.y = cy+Math.sin(ang)*maxR;
-        var dot = a.vx*Math.cos(ang)+a.vy*Math.sin(ang);
-        a.vx -= 2*dot*Math.cos(ang);
-        a.vy -= 2*dot*Math.sin(ang);
-        a.vx *= 0.4; a.vy *= 0.4;
-        boundaryPulses.push({angle:ang, alpha:0.6, spread:0});
-      }
-      a.vx *= 0.997; a.vy *= 0.997;
-    }
-  }
+            // === AGENT PHYSICS ===
+            if (Math.random() < dt * 0.4) {
+              const ok = agents.filter(a => a.state === 'ok');
+              if (ok.length > 4) {
+                const a = ok[Math.floor(Math.random() * ok.length)];
+                a.state = 'drift';
+                a.timer = 2 + Math.random() * 2;
+                a.da = Math.atan2(a.y - cy, a.x - cx) + (Math.random() - 0.5) * 0.3;
+              }
+            }
 
-  function drawBoundary(now) {
-    var g1 = ctx.createRadialGradient(cx,cy,radius*0.8, cx,cy,radius*1.2);
-    g1.addColorStop(0, rgb(GREEN,0));
-    g1.addColorStop(0.5, rgb(GREEN,0.03));
-    g1.addColorStop(1, rgb(GREEN,0));
-    ctx.fillStyle = g1;
-    ctx.beginPath(); ctx.arc(cx,cy,radius*1.2,0,Math.PI*2); ctx.fill();
+            agents.forEach(a => {
+              const dx = a.x - cx, dy = a.y - cy;
+              const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+              const ang = Math.atan2(dy, dx);
 
-    ctx.beginPath(); ctx.arc(cx,cy,radius,0,Math.PI*2);
-    ctx.strokeStyle = rgb(GREEN,0.18);
-    ctx.lineWidth = 1.5; ctx.stroke();
+              if (a.state === 'ok') {
+                const orb = ang + Math.PI / 2;
+                a.vx += Math.cos(orb) * a.speed * dt * 1.6;
+                a.vy += Math.sin(orb) * a.speed * dt * 1.6;
+                const target = R * (0.18 + Math.sin(a.ph + ts * 0.0003) * 0.25);
+                const pull = (target - dist) * 0.012;
+                a.vx += (dx / dist) * pull;
+                a.vy += (dy / dist) * pull;
+              } else if (a.state === 'drift') {
+                a.vx += Math.cos(a.da) * 1.3 * dt;
+                a.vy += Math.sin(a.da) * 1.3 * dt;
+                a.timer -= dt;
+                if (dist > R * 0.80) { a.state = 'hit'; a.timer = 0.5; }
+                else if (a.timer <= 0) a.state = 'ok';
+              } else if (a.state === 'hit') {
+                if (dist >= R * 0.90) {
+                  impacts.push({ x: a.x, y: a.y, r: 0, mx: 35 + Math.random() * 20, a: 1.0, t: 0 });
+                  a.state = 'back'; a.timer = 2;
+                  a.vx = -(dx / dist) * 2.2; a.vy = -(dy / dist) * 2.2;
+                } else {
+                  a.vx += Math.cos(a.da) * 2 * dt;
+                  a.vy += Math.sin(a.da) * 2 * dt;
+                }
+                a.timer -= dt;
+                if (a.timer <= 0) { a.state = 'back'; a.timer = 2; }
+              } else {
+                const tr = R * (0.15 + Math.random() * 0.25);
+                a.vx += (cx + Math.cos(ang) * tr - a.x) * 0.02;
+                a.vy += (cy + Math.sin(ang) * tr - a.y) * 0.02;
+                a.timer -= dt;
+                if (a.timer <= 0 && dist < R * 0.6) a.state = 'ok';
+              }
 
-    ctx.save(); ctx.translate(cx,cy); ctx.rotate(now*0.00015);
-    ctx.beginPath(); ctx.arc(0,0,radius*0.92,0,Math.PI*2);
-    ctx.setLineDash([2,7]);
-    ctx.strokeStyle = rgb(GREEN,0.08);
-    ctx.lineWidth = 1; ctx.stroke();
-    ctx.setLineDash([]); ctx.restore();
+              // Hard wall
+              if (dist > R * 0.88) {
+                const f = (dist - R * 0.88) / (R * 0.12);
+                a.vx -= (dx / dist) * f * dt * 200;
+                a.vy -= (dy / dist) * f * dt * 200;
+              }
 
-    ctx.font='400 9px "IBM Plex Mono"';
-    ctx.fillStyle=rgb(GREEN,0.4);
-    ctx.textAlign='center';
-    ctx.fillText('ODD BOUNDARY',cx,cy-radius-28);
-  }
+              a.vx *= (1 - 2 * dt); a.vy *= (1 - 2 * dt);
+              a.x += a.vx * dt * 60; a.y += a.vy * dt * 60;
+              a.ph += dt;
+              a.trail.push({ x: a.x, y: a.y });
+              while (a.trail.length > 8) a.trail.shift();
+            });
 
-  function drawPulses() {
-    for (var i=boundaryPulses.length-1;i>=0;i--) {
-      var p=boundaryPulses[i];
-      p.alpha -= 0.012; p.spread += 0.6;
-      if (p.alpha<=0) {boundaryPulses.splice(i,1);continue;}
-      var bx=cx+Math.cos(p.angle)*radius, by=cy+Math.sin(p.angle)*radius;
-      var g=ctx.createRadialGradient(bx,by,0,bx,by,p.spread+12);
-      g.addColorStop(0,rgb(RED,p.alpha*0.5));
-      g.addColorStop(1,rgb(RED,0));
-      ctx.fillStyle=g;
-      ctx.beginPath(); ctx.arc(bx,by,p.spread+12,0,Math.PI*2); ctx.fill();
-    }
-  }
+            // === CONNECTIONS ===
+            const okA = agents.filter(a => a.state === 'ok' || a.state === 'back');
+            const cd = mob() ? 45 : 65;
+            for (let i = 0; i < okA.length; i++) {
+              for (let j = i + 1; j < okA.length; j++) {
+                const d = Math.hypot(okA[j].x - okA[i].x, okA[j].y - okA[i].y);
+                if (d < cd) {
+                  ctx.beginPath();
+                  ctx.moveTo(okA[i].x, okA[i].y);
+                  ctx.lineTo(okA[j].x, okA[j].y);
+                  ctx.strokeStyle = rgba(GREEN, (1 - d / cd) * 0.12);
+                  ctx.lineWidth = 0.5;
+                  ctx.lineCap = 'round';
+                  ctx.stroke();
+                }
+              }
+            }
 
-  function drawAgents() {
-    for (var i=0;i<agents.length;i++) {
-      var a = agents[i];
-      var dx=a.x-cx, dy=a.y-cy;
-      var dist=Math.sqrt(dx*dx+dy*dy);
-      var edge=dist/(radius*0.88);
-      var r,g,b,al;
-      if (edge>0.75) {
-        var t=(edge-0.75)/0.25;
-        r=92+(214-92)*t; g=214+(92-214)*t; b=133+(92-133)*t; al=0.55+t*0.35;
-      } else {
-        r=92; g=214; b=133; al=0.5;
-      }
-      var col=[Math.round(r),Math.round(g),Math.round(b)];
+            // === DRAW AGENTS ===
+            agents.forEach(a => {
+              const b = 1 + Math.sin(a.ph * 2.5) * 0.1;
+              const r = a.sz * b;
+              let col, al;
+              if (a.state === 'ok') { col = GREEN; al = 0.6 + Math.sin(a.ph * 2) * 0.1; }
+              else if (a.state === 'drift') { col = AMBER; al = 0.75; }
+              else if (a.state === 'hit') { col = RED; al = 0.9; }
+              else { const t = Math.max(0, a.timer / 2); col = [Math.round(92+122*t), Math.round(214-34*t), Math.round(133-41*t)]; al = 0.6; }
 
-      var gl=ctx.createRadialGradient(a.x,a.y,0,a.x,a.y,a.size*3.5);
-      gl.addColorStop(0,rgb(col,al*0.25));
-      gl.addColorStop(1,rgb(col,0));
-      ctx.fillStyle=gl;
-      ctx.beginPath(); ctx.arc(a.x,a.y,a.size*3.5,0,Math.PI*2); ctx.fill();
+              // Trail
+              for (let ti = 0; ti < a.trail.length - 1; ti++) {
+                const ta = (ti / a.trail.length) * 0.06 * al;
+                ctx.beginPath();
+                ctx.moveTo(a.trail[ti].x, a.trail[ti].y);
+                ctx.lineTo(a.trail[ti+1].x, a.trail[ti+1].y);
+                ctx.strokeStyle = rgba(col, ta);
+                ctx.lineWidth = r * 0.4;
+                ctx.lineCap = 'round';
+                ctx.stroke();
+              }
 
-      ctx.beginPath(); ctx.arc(a.x,a.y,a.size,0,Math.PI*2);
-      ctx.fillStyle=rgb(col,al);
-      ctx.fill();
-    }
-  }
+              // Glow layers
+              for (let i = 4; i >= 0; i--) {
+                const t = i / 4;
+                ctx.beginPath(); ctx.arc(a.x, a.y, r * (1 + t * 3), 0, Math.PI * 2);
+                ctx.fillStyle = rgba(col, al * (1 - t) * 0.2);
+                ctx.fill();
+              }
+              ctx.beginPath(); ctx.arc(a.x, a.y, r, 0, Math.PI * 2);
+              ctx.fillStyle = rgba(col, al);
+              ctx.fill();
+              ctx.beginPath(); ctx.arc(a.x, a.y, r * 0.3, 0, Math.PI * 2);
+              ctx.fillStyle = rgba([255,255,255], al * 0.25);
+              ctx.fill();
+            });
 
-  function spawnTelemetry(now) {
-    if (now-lastTel>280) {
-      lastTel=now;
-      var label = dataLabels[Math.floor(Math.random()*dataLabels.length)];
-      var side = Math.random()>0.5?1:-1;
-      telemetry.push({
-        text:label,
-        x: cx+side*(radius+35+Math.random()*60),
-        y: cy-radius*0.5+Math.random()*radius,
-        tx: cx+(Math.random()-0.5)*radius*0.5,
-        ty: cy+(Math.random()-0.5)*radius*0.5,
-        alpha:1, prog:0, side:side
-      });
-    }
-  }
+            // === IMPACTS — dramatic ===
+            for (let i = impacts.length - 1; i >= 0; i--) {
+              const im = impacts[i];
+              im.t += dt;
+              im.r = im.mx * (1 - Math.exp(-im.t * 6));
+              im.a *= (1 - dt * 2);
+              if (im.a < 0.01) { impacts.splice(i, 1); continue; }
 
-  function drawTelemetry() {
-    for (var i=telemetry.length-1;i>=0;i--) {
-      var t=telemetry[i];
-      t.prog+=0.007;
-      if(t.prog>1) t.alpha-=0.025;
-      if(t.alpha<=0){telemetry.splice(i,1);continue;}
+              // Shockwave
+              ctx.beginPath(); ctx.arc(im.x, im.y, im.r, 0, Math.PI * 2);
+              ctx.strokeStyle = rgba(RED, im.a * 0.6);
+              ctx.lineWidth = 2.5 * im.a;
+              ctx.stroke();
 
-      var p=Math.min(t.prog,1);
-      var e=p<0.5?2*p*p:1-Math.pow(-2*p+2,2)/2;
-      var px=t.x+(t.tx-t.x)*e, py=t.y+(t.ty-t.y)*e;
+              // Second ring
+              ctx.beginPath(); ctx.arc(im.x, im.y, im.r * 0.5, 0, Math.PI * 2);
+              ctx.strokeStyle = rgba(RED, im.a * 0.3);
+              ctx.lineWidth = 1.5 * im.a;
+              ctx.stroke();
 
-      ctx.beginPath(); ctx.moveTo(t.x,t.y); ctx.lineTo(px,py);
-      ctx.strokeStyle=rgb(GREEN,t.alpha*0.1);
-      ctx.lineWidth=0.5; ctx.stroke();
+              // Flash glow
+              const fg = ctx.createRadialGradient(im.x, im.y, 0, im.x, im.y, im.mx * 1.5);
+              fg.addColorStop(0, rgba(RED, im.a * 0.2));
+              fg.addColorStop(0.5, rgba(RED, im.a * 0.05));
+              fg.addColorStop(1, 'transparent');
+              ctx.fillStyle = fg;
+              ctx.beginPath(); ctx.arc(im.x, im.y, im.mx * 1.5, 0, Math.PI * 2); ctx.fill();
 
-      if(t.alpha>0.3){
-        ctx.font='300 8px "IBM Plex Mono"';
-        ctx.fillStyle=rgb(GREEN,t.alpha*0.35);
-        ctx.textAlign=t.side>0?'left':'right';
-        ctx.fillText(t.text,t.x,t.y);
-      }
+              // Boundary flash — entire ring lights up briefly
+              if (im.t < 0.15) {
+                ctx.beginPath(); ctx.arc(cx, cy, bR, 0, Math.PI * 2);
+                ctx.strokeStyle = rgba(RED, (0.15 - im.t) * 2);
+                ctx.lineWidth = 3;
+                ctx.stroke();
+              }
+            }
 
-      ctx.beginPath(); ctx.arc(px,py,1.5,0,Math.PI*2);
-      ctx.fillStyle=rgb(GREEN,t.alpha*0.5);
-      ctx.fill();
-    }
-  }
-
-  function drawHash(now) {
-    var x = W<600 ? W-12 : cx+radius+55;
-    var startY = cy-radius*0.4;
-    var chars='0123456789abcdef';
-    ctx.font='300 7px "IBM Plex Mono"';
-    ctx.textAlign='right';
-    for(var i=0;i<7;i++){
-      var hash='';
-      var seed=Math.floor(now*0.0008)+i*7;
-      for(var j=0;j<14;j++) hash+=chars[(seed*(j+1)*31+j*17)%16];
-      ctx.fillStyle=rgb(PURPLE,0.22-i*0.025);
-      ctx.fillText(hash,x,startY+i*12);
-    }
-    ctx.fillStyle=rgb(PURPLE,0.22);
-    ctx.fillText('HASH CHAIN \u25B8',x,startY-10);
-  }
-
-  var lastTime=0;
-  function animate(now) {
-    if(!lastTime) lastTime=now;
-    var dt=now-lastTime; lastTime=now;
-    ctx.clearRect(0,0,W,H);
-
-    updateAgents(dt);
-    spawnTelemetry(now);
-
-    drawBoundary(now);
-    drawPulses();
-    drawTelemetry();
-    drawAgents();
-    drawHash(now);
-
-    requestAnimationFrame(animate);
-  }
-
-  window.addEventListener('resize', function(){ resize(); initAgents(); });
-  resize();
-  initAgents();
-  requestAnimationFrame(animate);
-})();
+            requestAnimationFrame(frame);
+          }
+          requestAnimationFrame(frame);
+        })();
       </script>
     </section>
 
