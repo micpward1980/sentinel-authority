@@ -123,7 +123,7 @@ function MonitoringPage() {
             System Monitoring
           </h1>
           <p style={{color: styles.textSecondary, marginTop: '4px', fontSize: '14px'}}>
-            Real-time ENVELO agent status and telemetry
+            {user?.role === 'admin' ? 'Real-time ENVELO agent status and telemetry' : 'Track your certified systems\' compliance status'}
           </p>
         </div>
         <div style={{display: 'flex', gap: '12px', alignItems: 'center'}}>
@@ -146,7 +146,7 @@ function MonitoringPage() {
           >
             <RefreshCw size={14} style={refreshing ? {animation: "spin 1s linear infinite"} : {}} /> {refreshing ? "Refreshing..." : "Refresh"}
           </button>
-          <button 
+          {user?.role === 'admin' && <button 
             onClick={exportSessionsCSV}
             style={{
               background: styles.bgPanel, border: `1px solid ${styles.borderGlass}`,
@@ -156,7 +156,7 @@ function MonitoringPage() {
             }}
           >
             <Download size={14} /> Export CSV
-          </button>
+          </button>}
         </div>
       </div>
 
@@ -239,7 +239,7 @@ function MonitoringPage() {
             
             <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '16px'}}>
               <div style={cardStyle}>
-                <div style={labelStyle}>Active Sessions</div>
+                <div style={labelStyle}>{user?.role === 'admin' ? 'Active Sessions' : 'Active Systems'}</div>
                 <div style={{fontSize: '32px', fontWeight: 300, color: styles.accentGreen}}>{summary.active || 0}</div>
                 <div style={subStyle}>{summary.offline || 0} offline</div>
               </div>
@@ -258,16 +258,16 @@ function MonitoringPage() {
                 <div style={{fontSize: '32px', fontWeight: 300, color: (summary.total_block || 0) > 0 ? '#D65C5C' : styles.accentGreen}}>{(summary.total_block || 0).toLocaleString()}</div>
                 <div style={subStyle}>{((summary.total_block || 0) / Math.max(summary.total_actions || 1, 1) * 100).toFixed(2)}% of actions</div>
               </div>
-              <div style={cardStyle}>
+              {user?.role === 'admin' && <div style={cardStyle}>
                 <div style={labelStyle}>Total Sessions</div>
                 <div style={{fontSize: '32px', fontWeight: 300, color: styles.textPrimary}}>{summary.total || 0}</div>
                 <div style={subStyle}>{summary.ended || 0} completed</div>
-              </div>
-              <div style={cardStyle}>
+              </div>}
+              {user?.role === 'admin' && <div style={cardStyle}>
                 <div style={labelStyle}>Unique Systems</div>
                 <div style={{fontSize: '32px', fontWeight: 300, color: styles.purpleBright}}>{[...new Set(sessions.map(s => s.certificate_id).filter(Boolean))].length}</div>
                 <div style={subStyle}>{[...new Set(sessions.map(s => s.organization_name).filter(Boolean))].length} organizations</div>
-              </div>
+              </div>}
             </div>
           </div>
         );
