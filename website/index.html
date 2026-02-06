@@ -595,22 +595,27 @@
       /* Landscape phone */
       .hero-content-bottom {
         bottom: 1vh !important;
-        padding: 0 40px !important;
+        padding: 0 clamp(16px, 4vw, 40px) !important;
       }
       .hero-content-bottom h1 {
-        font-size: clamp(18px, 3.5vw, 24px) !important;
+        font-size: clamp(16px, 3.5vw, 24px) !important;
         margin-bottom: 4px !important;
+        line-height: 1.1 !important;
       }
       .hero-content-bottom p:not(.hero-disclaimer) {
         font-size: 11px !important;
-        margin-bottom: 6px !important;
+        margin-bottom: 4px !important;
       }
       .hero-content-bottom .btn {
-        padding: 8px 14px !important;
-        font-size: 10px !important;
+        padding: 6px 12px !important;
+        font-size: 9px !important;
+        min-height: auto !important;
       }
       .hero-content-bottom .hero-disclaimer {
         display: none !important;
+      }
+      .hero-content-bottom .hero-actions {
+        gap: 8px !important;
       }
     }
 
@@ -1161,74 +1166,45 @@
     
     
     
-    /* Mobile hero element fixes */
-    @media (max-width: 768px) {
-      .scroll-indicator-desktop {
-        display: none !important;
-      }
-      .hero-disclaimer {
-        position: relative !important;
-        bottom: auto !important;
-        left: auto !important;
-        transform: none !important;
-        margin-top: 12px !important;
-        padding: 0 16px !important;
-      }
-      .hero {
-        padding-bottom: 40px !important;
-      }
-    }
+    /* [consolidated below] */
 
-    /* ===== MOBILE HERO FIXES ===== */
-    @media (max-width: 768px) {
-      /* Hide scroll indicator completely on mobile */
-      .scroll-line,
-      [style*="SCROLL"] {
-        display: none !important;
-      }
-      
-      /* Fix hero disclaimer - not absolute positioned on mobile */
-      .hero > [style*="position: absolute"][style*="bottom: 10px"] {
-        position: relative !important;
-        bottom: auto !important;
-        left: auto !important;
-        transform: none !important;
-        margin-top: 40px;
-      }
-      
-      /* Fix hero canvas aspect ratio */
-      #hero-canvas {
-        max-height: 100vh;
-      }
-      
-      /* More padding at bottom of hero content */
-      .hero > [style*="z-index: 10"][style*="text-align: center"] {
-        padding-bottom: 60px !important;
-      }
-    }
-    /* ===== END MOBILE HERO FIXES ===== */
+    /* [consolidated below] */
 
-    /* ===== COMPREHENSIVE MOBILE FIXES ===== */
+    /* ===== CONSOLIDATED MOBILE FIXES ===== */
     @media (max-width: 768px) {
-      /* Hero adjustments */
+      /* Hero */
       .hero {
         min-height: 100vh;
         min-height: 100dvh;
-        padding: 60px 16px 100px;
       }
-      .hero h1 {
-        font-size: 32px !important;
+      .hero-content-bottom {
+        bottom: 4vh !important;
+        padding: 0 16px !important;
       }
-      .hero p {
-        font-size: 15px !important;
+      .hero-content-bottom h1 {
+        font-size: clamp(24px, 6.5vw, 36px) !important;
+        line-height: 1.15 !important;
+        margin-bottom: 6px !important;
+      }
+      .hero-content-bottom p:not(.hero-disclaimer) {
+        font-size: 14px !important;
+        margin-bottom: 10px !important;
+      }
+      .hero-content-bottom .hero-disclaimer {
+        font-size: 8px !important;
+        margin-top: 8px !important;
+      }
+      .scroll-line,
+      .scroll-indicator-desktop,
+      [style*="SCROLL"] {
+        display: none !important;
+      }
+      #hero-canvas {
+        max-height: 100vh;
+        max-height: 100dvh;
       }
       
-      /* Hide scroll indicator on mobile */
-      .scroll-line {
-        display: none;
-      }
-      
-      /* Mechanism diagram - stack vertically */
+      /* Mechanism diagram */
       .mechanism-flow-container {
         flex-direction: column !important;
         gap: 16px !important;
@@ -1240,6 +1216,28 @@
       }
       .mechanism-connector > div {
         transform: rotate(90deg) !important;
+      }
+    }
+    
+    /* Small phones */
+    @media (max-width: 480px) {
+      .hero-content-bottom {
+        bottom: 2vh !important;
+        padding: 0 12px !important;
+      }
+      .hero-content-bottom h1 {
+        font-size: clamp(22px, 6vw, 30px) !important;
+      }
+      .hero-content-bottom p:not(.hero-disclaimer) {
+        font-size: 13px !important;
+      }
+      .hero-content-bottom .btn {
+        padding: 10px 16px !important;
+        font-size: 9px !important;
+      }
+      .hero-content-bottom .hero-disclaimer {
+        font-size: 7px !important;
+        max-width: 90vw !important;
       }
     }
     
@@ -2410,7 +2408,7 @@
       <canvas id="hero-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;"></canvas>
       
       <!-- Hero Content -->
-      <div id="hero-text" class="hero-content-bottom" style="position: absolute; bottom: 3vh; left: 0; right: 0; z-index: 10; text-align: center; padding: 0 24px; display: flex; flex-direction: column; align-items: center;">
+      <div id="hero-text" class="hero-content-bottom" style="position: absolute; bottom: 5vh; left: 0; right: 0; z-index: 10; text-align: center; padding: 0 16px; display: flex; flex-direction: column; align-items: center;">
         
         <h1 style="font-family: var(--serif); font-size: clamp(28px, 5vw, 50px); font-weight: 200; line-height: 1.15; margin-bottom: 8px; letter-spacing: -0.02em; color: #fff; max-width: 700px;">
           Operational Design Domain<br><span class="accent" style="color: #c4b8e8; font-style: italic;">Conformance</span>
@@ -2487,9 +2485,16 @@
     var hh = heroH();
     var avail = H - hh;
     cx = W * 0.5;
-    cy = avail * 0.60;
-    radius = Math.min(W * 0.25, avail * 0.34);
-    if (radius < 60) radius = 60;
+    if (W < 600) {
+      // Mobile: center the animation higher, bigger radius relative to screen
+      cy = avail * 0.50;
+      radius = Math.min(W * 0.35, avail * 0.38);
+      if (radius < 80) radius = 80;
+    } else {
+      cy = avail * 0.60;
+      radius = Math.min(W * 0.25, avail * 0.34);
+      if (radius < 60) radius = 60;
+    }
   }
 
   function initAgents() {
@@ -2625,13 +2630,18 @@
   }
 
   function spawnTelemetry(now) {
-    if (now-lastTel>280) {
+    var telDelay = W < 600 ? 500 : 280;
+    if (now-lastTel>telDelay) {
       lastTel=now;
       var label = dataLabels[Math.floor(Math.random()*dataLabels.length)];
       var side = Math.random()>0.5?1:-1;
+      var spawnDist = W < 600 ? radius+15+Math.random()*25 : radius+35+Math.random()*60;
+      var spawnX = cx+side*spawnDist;
+      // Clamp to viewport
+      spawnX = Math.max(10, Math.min(W-10, spawnX));
       telemetry.push({
-        text:label,
-        x: cx+side*(radius+35+Math.random()*60),
+        text: W < 480 ? label.split(':')[0] : label,
+        x: spawnX,
         y: cy-radius*0.5+Math.random()*radius,
         tx: cx+(Math.random()-0.5)*radius*0.5,
         ty: cy+(Math.random()-0.5)*radius*0.5,
@@ -2669,6 +2679,7 @@
   }
 
   function drawHash(now) {
+    if (W < 480) return; // Skip hash on small phones - overlaps content
     var x = W<600 ? W-12 : cx+radius+55;
     var startY = cy-radius*0.4;
     var chars='0123456789abcdef';
