@@ -168,8 +168,7 @@ async def create_test(
     
     # Notify applicant
     try:
-        from app.services.audit_service import write_audit_log
-from app.models.models import User
+        from app.models.models import User
         owner_result = await db.execute(select(User).where(User.id == application.user_id))
         owner = owner_result.scalar_one_or_none()
         if owner and owner.email:
@@ -290,8 +289,7 @@ async def start_test(
         app_result = await db.execute(select(Application).where(Application.id == test.application_id))
         application = app_result.scalar_one_or_none()
         if application:
-            from app.services.audit_service import write_audit_log
-from app.models.models import User
+            from app.models.models import User
             owner_result = await db.execute(select(User).where(User.id == application.user_id))
             owner = owner_result.scalar_one_or_none()
             if owner and owner.email:
@@ -481,8 +479,7 @@ async def stop_test(
         app_result = await db.execute(select(Application).where(Application.id == test.application_id))
         application = app_result.scalar_one_or_none()
         if application:
-            from app.services.audit_service import write_audit_log
-from app.models.models import User
+            from app.models.models import User
             owner_result = await db.execute(select(User).where(User.id == application.user_id))
             owner = owner_result.scalar_one_or_none()
             if owner and owner.email:
