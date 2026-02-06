@@ -4702,31 +4702,52 @@
         function drawAmbient(time){}
 
         function drawConn(a,b,col){
+          var g=ctx.createLinearGradient(a.x,a.y,b.x,b.y);
+          g.addColorStop(0,rgb(col,0.12));g.addColorStop(0.5,rgb(col,0.06));g.addColorStop(1,rgb(col,0.12));
           ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);
-          ctx.strokeStyle=rgb(col,0.1);ctx.lineWidth=1;ctx.stroke();
+          ctx.strokeStyle=g;ctx.lineWidth=1;ctx.stroke();
         }
 
         function drawNode(x,y,step,time){
           var r=step.r,col=step.col;
-          var h=ctx.createRadialGradient(x,y,r*0.8,x,y,r*1.4);
-          h.addColorStop(0,rgb(col,0));h.addColorStop(0.5,rgb(col,step.big?0.06:0.04));
+
+          // Outer glow — soft bloom
+          var h=ctx.createRadialGradient(x,y,r*0.6,x,y,r*1.6);
+          h.addColorStop(0,rgb(col,0));
+          h.addColorStop(0.4,rgb(col,step.big?0.05:0.03));
           h.addColorStop(1,rgb(col,0));
-          ctx.fillStyle=h;ctx.beginPath();ctx.arc(x,y,r*1.4,0,Math.PI*2);ctx.fill();
+          ctx.fillStyle=h;ctx.beginPath();ctx.arc(x,y,r*1.6,0,Math.PI*2);ctx.fill();
 
           var rr=r;
-          if(step.big)rr=r+1.5*Math.sin(time*1.5);
+          if(step.big)rr=r+1.2*Math.sin(time*1.2);
 
+          // Frosted glass fill — the deck's signature
+          var fg=ctx.createRadialGradient(x,y-r*0.3,0,x,y,rr);
+          fg.addColorStop(0,'rgba(255,255,255,0.04)');
+          fg.addColorStop(1,'rgba(255,255,255,0.01)');
           ctx.beginPath();ctx.arc(x,y,rr,0,Math.PI*2);
-          if(step.dashed){ctx.setLineDash([6,4]);ctx.strokeStyle=rgb(col,0.15);}
-          else ctx.strokeStyle=rgb(col,step.big?0.35:0.2);
-          ctx.lineWidth=1.5;ctx.stroke();ctx.setLineDash([]);
+          ctx.fillStyle=fg;ctx.fill();
 
-          ctx.save();ctx.translate(x,y);ctx.rotate(time*0.15);
-          ctx.beginPath();ctx.arc(0,0,rr*0.85,0,Math.PI*2);
-          ctx.setLineDash([2,7]);ctx.strokeStyle=rgb(col,0.08);
-          ctx.lineWidth=0.8;ctx.stroke();ctx.setLineDash([]);ctx.restore();
+          // Main ring
+          ctx.beginPath();ctx.arc(x,y,rr,0,Math.PI*2);
+          if(step.dashed){ctx.setLineDash([5,4]);ctx.strokeStyle=rgb(col,0.18);}
+          else ctx.strokeStyle=rgb(col,step.big?0.4:0.25);
+          ctx.lineWidth=1.2;ctx.stroke();ctx.setLineDash([]);
 
-          var ml=4;ctx.strokeStyle=rgb(col,0.18);ctx.lineWidth=0.5;
+          // Top highlight arc — the glass sheen
+          ctx.beginPath();ctx.arc(x,y,rr,-Math.PI*0.8,-Math.PI*0.2);
+          var tg=ctx.createLinearGradient(x-rr,y-rr,x+rr,y-rr);
+          tg.addColorStop(0,rgb(col,0));tg.addColorStop(0.5,rgb(col,0.2));tg.addColorStop(1,rgb(col,0));
+          ctx.strokeStyle=tg;ctx.lineWidth=0.6;ctx.stroke();
+
+          // Rotating dashed inner ring
+          ctx.save();ctx.translate(x,y);ctx.rotate(time*0.12);
+          ctx.beginPath();ctx.arc(0,0,rr*0.82,0,Math.PI*2);
+          ctx.setLineDash([2,8]);ctx.strokeStyle=rgb(col,0.07);
+          ctx.lineWidth=0.7;ctx.stroke();ctx.setLineDash([]);ctx.restore();
+
+          // Registration marks — crisp corners
+          var ml=5;ctx.strokeStyle=rgb(col,0.2);ctx.lineWidth=0.6;
           var corners=[[-1,-1],[1,-1],[-1,1],[1,1]];
           for(var ci=0;ci<4;ci++){
             var sx=corners[ci][0],sy=corners[ci][1];
@@ -4734,26 +4755,28 @@
             ctx.beginPath();ctx.moveTo(x+sx*rr,y+sy*(rr-3));ctx.lineTo(x+sx*rr,y+sy*(rr-3-ml));ctx.stroke();
           }
 
+          // Number — sharp mono
           ctx.textAlign='center';ctx.textBaseline='middle';
-          ctx.font=step.num.length>1?'400 14px "IBM Plex Mono"':'400 16px "IBM Plex Mono"';
-          ctx.fillStyle=rgb(col,step.dashed?0.8:1.0);
+          ctx.font=step.num.length>1?'300 15px "IBM Plex Mono"':'300 17px "IBM Plex Mono"';
+          ctx.fillStyle=rgb(col,step.dashed?0.75:0.95);
           ctx.fillText(step.num,x,y+1);ctx.textBaseline='alphabetic';
 
+          // Labels — deck-style typography
           var mob=W<550;
           if(!mob){
-            ctx.font='400 11px "IBM Plex Mono"';
-            ctx.fillStyle=col===GREEN?rgb(GREEN,1):'rgba(255,255,255,0.95)';
-            ctx.fillText(step.label,x,y+rr+18);
-            ctx.font='300 9px "IBM Plex Mono"';
-            ctx.fillStyle=col===GREEN?rgb(GREEN,0.7):'rgba(255,255,255,0.5)';
-            ctx.fillText(step.sub,x,y+rr+31);
+            ctx.font='500 10px "IBM Plex Mono"';
+            ctx.fillStyle=col===GREEN?rgb(GREEN,0.95):'rgba(255,255,255,0.9)';
+            ctx.fillText(step.label,x,y+rr+17);
+            ctx.font='300 8.5px "IBM Plex Mono"';
+            ctx.fillStyle=col===GREEN?rgb(GREEN,0.55):'rgba(255,255,255,0.4)';
+            ctx.fillText(step.sub,x,y+rr+30);
           }else{
             ctx.textAlign='left';
-            ctx.font='400 13px "IBM Plex Mono"';
-            ctx.fillStyle=col===GREEN?rgb(GREEN,1):'rgba(255,255,255,0.95)';
+            ctx.font='500 12px "IBM Plex Mono"';
+            ctx.fillStyle=col===GREEN?rgb(GREEN,0.95):'rgba(255,255,255,0.9)';
             ctx.fillText(step.label,x+rr+16,y-4);
-            ctx.font='300 11px "IBM Plex Mono"';
-            ctx.fillStyle=col===GREEN?rgb(GREEN,0.7):'rgba(255,255,255,0.5)';
+            ctx.font='300 10px "IBM Plex Mono"';
+            ctx.fillStyle=col===GREEN?rgb(GREEN,0.55):'rgba(255,255,255,0.4)';
             ctx.fillText(step.sub,x+rr+16,y+12);
             ctx.textAlign='center';
           }
@@ -4764,19 +4787,21 @@
           var seg=Math.floor(dotT/segT);
           if(seg>=steps.length)return;
           var st=dotT-seg*segT;
-          var cx,cy;
+          var cx,cy,traveling=false;
 
           if(st<=pauseT){cx=stops[seg].x;cy=stops[seg].y;}
           else{
+            traveling=true;
             var next=seg+1;if(next>=steps.length){dotT=0;return;}
             var p=ease((st-pauseT)/travelT);
             cx=lerp(stops[seg].x,stops[next].x,p);
             cy=lerp(stops[seg].y,stops[next].y,p);
-            if(p>0.95&&!arrivalPulses.find(function(a){return a.seg===next;})){
-              arrivalPulses.push({x:stops[next].x,y:stops[next].y,r:0,alpha:0.6,seg:next});
+            if(p>0.92&&!arrivalPulses.find(function(a){return a.seg===next;})){
+              arrivalPulses.push({x:stops[next].x,y:stops[next].y,r:0,alpha:0.5,seg:next});
             }
           }
 
+          // Color transition purple → green
           var ct=0;
           if(seg>=4)ct=1;
           else if(seg===3&&st>pauseT)ct=ease((st-pauseT)/travelT);
@@ -4785,35 +4810,47 @@
           var b=Math.round(PURPLE[2]+(GREEN[2]-PURPLE[2])*ct);
           var col=[r,g,b];
 
-          dotTrail.push({x:cx,y:cy,col:col.slice(),alpha:0.6,size:4});
-          if(dotTrail.length>30)dotTrail.shift();
-          for(var i=0;i<dotTrail.length;i++){
-            var d=dotTrail[i];d.alpha*=0.92;d.size*=0.97;
-            if(d.alpha<0.01)continue;
-            var tg=ctx.createRadialGradient(d.x,d.y,0,d.x,d.y,d.size);
-            tg.addColorStop(0,rgb(d.col,d.alpha*0.4));tg.addColorStop(1,rgb(d.col,0));
-            ctx.fillStyle=tg;ctx.beginPath();ctx.arc(d.x,d.y,d.size,0,Math.PI*2);ctx.fill();
+          // Trail — only when moving
+          if(traveling){
+            dotTrail.push({x:cx,y:cy,col:col.slice(),alpha:0.5,size:3});
+            if(dotTrail.length>18)dotTrail.shift();
+          }
+          for(var i=dotTrail.length-1;i>=0;i--){
+            var d=dotTrail[i];d.alpha*=0.9;d.size*=0.96;
+            if(d.alpha<0.01){dotTrail.splice(i,1);continue;}
+            ctx.beginPath();ctx.arc(d.x,d.y,d.size*0.5,0,Math.PI*2);
+            ctx.fillStyle=rgb(d.col,d.alpha*0.5);ctx.fill();
           }
 
-          var dg=ctx.createRadialGradient(cx,cy,0,cx,cy,8);
-          dg.addColorStop(0,rgb(col,0.5));dg.addColorStop(1,rgb(col,0));
-          ctx.fillStyle=dg;ctx.beginPath();ctx.arc(cx,cy,8,0,Math.PI*2);ctx.fill();
-          ctx.beginPath();ctx.arc(cx,cy,4,0,Math.PI*2);
-          ctx.fillStyle=rgb(col,0.85);ctx.fill();
-          ctx.beginPath();ctx.arc(cx,cy,1.5,0,Math.PI*2);
-          ctx.fillStyle='rgba(255,255,255,0.4)';ctx.fill();
-          ctx.beginPath();ctx.arc(cx,cy,10+2*Math.sin(time*3),0,Math.PI*2);
-          ctx.strokeStyle=rgb(col,0.15+0.05*Math.sin(time*3));
-          ctx.lineWidth=0.8;ctx.stroke();
+          // Bloom
+          var dg=ctx.createRadialGradient(cx,cy,0,cx,cy,10);
+          dg.addColorStop(0,rgb(col,0.35));dg.addColorStop(1,rgb(col,0));
+          ctx.fillStyle=dg;ctx.beginPath();ctx.arc(cx,cy,10,0,Math.PI*2);ctx.fill();
+
+          // Core dot
+          ctx.beginPath();ctx.arc(cx,cy,3,0,Math.PI*2);
+          ctx.fillStyle=rgb(col,0.9);ctx.fill();
+
+          // Hot center
+          ctx.beginPath();ctx.arc(cx,cy,1.2,0,Math.PI*2);
+          ctx.fillStyle='rgba(255,255,255,0.5)';ctx.fill();
+
+          // Breathing ring while paused
+          if(!traveling){
+            var br=12+1.5*Math.sin(time*2.5);
+            ctx.beginPath();ctx.arc(cx,cy,br,0,Math.PI*2);
+            ctx.strokeStyle=rgb(col,0.1+0.03*Math.sin(time*2.5));
+            ctx.lineWidth=0.6;ctx.stroke();
+          }
         }
 
         function drawPulses(){
           for(var i=arrivalPulses.length-1;i>=0;i--){
-            var p=arrivalPulses[i];p.r+=1.5;p.alpha-=0.015;
+            var p=arrivalPulses[i];p.r+=0.8;p.alpha-=0.012;
             if(p.alpha<=0){arrivalPulses.splice(i,1);continue;}
             ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
             var col=p.seg>=4?GREEN:PURPLE;
-            ctx.strokeStyle=rgb(col,p.alpha);ctx.lineWidth=1;ctx.stroke();
+            ctx.strokeStyle=rgb(col,p.alpha*0.6);ctx.lineWidth=0.8;ctx.stroke();
           }
         }
 
