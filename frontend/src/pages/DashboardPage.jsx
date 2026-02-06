@@ -90,7 +90,7 @@ function CustomerDashboard() {
           const total = monitoring?.summary?.total || 0;
           const hasAgents = total > 0;
           const statusColor = hasAgents ? (online > 0 ? styles.accentGreen : styles.accentAmber) : styles.textTertiary;
-          const statusText = hasAgents ? (online > 0 ? `${online} of ${total} online` : 'All agents offline') : 'No active agents';
+          const statusText = hasAgents ? (online > 0 ? `${online} of ${total} online` : 'All systems offline') : 'No active systems';
           return <StatCard onClick={() => navigate('/monitoring')} label="Live Status" value={hasAgents ? online : '—'} color={statusColor} icon={<Wifi className="w-5 h-5" style={{color: statusColor}} />} subtitle={statusText} />;
         })()}
       </div>
