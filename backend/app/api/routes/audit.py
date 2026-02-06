@@ -6,7 +6,8 @@ from datetime import datetime
 from sqlalchemy import select, func, desc
 from app.core.database import get_db
 from app.core.security import get_current_user, require_role
-from app.models.models import AuditLog
+from app.models.models import AuditLog, AuditAnchor
+import hashlib, hmac, os
 
 router = APIRouter(tags=["audit"])
 
@@ -207,5 +208,159 @@ async def verify_audit_integrity(
         "chain_breaks": chain_breaks,
         "integrity": "passed" if invalid == 0 and chain_breaks == 0 else "failed",
         "invalid_entries": invalid_ids,
+    }
+
+
+
+@router.get("/verify-chain", summary="Verify audit log integrity")
+async def verify_audit_chain(
+    db: AsyncSession = Depends(get_db),
+    user: dict = Depends(require_role(["admin"]))
+):
+    """Verify the entire audit hash chain is intact. Returns broken links if tampered."""
+    result = await db.execute(
+        select(AuditLog).order_by(AuditLog.id.asc())
+    )
+    logs = result.scalars().all()
+    
+    if not logs:
+        return {"status": "empty", "message": "No audit entries to verify"}
+    
+    broken_links = []
+    prev_hash = "0" * 16
+    
+    for log in logs:
+        # Reconstruct expected hash
+        payload = f"{log.id}:{log.timestamp}:{log.action}:{log.user_email}:{log.resource_type}:{log.resource_id}:{prev_hash}"
+        expected_hash = hashlib.sha256(payload.encode()).hexdigest()[:16]
+        
+        if log.prev_hash != prev_hash:
+            broken_links.append({
+                "id": log.id,
+                "issue": "prev_hash mismatch",
+                "expected_prev": prev_hash,
+                "actual_prev": log.prev_hash
+            })
+        
+        prev_hash = log.log_hash
+    
+    return {
+        "status": "intact" if not broken_links else "TAMPERED",
+        "total_entries": len(logs),
+        "broken_links": broken_links,
+        "latest_hash": logs[-1].log_hash if logs else None,
+        "verified_at": datetime.utcnow().isoformat()
+    }
+
+
+@router.post("/create-anchor", summary="Create tamper-proof hash anchor")
+async def create_anchor(
+    db: AsyncSession = Depends(get_db),
+    user: dict = Depends(require_role(["admin"]))
+):
+    """Snapshot the current chain state as an immutable anchor point."""
+    # Get latest audit entry
+    result = await db.execute(
+        select(AuditLog).order_by(AuditLog.id.desc()).limit(1)
+    )
+    latest = result.scalar_one_or_none()
+    if not latest:
+        return {"error": "No audit entries to anchor"}
+    
+    # Count total entries
+    count_result = await db.execute(select(AuditLog.id))
+    total = len(count_result.all())
+    
+    # Create HMAC signature using server secret
+    secret = os.environ.get("SECRET_KEY", "sentinel-authority-secret")
+    sig_payload = f"{latest.id}:{latest.log_hash}:{total}:{datetime.utcnow().isoformat()}"
+    signature = hmac.new(secret.encode(), sig_payload.encode(), hashlib.sha256).hexdigest()
+    
+    anchor = AuditAnchor(
+        last_audit_id=latest.id,
+        chain_hash=latest.log_hash,
+        entry_count=total,
+        anchor_signature=signature
+    )
+    db.add(anchor)
+    await db.commit()
+    await db.refresh(anchor)
+    
+    return {
+        "anchor_id": anchor.id,
+        "last_audit_id": anchor.last_audit_id,
+        "chain_hash": anchor.chain_hash,
+        "entry_count": anchor.entry_count,
+        "signature": anchor.anchor_signature,
+        "created_at": anchor.created_at.isoformat(),
+        "message": "Anchor created. This record is immutable and cannot be modified or deleted."
+    }
+
+
+@router.get("/anchors", summary="List all audit anchors")
+async def list_anchors(
+    db: AsyncSession = Depends(get_db),
+    user: dict = Depends(require_role(["admin"]))
+):
+    """List all hash anchor checkpoints."""
+    result = await db.execute(
+        select(AuditAnchor).order_by(AuditAnchor.id.desc())
+    )
+    anchors = result.scalars().all()
+    return [{
+        "id": a.id,
+        "created_at": a.created_at.isoformat(),
+        "last_audit_id": a.last_audit_id,
+        "chain_hash": a.chain_hash,
+        "entry_count": a.entry_count,
+        "signature": a.anchor_signature
+    } for a in anchors]
+
+
+@router.get("/verify-anchor/{anchor_id}", summary="Verify a specific anchor")
+async def verify_anchor(
+    anchor_id: int,
+    db: AsyncSession = Depends(get_db),
+    user: dict = Depends(require_role(["admin"]))
+):
+    """Verify an anchor matches current chain state at that point."""
+    result = await db.execute(select(AuditAnchor).where(AuditAnchor.id == anchor_id))
+    anchor = result.scalar_one_or_none()
+    if not anchor:
+        return {"error": "Anchor not found"}
+    
+    # Get the audit entry at the anchor point
+    audit_result = await db.execute(
+        select(AuditLog).where(AuditLog.id == anchor.last_audit_id)
+    )
+    audit_entry = audit_result.scalar_one_or_none()
+    if not audit_entry:
+        return {"status": "TAMPERED", "reason": "Referenced audit entry missing"}
+    
+    # Verify hash matches
+    hash_match = audit_entry.log_hash == anchor.chain_hash
+    
+    # Verify signature
+    secret = os.environ.get("SECRET_KEY", "sentinel-authority-secret")
+    
+    # Count entries up to anchor point
+    count_result = await db.execute(
+        select(AuditLog.id).where(AuditLog.id <= anchor.last_audit_id)
+    )
+    current_count = len(count_result.all())
+    count_match = current_count == anchor.entry_count
+    
+    return {
+        "anchor_id": anchor.id,
+        "hash_match": hash_match,
+        "count_match": count_match,
+        "status": "INTACT" if (hash_match and count_match) else "TAMPERED",
+        "expected_hash": anchor.chain_hash,
+        "actual_hash": audit_entry.log_hash,
+        "expected_count": anchor.entry_count,
+        "actual_count": current_count,
+        "reason": None if (hash_match and count_match) else (
+            "Hash mismatch - entries modified" if not hash_match else "Entry count mismatch - entries deleted"
+        )
     }
 

@@ -238,6 +238,17 @@ class AuditLog(Base):
     prev_hash = Column(String(64))
 
 
+
+
+class AuditAnchor(Base):
+    __tablename__ = "audit_anchors"
+    id = Column(Integer, primary_key=True, index=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    last_audit_id = Column(Integer, nullable=False)
+    chain_hash = Column(String(64), nullable=False)
+    entry_count = Column(Integer, nullable=False)
+    anchor_signature = Column(String(128), nullable=False)
+
 # ENVELO API Keys
 
 class ApplicationComment(Base):

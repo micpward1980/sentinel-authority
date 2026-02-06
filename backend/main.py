@@ -80,6 +80,69 @@ async def lifespan(app: FastAPI):
         except Exception as e:
             logger.warning(f"User backfill: {e}")
     
+
+    # Tamper-proof audit log: DB triggers to prevent UPDATE/DELETE
+    async with engine.begin() as tpconn:
+        try:
+            await tpconn.execute(raw_text("""
+                CREATE OR REPLACE FUNCTION prevent_audit_modification()
+                RETURNS TRIGGER AS $$
+                BEGIN
+                    RAISE EXCEPTION 'Audit log entries cannot be modified or deleted. This is a tamper-proof log.';
+                    RETURN NULL;
+                END;
+                $$ LANGUAGE plpgsql;
+            """))
+            await tpconn.execute(raw_text("""
+                DROP TRIGGER IF EXISTS no_audit_update ON audit_log;
+                CREATE TRIGGER no_audit_update
+                BEFORE UPDATE ON audit_log
+                FOR EACH ROW EXECUTE FUNCTION prevent_audit_modification();
+            """))
+            await tpconn.execute(raw_text("""
+                DROP TRIGGER IF EXISTS no_audit_delete ON audit_log;
+                CREATE TRIGGER no_audit_delete
+                BEFORE DELETE ON audit_log
+                FOR EACH ROW EXECUTE FUNCTION prevent_audit_modification();
+            """))
+            # Create anchor table for periodic hash checkpoints
+            await tpconn.execute(raw_text("""
+                CREATE TABLE IF NOT EXISTS audit_anchors (
+                    id SERIAL PRIMARY KEY,
+                    created_at TIMESTAMP DEFAULT NOW(),
+                    last_audit_id INTEGER NOT NULL,
+                    chain_hash VARCHAR(64) NOT NULL,
+                    entry_count INTEGER NOT NULL,
+                    anchor_signature VARCHAR(128) NOT NULL
+                )
+            """))
+            # Protect anchors too
+            await tpconn.execute(raw_text("""
+                CREATE OR REPLACE FUNCTION prevent_anchor_modification()
+                RETURNS TRIGGER AS $$
+                BEGIN
+                    RAISE EXCEPTION 'Audit anchors cannot be modified or deleted.';
+                    RETURN NULL;
+                END;
+                $$ LANGUAGE plpgsql;
+            """))
+            await tpconn.execute(raw_text("""
+                DROP TRIGGER IF EXISTS no_anchor_update ON audit_anchors;
+                CREATE TRIGGER no_anchor_update
+                BEFORE UPDATE ON audit_anchors
+                FOR EACH ROW EXECUTE FUNCTION prevent_anchor_modification();
+            """))
+            await tpconn.execute(raw_text("""
+                DROP TRIGGER IF EXISTS no_anchor_delete ON audit_anchors;
+                CREATE TRIGGER no_anchor_delete
+                BEFORE DELETE ON audit_anchors
+                FOR EACH ROW EXECUTE FUNCTION prevent_anchor_modification();
+            """))
+            await tpconn.commit()
+            logger.info("Tamper-proof audit triggers installed")
+        except Exception as e:
+            logger.warning(f"Audit trigger setup: {e}")
+
     yield
     logger.info("Shutting down...")
 
