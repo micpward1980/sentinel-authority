@@ -186,8 +186,8 @@
       pointer-events:none;
       z-index:0;
       background-image:
-        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
       background-size: var(--space-12) var(--space-12);
       opacity:.2;
       mask-image: radial-gradient(ellipse at center, rgba(0,0,0,.9) 20%, transparent 70%);
@@ -330,7 +330,7 @@
       border: 1px solid rgba(214,160,92,.25);
       background: rgba(214,160,92,.08);
       padding: 6px 8px;
-      border-radius: 999px;
+      border-radius: 0;
       white-space: nowrap;
       flex-shrink: 0;
     }
@@ -343,14 +343,14 @@
       background: rgba(255,255,255,.03);
       width: 40px;
       height: 40px;
-      border-radius: 10px;
+      border-radius: 0;
       cursor: pointer;
       position: relative;
-      transition: border-color .2s ease, background .2s ease;
+      transition: border-color .2s ease;
     }
     .nav-toggle:hover{
-      border-color: rgba(255,255,255,.18);
-      background: rgba(255,255,255,.05);
+      border-color: rgba(157,140,207,.3);
+      background: transparent;
     }
     .nav-toggle span{
       position: absolute;
@@ -610,6 +610,64 @@
     #tab-verify:hover, #tab-search:hover { background:rgba(157,140,207,0.1) !important; color:rgba(157,140,207,0.9) !important; }
     /* HUD button hover */
     #verify-btn:hover, #search-btn:hover { border-color:rgba(157,140,207,0.5) !important; color:#fff !important; background:rgba(157,140,207,0.12) !important; }
+
+    /* ════════════════════════════════════════════
+       NUCLEAR HUD OVERRIDE — zero border-radius everywhere
+       ════════════════════════════════════════════ */
+    
+    /* Kill all rounded corners except dots and circles */
+    .section *:not(.hud-dot):not(.hud-dot-green):not(.hud-dot-amber):not(.hud-dot-red):not([style*="border-radius: 50%"]):not(canvas) {
+      border-radius: 0 !important;
+    }
+    
+    /* Kill all box-shadows except canvas glow */
+    .section *:not(canvas):not([id*="dot"]) {
+      box-shadow: none !important;
+    }
+    
+    /* Kill all gradient backgrounds on non-canvas, non-body elements */
+    .section div[style*="linear-gradient(135deg"]:not([class*="hud"]) {
+      background: transparent !important;
+    }
+    
+    /* Kill translateY hover lifts */
+    .section *:hover {
+      transform: none !important;
+    }
+    
+    /* Restore canvas transforms */
+    canvas, canvas * { transform: unset !important; }
+    
+    /* Kill background radial blobs (decorative) */
+    .section div[style*="radial-gradient"][style*="pointer-events: none"] {
+      display: none !important;
+    }
+    
+    /* All borders become sharp hairlines */
+    .section [style*="border:"] {
+      border-color: rgba(255,255,255,0.06) !important;
+    }
+    .section [style*="border: 1px solid rgba(157"] {
+      border-color: rgba(157,140,207,0.15) !important;
+    }
+    .section [style*="border: 2px solid"] {
+      border-width: 1px !important;
+      border-color: rgba(157,140,207,0.15) !important;
+    }
+    
+    /* Footer also flat */
+    footer, footer * {
+      border-radius: 0 !important;
+    }
+    
+    /* Nav stays functional but flat */
+    nav, nav * {
+      border-radius: 0 !important;
+    }
+    .nav-drawer {
+      border-radius: 0 !important;
+    }
+
     /* Hero responsive */
     @media (max-width: 600px){
       .hero-content-bottom {
@@ -667,34 +725,36 @@
        ============================================ */
     .btn{
       appearance:none;
-      border:1px solid rgba(255,255,255,.18);
+      border:1px solid rgba(255,255,255,.10);
       background: transparent;
-      color: var(--text-primary);
-      padding: 14px 18px;
-      border-radius: 14px;
+      color: rgba(255,255,255,.7);
+      padding: 12px 20px;
+      border-radius: 0;
       font-family: var(--mono);
       font-size: 10px;
       letter-spacing: 2.5px;
       text-transform: uppercase;
       cursor: pointer;
-      transition: transform .2s var(--ease), border-color .2s ease, background .2s ease;
+      transition: color .2s ease, border-color .2s ease;
       position: relative;
-      overflow:hidden;
+      overflow:visible;
     }
     .btn:hover{
-      transform: translateY(-1px);
-      border-color: rgba(255,255,255,.28);
-      background: rgba(255,255,255,.04);
+      transform: none;
+      border-color: rgba(157,140,207,.4);
+      color: rgba(157,140,207,.95);
+      background: transparent;
       text-decoration: none;
     }
     .btn.primary{
-      border-color: rgba(157,140,207,.55);
-      background: rgba(91,75,138,.18);
-      box-shadow: 0 18px 50px rgba(0,0,0,.30);
+      border-color: rgba(157,140,207,.3);
+      background: transparent;
+      box-shadow: none;
+      color: rgba(157,140,207,.9);
     }
     .btn.primary:hover{
-      border-color: rgba(157,140,207,.85);
-      background: rgba(91,75,138,.26);
+      border-color: rgba(157,140,207,.6);
+      background: rgba(157,140,207,.06);
     }
 
     /* ============================================
@@ -756,30 +816,26 @@
        PANELS
        ============================================ */
     .panel{
-      background: linear-gradient(180deg, rgba(255,255,255,.035) 0%, rgba(255,255,255,.012) 100%);
-      border: 1px solid rgba(255,255,255,.07);
-      border-radius: 18px;
-      padding: var(--space-3) 28px;
-      backdrop-filter: blur(18px);
+      background: transparent;
+      border: none;
+      border-radius: 0;
+      padding: var(--space-3) 0;
+      backdrop-filter: none;
       position: relative;
-      overflow:hidden;
+      overflow:visible;
+      border-top: 1px solid rgba(255,255,255,0.04);
+      border-bottom: 1px solid rgba(255,255,255,0.04);
     }
-    .panel::before{
-      content:"";
-      position:absolute;
-      top:0;left:0;right:0;height:1px;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,.08), transparent);
-      pointer-events:none;
-    }
+    .panel::before{ display:none; }
     .panel > *{ position: relative; z-index: 1; }
 
     .panel h3{
       margin: 0 0 14px;
       font-family: var(--mono);
-      font-size: 11px;
-      letter-spacing: 4px;
+      font-size: 9px;
+      letter-spacing: 3px;
       text-transform: uppercase;
-      color: rgba(255,255,255,.85);
+      color: rgba(255,255,255,.45);
     }
     .panel p{
       margin: 0 0 var(--space-2);
@@ -1801,56 +1857,12 @@
       to { opacity: 1; transform: translateY(0); }
     }
     
-    /* Card hover lift effect */
-    [style*="border-radius: 20px"],
-    [style*="border-radius: 16px"],
-    [style*="border-radius: 14px"] {
-      transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease !important;
-    }
-    
-    [style*="border-radius: 20px"]:hover,
-    [style*="border-radius: 16px"]:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-    }
-    
-    /* Button glow on hover */
+    /* HUD — no card lift, no glow, no icon zoom */
     .btn.primary {
       position: relative;
-      overflow: hidden;
-      transition: all 0.3s ease !important;
+      overflow: visible;
     }
-    
-    .btn.primary::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-      transition: left 0.5s ease;
-    }
-    
-    .btn.primary:hover::before {
-      left: 100%;
-    }
-    
-    .btn.primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 30px rgba(91,75,138,0.4);
-    }
-    
-    /* Icon hover rotation */
-    .gate-icon svg,
-    [style*="border-radius: 12px"] svg {
-      transition: transform 0.3s ease;
-    }
-    
-    [style*="border-radius: 20px"]:hover svg,
-    [style*="border-radius: 16px"]:hover svg {
-      transform: scale(1.1);
-    }
+    .btn.primary::before { display:none; }
     
     /* Badge hover */
     .badge {
@@ -2458,7 +2470,7 @@
         
         <!-- CTA Buttons -->
         <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
-          <a class="btn primary" href="https://app.sentinelauthority.org" style="display: inline-flex; align-items: center; gap: 10px; padding: 12px 22px; background: linear-gradient(135deg, #5B4B8A 0%, #7B6BAA 100%); box-shadow: 0 4px 24px rgba(91,75,138,0.4);">
+          <a class="btn primary" href="https://app.sentinelauthority.org" style="display: inline-flex; align-items: center; gap: 10px; padding: 12px 22px;">
             Get Started
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
           </a>
@@ -4473,9 +4485,8 @@
       })();
       </script>
 
-      <a href="#verify" class="btn primary" style="display: inline-flex; align-items: center; gap: 10px;">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>
-          Verify a Certificate
+      <a href="#verify" class="hud-link" style="display: inline-flex; align-items: center; gap: 8px; font-size:11px;">
+          VERIFY A CERTIFICATE →
         </a>
       </div>
     </section>
