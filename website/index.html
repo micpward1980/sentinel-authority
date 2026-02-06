@@ -671,27 +671,7 @@
 
     /* 2050 HUD OVERLAY */
 
-    body::after {
-      content: '';
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      height: 1px;
-      background: linear-gradient(90deg,
-        transparent 5%,
-        rgba(157,140,207,0.08) 20%,
-        rgba(157,140,207,0.15) 50%,
-        rgba(157,140,207,0.08) 80%,
-        transparent 95%);
-      z-index: 9998;
-      pointer-events: none;
-      animation: page-scan 8s linear infinite;
-    }
-    @keyframes page-scan {
-      0% { top: -2px; opacity: 0; }
-      5% { opacity: 1; }
-      95% { opacity: 1; }
-      100% { top: 100vh; opacity: 0; }
-    }
+    /* page scan removed */
 
     .section::before {
       content: '';
