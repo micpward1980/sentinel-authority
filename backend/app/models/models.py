@@ -36,6 +36,17 @@ class TestState(str, enum.Enum):
     ABORTED = "aborted"
 
 
+
+class Organization(Base):
+    __tablename__ = "organizations"
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(255), nullable=False)
+    slug = Column(String(255), unique=True, index=True, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    users = relationship("User", back_populates="org")
+    applications = relationship("Application", back_populates="org")
+
+
 class User(Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True, index=True)
@@ -47,6 +58,8 @@ class User(Base):
     locked_until = Column(DateTime, nullable=True)
     full_name = Column(String(255))
     organization = Column(String(255))
+    organization_id = Column(Integer, ForeignKey("organizations.id"), nullable=True, index=True)
+    org = relationship("Organization", back_populates="users")
     role = Column(Enum(UserRole), default=UserRole.SUBSCRIBER)
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, default=datetime.utcnow)
@@ -80,6 +93,7 @@ class Application(Base):
     application_number = Column(String(50), unique=True, index=True)
     applicant_id = Column(Integer, ForeignKey("users.id"))
     organization_name = Column(String(255), nullable=False)
+    organization_id = Column(Integer, ForeignKey("organizations.id"), nullable=True, index=True)
     contact_name = Column(String(255))
     contact_email = Column(String(255))
     contact_phone = Column(String(50))
@@ -97,6 +111,7 @@ class Application(Base):
     notes = Column(Text)
     created_at = Column(DateTime, default=datetime.utcnow)
     applicant = relationship("User", back_populates="applications")
+    org = relationship("Organization", back_populates="applications")
     tests = relationship("CAT72Test", back_populates="application")
     certificate = relationship("Certificate", back_populates="application", uselist=False)
 
@@ -197,6 +212,7 @@ class Licensee(Base):
     id = Column(Integer, primary_key=True, index=True)
     license_number = Column(String(50), unique=True, index=True)
     organization_name = Column(String(255), nullable=False)
+    organization_id = Column(Integer, ForeignKey("organizations.id"), nullable=True, index=True)
     contact_name = Column(String(255))
     contact_email = Column(String(255))
     license_type = Column(String(50))
@@ -244,6 +260,7 @@ class APIKey(Base):
     key_prefix = Column(String(12))  # First 8 chars for identification (sa_live_xxxx)
     certificate_id = Column(Integer, ForeignKey("certificates.id"), nullable=True)
     user_id = Column(Integer, ForeignKey("users.id"))
+    organization_id = Column(Integer, ForeignKey("organizations.id"), nullable=True, index=True)
     name = Column(String(100))  # Friendly name like "Production Key"
     created_at = Column(DateTime, default=datetime.utcnow)
     last_used_at = Column(DateTime, nullable=True)

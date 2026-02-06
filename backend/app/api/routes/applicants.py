@@ -119,7 +119,7 @@ async def list_applications(
     from sqlalchemy import or_
     query = select(Application)
     if user.get("role") not in ["admin", "operator"]:
-        query = query.where(Application.applicant_id == int(user["sub"]))
+        query = query.where((Application.organization_id == user.get("organization_id")) if user.get("organization_id") else (Application.applicant_id == int(user["sub"])))
     if state and state != "all":
         if state == "revoked":
             query = query.where(Application.state.in_(["suspended", "revoked"]))
@@ -139,7 +139,7 @@ async def list_applications(
     # State counts (unfiltered by search/state for tab badges)
     count_q = select(Application.state, func.count(Application.id)).group_by(Application.state)
     if user.get("role") not in ["admin", "operator"]:
-        count_q = count_q.where(Application.applicant_id == int(user["sub"]))
+        count_q = count_q.where((Application.organization_id == user.get("organization_id")) if user.get("organization_id") else (Application.applicant_id == int(user["sub"])))
     count_result = await db.execute(count_q)
     state_counts = {"all": 0}
     for row in count_result.fetchall():

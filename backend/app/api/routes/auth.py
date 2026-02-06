@@ -19,7 +19,7 @@ from pydantic import BaseModel, EmailStr
 from app.core.database import get_db
 
 from app.core.security import get_password_hash, verify_password, create_access_token, get_current_user
-from app.models.models import User, UserRole, UserSession
+from app.models.models import User, Organization, UserRole, UserSession
 
 router = APIRouter()
 limiter = Limiter(key_func=get_remote_address)
@@ -225,7 +225,7 @@ async def verify_2fa_login(
     return {
         "access_token": token,
         "token_type": "bearer",
-        "user": {"id": user.id, "email": user.email, "full_name": user.full_name, "role": user.role.value, "organization": user.organization}
+        "user": {"id": user.id, "email": user.email, "full_name": user.full_name, "role": user.role.value, "organization": user.organization, "organization_id": user.organization_id}
     }
 
 class ChangePasswordRequest(BaseModel):
@@ -280,6 +280,19 @@ async def register(request: Request, user_data: UserCreate, db: AsyncSession = D
     await db.commit()
     await db.refresh(user)
     
+    # Link to organization
+    if user_data.organization:
+        org_slug = user_data.organization.lower().strip().replace(' ', '-').replace(',', '').replace('.', '')
+        existing_org = await db.execute(select(Organization).where(Organization.slug == org_slug))
+        org = existing_org.scalar_one_or_none()
+        if not org:
+            org = Organization(name=user_data.organization.strip(), slug=org_slug)
+            db.add(org)
+            await db.flush()
+        user.organization_id = org.id
+        await db.commit()
+        await db.refresh(user)
+    
     await notify_admin_new_registration(user.email, user.full_name)
     
     await write_audit_log(db, action="user_registered", resource_type="user", resource_id=user.id,
@@ -295,7 +308,7 @@ async def register(request: Request, user_data: UserCreate, db: AsyncSession = D
     return {
         "access_token": token,
         "token_type": "bearer",
-        "user": {"id": user.id, "email": user.email, "full_name": user.full_name, "role": user.role.value, "organization": user.organization}
+        "user": {"id": user.id, "email": user.email, "full_name": user.full_name, "role": user.role.value, "organization": user.organization, "organization_id": user.organization_id}
     }
 
 
@@ -333,11 +346,11 @@ async def login(request: Request, credentials: UserLogin, db: AsyncSession = Dep
     
     # Check if 2FA is enabled
     if user.totp_enabled and user.totp_secret:
-        temp_token = create_access_token({"sub": str(user.id), "email": user.email, "role": user.role.value, "organization": user.organization}, expires_minutes=5)
+        temp_token = create_access_token({"sub": str(user.id), "email": user.email, "role": user.role.value, "organization": user.organization, "organization_id": user.organization_id}, expires_minutes=5)
         return {
             "requires_2fa": True,
             "temp_token": temp_token,
-            "user": {"id": user.id, "email": user.email, "full_name": user.full_name, "role": user.role.value, "organization": user.organization}
+            "user": {"id": user.id, "email": user.email, "full_name": user.full_name, "role": user.role.value, "organization": user.organization, "organization_id": user.organization_id}
         }
     
     token = await _create_session_token(user, request, db)
@@ -349,7 +362,7 @@ async def login(request: Request, credentials: UserLogin, db: AsyncSession = Dep
     return {
         "access_token": token,
         "token_type": "bearer",
-        "user": {"id": user.id, "email": user.email, "full_name": user.full_name, "role": user.role.value, "organization": user.organization}
+        "user": {"id": user.id, "email": user.email, "full_name": user.full_name, "role": user.role.value, "organization": user.organization, "organization_id": user.organization_id}
     }
 
 

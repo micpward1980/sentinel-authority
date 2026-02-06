@@ -589,7 +589,9 @@ async def get_my_session_telemetry(
     """Get telemetry for own session"""
     # Verify ownership
     key_result = await db.execute(
-        select(APIKey).where(APIKey.user_id == int(current_user["sub"]))
+        select(APIKey).where(
+            (APIKey.organization_id == current_user.get("organization_id")) if current_user.get("organization_id") else (APIKey.user_id == int(current_user["sub"]))
+        )
     )
     my_keys = [k.id for k in key_result.scalars().all()]
     
@@ -632,7 +634,9 @@ async def get_my_session_violations(
 ):
     """Get violations for own session"""
     key_result = await db.execute(
-        select(APIKey).where(APIKey.user_id == int(current_user["sub"]))
+        select(APIKey).where(
+            (APIKey.organization_id == current_user.get("organization_id")) if current_user.get("organization_id") else (APIKey.user_id == int(current_user["sub"]))
+        )
     )
     my_keys = [k.id for k in key_result.scalars().all()]
     
@@ -675,7 +679,9 @@ async def download_my_session_report(
     from app.services.cat72_report_generator import generate_cat72_report
     
     key_result = await db.execute(
-        select(APIKey).where(APIKey.user_id == int(current_user["sub"]))
+        select(APIKey).where(
+            (APIKey.organization_id == current_user.get("organization_id")) if current_user.get("organization_id") else (APIKey.user_id == int(current_user["sub"]))
+        )
     )
     my_keys = [k.id for k in key_result.scalars().all()]
     
@@ -769,7 +775,9 @@ async def get_monitoring_overview(
     else:
         # Get user's API keys
         keys_result = await db.execute(
-            select(APIKey).where(APIKey.user_id == int(current_user["sub"]))
+            select(APIKey).where(
+            (APIKey.organization_id == current_user.get("organization_id")) if current_user.get("organization_id") else (APIKey.user_id == int(current_user["sub"]))
+        )
         )
         user_keys = keys_result.scalars().all()
         key_ids = [k.id for k in user_keys]
@@ -908,7 +916,9 @@ async def get_alerts(
         )
     else:
         keys_result = await db.execute(
-            select(APIKey).where(APIKey.user_id == int(current_user["sub"]))
+            select(APIKey).where(
+            (APIKey.organization_id == current_user.get("organization_id")) if current_user.get("organization_id") else (APIKey.user_id == int(current_user["sub"]))
+        )
         )
         user_keys = keys_result.scalars().all()
         key_ids = [k.id for k in user_keys]
