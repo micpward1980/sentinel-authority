@@ -395,6 +395,48 @@ class PasswordScoreRequest(BaseModel):
 async def password_strength_score(body: PasswordScoreRequest):
     return score_password(body.password)
 
+
+@router.put("/profile", summary="Update user profile")
+async def update_profile(
+    updates: ProfileUpdate,
+    db: AsyncSession = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    """Update user profile (name, organization)"""
+    result = await db.execute(select(User).where(User.id == int(current_user["sub"])))
+    user = result.scalar_one_or_none()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    if updates.full_name is not None:
+        user.full_name = updates.full_name.strip()
+    if updates.organization is not None:
+        user.organization = updates.organization.strip()
+        org_slug = updates.organization.lower().strip().replace(' ', '-').replace(',', '').replace('.', '')
+        if org_slug:
+            existing_org = await db.execute(select(Organization).where(Organization.slug == org_slug))
+            org = existing_org.scalar_one_or_none()
+            if not org:
+                org = Organization(name=updates.organization.strip(), slug=org_slug)
+                db.add(org)
+                await db.flush()
+            user.organization_id = org.id
+    
+    await db.commit()
+    await db.refresh(user)
+    
+    return {
+        "message": "Profile updated",
+        "user": {
+            "id": user.id,
+            "email": user.email,
+            "full_name": user.full_name,
+            "role": user.role.value,
+            "organization": user.organization,
+            "organization_id": user.organization_id
+        }
+    }
+
 @router.get("/me", summary="Get current user profile")
 async def get_me(current_user: dict = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(User).where(User.id == int(current_user["sub"])))
