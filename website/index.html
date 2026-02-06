@@ -2929,7 +2929,7 @@
         // ── CIRCLE NODE ──
         function drawCircleNode(x,y,r,col,label,time) {
           var h=ctx.createRadialGradient(x,y,r*0.7,x,y,r*1.6);
-          h.addColorStop(0,rgb(col,0.08));h.addColorStop(1,rgb(col,0));
+          h.addColorStop(0,rgb(col,0.035));h.addColorStop(1,rgb(col,0));
           ctx.fillStyle=h;ctx.beginPath();ctx.arc(x,y,r*1.6,0,Math.PI*2);ctx.fill();
 
           ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);
@@ -3381,7 +3381,7 @@
         // ── CIRCLE NODE ──
         function drawCircleNode(x,y,r,col,label,time){
           var h=ctx.createRadialGradient(x,y,r*0.7,x,y,r*1.6);
-          h.addColorStop(0,rgb(col,0.08));h.addColorStop(1,rgb(col,0));
+          h.addColorStop(0,rgb(col,0.035));h.addColorStop(1,rgb(col,0));
           ctx.fillStyle=h;ctx.beginPath();ctx.arc(x,y,r*1.6,0,Math.PI*2);ctx.fill();
           ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);
           ctx.fillStyle='rgba(255,255,255,0.035)';ctx.fill();
