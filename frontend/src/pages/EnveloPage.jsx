@@ -220,16 +220,28 @@ class EnveloAgent:
     # ── background loops ──────────────────────────────────────
 
     def _heartbeat_loop(self):
+        fail_count = 0
         while self.running:
             try:
-                self.client.post("/api/envelo/heartbeat", json={
+                res = self.client.post("/api/envelo/heartbeat", json={
                     "session_id": self.session_id,
                     "certificate_id": CERTIFICATE,
                     "timestamp": datetime.now(timezone.utc).isoformat(),
                     "stats": self.stats,
                 })
+                if res.status_code == 401:
+                    log.warning("API key revoked — shutting down")
+                    self.running = False
+                    self._flush_telemetry()
+                    self._cleanup()
+                    return
+                fail_count = 0
             except:
-                pass
+                fail_count += 1
+                if fail_count >= 10:
+                    log.warning(f"Lost connection ({fail_count} failures) — stopping")
+                    self.running = False
+                    return
             time.sleep(30)
 
     def _flush_loop(self):
@@ -242,12 +254,17 @@ class EnveloAgent:
             return
         batch, self.telemetry_buffer = self.telemetry_buffer[:], []
         try:
-            self.client.post("/api/envelo/telemetry", json={
+            res = self.client.post("/api/envelo/telemetry", json={
                 "certificate_id": CERTIFICATE,
                 "session_id": self.session_id,
                 "records": batch,
                 "stats": {"pass_count": self.stats["pass"], "block_count": self.stats["block"]},
             })
+            if res.status_code == 401:
+                log.warning("API key revoked — shutting down")
+                self.running = False
+                self._cleanup()
+                return
         except Exception as e:
             log.warning(f"Telemetry flush failed: {e}")
             self.telemetry_buffer = batch + self.telemetry_buffer
@@ -1319,6 +1336,7 @@ function EnveloCustomerView() {
   const [existingKeys, setExistingKeys] = useState([]);
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
+  const [showUninstall, setShowUninstall] = useState(false);
   const toast = useToast();
   const { user } = useAuth();
 
@@ -1484,16 +1502,81 @@ function EnveloCustomerView() {
         })}
 
         <Panel>
-          <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '12px'}}>Agent Management</p>
-          <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px'}}>
-            <div style={{padding: '16px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px'}}>
-              <p style={{fontWeight: 500, color: styles.textPrimary, marginBottom: '4px', fontSize: '14px'}}>View Logs</p>
-              <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px', color: styles.textSecondary, padding: '8px', background: 'rgba(0,0,0,0.3)', borderRadius: '6px', marginTop: '8px'}}>cat ~/.envelo/envelo.log</div>
+          <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Agent Control</p>
+          <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px'}}>
+            <button
+              onClick={async () => {
+                if (!confirm('Stop the ENVELO agent? It will shut down within 30 seconds.')) return;
+                try {
+                  const keys = await api.get('/api/apikeys/');
+                  for (const k of (keys.data || [])) {
+                    await api.delete(`/api/apikeys/${k.id}`);
+                  }
+                  toast.show('Agent will stop within 30 seconds', 'success');
+                  setTimeout(() => window.location.reload(), 3000);
+                } catch (e) {
+                  toast.show('Failed: ' + (e.response?.data?.detail || e.message), 'error');
+                }
+              }}
+              style={{padding: '16px', background: 'rgba(214,92,92,0.08)', border: '1px solid rgba(214,92,92,0.2)', borderRadius: '8px', cursor: 'pointer', textAlign: 'left'}}
+            >
+              <p style={{fontWeight: 500, color: styles.accentRed, marginBottom: '4px', fontSize: '14px'}}>⏹ Stop Agent</p>
+              <p style={{color: styles.textTertiary, fontSize: '11px', margin: 0}}>Revokes API key. Agent shuts down within 30s.</p>
+            </button>
+
+            <button
+              onClick={async () => {
+                if (!confirm('Redeploy? This revokes your current key and generates a new deploy command.')) return;
+                try {
+                  const keys = await api.get('/api/apikeys/');
+                  for (const k of (keys.data || [])) {
+                    await api.delete(`/api/apikeys/${k.id}`);
+                  }
+                  toast.show('Old agent stopping. Generating new deploy...', 'success');
+                  setTimeout(() => window.location.reload(), 2000);
+                } catch (e) {
+                  toast.show('Failed: ' + (e.response?.data?.detail || e.message), 'error');
+                }
+              }}
+              style={{padding: '16px', background: 'rgba(91,75,138,0.08)', border: '1px solid rgba(91,75,138,0.2)', borderRadius: '8px', cursor: 'pointer', textAlign: 'left'}}
+            >
+              <p style={{fontWeight: 500, color: styles.purpleBright, marginBottom: '4px', fontSize: '14px'}}>↻ Redeploy</p>
+              <p style={{color: styles.textTertiary, fontSize: '11px', margin: 0}}>Stop current agent and get a fresh deploy command.</p>
+            </button>
+
+            <button
+              onClick={async () => {
+                if (!confirm('Uninstall ENVELO agent? This revokes all keys and shows cleanup instructions.')) return;
+                try {
+                  const keys = await api.get('/api/apikeys/');
+                  for (const k of (keys.data || [])) {
+                    await api.delete(`/api/apikeys/${k.id}`);
+                  }
+                  toast.show('Keys revoked. Run the cleanup command below.', 'success');
+                  setShowUninstall(true);
+                } catch (e) {
+                  toast.show('Failed: ' + (e.response?.data?.detail || e.message), 'error');
+                }
+              }}
+              style={{padding: '16px', background: 'rgba(255,255,255,0.03)', border: '1px solid ' + styles.borderGlass, borderRadius: '8px', cursor: 'pointer', textAlign: 'left'}}
+            >
+              <p style={{fontWeight: 500, color: styles.textSecondary, marginBottom: '4px', fontSize: '14px'}}>⊘ Uninstall</p>
+              <p style={{color: styles.textTertiary, fontSize: '11px', margin: 0}}>Remove agent, config, and auto-restart service.</p>
+            </button>
+          </div>
+
+          {showUninstall && (
+            <div style={{marginTop: '16px', padding: '16px', background: 'rgba(0,0,0,0.3)', borderRadius: '8px', border: '1px solid ' + styles.borderGlass}}>
+              <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', color: styles.accentAmber, marginBottom: '8px'}}>Paste in terminal to fully remove</p>
+              <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px', color: styles.textSecondary, padding: '12px', background: 'rgba(0,0,0,0.3)', borderRadius: '6px', whiteSpace: 'pre-wrap', lineHeight: '1.8'}}>
+                {'# Stop agent\nkill $(cat ~/.envelo/envelo.pid) 2>/dev/null\n\n# Remove systemd service (Linux)\nsystemctl --user stop envelo.service 2>/dev/null\nsystemctl --user disable envelo.service 2>/dev/null\nrm -f ~/.config/systemd/user/envelo.service\n\n# Remove launchd (macOS)\nlaunchctl unload ~/Library/LaunchAgents/org.sentinelauthority.envelo.plist 2>/dev/null\nrm -f ~/Library/LaunchAgents/org.sentinelauthority.envelo.plist\n\n# Remove files\nrm -rf ~/.envelo\n\necho "✓ ENVELO uninstalled"'}
+              </div>
             </div>
-            <div style={{padding: '16px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px'}}>
-              <p style={{fontWeight: 500, color: styles.textPrimary, marginBottom: '4px', fontSize: '14px'}}>Restart Agent</p>
-              <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px', color: styles.textSecondary, padding: '8px', background: 'rgba(0,0,0,0.3)', borderRadius: '6px', marginTop: '8px'}}>kill $(cat ~/.envelo/envelo.pid) && python3 ~/.envelo/envelo_agent.py &</div>
-            </div>
+          )}
+
+          <div style={{marginTop: '16px', padding: '12px', background: 'rgba(0,0,0,0.15)', borderRadius: '8px'}}>
+            <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '8px'}}>Logs</p>
+            <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px', color: styles.textSecondary, padding: '8px', background: 'rgba(0,0,0,0.3)', borderRadius: '6px'}}>cat ~/.envelo/envelo.log</div>
           </div>
         </Panel>
       </div>
