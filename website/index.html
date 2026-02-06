@@ -856,49 +856,7 @@
 
     /* AWWWARDS LAYER */
 
-    @media (pointer: fine) {
-      * { cursor: none !important; }
-      a, button, [onclick], .btn, .hud-link, .hud-row[style*="cursor"],
-      .nav-links a, .nav-toggle, input, select, textarea {
-        cursor: none !important;
-      }
-    }
-    .sa-cursor {
-      position: fixed; top: 0; left: 0;
-      width: 8px; height: 8px;
-      background: rgba(157,140,207,0.9);
-      border-radius: 50%;
-      pointer-events: none;
-      z-index: 99999;
-      mix-blend-mode: screen;
-      transition: width 0.15s ease, height 0.15s ease, background 0.15s ease, margin 0.15s ease;
-      margin: -4px 0 0 -4px;
-    }
-    .sa-cursor.hovering {
-      width: 14px; height: 14px;
-      background: rgba(157,140,207,1);
-      margin: -7px 0 0 -7px;
-    }
-    .sa-ring {
-      position: fixed; top: 0; left: 0;
-      width: 40px; height: 40px;
-      border: 1px solid rgba(157,140,207,0.25);
-      border-radius: 50%;
-      pointer-events: none;
-      z-index: 99998;
-      transition: width 0.25s ease, height 0.25s ease, border-color 0.25s ease, margin 0.25s ease;
-      margin: -20px 0 0 -20px;
-    }
-    .sa-ring.hovering {
-      width: 60px; height: 60px;
-      margin: -30px 0 0 -30px;
-      border-color: rgba(157,140,207,0.5);
-    }
-    .sa-ring.clicking {
-      width: 30px; height: 30px;
-      margin: -15px 0 0 -15px;
-      border-color: rgba(157,140,207,0.7);
-    }
+
     .sa-progress {
       position: fixed; top: 0; left: 0;
       height: 2px;
@@ -921,46 +879,6 @@
       position: fixed; inset: 0;
       pointer-events: none; z-index: -1;
     }
-    .sa-preloader {
-      position: fixed; inset: 0;
-      background: #0e0e14; z-index: 999999;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      transition: opacity 0.6s ease, visibility 0.6s ease;
-    }
-    .sa-preloader.done { opacity: 0; visibility: hidden; }
-    .sa-preloader .sa-pre-label {
-      font-family: var(--mono, 'IBM Plex Mono', monospace);
-      font-size: 9px; letter-spacing: 4px;
-      text-transform: uppercase; color: rgba(255,255,255,0.35);
-      margin-bottom: 24px;
-    }
-    .sa-preloader .sa-pre-title {
-      font-family: var(--serif, 'Source Serif 4', serif);
-      font-size: 28px; font-weight: 200;
-      color: rgba(255,255,255,0.85);
-      margin-bottom: 32px; letter-spacing: 8px;
-      text-transform: uppercase;
-    }
-    .sa-preloader .sa-pre-bar-track {
-      width: 200px; height: 1px;
-      background: rgba(255,255,255,0.06);
-      position: relative; overflow: hidden;
-    }
-    .sa-preloader .sa-pre-bar {
-      position: absolute; top: 0; left: 0;
-      height: 100%; width: 0%;
-      background: linear-gradient(90deg, rgba(157,140,207,0.5), rgba(92,214,133,0.5));
-      transition: width 0.3s ease;
-    }
-    .sa-preloader .sa-pre-pct {
-      font-family: var(--mono, 'IBM Plex Mono', monospace);
-      font-size: 10px; color: rgba(255,255,255,0.2);
-      margin-top: 12px; letter-spacing: 2px;
-    }
-    .sa-reveal-ready nav { animation: sa-fadeDown 0.8s ease 0.1s both; }
-    .sa-reveal-ready .hero-content { animation: sa-fadeUp 0.8s ease 0.3s both; }
-    .sa-reveal-ready #hero-canvas { animation: sa-fadeIn 1.2s ease 0.5s both; }
     @keyframes sa-fadeDown { from { opacity:0; transform:translateY(-20px); } to { opacity:1; transform:translateY(0); } }
     @keyframes sa-fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
     @keyframes sa-fadeIn { from { opacity:0; } to { opacity:1; } }
@@ -970,7 +888,6 @@
     }
     .section { transition: filter 0.4s ease, opacity 0.4s ease; }
     .section.sa-blur-out { filter: blur(2px); opacity: 0.7; }
-    @media (pointer: coarse) { .sa-cursor, .sa-ring { display: none !important; } }
 
     /* Hero responsive */
     @media (max-width: 600px){
@@ -6056,28 +5973,6 @@
     <script>
     (function() {
       'use strict';
-      var preloader = document.getElementById('sa-preloader');
-      var preBar = document.getElementById('sa-pre-bar');
-      var prePct = document.getElementById('sa-pre-pct');
-      var progress = 0;
-      var preInt = setInterval(function() {
-        progress += Math.random() * 15 + 5;
-        if (progress > 90) progress = 90;
-        if (preBar) preBar.style.width = progress + '%';
-        if (prePct) prePct.textContent = Math.round(progress) + '%';
-      }, 120);
-      window.addEventListener('load', function() {
-        clearInterval(preInt);
-        if (preBar) preBar.style.width = '100%';
-        if (prePct) prePct.textContent = '100%';
-        setTimeout(function() {
-          if (preloader) preloader.classList.add('done');
-          document.body.classList.add('sa-reveal-ready');
-          setTimeout(function() {
-            if (preloader && preloader.parentNode) preloader.parentNode.removeChild(preloader);
-          }, 800);
-        }, 400);
-      });
       if (window.matchMedia('(pointer: fine)').matches) {
         var cursor = document.createElement('div');
         cursor.className = 'sa-cursor';
