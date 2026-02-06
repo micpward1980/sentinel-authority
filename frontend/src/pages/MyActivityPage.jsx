@@ -39,7 +39,7 @@ function MyActivityPage() {
   const totalPages = Math.ceil(total / PAGE_SIZE);
 
   return (
-    <div className="space-y-6" style={{maxWidth: '800px'}}>
+    <div className="space-y-6" style={{maxWidth: '800px', margin: '0 auto'}}>
       <SectionHeader label="Account" title="My Activity" />
 
       <Panel>

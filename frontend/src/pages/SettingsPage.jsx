@@ -99,7 +99,7 @@ function SettingsPage() {
   if (!prefs) return <div style={{color: styles.textTertiary, padding: '40px', textAlign: 'center'}}>Loading preferences...</div>;
 
   return (
-    <div className="space-y-6" style={{maxWidth: '700px'}}>
+    <div className="space-y-6" style={{maxWidth: '700px', margin: '0 auto'}}>
       <SectionHeader label="Account" title="Settings" />
 
       <Panel>
