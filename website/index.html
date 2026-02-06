@@ -2405,7 +2405,7 @@
     <!-- HERO -->
     <section class="hero">
       <!-- Full-viewport canvas -->
-      <canvas id="hero-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;"></canvas>
+      <canvas id="hero-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; opacity: 0; transition: opacity 0.8s ease;"></canvas>
       
       <!-- Hero Content -->
       <div id="hero-text" class="hero-content-bottom" style="position: absolute; bottom: 5vh; left: 0; right: 0; z-index: 10; text-align: center; padding: 0 16px; display: flex; flex-direction: column; align-items: center;">
@@ -2475,6 +2475,9 @@
     return window.innerHeight - rect.top + 20;
   }
 
+  var radiusLocked = false;
+  var lockedRadius = 0, lockedCx = 0, lockedCy = 0;
+
   function resize() {
     W = c.offsetWidth || window.innerWidth;
     H = c.offsetHeight || window.innerHeight;
@@ -2482,18 +2485,24 @@
     c.height = H * dpr;
     ctx.setTransform(dpr,0,0,dpr,0,0);
 
-    var hh = heroH();
-    var avail = H - hh;
-    cx = W * 0.5;
-    if (W < 600) {
-      // Mobile: center the animation higher, bigger radius relative to screen
-      cy = avail * 0.50;
-      radius = Math.min(W * 0.35, avail * 0.38);
-      if (radius < 80) radius = 80;
+    // Only recalculate layout on actual window resize, not scroll
+    if (!radiusLocked || Math.abs(W - c._lastW) > 20) {
+      // Use fixed proportion of viewport — don't depend on text position
+      cx = W * 0.5;
+      if (W < 600) {
+        cy = H * 0.35;
+        radius = Math.min(W * 0.35, H * 0.22);
+        if (radius < 80) radius = 80;
+      } else {
+        cy = H * 0.38;
+        radius = Math.min(W * 0.25, H * 0.26);
+        if (radius < 60) radius = 60;
+      }
+      lockedCx = cx; lockedCy = cy; lockedRadius = radius;
+      radiusLocked = true;
+      c._lastW = W;
     } else {
-      cy = avail * 0.60;
-      radius = Math.min(W * 0.25, avail * 0.34);
-      if (radius < 60) radius = 60;
+      cx = lockedCx; cy = lockedCy; radius = lockedRadius;
     }
   }
 
@@ -2697,8 +2706,10 @@
   }
 
   var lastTime=0;
+  var fadeTriggered = false;
   function animate(now) {
     if(!lastTime) lastTime=now;
+    if (!fadeTriggered) { c.style.opacity = '1'; fadeTriggered = true; }
     var dt=Math.min(now-lastTime, 32); lastTime=now;
     ctx.clearRect(0,0,W,H);
 
@@ -2715,9 +2726,17 @@
     requestAnimationFrame(animate);
   }
 
-  window.addEventListener('resize', function(){ resize(); initAgents(); });
+  window.addEventListener('resize', function(){
+    radiusLocked = false;
+    resize();
+    initAgents();
+    // Settle agents after resize too
+    for (var w=0; w<200; w++) updateAgents(16);
+  });
   resize();
   initAgents();
+  // Warm up: settle agents into boundary before first visible frame
+  for (var w=0; w<300; w++) updateAgents(16);
   requestAnimationFrame(animate);
 })();
       </script>
