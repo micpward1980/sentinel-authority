@@ -4333,7 +4333,7 @@
 
             var dx = a.x - cx, dy = a.y - cy;
             var dist = Math.sqrt(dx*dx+dy*dy);
-            var maxR = radius*0.86;
+            var maxR = oddRadius ? oddRadius*0.95 : radius*0.72;
             if (dist > maxR) {
               var ang = Math.atan2(dy,dx);
               a.x = cx+Math.cos(ang)*maxR;
@@ -4342,47 +4342,62 @@
               a.vx -= 2*dot*Math.cos(ang);
               a.vy -= 2*dot*Math.sin(ang);
               a.vx *= 0.4; a.vy *= 0.4;
-              if (dist > maxR*0.92) {
-                boundaryPulses.push({angle:ang, alpha:0.7, spread:0});
-              }
+              boundaryPulses.push({angle:ang, alpha:0.5, spread:0});
+              if (typeof enveloFlashes!=='undefined') enveloFlashes.push({angle:ang, alpha:0.6, spread:0});
             }
             a.vx *= 0.997; a.vy *= 0.997;
           }
         }
 
+        var oddRadius;
+        var enveloFlashes = [];
+
         function drawBoundary(now) {
           var pc = PHASE_COLORS[phase];
+          oddRadius = radius * 0.76;
+          var enveloR = radius;
 
-          var g1 = ctx.createRadialGradient(cx,cy,radius*0.92, cx,cy,radius*1.06);
-          g1.addColorStop(0, rgb(pc,0));
-          g1.addColorStop(0.5, rgb(pc,0.03));
-          g1.addColorStop(1, rgb(pc,0));
-          ctx.fillStyle = g1;
-          ctx.beginPath(); ctx.arc(cx,cy,radius*1.2,0,Math.PI*2); ctx.fill();
+          // — ENFORCEMENT MARGIN fill (between ODD and ENVELO) —
+          var mg = ctx.createRadialGradient(cx,cy,oddRadius, cx,cy,enveloR);
+          mg.addColorStop(0, rgb(PURPLE,0));
+          mg.addColorStop(0.3, rgb(PURPLE,0.015));
+          mg.addColorStop(1, rgb(PURPLE,0.025));
+          ctx.fillStyle = mg;
+          ctx.beginPath(); ctx.arc(cx,cy,enveloR,0,Math.PI*2); ctx.fill();
 
-          ctx.beginPath(); ctx.arc(cx,cy,radius,0,Math.PI*2);
-          ctx.strokeStyle = rgb(pc,0.18);
-          ctx.lineWidth = 1.5; ctx.stroke();
+          // — ENVELO outer ring (purple, solid) —
+          ctx.beginPath(); ctx.arc(cx,cy,enveloR,0,Math.PI*2);
+          ctx.strokeStyle = rgb(PURPLE,0.25);
+          ctx.lineWidth = 2; ctx.stroke();
 
-          ctx.save(); ctx.translate(cx,cy); ctx.rotate(now*0.00015);
-          ctx.beginPath(); ctx.arc(0,0,radius*0.92,0,Math.PI*2);
-          ctx.setLineDash([2,7]);
-          ctx.strokeStyle = rgb(pc,0.08);
+          // Outer glow
+          var eg = ctx.createRadialGradient(cx,cy,enveloR-4, cx,cy,enveloR+12);
+          eg.addColorStop(0, rgb(PURPLE,0.04));
+          eg.addColorStop(1, rgb(PURPLE,0));
+          ctx.fillStyle = eg;
+          ctx.beginPath(); ctx.arc(cx,cy,enveloR+12,0,Math.PI*2); ctx.fill();
+
+          // — ODD inner ring (green, dashed) —
+          ctx.save(); ctx.translate(cx,cy); ctx.rotate(now*0.0001);
+          ctx.beginPath(); ctx.arc(0,0,oddRadius,0,Math.PI*2);
+          ctx.setLineDash([4,8]);
+          ctx.strokeStyle = rgb(GREEN,0.18);
           ctx.lineWidth = 1; ctx.stroke();
           ctx.setLineDash([]); ctx.restore();
 
+          // — Progress arc on ENVELO ring —
           var prog = (simTime/72)*Math.PI*2;
           if (prog > 0.01) {
             ctx.beginPath();
-            ctx.arc(cx,cy,radius, -Math.PI/2, -Math.PI/2+prog);
-            var rg = ctx.createLinearGradient(cx-radius,cy,cx+radius,cy);
+            ctx.arc(cx,cy,enveloR, -Math.PI/2, -Math.PI/2+prog);
+            var rg = ctx.createLinearGradient(cx-enveloR,cy,cx+enveloR,cy);
             rg.addColorStop(0, rgb(GREEN,0.6));
             rg.addColorStop(1, rgb(PURPLE,0.6));
             ctx.strokeStyle = rg;
             ctx.lineWidth = 2.5; ctx.lineCap='round'; ctx.stroke();
 
             var ha = -Math.PI/2+prog;
-            var hx = cx+Math.cos(ha)*radius, hy = cy+Math.sin(ha)*radius;
+            var hx = cx+Math.cos(ha)*enveloR, hy = cy+Math.sin(ha)*enveloR;
             var hg = ctx.createRadialGradient(hx,hy,0,hx,hy,10);
             hg.addColorStop(0,rgb(PURPLE,0.5));
             hg.addColorStop(1,rgb(PURPLE,0));
@@ -4390,9 +4405,10 @@
             ctx.beginPath(); ctx.arc(hx,hy,10,0,Math.PI*2); ctx.fill();
           }
 
+          // — Hour ticks on ENVELO ring —
           for (var h=0; h<12; h++) {
             var ta = -Math.PI/2+(h/12)*Math.PI*2;
-            var inn = radius-6, out = radius+6;
+            var inn = enveloR-6, out = enveloR+6;
             var passed = (h*6)<simTime;
             ctx.beginPath();
             ctx.moveTo(cx+Math.cos(ta)*inn, cy+Math.sin(ta)*inn);
@@ -4401,7 +4417,7 @@
             ctx.lineWidth = h%2===0 ? 1.5 : 0.8;
             ctx.stroke();
             if (h%2===0) {
-              var lx=cx+Math.cos(ta)*(radius+17), ly=cy+Math.sin(ta)*(radius+17);
+              var lx=cx+Math.cos(ta)*(enveloR+17), ly=cy+Math.sin(ta)*(enveloR+17);
               ctx.font='400 8px "IBM Plex Mono"';
               ctx.fillStyle=passed?rgb(GREEN,0.85):'rgba(255,255,255,0.12)';
               ctx.textAlign='center'; ctx.textBaseline='middle';
@@ -4409,10 +4425,31 @@
             }
           }
 
-          ctx.font='400 9px "IBM Plex Mono"';
-          ctx.fillStyle=rgb(pc,0.7);
+          // — ENVELO flashes (when agents approach ODD boundary) —
+          for (var ef=enveloFlashes.length-1;ef>=0;ef--) {
+            var fl = enveloFlashes[ef];
+            fl.alpha -= 0.015; fl.spread += 0.4;
+            if (fl.alpha<=0) { enveloFlashes.splice(ef,1); continue; }
+            var fx=cx+Math.cos(fl.angle)*enveloR, fy=cy+Math.sin(fl.angle)*enveloR;
+            var fg=ctx.createRadialGradient(fx,fy,0,fx,fy,fl.spread+15);
+            fg.addColorStop(0,rgb(PURPLE,fl.alpha*0.6));
+            fg.addColorStop(1,rgb(PURPLE,0));
+            ctx.fillStyle=fg;
+            ctx.beginPath(); ctx.arc(fx,fy,fl.spread+15,0,Math.PI*2); ctx.fill();
+          }
+
+          // — Labels —
+          ctx.font='600 9px "IBM Plex Mono"';
           ctx.textAlign='center';
-          ctx.fillText('OPERATIONAL DOMAIN',cx,cy-radius-28);
+          ctx.fillStyle=rgb(PURPLE,0.8);
+          ctx.fillText('ENVELO',cx,cy-enveloR-28);
+          ctx.font='300 7px "IBM Plex Mono"';
+          ctx.fillStyle=rgb(PURPLE,0.35);
+          ctx.fillText('ENFORCEMENT LAYER',cx,cy-enveloR-16);
+
+          ctx.font='400 8px "IBM Plex Mono"';
+          ctx.fillStyle=rgb(GREEN,0.5);
+          ctx.fillText('ODD BOUNDARY',cx,cy-oddRadius-10);
         }
 
         function drawPulses() {
