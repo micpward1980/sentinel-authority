@@ -3047,7 +3047,7 @@
 
   function drawHash(now) {
     if (W < 480) return; // Skip hash on small phones - overlaps content
-    var x = W<600 ? W-12 : cx+radius+55;
+    var x = W<600 ? W-12 : cx+radius+90;
     var startY = cy-radius*0.4;
     var chars='0123456789abcdef';
     ctx.font='400 7.5px "IBM Plex Mono"';
@@ -4765,7 +4765,7 @@
         }
 
         function drawHash(now) {
-          var x = W<600 ? W-12 : cx+radius+55;
+          var x = W<600 ? W-12 : cx+radius+90;
           var startY = cy-radius*0.4;
           var chars='0123456789abcdef';
           ctx.font='300 7px "IBM Plex Mono"';
