@@ -2716,12 +2716,18 @@
   var boundaryPulses = [];
 
   var dataLabels = [
-    'speed:62.4mph','lat:30.412\u00B0N','lng:97.741\u00B0W','heading:247\u00B0',
-    'lane:2','lidar:clean','visibility:0.8mi','brake_dist:184ft',
-    'following:2.3s','steering:0.4\u00B0','throttle:34%','yaw_rate:0.02\u00B0/s',
-    'road:dry','temp:71\u00B0F','wind:8mph_NW','grade:1.2%',
-    'obj_count:14','ped_count:0','signal:green','conf:0.994',
-    'gps_fix:RTK','imu:nominal','cam_8:clear','radar:12_trk'
+    // Autonomous vehicles
+    'av:speed:62.4mph','av:lidar:clean','av:lane:2','av:brake_dist:184ft',
+    // Aerospace & defense
+    'uav:alt:12400ft','uav:heading:247\u00B0','sat:orbit:LEO','wpn:safe:locked',
+    // Healthcare AI
+    'dx:conf:0.994','imaging:mri:clear','dosage:verify:OK','patient:id:anon',
+    // Industrial robotics
+    'arm:torque:42Nm','weld:temp:1840\u00B0F','cell:cycle:14209','grip:psi:28.4',
+    // Financial AI
+    'txn:risk:0.003','algo:latency:2.1ms','fraud:score:LOW','aml:flag:clear',
+    // Energy & grid
+    'grid:load:84.2%','turbine:rpm:1812','solar:eff:22.4%','batt:soc:67%'
   ];
 
   function rgb(col,a){ return 'rgba('+col[0]+','+col[1]+','+col[2]+','+a+')'; }
@@ -2846,7 +2852,7 @@
     ctx.font='400 9px "IBM Plex Mono"';
     ctx.fillStyle=rgb(PURPLE,0.85);
     ctx.textAlign='center';
-    ctx.fillText('ODD BOUNDARY',cx,cy-radius-28);
+    ctx.fillText('OPERATIONAL DOMAIN',cx,cy-radius-28);
     ctx.font='600 8px "IBM Plex Mono"';
     ctx.fillStyle=rgb(PURPLE,0.6);
     ctx.fillText('ENVELO',cx,cy-radius-17);
@@ -4405,7 +4411,7 @@
           ctx.font='400 9px "IBM Plex Mono"';
           ctx.fillStyle=rgb(pc,0.7);
           ctx.textAlign='center';
-          ctx.fillText('ODD BOUNDARY',cx,cy-radius-28);
+          ctx.fillText('OPERATIONAL DOMAIN',cx,cy-radius-28);
         }
 
         function drawPulses() {
