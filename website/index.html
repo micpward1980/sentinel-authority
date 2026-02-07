@@ -5399,46 +5399,38 @@
         </div>
       </div>
 
-      <!-- Contact — HUD -->
-      <div class="reveal" style="max-width: 700px; margin: 0 auto;">
-        <div class="hud-frame hud-scanline"><i></i>
-          <a href="mailto:info@sentinelauthority.org" style="text-decoration:none;display:block;">
-            <div class="hud-row" style="display:flex;align-items:flex-start;gap:12px;cursor:pointer;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.8'">
-              <span class="hud-dot" style="margin-top:6px;"></span>
-              <div style="flex:1;">
-                <div class="hud-label">GENERAL INQUIRIES</div>
-                <div class="hud-title" style="margin-top:4px;">info@sentinelauthority.org</div>
-                <div class="hud-desc">Questions about ODDC, the framework, or how conformance works.</div>
-              </div>
-            </div>
-          </a>
-          <a href="mailto:conformance@sentinelauthority.org" style="text-decoration:none;display:block;">
-            <div class="hud-row" style="display:flex;align-items:flex-start;gap:12px;cursor:pointer;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.8'">
-              <span class="hud-dot hud-dot-green" style="margin-top:6px;"></span>
-              <div style="flex:1;">
-                <div class="hud-label">CONFORMANCE ASSESSMENT</div>
-                <div class="hud-title" style="margin-top:4px;color:rgba(92,214,133,0.85);">conformance@sentinelauthority.org</div>
-                <div class="hud-desc">Start assessment, pricing questions, or enterprise solutions.</div>
-              </div>
-            </div>
-          </a>
-          <a href="https://app.sentinelauthority.org" style="text-decoration:none;display:block;">
-            <div class="hud-row" style="display:flex;align-items:flex-start;gap:12px;cursor:pointer;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.8'">
-              <span class="hud-dot hud-dot-amber" style="margin-top:6px;"></span>
-              <div style="flex:1;">
-                <div class="hud-label">PORTAL</div>
-                <div class="hud-link" style="margin-top:4px;display:inline-block;">APP.SENTINELAUTHORITY.ORG →</div>
-                <div class="hud-desc">Create an account and begin your certification application.</div>
-              </div>
-            </div>
-          </a>
+      <div class="reveal" style="max-width:700px;margin:0 auto;">
+        <div style="padding:20px 0;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;align-items:flex-start;gap:12px;">
+          <span class="hud-dot" style="width:6px;height:6px;border-radius:50%;background:rgba(157,140,207,0.5);flex-shrink:0;margin-top:6px;"></span>
+          <div>
+            <div class="hud-label" style="margin-bottom:4px;">GENERAL INQUIRIES</div>
+            <div style="font-family:var(--mono);font-size:14px;color:var(--text-primary);letter-spacing:0.5px;">info@sentinelauthority.org</div>
+            <div class="hud-desc" style="margin-top:4px;">Questions about ODDC, the framework, or how conformance works.</div>
+          </div>
         </div>
-      </div>
 
-      <!-- Response time note -->
-      <div class="reveal" style="margin-top: var(--space-3); text-align: center;">
-        <span class="hud-label" style="color:rgba(255,255,255,0.3);">TYPICAL RESPONSE ·</span>
-        <span style="font-family:var(--mono);font-size:10px;letter-spacing:1px;color:rgba(255,255,255,0.6);">24 HOURS</span>
+        <div style="padding:20px 0;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;align-items:flex-start;gap:12px;">
+          <span class="hud-dot" style="width:6px;height:6px;border-radius:50%;background:rgba(157,140,207,0.5);flex-shrink:0;margin-top:6px;"></span>
+          <div>
+            <div class="hud-label" style="margin-bottom:4px;">CONFORMANCE ASSESSMENT</div>
+            <a href="mailto:conformance@sentinelauthority.org" style="font-family:var(--mono);font-size:14px;color:var(--purple-bright);letter-spacing:0.5px;text-decoration:none;">conformance@sentinelauthority.org</a>
+            <div class="hud-desc" style="margin-top:4px;">Start assessment, pricing questions, or enterprise solutions.</div>
+          </div>
+        </div>
+
+        <div style="padding:20px 0;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;align-items:flex-start;gap:12px;">
+          <span class="hud-dot" style="width:6px;height:6px;border-radius:50%;background:rgba(157,140,207,0.5);flex-shrink:0;margin-top:6px;"></span>
+          <div>
+            <div class="hud-label" style="margin-bottom:4px;">PORTAL</div>
+            <a href="https://app.sentinelauthority.org" class="hud-link" style="font-size:14px;">APP.SENTINELAUTHORITY.ORG &#x2192;</a>
+            <div class="hud-desc" style="margin-top:4px;">Create an account and begin your certification application.</div>
+          </div>
+        </div>
+
+        <div style="margin-top:32px;text-align:center;">
+          <span class="hud-label">TYPICAL RESPONSE</span>
+          <span style="font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--text-secondary);margin-left:8px;">&lt; 24 HOURS</span>
+        </div>
       </div>
     </section>
     <footer>
@@ -5708,6 +5700,16 @@
   <script>
     // Verify widget mode switching
     function setVerifyMode(mode) {
+      document.getElementById('verify-mode').style.display = mode === 'verify' ? '' : 'none';
+      document.getElementById('search-mode').style.display = mode === 'search' ? '' : 'none';
+      document.getElementById('verify-result').innerHTML = '';
+      ['tab-verify','tab-search'].forEach(function(id) {
+        var el = document.getElementById(id);
+        if (!el) return;
+        var active = id === 'tab-' + mode;
+        el.style.color = active ? 'rgba(157,140,207,0.9)' : 'rgba(255,255,255,0.3)';
+        el.style.borderBottomColor = active ? 'rgba(157,140,207,0.6)' : 'transparent';
+      });
       document.getElementById('verify-mode').style.display = mode === 'verify' ? '' : 'none';
       document.getElementById('search-mode').style.display = mode === 'search' ? '' : 'none';
       document.getElementById('verify-result').innerHTML = '';
