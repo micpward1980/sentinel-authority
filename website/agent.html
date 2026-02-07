@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ENVELO Agent | Sentinel Authority</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect x='6' y='6' width='20' height='20' rx='5' fill='%235B4B8A' stroke='%239d8ccf' stroke-width='2'/><circle cx='16' cy='16' r='4' fill='%239d8ccf'/></svg>" />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@300;400;500&family=Source+Serif+4:wght@200;400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-deep: #0a0a0f;
+      --purple-primary: #5B4B8A;
+      --purple-bright: #9d8ccf;
+      --text-primary: rgba(255,255,255,0.95);
+      --text-secondary: rgba(255,255,255,0.7);
+      --text-tertiary: rgba(255,255,255,0.4);
+      --border-glass: rgba(255,255,255,0.1);
+      --accent-green: #5cd685;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-deep);
+      color: var(--text-primary);
+      min-height: 100vh;
+      background-image: radial-gradient(1200px 700px at 15% 10%, rgba(91,75,138,0.15), transparent 55%);
+    }
+    .container { max-width: 900px; margin: 0 auto; padding: 60px 24px; }
+    .back-link {
+      display: inline-flex; align-items: center; gap: 8px;
+      color: var(--text-tertiary); text-decoration: none;
+      font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+      letter-spacing: 1px; text-transform: uppercase;
+      margin-bottom: 40px; transition: color 0.2s;
+    }
+    .back-link:hover { color: var(--purple-bright); }
+    h1 {
+      font-family: 'Source Serif 4', serif; font-weight: 200;
+      font-size: 42px; line-height: 1.2; margin-bottom: 16px;
+    }
+    h1 span { color: var(--purple-bright); }
+    .subtitle {
+      color: var(--text-secondary); font-size: 16px; line-height: 1.6;
+      max-width: 640px; margin-bottom: 48px;
+    }
+    .panel {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border-glass);
+      border-radius: 12px; padding: 32px; margin-bottom: 24px;
+    }
+    .panel-label {
+      font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+      letter-spacing: 2px; text-transform: uppercase;
+      color: var(--text-tertiary); margin-bottom: 16px;
+    }
+    .panel h2 {
+      font-family: 'Source Serif 4', serif; font-weight: 200;
+      font-size: 24px; margin-bottom: 12px;
+    }
+    .panel p { color: var(--text-secondary); font-size: 14px; line-height: 1.6; margin-bottom: 16px; }
+    .code-block {
+      background: rgba(0,0,0,0.4); border: 1px solid var(--border-glass);
+      border-radius: 8px; padding: 16px 20px; margin: 16px 0;
+      font-family: 'IBM Plex Mono', monospace; font-size: 14px;
+      color: var(--accent-green); overflow-x: auto;
+      position: relative;
+    }
+    .code-block .copy-btn {
+      position: absolute; top: 8px; right: 8px;
+      background: rgba(255,255,255,0.1); border: 1px solid var(--border-glass);
+      border-radius: 4px; padding: 4px 10px; color: var(--text-tertiary);
+      font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .code-block .copy-btn:hover { background: rgba(255,255,255,0.15); color: var(--text-secondary); }
+    .step-num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 28px; height: 28px; border-radius: 50%;
+      background: var(--purple-primary); color: white;
+      font-family: 'IBM Plex Mono', monospace; font-size: 12px;
+      font-weight: 500; flex-shrink: 0; margin-right: 12px;
+    }
+    .step-row { display: flex; align-items: flex-start; margin-bottom: 20px; }
+    .step-content h3 {
+      font-size: 15px; font-weight: 500; margin-bottom: 4px; color: var(--text-primary);
+    }
+    .step-content p { color: var(--text-secondary); font-size: 13px; line-height: 1.5; }
+    .cli-table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+    .cli-table th {
+      text-align: left; padding: 8px 12px;
+      font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+      letter-spacing: 1px; text-transform: uppercase;
+      color: var(--text-tertiary); border-bottom: 1px solid var(--border-glass);
+    }
+    .cli-table td {
+      padding: 8px 12px; font-size: 13px; border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .cli-table td:first-child {
+      font-family: 'IBM Plex Mono', monospace; color: var(--accent-green); font-size: 12px;
+    }
+    .cli-table td:last-child { color: var(--text-secondary); }
+    .badge {
+      display: inline-block; padding: 3px 10px; border-radius: 20px;
+      font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+      letter-spacing: 1px; text-transform: uppercase;
+    }
+    .badge-new { background: rgba(92, 214, 133, 0.15); color: var(--accent-green); border: 1px solid rgba(92, 214, 133, 0.3); }
+    .security-list { list-style: none; padding: 0; }
+    .security-list li {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 8px 0; color: var(--text-secondary); font-size: 13px; line-height: 1.5;
+    }
+    .security-list li::before { content: '◉'; color: var(--accent-green); flex-shrink: 0; font-size: 10px; margin-top: 3px; }
+    .download-btn {
+      display: inline-block; padding: 12px 28px;
+      background: var(--purple-primary); color: white;
+      text-decoration: none; border-radius: 8px;
+      font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+      letter-spacing: 1px; text-transform: uppercase;
+      transition: all 0.2s; border: 1px solid var(--purple-bright);
+    }
+    .download-btn:hover { background: var(--purple-bright); color: white; }
+    .footer {
+      margin-top: 60px; padding-top: 24px;
+      border-top: 1px solid var(--border-glass);
+      color: var(--text-tertiary); font-size: 12px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .footer a { color: var(--text-tertiary); text-decoration: none; }
+    .footer a:hover { color: var(--purple-bright); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="index.html" class="back-link">← Sentinel Authority</a>
+
+    <h1>ENVELO <span>Agent</span></h1>
+    <p class="subtitle">
+      Enforced Non-Violable Execution-Limit Override. One command installs. One command starts.
+      The agent does everything.
+    </p>
+
+    <!-- QUICK START -->
+    <div class="panel">
+      <div class="panel-label">Quick Start <span class="badge badge-new">v2.0</span></div>
+      <h2>Install & Deploy</h2>
+      <p>Open a terminal on the target system and run:</p>
+      <div class="code-block">
+        curl -sSL https://get.sentinelauthority.org | bash
+        <button class="copy-btn" onclick="navigator.clipboard.writeText('curl -sSL https://get.sentinelauthority.org | bash').then(()=>this.textContent='Copied!').catch(()=>this.textContent='Failed')">Copy</button>
+      </div>
+      <p style="color: var(--text-tertiary); font-size: 12px;">
+        The installer prompts for your Certificate ID and API Key (both visible in the
+        <a href="https://app.sentinelauthority.org" style="color: var(--purple-bright);">portal</a>
+        under ENVELO Agent tab). Then it automatically downloads boundaries, scans for telemetry sources,
+        and configures everything.
+      </p>
+    </div>
+
+    <!-- THREE STEPS -->
+    <div class="panel">
+      <div class="panel-label">After Install</div>
+      <div class="step-row">
+        <span class="step-num">1</span>
+        <div class="step-content">
+          <h3>Validate</h3>
+          <div class="code-block" style="margin: 8px 0;">envelo validate</div>
+          <p>Pre-flight check: credentials, API connectivity, source mappings, fail-closed mode.</p>
+        </div>
+      </div>
+      <div class="step-row">
+        <span class="step-num">2</span>
+        <div class="step-content">
+          <h3>Start</h3>
+          <div class="code-block" style="margin: 8px 0;">envelo start -d</div>
+          <p>Starts the enforcement agent as a background daemon. For auto-start on boot: <code style="background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 4px; font-size: 12px;">envelo service install</code></p>
+        </div>
+      </div>
+      <div class="step-row">
+        <span class="step-num">3</span>
+        <div class="step-content">
+          <h3>Begin CAT-72</h3>
+          <p>Go to <a href="https://app.sentinelauthority.org" style="color: var(--purple-bright);">app.sentinelauthority.org</a> → your case → CAT-72 tab → click <strong>Begin Test</strong>. The 72-hour timer starts immediately.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- CLI REFERENCE -->
+    <div class="panel">
+      <div class="panel-label">ENVELO CLI — Complete Reference</div>
+      <h2>The Agent Does Everything</h2>
+      <p>Every operation — monitoring, diagnostics, infrastructure, boundaries — is a single command.</p>
+
+      <h3 style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 2px; color: var(--text-tertiary); margin: 20px 0 8px;">Running</h3>
+      <table class="cli-table">
+        <tr><td>envelo start [-d]</td><td>Start enforcement (foreground or daemon)</td></tr>
+        <tr><td>envelo stop</td><td>Stop running agent</td></tr>
+        <tr><td>envelo restart</td><td>Stop and restart</td></tr>
+        <tr><td>envelo validate</td><td>Pre-flight configuration check</td></tr>
+      </table>
+
+      <h3 style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 2px; color: var(--text-tertiary); margin: 20px 0 8px;">Monitoring</h3>
+      <table class="cli-table">
+        <tr><td>envelo status</td><td>Full health check (agent, API, TLS, sources)</td></tr>
+        <tr><td>envelo monitor</td><td>Live terminal dashboard (refreshes every 2s)</td></tr>
+        <tr><td>envelo events</td><td>Violation and enforcement history</td></tr>
+        <tr><td>envelo logs -f</td><td>Follow agent logs in real-time</td></tr>
+        <tr><td>envelo cat72</td><td>CAT-72 test status and progress</td></tr>
+      </table>
+
+      <h3 style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 2px; color: var(--text-tertiary); margin: 20px 0 8px;">Boundaries</h3>
+      <table class="cli-table">
+        <tr><td>envelo boundaries</td><td>Show all enforced boundaries</td></tr>
+        <tr><td>envelo resync</td><td>Force re-fetch from Sentinel Authority</td></tr>
+        <tr><td>envelo simulate &lt;param&gt; &lt;val&gt;</td><td>Dry-run a boundary check (shows tier result)</td></tr>
+      </table>
+
+      <h3 style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 2px; color: var(--text-tertiary); margin: 20px 0 8px;">Sources</h3>
+      <table class="cli-table">
+        <tr><td>envelo test</td><td>Test all telemetry source connections</td></tr>
+        <tr><td>envelo rediscover</td><td>Re-scan environment for telemetry sources</td></tr>
+        <tr><td>envelo benchmark</td><td>Measure enforcement latency</td></tr>
+      </table>
+
+      <h3 style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 2px; color: var(--text-tertiary); margin: 20px 0 8px;">Infrastructure</h3>
+      <table class="cli-table">
+        <tr><td>envelo service install</td><td>Auto-start on boot (systemd / launchd)</td></tr>
+        <tr><td>envelo docker</td><td>Generate Dockerfile + docker-compose.yml</td></tr>
+        <tr><td>envelo k8s</td><td>Generate Kubernetes DaemonSet + Secret</td></tr>
+      </table>
+
+      <h3 style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 2px; color: var(--text-tertiary); margin: 20px 0 8px;">Maintenance</h3>
+      <table class="cli-table">
+        <tr><td>envelo diagnose</td><td>Generate support bundle (redacted, safe to send)</td></tr>
+        <tr><td>envelo network</td><td>Full network diagnostic</td></tr>
+        <tr><td>envelo export</td><td>Auditor-ready boundary bundle</td></tr>
+        <tr><td>envelo rotate-key</td><td>Rotate API key</td></tr>
+        <tr><td>envelo update</td><td>Self-update</td></tr>
+        <tr><td>envelo rollback</td><td>Uninstall (suspends conformance)</td></tr>
+      </table>
+    </div>
+
+    <!-- SECURITY -->
+    <div class="panel">
+      <div class="panel-label">Security Model</div>
+      <h2>Zero Inbound. Zero Trust.</h2>
+      <ul class="security-list">
+        <li>Outbound only — ENVELO opens zero inbound ports on your network</li>
+        <li>No remote access — Sentinel cannot access your system, network, or data</li>
+        <li>No commands from cloud — The connection is one-way: telemetry out, nothing in</li>
+        <li>No PHI/PII — Only ODD parameter values are transmitted. No business data.</li>
+        <li>Signed telemetry — Every packet is cryptographically signed and hash-chain linked</li>
+        <li>Fail-closed — If the connection drops, the agent blocks all actions (safe state)</li>
+        <li>Certificate pinning — TLS 1.3 with pinning prevents man-in-the-middle interception</li>
+      </ul>
+    </div>
+
+    <!-- SYSTEM REQUIREMENTS -->
+    <div class="panel">
+      <div class="panel-label">Requirements</div>
+      <h2>System Requirements</h2>
+      <table class="cli-table">
+        <tr><td style="color: var(--text-primary);">OS</td><td>Linux (Ubuntu 20.04+, RHEL 8+), macOS 12+, Windows Server 2019+</td></tr>
+        <tr><td style="color: var(--text-primary);">Python</td><td>3.7 or higher</td></tr>
+        <tr><td style="color: var(--text-primary);">CPU</td><td>2 cores minimum</td></tr>
+        <tr><td style="color: var(--text-primary);">RAM</td><td>512 MB for ENVELO agent</td></tr>
+        <tr><td style="color: var(--text-primary);">Network</td><td>Outbound HTTPS (port 443)</td></tr>
+        <tr><td style="color: var(--text-primary);">Clock</td><td>NTP-synchronized (±1 second)</td></tr>
+      </table>
+    </div>
+
+    <!-- ALTERNATIVE METHODS -->
+    <div class="panel">
+      <div class="panel-label">Alternative Deployment</div>
+
+      <h3 style="font-size: 15px; margin-bottom: 8px;">Docker</h3>
+      <div class="code-block">
+envelo docker
+cd envelo-docker && docker compose up -d
+        <button class="copy-btn" onclick="navigator.clipboard.writeText('envelo docker && cd envelo-docker && docker compose up -d')">Copy</button>
+      </div>
+
+      <h3 style="font-size: 15px; margin: 20px 0 8px;">Kubernetes</h3>
+      <div class="code-block">
+envelo k8s
+kubectl apply -f envelo-k8s.yaml
+        <button class="copy-btn" onclick="navigator.clipboard.writeText('envelo k8s && kubectl apply -f envelo-k8s.yaml')">Copy</button>
+      </div>
+
+      <h3 style="font-size: 15px; margin: 20px 0 8px;">SDK Integration</h3>
+      <div class="code-block" style="color: var(--text-secondary);">
+from envelo import EnveloAgent, EnveloConfig
+
+agent = EnveloAgent(EnveloConfig(
+    api_key="sa_live_...",
+    certificate_number="ODDC-2026-XXXXX"
+))
+agent.start()
+
+@agent.enforce
+def move_robot(speed, position):
+    motors.actuate(speed, position)
+      </div>
+    </div>
+
+    <!-- DOCUMENTATION -->
+    <div class="panel" style="text-align: center; padding: 40px;">
+      <h2>ODDC Certification Guide</h2>
+      <p style="margin-bottom: 24px;">Complete walkthrough: application through certification. Includes deployment instructions, CLI reference, three-tier enforcement model, and boundary specification format.</p>
+      <a href="downloads/ODDC_Certification_Guide_v3.pdf" class="download-btn">Download PDF — v3.0</a>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="footer">
+      <span>© 2026 Sentinel Authority</span>
+      <div style="display: flex; gap: 24px;">
+        <a href="https://app.sentinelauthority.org">Portal</a>
+        <a href="index.html">Home</a>
+        <a href="status.html">Status</a>
+        <a href="verify.html">Verify</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
