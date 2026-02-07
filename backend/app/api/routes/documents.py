@@ -9,12 +9,20 @@ DOCS_DIR = Path("/app/static/documents")
 
 AVAILABLE_DOCS = {
     "oddc-certification-guide": {
-        "filename": "ODDC_Certification_Guide.pdf",
+        "filename": "ODDC_Certification_Guide_v3.pdf",
         "title": "ODDC Certification Guide",
-        "description": "Complete applicant roadmap for ODDC certification",
-        "version": "1.0",
+        "description": "Complete applicant roadmap for ODDC certification — Phase 1 through Continued Monitoring, ENVELO CLI reference, three-tier enforcement model",
+        "version": "3.0",
         "roles": ["admin", "applicant"],
     },
+    "oddc-certification-guide-v1": {
+        "filename": "ODDC_Certification_Guide.pdf",
+        "title": "ODDC Certification Guide (Legacy)",
+        "description": "Version 1.0 — superseded by v3.0",
+        "version": "1.0",
+        "roles": ["admin"],
+    },
+},
 }
 
 
