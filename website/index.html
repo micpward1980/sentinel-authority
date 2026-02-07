@@ -4632,21 +4632,16 @@
 
           if(simTime<24) phase=0;
           else if(simTime<48) phase=1;
-          else if(simTime<66) phase=2;
-          else if(simTime>=66&&!failTriggered&&phase===2){
-            failTriggered=true; failTime=now; halted=true;
-          }
-          if(halted&&failTriggered&&now-failTime>2000){
-            halted=false; haltAlpha=0; failTriggered=false;
-          }
+          else phase=2;
+
           if(simTime>=72){
+            simTime=72;
             if(!holdStart) holdStart=now;
-            halted=true;
           }
           if(holdStart&&now-holdStart>3000){
             simTime=0; blockCount=0; phase=0;
-            failTriggered=false; halted=false; haltAlpha=0;
             holdStart=0;
+            telemetry=[]; stressMarkers=[]; boundaryPulses=[];
             initAgents();
           }
 
