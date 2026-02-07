@@ -2788,11 +2788,62 @@
     }
   }
 
+  var enveloEvents = [];
+
   function updateAgents(dt) {
+    var oddR = heroOddRadius || radius*0.76;
+    var enveloR = radius;
+    var approachZone = oddR * 0.82;
+
     for (var i=0; i<agents.length; i++) {
       var a = agents[i];
+      if (!a.tier) a.tier = 0;
+      if (!a.mrcTimer) a.mrcTimer = 0;
+      if (!a.haltTimer) a.haltTimer = 0;
       a.phase += a.drift * dt;
 
+      // Tier 3: halted — frozen, counting down to respawn
+      if (a.tier === 3) {
+        a.haltTimer -= dt;
+        if (a.haltTimer <= 0) {
+          a.tier = 0;
+          a.x = cx + (Math.random()-0.5)*oddR*0.6;
+          a.y = cy + (Math.random()-0.5)*oddR*0.6;
+          a.vx = (Math.random()-0.5)*0.3;
+          a.vy = (Math.random()-0.5)*0.3;
+        }
+        continue;
+      }
+
+      // Tier 2: in enforcement margin — ENVELO decelerating to MRC
+      if (a.tier === 2) {
+        a.vx *= 0.92;
+        a.vy *= 0.92;
+        var dx2 = a.x-cx, dy2 = a.y-cy, dist2 = Math.sqrt(dx2*dx2+dy2*dy2)||1;
+        a.vx -= (dx2/dist2)*0.02*dt;
+        a.vy -= (dy2/dist2)*0.02*dt;
+        a.x += a.vx*dt*0.06;
+        a.y += a.vy*dt*0.06;
+        a.mrcTimer -= dt;
+
+        dx2 = a.x-cx; dy2 = a.y-cy; dist2 = Math.sqrt(dx2*dx2+dy2*dy2);
+        if (dist2 < oddR*0.9) {
+          a.tier = 0; a.mrcTimer = 0;
+        }
+        if (dist2 >= enveloR*0.98) {
+          a.tier = 3; a.haltTimer = 3000;
+          var ang3 = Math.atan2(dy2,dx2);
+          a.vx=0; a.vy=0;
+          enveloEvents.push({x:a.x,y:a.y,alpha:1});
+          boundaryPulses.push({angle:ang3, alpha:0.8, spread:0});
+        }
+        if (a.mrcTimer <= 0 && a.tier===2) {
+          a.tier = 0; a.mrcTimer = 0;
+        }
+        continue;
+      }
+
+      // Normal movement
       a.vx += Math.cos(a.phase)*0.015*dt*0.1;
       a.vy += Math.sin(a.phase*1.3)*0.015*dt*0.1;
 
@@ -2801,13 +2852,13 @@
       var nx = dx/dist, ny = dy/dist;
 
       if (!a.isOutlier && dist > a.softMax) {
-        var over = (dist - a.softMax) / radius;
+        var over = (dist - a.softMax) / oddR;
         a.vx -= nx * over * 0.004 * dt;
         a.vy -= ny * over * 0.004 * dt;
       }
       if (a.isOutlier) {
-        a.vx += nx * 0.0008 * dt * 0.1;
-        a.vy += ny * 0.0008 * dt * 0.1;
+        a.vx += nx * 0.001 * dt * 0.1;
+        a.vy += ny * 0.001 * dt * 0.1;
       }
 
       a.x += a.vx*dt*0.06;
@@ -2815,17 +2866,25 @@
 
       dx = a.x - cx; dy = a.y - cy;
       dist = Math.sqrt(dx*dx+dy*dy);
-      var maxR = heroOddRadius ? heroOddRadius*0.95 : radius*0.72;
-      if (dist > maxR) {
-        var ang = Math.atan2(dy,dx);
-        a.x = cx+Math.cos(ang)*maxR;
-        a.y = cy+Math.sin(ang)*maxR;
-        var dot = a.vx*Math.cos(ang)+a.vy*Math.sin(ang);
-        a.vx -= 2*dot*Math.cos(ang);
-        a.vy -= 2*dot*Math.sin(ang);
-        a.vx *= 0.4; a.vy *= 0.4;
-        boundaryPulses.push({angle:ang, alpha:0.6, spread:0});
+
+      // Tier 1: approaching ODD — system self-corrects
+      if (dist > approachZone && dist < oddR) {
+        a.tier = 1;
+        var pullback = (dist - approachZone) / (oddR - approachZone);
+        a.vx -= nx * pullback * 0.002 * dt;
+        a.vy -= ny * pullback * 0.002 * dt;
+      } else if (dist < approachZone) {
+        a.tier = 0;
       }
+
+      // Tier 2: crossed ODD into enforcement margin
+      if (dist >= oddR) {
+        a.tier = 2;
+        a.mrcTimer = 2000 + Math.random()*1500;
+        var ang2 = Math.atan2(dy,dx);
+        boundaryPulses.push({angle:ang2, alpha:0.4, spread:0});
+      }
+
       a.vx *= 0.997; a.vy *= 0.997;
     }
   }
@@ -2895,27 +2954,44 @@
   function drawAgents() {
     for (var i=0;i<agents.length;i++) {
       var a = agents[i];
-      var dx=a.x-cx, dy=a.y-cy;
-      var dist=Math.sqrt(dx*dx+dy*dy);
-      var edge=dist/(radius*0.88);
-      var r,g,b,al;
-      if (edge>0.75) {
-        var t=(edge-0.75)/0.25;
-        r=92+(214-92)*t; g=214+(92-214)*t; b=133+(92-133)*t; al=0.55+t*0.35;
-      } else {
-        r=92; g=214; b=133; al=0.5;
-      }
-      var col=[Math.round(r),Math.round(g),Math.round(b)];
+      var tier = a.tier || 0;
+      var col, al, glowSize;
 
-      var gl=ctx.createRadialGradient(a.x,a.y,0,a.x,a.y,a.size*2.8);
+      if (tier === 3) {
+        col = RED; al = 0.3 + Math.sin(Date.now()*0.008)*0.15; glowSize = a.size*5;
+        // Halt X marker
+        ctx.strokeStyle = rgb(RED,0.5);
+        ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.moveTo(a.x-4,a.y-4); ctx.lineTo(a.x+4,a.y+4); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(a.x+4,a.y-4); ctx.lineTo(a.x-4,a.y+4); ctx.stroke();
+      } else if (tier === 2) {
+        col = RED; al = 0.7; glowSize = a.size*4;
+      } else if (tier === 1) {
+        col = AMBER; al = 0.6; glowSize = a.size*3.5;
+      } else {
+        col = GREEN; al = 0.5; glowSize = a.size*2.8;
+      }
+
+      var gl=ctx.createRadialGradient(a.x,a.y,0,a.x,a.y,glowSize);
       gl.addColorStop(0,rgb(col,al*0.25));
       gl.addColorStop(1,rgb(col,0));
       ctx.fillStyle=gl;
-      ctx.beginPath(); ctx.arc(a.x,a.y,a.size*3.5,0,Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(a.x,a.y,glowSize*1.2,0,Math.PI*2); ctx.fill();
 
       ctx.beginPath(); ctx.arc(a.x,a.y,a.size,0,Math.PI*2);
       ctx.fillStyle=rgb(col,al);
       ctx.fill();
+    }
+
+    // ENVELO halt events (flash + fade)
+    for (var e=enveloEvents.length-1;e>=0;e--) {
+      var ev = enveloEvents[e];
+      ev.alpha -= 0.008;
+      if (ev.alpha<=0) { enveloEvents.splice(e,1); continue; }
+      ctx.font='500 7px "IBM Plex Mono"';
+      ctx.fillStyle=rgb(RED,ev.alpha*0.8);
+      ctx.textAlign='center';
+      ctx.fillText('HALT',ev.x,ev.y-10);
     }
   }
 
@@ -4340,31 +4416,81 @@
           }
         }
 
+        var catEnveloEvents = [];
+
         function updateAgents(dt) {
           var sm = phase===1 ? 1.6 : 1;
           if (halted) sm = 0;
+          var oddR = oddRadius || radius*0.76;
+          var enveloR = radius;
+          var approachZone = oddR * 0.82;
+
           for (var i=0; i<agents.length; i++) {
             var a = agents[i];
+            if (!a.tier) a.tier = 0;
+            if (!a.mrcTimer) a.mrcTimer = 0;
+            if (!a.haltTimer) a.haltTimer = 0;
             a.phase += a.drift * dt;
+
+            if (a.tier === 3) {
+              a.haltTimer -= dt;
+              if (a.haltTimer <= 0) {
+                a.tier = 0;
+                a.x = cx + (Math.random()-0.5)*oddR*0.6;
+                a.y = cy + (Math.random()-0.5)*oddR*0.6;
+                a.vx = (Math.random()-0.5)*0.3;
+                a.vy = (Math.random()-0.5)*0.3;
+              }
+              continue;
+            }
+
+            if (a.tier === 2) {
+              a.vx *= 0.92;
+              a.vy *= 0.92;
+              var dx2=a.x-cx,dy2=a.y-cy,dist2=Math.sqrt(dx2*dx2+dy2*dy2)||1;
+              a.vx -= (dx2/dist2)*0.02*dt;
+              a.vy -= (dy2/dist2)*0.02*dt;
+              a.x += a.vx*dt*0.06;
+              a.y += a.vy*dt*0.06;
+              a.mrcTimer -= dt;
+              dx2=a.x-cx;dy2=a.y-cy;dist2=Math.sqrt(dx2*dx2+dy2*dy2);
+              if (dist2<oddR*0.9) { a.tier=0; a.mrcTimer=0; }
+              if (dist2>=enveloR*0.98) {
+                a.tier=3; a.haltTimer=3000;
+                a.vx=0; a.vy=0;
+                var ang3=Math.atan2(dy2,dx2);
+                catEnveloEvents.push({x:a.x,y:a.y,alpha:1});
+                boundaryPulses.push({angle:ang3, alpha:0.8, spread:0});
+                if (typeof enveloFlashes!=='undefined') enveloFlashes.push({angle:ang3, alpha:0.8, spread:0});
+              }
+              if (a.mrcTimer<=0 && a.tier===2) { a.tier=0; a.mrcTimer=0; }
+              continue;
+            }
+
             a.vx += (Math.cos(a.phase)*0.015 - a.vx*0.008)*dt*0.1;
             a.vy += (Math.sin(a.phase*1.3)*0.015 - a.vy*0.008)*dt*0.1;
             a.x += a.vx*sm*dt*0.06;
             a.y += a.vy*sm*dt*0.06;
 
-            var dx = a.x - cx, dy = a.y - cy;
-            var dist = Math.sqrt(dx*dx+dy*dy);
-            var maxR = oddRadius ? oddRadius*0.95 : radius*0.72;
-            if (dist > maxR) {
-              var ang = Math.atan2(dy,dx);
-              a.x = cx+Math.cos(ang)*maxR;
-              a.y = cy+Math.sin(ang)*maxR;
-              var dot = a.vx*Math.cos(ang)+a.vy*Math.sin(ang);
-              a.vx -= 2*dot*Math.cos(ang);
-              a.vy -= 2*dot*Math.sin(ang);
-              a.vx *= 0.4; a.vy *= 0.4;
-              boundaryPulses.push({angle:ang, alpha:0.5, spread:0});
-              if (typeof enveloFlashes!=='undefined') enveloFlashes.push({angle:ang, alpha:0.6, spread:0});
+            var dx=a.x-cx,dy=a.y-cy,dist=Math.sqrt(dx*dx+dy*dy)||1;
+            var nx=dx/dist,ny=dy/dist;
+
+            if (dist>approachZone && dist<oddR) {
+              a.tier=1;
+              var pb=(dist-approachZone)/(oddR-approachZone);
+              a.vx -= nx*pb*0.002*dt;
+              a.vy -= ny*pb*0.002*dt;
+            } else if (dist<approachZone) {
+              a.tier=0;
             }
+
+            if (dist>=oddR) {
+              a.tier=2; a.mrcTimer=2000+Math.random()*1500;
+              var ang2=Math.atan2(dy,dx);
+              boundaryPulses.push({angle:ang2, alpha:0.4, spread:0});
+              if (typeof enveloFlashes!=='undefined') enveloFlashes.push({angle:ang2, alpha:0.5, spread:0});
+            }
+
             a.vx *= 0.997; a.vy *= 0.997;
           }
         }
@@ -4489,28 +4615,41 @@
         function drawAgents() {
           for (var i=0;i<agents.length;i++) {
             var a = agents[i];
-            var dx=a.x-cx, dy=a.y-cy;
-            var dist=Math.sqrt(dx*dx+dy*dy);
-            var edge=dist/(radius*0.86);
-            var r,g,b,al;
-            if (edge>0.75) {
-              var t=(edge-0.75)/0.25;
-              r=92+(214-92)*t; g=214+(92-214)*t; b=133+(92-133)*t; al=0.55+t*0.35;
-            } else {
-              r=92; g=214; b=133; al=0.5;
-            }
-            if (halted) al*=0.25;
-            var col=[Math.round(r),Math.round(g),Math.round(b)];
+            var tier = a.tier || 0;
+            var col, al, glowSize;
 
-            var gl=ctx.createRadialGradient(a.x,a.y,0,a.x,a.y,a.size*2.8);
+            if (tier===3) {
+              col=RED; al=0.3+Math.sin(Date.now()*0.008)*0.15; glowSize=a.size*5;
+              ctx.strokeStyle=rgb(RED,0.5); ctx.lineWidth=1.5;
+              ctx.beginPath(); ctx.moveTo(a.x-4,a.y-4); ctx.lineTo(a.x+4,a.y+4); ctx.stroke();
+              ctx.beginPath(); ctx.moveTo(a.x+4,a.y-4); ctx.lineTo(a.x-4,a.y+4); ctx.stroke();
+            } else if (tier===2) {
+              col=RED; al=0.7; glowSize=a.size*4;
+            } else if (tier===1) {
+              col=AMBER; al=0.6; glowSize=a.size*3.5;
+            } else {
+              col=GREEN; al=halted?0.15:0.5; glowSize=a.size*2.8;
+            }
+
+            var gl=ctx.createRadialGradient(a.x,a.y,0,a.x,a.y,glowSize);
             gl.addColorStop(0,rgb(col,al*0.25));
             gl.addColorStop(1,rgb(col,0));
             ctx.fillStyle=gl;
-            ctx.beginPath(); ctx.arc(a.x,a.y,a.size*3.5,0,Math.PI*2); ctx.fill();
+            ctx.beginPath(); ctx.arc(a.x,a.y,glowSize*1.2,0,Math.PI*2); ctx.fill();
 
             ctx.beginPath(); ctx.arc(a.x,a.y,a.size,0,Math.PI*2);
             ctx.fillStyle=rgb(col,al);
             ctx.fill();
+          }
+
+          for (var e=catEnveloEvents.length-1;e>=0;e--) {
+            var ev=catEnveloEvents[e];
+            ev.alpha -= 0.008;
+            if (ev.alpha<=0) { catEnveloEvents.splice(e,1); continue; }
+            ctx.font='500 7px "IBM Plex Mono"';
+            ctx.fillStyle=rgb(RED,ev.alpha*0.8);
+            ctx.textAlign='center';
+            ctx.fillText('HALT',ev.x,ev.y-10);
           }
         }
 
