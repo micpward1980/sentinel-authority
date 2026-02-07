@@ -3,635 +3,224 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>Test Status — Sentinel Authority</title>
-  <meta name="description" content="Check your CAT-72 conformance test status" />
+  <title>CAT-72 Status — Sentinel Authority</title>
+  <meta name="description" content="Track your CAT-72 conformance test in real time" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect x='6' y='6' width='20' height='20' rx='5' fill='%235B4B8A' stroke='%239d8ccf' stroke-width='2'/><circle cx='16' cy='16' r='4' fill='%239d8ccf'/></svg>" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <style>
     :root {
-      color-scheme: dark;
-      --purple-primary:#5B4B8A;
-      --purple-bright:#a896d6;
-      --purple-glow:rgba(157,140,207,.20);
-      --bg-deep:#2a2f3d;
-      --bg-panel:rgba(255,255,255,.03);
-      --accent-green:#5CD685;
-      --accent-amber:#D6A05C;
-      --accent-red:#D65C5C;
-      --text-primary:rgba(255,255,255,.94);
-      --text-secondary:rgba(255,255,255,.78);
-      --text-tertiary:rgba(255,255,255,.55);
-      --border-glass:rgba(255,255,255,.07);
-      --border-subtle:rgba(255,255,255,.04);
-      --serif:Georgia,'Source Serif 4',serif;
-      --mono:Consolas,'IBM Plex Mono',monospace;
-      --sans:'Inter',system-ui,-apple-system,sans-serif;
-      --ease:cubic-bezier(0.16,1,0.3,1);
-      --max:860px;
-      --nav-height:72px;
+      color-scheme:dark;
+      --purple-primary:#5B4B8A;--purple-bright:#9d8ccf;--purple-glow:rgba(157,140,207,.20);
+      --bg-deep:#0c1220;--bg-mid:#111827;
+      --accent-green:#5CD685;--accent-amber:#D6A05C;--accent-red:#D65C5C;
+      --text-primary:rgba(255,255,255,.94);--text-secondary:rgba(255,255,255,.65);--text-tertiary:rgba(255,255,255,.35);
+      --border-glass:rgba(255,255,255,.06);
+      --serif:Georgia,serif;--mono:Consolas,'IBM Plex Mono',monospace;--sans:'Inter',system-ui,sans-serif;
+      --max:880px;--nav-height:64px;
     }
-    *{ box-sizing:border-box; }
-    html{ scroll-behavior:smooth; background:var(--bg-deep); }
-    body{
-      margin:0; font-family:var(--sans); color:var(--text-primary);
-      background:var(--bg-deep);
-      -webkit-font-smoothing:antialiased;
-      min-height:100vh; overflow-x:hidden;
-    }
-    a{ color:inherit; text-decoration:none; }
-    a:hover{ text-decoration:underline; text-underline-offset:4px; }
-    ::selection{ background:var(--purple-primary); color:#fff; }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    html{scroll-behavior:smooth;background:var(--bg-deep);}
+    body{font-family:var(--sans);color:var(--text-primary);background:var(--bg-deep);-webkit-font-smoothing:antialiased;min-height:100vh;overflow-x:hidden;}
+    a{color:inherit;text-decoration:none;}
 
-    /* Ambient background */
-    .ambient{
-      position:fixed; inset:0; pointer-events:none; z-index:0;
-    }
-    .ambient::before{
-      content:""; position:absolute;
-      width:900px; height:900px; top:-200px; left:-300px;
-      background:radial-gradient(circle,rgba(91,75,138,.18),transparent 65%);
-      animation:drift1 25s ease-in-out infinite;
-    }
-    .ambient::after{
-      content:""; position:absolute;
-      width:700px; height:700px; bottom:-100px; right:-200px;
-      background:radial-gradient(circle,rgba(92,214,133,.06),transparent 65%);
-      animation:drift2 30s ease-in-out infinite;
-    }
-    @keyframes drift1{
-      0%,100%{ transform:translate(0,0); }
-      50%{ transform:translate(60px,40px); }
-    }
-    @keyframes drift2{
-      0%,100%{ transform:translate(0,0); }
-      50%{ transform:translate(-40px,-30px); }
-    }
+    .site-header{position:fixed;top:0;width:100%;z-index:50;height:var(--nav-height);padding:0 20px;border-bottom:1px solid var(--border-glass);background:rgba(12,18,32,.92);backdrop-filter:blur(18px);display:flex;align-items:center;}
+    .nav-inner{max-width:var(--max);margin:0 auto;width:100%;display:flex;align-items:center;justify-content:space-between;}
+    .brand{display:flex;align-items:center;gap:10px;text-decoration:none;}
+    .brand:hover{text-decoration:none;}
+    .brand-mark{width:24px;height:24px;background:var(--purple-primary);border:2px solid var(--purple-bright);border-radius:6px;display:flex;align-items:center;justify-content:center;}
+    .brand-mark-inner{width:8px;height:8px;background:#c4b8e8;border-radius:50%;}
+    .brand-name{font-family:var(--mono);font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.86);}
+    .back-link{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-tertiary);transition:color .2s;}
+    .back-link:hover{color:var(--text-primary);text-decoration:none;}
 
-    .grid-overlay{
-      position:fixed; inset:0; pointer-events:none; z-index:0;
-      background-image: linear-gradient(rgba(255,255,255,0.03) 1px,transparent 1px),
-                         linear-gradient(90deg,rgba(255,255,255,0.03) 1px,transparent 1px);
-      background-size:120px 120px; opacity:.2;
-      mask-image:radial-gradient(ellipse at center,rgba(0,0,0,.9) 20%,transparent 70%);
-    }
+    main{position:relative;z-index:1;max-width:var(--max);margin:0 auto;padding:calc(var(--nav-height) + 60px) 20px 60px;}
 
-    /* Nav */
-    .site-header{
-      position:fixed; top:0; width:100%; z-index:50;
-      height:var(--nav-height); padding:0 20px;
-      border-bottom:1px solid var(--border-glass);
-      background:rgba(42,47,61,.88);
-      backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px);
-      display:flex; align-items:center;
-    }
-    .nav-inner{
-      max-width:var(--max); margin:0 auto; width:100%;
-      display:flex; align-items:center; justify-content:space-between;
-    }
-    .brand{ display:flex; align-items:center; gap:10px; text-decoration:none; }
-    .brand:hover{ text-decoration:none; }
-    .brand-mark{
-      width:24px; height:24px; background:var(--purple-primary);
-      border:2px solid var(--purple-bright); border-radius:6px;
-      display:flex; align-items:center; justify-content:center;
-    }
-    .brand-mark-inner{
-      width:8px; height:8px; background:#c4b8e8; border-radius:50%;
-      animation:eye-pulse 7s ease-in-out infinite;
-    }
-    @keyframes eye-pulse{
-      0%,100%{ opacity:.75; transform:scale(.98); box-shadow:0 0 0 rgba(196,184,232,0); }
-      50%{ opacity:1; transform:scale(1.02); box-shadow:0 0 10px rgba(157,140,207,.22); }
-    }
-    .brand-name{
-      font-family:var(--mono); font-size:10px; letter-spacing:3px;
-      text-transform:uppercase; color:rgba(255,255,255,.86);
-    }
-    .back-link{
-      font-family:var(--mono); font-size:10px; font-weight:500;
-      letter-spacing:2px; text-transform:uppercase;
-      color:var(--text-tertiary); transition:color .2s;
-    }
-    .back-link:hover{ color:var(--text-primary); text-decoration:none; }
+    .hud-frame{position:relative;border:1px solid var(--border-glass);padding:20px 24px;margin-bottom:16px;background:rgba(255,255,255,.015);}
+    .hud-frame>i{position:absolute;display:block;width:8px;height:8px;pointer-events:none;}
+    .hud-frame>i::before,.hud-frame>i::after{content:'';position:absolute;background:var(--purple-bright);opacity:.4;}
+    .hud-frame>i::before{width:8px;height:1px;top:0;left:0;}
+    .hud-frame>i::after{width:1px;height:8px;top:0;left:0;}
+    .hud-frame>i{top:-1px;left:-1px;}
+    .hud-scanline::after{content:'';position:absolute;top:0;left:0;right:0;bottom:0;pointer-events:none;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(255,255,255,.008) 3px,rgba(255,255,255,.008) 4px);z-index:0;}
+    .hud-scanline>*{position:relative;z-index:1;}
+    .hud-label{font-family:var(--mono);font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(157,140,207,0.6);}
+    .hud-title{font-family:var(--mono);font-size:12px;color:rgba(255,255,255,0.8);letter-spacing:0.5px;}
+    .hud-desc{font-size:12px;color:var(--text-tertiary);line-height:1.5;}
+    .hud-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+    .hud-dot-green{background:var(--accent-green);box-shadow:0 0 6px rgba(92,214,133,.4);}
+    .hud-dot-amber{background:var(--accent-amber);box-shadow:0 0 6px rgba(214,160,92,.4);}
+    .hud-row{padding:12px 0;border-bottom:1px solid var(--border-glass);}
+    .hud-row:last-child{border-bottom:none;padding-bottom:0;}
 
-    /* Page layout */
-    main{
-      position:relative; z-index:1;
-      max-width:var(--max); margin:0 auto;
-      padding:calc(var(--nav-height) + 80px) 20px 60px;
-    }
+    .section-label{font-family:var(--mono);font-size:10px;letter-spacing:6px;text-transform:uppercase;color:var(--purple-bright);display:flex;align-items:center;gap:14px;margin-bottom:16px;}
+    .section-label::before{content:'';width:40px;height:1px;background:var(--purple-bright);opacity:.5;}
+    .section-title{font-family:var(--serif);font-size:clamp(32px,5vw,48px);font-weight:200;line-height:1.05;margin:0 0 12px;letter-spacing:-0.04em;}
+    .section-lead{color:var(--text-secondary);font-size:16px;font-weight:300;line-height:1.7;max-width:50ch;}
 
-    /* Hero area */
-    .hero{
-      position:relative;
-      padding-bottom:48px;
-      margin-bottom:48px;
-    }
-    .hero::before{
-      content:""; position:absolute; left:0;
-      top:0; bottom:0; width:1px;
-      background:linear-gradient(to bottom,rgba(157,140,207,.25),rgba(157,140,207,.05));
-    }
+    .spinner{width:24px;height:24px;border:2px solid rgba(255,255,255,.06);border-top-color:var(--purple-bright);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto;}
+    @keyframes spin{to{transform:rotate(360deg);}}
+    .loading-text{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-tertiary);text-align:center;margin-top:8px;}
 
-    .page-kicker{
-      font-family:var(--mono); font-size:10px; letter-spacing:6px;
-      text-transform:uppercase; color:var(--purple-bright);
-      display:flex; align-items:center; gap:14px; margin-bottom:20px;
-    }
-    .page-kicker::before{
-      content:""; width:40px; height:1px; background:var(--purple-bright); opacity:.9;
-    }
+    .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:16px 0;}
+    .metric{background:rgba(0,0,0,.3);border:1px solid var(--border-glass);padding:16px 8px;text-align:center;}
+    .metric-val{font-family:var(--mono);font-size:22px;color:var(--text-primary);}
+    .metric-val.green{color:var(--accent-green);}
+    .metric-val.red{color:var(--accent-red);}
+    .metric-lbl{font-family:var(--mono);font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-tertiary);margin-top:4px;}
 
-    h1{
-      font-family:var(--serif); font-size:clamp(40px,6vw,60px);
-      font-weight:200; line-height:1.0; margin:0 0 8px; letter-spacing:-0.04em;
-    }
-    h1 .accent{ font-style:italic; color:var(--purple-bright);
-      text-shadow:-1px 0 rgba(255,100,100,0.06),1px 0 rgba(100,255,255,0.06),0 0 20px var(--purple-glow);
-    }
+    .progress{height:3px;background:rgba(255,255,255,.06);margin:16px 0 8px;}
+    .progress-fill{height:100%;background:linear-gradient(90deg,var(--purple-primary),var(--purple-bright));box-shadow:0 0 8px rgba(157,140,207,.3);transition:width .8s;}
+    .progress-lbl{font-family:var(--mono);font-size:10px;color:var(--text-tertiary);text-align:center;}
 
-    .hero-stamp{ width:60px; height:1px; background:var(--purple-bright); opacity:.15; margin:16px 0; }
+    .criteria{margin-top:16px;padding-top:16px;border-top:1px solid var(--border-glass);}
+    .criteria-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.03);font-size:13px;color:var(--text-secondary);}
+    .criteria-row:last-child{border-bottom:none;}
+    .c-icon{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;}
+    .c-met{background:rgba(92,214,133,.12);color:var(--accent-green);border:1px solid rgba(92,214,133,.2);}
+    .c-pending{background:rgba(255,255,255,.03);color:var(--text-tertiary);border:1px solid rgba(255,255,255,.06);}
 
-    .page-desc{
-      color:var(--text-secondary); font-size:17px; font-weight:200;
-      line-height:1.75; margin:0; max-width:52ch;
-      border-left:2px solid rgba(91,75,138,.5);
-      padding-left:20px;
-    }
+    .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:24px;}
+    .step{border:1px solid var(--border-glass);padding:20px 16px;background:rgba(255,255,255,.015);}
+    .step-n{font-family:var(--mono);font-size:9px;letter-spacing:3px;color:var(--purple-bright);margin-bottom:8px;}
+    .step-t{font-family:var(--serif);font-size:18px;font-weight:200;margin-bottom:6px;}
+    .step-d{font-size:12px;color:var(--text-tertiary);line-height:1.6;}
 
-    /* Search panel */
-    .search-panel{
-      background:var(--bg-panel); border:1px solid var(--border-glass);
-      border-radius:20px; padding:32px; backdrop-filter:blur(18px);
-      position:relative; overflow:hidden; margin-bottom:48px;
-      box-shadow:0 20px 60px rgba(0,0,0,.25), 0 0 0 1px rgba(255,255,255,.03) inset;
-    }
-    .search-panel::before{
-      content:""; position:absolute; inset:-30%;
-      background:radial-gradient(circle at 30% 30%,rgba(157,140,207,.12),transparent 50%);
-      pointer-events:none;
-    }
-    .search-panel::after{
-      content:""; position:absolute; top:0; left:32px; right:32px; height:1px;
-      background:linear-gradient(90deg,transparent,rgba(157,140,207,.25),transparent);
-    }
-    .search-panel>*{ position:relative; z-index:1; }
+    footer{margin-top:48px;padding:32px 20px;border-top:1px solid var(--border-glass);text-align:center;}
+    .footer-copy{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-tertiary);}
+    .footer-links{margin-top:12px;display:flex;justify-content:center;gap:20px;flex-wrap:wrap;}
+    .footer-links a{font-family:var(--mono);font-size:10px;letter-spacing:1px;color:var(--text-tertiary);}
+    .footer-links a:hover{color:var(--text-primary);}
 
-    .search-label{
-      font-family:var(--mono); font-size:9px; letter-spacing:3px;
-      text-transform:uppercase; color:var(--purple-bright);
-      display:block; margin-bottom:12px;
-    }
-
-    .search-row{ display:flex; gap:10px; }
-
-    .search-row input{
-      flex:1; padding:16px 20px;
-      background:rgba(0,0,0,.25); border:1px solid rgba(255,255,255,.08);
-      border-radius:14px; color:var(--text-primary);
-      font-family:var(--mono); font-size:15px; letter-spacing:2px;
-      outline:none; transition:all .25s;
-    }
-    .search-row input:focus{
-      border-color:rgba(157,140,207,.45);
-      box-shadow:0 0 0 3px rgba(91,75,138,.15);
-    }
-    .search-row input::placeholder{ color:rgba(255,255,255,.25); font-size:14px; letter-spacing:1px; }
-
-    .search-row button{
-      appearance:none; padding:16px 32px;
-      border:1px solid rgba(157,140,207,.5);
-      background:rgba(91,75,138,.2); color:var(--text-primary);
-      border-radius:14px; font-family:var(--mono); font-size:10px;
-      letter-spacing:2.5px; text-transform:uppercase; cursor:pointer;
-      transition:all .25s; white-space:nowrap;
-      box-shadow:0 4px 20px rgba(91,75,138,.15);
-    }
-    .search-row button:hover{
-      border-color:rgba(157,140,207,.8); background:rgba(91,75,138,.35);
-      transform:translateY(-1px); box-shadow:0 8px 30px rgba(91,75,138,.25);
-    }
-
-    .search-hint{
-      font-size:12px; color:var(--text-tertiary); margin-top:14px;
-      line-height:1.6;
-    }
-    .search-hint a{ color:var(--purple-bright); }
-
-    /* Results */
-    .result-panel{
-      display:none; background:var(--bg-panel);
-      border:1px solid var(--border-glass); border-radius:20px;
-      padding:36px; backdrop-filter:blur(18px);
-      position:relative; overflow:hidden;
-      animation:fadeUp .5s var(--ease);
-      margin-bottom:48px;
-      box-shadow:0 20px 60px rgba(0,0,0,.25);
-    }
-    .result-panel::before{
-      content:""; position:absolute; inset:-20%;
-      background:radial-gradient(circle at 80% 20%,rgba(157,140,207,.08),transparent 55%);
-      pointer-events:none;
-    }
-    .result-panel>*{ position:relative; z-index:1; }
-    .result-panel.show{ display:block; }
-
-    @keyframes fadeUp{
-      from{ opacity:0; transform:translateY(20px); }
-      to{ opacity:1; transform:translateY(0); }
-    }
-
-    /* Status badges */
-    .status-badge{
-      display:inline-flex; align-items:center; gap:8px;
-      padding:10px 18px; border-radius:24px;
-      font-family:var(--mono); font-size:10px; font-weight:500;
-      letter-spacing:1.5px; text-transform:uppercase;
-    }
-    .status-badge .dot{ width:8px; height:8px; border-radius:50%; }
-    .status-running{ background:rgba(92,214,133,.1); color:var(--accent-green); border:1px solid rgba(92,214,133,.2); }
-    .status-running .dot{ background:var(--accent-green); animation:pulse 2s infinite; box-shadow:0 0 8px rgba(92,214,133,.4); }
-    .status-waiting{ background:rgba(214,160,92,.1); color:var(--accent-amber); border:1px solid rgba(214,160,92,.2); }
-    .status-waiting .dot{ background:var(--accent-amber); animation:pulse 2s infinite; box-shadow:0 0 8px rgba(214,160,92,.4); }
-    .status-certified{ background:rgba(157,140,207,.1); color:var(--purple-bright); border:1px solid rgba(157,140,207,.2); }
-    .status-certified .dot{ background:var(--purple-bright); box-shadow:0 0 8px rgba(157,140,207,.4); }
-    .status-not_found{ background:rgba(214,92,92,.08); color:var(--accent-red); border:1px solid rgba(214,92,92,.2); }
-    .status-not_found .dot{ background:var(--accent-red); }
-
-    @keyframes pulse{ 0%,100%{ opacity:1; } 50%{ opacity:.4; } }
-
-    /* Time display */
-    .time-display{ text-align:center; margin:32px 0 12px; }
-    .time-display .big{
-      font-family:var(--serif); font-size:72px; font-weight:200;
-      letter-spacing:-0.04em; line-height:1;
-      background:linear-gradient(180deg,var(--text-primary),var(--text-secondary));
-      -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-      background-clip:text;
-    }
-    .time-display .label{
-      font-family:var(--mono); font-size:9px; letter-spacing:4px;
-      text-transform:uppercase; color:var(--text-tertiary); margin-top:6px;
-    }
-
-    /* Progress */
-    .progress-bar{
-      height:4px; background:rgba(255,255,255,.06);
-      border-radius:2px; overflow:hidden; margin:24px 0 10px;
-    }
-    .progress-fill{
-      height:100%; border-radius:2px;
-      background:linear-gradient(90deg,var(--purple-primary),var(--purple-bright));
-      transition:width .8s var(--ease);
-      box-shadow:0 0 12px rgba(157,140,207,.3);
-    }
-    .progress-label{
-      font-family:var(--mono); font-size:11px;
-      color:var(--text-tertiary); text-align:center; letter-spacing:0.5px;
-    }
-
-    /* Metrics */
-    .metrics-grid{
-      display:grid; grid-template-columns:repeat(4,1fr);
-      gap:12px; margin:32px 0;
-    }
-    .metric-card{
-      background:rgba(0,0,0,.25); border:1px solid rgba(255,255,255,.05);
-      border-radius:14px; padding:20px 8px; text-align:center;
-      transition:border-color .2s;
-    }
-    .metric-card:hover{ border-color:rgba(255,255,255,.12); }
-    .metric-value{
-      font-family:var(--serif); font-size:30px; font-weight:200; line-height:1;
-    }
-    .metric-value.green{ color:var(--accent-green); }
-    .metric-value.red{ color:var(--accent-red); }
-    .metric-label{
-      font-family:var(--mono); font-size:8px; letter-spacing:1.5px;
-      text-transform:uppercase; color:var(--text-tertiary); margin-top:8px;
-    }
-
-    /* Criteria */
-    .criteria-section{ margin-top:32px; padding-top:28px; border-top:1px solid var(--border-glass); }
-    .criteria-title{
-      font-family:var(--mono); font-size:10px; letter-spacing:4px;
-      text-transform:uppercase; color:var(--purple-bright); margin:0 0 18px;
-    }
-    .criteria-item{
-      display:flex; align-items:center; gap:14px;
-      padding:14px 16px; border-radius:12px;
-      border:1px solid rgba(255,255,255,.05);
-      background:rgba(255,255,255,.015);
-      margin-bottom:8px;
-      font-size:14px; color:var(--text-secondary); font-weight:200;
-      transition:border-color .2s;
-    }
-    .criteria-item:hover{ border-color:rgba(255,255,255,.10); }
-    .criteria-icon{
-      width:26px; height:26px; border-radius:50%;
-      display:flex; align-items:center; justify-content:center;
-      font-size:13px; flex-shrink:0;
-    }
-    .criteria-met{
-      background:rgba(92,214,133,.12); color:var(--accent-green);
-      border:1px solid rgba(92,214,133,.25);
-    }
-    .criteria-pending{
-      background:rgba(255,255,255,.03); color:var(--text-tertiary);
-      border:1px solid rgba(255,255,255,.08);
-    }
-
-    /* Message */
-    .message{
-      margin-top:28px; padding:18px 20px;
-      background:rgba(91,75,138,.06); border:1px solid rgba(157,140,207,.15);
-      border-radius:12px; font-size:13px; color:var(--text-secondary);
-      font-weight:200; line-height:1.7;
-    }
-
-    /* Not found */
-    .not-found-content{ text-align:center; padding:20px 0; }
-    .not-found-content p{ color:var(--text-secondary); font-size:14px; line-height:1.7; font-weight:200; margin:0 0 8px; }
-
-    /* Certified */
-    .certified-content{ margin-top:28px; }
-    .certified-content h2{ font-family:var(--serif); font-size:30px; font-weight:200; margin:0 0 8px; letter-spacing:-0.02em; }
-    .certified-content p{ color:var(--text-secondary); font-size:14px; margin:0 0 8px; font-weight:200; }
-    .cert-details{
-      background:rgba(0,0,0,.2); border:1px solid var(--border-glass);
-      border-radius:12px; padding:18px 20px; margin:20px 0;
-    }
-    .cert-details p{ margin:0 0 8px; font-family:var(--mono); font-size:13px; color:var(--text-secondary); }
-    .cert-details p:last-child{ margin:0; }
-    .cert-details strong{ color:var(--text-primary); }
-
-    .btn-cta{
-      display:inline-block; padding:14px 28px;
-      border:1px solid rgba(157,140,207,.5);
-      background:rgba(91,75,138,.18); color:var(--text-primary);
-      border-radius:14px; font-family:var(--mono); font-size:10px;
-      letter-spacing:2px; text-transform:uppercase; cursor:pointer;
-      transition:all .25s; margin-top:16px;
-      box-shadow:0 4px 20px rgba(91,75,138,.15);
-    }
-    .btn-cta:hover{
-      border-color:rgba(157,140,207,.8); background:rgba(91,75,138,.30);
-      text-decoration:none; transform:translateY(-1px);
-      box-shadow:0 8px 30px rgba(91,75,138,.25);
-    }
-
-    /* Loading */
-    .loading{ display:flex; flex-direction:column; align-items:center; gap:16px; padding:48px 0; }
-    .spinner{
-      width:36px; height:36px; border:2px solid rgba(255,255,255,.06);
-      border-top-color:var(--purple-bright); border-radius:50%;
-      animation:spin .7s linear infinite;
-    }
-    @keyframes spin{ to{ transform:rotate(360deg); } }
-    .loading-text{
-      font-family:var(--mono); font-size:10px; letter-spacing:2px;
-      text-transform:uppercase; color:var(--text-tertiary);
-    }
-
-    /* How it works */
-    .section-divider{
-      border:none; height:1px; margin:0;
-      background:linear-gradient(90deg,transparent,var(--border-glass),transparent);
-    }
-
-    .how-section{ padding:48px 0; }
-    .how-label{
-      font-family:var(--mono); font-size:10px; letter-spacing:5px;
-      text-transform:uppercase; color:var(--purple-bright); margin-bottom:12px;
-    }
-    .how-title{
-      font-family:var(--serif); font-size:clamp(26px,3.5vw,36px);
-      font-weight:200; margin:0 0 36px; letter-spacing:-0.03em;
-    }
-
-    .steps-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
-
-    .step-card{
-      padding:28px 24px; border:1px solid var(--border-glass);
-      background:rgba(255,255,255,.02); border-radius:18px;
-      position:relative; overflow:hidden; transition:border-color .3s, transform .3s;
-    }
-    .step-card:hover{ border-color:rgba(157,140,207,.25); transform:translateY(-2px); }
-    .step-card::before{
-      content:""; position:absolute; inset:-30%;
-      background:radial-gradient(circle at 30% 20%,rgba(157,140,207,.06),transparent 55%);
-      pointer-events:none; opacity:.8;
-    }
-    .step-card>*{ position:relative; z-index:1; }
-
-    .step-num{
-      font-family:var(--mono); font-size:9px; letter-spacing:4px;
-      text-transform:uppercase; color:var(--purple-bright); margin-bottom:14px;
-    }
-    .step-title{
-      font-family:var(--serif); font-size:20px; font-weight:200;
-      margin:0 0 8px; letter-spacing:-0.02em;
-    }
-    .step-desc{
-      color:var(--text-tertiary); font-size:13px; line-height:1.65;
-      font-weight:200; margin:0;
-    }
-
-    /* Footer */
-    footer{
-      margin-top:20px; padding:40px 20px;
-      border-top:1px solid var(--border-glass); text-align:center;
-      position:relative; z-index:1;
-    }
-    .footer-copy{
-      font-family:var(--mono); font-size:10px; letter-spacing:2px;
-      text-transform:uppercase; color:var(--text-tertiary);
-    }
-    .footer-links{
-      margin-top:16px; display:flex; justify-content:center;
-      gap:24px; flex-wrap:wrap;
-    }
-    .footer-links a{
-      font-family:var(--mono); font-size:10px; letter-spacing:1px;
-      color:var(--text-tertiary); transition:color .2s;
-    }
-    .footer-links a:hover{ color:var(--text-primary); text-decoration:none; }
-
-    @media(max-width:700px){
-      .metrics-grid{ grid-template-columns:repeat(2,1fr); }
-      .steps-grid{ grid-template-columns:1fr; }
-      h1{ font-weight:300; }
-      .time-display .big{ font-size:52px; }
-      .search-row{ flex-direction:column; }
-      .hero::before{ display:none; }
-      .page-desc{ border-left:none; padding-left:0; }
-    }
-
-    @media(max-width:480px){
-      .metrics-grid{ grid-template-columns:1fr !important; }
-      h1{ font-size:clamp(28px,6vw,52px); }
-      .time-display .big{ font-size:36px; }
-      .search-row input, .search-row button{ font-size:12px; }
-      .result-card{ padding:16px; }
-      .brand-name{ font-size:9px; letter-spacing:2px; }
-    }
-
-    @media(prefers-reduced-motion:reduce){
-      .brand-mark-inner{ animation:none; opacity:.9; }
-      .ambient::before,.ambient::after{ animation:none; }
-    }
+    @media(max-width:700px){.metrics{grid-template-columns:repeat(2,1fr);}.steps{grid-template-columns:1fr;}}
+    @media(max-width:480px){.metrics{grid-template-columns:1fr;}}
   </style>
 </head>
 <body>
-  <div class="ambient" aria-hidden="true"></div>
-  <div class="grid-overlay" aria-hidden="true"></div>
-
   <header class="site-header">
     <div class="nav-inner">
-      <a href="index.html" class="brand">
-        <div class="brand-mark" aria-hidden="true"><div class="brand-mark-inner"></div></div>
-        <div class="brand-name">Sentinel Authority</div>
-      </a>
-      <a href="https://app.sentinelauthority.org" class="back-link">← Back to Dashboard</a>
+      <a href="index.html" class="brand"><div class="brand-mark"><div class="brand-mark-inner"></div></div><div class="brand-name">Sentinel Authority</div></a>
+      <a href="index.html#verify" class="back-link">← Back</a>
     </div>
   </header>
 
   <main>
-    <div class="hero">
-      <div class="page-kicker">CAT-72 Conformance</div>
-      <h1>Test <span class="accent">Status</span></h1>
-      <div class="hero-stamp"></div>
-      <p class="page-desc">Track your system's 72-hour continuous conformance test in real time. Enter your Certificate ID to view progress, metrics, and certification criteria.</p>
+    <div style="margin-bottom:40px;">
+      <span class="section-label">CAT-72 CONFORMANCE</span>
+      <h1 class="section-title">Test Status</h1>
+      <p class="section-lead">Track your 72-hour continuous conformance test in real time.</p>
     </div>
 
-    <div class="search-panel">
-      <label class="search-label" for="certId">Certificate ID</label>
-      <div class="search-row">
-        <input type="text" id="certId" placeholder="ODDC-2026-0001" />
-        <button onclick="checkStatus()">Check Status</button>
+    <div class="hud-frame hud-scanline"><i></i>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <span class="hud-label">CERTIFICATE ID</span>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <span class="hud-dot hud-dot-green"></span>
+          <span class="hud-label" style="color:rgba(92,214,133,0.7);">LIVE</span>
+        </div>
       </div>
-      <p class="search-hint">Find your Certificate ID in the <a href="https://app.sentinelauthority.org">applicant portal</a> or your approval email.</p>
+      <div style="display:flex;gap:8px;align-items:stretch;">
+        <input type="text" id="certId" placeholder="ODDC-2026-00001" style="flex:1;padding:14px 16px;font-family:var(--mono);font-size:15px;letter-spacing:2px;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.06);border-radius:0;color:var(--text-primary);outline:none;border-bottom:1px solid rgba(157,140,207,0.2);">
+        <button onclick="checkStatus()" style="padding:14px 20px;font-family:var(--mono);font-size:10px;letter-spacing:2px;background:transparent;border:1px solid rgba(157,140,207,.25);border-radius:0;color:rgba(157,140,207,.9);cursor:pointer;white-space:nowrap;">CHECK</button>
+      </div>
+      <div class="hud-desc" style="margin-top:8px;">Find your Certificate ID in the <a href="https://app.sentinelauthority.org" style="color:var(--purple-bright);">applicant portal</a> or approval email.</div>
     </div>
 
-    <div class="result-panel" id="result"></div>
+    <div id="result" style="display:none;"></div>
 
-    <hr class="section-divider" />
-
-    <div class="how-section">
-      <div class="how-label">How It Works</div>
-      <h2 class="how-title">The CAT-72 conformance window</h2>
-
-      <div class="steps-grid">
-        <div class="step-card">
-          <div class="step-num">01</div>
-          <div class="step-title">72 Hours</div>
-          <p class="step-desc">Continuous autonomous operation with ENVELO enforcing all approved boundaries in your production environment.</p>
+    <div style="margin-top:40px;padding-top:32px;border-top:1px solid var(--border-glass);">
+      <span class="hud-label" style="margin-bottom:16px;display:block;">HOW CAT-72 WORKS</span>
+      <div class="steps">
+        <div class="step">
+          <div class="step-n">01</div>
+          <div class="step-t">72 Hours</div>
+          <p class="step-d">Continuous operation with ENVELO enforcing all boundaries in production.</p>
         </div>
-        <div class="step-card">
-          <div class="step-num">02</div>
-          <div class="step-title">≥ 95% Pass Rate</div>
-          <p class="step-desc">Minimum pass rate across all boundary enforcement actions evaluated during the full test window.</p>
+        <div class="step">
+          <div class="step-n">02</div>
+          <div class="step-t">Zero Tier 3</div>
+          <p class="step-d">No ENVELO Wall violations. Tier 2 breaches must trigger successful MRC.</p>
         </div>
-        <div class="step-card">
-          <div class="step-num">03</div>
-          <div class="step-title">Real-Time Telemetry</div>
-          <p class="step-desc">Live telemetry streamed from your ENVELO agent throughout the entire test window.</p>
+        <div class="step">
+          <div class="step-n">03</div>
+          <div class="step-t">Sealed Record</div>
+          <p class="step-d">Cryptographic hash-chain telemetry. Tamper-evident. Auditor-ready.</p>
         </div>
       </div>
     </div>
   </main>
 
   <footer>
-    <div class="footer-copy">© <span id="footer-year"></span> Sentinel Authority</div>
+    <div class="footer-copy">© <span id="yr"></span> Sentinel Authority</div>
     <div class="footer-links">
-      <a href="privacy.html">Privacy</a>
-      <a href="terms.html">Terms</a>
-      <a href="index.html#artifacts">Documents</a>
-      <a href="conformance-agreement.html">Conformance</a>
+      <a href="index.html">Home</a>
+      <a href="index.html#verify">Verify</a>
+      <a href="index.html#artifacts">Docs</a>
+      <a href="index.html#contact">Contact</a>
     </div>
   </footer>
 
   <script>
-    document.getElementById("footer-year").textContent = new Date().getFullYear();
-
-    const params = new URLSearchParams(window.location.search);
-    const certParam = params.get('cert');
-    if (certParam) {
-      document.getElementById('certId').value = certParam;
-      checkStatus();
-    }
+    document.getElementById('yr').textContent = new Date().getFullYear();
+    const p = new URLSearchParams(window.location.search);
+    if (p.get('cert')) { document.getElementById('certId').value = p.get('cert'); checkStatus(); }
+    document.getElementById('certId').addEventListener('keydown', e => { if(e.key==='Enter') checkStatus(); });
 
     async function checkStatus() {
       const certId = document.getElementById('certId').value.trim();
       if (!certId) { document.getElementById('certId').focus(); return; }
-
-      const resultDiv = document.getElementById('result');
-      resultDiv.innerHTML = '<div class="loading"><div class="spinner"></div><div class="loading-text">Checking status…</div></div>';
-      resultDiv.classList.add('show');
+      const r = document.getElementById('result');
+      r.style.display = 'block';
+      r.innerHTML = '<div class="hud-frame"><i></i><div class="spinner"></div><div class="loading-text">Querying registry…</div></div>';
 
       try {
-        const res = await fetch(`https://sentinel-authority-production.up.railway.app/api/verify/status/${encodeURIComponent(certId)}`);
-        const data = await res.json();
+        const res = await fetch('https://sentinel-authority-production.up.railway.app/api/verify/status/' + encodeURIComponent(certId));
+        const d = await res.json();
 
-        if (data.status === 'not_found') {
-          resultDiv.innerHTML = `
-            <span class="status-badge status-not_found"><span class="dot"></span>Not Found</span>
-            <div class="not-found-content">
-              <p>${data.message || 'No active test found for this Certificate ID.'}</p>
-              <p>Ensure your ENVELO Agent is running and connected with the correct Certificate ID.</p>
-            </div>
-          `;
-        } else if (data.status === 'certified') {
-          resultDiv.innerHTML = `
-            <span class="status-badge status-certified"><span class="dot"></span>Certified</span>
-            <div class="certified-content">
-              <h2>Conformance Verified</h2>
-              <p>Your system has successfully completed the CAT-72 conformance test.</p>
-              <div class="cert-details">
-                <p><strong>Certificate</strong> ${data.certificate_number}</p>
-                <p><strong>Issued</strong> ${new Date(data.issued_at).toLocaleDateString()}</p>
-                <p><strong>Expires</strong> ${new Date(data.expires_at).toLocaleDateString()}</p>
-              </div>
-              <a href="https://app.sentinelauthority.org" class="btn-cta">View in Dashboard →</a>
-            </div>
-          `;
+        if (d.status === 'not_found') {
+          r.innerHTML = '<div class="hud-frame"><i></i>' +
+            '<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;"><span class="hud-dot" style="background:var(--accent-red);"></span><span class="hud-label" style="color:var(--accent-red);">NOT FOUND</span></div>' +
+            '<div class="hud-desc">' + (d.message || 'No active test found for this Certificate ID.') + '</div>' +
+            '<div class="hud-desc" style="margin-top:8px;">Ensure ENVELO is running with the correct Certificate ID and API key.</div></div>';
+        } else if (d.status === 'certified') {
+          r.innerHTML = '<div class="hud-frame hud-scanline"><i></i>' +
+            '<div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;"><span class="hud-dot hud-dot-green"></span><span class="hud-label" style="color:var(--accent-green);">CERTIFIED</span></div>' +
+            '<div class="hud-title" style="font-size:14px;margin-bottom:12px;">Conformance Verified</div>' +
+            '<div style="display:grid;grid-template-columns:100px 1fr;gap:4px 12px;padding:12px 0;border-top:1px solid var(--border-glass);border-bottom:1px solid var(--border-glass);">' +
+              '<span class="hud-label">CERTIFICATE</span><span class="hud-title">' + d.certificate_number + '</span>' +
+              '<span class="hud-label">ISSUED</span><span class="hud-title">' + new Date(d.issued_at).toLocaleDateString() + '</span>' +
+              '<span class="hud-label">EXPIRES</span><span class="hud-title">' + new Date(d.expires_at).toLocaleDateString() + '</span>' +
+            '</div>' +
+            '<div style="margin-top:12px;"><a href="https://app.sentinelauthority.org" style="font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--purple-bright);">VIEW IN DASHBOARD →</a></div></div>';
         } else {
-          const pct = Math.min(100, (data.hours_elapsed / 72) * 100);
-          resultDiv.innerHTML = `
-            <span class="status-badge status-${data.status}">
-              <span class="dot"></span>${data.status === 'running' ? 'Test Running' : 'Waiting for Agent'}
-            </span>
-
-            <div class="time-display">
-              <div class="big">${data.hours_remaining.toFixed(1)}h</div>
-              <div class="label">Remaining</div>
-            </div>
-
-            <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
-            <p class="progress-label">${data.hours_elapsed.toFixed(1)} / 72 hours elapsed</p>
-
-            <div class="metrics-grid">
-              <div class="metric-card"><div class="metric-value">${data.total_actions.toLocaleString()}</div><div class="metric-label">Total Actions</div></div>
-              <div class="metric-card"><div class="metric-value green">${data.pass_count.toLocaleString()}</div><div class="metric-label">Passed</div></div>
-              <div class="metric-card"><div class="metric-value ${data.block_count > 0 ? 'red' : ''}">${data.block_count.toLocaleString()}</div><div class="metric-label">Blocked</div></div>
-              <div class="metric-card"><div class="metric-value ${data.pass_rate >= 95 ? 'green' : ''}">${data.pass_rate}%</div><div class="metric-label">Pass Rate</div></div>
-            </div>
-
-            <div class="criteria-section">
-              <h3 class="criteria-title">Certification Criteria</h3>
-              <div class="criteria-item"><span class="criteria-icon ${data.criteria.duration_met ? 'criteria-met' : 'criteria-pending'}">${data.criteria.duration_met ? '✓' : '○'}</span>72 hours continuous operation</div>
-              <div class="criteria-item"><span class="criteria-icon ${data.criteria.actions_met ? 'criteria-met' : 'criteria-pending'}">${data.criteria.actions_met ? '✓' : '○'}</span>Minimum 100 enforced actions</div>
-              <div class="criteria-item"><span class="criteria-icon ${data.criteria.pass_rate_met ? 'criteria-met' : 'criteria-pending'}">${data.criteria.pass_rate_met ? '✓' : '○'}</span>≥ 95% boundary pass rate</div>
-              <div class="criteria-item"><span class="criteria-icon ${data.criteria.blocking_verified ? 'criteria-met' : 'criteria-pending'}">${data.criteria.blocking_verified ? '✓' : '○'}</span>Blocking enforcement verified</div>
-            </div>
-
-            <div class="message">${data.status === 'waiting' ? 'Your ENVELO Agent is not currently connected. Ensure it is running with the correct API key and Certificate ID.' : 'Test in progress — keep your system and ENVELO Agent running continuously until completion.'}</div>
-          `;
+          const pct = Math.min(100, (d.hours_elapsed / 72) * 100);
+          const statusColor = d.status === 'running' ? 'var(--accent-green)' : 'var(--accent-amber)';
+          const statusLabel = d.status === 'running' ? 'RUNNING' : 'WAITING';
+          const statusDot = d.status === 'running' ? 'hud-dot-green' : 'hud-dot-amber';
+          r.innerHTML = '<div class="hud-frame hud-scanline"><i></i>' +
+            '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">' +
+              '<div style="display:flex;align-items:center;gap:8px;"><span class="hud-dot ' + statusDot + '"></span><span class="hud-label" style="color:' + statusColor + ';">' + statusLabel + '</span></div>' +
+              '<span class="hud-label">' + certId + '</span>' +
+            '</div>' +
+            '<div style="text-align:center;margin:20px 0 8px;"><div style="font-family:var(--mono);font-size:48px;color:var(--text-primary);letter-spacing:-2px;">' + d.hours_remaining.toFixed(1) + 'h</div><div class="hud-label">REMAINING</div></div>' +
+            '<div class="progress"><div class="progress-fill" style="width:' + pct + '%;"></div></div>' +
+            '<div class="progress-lbl">' + d.hours_elapsed.toFixed(1) + ' / 72 hours</div>' +
+            '<div class="metrics">' +
+              '<div class="metric"><div class="metric-val">' + d.total_actions.toLocaleString() + '</div><div class="metric-lbl">Actions</div></div>' +
+              '<div class="metric"><div class="metric-val green">' + d.pass_count.toLocaleString() + '</div><div class="metric-lbl">Passed</div></div>' +
+              '<div class="metric"><div class="metric-val' + (d.block_count > 0 ? ' red' : '') + '">' + d.block_count.toLocaleString() + '</div><div class="metric-lbl">Blocked</div></div>' +
+              '<div class="metric"><div class="metric-val' + (d.pass_rate >= 95 ? ' green' : '') + '">' + d.pass_rate + '%</div><div class="metric-lbl">Pass Rate</div></div>' +
+            '</div>' +
+            '<div class="criteria"><span class="hud-label" style="display:block;margin-bottom:10px;">CRITERIA</span>' +
+              '<div class="criteria-row"><span class="c-icon ' + (d.criteria.duration_met ? 'c-met' : 'c-pending') + '">' + (d.criteria.duration_met ? '✓' : '○') + '</span>72 hours continuous</div>' +
+              '<div class="criteria-row"><span class="c-icon ' + (d.criteria.actions_met ? 'c-met' : 'c-pending') + '">' + (d.criteria.actions_met ? '✓' : '○') + '</span>Minimum 100 actions</div>' +
+              '<div class="criteria-row"><span class="c-icon ' + (d.criteria.pass_rate_met ? 'c-met' : 'c-pending') + '">' + (d.criteria.pass_rate_met ? '✓' : '○') + '</span>≥ 95% pass rate</div>' +
+              '<div class="criteria-row"><span class="c-icon ' + (d.criteria.blocking_verified ? 'c-met' : 'c-pending') + '">' + (d.criteria.blocking_verified ? '✓' : '○') + '</span>Blocking verified</div>' +
+            '</div></div>';
         }
       } catch (err) {
-        resultDiv.innerHTML = `<div class="not-found-content"><p style="color:var(--accent-red);">Connection error: ${err.message}</p><p>Please try again or contact info@sentinelauthority.org</p></div>`;
+        r.innerHTML = '<div class="hud-frame"><i></i><div style="display:flex;align-items:center;gap:8px;"><span class="hud-dot" style="background:var(--accent-red);"></span><span class="hud-label" style="color:var(--accent-red);">CONNECTION ERROR</span></div><div class="hud-desc" style="margin-top:8px;">' + err.message + '</div></div>';
       }
     }
   </script>

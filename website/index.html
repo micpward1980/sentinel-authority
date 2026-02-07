@@ -5325,127 +5325,86 @@
         </div>
       </div>
 
-      <!-- Verification Terminal -->
-      <div class="reveal" style="max-width: 700px; margin: 0 auto;">
-        <div class="hud-frame"><i></i>
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <!-- Verify / Status Terminal -->
+      <div class="reveal" style="max-width:700px;margin:0 auto;">
+        <div class="hud-frame hud-scanline"><i></i>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
             <span class="hud-label">SENTINEL REGISTRY</span>
             <div style="display:flex;align-items:center;gap:6px;">
               <span class="hud-dot hud-dot-green"></span>
               <span class="hud-label" style="color:rgba(92,214,133,0.7);">LIVE</span>
             </div>
           </div>
-          <div>
-            
-            <!-- Mode tabs -->
-            <div style="display: flex; gap: 8px; margin-bottom: 24px;">
-              <button id="tab-verify" onclick="setVerifyMode('verify')" style="
-                flex: 1; padding: 10px 16px; border-radius: 0; border: none; cursor: pointer;
-                font-family: var(--mono); font-size: 10px; letter-spacing: 2px;
-                background: rgba(157,140,207,0.15); color: rgba(157,140,207,0.9); border-bottom: 1px solid rgba(157,140,207,0.3); transition: all 0.2s;
-              ">VERIFY CERTIFICATE</button>
-              <button id="tab-search" onclick="setVerifyMode('search')" style="
-                flex: 1; padding: 10px 16px; border-radius: 0; border: none; cursor: pointer;
-                font-family: var(--mono); font-size: 10px; letter-spacing: 2px;
-                background: transparent; color: rgba(255,255,255,0.3); border-bottom: 1px solid rgba(255,255,255,0.04); transition: all 0.2s;
-              ">SEARCH REGISTRY</button>
+
+          <!-- Mode tabs -->
+          <div style="display:flex;gap:0;margin-bottom:24px;border-bottom:1px solid rgba(255,255,255,0.06);">
+            <button id="tab-verify" onclick="setVerifyMode('verify')" style="flex:1;padding:10px 0;border:none;cursor:pointer;font-family:var(--mono);font-size:10px;letter-spacing:2px;background:transparent;color:rgba(157,140,207,0.9);border-bottom:2px solid rgba(157,140,207,0.6);transition:all 0.2s;">VERIFY CERTIFICATE</button>
+            <button id="tab-search" onclick="setVerifyMode('search')" style="flex:1;padding:10px 0;border:none;cursor:pointer;font-family:var(--mono);font-size:10px;letter-spacing:2px;background:transparent;color:rgba(255,255,255,0.3);border-bottom:2px solid transparent;transition:all 0.2s;">SEARCH REGISTRY</button>
+            <button id="tab-status" onclick="setVerifyMode('status')" style="flex:1;padding:10px 0;border:none;cursor:pointer;font-family:var(--mono);font-size:10px;letter-spacing:2px;background:transparent;color:rgba(255,255,255,0.3);border-bottom:2px solid transparent;transition:all 0.2s;">CAT-72 STATUS</button>
+          </div>
+
+          <!-- Verify mode -->
+          <div id="verify-mode">
+            <div style="display:flex;gap:8px;align-items:stretch;">
+              <input type="text" id="cert-input" placeholder="ODDC-2026-00001" style="flex:1;padding:14px 16px;font-family:var(--mono);font-size:15px;letter-spacing:2px;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.06);border-radius:0;color:var(--text-primary);outline:none;border-bottom:1px solid rgba(157,140,207,0.2);">
+              <button onclick="verifyCertificate()" style="padding:14px 20px;font-family:var(--mono);font-size:10px;letter-spacing:2px;background:transparent;border:1px solid rgba(157,140,207,0.25);border-radius:0;color:rgba(157,140,207,0.9);cursor:pointer;transition:all 0.2s;white-space:nowrap;">VERIFY</button>
             </div>
-            
-            <!-- Verify mode -->
-            <div id="verify-mode">
-              <div style="display: flex; gap: 12px; align-items: center;">
-                <div style="flex: 1; position: relative;">
-                  <input type="text" id="cert-input" placeholder="ODDC-2026-00001" style="
-                    width: 100%; padding: 18px 24px; font-family: var(--mono); font-size: 18px;
-                    letter-spacing: 2px; background: rgba(0,0,0,0.2);
-                    border: 1px solid rgba(255,255,255,0.06); border-radius: 0;
-                    color: var(--text-primary); outline: none; box-sizing: border-box; border-bottom: 1px solid rgba(157,140,207,0.2);
-                  ">
-                </div>
-                <button id="scan-btn" onclick="openScanner()" title="Scan QR Code" class="mobile-only" style="
-                  padding: 16px; background: transparent;
-                  border: 1px solid rgba(255,255,255,0.06); border-radius: 0; cursor: pointer;
-                  display: none; align-items: center; justify-content: center;
-                ">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(157,140,207,0.9)" stroke-width="1.5">
-                    <rect x="3" y="3" width="7" height="7" rx="1"/>
-                    <rect x="14" y="3" width="7" height="7" rx="1"/>
-                    <rect x="3" y="14" width="7" height="7" rx="1"/>
-                    <rect x="14" y="14" width="3" height="3"/>
-                    <rect x="18" y="14" width="3" height="3"/>
-                    <rect x="14" y="18" width="3" height="3"/>
-                    <rect x="18" y="18" width="3" height="3"/>
-                  </svg>
-                </button>
-                <button id="verify-btn" aria-label="Verify certificate" onclick="verifyCertificate()" style="
-                  padding: 16px 24px; font-family: var(--mono); font-size: 10px; letter-spacing: 2px;
-                  background: transparent;
-                  border: 1px solid rgba(157,140,207,0.25); border-radius: 0; color: rgba(157,140,207,0.9); cursor: pointer;
-                  box-shadow: none; transition: all 0.2s;
-                ">Verify</button>
-              </div>
-              
-              <!-- QR Scanner Modal -->
-              <div id="scanner-modal" onclick="if(event.target === this) closeScanner()" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.95); z-index: 9999; align-items: center; justify-content: center;">
-                <div style="background: #0c1220; border: 1px solid rgba(157,140,207,0.4); border-radius: 20px; padding: 24px; max-width: 400px; width: 90%; text-align: center; position: relative;">
-                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                    <span style="font-family: var(--mono); font-size: 12px; letter-spacing: 2px; color: var(--purple-bright);">SCAN QR CODE</span>
-                    <button onclick="closeScanner()" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; cursor: pointer; padding: 8px; display: flex; align-items: center; justify-content: center;">
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5">
-                        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-                      </svg>
-                    </button>
-                  </div>
-                  <div id="qr-reader" style="width: 100%; border-radius: 12px; overflow: hidden; min-height: 200px; background: rgba(0,0,0,0.3);"></div>
-                  <p style="font-size: 12px; color: var(--text-tertiary); margin-top: 16px;">Point camera at certificate QR code</p>
-                  <button onclick="closeScanner()" style="margin-top: 20px; padding: 14px 32px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; color: #fff; font-family: var(--mono); font-size: 12px; letter-spacing: 1px; cursor: pointer;">Close</button>
-                </div>
-              </div>
+            <div class="hud-desc" style="margin-top:8px;">Enter a certificate ID from any ODDC mark or certificate document.</div>
+          </div>
+
+          <!-- Search mode -->
+          <div id="search-mode" style="display:none;">
+            <div style="display:flex;gap:8px;align-items:stretch;">
+              <input type="text" id="search-input" placeholder="Company or system name..." style="flex:1;padding:14px 16px;font-family:var(--mono);font-size:15px;letter-spacing:2px;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.06);border-radius:0;color:var(--text-primary);outline:none;border-bottom:1px solid rgba(157,140,207,0.2);">
+              <button onclick="searchRegistry()" style="padding:14px 20px;font-family:var(--mono);font-size:10px;letter-spacing:2px;background:transparent;border:1px solid rgba(157,140,207,0.25);border-radius:0;color:rgba(157,140,207,0.9);cursor:pointer;transition:all 0.2s;white-space:nowrap;">SEARCH</button>
             </div>
-            
-            <!-- Search mode -->
-            <div id="search-mode" style="display: none;">
-              <div style="display: flex; gap: 12px; align-items: center;">
-                <div style="flex: 1; position: relative;">
-                  <input type="text" id="search-input" placeholder="Company or system name..." style="
-                    width: 100%; padding: 18px 24px; font-family: var(--mono); font-size: 18px;
-                    letter-spacing: 2px; background: rgba(0,0,0,0.2);
-                    border: 1px solid rgba(255,255,255,0.06); border-radius: 0;
-                    color: var(--text-primary); outline: none; box-sizing: border-box; border-bottom: 1px solid rgba(157,140,207,0.2);
-                  ">
-                </div>
-                <button id="search-btn" aria-label="Search registry" onclick="searchRegistry()" style="
-                  padding: 16px 24px; font-family: var(--mono); font-size: 10px; letter-spacing: 2px;
-                  background: transparent;
-                  border: 1px solid rgba(157,140,207,0.25); border-radius: 0; color: rgba(157,140,207,0.9); cursor: pointer;
-                  box-shadow: none; transition: all 0.2s;
-                ">Search</button>
-              </div>
+            <div class="hud-desc" style="margin-top:8px;">Search the public conformance registry by company or system name.</div>
+          </div>
+
+          <!-- Status mode -->
+          <div id="status-mode" style="display:none;">
+            <div style="display:flex;gap:8px;align-items:stretch;">
+              <input type="text" id="status-input" placeholder="ODDC-2026-00001" style="flex:1;padding:14px 16px;font-family:var(--mono);font-size:15px;letter-spacing:2px;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.06);border-radius:0;color:var(--text-primary);outline:none;border-bottom:1px solid rgba(157,140,207,0.2);">
+              <button onclick="checkCat72Status()" style="padding:14px 20px;font-family:var(--mono);font-size:10px;letter-spacing:2px;background:transparent;border:1px solid rgba(157,140,207,0.25);border-radius:0;color:rgba(157,140,207,0.9);cursor:pointer;transition:all 0.2s;white-space:nowrap;">CHECK</button>
             </div>
-            
-            <!-- Result area -->
-            <div id="verify-result" style="margin-top: 20px;"></div>
-            
+            <div class="hud-desc" style="margin-top:8px;">Track your 72-hour conformance test progress in real time.</div>
+          </div>
+
+          <!-- Result area -->
+          <div id="verify-result" style="margin-top:20px;"></div>
+        </div>
+      </div>
+
+      <!-- Status indicators -->
+      <div class="reveal" style="max-width:700px;margin:var(--space-3) auto 0;">
+        <div class="hud-frame"><i></i>
+          <div class="hud-label" style="margin-bottom:12px;">STATUS INDICATORS</div>
+          <div style="display:grid;grid-template-columns:auto 1fr;gap:8px 12px;align-items:center;">
+            <span class="hud-dot hud-dot-green"></span>
+            <div><span class="hud-title" style="color:rgba(92,214,133,0.9);">VALID</span><span class="hud-desc" style="margin-left:8px;">Conformance current, mark authorized</span></div>
+            <span class="hud-dot hud-dot-amber"></span>
+            <div><span class="hud-title" style="color:rgba(214,160,92,0.9);">TESTING</span><span class="hud-desc" style="margin-left:8px;">CAT-72 in progress</span></div>
+            <span class="hud-dot" style="width:6px;height:6px;border-radius:50%;background:rgba(214,92,92,0.9);"></span>
+            <div><span class="hud-title" style="color:rgba(214,92,92,0.9);">EXPIRED</span><span class="hud-desc" style="margin-left:8px;">Conformance lapsed, renewal required</span></div>
           </div>
         </div>
       </div>
 
-
       <!-- API Access -->
-      <div class="reveal" style="margin-top: var(--space-4); max-width: 600px; margin-left: auto; margin-right: auto; text-align: center;">
+      <div class="reveal" style="margin-top:var(--space-3);max-width:700px;margin-left:auto;margin-right:auto;">
         <div class="hud-frame"><i></i>
-        <div class="hud-label" style="margin-bottom:12px;">PROGRAMMATIC ACCESS</div>
-        <div class="hud-desc" style="margin-bottom:16px;">Integrate verification into your systems with our REST API.</div>
-        <div style="background: transparent; border-radius: 0; border:1px solid rgba(255,255,255,0.04); padding: 16px; text-align: left; font-family: var(--mono); font-size: 12px; color: var(--text-secondary); word-break: break-all;">
-          <span style="color: var(--purple-bright);">GET</span><br style="display: none;" class="mobile-break"/>
-          <span style="color: var(--text-tertiary);">https://api.sentinelauthority.org</span><wbr/><span style="color: var(--text-tertiary);">/v1/verify/</span><span style="color: rgba(92,214,133,0.9);">{cert_id}</span>
-        </div>
-        <div style="margin-top: var(--space-2);">
-          <a href="mailto:conformance@sentinelauthority.org" class="hud-link">REQUEST API KEY →</a>
-        </div>
+          <div class="hud-label" style="margin-bottom:12px;">PROGRAMMATIC ACCESS</div>
+          <div class="hud-desc" style="margin-bottom:16px;">Integrate verification into your systems with our REST API.</div>
+          <div style="background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.04);padding:14px 16px;font-family:var(--mono);font-size:12px;color:var(--text-secondary);word-break:break-all;">
+            <span style="color:rgba(157,140,207,0.9);">GET</span> <span style="color:var(--text-tertiary);">https://api.sentinelauthority.org/v1/verify/</span><span style="color:rgba(92,214,133,0.9);">{cert_id}</span>
+          </div>
+          <div style="margin-top:12px;">
+            <a href="mailto:conformance@sentinelauthority.org" class="hud-link">REQUEST API KEY →</a>
+          </div>
         </div>
       </div>
     </section>
+
     <section id="contact" class="section">
       <div class="section-head reveal">
         <div>
@@ -5766,6 +5725,16 @@
   <script>
     // Verify widget mode switching
     function setVerifyMode(mode) {
+      document.getElementById('verify-mode').style.display = mode === 'verify' ? '' : 'none';
+      document.getElementById('search-mode').style.display = mode === 'search' ? '' : 'none';
+      document.getElementById('status-mode').style.display = mode === 'status' ? '' : 'none';
+      document.getElementById('verify-result').innerHTML = '';
+      ['tab-verify','tab-search','tab-status'].forEach(function(id) {
+        var el = document.getElementById(id);
+        var active = id === 'tab-' + mode;
+        el.style.color = active ? 'rgba(157,140,207,0.9)' : 'rgba(255,255,255,0.3)';
+        el.style.borderBottomColor = active ? 'rgba(157,140,207,0.6)' : 'transparent';
+      });
       const verifyMode = document.getElementById("verify-mode");
       const searchMode = document.getElementById("search-mode");
       const tabVerify = document.getElementById("tab-verify");
