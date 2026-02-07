@@ -691,15 +691,7 @@
       50% { opacity: 1; }
     }
 
-    .reveal {
-      opacity: 0;
-      transform: translateY(8px);
-      transition: opacity 0.8s ease, transform 0.8s ease;
-    }
-    .reveal.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    .reveal { opacity: 1; transform: none; }
 
     .section-label {
       overflow: hidden;
@@ -879,8 +871,8 @@
       transition: color 0.2s ease, border-color 0.2s ease, transform 0.25s cubic-bezier(0.23, 1, 0.32, 1) !important;
       will-change: transform;
     }
-    .section { transition: filter 0.4s ease, opacity 0.4s ease; }
-    .section.sa-blur-out { filter: blur(2px); opacity: 0.7; }
+    
+    
 
     /* Hero responsive */
     @media (max-width: 600px){
@@ -6081,19 +6073,7 @@
       var vignette = document.createElement('div');
       vignette.className = 'sa-vignette';
       document.body.appendChild(vignette);
-      var allSections = document.querySelectorAll('.section');
-      var blurObs = new IntersectionObserver(function(entries) {
-        entries.forEach(function(entry) {
-          if (entry.isIntersecting) {
-            entry.target.classList.remove('sa-blur-out');
-          } else {
-            var r = entry.boundingClientRect;
-            if (r.bottom < 0) entry.target.classList.add('sa-blur-out');
-            else entry.target.classList.remove('sa-blur-out');
-          }
-        });
-      }, { threshold: 0.05 });
-      for (var si = 0; si < allSections.length; si++) blurObs.observe(allSections[si]);
+
       document.querySelectorAll('a[href^="#"]').forEach(function(a) {
         a.addEventListener('click', function(e) {
           var target = document.querySelector(this.getAttribute('href'));
