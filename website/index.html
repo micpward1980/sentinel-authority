@@ -2794,7 +2794,7 @@
   function updateAgents(dt) {
     var oddR = heroOddRadius || radius*0.76;
     var enveloR = radius;
-    var approachZone = oddR * 0.82;
+    var approachZone = oddR * 0.65;
 
     for (var i=0; i<agents.length; i++) {
       var a = agents[i];
@@ -4424,7 +4424,7 @@
           if (halted) sm = 0;
           var oddR = oddRadius || radius*0.76;
           var enveloR = radius;
-          var approachZone = oddR * 0.82;
+          var approachZone = oddR * 0.65;
 
           for (var i=0; i<agents.length; i++) {
             var a = agents[i];
