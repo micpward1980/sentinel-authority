@@ -13,18 +13,18 @@
     :root {
       color-scheme:dark;
       --purple-primary:#5B4B8A;--purple-bright:#9d8ccf;--purple-glow:rgba(157,140,207,.20);
-      --bg-deep:#0c1220;--bg-mid:#111827;
+      --bg-deep:#0c1220;
       --accent-green:#5CD685;--accent-amber:#D6A05C;--accent-red:#D65C5C;
       --text-primary:rgba(255,255,255,.94);--text-secondary:rgba(255,255,255,.65);--text-tertiary:rgba(255,255,255,.35);
       --border-glass:rgba(255,255,255,.06);
       --serif:Georgia,serif;--mono:Consolas,'IBM Plex Mono',monospace;--sans:'Inter',system-ui,sans-serif;
       --max:880px;--nav-height:64px;
+      --space-3:32px;--space-4:48px;
     }
     *{box-sizing:border-box;margin:0;padding:0;}
     html{scroll-behavior:smooth;background:var(--bg-deep);}
     body{font-family:var(--sans);color:var(--text-primary);background:var(--bg-deep);-webkit-font-smoothing:antialiased;min-height:100vh;overflow-x:hidden;}
     a{color:inherit;text-decoration:none;}
-
     .site-header{position:fixed;top:0;width:100%;z-index:50;height:var(--nav-height);padding:0 20px;border-bottom:1px solid var(--border-glass);background:rgba(12,18,32,.92);backdrop-filter:blur(18px);display:flex;align-items:center;}
     .nav-inner{max-width:var(--max);margin:0 auto;width:100%;display:flex;align-items:center;justify-content:space-between;}
     .brand{display:flex;align-items:center;gap:10px;text-decoration:none;}
@@ -34,9 +34,7 @@
     .brand-name{font-family:var(--mono);font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.86);}
     .back-link{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-tertiary);transition:color .2s;}
     .back-link:hover{color:var(--text-primary);text-decoration:none;}
-
     main{position:relative;z-index:1;max-width:var(--max);margin:0 auto;padding:calc(var(--nav-height) + 60px) 20px 60px;}
-
     .hud-frame{position:relative;border:1px solid var(--border-glass);padding:20px 24px;margin-bottom:16px;background:rgba(255,255,255,.015);}
     .hud-frame>i{position:absolute;display:block;width:8px;height:8px;pointer-events:none;}
     .hud-frame>i::before,.hud-frame>i::after{content:'';position:absolute;background:var(--purple-bright);opacity:.4;}
@@ -46,55 +44,30 @@
     .hud-scanline::after{content:'';position:absolute;top:0;left:0;right:0;bottom:0;pointer-events:none;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(255,255,255,.008) 3px,rgba(255,255,255,.008) 4px);z-index:0;}
     .hud-scanline>*{position:relative;z-index:1;}
     .hud-label{font-family:var(--mono);font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(157,140,207,0.6);}
+    .hud-num{font-family:var(--mono);font-size:10px;letter-spacing:2px;color:rgba(157,140,207,0.5);min-width:44px;}
     .hud-title{font-family:var(--mono);font-size:12px;color:rgba(255,255,255,0.8);letter-spacing:0.5px;}
     .hud-desc{font-size:12px;color:var(--text-tertiary);line-height:1.5;}
     .hud-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
     .hud-dot-green{background:var(--accent-green);box-shadow:0 0 6px rgba(92,214,133,.4);}
     .hud-dot-amber{background:var(--accent-amber);box-shadow:0 0 6px rgba(214,160,92,.4);}
+    .hud-dot-red{background:var(--accent-red);}
     .hud-row{padding:12px 0;border-bottom:1px solid var(--border-glass);}
     .hud-row:last-child{border-bottom:none;padding-bottom:0;}
-
+    .hud-link{font-family:var(--mono);font-size:10px;letter-spacing:2px;color:rgba(157,140,207,0.7);transition:color 0.2s;}
+    .hud-link:hover{color:rgba(157,140,207,1);text-decoration:none;}
     .section-label{font-family:var(--mono);font-size:10px;letter-spacing:6px;text-transform:uppercase;color:var(--purple-bright);display:flex;align-items:center;gap:14px;margin-bottom:16px;}
     .section-label::before{content:'';width:40px;height:1px;background:var(--purple-bright);opacity:.5;}
     .section-title{font-family:var(--serif);font-size:clamp(32px,5vw,48px);font-weight:200;line-height:1.05;margin:0 0 12px;letter-spacing:-0.04em;}
     .section-lead{color:var(--text-secondary);font-size:16px;font-weight:300;line-height:1.7;max-width:50ch;}
-
-    .spinner{width:24px;height:24px;border:2px solid rgba(255,255,255,.06);border-top-color:var(--purple-bright);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto;}
+    .spinner{width:20px;height:20px;border:2px solid rgba(255,255,255,.06);border-top-color:var(--purple-bright);border-radius:50%;animation:spin .7s linear infinite;display:inline-block;vertical-align:middle;margin-right:8px;}
     @keyframes spin{to{transform:rotate(360deg);}}
-    .loading-text{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-tertiary);text-align:center;margin-top:8px;}
-
-    .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:16px 0;}
-    .metric{background:rgba(0,0,0,.3);border:1px solid var(--border-glass);padding:16px 8px;text-align:center;}
-    .metric-val{font-family:var(--mono);font-size:22px;color:var(--text-primary);}
-    .metric-val.green{color:var(--accent-green);}
-    .metric-val.red{color:var(--accent-red);}
-    .metric-lbl{font-family:var(--mono);font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-tertiary);margin-top:4px;}
-
-    .progress{height:3px;background:rgba(255,255,255,.06);margin:16px 0 8px;}
+    .progress-track{height:3px;background:rgba(255,255,255,.06);margin:12px 0 6px;}
     .progress-fill{height:100%;background:linear-gradient(90deg,var(--purple-primary),var(--purple-bright));box-shadow:0 0 8px rgba(157,140,207,.3);transition:width .8s;}
-    .progress-lbl{font-family:var(--mono);font-size:10px;color:var(--text-tertiary);text-align:center;}
-
-    .criteria{margin-top:16px;padding-top:16px;border-top:1px solid var(--border-glass);}
-    .criteria-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.03);font-size:13px;color:var(--text-secondary);}
-    .criteria-row:last-child{border-bottom:none;}
-    .c-icon{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;}
-    .c-met{background:rgba(92,214,133,.12);color:var(--accent-green);border:1px solid rgba(92,214,133,.2);}
-    .c-pending{background:rgba(255,255,255,.03);color:var(--text-tertiary);border:1px solid rgba(255,255,255,.06);}
-
-    .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:24px;}
-    .step{border:1px solid var(--border-glass);padding:20px 16px;background:rgba(255,255,255,.015);}
-    .step-n{font-family:var(--mono);font-size:9px;letter-spacing:3px;color:var(--purple-bright);margin-bottom:8px;}
-    .step-t{font-family:var(--serif);font-size:18px;font-weight:200;margin-bottom:6px;}
-    .step-d{font-size:12px;color:var(--text-tertiary);line-height:1.6;}
-
     footer{margin-top:48px;padding:32px 20px;border-top:1px solid var(--border-glass);text-align:center;}
     .footer-copy{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-tertiary);}
     .footer-links{margin-top:12px;display:flex;justify-content:center;gap:20px;flex-wrap:wrap;}
     .footer-links a{font-family:var(--mono);font-size:10px;letter-spacing:1px;color:var(--text-tertiary);}
     .footer-links a:hover{color:var(--text-primary);}
-
-    @media(max-width:700px){.metrics{grid-template-columns:repeat(2,1fr);}.steps{grid-template-columns:1fr;}}
-    @media(max-width:480px){.metrics{grid-template-columns:1fr;}}
   </style>
 </head>
 <body>
@@ -104,14 +77,12 @@
       <a href="index.html#verify" class="back-link">← Back</a>
     </div>
   </header>
-
   <main>
     <div style="margin-bottom:40px;">
       <span class="section-label">CAT-72 CONFORMANCE</span>
       <h1 class="section-title">Test Status</h1>
       <p class="section-lead">Track your 72-hour continuous conformance test in real time.</p>
     </div>
-
     <div class="hud-frame hud-scanline"><i></i>
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
         <span class="hud-label">CERTIFICATE ID</span>
@@ -121,36 +92,31 @@
         </div>
       </div>
       <div style="display:flex;gap:8px;align-items:stretch;">
-        <input type="text" id="certId" placeholder="ODDC-2026-00001" style="flex:1;padding:14px 16px;font-family:var(--mono);font-size:15px;letter-spacing:2px;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.06);border-radius:0;color:var(--text-primary);outline:none;border-bottom:1px solid rgba(157,140,207,0.2);">
-        <button onclick="checkStatus()" style="padding:14px 20px;font-family:var(--mono);font-size:10px;letter-spacing:2px;background:transparent;border:1px solid rgba(157,140,207,.25);border-radius:0;color:rgba(157,140,207,.9);cursor:pointer;white-space:nowrap;">CHECK</button>
+        <input type="text" id="certId" placeholder="ODDC-2026-00001" style="flex:1;padding:14px 0;font-family:var(--mono);font-size:15px;letter-spacing:2px;background:transparent;border:none;border-bottom:1px solid rgba(157,140,207,0.2);color:var(--text-primary);outline:none;">
+        <button onclick="checkStatus()" style="padding:14px 20px;font-family:var(--mono);font-size:10px;letter-spacing:2px;background:transparent;border:none;border-bottom:1px solid rgba(157,140,207,.25);color:rgba(157,140,207,.9);cursor:pointer;white-space:nowrap;">CHECK</button>
       </div>
-      <div class="hud-desc" style="margin-top:8px;">Find your Certificate ID in the <a href="https://app.sentinelauthority.org" style="color:var(--purple-bright);">applicant portal</a> or approval email.</div>
+      <div class="hud-desc" style="margin-top:8px;">Find your Certificate ID in the <a href="https://app.sentinelauthority.org" style="color:rgba(157,140,207,0.7);">applicant portal</a> or approval email.</div>
     </div>
-
-    <div id="result" style="display:none;"></div>
-
-    <div style="margin-top:40px;padding-top:32px;border-top:1px solid var(--border-glass);">
-      <span class="hud-label" style="margin-bottom:16px;display:block;">HOW CAT-72 WORKS</span>
-      <div class="steps">
-        <div class="step">
-          <div class="step-n">01</div>
-          <div class="step-t">72 Hours</div>
-          <p class="step-d">Continuous operation with ENVELO enforcing all boundaries in production.</p>
-        </div>
-        <div class="step">
-          <div class="step-n">02</div>
-          <div class="step-t">Zero Tier 3</div>
-          <p class="step-d">No ENVELO Wall violations. Tier 2 breaches must trigger successful MRC.</p>
-        </div>
-        <div class="step">
-          <div class="step-n">03</div>
-          <div class="step-t">Sealed Record</div>
-          <p class="step-d">Cryptographic hash-chain telemetry. Tamper-evident. Auditor-ready.</p>
-        </div>
+    <div id="result"></div>
+    <div class="hud-frame" style="margin-top:var(--space-4);"><i></i>
+      <div class="hud-label" style="margin-bottom:16px;">HOW CAT-72 WORKS</div>
+      <div class="hud-row" style="display:flex;align-items:flex-start;gap:12px;">
+        <span class="hud-num" style="margin-top:2px;">01</span>
+        <span class="hud-dot hud-dot-green" style="margin-top:5px;"></span>
+        <div><div class="hud-title">72 Hours</div><div class="hud-desc">Continuous operation with ENVELO enforcing all boundaries in production.</div></div>
+      </div>
+      <div class="hud-row" style="display:flex;align-items:flex-start;gap:12px;">
+        <span class="hud-num" style="margin-top:2px;">02</span>
+        <span class="hud-dot hud-dot-amber" style="margin-top:5px;"></span>
+        <div><div class="hud-title">Zero Tier 3</div><div class="hud-desc">No ENVELO Wall violations. Tier 2 breaches must trigger successful MRC.</div></div>
+      </div>
+      <div class="hud-row" style="display:flex;align-items:flex-start;gap:12px;">
+        <span class="hud-num" style="margin-top:2px;">03</span>
+        <span class="hud-dot" style="width:6px;height:6px;border-radius:50%;background:rgba(157,140,207,0.6);margin-top:5px;flex-shrink:0;"></span>
+        <div><div class="hud-title">Sealed Record</div><div class="hud-desc">Cryptographic hash-chain telemetry. Tamper-evident. Auditor-ready.</div></div>
       </div>
     </div>
   </main>
-
   <footer>
     <div class="footer-copy">© <span id="yr"></span> Sentinel Authority</div>
     <div class="footer-links">
@@ -160,67 +126,44 @@
       <a href="index.html#contact">Contact</a>
     </div>
   </footer>
-
   <script>
     document.getElementById('yr').textContent = new Date().getFullYear();
-    const p = new URLSearchParams(window.location.search);
+    var p = new URLSearchParams(window.location.search);
     if (p.get('cert')) { document.getElementById('certId').value = p.get('cert'); checkStatus(); }
-    document.getElementById('certId').addEventListener('keydown', e => { if(e.key==='Enter') checkStatus(); });
+    document.getElementById('certId').addEventListener('keydown', function(e) { if(e.key==='Enter') checkStatus(); });
 
     async function checkStatus() {
-      const certId = document.getElementById('certId').value.trim();
+      var certId = document.getElementById('certId').value.trim();
       if (!certId) { document.getElementById('certId').focus(); return; }
-      const r = document.getElementById('result');
-      r.style.display = 'block';
-      r.innerHTML = '<div class="hud-frame"><i></i><div class="spinner"></div><div class="loading-text">Querying registry…</div></div>';
-
+      var r = document.getElementById('result');
+      r.innerHTML = '<div class="hud-frame"><i></i><div style="display:flex;align-items:center;gap:8px;"><div class="spinner"></div><span class="hud-label">QUERYING REGISTRY\u2026</span></div></div>';
       try {
-        const res = await fetch('https://sentinel-authority-production.up.railway.app/api/verify/status/' + encodeURIComponent(certId));
-        const d = await res.json();
-
+        var res = await fetch('https://sentinel-authority-production.up.railway.app/api/verify/status/' + encodeURIComponent(certId));
+        var d = await res.json();
         if (d.status === 'not_found') {
-          r.innerHTML = '<div class="hud-frame"><i></i>' +
-            '<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;"><span class="hud-dot" style="background:var(--accent-red);"></span><span class="hud-label" style="color:var(--accent-red);">NOT FOUND</span></div>' +
-            '<div class="hud-desc">' + (d.message || 'No active test found for this Certificate ID.') + '</div>' +
-            '<div class="hud-desc" style="margin-top:8px;">Ensure ENVELO is running with the correct Certificate ID and API key.</div></div>';
+          r.innerHTML = '<div class="hud-frame"><i></i><div class="hud-row" style="display:flex;align-items:center;gap:8px;"><span class="hud-dot hud-dot-red"></span><span class="hud-label" style="color:var(--accent-red);">NOT FOUND</span></div><div class="hud-row"><div class="hud-desc">' + (d.message || 'No active test found for this Certificate ID.') + '</div><div class="hud-desc" style="margin-top:4px;">Ensure ENVELO is running with the correct Certificate ID and API key.</div></div></div>';
         } else if (d.status === 'certified') {
-          r.innerHTML = '<div class="hud-frame hud-scanline"><i></i>' +
-            '<div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;"><span class="hud-dot hud-dot-green"></span><span class="hud-label" style="color:var(--accent-green);">CERTIFIED</span></div>' +
-            '<div class="hud-title" style="font-size:14px;margin-bottom:12px;">Conformance Verified</div>' +
-            '<div style="display:grid;grid-template-columns:100px 1fr;gap:4px 12px;padding:12px 0;border-top:1px solid var(--border-glass);border-bottom:1px solid var(--border-glass);">' +
-              '<span class="hud-label">CERTIFICATE</span><span class="hud-title">' + d.certificate_number + '</span>' +
-              '<span class="hud-label">ISSUED</span><span class="hud-title">' + new Date(d.issued_at).toLocaleDateString() + '</span>' +
-              '<span class="hud-label">EXPIRES</span><span class="hud-title">' + new Date(d.expires_at).toLocaleDateString() + '</span>' +
-            '</div>' +
-            '<div style="margin-top:12px;"><a href="https://app.sentinelauthority.org" style="font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--purple-bright);">VIEW IN DASHBOARD →</a></div></div>';
+          r.innerHTML = '<div class="hud-frame hud-scanline"><i></i><div class="hud-row" style="display:flex;align-items:center;gap:8px;"><span class="hud-dot hud-dot-green"></span><span class="hud-label" style="color:var(--accent-green);">CERTIFIED</span></div><div class="hud-row" style="display:grid;grid-template-columns:100px 1fr;gap:4px 12px;"><span class="hud-label">CERTIFICATE</span><span class="hud-title">' + d.certificate_number + '</span><span class="hud-label">ISSUED</span><span class="hud-title">' + new Date(d.issued_at).toLocaleDateString() + '</span><span class="hud-label">EXPIRES</span><span class="hud-title">' + new Date(d.expires_at).toLocaleDateString() + '</span></div><div class="hud-row"><a href="https://app.sentinelauthority.org" class="hud-link">VIEW IN DASHBOARD \u2192</a></div></div>';
         } else {
-          const pct = Math.min(100, (d.hours_elapsed / 72) * 100);
-          const statusColor = d.status === 'running' ? 'var(--accent-green)' : 'var(--accent-amber)';
-          const statusLabel = d.status === 'running' ? 'RUNNING' : 'WAITING';
-          const statusDot = d.status === 'running' ? 'hud-dot-green' : 'hud-dot-amber';
+          var pct = Math.min(100, (d.hours_elapsed / 72) * 100);
+          var isRunning = d.status === 'running';
+          var dotClass = isRunning ? 'hud-dot-green' : 'hud-dot-amber';
+          var statusColor = isRunning ? 'var(--accent-green)' : 'var(--accent-amber)';
+          var statusLabel = isRunning ? 'RUNNING' : 'WAITING';
           r.innerHTML = '<div class="hud-frame hud-scanline"><i></i>' +
-            '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">' +
-              '<div style="display:flex;align-items:center;gap:8px;"><span class="hud-dot ' + statusDot + '"></span><span class="hud-label" style="color:' + statusColor + ';">' + statusLabel + '</span></div>' +
-              '<span class="hud-label">' + certId + '</span>' +
+            '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;"><div style="display:flex;align-items:center;gap:8px;"><span class="hud-dot ' + dotClass + '"></span><span class="hud-label" style="color:' + statusColor + ';">' + statusLabel + '</span></div><span class="hud-label">' + certId + '</span></div>' +
+            '<div class="hud-row" style="text-align:center;"><div style="font-family:var(--mono);font-size:48px;color:var(--text-primary);letter-spacing:-2px;line-height:1;">' + d.hours_remaining.toFixed(1) + '<span style="font-size:16px;color:var(--text-tertiary);letter-spacing:0;">h remaining</span></div><div class="progress-track"><div class="progress-fill" style="width:' + pct + '%;"></div></div><span class="hud-desc">' + d.hours_elapsed.toFixed(1) + ' / 72 hours elapsed</span></div>' +
+            '<div class="hud-row" style="display:grid;grid-template-columns:1fr 80px;gap:4px 12px;"><span class="hud-title">Total Actions</span><span class="hud-title" style="text-align:right;">' + d.total_actions.toLocaleString() + '</span><span class="hud-title">Passed</span><span class="hud-title" style="text-align:right;color:var(--accent-green);">' + d.pass_count.toLocaleString() + '</span><span class="hud-title">Blocked</span><span class="hud-title" style="text-align:right;' + (d.block_count > 0 ? 'color:var(--accent-red);' : '') + '">' + d.block_count.toLocaleString() + '</span><span class="hud-title">Pass Rate</span><span class="hud-title" style="text-align:right;' + (d.pass_rate >= 95 ? 'color:var(--accent-green);' : '') + '">' + d.pass_rate + '%</span></div>' +
+            '<div class="hud-row"><span class="hud-label" style="display:block;margin-bottom:8px;">CRITERIA</span>' +
+              '<div style="display:flex;align-items:center;gap:8px;padding:4px 0;"><span class="hud-dot ' + (d.criteria.duration_met ? 'hud-dot-green' : '') + '" style="' + (d.criteria.duration_met ? '' : 'background:rgba(255,255,255,0.1);') + '"></span><span class="hud-desc">72 hours continuous</span></div>' +
+              '<div style="display:flex;align-items:center;gap:8px;padding:4px 0;"><span class="hud-dot ' + (d.criteria.actions_met ? 'hud-dot-green' : '') + '" style="' + (d.criteria.actions_met ? '' : 'background:rgba(255,255,255,0.1);') + '"></span><span class="hud-desc">Minimum 100 actions</span></div>' +
+              '<div style="display:flex;align-items:center;gap:8px;padding:4px 0;"><span class="hud-dot ' + (d.criteria.pass_rate_met ? 'hud-dot-green' : '') + '" style="' + (d.criteria.pass_rate_met ? '' : 'background:rgba(255,255,255,0.1);') + '"></span><span class="hud-desc">\u2265 95% pass rate</span></div>' +
+              '<div style="display:flex;align-items:center;gap:8px;padding:4px 0;"><span class="hud-dot ' + (d.criteria.blocking_verified ? 'hud-dot-green' : '') + '" style="' + (d.criteria.blocking_verified ? '' : 'background:rgba(255,255,255,0.1);') + '"></span><span class="hud-desc">Blocking verified</span></div>' +
             '</div>' +
-            '<div style="text-align:center;margin:20px 0 8px;"><div style="font-family:var(--mono);font-size:48px;color:var(--text-primary);letter-spacing:-2px;">' + d.hours_remaining.toFixed(1) + 'h</div><div class="hud-label">REMAINING</div></div>' +
-            '<div class="progress"><div class="progress-fill" style="width:' + pct + '%;"></div></div>' +
-            '<div class="progress-lbl">' + d.hours_elapsed.toFixed(1) + ' / 72 hours</div>' +
-            '<div class="metrics">' +
-              '<div class="metric"><div class="metric-val">' + d.total_actions.toLocaleString() + '</div><div class="metric-lbl">Actions</div></div>' +
-              '<div class="metric"><div class="metric-val green">' + d.pass_count.toLocaleString() + '</div><div class="metric-lbl">Passed</div></div>' +
-              '<div class="metric"><div class="metric-val' + (d.block_count > 0 ? ' red' : '') + '">' + d.block_count.toLocaleString() + '</div><div class="metric-lbl">Blocked</div></div>' +
-              '<div class="metric"><div class="metric-val' + (d.pass_rate >= 95 ? ' green' : '') + '">' + d.pass_rate + '%</div><div class="metric-lbl">Pass Rate</div></div>' +
-            '</div>' +
-            '<div class="criteria"><span class="hud-label" style="display:block;margin-bottom:10px;">CRITERIA</span>' +
-              '<div class="criteria-row"><span class="c-icon ' + (d.criteria.duration_met ? 'c-met' : 'c-pending') + '">' + (d.criteria.duration_met ? '✓' : '○') + '</span>72 hours continuous</div>' +
-              '<div class="criteria-row"><span class="c-icon ' + (d.criteria.actions_met ? 'c-met' : 'c-pending') + '">' + (d.criteria.actions_met ? '✓' : '○') + '</span>Minimum 100 actions</div>' +
-              '<div class="criteria-row"><span class="c-icon ' + (d.criteria.pass_rate_met ? 'c-met' : 'c-pending') + '">' + (d.criteria.pass_rate_met ? '✓' : '○') + '</span>≥ 95% pass rate</div>' +
-              '<div class="criteria-row"><span class="c-icon ' + (d.criteria.blocking_verified ? 'c-met' : 'c-pending') + '">' + (d.criteria.blocking_verified ? '✓' : '○') + '</span>Blocking verified</div>' +
-            '</div></div>';
+            '<div class="hud-row"><div class="hud-desc">' + (isRunning ? 'Test in progress \u2014 keep your system and ENVELO running continuously.' : 'ENVELO not connected. Ensure it is running with the correct API key.') + '</div></div></div>';
         }
       } catch (err) {
-        r.innerHTML = '<div class="hud-frame"><i></i><div style="display:flex;align-items:center;gap:8px;"><span class="hud-dot" style="background:var(--accent-red);"></span><span class="hud-label" style="color:var(--accent-red);">CONNECTION ERROR</span></div><div class="hud-desc" style="margin-top:8px;">' + err.message + '</div></div>';
+        r.innerHTML = '<div class="hud-frame"><i></i><div class="hud-row" style="display:flex;align-items:center;gap:8px;"><span class="hud-dot hud-dot-red"></span><span class="hud-label" style="color:var(--accent-red);">CONNECTION ERROR</span></div><div class="hud-row"><div class="hud-desc">' + err.message + '</div></div></div>';
       }
     }
   </script>
