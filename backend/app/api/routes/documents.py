@@ -22,7 +22,6 @@ AVAILABLE_DOCS = {
         "version": "1.0",
         "roles": ["admin"],
     },
-},
 }
 
 
