@@ -5735,6 +5735,16 @@
         el.style.color = active ? 'rgba(157,140,207,0.9)' : 'rgba(255,255,255,0.3)';
         el.style.borderBottomColor = active ? 'rgba(157,140,207,0.6)' : 'transparent';
       });
+      document.getElementById('verify-mode').style.display = mode === 'verify' ? '' : 'none';
+      document.getElementById('search-mode').style.display = mode === 'search' ? '' : 'none';
+      document.getElementById('status-mode').style.display = mode === 'status' ? '' : 'none';
+      document.getElementById('verify-result').innerHTML = '';
+      ['tab-verify','tab-search','tab-status'].forEach(function(id) {
+        var el = document.getElementById(id);
+        var active = id === 'tab-' + mode;
+        el.style.color = active ? 'rgba(157,140,207,0.9)' : 'rgba(255,255,255,0.3)';
+        el.style.borderBottomColor = active ? 'rgba(157,140,207,0.6)' : 'transparent';
+      });
       const verifyMode = document.getElementById("verify-mode");
       const searchMode = document.getElementById("search-mode");
       const tabVerify = document.getElementById("tab-verify");
