@@ -4263,7 +4263,7 @@
         var PHASE_NAMES = ['CONTINUOUS DEMO', 'STRESS TESTING', 'FAIL-CLOSED PROOF'];
 
         var simTime = 0;
-        var SIM_SPEED = 0.0004;
+        var SIM_SPEED = 0.0016;
         var phase = 0;
         var cx, cy, radius;
         var agents = [];
@@ -4635,12 +4635,16 @@
           else if(simTime>=66&&!failTriggered&&phase===2){
             failTriggered=true; failTime=now; halted=true;
           }
-          if(halted&&failTriggered&&now-failTime>3500){
+          if(halted&&failTriggered&&now-failTime>2500){
             halted=false; haltAlpha=0; failTriggered=false;
           }
-          if(simTime>=72){
+          if(simTime>=72&&!this._holdStart){
+            this._holdStart=now; halted=true;
+          }
+          if(this._holdStart&&now-this._holdStart>3000){
             simTime=0; blockCount=0; phase=0;
             failTriggered=false; halted=false; haltAlpha=0;
+            this._holdStart=0;
             initAgents();
           }
 
