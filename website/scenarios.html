@@ -47,7 +47,7 @@
       /* Text hierarchy */
       --text-primary:rgba(255,255,255,.94);
       --text-secondary:rgba(255,255,255,.78);
-      --text-tertiary:rgba(255,255,255,.55);
+      --text-tertiary:rgba(255,255,255,.50);
 
       /* Borders */
       --border-glass:rgba(255,255,255,.07);
@@ -1276,7 +1276,7 @@
       appearance:none;
       border:1px solid rgba(255,255,255,.18);
       background:rgba(255,255,255,.04);
-      color:rgba(255,255,255,.65);
+      color:rgba(255,255,255,0.50);
       padding:4px 8px;
       border-radius:6px;
       font-family:var(--mono);
@@ -1289,7 +1289,7 @@
     .copy-btn:hover{
       border-color:rgba(157,140,207,.55);
       background:rgba(91,75,138,.18);
-      color:rgba(255,255,255,.90);
+      color:rgba(255,255,255,0.92);
     }
     .copy-btn.copied{
       border-color:rgba(92,214,133,.35);
@@ -2529,8 +2529,8 @@
     .back-link{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-tertiary);transition:color .2s;text-decoration:none;}
     .back-link:hover{color:var(--text-primary);text-decoration:none;}
     .foot-links{display:flex;gap:20px;}
-    .foot-links a{color:rgba(255,255,255,.48);font-size:13px;}
-    .foot-links a:hover{color:rgba(255,255,255,.82);text-decoration:none;}
+    .foot-links a{color:rgba(255,255,255,0.35);font-size:13px;}
+    .foot-links a:hover{color:rgba(255,255,255,0.78);text-decoration:none;}
 
     main{position:relative;z-index:1;max-width:var(--max);margin:0 auto;padding:0 var(--space-2);}
     .page-hero{padding:calc(var(--nav-height) + 60px) 0 var(--space-6);border-top:none;}
@@ -2594,11 +2594,11 @@
           <span class="hud-dot hud-dot-green" style="margin-left:auto;"></span>
         </div>
         <div class="hud-desc" style="margin-bottom:16px;">Hyperscale environments rely on autonomous systems to allocate power, optimize cooling, place workloads, and orchestrate AI-on-AI stacks. ODDC scenarios illustrate facility-level and stack-level envelope boundaries.</div>
-        <div class="hud-label" style="margin-bottom:8px;color:rgba(255,255,255,0.5);">INTERLOCK BEHAVIOR</div>
+        <div class="hud-label" style="margin-bottom:8px;color:rgba(255,255,255,0.50);">INTERLOCK BEHAVIOR</div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-green" style="margin-top:5px;"></span><span class="hud-desc">Hard-cap interlocks on CPU throttling to prevent TDP overruns</span></div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-green" style="margin-top:5px;"></span><span class="hud-desc">Automatic workload shedding as power approaches limits</span></div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-green" style="margin-top:5px;"></span><span class="hud-desc">Maximum recursion depth for AI managing AI</span></div>
-        <div class="hud-label" style="margin:16px 0 8px;color:rgba(255,255,255,0.5);">EVIDENCE OUTPUTS</div>
+        <div class="hud-label" style="margin:16px 0 8px;color:rgba(255,255,255,0.50);">EVIDENCE OUTPUTS</div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Append-only envelope adherence logs</span></div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Cryptographic attestations for underwriting review</span></div>
         <div class="hud-row" style="display:flex;justify-content:flex-end;padding-top:8px;">
@@ -2612,11 +2612,11 @@
           <span class="hud-dot " style="margin-left:auto;"></span>
         </div>
         <div class="hud-desc" style="margin-bottom:16px;">Speed, geofence, and weather protocol enforcement for autonomous vehicle fleets operating within declared operational design domains.</div>
-        <div class="hud-label" style="margin-bottom:8px;color:rgba(255,255,255,0.5);">INTERLOCK BEHAVIOR</div>
+        <div class="hud-label" style="margin-bottom:8px;color:rgba(255,255,255,0.50);">INTERLOCK BEHAVIOR</div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot " style="margin-top:5px;"></span><span class="hud-desc">Speed governors enforced at ODD boundary</span></div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot " style="margin-top:5px;"></span><span class="hud-desc">Geofence hard-walls preventing operation outside declared zones</span></div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot " style="margin-top:5px;"></span><span class="hud-desc">Weather-responsive degradation to minimum risk condition</span></div>
-        <div class="hud-label" style="margin:16px 0 8px;color:rgba(255,255,255,0.5);">EVIDENCE OUTPUTS</div>
+        <div class="hud-label" style="margin:16px 0 8px;color:rgba(255,255,255,0.50);">EVIDENCE OUTPUTS</div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Continuous telemetry of speed, position, heading</span></div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Boundary proximity alerts and enforcement events</span></div>
         <div class="hud-row" style="display:flex;justify-content:flex-end;padding-top:8px;">
@@ -2630,11 +2630,11 @@
           <span class="hud-dot hud-dot-red" style="margin-left:auto;"></span>
         </div>
         <div class="hud-desc" style="margin-bottom:16px;">Clinical decision support boundaries ensuring AI-assisted diagnostics operate within declared competency domains with fail-safe escalation.</div>
-        <div class="hud-label" style="margin-bottom:8px;color:rgba(255,255,255,0.5);">INTERLOCK BEHAVIOR</div>
+        <div class="hud-label" style="margin-bottom:8px;color:rgba(255,255,255,0.50);">INTERLOCK BEHAVIOR</div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-red" style="margin-top:5px;"></span><span class="hud-desc">Confidence threshold enforcement — flags below declared minimum</span></div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-red" style="margin-top:5px;"></span><span class="hud-desc">Mandatory human-in-loop triggers for critical decisions</span></div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-red" style="margin-top:5px;"></span><span class="hud-desc">Scope limitation preventing recommendations outside trained domains</span></div>
-        <div class="hud-label" style="margin:16px 0 8px;color:rgba(255,255,255,0.5);">EVIDENCE OUTPUTS</div>
+        <div class="hud-label" style="margin:16px 0 8px;color:rgba(255,255,255,0.50);">EVIDENCE OUTPUTS</div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Decision audit trail with confidence scores</span></div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Escalation event logs with clinician acknowledgment</span></div>
         <div class="hud-row" style="display:flex;justify-content:flex-end;padding-top:8px;">
@@ -2648,11 +2648,11 @@
           <span class="hud-dot hud-dot-amber" style="margin-left:auto;"></span>
         </div>
         <div class="hud-desc" style="margin-bottom:16px;">Trading limits and circuit breaker enforcement for autonomous trading systems operating within risk parameters.</div>
-        <div class="hud-label" style="margin-bottom:8px;color:rgba(255,255,255,0.5);">INTERLOCK BEHAVIOR</div>
+        <div class="hud-label" style="margin-bottom:8px;color:rgba(255,255,255,0.50);">INTERLOCK BEHAVIOR</div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-amber" style="margin-top:5px;"></span><span class="hud-desc">Position size hard-caps enforced in real-time</span></div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-amber" style="margin-top:5px;"></span><span class="hud-desc">Sector exposure limits with automatic rebalancing</span></div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-amber" style="margin-top:5px;"></span><span class="hud-desc">Circuit breakers triggered by volatility thresholds</span></div>
-        <div class="hud-label" style="margin:16px 0 8px;color:rgba(255,255,255,0.5);">EVIDENCE OUTPUTS</div>
+        <div class="hud-label" style="margin:16px 0 8px;color:rgba(255,255,255,0.50);">EVIDENCE OUTPUTS</div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Trade-level compliance audit trail</span></div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Risk parameter adherence reporting</span></div>
         <div class="hud-row" style="display:flex;justify-content:flex-end;padding-top:8px;">
@@ -2666,11 +2666,11 @@
           <span class="hud-dot hud-dot-green" style="margin-left:auto;"></span>
         </div>
         <div class="hud-desc" style="margin-bottom:16px;">Robotics safety envelope enforcement for autonomous manufacturing systems operating alongside human workers.</div>
-        <div class="hud-label" style="margin-bottom:8px;color:rgba(255,255,255,0.5);">INTERLOCK BEHAVIOR</div>
+        <div class="hud-label" style="margin-bottom:8px;color:rgba(255,255,255,0.50);">INTERLOCK BEHAVIOR</div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-green" style="margin-top:5px;"></span><span class="hud-desc">Speed and force limits enforced by proximity zones</span></div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-green" style="margin-top:5px;"></span><span class="hud-desc">Emergency stop integration with ENVELO enforcement layer</span></div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-green" style="margin-top:5px;"></span><span class="hud-desc">Tool change validation preventing unauthorized operations</span></div>
-        <div class="hud-label" style="margin:16px 0 8px;color:rgba(255,255,255,0.5);">EVIDENCE OUTPUTS</div>
+        <div class="hud-label" style="margin:16px 0 8px;color:rgba(255,255,255,0.50);">EVIDENCE OUTPUTS</div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Safety zone violation logs</span></div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Force and speed telemetry per cycle</span></div>
         <div class="hud-row" style="display:flex;justify-content:flex-end;padding-top:8px;">
@@ -2684,11 +2684,11 @@
           <span class="hud-dot " style="margin-left:auto;"></span>
         </div>
         <div class="hud-desc" style="margin-bottom:16px;">Mission envelope and geofencing enforcement for autonomous aerial systems operating within declared airspace boundaries.</div>
-        <div class="hud-label" style="margin-bottom:8px;color:rgba(255,255,255,0.5);">INTERLOCK BEHAVIOR</div>
+        <div class="hud-label" style="margin-bottom:8px;color:rgba(255,255,255,0.50);">INTERLOCK BEHAVIOR</div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot " style="margin-top:5px;"></span><span class="hud-desc">Altitude and airspeed hard-walls at declared limits</span></div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot " style="margin-top:5px;"></span><span class="hud-desc">Geofence enforcement with return-to-base failsafe</span></div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot " style="margin-top:5px;"></span><span class="hud-desc">Weather minimums triggering automatic mission abort</span></div>
-        <div class="hud-label" style="margin:16px 0 8px;color:rgba(255,255,255,0.5);">EVIDENCE OUTPUTS</div>
+        <div class="hud-label" style="margin:16px 0 8px;color:rgba(255,255,255,0.50);">EVIDENCE OUTPUTS</div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Flight envelope adherence recording</span></div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Mission boundary event documentation</span></div>
         <div class="hud-row" style="display:flex;justify-content:flex-end;padding-top:8px;">
@@ -2702,11 +2702,11 @@
           <span class="hud-dot hud-dot-amber" style="margin-left:auto;"></span>
         </div>
         <div class="hud-desc" style="margin-bottom:16px;">Grid management and power distribution enforcement for autonomous energy systems balancing load and generation.</div>
-        <div class="hud-label" style="margin-bottom:8px;color:rgba(255,255,255,0.5);">INTERLOCK BEHAVIOR</div>
+        <div class="hud-label" style="margin-bottom:8px;color:rgba(255,255,255,0.50);">INTERLOCK BEHAVIOR</div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-amber" style="margin-top:5px;"></span><span class="hud-desc">Frequency deviation hard-limits preventing cascade failure</span></div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-amber" style="margin-top:5px;"></span><span class="hud-desc">Load shedding protocols enforced at threshold</span></div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-amber" style="margin-top:5px;"></span><span class="hud-desc">Renewable intermittency compensation within declared bounds</span></div>
-        <div class="hud-label" style="margin:16px 0 8px;color:rgba(255,255,255,0.5);">EVIDENCE OUTPUTS</div>
+        <div class="hud-label" style="margin:16px 0 8px;color:rgba(255,255,255,0.50);">EVIDENCE OUTPUTS</div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Grid stability telemetry logs</span></div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Load balancing enforcement event records</span></div>
         <div class="hud-row" style="display:flex;justify-content:flex-end;padding-top:8px;">
@@ -2720,11 +2720,11 @@
           <span class="hud-dot hud-dot-red" style="margin-left:auto;"></span>
         </div>
         <div class="hud-desc" style="margin-bottom:16px;">Autonomous system enforcement in defense contexts with strict rules of engagement and operational boundary compliance.</div>
-        <div class="hud-label" style="margin-bottom:8px;color:rgba(255,255,255,0.5);">INTERLOCK BEHAVIOR</div>
+        <div class="hud-label" style="margin-bottom:8px;color:rgba(255,255,255,0.50);">INTERLOCK BEHAVIOR</div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-red" style="margin-top:5px;"></span><span class="hud-desc">Rules of engagement boundary enforcement</span></div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-red" style="margin-top:5px;"></span><span class="hud-desc">Geographic restriction hard-walls</span></div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-red" style="margin-top:5px;"></span><span class="hud-desc">Escalation-of-force protocol enforcement with human override</span></div>
-        <div class="hud-label" style="margin:16px 0 8px;color:rgba(255,255,255,0.5);">EVIDENCE OUTPUTS</div>
+        <div class="hud-label" style="margin:16px 0 8px;color:rgba(255,255,255,0.50);">EVIDENCE OUTPUTS</div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Engagement boundary compliance records</span></div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Rules-of-engagement adherence audit trail</span></div>
         <div class="hud-row" style="display:flex;justify-content:flex-end;padding-top:8px;">
@@ -2738,11 +2738,11 @@
           <span class="hud-dot hud-dot-green" style="margin-left:auto;"></span>
         </div>
         <div class="hud-desc" style="margin-bottom:16px;">Autonomous fleet and warehouse system enforcement for logistics operations within declared operational parameters.</div>
-        <div class="hud-label" style="margin-bottom:8px;color:rgba(255,255,255,0.5);">INTERLOCK BEHAVIOR</div>
+        <div class="hud-label" style="margin-bottom:8px;color:rgba(255,255,255,0.50);">INTERLOCK BEHAVIOR</div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-green" style="margin-top:5px;"></span><span class="hud-desc">Route corridor enforcement preventing unauthorized detours</span></div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-green" style="margin-top:5px;"></span><span class="hud-desc">Load weight and volume limits enforced at pickup</span></div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-green" style="margin-top:5px;"></span><span class="hud-desc">Speed and proximity enforcement in warehouse zones</span></div>
-        <div class="hud-label" style="margin:16px 0 8px;color:rgba(255,255,255,0.5);">EVIDENCE OUTPUTS</div>
+        <div class="hud-label" style="margin:16px 0 8px;color:rgba(255,255,255,0.50);">EVIDENCE OUTPUTS</div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Route adherence and deviation logs</span></div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Load compliance verification records</span></div>
         <div class="hud-row" style="display:flex;justify-content:flex-end;padding-top:8px;">
@@ -2756,11 +2756,11 @@
           <span class="hud-dot " style="margin-left:auto;"></span>
         </div>
         <div class="hud-desc" style="margin-bottom:16px;">Autonomous vessel and port equipment enforcement for maritime operations within declared navigational and operational boundaries.</div>
-        <div class="hud-label" style="margin-bottom:8px;color:rgba(255,255,255,0.5);">INTERLOCK BEHAVIOR</div>
+        <div class="hud-label" style="margin-bottom:8px;color:rgba(255,255,255,0.50);">INTERLOCK BEHAVIOR</div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot " style="margin-top:5px;"></span><span class="hud-desc">Navigation corridor hard-walls in port approaches</span></div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot " style="margin-top:5px;"></span><span class="hud-desc">Speed restrictions enforced by zone proximity</span></div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot " style="margin-top:5px;"></span><span class="hud-desc">Weather and sea-state minimum enforcement</span></div>
-        <div class="hud-label" style="margin:16px 0 8px;color:rgba(255,255,255,0.5);">EVIDENCE OUTPUTS</div>
+        <div class="hud-label" style="margin:16px 0 8px;color:rgba(255,255,255,0.50);">EVIDENCE OUTPUTS</div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Vessel track and boundary adherence logs</span></div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Port operation compliance documentation</span></div>
         <div class="hud-row" style="display:flex;justify-content:flex-end;padding-top:8px;">

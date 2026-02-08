@@ -47,7 +47,7 @@
       /* Text hierarchy */
       --text-primary:rgba(255,255,255,.94);
       --text-secondary:rgba(255,255,255,.78);
-      --text-tertiary:rgba(255,255,255,.55);
+      --text-tertiary:rgba(255,255,255,.50);
 
       /* Borders */
       --border-glass:rgba(255,255,255,.07);
@@ -1276,7 +1276,7 @@
       appearance:none;
       border:1px solid rgba(255,255,255,.18);
       background:rgba(255,255,255,.04);
-      color:rgba(255,255,255,.65);
+      color:rgba(255,255,255,0.50);
       padding:4px 8px;
       border-radius:6px;
       font-family:var(--mono);
@@ -1289,7 +1289,7 @@
     .copy-btn:hover{
       border-color:rgba(157,140,207,.55);
       background:rgba(91,75,138,.18);
-      color:rgba(255,255,255,.90);
+      color:rgba(255,255,255,0.92);
     }
     .copy-btn.copied{
       border-color:rgba(92,214,133,.35);
@@ -2529,8 +2529,8 @@
     .back-link{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-tertiary);transition:color .2s;text-decoration:none;}
     .back-link:hover{color:var(--text-primary);text-decoration:none;}
     .foot-links{display:flex;gap:20px;}
-    .foot-links a{color:rgba(255,255,255,.48);font-size:13px;}
-    .foot-links a:hover{color:rgba(255,255,255,.82);text-decoration:none;}
+    .foot-links a{color:rgba(255,255,255,0.35);font-size:13px;}
+    .foot-links a:hover{color:rgba(255,255,255,0.78);text-decoration:none;}
 
     main{position:relative;z-index:1;max-width:var(--max);margin:0 auto;padding:0 var(--space-2) 80px;}
     .page-hero{margin-bottom:var(--space-6);}
@@ -2623,12 +2623,12 @@
       <!-- 2 Applicant Obligations -->
       <div id="obligations" class="hud-frame" style="margin-top:var(--space-3);"><i></i>
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;"><span class="hud-num">02</span><span class="hud-label">APPLICANT OBLIGATIONS</span></div>
-        <div class="hud-label" style="margin-bottom:8px;color:rgba(255,255,255,0.5);">2.1 APPLICATION REQUIREMENTS</div>
+        <div class="hud-label" style="margin-bottom:8px;color:rgba(255,255,255,0.50);">2.1 APPLICATION REQUIREMENTS</div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Provide complete and accurate application materials</span></div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Disclose all relevant system specifications and operational parameters</span></div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Identify all boundaries, tolerances, and constraints in the ODD specification</span></div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Submit documentation of ENVELO-compliant enforcement architecture</span></div>
-        <div class="hud-label" style="margin:16px 0 8px;color:rgba(255,255,255,0.5);">2.2 TESTING REQUIREMENTS</div>
+        <div class="hud-label" style="margin:16px 0 8px;color:rgba(255,255,255,0.50);">2.2 TESTING REQUIREMENTS</div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Deploy the ENVELO Agent as configured by SA</span></div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Conduct CAT-72 testing under normal operational conditions</span></div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Not modify system configuration or enforcement settings during testing</span></div>
@@ -2639,7 +2639,7 @@
         <div class="hud-desc">Minimum 99% monthly uptime required. Outages under 1 hour require no action. Extended outages exceeding 1 hour trigger automated notification. Cumulative downtime exceeding 24 hours per calendar month may result in attestation suspension.</div>
       </div>
       <div class="hud-frame" style="margin-top:var(--space-2);"><i></i>
-        <div class="hud-label" style="margin-bottom:8px;color:rgba(255,255,255,0.5);">2.3 POST-CONFORMANCE REQUIREMENTS</div>
+        <div class="hud-label" style="margin-bottom:8px;color:rgba(255,255,255,0.50);">2.3 POST-CONFORMANCE REQUIREMENTS</div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Maintain ENVELO Agent in continuous operation during attested system operation</span></div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Not bypass, disable, or tamper with enforcement mechanisms</span></div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Notify SA of any system modifications affecting ODD or enforcement</span></div>
@@ -2656,7 +2656,7 @@
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-green" style="margin-top:5px;"></span><span class="hud-desc">Issue conformance determination based on evidentiary record</span></div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-green" style="margin-top:5px;"></span><span class="hud-desc">Maintain attestation records per retention requirements</span></div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-green" style="margin-top:5px;"></span><span class="hud-desc">Provide attestation verification services</span></div>
-        <div class="hud-label" style="margin:16px 0 8px;color:rgba(255,255,255,0.5);">SA DOES NOT</div>
+        <div class="hud-label" style="margin:16px 0 8px;color:rgba(255,255,255,0.50);">SA DOES NOT</div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-red" style="margin-top:5px;"></span><span class="hud-desc">Implement, operate, or monitor runtime systems</span></div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-red" style="margin-top:5px;"></span><span class="hud-desc">Certify implementation correctness or validate code</span></div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-red" style="margin-top:5px;"></span><span class="hud-desc">Warrant system behavior or performance</span></div>
@@ -2666,11 +2666,11 @@
       <!-- 4 Conformance Terms -->
       <div id="terms" class="hud-frame" style="margin-top:var(--space-3);"><i></i>
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;"><span class="hud-num">04</span><span class="hud-label">CONFORMANCE TERMS</span></div>
-        <div class="hud-label" style="margin-bottom:8px;color:rgba(255,255,255,0.5);">4.1 TERM DURATION</div>
+        <div class="hud-label" style="margin-bottom:8px;color:rgba(255,255,255,0.50);">4.1 TERM DURATION</div>
         <div class="hud-desc" style="margin-bottom:16px;">6&ndash;24 months based on operational domain risk profile, ODD complexity, and applicant conformance history. Term duration specified in the conformance determination.</div>
-        <div class="hud-label" style="margin-bottom:8px;color:rgba(255,255,255,0.5);">4.2 RENEWAL</div>
+        <div class="hud-label" style="margin-bottom:8px;color:rgba(255,255,255,0.50);">4.2 RENEWAL</div>
         <div class="hud-desc" style="margin-bottom:16px;">Renewal requires CAT-72 re-completion. Streamlined renewal (48-hour test duration) may be available for applicants with clean history and no modifications.</div>
-        <div class="hud-label" style="margin-bottom:8px;color:rgba(255,255,255,0.5);">4.3 MODIFICATIONS</div>
+        <div class="hud-label" style="margin-bottom:8px;color:rgba(255,255,255,0.50);">4.3 MODIFICATIONS</div>
         <div class="hud-desc" style="margin-bottom:12px;">Any modification to ODD specification, enforcement architecture, or underlying simulation requires:</div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Notification to SA within 5 business days</span></div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Evaluation of modification impact</span></div>
@@ -2691,11 +2691,11 @@
       <!-- 6 Suspension -->
       <div id="suspension" class="hud-frame hud-frame-amber" style="margin-top:var(--space-3);"><i></i>
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;"><span class="hud-num">06</span><span class="hud-label">SUSPENSION &amp; REINSTATEMENT</span><span class="hud-dot hud-dot-amber" style="margin-left:auto;"></span></div>
-        <div class="hud-label" style="margin-bottom:8px;color:rgba(255,255,255,0.5);">6.1 AUTOMATIC SUSPENSION TRIGGERS</div>
+        <div class="hud-label" style="margin-bottom:8px;color:rgba(255,255,255,0.50);">6.1 AUTOMATIC SUSPENSION TRIGGERS</div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-amber" style="margin-top:5px;"></span><span class="hud-desc">ENVELO Agent downtime exceeds 24 cumulative hours per calendar month</span></div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-amber" style="margin-top:5px;"></span><span class="hud-desc">Violation rate exceeds 10% of total actions over a 24-hour period</span></div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-amber" style="margin-top:5px;"></span><span class="hud-desc">Agent unreachable for more than 72 consecutive hours</span></div>
-        <div class="hud-label" style="margin:16px 0 8px;color:rgba(255,255,255,0.5);">6.2 REINSTATEMENT</div>
+        <div class="hud-label" style="margin:16px 0 8px;color:rgba(255,255,255,0.50);">6.2 REINSTATEMENT</div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-num">1st</span><span class="hud-desc">Restore agent operation and pass 24-hour verification check</span></div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-num">2nd</span><span class="hud-desc">Above plus written remediation plan</span></div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-num">3rd</span><span class="hud-desc">Full CAT-72 re-assessment required</span></div>
@@ -2728,13 +2728,13 @@
       <!-- 10 General -->
       <div id="general" class="hud-frame" style="margin-top:var(--space-3);"><i></i>
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;"><span class="hud-num">10</span><span class="hud-label">GENERAL PROVISIONS</span></div>
-        <div class="hud-label" style="margin-bottom:8px;color:rgba(255,255,255,0.5);">10.1 GOVERNING LAW</div>
+        <div class="hud-label" style="margin-bottom:8px;color:rgba(255,255,255,0.50);">10.1 GOVERNING LAW</div>
         <div class="hud-desc" style="margin-bottom:16px;">This Agreement is governed by the laws of the Province of Ontario, Canada. Disputes shall be resolved in the courts of Ontario, Canada.</div>
-        <div class="hud-label" style="margin-bottom:8px;color:rgba(255,255,255,0.5);">10.2 ENTIRE AGREEMENT</div>
+        <div class="hud-label" style="margin-bottom:8px;color:rgba(255,255,255,0.50);">10.2 ENTIRE AGREEMENT</div>
         <div class="hud-desc" style="margin-bottom:16px;">This Agreement, together with the Terms of Service and applicable fee schedules, constitutes the entire agreement between the parties.</div>
-        <div class="hud-label" style="margin-bottom:8px;color:rgba(255,255,255,0.5);">10.3 AMENDMENTS</div>
+        <div class="hud-label" style="margin-bottom:8px;color:rgba(255,255,255,0.50);">10.3 AMENDMENTS</div>
         <div class="hud-desc" style="margin-bottom:16px;">SA may amend this Agreement with notice. Continued participation after amendment constitutes acceptance.</div>
-        <div class="hud-label" style="margin-bottom:8px;color:rgba(255,255,255,0.5);">10.4 SEVERABILITY</div>
+        <div class="hud-label" style="margin-bottom:8px;color:rgba(255,255,255,0.50);">10.4 SEVERABILITY</div>
         <div class="hud-desc">If any provision is found unenforceable, the remaining provisions remain in effect.</div>
       </div>
 

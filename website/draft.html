@@ -47,7 +47,7 @@
       /* Text hierarchy */
       --text-primary:rgba(255,255,255,.94);
       --text-secondary:rgba(255,255,255,.78);
-      --text-tertiary:rgba(255,255,255,.55);
+      --text-tertiary:rgba(255,255,255,.50);
 
       /* Borders */
       --border-glass:rgba(255,255,255,.07);
@@ -1276,7 +1276,7 @@
       appearance:none;
       border:1px solid rgba(255,255,255,.18);
       background:rgba(255,255,255,.04);
-      color:rgba(255,255,255,.65);
+      color:rgba(255,255,255,0.50);
       padding:4px 8px;
       border-radius:6px;
       font-family:var(--mono);
@@ -1289,7 +1289,7 @@
     .copy-btn:hover{
       border-color:rgba(157,140,207,.55);
       background:rgba(91,75,138,.18);
-      color:rgba(255,255,255,.90);
+      color:rgba(255,255,255,0.92);
     }
     .copy-btn.copied{
       border-color:rgba(92,214,133,.35);
@@ -2529,8 +2529,8 @@
     .back-link{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-tertiary);transition:color .2s;text-decoration:none;}
     .back-link:hover{color:var(--text-primary);text-decoration:none;}
     .foot-links{display:flex;gap:20px;}
-    .foot-links a{color:rgba(255,255,255,.48);font-size:13px;}
-    .foot-links a:hover{color:rgba(255,255,255,.82);text-decoration:none;}
+    .foot-links a{color:rgba(255,255,255,0.35);font-size:13px;}
+    .foot-links a:hover{color:rgba(255,255,255,0.78);text-decoration:none;}
 
     main{position:relative;z-index:1;max-width:800px;margin:0 auto;padding:0 var(--space-2) 80px;}
     .page-hero{margin-bottom:var(--space-6);}
@@ -2556,7 +2556,7 @@
     .timeline-date{font-size:12px;color:var(--text-tertiary);margin-bottom:8px;}
     .timeline-desc{font-size:14px;color:var(--text-secondary);line-height:1.6;}
     .panel{background:rgba(255,255,255,0.02);border:1px solid var(--border-glass);padding:28px;margin-bottom:var(--space-3);overflow:hidden;}
-    .panel h3{font-family:var(--mono);font-size:11px;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,.85);margin:0 0 20px;}
+    .panel h3{font-family:var(--mono);font-size:11px;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,0.78);margin:0 0 20px;}
     .panel p{color:var(--text-secondary);font-size:14px;line-height:1.7;margin:0;}
     .errata-empty{color:var(--text-tertiary);font-style:italic;font-size:14px;padding:20px;text-align:center;background:rgba(92,214,133,0.05);border:1px solid rgba(92,214,133,0.15);}
     .report-card{border:1px solid rgba(157,140,207,0.25);padding:24px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;background:rgba(157,140,207,.03);}
