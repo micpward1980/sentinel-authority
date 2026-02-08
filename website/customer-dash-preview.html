@@ -1,272 +1,182 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Customer Dashboard Preview</title>
-  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@200;300;400&family=Inter:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Your Systems — Sentinel Authority</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect x='6' y='6' width='20' height='20' rx='5' fill='%235B4B8A' stroke='%239d8ccf' stroke-width='2'/><circle cx='16' cy='16' r='4' fill='%239d8ccf'/></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --purple-primary:#5B4B8A;
-      --purple-bright:#a896d6;
-      --accent-green:#5CD685;
-      --accent-amber:#D6A05C;
-      --accent-red:#D65C5C;
-      --text-primary:rgba(255,255,255,.94);
-      --text-secondary:rgba(255,255,255,.78);
-      --text-tertiary:rgba(255,255,255,.55);
-      --border-glass:rgba(255,255,255,.07);
-      --bg-panel:rgba(255,255,255,.03);
+      color-scheme:dark;
+      --purple-primary:#5B4B8A;--purple-bright:#9d8ccf;--purple-glow:rgba(157,140,207,.20);
+      --bg-deep:#0c1220;
+      --accent-green:#5CD685;--accent-amber:#D6A05C;--accent-red:#D65C5C;
+      --text-primary:rgba(255,255,255,.94);--text-secondary:rgba(255,255,255,.65);--text-tertiary:rgba(255,255,255,.35);
+      --border-glass:rgba(255,255,255,.06);
+      --serif:Georgia,serif;--mono:'IBM Plex Mono',Consolas,monospace;--sans:'Inter',system-ui,sans-serif;
+      --max:860px;--nav-height:56px;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { 
-      background: linear-gradient(180deg, #0e0e14 0%, #12121a 100%);
-      font-family: 'Inter', sans-serif;
-      color: var(--text-primary);
-      min-height: 100vh;
-      padding: 40px;
-      max-width: 900px;
-      margin: 0 auto;
-    }
-    .header {
-      margin-bottom: 40px;
-    }
-    .label {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 10px;
-      letter-spacing: 4px;
-      text-transform: uppercase;
-      color: var(--purple-bright);
-      margin-bottom: 8px;
-    }
-    h1 {
-      font-family: Georgia, 'Source Serif 4', serif;
-      font-size: 36px;
-      font-weight: 200;
-    }
-    .subtitle {
-      color: var(--text-secondary);
-      margin-top: 8px;
-      font-size: 15px;
-    }
-    .panel {
-      background: var(--bg-panel);
-      border: 1px solid var(--border-glass);
-      border-radius: 16px;
-      padding: 28px;
-      margin-bottom: 24px;
-    }
-    .panel.success {
-      background: linear-gradient(135deg, rgba(92,214,133,0.08) 0%, rgba(92,214,133,0.02) 100%);
-      border-color: rgba(92,214,133,0.25);
-    }
-    .panel-title {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 11px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: var(--text-tertiary);
-      margin-bottom: 20px;
-    }
-    .system-card {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 24px;
-      background: rgba(0,0,0,0.2);
-      border: 1px solid var(--border-glass);
-      border-radius: 12px;
-      margin-bottom: 16px;
-    }
-    .system-info h3 {
-      font-size: 18px;
-      font-weight: 500;
-      margin-bottom: 8px;
-    }
-    .system-cert {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 13px;
-      color: var(--purple-bright);
-      margin-bottom: 4px;
-    }
-    .system-meta {
-      font-size: 12px;
-      color: var(--text-tertiary);
-    }
-    .status-badge {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 16px;
-      border-radius: 20px;
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 11px;
-      text-transform: uppercase;
-    }
-    .status-badge.active {
-      background: rgba(92,214,133,0.15);
-      color: var(--accent-green);
-    }
-    .status-badge.offline {
-      background: rgba(255,255,255,0.05);
-      color: var(--text-tertiary);
-    }
-    .status-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: currentColor;
-    }
-    .status-badge.active .status-dot {
-      box-shadow: 0 0 8px var(--accent-green);
-      animation: pulse 2s infinite;
-    }
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.5; }
-    }
-    .btn {
-      padding: 12px 24px;
-      background: var(--purple-primary);
-      border: 1px solid var(--purple-bright);
-      border-radius: 8px;
-      color: white;
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 11px;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .btn.secondary {
-      background: transparent;
-      border-color: var(--border-glass);
-      color: var(--text-secondary);
-    }
-    .stats-row {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-      margin-bottom: 24px;
-    }
-    .stat-box {
-      text-align: center;
-      padding: 20px;
-      background: rgba(0,0,0,0.2);
-      border-radius: 12px;
-    }
-    .stat-box .value {
-      font-size: 28px;
-      font-weight: 200;
-      margin-bottom: 4px;
-    }
-    .stat-box .label {
-      font-size: 10px;
-      color: var(--text-tertiary);
-      margin: 0;
-    }
-    .api-key-box {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 16px;
-      background: rgba(0,0,0,0.3);
-      border: 1px solid var(--border-glass);
-      border-radius: 8px;
-      margin-bottom: 16px;
-    }
-    .api-key {
-      flex: 1;
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 14px;
-      color: var(--accent-green);
-      letter-spacing: 1px;
-    }
-    .copy-btn {
-      padding: 8px 16px;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid var(--border-glass);
-      border-radius: 6px;
-      color: var(--text-secondary);
-      font-size: 12px;
-      cursor: pointer;
-    }
-    .help-text {
-      font-size: 13px;
-      color: var(--text-tertiary);
-      line-height: 1.6;
-    }
-    .mono { font-family: 'IBM Plex Mono', monospace; }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    html{background:var(--bg-deep);}
+    body{font-family:var(--sans);color:var(--text-primary);background:var(--bg-deep);-webkit-font-smoothing:antialiased;min-height:100vh;}
+    a{color:inherit;text-decoration:none;}
+
+    /* ── Nav ── */
+    .site-header{position:fixed;top:0;width:100%;z-index:50;height:var(--nav-height);padding:0 24px;border-bottom:1px solid var(--border-glass);background:rgba(12,18,32,.92);backdrop-filter:blur(18px);display:flex;align-items:center;}
+    .nav-inner{max-width:var(--max);margin:0 auto;width:100%;display:flex;align-items:center;justify-content:space-between;}
+    .brand{display:flex;align-items:center;gap:10px;}
+    .brand-mark{width:22px;height:22px;background:var(--purple-primary);border:1.5px solid var(--purple-bright);border-radius:5px;display:flex;align-items:center;justify-content:center;}
+    .brand-mark-inner{width:7px;height:7px;background:#c4b8e8;border-radius:50%;}
+    .brand-name{font-family:var(--mono);font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.7);}
+    .nav-links{display:flex;gap:20px;align-items:center;}
+    .nav-link{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-tertiary);transition:color .2s;}
+    .nav-link:hover{color:var(--text-primary);}
+    .nav-link.active{color:var(--purple-bright);}
+
+    /* ── Layout ── */
+    main{max-width:var(--max);margin:0 auto;padding:calc(var(--nav-height) + 40px) 24px 60px;}
+
+    /* ── HUD System ── */
+    .hud-frame{position:relative;border:1px solid var(--border-glass);padding:20px 24px;margin-bottom:20px;background:rgba(255,255,255,.015);}
+    .hud-frame>i{position:absolute;display:block;width:8px;height:8px;pointer-events:none;}
+    .hud-frame>i::before,.hud-frame>i::after{content:'';position:absolute;background:var(--purple-bright);opacity:.35;}
+    .hud-frame>i::before{width:8px;height:1px;}
+    .hud-frame>i::after{width:1px;height:8px;}
+    .hud-frame>i{top:-1px;left:-1px;}
+    .hud-scanline::after{content:'';position:absolute;top:0;left:0;right:0;bottom:0;pointer-events:none;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(255,255,255,.008) 3px,rgba(255,255,255,.008) 4px);z-index:0;}
+    .hud-scanline>*{position:relative;z-index:1;}
+    .hud-label{font-family:var(--mono);font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(157,140,207,0.5);}
+    .hud-title{font-family:var(--mono);font-size:12px;color:rgba(255,255,255,0.8);letter-spacing:0.5px;}
+    .hud-desc{font-size:12px;color:var(--text-tertiary);line-height:1.5;}
+    .hud-link{font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(157,140,207,0.7);transition:color .2s;cursor:pointer;background:none;border:none;padding:0;}
+    .hud-link:hover{color:var(--purple-bright);}
+    .hud-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;display:inline-block;}
+    .dot-green{background:var(--accent-green);box-shadow:0 0 6px rgba(92,214,133,.4);}
+    .dot-amber{background:var(--accent-amber);box-shadow:0 0 6px rgba(214,160,92,.4);}
+    .dot-red{background:var(--accent-red);}
+
+    .section-label{font-family:var(--mono);font-size:10px;letter-spacing:6px;text-transform:uppercase;color:var(--purple-bright);display:flex;align-items:center;gap:14px;margin-bottom:8px;}
+    .section-label::before{content:'';width:40px;height:1px;background:var(--purple-bright);opacity:.4;}
+    .section-title{font-family:var(--serif);font-size:clamp(28px,4vw,36px);font-weight:200;line-height:1.1;margin-bottom:6px;}
+    .section-lead{color:var(--text-secondary);font-size:14px;font-weight:300;}
+
+    /* ── Stats row ── */
+    .stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-bottom:1px solid var(--border-glass);margin-bottom:24px;}
+    .stat-item{padding:20px 0;border-right:1px solid var(--border-glass);text-align:center;}
+    .stat-item:last-child{border-right:none;}
+    .stat-value{font-family:var(--mono);font-size:28px;font-weight:400;letter-spacing:-1px;line-height:1;margin-top:8px;}
+
+    /* ── System card ── */
+    .system-row{display:flex;justify-content:space-between;align-items:center;padding:20px 0;border-bottom:1px solid var(--border-glass);}
+    .system-name{font-size:16px;font-weight:400;margin-bottom:4px;}
+    .system-cert{font-family:var(--mono);font-size:13px;color:var(--purple-bright);letter-spacing:1px;margin-bottom:4px;}
+    .system-meta{font-size:12px;color:var(--text-tertiary);}
+    .system-status{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;}
+
+    /* ── API key ── */
+    .key-display{display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid var(--border-glass);}
+    .key-value{flex:1;font-family:var(--mono);font-size:14px;color:var(--accent-green);letter-spacing:1px;}
+    .copy-btn{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-tertiary);background:transparent;border:none;border-bottom:1px solid var(--border-glass);padding:6px 0;cursor:pointer;transition:color .2s;}
+    .copy-btn:hover{color:var(--text-primary);}
+
+    /* ── Action link ── */
+    .hud-action{display:block;padding:12px 0;font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(157,140,207,0.6);transition:color .2s;}
+    .hud-action:hover{color:var(--purple-bright);}
   </style>
 </head>
 <body>
-  <div class="header">
-    <div class="label">ENVELO Agent</div>
-    <h1>Your Systems</h1>
-    <p class="subtitle">Monitor enforcement status and manage your attested systems</p>
-  </div>
-
-  <!-- System Card - Active -->
-  <div class="system-card">
-    <div class="system-info">
-      <h3>Warehouse AGV Fleet</h3>
-      <div class="system-cert">ODDC-2026-00042</div>
-      <div class="system-meta">Attested Jan 15, 2026 • Expires Jan 15, 2027</div>
-    </div>
-    <div style="display: flex; align-items: center; gap: 16px;">
-      <div class="status-badge active">
-        <span class="status-dot"></span>
-        ENVELO Active
-      </div>
-      <button class="btn secondary">Details</button>
-    </div>
-  </div>
-
-  <!-- Stats for active system -->
-  <div class="panel success">
-    <div class="stats-row">
-      <div class="stat-box">
-        <div class="value" style="color: var(--accent-green);">156h</div>
-        <div class="label">Uptime</div>
-      </div>
-      <div class="stat-box">
-        <div class="value" style="color: var(--purple-bright);">45,291</div>
-        <div class="label">Telemetry Records</div>
-      </div>
-      <div class="stat-box">
-        <div class="value" style="color: var(--accent-green);">0</div>
-        <div class="label">Violations</div>
+  <header class="site-header">
+    <div class="nav-inner">
+      <a href="index.html" class="brand">
+        <div class="brand-mark"><div class="brand-mark-inner"></div></div>
+        <div class="brand-name">Sentinel Authority</div>
+      </a>
+      <div class="nav-links">
+        <a href="admin-dash-preview.html" class="nav-link">Admin</a>
+        <a href="#" class="nav-link active">Dashboard</a>
+        <a href="index.html" class="nav-link">Site</a>
       </div>
     </div>
-    <p class="help-text" style="text-align: center;">System operating within declared boundaries. Attestation valid.</p>
-  </div>
+  </header>
 
-  <!-- API Key -->
-  <div class="panel">
-    <div class="panel-title">Your API Key</div>
-    <div class="api-key-box">
-      <span class="api-key">sk_live_a8f3k2m9x7p4q1w6...</span>
-      <button class="copy-btn">Copy</button>
+  <main>
+    <div style="margin-bottom:32px;">
+      <span class="section-label">ENVELO AGENT</span>
+      <h1 class="section-title">Your Systems</h1>
+      <p class="section-lead">Monitor enforcement status and manage your attested systems</p>
     </div>
-    <p class="help-text">Use this key to authenticate your ENVELO Agent. Keep it secret.</p>
-  </div>
 
-  <!-- Download Agent -->
-  <div class="panel">
-    <div class="panel-title">ENVELO Agent</div>
-    <p style="color: var(--text-secondary); margin-bottom: 20px;">Download the pre-configured agent for your system. The agent must remain running during operation to maintain attestation.</p>
-    <button class="btn">↓ Download Agent</button>
-  </div>
+    <!-- ── System Card ── -->
+    <div class="hud-frame hud-scanline"><i></i>
+      <div class="system-row">
+        <div>
+          <div class="system-name">Warehouse AGV Fleet</div>
+          <div class="system-cert">ODDC-2026-00042</div>
+          <div class="system-meta">Attested Jan 15, 2026 · Expires Jan 15, 2027</div>
+        </div>
+        <div class="system-status" style="color:var(--accent-green);">
+          <span class="hud-dot dot-green"></span>
+          ENVELO ACTIVE
+        </div>
+      </div>
 
-  <!-- Help -->
-  <div class="panel">
-    <div class="panel-title">Need Help?</div>
-    <p class="help-text" style="margin-bottom: 16px;">
-      If your ENVELO Agent goes offline, your system status will change to "Offline" within 5 minutes. 
-      Extended outages may affect your attestation status.
-    </p>
-    <a href="#" style="color: var(--purple-bright); font-size: 13px;">View Documentation →</a>
-  </div>
+      <!-- Stats -->
+      <div class="stats-row" style="margin-top:20px;">
+        <div class="stat-item">
+          <div class="hud-label">UPTIME</div>
+          <div class="stat-value" style="color:var(--accent-green);">156h</div>
+        </div>
+        <div class="stat-item">
+          <div class="hud-label">TELEMETRY</div>
+          <div class="stat-value" style="color:var(--purple-bright);">45,291</div>
+        </div>
+        <div class="stat-item">
+          <div class="hud-label">VIOLATIONS</div>
+          <div class="stat-value" style="color:var(--accent-green);">0</div>
+        </div>
+      </div>
+
+      <div style="text-align:center;padding:8px 0;">
+        <span class="hud-desc">System operating within declared boundaries. Conformance valid.</span>
+      </div>
+    </div>
+
+    <!-- ── API Key ── -->
+    <div class="hud-frame"><i></i>
+      <div class="hud-label" style="margin-bottom:16px;">YOUR API KEY</div>
+      <div class="key-display">
+        <span class="key-value">sa_live_a8f3k2m9x7p4q1w6...</span>
+        <button class="copy-btn" onclick="navigator.clipboard.writeText('sa_live_a8f3k2m9x7p4q1w6');this.textContent='COPIED';setTimeout(()=>this.textContent='COPY',2000)">COPY</button>
+      </div>
+      <div class="hud-desc" style="margin-top:12px;">Use this key to authenticate your ENVELO Agent. Keep it secret.</div>
+    </div>
+
+    <!-- ── ENVELO Agent ── -->
+    <div class="hud-frame"><i></i>
+      <div class="hud-label" style="margin-bottom:12px;">ENVELO AGENT</div>
+      <div style="color:var(--text-secondary);font-size:13px;line-height:1.6;margin-bottom:16px;">
+        The pre-configured agent for your system. Must remain running during operation to maintain conformance.
+      </div>
+      <div style="padding:12px 0;border-top:1px solid var(--border-glass);font-family:var(--mono);font-size:12px;color:var(--text-tertiary);">
+        <span style="color:rgba(157,140,207,0.8);">$</span> curl -sSL https://get.sentinelauthority.org | bash
+      </div>
+      <a href="agent.html" class="hud-action">VIEW AGENT DOCUMENTATION →</a>
+    </div>
+
+    <!-- ── Help ── -->
+    <div class="hud-frame"><i></i>
+      <div class="hud-label" style="margin-bottom:12px;">SUPPORT</div>
+      <div style="color:var(--text-tertiary);font-size:13px;line-height:1.6;margin-bottom:16px;">
+        If your ENVELO Agent goes offline, system status changes to idle within 5 minutes. Extended outages may affect conformance status.
+      </div>
+      <div style="display:flex;gap:24px;">
+        <a href="agent.html" class="hud-action" style="padding:0;">DOCUMENTATION →</a>
+        <a href="mailto:conformance@sentinelauthority.org" class="hud-action" style="padding:0;">CONTACT SUPPORT →</a>
+      </div>
+    </div>
+  </main>
 </body>
 </html>
