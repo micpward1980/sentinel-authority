@@ -3065,9 +3065,13 @@
           agents[i].softMax = agents[i].isOutlier ? radius * 0.88 : radius * 0.65;
         }
         for (var w = 0; w < 60; w++) updateAgents(16);
+        enveloEvents = [];
+        boundaryPulses = [];
       } else {
         initAgents();
         for (var w = 0; w < 300; w++) updateAgents(16);
+        enveloEvents = [];
+        boundaryPulses = [];
       }
     }, 150);
   });
@@ -3079,6 +3083,9 @@
       initAgents();
       // Warm up: 500 frames = ~8s simulated — agents fully settled
       for (var w=0; w<500; w++) updateAgents(16);
+      // Clear any boundary events from warm-up so first frame has no flashes
+      enveloEvents = [];
+      boundaryPulses = [];
       requestAnimationFrame(animate);
     }, 200);
   }
