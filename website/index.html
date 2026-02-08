@@ -1840,11 +1840,10 @@
        REVEAL ANIMATION
        ============================================ */
     .reveal{ 
-      opacity: 0; 
-      transform: translateY(var(--space-3)); 
-      transition: opacity .9s var(--ease), transform .9s var(--ease); 
+      opacity: 1; 
+      transform: none; 
     }
-    .reveal.active{ opacity: 1; transform: translateY(0); }
+    .reveal.active{ opacity: 1; transform: none; }
     
     @media (prefers-reduced-motion: reduce){
       .reveal{ opacity: 1; transform: none; transition: none; }
@@ -2021,22 +2020,13 @@
        ENHANCED ANIMATIONS
        ============================================ */
     
-    /* Staggered reveal for grid children */
+    /* Staggered reveal — disabled, instant show */
     .reveal.active > * {
-      opacity: 0;
-      animation: stagger-in 0.5s ease forwards;
+      opacity: 1;
     }
-    .reveal.active > *:nth-child(1) { animation-delay: 0s; }
-    .reveal.active > *:nth-child(2) { animation-delay: 0.08s; }
-    .reveal.active > *:nth-child(3) { animation-delay: 0.16s; }
-    .reveal.active > *:nth-child(4) { animation-delay: 0.24s; }
-    .reveal.active > *:nth-child(5) { animation-delay: 0.32s; }
-    .reveal.active > *:nth-child(6) { animation-delay: 0.4s; }
-    .reveal.active > *:nth-child(7) { animation-delay: 0.48s; }
-    .reveal.active > *:nth-child(8) { animation-delay: 0.56s; }
     
     @keyframes stagger-in {
-      from { opacity: 0; transform: translateY(20px); }
+      from { opacity: 0; transform: translateY(12px); }
       to { opacity: 1; transform: translateY(0); }
     }
     
@@ -2620,7 +2610,7 @@
     <!-- HERO -->
     <section class="hero">
       <!-- Full-viewport canvas -->
-      <div style="display:flex;justify-content:center;margin:0 auto;max-width:880px;padding-top:60px;"><div style="width:100%;"><canvas id="hero-canvas" style="width:100%;display:block;opacity:0;transition:opacity 1.2s ease 0.15s;"></canvas></div></div>
+      <div style="display:flex;justify-content:center;margin:0 auto;max-width:880px;padding-top:60px;"><div style="width:100%;"><canvas id="hero-canvas" style="width:100%;display:block;"></canvas></div></div>
       
       <!-- Hero Content -->
       <div id="hero-text" class="hero-content-bottom" style="position: relative; z-index: 10; text-align: center; padding: 12px 16px 0; display: flex; flex-direction: column; align-items: center;">
@@ -3035,10 +3025,8 @@
   }
 
   var lastTime=0;
-  var fadeTriggered = false;
   function animate(now) {
     if(!lastTime) lastTime=now;
-    if (!fadeTriggered) { c.style.opacity = '1'; fadeTriggered = true; }
     var dt=Math.min(now-lastTime, 32); lastTime=now;
     ctx.clearRect(0,0,W,H);
 
@@ -5197,7 +5185,7 @@
 
       <!-- CTA -->
       <div class="reveal" style="text-align: center; margin-top: var(--space-4);">
-        <a href="https://app.sentinelauthority.org" class="btn primary" style="display: inline-flex; align-items: center; gap: 10px; padding: 18px 32px;">
+        <a href="https://app.sentinelauthority.org" style="display:inline-flex;align-items:center;gap:10px;font-family:var(--mono);font-size:13px;letter-spacing:3px;text-transform:uppercase;color:rgba(157,140,207,0.95);text-decoration:none;transition:filter .2s;" onmouseover="this.style.filter='brightness(1.4)'" onmouseout="this.style.filter='brightness(1)'">
           Begin Assessment
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </a>
