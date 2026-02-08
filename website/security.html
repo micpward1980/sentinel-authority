@@ -8,126 +8,113 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect x='6' y='6' width='20' height='20' rx='5' fill='%235B4B8A' stroke='%239d8ccf' stroke-width='2'/><circle cx='16' cy='16' r='4' fill='%239d8ccf'/></svg>" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="preload" href="https://fonts.gstatic.com/s/sourceserif4/v7/vEF42_tTDB4M7-auWDN0ahZJW1ge-w.woff2" as="font" type="font/woff2" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,200;0,300;0,400;1,200;1,300&family=Inter:wght@200;400;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Source+Serif+4:wght@200;400&display=swap" rel="stylesheet" />
   <style>
+    /* ═══ EXACT index.html variables ═══ */
     :root{
-      color-scheme: dark;
+      color-scheme:dark;
       --purple-primary:#5B4B8A;
-      --purple-bright:#9d8ccf;
+      --purple-bright:#a896d6;
       --purple-glow:rgba(157,140,207,.20);
       --bg-deep:#2a2f3d;
-      --bg-panel:rgba(255,255,255,.05);
+      --bg-panel:rgba(255,255,255,.03);
       --accent-green:#5CD685;
       --accent-amber:#D6A05C;
       --accent-red:#D65C5C;
       --text-primary:rgba(255,255,255,.94);
-      --text-secondary:rgba(255,255,255,.75);
-      --text-tertiary:rgba(255,255,255,.50);
-      --border-glass:rgba(255,255,255,.10);
-      --border-subtle:rgba(255,255,255,.06);
-      --serif:'Source Serif 4',serif;
-      --mono:'IBM Plex Mono',monospace;
-      --sans:'Inter',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      --text-secondary:rgba(255,255,255,.78);
+      --text-tertiary:rgba(255,255,255,.55);
+      --border-glass:rgba(255,255,255,.07);
+      --border-subtle:rgba(255,255,255,.04);
+      --serif:Georgia,'Source Serif 4',serif;
+      --mono:Consolas,'IBM Plex Mono',monospace;
+      --sans:Calibri,'Inter',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
       --ease:cubic-bezier(0.16,1,0.3,1);
       --ease-out:cubic-bezier(0.33,1,0.68,1);
-      --space-1:10px;--space-2:20px;--space-3:30px;--space-4:40px;--space-6:60px;--space-8:80px;--space-10:100px;--space-12:120px;
-      --max:1200px;
+      --space-1:10px;--space-2:20px;--space-3:20px;--space-4:28px;--space-5:35px;--space-6:40px;--space-8:50px;--space-10:60px;--space-12:120px;
+      --max:780px;
       --nav-height:72px;
     }
-    *{box-sizing:border-box}
-    html{scroll-behavior:smooth;background:var(--bg-deep)}
+    *{box-sizing:border-box;}
+    html{scroll-behavior:smooth;background:var(--bg-deep);}
     body{
-      margin:0;
-      font-family:var(--sans);
-      background: radial-gradient(1200px 700px at 15% 10%, rgba(91,75,138,.15), transparent 55%),
-                  radial-gradient(900px 600px at 85% 80%, rgba(92,214,133,.06), transparent 55%),
-                  var(--bg-deep);
-      color:var(--text-primary);
-      overflow-x:hidden;
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
+      margin:0;font-family:var(--sans);
+      background:radial-gradient(1200px 700px at 15% 10%,rgba(91,75,138,.10),transparent 55%),radial-gradient(900px 600px at 85% 80%,rgba(92,214,133,.04),transparent 55%),var(--bg-deep);
+      color:var(--text-primary);overflow-x:hidden;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
     }
-    a{color:inherit;text-decoration:none}
-    a:hover{text-decoration:underline;text-underline-offset:4px}
-    ::selection{background:var(--purple-primary);color:#fff}
-    a:focus-visible,button:focus-visible{outline:2px solid rgba(157,140,207,.75);outline-offset:3px;border-radius:10px}
+    a{color:inherit;text-decoration:none;}
+    a:hover{text-decoration:underline;text-underline-offset:4px;}
+    ::selection{background:var(--purple-primary);color:#fff;}
+    a:focus-visible,button:focus-visible{outline:2px solid rgba(157,140,207,.75);outline-offset:3px;}
 
-    .grid-overlay{
-      position:fixed;inset:0;pointer-events:none;z-index:0;
-      background-image:linear-gradient(rgba(255,255,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.03) 1px,transparent 1px);
-      background-size:var(--space-12) var(--space-12);
-      opacity:.2;
-      mask-image:radial-gradient(ellipse at center,rgba(0,0,0,.9) 20%,transparent 70%);
-      -webkit-mask-image:radial-gradient(ellipse at center,rgba(0,0,0,.9) 20%,transparent 70%);
-    }
+    /* ═══ Grid overlay ═══ */
+    .grid-overlay{position:fixed;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px);background-size:var(--space-12) var(--space-12);opacity:.2;mask-image:radial-gradient(ellipse at center,rgba(0,0,0,.9) 20%,transparent 70%);-webkit-mask-image:radial-gradient(ellipse at center,rgba(0,0,0,.9) 20%,transparent 70%);}
 
-    .site-header{
-      position:fixed;top:0;width:100%;z-index:50;
-      padding:0 var(--space-2);height:var(--nav-height);
-      border-bottom:1px solid rgba(255,255,255,.06);
-      background:rgba(42,47,61,.88);
-      backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-      display:flex;align-items:center;
-    }
-    .nav-inner{max-width:var(--max);margin:0 auto;width:100%;display:flex;align-items:center;justify-content:space-between;gap:var(--space-2)}
-    .brand{display:flex;align-items:center;gap:var(--space-1);flex-shrink:0;text-decoration:none}.brand:hover{text-decoration:none}
-    .brand-mark{width:24px;height:24px;background:var(--purple-primary);border:2px solid var(--purple-bright);border-radius:6px;display:flex;align-items:center;justify-content:center}
-    .brand-mark-inner{width:8px;height:8px;background:#c4b8e8;border-radius:50%}
-    .brand-name{font-family:var(--mono);font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.86)}
-    .back-link{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-tertiary);display:flex;align-items:center;gap:8px;transition:color .2s}.back-link:hover{color:var(--text-primary);text-decoration:none}
+    /* ═══ Nav — exact match ═══ */
+    .site-header{position:fixed;top:0;width:100%;z-index:50;padding:0 var(--space-2);height:var(--nav-height);border-bottom:1px solid rgba(255,255,255,.06);background:rgba(42,47,61,.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);display:flex;align-items:center;}
+    .nav-inner{max-width:var(--max);margin:0 auto;width:100%;display:flex;align-items:center;justify-content:space-between;gap:var(--space-2);}
+    .brand{display:flex;align-items:center;gap:var(--space-1);flex-shrink:0;text-decoration:none;}.brand:hover{text-decoration:none;}
+    .brand-mark{width:24px;height:24px;background:var(--purple-primary);border:2px solid var(--purple-bright);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+    .brand-mark-inner{width:8px;height:8px;background:#c4b8e8;border-radius:50%;animation:eye-pulse 7s ease-in-out infinite;}
+    @keyframes eye-pulse{0%,100%{opacity:.75;transform:scale(.98);box-shadow:0 0 0 rgba(196,184,232,0);}50%{opacity:1;transform:scale(1.02);box-shadow:0 0 10px rgba(157,140,207,.22);}}
+    .brand-name{font-family:var(--mono);font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.86);white-space:nowrap;}
+    .back-link{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-tertiary);transition:color .2s;display:flex;align-items:center;gap:6px;}.back-link:hover{color:var(--text-primary);text-decoration:none;}
 
-    .content-wrap{position:relative;z-index:1;max-width:780px;margin:0 auto;padding:calc(var(--nav-height) + 80px) var(--space-2) 100px}
+    /* ═══ Layout ═══ */
+    .content-wrap{position:relative;z-index:1;max-width:var(--max);margin:0 auto;padding:calc(var(--nav-height) + 48px) var(--space-2) 80px;}
 
-    .page-label{font-family:var(--mono);font-size:10px;letter-spacing:5px;text-transform:uppercase;color:var(--purple-bright);display:flex;align-items:center;gap:12px;margin-bottom:20px;opacity:.7}
-    .page-label::before{content:'';width:40px;height:1px;background:var(--purple-bright);opacity:.4}
-    .page-title{font-family:var(--serif);font-size:clamp(28px,4.5vw,44px);font-weight:200;line-height:1.15;margin:0 0 16px;letter-spacing:-0.02em}
-    .page-desc{font-size:16px;font-weight:200;color:var(--text-secondary);line-height:1.7;max-width:55ch;margin-bottom:var(--space-6)}
+    /* ═══ HUD System — exact match ═══ */
+    .hud-frame{position:relative;padding:20px 16px;border:none;overflow:hidden;}
+    .hud-frame::before,.hud-frame::after,.hud-frame>i::before,.hud-frame>i::after{content:'';position:absolute;width:12px;height:12px;border-color:rgba(255,255,255,0.08);border-style:solid;pointer-events:none;animation:corner-breathe 4s ease-in-out infinite;}
+    .hud-frame::before{top:0;left:0;border-width:1px 0 0 1px;}
+    .hud-frame::after{top:0;right:0;border-width:1px 1px 0 0;}
+    .hud-frame>i::before{bottom:0;left:0;border-width:0 0 1px 1px;position:absolute;}
+    .hud-frame>i::after{bottom:0;right:0;border-width:0 1px 1px 0;position:absolute;}
+    .hud-frame>i{position:absolute;inset:0;pointer-events:none;}
+    @keyframes corner-breathe{0%,100%{border-color:rgba(255,255,255,0.06);}50%{border-color:rgba(157,140,207,0.2);}}
+    .hud-frame-red::before,.hud-frame-red::after,.hud-frame-red>i::before,.hud-frame-red>i::after{border-color:rgba(214,92,92,0.12);}
+    .hud-frame-green::before,.hud-frame-green::after,.hud-frame-green>i::before,.hud-frame-green>i::after{animation:corner-breathe-green 4s ease-in-out infinite !important;}
+    @keyframes corner-breathe-green{0%,100%{border-color:rgba(92,214,133,0.08);}50%{border-color:rgba(92,214,133,0.25);}}
 
-    .core-box{
-      background:var(--bg-panel);
-      border:1px solid var(--border-glass);
-      border-radius:16px;
-      padding:var(--space-3) var(--space-3) var(--space-2);
-      margin-bottom:var(--space-6);
-    }
-    .core-box h3{font-family:var(--mono);font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--accent-green);margin:0 0 12px;opacity:.85}
-    .core-box p{font-size:15px;font-weight:400;color:var(--text-secondary);line-height:1.7;margin:0 0 var(--space-2)}
-    .core-box strong{color:var(--text-primary);font-weight:600}
-    .badge-row{display:flex;flex-wrap:wrap;gap:8px}
-    .badge{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;font-family:var(--mono);font-size:11px;letter-spacing:.5px}
-    .badge.red{background:rgba(214,92,92,.08);border:1px solid rgba(214,92,92,.2);color:rgba(214,92,92,.85)}
+    .hud-scanline{border-bottom:1px solid rgba(255,255,255,0.04);}
+    .hud-dot{display:inline-block;width:4px;height:4px;border-radius:50%;background:rgba(157,140,207,0.5);margin-right:8px;flex-shrink:0;}
+    .hud-dot-green{background:rgba(92,214,133,0.6);animation:hud-breathe 3s ease-in-out infinite;}
+    .hud-dot-red{background:rgba(214,92,92,0.5);}
+    @keyframes hud-breathe{0%,100%{opacity:0.4;}50%{opacity:1;}}
+    .hud-row{padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.02);}.hud-row:last-child{border-bottom:none;}
+    .hud-label{font-family:var(--mono);font-size:9px;letter-spacing:2px;color:rgba(255,255,255,0.35);text-transform:uppercase;}
+    .hud-title{font-size:14px;color:rgba(255,255,255,0.92);font-weight:400;margin:2px 0;}
+    .hud-desc{font-size:12px;color:rgba(255,255,255,0.50);line-height:1.5;}
+    .hud-link{font-family:var(--mono);font-size:11px;letter-spacing:2px;color:rgba(157,140,207,0.7);text-decoration:none !important;border-bottom:none !important;padding-bottom:2px;transition:all 0.2s;position:relative;overflow:hidden;}
+    .hud-link:hover{color:rgba(157,140,207,0.95);text-decoration:none !important;}
+    .hud-link::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(157,140,207,0.4),transparent);transform:translateX(-100%);transition:transform 0.4s ease;}
+    .hud-link:hover::after{transform:translateX(0);}
 
-    .faq-section{margin-bottom:var(--space-6)}
-    .faq-section-header{font-family:var(--mono);font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--purple-bright);margin:0 0 var(--space-2);padding-bottom:12px;border-bottom:1px solid var(--border-subtle);opacity:.6}
+    /* ═══ Section titles — exact match ═══ */
+    .section-label{font-family:var(--mono);font-size:10px;letter-spacing:5px;text-transform:uppercase;color:var(--purple-bright);display:block;margin-bottom:12px;}
+    .section-title{font-family:var(--serif);font-size:clamp(28px,4.5vw,44px);font-weight:normal;line-height:1.15;margin:0 0 16px;letter-spacing:-0.02em;}
+    .section-lead{max-width:55ch;color:var(--text-secondary);font-weight:300;line-height:1.85;margin-bottom:var(--space-6);font-size:16px;}
 
-    .faq-item{padding:var(--space-2) 0;border-bottom:1px solid var(--border-subtle)}
-    .faq-item:last-child{border-bottom:none}
-    .faq-q{font-size:15px;font-weight:500;color:var(--text-primary);margin-bottom:8px;line-height:1.4}
-    .faq-a{font-size:14px;font-weight:400;color:var(--text-secondary);line-height:1.75;margin:0}
+    /* ═══ Badge row ═══ */
+    .badge-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;}
+    .badge{font-family:var(--mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;padding:6px 8px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.03);color:rgba(255,255,255,.80);white-space:nowrap;}
+    .badge.red{border-color:rgba(214,92,92,.22);color:rgba(214,92,92,.95);background:rgba(214,92,92,.06);}
 
-    .contact-box{
-      background:var(--bg-panel);
-      border:1px solid var(--border-glass);
-      border-radius:16px;
-      padding:var(--space-3);
-      margin-top:var(--space-4);
-      text-align:center;
-    }
-    .contact-box h3{font-family:var(--mono);font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--purple-bright);margin:0 0 10px;opacity:.7}
-    .contact-box p{font-size:14px;color:var(--text-secondary);line-height:1.7;margin:0}
-    .contact-box a{color:var(--purple-bright);transition:color .2s}
-    .contact-box a:hover{color:#c4b8e8}
+    /* ═══ FAQ ═══ */
+    .faq-group-label{font-family:var(--mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border-subtle);}
+    .faq-item{padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.02);}.faq-item:last-child{border-bottom:none;padding-bottom:0;}
+    .faq-q{font-size:14px;font-weight:500;color:rgba(255,255,255,0.92);margin-bottom:6px;line-height:1.4;}
+    .faq-a{font-size:13px;color:var(--text-secondary);line-height:1.75;margin:0;}
 
-    footer{margin-top:var(--space-8);padding:var(--space-2);border-top:1px solid var(--border-subtle);text-align:center}
-    .footer-copy{font-family:var(--mono);font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--text-tertiary);opacity:.5}
+    /* ═══ Footer — exact match ═══ */
+    footer{border-top:1px solid var(--border-glass);padding:var(--space-6) 0 var(--space-4);margin-top:var(--space-4);color:rgba(255,255,255,.45);font-family:var(--mono);font-size:10px;letter-spacing:1px;}
+    .footer-inner{max-width:var(--max);margin:0 auto;padding:0 var(--space-2);display:flex;justify-content:space-between;align-items:flex-start;gap:var(--space-2);flex-wrap:wrap;}
 
-    @media(max-width:600px){
-      .content-wrap{padding:calc(var(--nav-height) + 40px) 16px 60px}
-      .page-title{font-size:26px}
-      .core-box{padding:var(--space-2)}
-      .badge{font-size:10px;padding:6px 10px}
-    }
+    /* ═══ Nuclear override ═══ */
+    *:not(.hud-dot):not(.hud-dot-green):not(.hud-dot-red):not(.brand-mark-inner):not(canvas){border-radius:0 !important;}
+
+    @media(max-width:768px){.content-wrap{padding:calc(var(--nav-height) + 32px) 16px 60px;}.badge-row{gap:6px;}.badge{font-size:8px;padding:5px 6px;}}
+    @media(max-width:480px){.section-title{font-size:22px;}.badge-row{flex-direction:column;}}
   </style>
 </head>
 <body>
@@ -147,23 +134,25 @@
   </header>
 
   <div class="content-wrap">
-    <div class="page-label">Security Architecture</div>
-    <h1 class="page-title">Security FAQ for IT &amp; Compliance Teams</h1>
-    <p class="page-desc">Enterprise security teams ask tough questions. Here are the answers, backed by architecture.</p>
+    <div class="section-label">SECURITY ARCHITECTURE</div>
+    <h1 class="section-title">Security FAQ for IT &amp; Compliance Teams</h1>
+    <p class="section-lead">Enterprise security teams ask tough questions. Here are the answers, backed by architecture.</p>
 
-    <div class="core-box">
-      <h3>The Core Guarantee</h3>
-      <p>Sentinel Authority <strong>cannot</strong> send commands to your system, execute code on your infrastructure, access your network, or control your autonomous systems. This is architecturally enforced, not policy-based.</p>
+    <!-- ── Core Guarantee ── -->
+    <div class="hud-frame hud-frame-green" style="margin-bottom:var(--space-4);"><i></i>
+      <div class="hud-label" style="color:rgba(92,214,133,0.6);margin-bottom:12px;">THE CORE GUARANTEE</div>
+      <p style="font-size:15px;color:var(--text-secondary);line-height:1.7;margin:0;">Sentinel Authority <strong style="color:var(--text-primary);">cannot</strong> send commands to your system, execute code on your infrastructure, access your network, or control your autonomous systems. This is architecturally enforced, not policy-based.</p>
       <div class="badge-row">
-        <span class="badge red">✗ No Remote Commands</span>
-        <span class="badge red">✗ No Code Execution</span>
-        <span class="badge red">✗ No Network Access</span>
-        <span class="badge red">✗ No Actuator Control</span>
+        <span class="badge red">✕ NO REMOTE COMMANDS</span>
+        <span class="badge red">✕ NO CODE EXECUTION</span>
+        <span class="badge red">✕ NO NETWORK ACCESS</span>
+        <span class="badge red">✕ NO ACTUATOR CONTROL</span>
       </div>
     </div>
 
-    <div class="faq-section">
-      <h2 class="faq-section-header">Attack Surface &amp; Compromise</h2>
+    <!-- ── Attack Surface ── -->
+    <div class="hud-frame" style="margin-bottom:var(--space-3);"><i></i>
+      <div class="faq-group-label">ATTACK SURFACE &amp; COMPROMISE</div>
       <div class="faq-item">
         <div class="faq-q">What if Sentinel Authority is compromised?</div>
         <div class="faq-a">There is no path back to your systems. The agent opens no listening ports and accepts no inbound connections. Even a fully compromised Sentinel Authority cannot send commands, push code, or access your infrastructure. The one-way architecture makes this physically impossible.</div>
@@ -178,20 +167,22 @@
       </div>
     </div>
 
-    <div class="faq-section">
-      <h2 class="faq-section-header">Data Privacy &amp; HIPAA</h2>
+    <!-- ── Data Privacy ── -->
+    <div class="hud-frame" style="margin-bottom:var(--space-3);"><i></i>
+      <div class="faq-group-label">DATA PRIVACY &amp; HIPAA</div>
       <div class="faq-item">
         <div class="faq-q">Does ENVELO transmit PHI or PII?</div>
         <div class="faq-a">No. Telemetry contains only operational metrics — boundary proximity, enforcement events, timestamps. No patient data, no payload content, no PII ever leaves your system. You control what parameters are passed to the agent.</div>
       </div>
       <div class="faq-item">
         <div class="faq-q">Is a BAA (Business Associate Agreement) available?</div>
-        <div class="faq-a">Yes. Business Associate Agreements are available for healthcare customers upon request. Contact conformance@sentinelauthority.org.</div>
+        <div class="faq-a">Yes. Business Associate Agreements are available for healthcare customers upon request. Contact <a href="mailto:conformance@sentinelauthority.org" class="hud-link" style="font-size:13px;letter-spacing:0;">conformance@sentinelauthority.org</a>.</div>
       </div>
     </div>
 
-    <div class="faq-section">
-      <h2 class="faq-section-header">Network &amp; Firewall</h2>
+    <!-- ── Network ── -->
+    <div class="hud-frame" style="margin-bottom:var(--space-3);"><i></i>
+      <div class="faq-group-label">NETWORK &amp; FIREWALL</div>
       <div class="faq-item">
         <div class="faq-q">What firewall rules are required?</div>
         <div class="faq-a">Outbound HTTPS (port 443) to api.sentinelauthority.org only. No inbound ports. No DMZ exposure. No VPN tunnels. The agent initiates all connections.</div>
@@ -202,8 +193,9 @@
       </div>
     </div>
 
-    <div class="faq-section">
-      <h2 class="faq-section-header">Auditability &amp; Compliance</h2>
+    <!-- ── Auditability ── -->
+    <div class="hud-frame" style="margin-bottom:var(--space-3);"><i></i>
+      <div class="faq-group-label">AUDITABILITY &amp; COMPLIANCE</div>
       <div class="faq-item">
         <div class="faq-q">Is the agent code auditable?</div>
         <div class="faq-a">Yes. Enterprise customers receive full source access for security review prior to deployment. We welcome third-party security audits.</div>
@@ -214,14 +206,18 @@
       </div>
     </div>
 
-    <div class="contact-box">
-      <h3>Still have questions?</h3>
-      <p>Our security team is available to discuss your specific requirements.<br>Contact <a href="mailto:conformance@sentinelauthority.org">conformance@sentinelauthority.org</a></p>
+    <!-- ── Contact ── -->
+    <div class="hud-frame" style="text-align:center;padding:var(--space-4) 16px;"><i></i>
+      <div class="hud-label" style="margin-bottom:10px;">STILL HAVE QUESTIONS?</div>
+      <p style="font-size:14px;color:var(--text-secondary);line-height:1.7;margin:0;">Our security team is available to discuss your specific requirements.<br>Contact <a href="mailto:conformance@sentinelauthority.org" class="hud-link" style="font-size:14px;letter-spacing:0;">conformance@sentinelauthority.org</a></p>
     </div>
   </div>
 
   <footer>
-    <div class="footer-copy">© Sentinel Authority — ODDC v1.0</div>
+    <div class="footer-inner">
+      <span>© SENTINEL AUTHORITY — ODDC V1.0</span>
+    </div>
   </footer>
 </body>
 </html>
+
