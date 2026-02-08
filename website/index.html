@@ -802,19 +802,6 @@
 
     .hud-link {
       position: relative;
-      overflow: hidden;
-    }
-    .hud-link::after {
-      content: '';
-      position: absolute;
-      bottom: 0; left: 0; right: 0;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(157,140,207,0.4), transparent);
-      transform: translateX(-100%);
-      transition: transform 0.4s ease;
-    }
-    .hud-link:hover::after {
-      transform: translateX(0);
     }
 
     .section-title.glow {
