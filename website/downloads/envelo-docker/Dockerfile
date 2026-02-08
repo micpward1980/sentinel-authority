@@ -5,8 +5,8 @@ WORKDIR /app
 # Install dependencies
 RUN pip install --no-cache-dir httpx
 
-# Copy agent
-COPY envelo-agent/envelo /app/envelo
+# Copy interlock
+COPY envelo-interlock/envelo /app/envelo
 
 # Copy entrypoint
 COPY docker-entrypoint.py /app/entrypoint.py

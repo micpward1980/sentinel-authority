@@ -1,6 +1,6 @@
-# ENVELO Agent - Docker
+# ENVELO Interlock - Docker
 
-Run the ENVELO Agent as a Docker container.
+Run the ENVELO Interlock as a Docker container.
 
 ## Quick Start
 ```bash
@@ -25,13 +25,13 @@ docker-compose up -d
 
 ## Building Locally
 ```bash
-docker build -t envelo-agent .
-docker run -e ENVELO_CERTIFICATE_ID=... -e ENVELO_API_KEY=... envelo-agent
+docker build -t envelo-interlock .
+docker run -e ENVELO_CERTIFICATE_ID=... -e ENVELO_API_KEY=... envelo-interlock
 ```
 
 ## Integrating with Your Application
 
-Mount your application directory and import the agent:
+Mount your application directory and import the interlock:
 ```bash
 docker run -d \
   -e ENVELO_CERTIFICATE_ID=ODDC-2026-XXXXX \
@@ -42,16 +42,16 @@ docker run -d \
 
 Then in your Python code:
 ```python
-from envelo import EnveloAgent, EnveloConfig, NumericBoundary
+from envelo import EnveloInterlock, EnveloConfig, NumericBoundary
 
 config = EnveloConfig(
     certificate_id="ODDC-2026-XXXXX",
     api_key="your-api-key"
 )
-agent = EnveloAgent(config)
+interlock = EnveloInterlock(config)
 ```
 
 ## Support
 
-- Documentation: https://sentinelauthority.org/agent.html
+- Documentation: https://sentinelauthority.org/interlock.html
 - Email: conformance@sentinelauthority.org

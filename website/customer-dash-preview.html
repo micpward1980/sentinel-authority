@@ -104,7 +104,7 @@
 
   <main>
     <div style="margin-bottom:32px;">
-      <span class="section-label">ENVELO AGENT</span>
+      <span class="section-label">ENVELO INTERLOCK</span>
       <h1 class="section-title">Your Systems</h1>
       <p class="section-lead">Monitor enforcement status and manage your attested systems</p>
     </div>
@@ -151,29 +151,29 @@
         <span class="key-value">sa_live_a8f3k2m9x7p4q1w6...</span>
         <button class="copy-btn" onclick="navigator.clipboard.writeText('sa_live_a8f3k2m9x7p4q1w6');this.textContent='COPIED';setTimeout(()=>this.textContent='COPY',2000)">COPY</button>
       </div>
-      <div class="hud-desc" style="margin-top:12px;">Use this key to authenticate your ENVELO Agent. Keep it secret.</div>
+      <div class="hud-desc" style="margin-top:12px;">Use this key to authenticate your ENVELO Interlock. Keep it secret.</div>
     </div>
 
-    <!-- ── ENVELO Agent ── -->
+    <!-- ── ENVELO Interlock ── -->
     <div class="hud-frame"><i></i>
-      <div class="hud-label" style="margin-bottom:12px;">ENVELO AGENT</div>
+      <div class="hud-label" style="margin-bottom:12px;">ENVELO INTERLOCK</div>
       <div style="color:var(--text-secondary);font-size:13px;line-height:1.6;margin-bottom:16px;">
-        The pre-configured agent for your system. Must remain running during operation to maintain conformance.
+        The pre-configured interlock for your system. Must remain running during operation to maintain conformance.
       </div>
       <div style="padding:12px 0;border-top:1px solid var(--border-glass);font-family:var(--mono);font-size:12px;color:var(--text-tertiary);">
         <span style="color:rgba(157,140,207,0.8);">$</span> curl -sSL https://get.sentinelauthority.org | bash
       </div>
-      <a href="agent.html" class="hud-action">VIEW AGENT DOCUMENTATION →</a>
+      <a href="interlock.html" class="hud-action">VIEW INTERLOCK DOCUMENTATION →</a>
     </div>
 
     <!-- ── Help ── -->
     <div class="hud-frame"><i></i>
       <div class="hud-label" style="margin-bottom:12px;">SUPPORT</div>
       <div style="color:var(--text-tertiary);font-size:13px;line-height:1.6;margin-bottom:16px;">
-        If your ENVELO Agent goes offline, system status changes to idle within 5 minutes. Extended outages may affect conformance status.
+        If your ENVELO Interlock goes offline, system status changes to idle within 5 minutes. Extended outages may affect conformance status.
       </div>
       <div style="display:flex;gap:24px;">
-        <a href="agent.html" class="hud-action" style="padding:0;">DOCUMENTATION →</a>
+        <a href="interlock.html" class="hud-action" style="padding:0;">DOCUMENTATION →</a>
         <a href="mailto:conformance@sentinelauthority.org" class="hud-action" style="padding:0;">CONTACT SUPPORT →</a>
       </div>
     </div>

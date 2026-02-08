@@ -3623,7 +3623,7 @@
         </div>
       </div>
       <div class="reveal" style="text-align:center;margin-bottom:var(--space-2);">
-        <span style="font-family:var(--mono);font-size:11px;letter-spacing:1px;color:rgba(255,255,255,0.35);">Deployed by Sentinel as a <span style="color:rgba(92,214,133,0.8);">runtime agent</span> on your infrastructure — outbound-only, non-bypassable</span>
+        <span style="font-family:var(--mono);font-size:11px;letter-spacing:1px;color:rgba(255,255,255,0.35);">Deployed by Sentinel as a <span style="color:rgba(92,214,133,0.8);">runtime interlock</span> on your infrastructure — outbound-only, non-bypassable</span>
       </div>
     </section>
     <section id="security" class="section">
@@ -3632,7 +3632,7 @@
           <span class="section-label">SECURITY ARCHITECTURE</span>
           <h2 class="section-title">Zero Trust, Zero Access</h2>
           <p class="section-lead">
-            Enterprise security teams ask: "Is this agent a backdoor?" The answer is <strong>architecturally impossible</strong>.
+            Enterprise security teams ask: "Is this interlock a backdoor?" The answer is <strong>architecturally impossible</strong>.
           </p>
         </div>
       </div>
@@ -4026,7 +4026,7 @@
         <div class="hud-frame hud-scanline"><i></i>
           <div class="hud-row" style="display:flex;align-items:flex-start;">
             <span class="hud-num">01</span><span class="hud-dot hud-dot-green" style="margin-top:6px;"></span>
-            <div><div class="hud-title">Zero Listening Ports</div><div class="hud-desc">Agent opens no inbound ports. Only outbound HTTPS to api.sentinelauthority.org.</div></div>
+            <div><div class="hud-title">Zero Listening Ports</div><div class="hud-desc">Interlock opens no inbound ports. Only outbound HTTPS to api.sentinelauthority.org.</div></div>
           </div>
           <div class="hud-row" style="display:flex;align-items:flex-start;">
             <span class="hud-num">02</span><span class="hud-dot" style="margin-top:6px;"></span>
@@ -5011,7 +5011,7 @@
         var steps=[
           {label:'Apply',sub:'Submit ODD',num:'1',col:PURPLE,r:26},
           {label:'Review',sub:'5-10 days',num:'2',col:PURPLE,r:26},
-          {label:'Deploy',sub:'ENVELO Agent',num:'3',col:PURPLE,r:26},
+          {label:'Deploy',sub:'ENVELO Interlock',num:'3',col:PURPLE,r:26},
           {label:'CAT-72',sub:'72 hours',num:'4',col:PURPLE,r:30,big:1},
           {label:'Attested',sub:'ODDC issued',num:'\u2713',col:GREEN,r:26},
           {label:'Maintain',sub:'Continuous',num:'\u221E',col:GREEN,r:22,dashed:1}
@@ -5247,7 +5247,7 @@
           <span class="section-label">DOCUMENTATION</span>
           <h2 class="section-title">Resources</h2>
           <p class="section-lead">
-            Normative specifications, implementation guides, and the ENVELO Agent.
+            Normative specifications, implementation guides, and the ENVELO Interlock.
           </p>
         </div>
       </div>
@@ -5290,14 +5290,14 @@
         </div>
       </div>
 
-      <!-- ENVELO Agent — HUD -->
+      <!-- ENVELO Interlock — HUD -->
       <div class="reveal" style="max-width: 700px; margin: 0 auto;">
         <div class="hud-frame hud-scanline"><i></i>
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
             <span class="hud-label">RUNTIME ENFORCEMENT</span>
             <span class="hud-dot hud-dot-green"></span>
           </div>
-          <div style="font-family:var(--serif);font-size:22px;color:rgba(255,255,255,0.92);font-weight:200;margin-bottom:8px;">ENVELO Agent</div>
+          <div style="font-family:var(--serif);font-size:22px;color:rgba(255,255,255,0.92);font-weight:200;margin-bottom:8px;">ENVELO Interlock</div>
           <div class="hud-desc" style="margin-bottom:16px;max-width:500px;">The interlock layer that makes execution limits non-violable. Tiered enforcement: self-correction, controlled degradation, hard halt.</div>
           <div class="hud-row" style="display:flex;gap:24px;flex-wrap:wrap;padding-bottom:16px;">
             <div style="display:flex;align-items:center;gap:6px;">
@@ -5314,7 +5314,7 @@
             </div>
           </div>
           <div class="hud-row" style="display:flex;justify-content:space-between;align-items:center;">
-            <a href="https://app.sentinelauthority.org" class="hud-link">ACCESS AGENT PORTAL →</a>
+            <a href="https://app.sentinelauthority.org" class="hud-link">ACCESS INTERLOCK PORTAL →</a>
             <span class="hud-label">REQUIRED FOR ODDC</span>
           </div>
         </div>

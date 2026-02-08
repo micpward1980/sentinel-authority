@@ -1,5 +1,5 @@
 #!/bin/bash
-# ENVELO Agent Installer
+# ENVELO Interlock Installer
 # Sentinel Authority - https://sentinelauthority.org
 
 set -e
@@ -8,7 +8,7 @@ clear
 echo ""
 echo "  ╔═══════════════════════════════════════════════════════════╗"
 echo "  ║                                                           ║"
-echo "  ║             ENVELO Agent Installer v1.0                   ║"
+echo "  ║             ENVELO Interlock Installer v1.0                   ║"
 echo "  ║                  Sentinel Authority                       ║"
 echo "  ║                                                           ║"
 echo "  ║     Runtime enforcement for ODDC-certified systems        ║"
@@ -61,16 +61,16 @@ fi
 INSTALL_DIR="$HOME/.envelo"
 echo "  ─────────────────────────────────────────────────────────────"
 echo ""
-echo "  Installing ENVELO Agent..."
+echo "  Installing ENVELO Interlock..."
 echo ""
 
 mkdir -p "$INSTALL_DIR"
 cd "$INSTALL_DIR"
 
 echo "  📦 Downloading agent package..."
-curl -sSL https://www.sentinelauthority.org/downloads/envelo-agent-v1.0.0.zip -o envelo-agent.zip 2>/dev/null
-unzip -q -o envelo-agent.zip
-rm envelo-agent.zip
+curl -sSL https://www.sentinelauthority.org/downloads/envelo-interlock-v1.0.0.zip -o envelo-interlock.zip 2>/dev/null
+unzip -q -o envelo-interlock.zip
+rm envelo-interlock.zip
 
 echo "  📦 Installing dependencies..."
 pip3 install httpx --quiet 2>/dev/null || pip3 install httpx --quiet --break-system-packages 2>/dev/null
@@ -86,15 +86,15 @@ CONF
 cat > example.py << 'EXAMPLE'
 #!/usr/bin/env python3
 """
-ENVELO Agent - Example Usage
-Run this file to test your ENVELO Agent installation.
+ENVELO Interlock - Example Usage
+Run this file to test your ENVELO Interlock installation.
 """
 
 import sys
 import os
 
 # Add ENVELO to path
-sys.path.insert(0, os.path.expanduser('~/.envelo/envelo-agent'))
+sys.path.insert(0, os.path.expanduser('~/.envelo/envelo-interlock'))
 
 # Load config
 from dotenv import load_dotenv
@@ -115,7 +115,7 @@ agent = EnveloAgent(config)
 agent.add_boundary(NumericBoundary("speed", min=0, max=100, unit="km/h"))
 agent.add_boundary(NumericBoundary("temperature", min=-20, max=50, unit="celsius"))
 
-print("ENVELO Agent initialized!")
+print("ENVELO Interlock initialized!")
 print(f"Certificate: {config.certificate_id}")
 print("")
 
@@ -153,7 +153,7 @@ chmod +x example.py
 echo ""
 echo "  ═══════════════════════════════════════════════════════════"
 echo ""
-echo "  ✅ ENVELO Agent installed successfully!"
+echo "  ✅ ENVELO Interlock installed successfully!"
 echo ""
 echo "  ─────────────────────────────────────────────────────────────"
 echo "  Location:     ~/.envelo"
@@ -170,7 +170,7 @@ echo ""
 echo "  INTEGRATE INTO YOUR CODE:"
 echo ""
 echo "    import sys"
-echo "    sys.path.insert(0, '$INSTALL_DIR/envelo-agent')"
+echo "    sys.path.insert(0, '$INSTALL_DIR/envelo-interlock')"
 echo "    from envelo import EnveloAgent, EnveloConfig, NumericBoundary"
 echo ""
 echo "  ─────────────────────────────────────────────────────────────"
