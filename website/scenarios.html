@@ -45,10 +45,10 @@
       
       /* Core palette */
       --purple-primary:#5B4B8A;
-      --purple-bright:#a896d6;
+      --purple-bright:#9d8ccf;
       --purple-glow:rgba(157,140,207,.20);
-      --bg-deep:#2a2f3d;
-      --bg-panel:rgba(255,255,255,.03);
+      --bg-deep:#0c1220;
+      --bg-panel:rgba(255,255,255,.015);
       --accent-green:#5CD685;
       --accent-amber:#D6A05C;
       --accent-red:#D65C5C;
@@ -59,13 +59,13 @@
       --text-tertiary:rgba(255,255,255,.55);
 
       /* Borders */
-      --border-glass:rgba(255,255,255,.07);
+      --border-glass:rgba(255,255,255,.06);
       --border-subtle:rgba(255,255,255,.04);
 
       /* Typography */
       --serif:Georgia,'Source Serif 4',serif;
       --mono:Consolas,'IBM Plex Mono',monospace;
-      --sans:Calibri,'Inter',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      --sans:'Inter',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
 
       /* Timing */
       --ease: cubic-bezier(0.16, 1, 0.3, 1);
@@ -84,7 +84,7 @@
       
       /* Layout */
       --max: 1200px;
-      --nav-height: 72px;
+      --nav-height: 56px;
     }
 
     *{ box-sizing:border-box; }
@@ -108,7 +108,7 @@
       padding:12px 18px;
       background:var(--bg-deep);
       border:1px solid var(--purple-bright);
-      border-radius:8px;
+      
       color:var(--text-primary);
       font-family:var(--mono);
       font-size:11px;
@@ -134,16 +134,14 @@
     a:focus-visible, button:focus-visible {
       outline: 2px solid rgba(157,140,207,.75);
       outline-offset: 3px;
-      border-radius: 10px;
+      
     }
     
     html{ scroll-behavior:smooth; background:var(--bg-deep); }
     body{
       margin:0;
       font-family:var(--sans);
-      background: radial-gradient(1200px 700px at 15% 10%, rgba(91,75,138,.10), transparent 55%),
-                  radial-gradient(900px 600px at 85% 80%, rgba(92,214,133,.04), transparent 55%),
-                  var(--bg-deep);
+      background: var(--bg-deep);
       color:var(--text-primary);
       overflow-x:hidden;
       -webkit-font-smoothing:antialiased;
@@ -154,7 +152,7 @@
     ::selection{ background:var(--purple-primary); color:#fff; }
 
     /* Subtle grid overlay */
-    .grid-overlay{
+    .grid-overlay{display:none;
       position:fixed;
       inset:0;
       pointer-events:none;
@@ -177,8 +175,8 @@
       z-index:50;
       padding:0 var(--space-2, 20px);
       height: var(--nav-height, 72px);
-      border-bottom:1px solid rgba(255,255,255,.10);
-      background: rgba(42,47,61,.88);
+      border-bottom:1px solid rgba(255,255,255,.06);
+      background: rgba(12,18,32,.92);
       backdrop-filter: blur(18px);
       -webkit-backdrop-filter: blur(18px);
       display: flex;
@@ -211,7 +209,7 @@
       background: var(--purple-primary, #5B4B8A);
       border: 2px solid #9d8ccf;
       border: 2px solid var(--purple-bright, #9d8ccf);
-      border-radius: 6px;
+      
       display: flex;
       align-items: center;
       justify-content: center;
@@ -319,7 +317,7 @@
       border: 1px solid rgba(214,160,92,.25);
       background: rgba(214,160,92,.08);
       padding: 6px 8px;
-      border-radius: 999px;
+      
       white-space: nowrap;
       flex-shrink: 0;
     }
@@ -332,7 +330,7 @@
       background: rgba(255,255,255,.03);
       width: 40px;
       height: 40px;
-      border-radius: 10px;
+      
       cursor: pointer;
       position: relative;
       transition: border-color .2s ease, background .2s ease;
@@ -376,7 +374,7 @@
       width: 280px;
       max-width: calc(100vw - var(--space-4));
       height: calc(100vh - var(--nav-height));
-      background: rgba(42,47,61,.96);
+      background: rgba(12,18,32,.96);
       backdrop-filter: blur(24px);
       border-left: 1px solid var(--border-glass);
       transform: translateX(100%);
@@ -533,7 +531,7 @@
       border: 1px solid rgba(157,140,207,.22);
       background: rgba(91,75,138,.05);
       padding: 8px 12px;
-      border-radius: 8px;
+      
       width: fit-content;
       margin: var(--space-1) 0 var(--space-2);
     }
@@ -597,7 +595,7 @@
       background: transparent;
       color: var(--text-primary);
       padding: 14px 18px;
-      border-radius: 14px;
+      
       font-family: var(--mono);
       font-size: 10px;
       letter-spacing: 2.5px;
@@ -684,7 +682,7 @@
     .panel{
       background: var(--bg-panel);
       border: 1px solid var(--border-glass);
-      border-radius: 18px;
+      
       padding: var(--space-3) 28px;
       backdrop-filter: blur(18px);
       position: relative;
@@ -762,7 +760,7 @@
       letter-spacing: 2px;
       text-transform: uppercase;
       padding: 8px 10px;
-      border-radius: 999px;
+      
       border: 1px solid rgba(255,255,255,.14);
       background: rgba(255,255,255,.03);
       color: rgba(255,255,255,.82);
@@ -783,7 +781,7 @@
       padding: 6px 12px;
       background: rgba(91, 75, 138, 0.15);
       border: 1px solid rgba(157, 140, 207, 0.25);
-      border-radius: 4px;
+      
       color: var(--purple-bright);
       font-family: var(--mono);
       font-size: 10px;
@@ -800,7 +798,7 @@
     .doc-icon {
       padding: 2px 5px;
       background: rgba(157, 140, 207, 0.2);
-      border-radius: 2px;
+      
       font-size: 9px;
       font-weight: 600;
       letter-spacing: 1px;
@@ -823,7 +821,7 @@
       display:flex;
       gap: 12px;
       padding: 14px;
-      border-radius: 16px;
+      
       border: 1px solid rgba(255,255,255,.10);
       background: rgba(255,255,255,.025);
       align-items:flex-start;
@@ -856,7 +854,7 @@
     .node{
       border: 1px solid var(--border-glass);
       background: rgba(255,255,255,.02);
-      border-radius: 18px;
+      
       padding: 28px 22px;
       position: relative;
       overflow:hidden;
@@ -903,7 +901,7 @@
     .record{
       background: rgba(0,0,0,.20);
       border: 1px solid rgba(255,255,255,.12);
-      border-radius: 18px;
+      
       overflow:hidden;
     }
     .record-head{
@@ -912,7 +910,7 @@
       align-items:center;
       padding: var(--space-2) 18px;
       background: rgba(91,75,138,.12);
-      border-bottom: 1px solid rgba(255,255,255,.10);
+      border-bottom: 1px solid rgba(255,255,255,.06);
       gap: 12px;
       flex-wrap: wrap;
     }
@@ -932,7 +930,7 @@
       border: 1px solid rgba(92,214,133,.20);
       background: rgba(92,214,133,.06);
       padding: 6px 10px;
-      border-radius: 999px;
+      
       display:flex; align-items:center; gap: 8px;
     }
     .record-status .s-dot{
@@ -962,7 +960,7 @@
       border: 1px solid rgba(157,140,207,.35);
       background: rgba(91,75,138,.08);
       padding: 6px 10px;
-      border-radius: 6px;
+      
       transition: all .2s ease;
     }
     .verify-link:hover{
@@ -1005,7 +1003,7 @@
       background:rgba(255,255,255,.04);
       color:rgba(255,255,255,.65);
       padding:4px 8px;
-      border-radius:6px;
+      
       font-family:var(--mono);
       font-size:9px;
       letter-spacing:1px;
@@ -1048,7 +1046,7 @@
       letter-spacing: 1.5px;
       text-transform: uppercase;
       padding: 12px 18px;
-      border-radius: 10px;
+      
       backdrop-filter: blur(12px);
       opacity: 0;
       transition: opacity .18s ease, transform .18s var(--ease-out);
@@ -1072,7 +1070,7 @@
       padding: 14px;
       border: 1px solid rgba(255,255,255,.10);
       background: rgba(255,255,255,.02);
-      border-radius: 16px;
+      
       display:flex;
       justify-content: space-between;
       gap: 12px;
@@ -1101,7 +1099,7 @@
       letter-spacing: 2px;
       text-transform: uppercase;
       padding: 6px 8px;
-      border-radius: 999px;
+      
       border: 1px solid rgba(255,255,255,.14);
       background: rgba(255,255,255,.03);
       color: rgba(255,255,255,.80);
@@ -1173,7 +1171,7 @@
       max-width: 540px;
       background: var(--bg-panel);
       border: 1px solid var(--border-glass);
-      border-radius: 18px;
+      
       padding: 8px 0;
       backdrop-filter: blur(18px);
     }
@@ -1211,7 +1209,7 @@
     .definition-callout{
       background: rgba(91,75,138,.08);
       border: 1px solid rgba(157,140,207,.25);
-      border-radius: 12px;
+      
       padding: var(--space-2) 18px;
       margin-top: var(--space-2);
     }
@@ -1341,7 +1339,7 @@
     .download-modal-card{
       background: var(--bg-deep);
       border: 1px solid var(--border-glass);
-      border-radius: 18px;
+      
       padding: var(--space-3);
       max-width: 420px;
       width: 100%;
@@ -1387,7 +1385,7 @@
       padding: 12px 14px;
       background: rgba(255,255,255,.04);
       border: 1px solid var(--border-glass);
-      border-radius: 8px;
+      
       color: var(--text-primary);
       font-family: var(--sans);
       font-size: 14px;
@@ -1409,7 +1407,7 @@
       background: rgba(91,75,138,.18);
       color: var(--text-primary);
       padding: 14px 24px;
-      border-radius: 12px;
+      
       font-family: var(--mono);
       font-size: 10px;
       letter-spacing: 2px;
@@ -1430,12 +1428,12 @@
       text-align: center;
     }
 
-    .scenario{background:var(--bg-panel);border:1px solid var(--border-glass);border-radius:18px;padding:var(--space-3);margin-bottom:var(--space-3)}
+    .scenario{background:var(--bg-panel);border:1px solid var(--border-glass);padding:var(--space-3);margin-bottom:var(--space-3)}
     .scenario h2{font-family:var(--serif);font-size:26px;font-weight:200;margin:0 0 var(--space-2)}
     .scenario p{color:var(--text-secondary);font-size:15px;line-height:1.75;margin:0 0 var(--space-2)}
     .scenario h4{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-tertiary);margin:var(--space-2) 0 var(--space-1)}
     .scenario ul{margin:0;padding-left:20px;color:var(--text-secondary);font-size:14px;line-height:1.8}
-    .scenario-download{display:inline-block;margin-top:var(--space-2);padding:12px 20px;background:rgba(91,75,138,.18);border:1px solid rgba(157,140,207,.55);border-radius:10px;color:var(--text-primary);font-family:var(--mono);font-size:11px;letter-spacing:1px;text-decoration:none;cursor:pointer;transition:transform .2s ease,border-color .2s ease,background .2s ease}
+    .scenario-download{display:inline-block;margin-top:var(--space-2);padding:12px 20px;background:rgba(91,75,138,.18);border:1px solid rgba(157,140,207,.55);color:var(--text-primary);font-family:var(--mono);font-size:11px;letter-spacing:1px;text-decoration:none;cursor:pointer;transition:transform .2s ease,border-color .2s ease,background .2s ease}
     .scenario-download:hover{transform:translateY(-1px);border-color:rgba(157,140,207,.85);background:rgba(91,75,138,.26);text-decoration:none}
     @keyframes eye-pulse {
       0%, 100% {
@@ -1477,14 +1475,14 @@
     }
     
     /* Card hover lift effect */
-    [style*="border-radius: 20px"],
-    [style*="border-radius: 16px"],
-    [style*="border-radius: 14px"] {
+    [style*=""],
+    [style*=""],
+    [style*=""] {
       transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease !important;
     }
     
-    [style*="border-radius: 20px"]:hover,
-    [style*="border-radius: 16px"]:hover {
+    [style*=""]:hover,
+    [style*=""]:hover {
       transform: translateY(-4px);
       box-shadow: 0 20px 40px rgba(0,0,0,0.3);
     }
@@ -1518,12 +1516,12 @@
     
     /* Icon hover rotation */
     .gate-icon svg,
-    [style*="border-radius: 12px"] svg {
+    [style*=""] svg {
       transition: transform 0.3s ease;
     }
     
-    [style*="border-radius: 20px"]:hover svg,
-    [style*="border-radius: 16px"]:hover svg {
+    [style*=""]:hover svg,
+    [style*=""]:hover svg {
       transform: scale(1.1);
     }
     
@@ -1702,7 +1700,7 @@
       background: var(--purple-primary);
       color: #fff;
       padding: 12px 24px;
-      border-radius: 8px;
+      
       font-family: var(--mono);
       font-size: 12px;
       z-index: 9999;
@@ -1899,7 +1897,7 @@
     
     <!-- Hero Header -->
     <div class="reveal" style="text-align: center; margin-bottom: 60px;">
-      <div style="display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; background: rgba(157,140,207,0.1); border: 1px solid rgba(157,140,207,0.3); border-radius: 50px; margin-bottom: 24px;">
+      <div style="display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; background: rgba(157,140,207,0.1); border: 1px solid rgba(157,140,207,0.3);  margin-bottom: 24px;">
         <div style="width: 8px; height: 8px; background: rgba(157,140,207,0.9); border-radius: 50%;"></div>
         <span style="font-family: var(--mono); font-size: 11px; letter-spacing: 2px; color: rgba(157,140,207,0.9);">ODDC SCENARIOS</span>
       </div>
@@ -1913,9 +1911,9 @@
     <div class="reveal" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 80px;">
       
       <!-- Data Centers -->
-      <a href="#datacenters" style="position: relative; background: linear-gradient(135deg, rgba(92,214,133,0.1) 0%, rgba(92,214,133,0.02) 100%); border: 1px solid rgba(92,214,133,0.25); border-radius: 20px; padding: 28px; text-decoration: none; transition: all 0.3s ease; overflow: hidden;" onmouseover="this.style.transform='translateY(-4px)';this.style.borderColor='rgba(92,214,133,0.5)'" onmouseout="this.style.transform='translateY(0)';this.style.borderColor='rgba(92,214,133,0.25)'">
+      <a href="#datacenters" style="position: relative; background: linear-gradient(135deg, rgba(92,214,133,0.1) 0%, rgba(92,214,133,0.02) 100%); border: 1px solid rgba(92,214,133,0.25);  padding: 28px; text-decoration: none; transition: all 0.3s ease; overflow: hidden;" onmouseover="this.style.transform='translateY(-4px)';this.style.borderColor='rgba(92,214,133,0.5)'" onmouseout="this.style.transform='translateY(0)';this.style.borderColor='rgba(92,214,133,0.25)'">
         <div style="position: absolute; top: 0; left: 24px; width: 50px; height: 3px; background: linear-gradient(90deg, rgba(92,214,133,0.8), transparent);"></div>
-        <div style="width: 48px; height: 48px; background: rgba(92,214,133,0.15); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px;">
+        <div style="width: 48px; height: 48px; background: rgba(92,214,133,0.15);  display: flex; align-items: center; justify-content: center; margin-bottom: 16px;">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(92,214,133,0.9)" stroke-width="1.5"><rect x="2" y="3" width="20" height="18" rx="2"/><line x1="2" y1="9" x2="22" y2="9"/><line x1="2" y1="15" x2="22" y2="15"/><circle cx="7" cy="6" r="1" fill="rgba(92,214,133,0.9)"/><circle cx="7" cy="12" r="1" fill="rgba(92,214,133,0.9)"/><circle cx="7" cy="18" r="1" fill="rgba(92,214,133,0.9)"/></svg>
         </div>
         <h3 style="font-size: 18px; font-weight: 600; color: var(--text-primary); margin: 0 0 8px;">Data Centers</h3>
@@ -1924,9 +1922,9 @@
       </a>
 
       <!-- Autonomous Vehicles -->
-      <a href="#vehicles" style="position: relative; background: linear-gradient(135deg, rgba(157,140,207,0.1) 0%, rgba(157,140,207,0.02) 100%); border: 1px solid rgba(157,140,207,0.25); border-radius: 20px; padding: 28px; text-decoration: none; transition: all 0.3s ease; overflow: hidden;" onmouseover="this.style.transform='translateY(-4px)';this.style.borderColor='rgba(157,140,207,0.5)'" onmouseout="this.style.transform='translateY(0)';this.style.borderColor='rgba(157,140,207,0.25)'">
+      <a href="#vehicles" style="position: relative; background: linear-gradient(135deg, rgba(157,140,207,0.1) 0%, rgba(157,140,207,0.02) 100%); border: 1px solid rgba(157,140,207,0.25);  padding: 28px; text-decoration: none; transition: all 0.3s ease; overflow: hidden;" onmouseover="this.style.transform='translateY(-4px)';this.style.borderColor='rgba(157,140,207,0.5)'" onmouseout="this.style.transform='translateY(0)';this.style.borderColor='rgba(157,140,207,0.25)'">
         <div style="position: absolute; top: 0; left: 24px; width: 50px; height: 3px; background: linear-gradient(90deg, rgba(157,140,207,0.8), transparent);"></div>
-        <div style="width: 48px; height: 48px; background: rgba(157,140,207,0.15); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px;">
+        <div style="width: 48px; height: 48px; background: rgba(157,140,207,0.15);  display: flex; align-items: center; justify-content: center; margin-bottom: 16px;">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(157,140,207,0.9)" stroke-width="1.5"><path d="M5 17h14v-5H5z"/><path d="M19 12l-2-6H7l-2 6"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/></svg>
         </div>
         <h3 style="font-size: 18px; font-weight: 600; color: var(--text-primary); margin: 0 0 8px;">Autonomous Vehicles</h3>
@@ -1935,9 +1933,9 @@
       </a>
 
       <!-- Healthcare -->
-      <a href="#healthcare" style="position: relative; background: linear-gradient(135deg, rgba(214,92,92,0.1) 0%, rgba(214,92,92,0.02) 100%); border: 1px solid rgba(214,92,92,0.25); border-radius: 20px; padding: 28px; text-decoration: none; transition: all 0.3s ease; overflow: hidden;" onmouseover="this.style.transform='translateY(-4px)';this.style.borderColor='rgba(214,92,92,0.5)'" onmouseout="this.style.transform='translateY(0)';this.style.borderColor='rgba(214,92,92,0.25)'">
+      <a href="#healthcare" style="position: relative; background: linear-gradient(135deg, rgba(214,92,92,0.1) 0%, rgba(214,92,92,0.02) 100%); border: 1px solid rgba(214,92,92,0.25);  padding: 28px; text-decoration: none; transition: all 0.3s ease; overflow: hidden;" onmouseover="this.style.transform='translateY(-4px)';this.style.borderColor='rgba(214,92,92,0.5)'" onmouseout="this.style.transform='translateY(0)';this.style.borderColor='rgba(214,92,92,0.25)'">
         <div style="position: absolute; top: 0; left: 24px; width: 50px; height: 3px; background: linear-gradient(90deg, rgba(214,92,92,0.8), transparent);"></div>
-        <div style="width: 48px; height: 48px; background: rgba(214,92,92,0.15); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px;">
+        <div style="width: 48px; height: 48px; background: rgba(214,92,92,0.15);  display: flex; align-items: center; justify-content: center; margin-bottom: 16px;">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(214,92,92,0.9)" stroke-width="1.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
         </div>
         <h3 style="font-size: 18px; font-weight: 600; color: var(--text-primary); margin: 0 0 8px;">Healthcare & Medical AI</h3>
@@ -1946,9 +1944,9 @@
       </a>
 
       <!-- Financial Services -->
-      <a href="#finance" style="position: relative; background: linear-gradient(135deg, rgba(214,160,92,0.1) 0%, rgba(214,160,92,0.02) 100%); border: 1px solid rgba(214,160,92,0.25); border-radius: 20px; padding: 28px; text-decoration: none; transition: all 0.3s ease; overflow: hidden;" onmouseover="this.style.transform='translateY(-4px)';this.style.borderColor='rgba(214,160,92,0.5)'" onmouseout="this.style.transform='translateY(0)';this.style.borderColor='rgba(214,160,92,0.25)'">
+      <a href="#finance" style="position: relative; background: linear-gradient(135deg, rgba(214,160,92,0.1) 0%, rgba(214,160,92,0.02) 100%); border: 1px solid rgba(214,160,92,0.25);  padding: 28px; text-decoration: none; transition: all 0.3s ease; overflow: hidden;" onmouseover="this.style.transform='translateY(-4px)';this.style.borderColor='rgba(214,160,92,0.5)'" onmouseout="this.style.transform='translateY(0)';this.style.borderColor='rgba(214,160,92,0.25)'">
         <div style="position: absolute; top: 0; left: 24px; width: 50px; height: 3px; background: linear-gradient(90deg, rgba(214,160,92,0.8), transparent);"></div>
-        <div style="width: 48px; height: 48px; background: rgba(214,160,92,0.15); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px;">
+        <div style="width: 48px; height: 48px; background: rgba(214,160,92,0.15);  display: flex; align-items: center; justify-content: center; margin-bottom: 16px;">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(214,160,92,0.9)" stroke-width="1.5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
         </div>
         <h3 style="font-size: 18px; font-weight: 600; color: var(--text-primary); margin: 0 0 8px;">Financial Services</h3>
@@ -1957,9 +1955,9 @@
       </a>
 
       <!-- Manufacturing -->
-      <a href="#manufacturing" style="position: relative; background: linear-gradient(135deg, rgba(92,214,133,0.1) 0%, rgba(92,214,133,0.02) 100%); border: 1px solid rgba(92,214,133,0.25); border-radius: 20px; padding: 28px; text-decoration: none; transition: all 0.3s ease; overflow: hidden;" onmouseover="this.style.transform='translateY(-4px)';this.style.borderColor='rgba(92,214,133,0.5)'" onmouseout="this.style.transform='translateY(0)';this.style.borderColor='rgba(92,214,133,0.25)'">
+      <a href="#manufacturing" style="position: relative; background: linear-gradient(135deg, rgba(92,214,133,0.1) 0%, rgba(92,214,133,0.02) 100%); border: 1px solid rgba(92,214,133,0.25);  padding: 28px; text-decoration: none; transition: all 0.3s ease; overflow: hidden;" onmouseover="this.style.transform='translateY(-4px)';this.style.borderColor='rgba(92,214,133,0.5)'" onmouseout="this.style.transform='translateY(0)';this.style.borderColor='rgba(92,214,133,0.25)'">
         <div style="position: absolute; top: 0; left: 24px; width: 50px; height: 3px; background: linear-gradient(90deg, rgba(92,214,133,0.8), transparent);"></div>
-        <div style="width: 48px; height: 48px; background: rgba(92,214,133,0.15); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px;">
+        <div style="width: 48px; height: 48px; background: rgba(92,214,133,0.15);  display: flex; align-items: center; justify-content: center; margin-bottom: 16px;">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(92,214,133,0.9)" stroke-width="1.5"><path d="M2 20h20"/><path d="M5 20V8l7-5 7 5v12"/><path d="M9 20v-6h6v6"/></svg>
         </div>
         <h3 style="font-size: 18px; font-weight: 600; color: var(--text-primary); margin: 0 0 8px;">Industrial Manufacturing</h3>
@@ -1968,9 +1966,9 @@
       </a>
 
       <!-- Aerospace -->
-      <a href="#aerospace" style="position: relative; background: linear-gradient(135deg, rgba(157,140,207,0.1) 0%, rgba(157,140,207,0.02) 100%); border: 1px solid rgba(157,140,207,0.25); border-radius: 20px; padding: 28px; text-decoration: none; transition: all 0.3s ease; overflow: hidden;" onmouseover="this.style.transform='translateY(-4px)';this.style.borderColor='rgba(157,140,207,0.5)'" onmouseout="this.style.transform='translateY(0)';this.style.borderColor='rgba(157,140,207,0.25)'">
+      <a href="#aerospace" style="position: relative; background: linear-gradient(135deg, rgba(157,140,207,0.1) 0%, rgba(157,140,207,0.02) 100%); border: 1px solid rgba(157,140,207,0.25);  padding: 28px; text-decoration: none; transition: all 0.3s ease; overflow: hidden;" onmouseover="this.style.transform='translateY(-4px)';this.style.borderColor='rgba(157,140,207,0.5)'" onmouseout="this.style.transform='translateY(0)';this.style.borderColor='rgba(157,140,207,0.25)'">
         <div style="position: absolute; top: 0; left: 24px; width: 50px; height: 3px; background: linear-gradient(90deg, rgba(157,140,207,0.8), transparent);"></div>
-        <div style="width: 48px; height: 48px; background: rgba(157,140,207,0.15); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px;">
+        <div style="width: 48px; height: 48px; background: rgba(157,140,207,0.15);  display: flex; align-items: center; justify-content: center; margin-bottom: 16px;">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(157,140,207,0.9)" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
         </div>
         <h3 style="font-size: 18px; font-weight: 600; color: var(--text-primary); margin: 0 0 8px;">Aerospace & Defense</h3>
@@ -1979,9 +1977,9 @@
       </a>
 
       <!-- Energy & Utilities -->
-      <a href="#energy" style="position: relative; background: linear-gradient(135deg, rgba(214,160,92,0.1) 0%, rgba(214,160,92,0.02) 100%); border: 1px solid rgba(214,160,92,0.25); border-radius: 20px; padding: 28px; text-decoration: none; transition: all 0.3s ease; overflow: hidden;" onmouseover="this.style.transform='translateY(-4px)';this.style.borderColor='rgba(214,160,92,0.5)'" onmouseout="this.style.transform='translateY(0)';this.style.borderColor='rgba(214,160,92,0.25)'">
+      <a href="#energy" style="position: relative; background: linear-gradient(135deg, rgba(214,160,92,0.1) 0%, rgba(214,160,92,0.02) 100%); border: 1px solid rgba(214,160,92,0.25);  padding: 28px; text-decoration: none; transition: all 0.3s ease; overflow: hidden;" onmouseover="this.style.transform='translateY(-4px)';this.style.borderColor='rgba(214,160,92,0.5)'" onmouseout="this.style.transform='translateY(0)';this.style.borderColor='rgba(214,160,92,0.25)'">
         <div style="position: absolute; top: 0; left: 24px; width: 50px; height: 3px; background: linear-gradient(90deg, rgba(214,160,92,0.8), transparent);"></div>
-        <div style="width: 48px; height: 48px; background: rgba(214,160,92,0.15); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px;">
+        <div style="width: 48px; height: 48px; background: rgba(214,160,92,0.15);  display: flex; align-items: center; justify-content: center; margin-bottom: 16px;">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(214,160,92,0.9)" stroke-width="1.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
         </div>
         <h3 style="font-size: 18px; font-weight: 600; color: var(--text-primary); margin: 0 0 8px;">Energy &amp; Utilities</h3>
@@ -1990,9 +1988,9 @@
       </a>
 
       <!-- Defense & National Security -->
-      <a href="#defense" style="position: relative; background: linear-gradient(135deg, rgba(214,92,92,0.1) 0%, rgba(214,92,92,0.02) 100%); border: 1px solid rgba(214,92,92,0.25); border-radius: 20px; padding: 28px; text-decoration: none; transition: all 0.3s ease; overflow: hidden;" onmouseover="this.style.transform='translateY(-4px)';this.style.borderColor='rgba(214,92,92,0.5)'" onmouseout="this.style.transform='translateY(0)';this.style.borderColor='rgba(214,92,92,0.25)'">
+      <a href="#defense" style="position: relative; background: linear-gradient(135deg, rgba(214,92,92,0.1) 0%, rgba(214,92,92,0.02) 100%); border: 1px solid rgba(214,92,92,0.25);  padding: 28px; text-decoration: none; transition: all 0.3s ease; overflow: hidden;" onmouseover="this.style.transform='translateY(-4px)';this.style.borderColor='rgba(214,92,92,0.5)'" onmouseout="this.style.transform='translateY(0)';this.style.borderColor='rgba(214,92,92,0.25)'">
         <div style="position: absolute; top: 0; left: 24px; width: 50px; height: 3px; background: linear-gradient(90deg, rgba(214,92,92,0.8), transparent);"></div>
-        <div style="width: 48px; height: 48px; background: rgba(214,92,92,0.15); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px;">
+        <div style="width: 48px; height: 48px; background: rgba(214,92,92,0.15);  display: flex; align-items: center; justify-content: center; margin-bottom: 16px;">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(214,92,92,0.9)" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
         </div>
         <h3 style="font-size: 18px; font-weight: 600; color: var(--text-primary); margin: 0 0 8px;">Defense &amp; National Security</h3>
@@ -2001,9 +1999,9 @@
       </a>
 
       <!-- Logistics & Supply Chain -->
-      <a href="#logistics" style="position: relative; background: linear-gradient(135deg, rgba(92,214,133,0.1) 0%, rgba(92,214,133,0.02) 100%); border: 1px solid rgba(92,214,133,0.25); border-radius: 20px; padding: 28px; text-decoration: none; transition: all 0.3s ease; overflow: hidden;" onmouseover="this.style.transform='translateY(-4px)';this.style.borderColor='rgba(92,214,133,0.5)'" onmouseout="this.style.transform='translateY(0)';this.style.borderColor='rgba(92,214,133,0.25)'">
+      <a href="#logistics" style="position: relative; background: linear-gradient(135deg, rgba(92,214,133,0.1) 0%, rgba(92,214,133,0.02) 100%); border: 1px solid rgba(92,214,133,0.25);  padding: 28px; text-decoration: none; transition: all 0.3s ease; overflow: hidden;" onmouseover="this.style.transform='translateY(-4px)';this.style.borderColor='rgba(92,214,133,0.5)'" onmouseout="this.style.transform='translateY(0)';this.style.borderColor='rgba(92,214,133,0.25)'">
         <div style="position: absolute; top: 0; left: 24px; width: 50px; height: 3px; background: linear-gradient(90deg, rgba(92,214,133,0.8), transparent);"></div>
-        <div style="width: 48px; height: 48px; background: rgba(92,214,133,0.15); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px;">
+        <div style="width: 48px; height: 48px; background: rgba(92,214,133,0.15);  display: flex; align-items: center; justify-content: center; margin-bottom: 16px;">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(92,214,133,0.9)" stroke-width="1.5"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
         </div>
         <h3 style="font-size: 18px; font-weight: 600; color: var(--text-primary); margin: 0 0 8px;">Logistics &amp; Supply Chain</h3>
@@ -2012,9 +2010,9 @@
       </a>
 
       <!-- Maritime & Port Operations -->
-      <a href="#maritime" style="position: relative; background: linear-gradient(135deg, rgba(157,140,207,0.1) 0%, rgba(157,140,207,0.02) 100%); border: 1px solid rgba(157,140,207,0.25); border-radius: 20px; padding: 28px; text-decoration: none; transition: all 0.3s ease; overflow: hidden;" onmouseover="this.style.transform='translateY(-4px)';this.style.borderColor='rgba(157,140,207,0.5)'" onmouseout="this.style.transform='translateY(0)';this.style.borderColor='rgba(157,140,207,0.25)'">
+      <a href="#maritime" style="position: relative; background: linear-gradient(135deg, rgba(157,140,207,0.1) 0%, rgba(157,140,207,0.02) 100%); border: 1px solid rgba(157,140,207,0.25);  padding: 28px; text-decoration: none; transition: all 0.3s ease; overflow: hidden;" onmouseover="this.style.transform='translateY(-4px)';this.style.borderColor='rgba(157,140,207,0.5)'" onmouseout="this.style.transform='translateY(0)';this.style.borderColor='rgba(157,140,207,0.25)'">
         <div style="position: absolute; top: 0; left: 24px; width: 50px; height: 3px; background: linear-gradient(90deg, rgba(157,140,207,0.8), transparent);"></div>
-        <div style="width: 48px; height: 48px; background: rgba(157,140,207,0.15); border-radius: 14px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px;">
+        <div style="width: 48px; height: 48px; background: rgba(157,140,207,0.15);  display: flex; align-items: center; justify-content: center; margin-bottom: 16px;">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(157,140,207,0.9)" stroke-width="1.5"><path d="M2 20l.8-2.7A1.5 1.5 0 014.2 16h15.6a1.5 1.5 0 011.4 1.3L22 20"/><path d="M12 16V4"/><path d="M4 12l8-4 8 4"/><path d="M2 20c1 1 3 2 5 2s4-1 5-2c1 1 3 2 5 2s4-1 5-2"/></svg>
         </div>
         <h3 style="font-size: 18px; font-weight: 600; color: var(--text-primary); margin: 0 0 8px;">Maritime &amp; Port Operations</h3>
@@ -2024,9 +2022,9 @@
     </div>
 
     <!-- Scenario Sections -->
-    <section id="datacenters" class="reveal" style="margin-bottom: 60px; padding: 40px; background: linear-gradient(135deg, rgba(92,214,133,0.08) 0%, rgba(92,214,133,0.02) 100%); border: 1px solid rgba(92,214,133,0.2); border-radius: 24px;">
+    <section id="datacenters" class="reveal" style="margin-bottom: 60px; padding: 40px; background: linear-gradient(135deg, rgba(92,214,133,0.08) 0%, rgba(92,214,133,0.02) 100%); border: 1px solid rgba(92,214,133,0.2); ">
       <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 24px;">
-        <div style="width: 56px; height: 56px; background: rgba(92,214,133,0.15); border-radius: 14px; display: flex; align-items: center; justify-content: center;">
+        <div style="width: 56px; height: 56px; background: rgba(92,214,133,0.15);  display: flex; align-items: center; justify-content: center;">
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(92,214,133,0.9)" stroke-width="1.5"><rect x="2" y="3" width="20" height="18" rx="2"/><line x1="2" y1="9" x2="22" y2="9"/><line x1="2" y1="15" x2="22" y2="15"/><circle cx="7" cy="6" r="1" fill="rgba(92,214,133,0.9)"/><circle cx="7" cy="12" r="1" fill="rgba(92,214,133,0.9)"/><circle cx="7" cy="18" r="1" fill="rgba(92,214,133,0.9)"/></svg>
         </div>
         <h2 style="font-family: Georgia, 'Source Serif 4', serif; font-size: 28px; font-weight: 300; color: var(--text-primary); margin: 0;">Data Centers & Hyperscale Computing</h2>
@@ -2035,7 +2033,7 @@
         Hyperscale environments increasingly rely on autonomous systems to allocate power, optimize cooling, place workloads, and orchestrate AI-on-AI stacks. ODDC scenarios illustrate facility-level and stack-level envelope boundaries.
       </p>
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 24px;">
-        <div style="background: rgba(0,0,0,0.2); border-radius: 12px; padding: 20px;">
+        <div style="background: rgba(0,0,0,0.2);  padding: 20px;">
           <h4 style="font-family: var(--mono); font-size: 11px; letter-spacing: 2px; color: rgba(92,214,133,0.9); margin: 0 0 12px;">INTERLOCK BEHAVIOR</h4>
           <ul style="margin: 0; padding-left: 20px; color: var(--text-secondary); font-size: 14px; line-height: 1.8;">
             <li>Hard-cap interlocks on CPU throttling to prevent TDP overruns</li>
@@ -2043,7 +2041,7 @@
             <li>Maximum recursion depth for AI managing AI</li>
           </ul>
         </div>
-        <div style="background: rgba(0,0,0,0.2); border-radius: 12px; padding: 20px;">
+        <div style="background: rgba(0,0,0,0.2);  padding: 20px;">
           <h4 style="font-family: var(--mono); font-size: 11px; letter-spacing: 2px; color: rgba(92,214,133,0.9); margin: 0 0 12px;">EVIDENCE OUTPUTS</h4>
           <ul style="margin: 0; padding-left: 20px; color: var(--text-secondary); font-size: 14px; line-height: 1.8;">
             <li>Append-only envelope adherence logs</li>
@@ -2051,15 +2049,15 @@
           </ul>
         </div>
       </div>
-      <a href="docs/ODDC_Scenarios_v1.0.pdf" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; background: rgba(92,214,133,0.15); border: 1px solid rgba(92,214,133,0.4); border-radius: 10px; color: rgba(92,214,133,0.95); font-family: var(--mono); font-size: 12px; text-decoration: none; transition: all 0.2s;">
+      <a href="docs/ODDC_Scenarios_v1.0.pdf" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; background: rgba(92,214,133,0.15); border: 1px solid rgba(92,214,133,0.4);  color: rgba(92,214,133,0.95); font-family: var(--mono); font-size: 12px; text-decoration: none; transition: all 0.2s;">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         Download Full Scenarios PDF
       </a>
     </section>
 
-    <section id="vehicles" class="reveal" style="margin-bottom: 60px; padding: 40px; background: linear-gradient(135deg, rgba(157,140,207,0.08) 0%, rgba(157,140,207,0.02) 100%); border: 1px solid rgba(157,140,207,0.2); border-radius: 24px;">
+    <section id="vehicles" class="reveal" style="margin-bottom: 60px; padding: 40px; background: linear-gradient(135deg, rgba(157,140,207,0.08) 0%, rgba(157,140,207,0.02) 100%); border: 1px solid rgba(157,140,207,0.2); ">
       <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 24px;">
-        <div style="width: 56px; height: 56px; background: rgba(157,140,207,0.15); border-radius: 14px; display: flex; align-items: center; justify-content: center;">
+        <div style="width: 56px; height: 56px; background: rgba(157,140,207,0.15);  display: flex; align-items: center; justify-content: center;">
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(157,140,207,0.9)" stroke-width="1.5"><path d="M5 17h14v-5H5z"/><path d="M19 12l-2-6H7l-2 6"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/></svg>
         </div>
         <h2 style="font-family: Georgia, 'Source Serif 4', serif; font-size: 28px; font-weight: 300; color: var(--text-primary); margin: 0;">Autonomous Vehicles</h2>
@@ -2068,7 +2066,7 @@
         ODDC scenarios illustrate mathematically specified authorization parameters governing vehicle behavior across conditions with ENVELO-compliant enforcement preventing boundary violations.
       </p>
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 24px;">
-        <div style="background: rgba(0,0,0,0.2); border-radius: 12px; padding: 20px;">
+        <div style="background: rgba(0,0,0,0.2);  padding: 20px;">
           <h4 style="font-family: var(--mono); font-size: 11px; letter-spacing: 2px; color: rgba(157,140,207,0.9); margin: 0 0 12px;">INTERLOCK BEHAVIOR</h4>
           <ul style="margin: 0; padding-left: 20px; color: var(--text-secondary); font-size: 14px; line-height: 1.8;">
             <li>Non-bypassable speed interlock tied to zone authorization</li>
@@ -2076,7 +2074,7 @@
             <li>Weather-tier degradation limits on velocity</li>
           </ul>
         </div>
-        <div style="background: rgba(0,0,0,0.2); border-radius: 12px; padding: 20px;">
+        <div style="background: rgba(0,0,0,0.2);  padding: 20px;">
           <h4 style="font-family: var(--mono); font-size: 11px; letter-spacing: 2px; color: rgba(157,140,207,0.9); margin: 0 0 12px;">EVIDENCE OUTPUTS</h4>
           <ul style="margin: 0; padding-left: 20px; color: var(--text-secondary); font-size: 14px; line-height: 1.8;">
             <li>Cryptographic, time-indexed compliance record</li>
@@ -2084,15 +2082,15 @@
           </ul>
         </div>
       </div>
-      <a href="docs/ODDC_Scenarios_v1.0.pdf" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; background: rgba(157,140,207,0.15); border: 1px solid rgba(157,140,207,0.4); border-radius: 10px; color: rgba(157,140,207,0.95); font-family: var(--mono); font-size: 12px; text-decoration: none; transition: all 0.2s;">
+      <a href="docs/ODDC_Scenarios_v1.0.pdf" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; background: rgba(157,140,207,0.15); border: 1px solid rgba(157,140,207,0.4);  color: rgba(157,140,207,0.95); font-family: var(--mono); font-size: 12px; text-decoration: none; transition: all 0.2s;">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         Download Full Scenarios PDF
       </a>
     </section>
 
-    <section id="healthcare" class="reveal" style="margin-bottom: 60px; padding: 40px; background: linear-gradient(135deg, rgba(214,92,92,0.08) 0%, rgba(214,92,92,0.02) 100%); border: 1px solid rgba(214,92,92,0.2); border-radius: 24px;">
+    <section id="healthcare" class="reveal" style="margin-bottom: 60px; padding: 40px; background: linear-gradient(135deg, rgba(214,92,92,0.08) 0%, rgba(214,92,92,0.02) 100%); border: 1px solid rgba(214,92,92,0.2); ">
       <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 24px;">
-        <div style="width: 56px; height: 56px; background: rgba(214,92,92,0.15); border-radius: 14px; display: flex; align-items: center; justify-content: center;">
+        <div style="width: 56px; height: 56px; background: rgba(214,92,92,0.15);  display: flex; align-items: center; justify-content: center;">
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(214,92,92,0.9)" stroke-width="1.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
         </div>
         <h2 style="font-family: Georgia, 'Source Serif 4', serif; font-size: 28px; font-weight: 300; color: var(--text-primary); margin: 0;">Healthcare & Medical AI</h2>
@@ -2101,7 +2099,7 @@
         Medical AI operates in life-critical environments where auditability and bounded autonomy are required. ODDC scenarios illustrate operational boundaries for diagnostic recommendations and clinical interventions.
       </p>
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 24px;">
-        <div style="background: rgba(0,0,0,0.2); border-radius: 12px; padding: 20px;">
+        <div style="background: rgba(0,0,0,0.2);  padding: 20px;">
           <h4 style="font-family: var(--mono); font-size: 11px; letter-spacing: 2px; color: rgba(214,92,92,0.9); margin: 0 0 12px;">INTERLOCK BEHAVIOR</h4>
           <ul style="margin: 0; padding-left: 20px; color: var(--text-secondary); font-size: 14px; line-height: 1.8;">
             <li>Mandatory confirmation for Stage 3+ interventions</li>
@@ -2109,7 +2107,7 @@
             <li>Automatic escalation on anomalous vital signs</li>
           </ul>
         </div>
-        <div style="background: rgba(0,0,0,0.2); border-radius: 12px; padding: 20px;">
+        <div style="background: rgba(0,0,0,0.2);  padding: 20px;">
           <h4 style="font-family: var(--mono); font-size: 11px; letter-spacing: 2px; color: rgba(214,92,92,0.9); margin: 0 0 12px;">EVIDENCE OUTPUTS</h4>
           <ul style="margin: 0; padding-left: 20px; color: var(--text-secondary); font-size: 14px; line-height: 1.8;">
             <li>Append-only clinical decision trace</li>
@@ -2117,15 +2115,15 @@
           </ul>
         </div>
       </div>
-      <a href="docs/ODDC_Scenarios_v1.0.pdf" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; background: rgba(214,92,92,0.15); border: 1px solid rgba(214,92,92,0.4); border-radius: 10px; color: rgba(214,92,92,0.95); font-family: var(--mono); font-size: 12px; text-decoration: none; transition: all 0.2s;">
+      <a href="docs/ODDC_Scenarios_v1.0.pdf" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; background: rgba(214,92,92,0.15); border: 1px solid rgba(214,92,92,0.4);  color: rgba(214,92,92,0.95); font-family: var(--mono); font-size: 12px; text-decoration: none; transition: all 0.2s;">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         Download Full Scenarios PDF
       </a>
     </section>
 
-    <section id="finance" class="reveal" style="margin-bottom: 60px; padding: 40px; background: linear-gradient(135deg, rgba(214,160,92,0.08) 0%, rgba(214,160,92,0.02) 100%); border: 1px solid rgba(214,160,92,0.2); border-radius: 24px;">
+    <section id="finance" class="reveal" style="margin-bottom: 60px; padding: 40px; background: linear-gradient(135deg, rgba(214,160,92,0.08) 0%, rgba(214,160,92,0.02) 100%); border: 1px solid rgba(214,160,92,0.2); ">
       <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 24px;">
-        <div style="width: 56px; height: 56px; background: rgba(214,160,92,0.15); border-radius: 14px; display: flex; align-items: center; justify-content: center;">
+        <div style="width: 56px; height: 56px; background: rgba(214,160,92,0.15);  display: flex; align-items: center; justify-content: center;">
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(214,160,92,0.9)" stroke-width="1.5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
         </div>
         <h2 style="font-family: Georgia, 'Source Serif 4', serif; font-size: 28px; font-weight: 300; color: var(--text-primary); margin: 0;">Financial Services & Trading</h2>
@@ -2134,7 +2132,7 @@
         High-frequency automated decision systems can create cascading failures if limits are bypassable. ODDC scenarios illustrate quantifiable risk envelopes enforced independently of trading algorithms.
       </p>
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 24px;">
-        <div style="background: rgba(0,0,0,0.2); border-radius: 12px; padding: 20px;">
+        <div style="background: rgba(0,0,0,0.2);  padding: 20px;">
           <h4 style="font-family: var(--mono); font-size: 11px; letter-spacing: 2px; color: rgba(214,160,92,0.9); margin: 0 0 12px;">INTERLOCK BEHAVIOR</h4>
           <ul style="margin: 0; padding-left: 20px; color: var(--text-secondary); font-size: 14px; line-height: 1.8;">
             <li>Volatility-triggered circuit breaker</li>
@@ -2142,7 +2140,7 @@
             <li>Mandatory review on drawdown events</li>
           </ul>
         </div>
-        <div style="background: rgba(0,0,0,0.2); border-radius: 12px; padding: 20px;">
+        <div style="background: rgba(0,0,0,0.2);  padding: 20px;">
           <h4 style="font-family: var(--mono); font-size: 11px; letter-spacing: 2px; color: rgba(214,160,92,0.9); margin: 0 0 12px;">EVIDENCE OUTPUTS</h4>
           <ul style="margin: 0; padding-left: 20px; color: var(--text-secondary); font-size: 14px; line-height: 1.8;">
             <li>Cryptographic attestation of order gating</li>
@@ -2150,15 +2148,15 @@
           </ul>
         </div>
       </div>
-      <a href="docs/ODDC_Scenarios_v1.0.pdf" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; background: rgba(214,160,92,0.15); border: 1px solid rgba(214,160,92,0.4); border-radius: 10px; color: rgba(214,160,92,0.95); font-family: var(--mono); font-size: 12px; text-decoration: none; transition: all 0.2s;">
+      <a href="docs/ODDC_Scenarios_v1.0.pdf" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; background: rgba(214,160,92,0.15); border: 1px solid rgba(214,160,92,0.4);  color: rgba(214,160,92,0.95); font-family: var(--mono); font-size: 12px; text-decoration: none; transition: all 0.2s;">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         Download Full Scenarios PDF
       </a>
     </section>
 
-    <section id="manufacturing" class="reveal" style="margin-bottom: 60px; padding: 40px; background: linear-gradient(135deg, rgba(92,214,133,0.08) 0%, rgba(92,214,133,0.02) 100%); border: 1px solid rgba(92,214,133,0.2); border-radius: 24px;">
+    <section id="manufacturing" class="reveal" style="margin-bottom: 60px; padding: 40px; background: linear-gradient(135deg, rgba(92,214,133,0.08) 0%, rgba(92,214,133,0.02) 100%); border: 1px solid rgba(92,214,133,0.2); ">
       <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 24px;">
-        <div style="width: 56px; height: 56px; background: rgba(92,214,133,0.15); border-radius: 14px; display: flex; align-items: center; justify-content: center;">
+        <div style="width: 56px; height: 56px; background: rgba(92,214,133,0.15);  display: flex; align-items: center; justify-content: center;">
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(92,214,133,0.9)" stroke-width="1.5"><path d="M2 20h20"/><path d="M5 20V8l7-5 7 5v12"/><path d="M9 20v-6h6v6"/></svg>
         </div>
         <h2 style="font-family: Georgia, 'Source Serif 4', serif; font-size: 28px; font-weight: 300; color: var(--text-primary); margin: 0;">Industrial Manufacturing</h2>
@@ -2167,7 +2165,7 @@
         Autonomous robotics and AI-driven production systems operate alongside humans in hazardous environments. ODDC scenarios illustrate safety envelopes with ENVELO-compliant isolated enforcement.
       </p>
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 24px;">
-        <div style="background: rgba(0,0,0,0.2); border-radius: 12px; padding: 20px;">
+        <div style="background: rgba(0,0,0,0.2);  padding: 20px;">
           <h4 style="font-family: var(--mono); font-size: 11px; letter-spacing: 2px; color: rgba(92,214,133,0.9); margin: 0 0 12px;">INTERLOCK BEHAVIOR</h4>
           <ul style="margin: 0; padding-left: 20px; color: var(--text-secondary); font-size: 14px; line-height: 1.8;">
             <li>Proximity-triggered force limiters</li>
@@ -2175,7 +2173,7 @@
             <li>Independent enforcement layer</li>
           </ul>
         </div>
-        <div style="background: rgba(0,0,0,0.2); border-radius: 12px; padding: 20px;">
+        <div style="background: rgba(0,0,0,0.2);  padding: 20px;">
           <h4 style="font-family: var(--mono); font-size: 11px; letter-spacing: 2px; color: rgba(92,214,133,0.9); margin: 0 0 12px;">EVIDENCE OUTPUTS</h4>
           <ul style="margin: 0; padding-left: 20px; color: var(--text-secondary); font-size: 14px; line-height: 1.8;">
             <li>Audit-ready boundary adherence record</li>
@@ -2183,15 +2181,15 @@
           </ul>
         </div>
       </div>
-      <a href="docs/ODDC_Scenarios_v1.0.pdf" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; background: rgba(92,214,133,0.15); border: 1px solid rgba(92,214,133,0.4); border-radius: 10px; color: rgba(92,214,133,0.95); font-family: var(--mono); font-size: 12px; text-decoration: none; transition: all 0.2s;">
+      <a href="docs/ODDC_Scenarios_v1.0.pdf" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; background: rgba(92,214,133,0.15); border: 1px solid rgba(92,214,133,0.4);  color: rgba(92,214,133,0.95); font-family: var(--mono); font-size: 12px; text-decoration: none; transition: all 0.2s;">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         Download Full Scenarios PDF
       </a>
     </section>
 
-    <section id="aerospace" class="reveal" style="margin-bottom: 60px; padding: 40px; background: linear-gradient(135deg, rgba(157,140,207,0.08) 0%, rgba(157,140,207,0.02) 100%); border: 1px solid rgba(157,140,207,0.2); border-radius: 24px;">
+    <section id="aerospace" class="reveal" style="margin-bottom: 60px; padding: 40px; background: linear-gradient(135deg, rgba(157,140,207,0.08) 0%, rgba(157,140,207,0.02) 100%); border: 1px solid rgba(157,140,207,0.2); ">
       <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 24px;">
-        <div style="width: 56px; height: 56px; background: rgba(157,140,207,0.15); border-radius: 14px; display: flex; align-items: center; justify-content: center;">
+        <div style="width: 56px; height: 56px; background: rgba(157,140,207,0.15);  display: flex; align-items: center; justify-content: center;">
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(157,140,207,0.9)" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
         </div>
         <h2 style="font-family: Georgia, 'Source Serif 4', serif; font-size: 28px; font-weight: 300; color: var(--text-primary); margin: 0;">Aerospace & Defense</h2>
@@ -2200,7 +2198,7 @@
         Autonomous aircraft and mission systems require strict operational certainty. ODDC scenarios illustrate mission envelopes with ENVELO-compliant chain-of-custody enforcement.
       </p>
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 24px;">
-        <div style="background: rgba(0,0,0,0.2); border-radius: 12px; padding: 20px;">
+        <div style="background: rgba(0,0,0,0.2);  padding: 20px;">
           <h4 style="font-family: var(--mono); font-size: 11px; letter-spacing: 2px; color: rgba(157,140,207,0.9); margin: 0 0 12px;">INTERLOCK BEHAVIOR</h4>
           <ul style="margin: 0; padding-left: 20px; color: var(--text-secondary); font-size: 14px; line-height: 1.8;">
             <li>Geofence-triggered return-to-base</li>
@@ -2208,7 +2206,7 @@
             <li>Multi-party cryptographic payload release</li>
           </ul>
         </div>
-        <div style="background: rgba(0,0,0,0.2); border-radius: 12px; padding: 20px;">
+        <div style="background: rgba(0,0,0,0.2);  padding: 20px;">
           <h4 style="font-family: var(--mono); font-size: 11px; letter-spacing: 2px; color: rgba(157,140,207,0.9); margin: 0 0 12px;">EVIDENCE OUTPUTS</h4>
           <ul style="margin: 0; padding-left: 20px; color: var(--text-secondary); font-size: 14px; line-height: 1.8;">
             <li>Cryptographically signed compliance logs</li>
@@ -2216,16 +2214,16 @@
           </ul>
         </div>
       </div>
-      <a href="docs/ODDC_Scenarios_v1.0.pdf" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; background: rgba(157,140,207,0.15); border: 1px solid rgba(157,140,207,0.4); border-radius: 10px; color: rgba(157,140,207,0.95); font-family: var(--mono); font-size: 12px; text-decoration: none; transition: all 0.2s;">
+      <a href="docs/ODDC_Scenarios_v1.0.pdf" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; background: rgba(157,140,207,0.15); border: 1px solid rgba(157,140,207,0.4);  color: rgba(157,140,207,0.95); font-family: var(--mono); font-size: 12px; text-decoration: none; transition: all 0.2s;">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         Download Full Scenarios PDF
       </a>
     </section>
 
     
-    <section id="energy" class="reveal" style="margin-bottom: 60px; padding: 40px; background: linear-gradient(135deg, rgba(214,160,92,0.08) 0%, rgba(214,160,92,0.02) 100%); border: 1px solid rgba(214,160,92,0.2); border-radius: 24px;">
+    <section id="energy" class="reveal" style="margin-bottom: 60px; padding: 40px; background: linear-gradient(135deg, rgba(214,160,92,0.08) 0%, rgba(214,160,92,0.02) 100%); border: 1px solid rgba(214,160,92,0.2); ">
       <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 24px;">
-        <div style="width: 56px; height: 56px; background: rgba(214,160,92,0.15); border-radius: 14px; display: flex; align-items: center; justify-content: center;">
+        <div style="width: 56px; height: 56px; background: rgba(214,160,92,0.15);  display: flex; align-items: center; justify-content: center;">
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(214,160,92,0.9)" stroke-width="1.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
         </div>
         <h2 style="font-family: Georgia, 'Source Serif 4', serif; font-size: 28px; font-weight: 300; color: var(--text-primary); margin: 0;">Energy &amp; Utilities</h2>
@@ -2234,7 +2232,7 @@
         Autonomous systems manage grid balancing, renewable integration, demand response, and distributed energy resource orchestration. Cascading failures can affect millions and cause billions in economic damage.
       </p>
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 24px;">
-        <div style="background: rgba(0,0,0,0.2); border-radius: 12px; padding: 20px;">
+        <div style="background: rgba(0,0,0,0.2);  padding: 20px;">
           <h4 style="font-family: var(--mono); font-size: 11px; letter-spacing: 2px; color: rgba(214,160,92,0.9); margin: 0 0 12px;">INTERLOCK BEHAVIOR</h4>
           <ul style="margin: 0; padding-left: 20px; color: var(--text-secondary); font-size: 14px; line-height: 1.8;">
             <li>Frequency response bounded by independent relay protection</li>
@@ -2242,7 +2240,7 @@
             <li>Protected categories (hospitals, emergency) hardcoded</li>
           </ul>
         </div>
-        <div style="background: rgba(0,0,0,0.2); border-radius: 12px; padding: 20px;">
+        <div style="background: rgba(0,0,0,0.2);  padding: 20px;">
           <h4 style="font-family: var(--mono); font-size: 11px; letter-spacing: 2px; color: rgba(214,160,92,0.9); margin: 0 0 12px;">EVIDENCE OUTPUTS</h4>
           <ul style="margin: 0; padding-left: 20px; color: var(--text-secondary); font-size: 14px; line-height: 1.8;">
             <li>NERC-compliant timestamped decision logs</li>
@@ -2250,15 +2248,15 @@
           </ul>
         </div>
       </div>
-      <a href="docs/ODDC_Scenarios_v1.0.pdf" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; background: rgba(214,160,92,0.15); border: 1px solid rgba(214,160,92,0.4); border-radius: 10px; color: rgba(214,160,92,0.95); font-family: var(--mono); font-size: 12px; text-decoration: none; transition: all 0.2s;">
+      <a href="docs/ODDC_Scenarios_v1.0.pdf" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; background: rgba(214,160,92,0.15); border: 1px solid rgba(214,160,92,0.4);  color: rgba(214,160,92,0.95); font-family: var(--mono); font-size: 12px; text-decoration: none; transition: all 0.2s;">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         Download Full Scenarios PDF
       </a>
     </section>
 
-    <section id="defense" class="reveal" style="margin-bottom: 60px; padding: 40px; background: linear-gradient(135deg, rgba(214,92,92,0.08) 0%, rgba(214,92,92,0.02) 100%); border: 1px solid rgba(214,92,92,0.2); border-radius: 24px;">
+    <section id="defense" class="reveal" style="margin-bottom: 60px; padding: 40px; background: linear-gradient(135deg, rgba(214,92,92,0.08) 0%, rgba(214,92,92,0.02) 100%); border: 1px solid rgba(214,92,92,0.2); ">
       <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 24px;">
-        <div style="width: 56px; height: 56px; background: rgba(214,92,92,0.15); border-radius: 14px; display: flex; align-items: center; justify-content: center;">
+        <div style="width: 56px; height: 56px; background: rgba(214,92,92,0.15);  display: flex; align-items: center; justify-content: center;">
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(214,92,92,0.9)" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
         </div>
         <h2 style="font-family: Georgia, 'Source Serif 4', serif; font-size: 28px; font-weight: 300; color: var(--text-primary); margin: 0;">Defense &amp; National Security</h2>
@@ -2267,7 +2265,7 @@
         Autonomous defense systems include surveillance platforms, logistics automation, cyber defense, and sensor networks. These operate under strict rules of engagement and international humanitarian law.
       </p>
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 24px;">
-        <div style="background: rgba(0,0,0,0.2); border-radius: 12px; padding: 20px;">
+        <div style="background: rgba(0,0,0,0.2);  padding: 20px;">
           <h4 style="font-family: var(--mono); font-size: 11px; letter-spacing: 2px; color: rgba(214,92,92,0.9); margin: 0 0 12px;">INTERLOCK BEHAVIOR</h4>
           <ul style="margin: 0; padding-left: 20px; color: var(--text-secondary); font-size: 14px; line-height: 1.8;">
             <li>Independent ROE authorization module</li>
@@ -2275,7 +2273,7 @@
             <li>Hardware-level classification with data diodes</li>
           </ul>
         </div>
-        <div style="background: rgba(0,0,0,0.2); border-radius: 12px; padding: 20px;">
+        <div style="background: rgba(0,0,0,0.2);  padding: 20px;">
           <h4 style="font-family: var(--mono); font-size: 11px; letter-spacing: 2px; color: rgba(214,92,92,0.9); margin: 0 0 12px;">EVIDENCE OUTPUTS</h4>
           <ul style="margin: 0; padding-left: 20px; color: var(--text-secondary); font-size: 14px; line-height: 1.8;">
             <li>Isolated sensor/planning stack audit trails</li>
@@ -2283,15 +2281,15 @@
           </ul>
         </div>
       </div>
-      <a href="docs/ODDC_Scenarios_v1.0.pdf" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; background: rgba(214,92,92,0.15); border: 1px solid rgba(214,92,92,0.4); border-radius: 10px; color: rgba(214,92,92,0.95); font-family: var(--mono); font-size: 12px; text-decoration: none; transition: all 0.2s;">
+      <a href="docs/ODDC_Scenarios_v1.0.pdf" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; background: rgba(214,92,92,0.15); border: 1px solid rgba(214,92,92,0.4);  color: rgba(214,92,92,0.95); font-family: var(--mono); font-size: 12px; text-decoration: none; transition: all 0.2s;">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         Download Full Scenarios PDF
       </a>
     </section>
 
-    <section id="logistics" class="reveal" style="margin-bottom: 60px; padding: 40px; background: linear-gradient(135deg, rgba(92,214,133,0.08) 0%, rgba(92,214,133,0.02) 100%); border: 1px solid rgba(92,214,133,0.2); border-radius: 24px;">
+    <section id="logistics" class="reveal" style="margin-bottom: 60px; padding: 40px; background: linear-gradient(135deg, rgba(92,214,133,0.08) 0%, rgba(92,214,133,0.02) 100%); border: 1px solid rgba(92,214,133,0.2); ">
       <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 24px;">
-        <div style="width: 56px; height: 56px; background: rgba(92,214,133,0.15); border-radius: 14px; display: flex; align-items: center; justify-content: center;">
+        <div style="width: 56px; height: 56px; background: rgba(92,214,133,0.15);  display: flex; align-items: center; justify-content: center;">
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(92,214,133,0.9)" stroke-width="1.5"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
         </div>
         <h2 style="font-family: Georgia, 'Source Serif 4', serif; font-size: 28px; font-weight: 300; color: var(--text-primary); margin: 0;">Logistics &amp; Supply Chain</h2>
@@ -2300,7 +2298,7 @@
         Autonomous logistics systems manage warehouse robotics, route optimization, inventory allocation, and last-mile delivery. Physical automation combined with algorithmic decisions creates compound risk surfaces.
       </p>
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 24px;">
-        <div style="background: rgba(0,0,0,0.2); border-radius: 12px; padding: 20px;">
+        <div style="background: rgba(0,0,0,0.2);  padding: 20px;">
           <h4 style="font-family: var(--mono); font-size: 11px; letter-spacing: 2px; color: rgba(92,214,133,0.9); margin: 0 0 12px;">INTERLOCK BEHAVIOR</h4>
           <ul style="margin: 0; padding-left: 20px; color: var(--text-secondary); font-size: 14px; line-height: 1.8;">
             <li>Safety-rated speed monitor (SRS per ISO 10218)</li>
@@ -2308,7 +2306,7 @@
             <li>Procurement system hard spending limits</li>
           </ul>
         </div>
-        <div style="background: rgba(0,0,0,0.2); border-radius: 12px; padding: 20px;">
+        <div style="background: rgba(0,0,0,0.2);  padding: 20px;">
           <h4 style="font-family: var(--mono); font-size: 11px; letter-spacing: 2px; color: rgba(92,214,133,0.9); margin: 0 0 12px;">EVIDENCE OUTPUTS</h4>
           <ul style="margin: 0; padding-left: 20px; color: var(--text-secondary); font-size: 14px; line-height: 1.8;">
             <li>Order-to-delivery traceability chain</li>
@@ -2316,15 +2314,15 @@
           </ul>
         </div>
       </div>
-      <a href="docs/ODDC_Scenarios_v1.0.pdf" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; background: rgba(92,214,133,0.15); border: 1px solid rgba(92,214,133,0.4); border-radius: 10px; color: rgba(92,214,133,0.95); font-family: var(--mono); font-size: 12px; text-decoration: none; transition: all 0.2s;">
+      <a href="docs/ODDC_Scenarios_v1.0.pdf" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; background: rgba(92,214,133,0.15); border: 1px solid rgba(92,214,133,0.4);  color: rgba(92,214,133,0.95); font-family: var(--mono); font-size: 12px; text-decoration: none; transition: all 0.2s;">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         Download Full Scenarios PDF
       </a>
     </section>
 
-    <section id="maritime" class="reveal" style="margin-bottom: 60px; padding: 40px; background: linear-gradient(135deg, rgba(157,140,207,0.08) 0%, rgba(157,140,207,0.02) 100%); border: 1px solid rgba(157,140,207,0.2); border-radius: 24px;">
+    <section id="maritime" class="reveal" style="margin-bottom: 60px; padding: 40px; background: linear-gradient(135deg, rgba(157,140,207,0.08) 0%, rgba(157,140,207,0.02) 100%); border: 1px solid rgba(157,140,207,0.2); ">
       <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 24px;">
-        <div style="width: 56px; height: 56px; background: rgba(157,140,207,0.15); border-radius: 14px; display: flex; align-items: center; justify-content: center;">
+        <div style="width: 56px; height: 56px; background: rgba(157,140,207,0.15);  display: flex; align-items: center; justify-content: center;">
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(157,140,207,0.9)" stroke-width="1.5"><path d="M2 20l.8-2.7A1.5 1.5 0 014.2 16h15.6a1.5 1.5 0 011.4 1.3L22 20"/><path d="M12 16V4"/><path d="M4 12l8-4 8 4"/><path d="M2 20c1 1 3 2 5 2s4-1 5-2c1 1 3 2 5 2s4-1 5-2"/></svg>
         </div>
         <h2 style="font-family: Georgia, 'Source Serif 4', serif; font-size: 28px; font-weight: 300; color: var(--text-primary); margin: 0;">Maritime &amp; Port Operations</h2>
@@ -2333,7 +2331,7 @@
         Autonomous maritime systems include vessel navigation, port crane operations, and container yard management operating under IMO conventions, flag state requirements, and port authority rules.
       </p>
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 24px;">
-        <div style="background: rgba(0,0,0,0.2); border-radius: 12px; padding: 20px;">
+        <div style="background: rgba(0,0,0,0.2);  padding: 20px;">
           <h4 style="font-family: var(--mono); font-size: 11px; letter-spacing: 2px; color: rgba(157,140,207,0.9); margin: 0 0 12px;">INTERLOCK BEHAVIOR</h4>
           <ul style="margin: 0; padding-left: 20px; color: var(--text-secondary); font-size: 14px; line-height: 1.8;">
             <li>Independent ECDIS navigation boundary enforcement</li>
@@ -2341,7 +2339,7 @@
             <li>AIS-based COLREG collision avoidance</li>
           </ul>
         </div>
-        <div style="background: rgba(0,0,0,0.2); border-radius: 12px; padding: 20px;">
+        <div style="background: rgba(0,0,0,0.2);  padding: 20px;">
           <h4 style="font-family: var(--mono); font-size: 11px; letter-spacing: 2px; color: rgba(157,140,207,0.9); margin: 0 0 12px;">EVIDENCE OUTPUTS</h4>
           <ul style="margin: 0; padding-left: 20px; color: var(--text-secondary); font-size: 14px; line-height: 1.8;">
             <li>Verified chart-referenced navigation logs</li>
@@ -2349,17 +2347,17 @@
           </ul>
         </div>
       </div>
-      <a href="docs/ODDC_Scenarios_v1.0.pdf" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; background: rgba(157,140,207,0.15); border: 1px solid rgba(157,140,207,0.4); border-radius: 10px; color: rgba(157,140,207,0.95); font-family: var(--mono); font-size: 12px; text-decoration: none; transition: all 0.2s;">
+      <a href="docs/ODDC_Scenarios_v1.0.pdf" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; background: rgba(157,140,207,0.15); border: 1px solid rgba(157,140,207,0.4);  color: rgba(157,140,207,0.95); font-family: var(--mono); font-size: 12px; text-decoration: none; transition: all 0.2s;">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         Download Full Scenarios PDF
       </a>
     </section>
 
     <!-- Bottom CTA -->
-    <div class="reveal" style="text-align: center; padding: 40px; background: linear-gradient(135deg, rgba(91,75,138,0.15) 0%, rgba(91,75,138,0.05) 100%); border: 1px solid rgba(157,140,207,0.25); border-radius: 24px;">
+    <div class="reveal" style="text-align: center; padding: 40px; background: linear-gradient(135deg, rgba(91,75,138,0.15) 0%, rgba(91,75,138,0.05) 100%); border: 1px solid rgba(157,140,207,0.25); ">
       <h3 style="font-family: Georgia, 'Source Serif 4', serif; font-size: 24px; font-weight: 300; color: var(--text-primary); margin: 0 0 12px;">Ready for conformance?</h3>
       <p style="font-size: 15px; color: var(--text-secondary); margin: 0 0 24px;">Start your ODDC journey today.</p>
-      <a href="https://app.sentinelauthority.org" style="display: inline-flex; align-items: center; gap: 10px; padding: 16px 28px; background: linear-gradient(135deg, rgba(157,140,207,0.9) 0%, rgba(91,75,138,0.9) 100%); border-radius: 12px; color: #fff; font-family: var(--mono); font-size: 13px; letter-spacing: 1px; text-decoration: none; transition: all 0.2s;">
+      <a href="https://app.sentinelauthority.org" style="display: inline-flex; align-items: center; gap: 10px; padding: 16px 28px; background: rgba(91,75,138,0.6); border: 1px solid rgba(157,140,207,0.3);  color: #fff; font-family: var(--mono); font-size: 13px; letter-spacing: 1px; text-decoration: none; transition: all 0.2s;">
         Begin Assessment
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       </a>
