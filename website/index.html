@@ -2896,25 +2896,14 @@
     var enveloR = radius;
     heroOddRadius = radius * 0.76;
 
-    // Enforcement margin fill
-    var mg = ctx.createRadialGradient(cx,cy,heroOddRadius, cx,cy,enveloR);
-    mg.addColorStop(0, rgb(PURPLE,0));
-    mg.addColorStop(0.5, rgb(PURPLE,0.04));
-    mg.addColorStop(1, rgb(PURPLE,0));
-    ctx.fillStyle = mg;
-    ctx.beginPath(); ctx.arc(cx,cy,enveloR,0,Math.PI*2); ctx.fill();
+    // Enforcement margin fill removed — transparent to match page bg
 
     // ENVELO outer ring (purple, solid)
     ctx.beginPath(); ctx.arc(cx,cy,enveloR,0,Math.PI*2);
     ctx.strokeStyle = rgb(PURPLE,0.2);
     ctx.lineWidth = 1.5; ctx.stroke();
 
-    // Outer glow
-    var eg = ctx.createRadialGradient(cx,cy,enveloR-4, cx,cy,enveloR+12);
-    eg.addColorStop(0, rgb(PURPLE,0.04));
-    eg.addColorStop(1, rgb(PURPLE,0));
-    ctx.fillStyle = eg;
-    ctx.beginPath(); ctx.arc(cx,cy,enveloR+12,0,Math.PI*2); ctx.fill();
+    // Outer glow removed — transparent to match page bg
 
     // ODD inner ring (green, dashed, rotating)
     ctx.save(); ctx.translate(cx,cy); ctx.rotate(now*0.0001);
@@ -4517,25 +4506,14 @@
           oddRadius = radius * 0.76;
           var enveloR = radius;
 
-          // — ENFORCEMENT MARGIN fill (between ODD and ENVELO) —
-          var mg = ctx.createRadialGradient(cx,cy,oddRadius, cx,cy,enveloR);
-          mg.addColorStop(0, rgb(PURPLE,0));
-          mg.addColorStop(0.5, rgb(PURPLE,0.04));
-          mg.addColorStop(1, rgb(PURPLE,0));
-          ctx.fillStyle = mg;
-          ctx.beginPath(); ctx.arc(cx,cy,enveloR,0,Math.PI*2); ctx.fill();
+          // Enforcement margin fill removed — transparent to match page bg
 
           // — ENVELO outer ring (purple, solid) —
           ctx.beginPath(); ctx.arc(cx,cy,enveloR,0,Math.PI*2);
           ctx.strokeStyle = rgb(PURPLE,0.2);
           ctx.lineWidth = 1.5; ctx.stroke();
 
-          // Outer glow
-          var eg = ctx.createRadialGradient(cx,cy,enveloR-4, cx,cy,enveloR+12);
-          eg.addColorStop(0, rgb(PURPLE,0.04));
-          eg.addColorStop(1, rgb(PURPLE,0));
-          ctx.fillStyle = eg;
-          ctx.beginPath(); ctx.arc(cx,cy,enveloR+12,0,Math.PI*2); ctx.fill();
+          // Outer glow removed — transparent to match page bg
 
           // — ODD inner ring (green, dashed) —
           ctx.save(); ctx.translate(cx,cy); ctx.rotate(now*0.0001);
