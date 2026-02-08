@@ -449,7 +449,7 @@
        ============================================ */
     .hero{
       position: relative;
-      padding: 0;
+      padding: 0 0 200px;
       margin: 0;
       margin-top: var(--nav-height);
       overflow: visible;
@@ -2614,7 +2614,7 @@
       <!-- Full-viewport canvas -->
       <div style="position:relative;display:flex;justify-content:center;margin:0 auto;max-width:880px;padding-top:0;"><div style="width:100%;"><canvas id="hero-canvas" style="width:100%;display:block;opacity:0;transition:opacity 0.35s ease;"></canvas></div>
       <!-- Hero Content overlaid on canvas -->
-      <div id="hero-text" class="hero-content-bottom" style="position:absolute;bottom:0;left:0;right:0;z-index:10;text-align:center;padding:0 16px 16px;display:flex;flex-direction:column;align-items:center;">
+      <div id="hero-text" class="hero-content-bottom" style="position:absolute;bottom:-192px;left:0;right:0;z-index:10;text-align:center;padding:0 16px 16px;display:flex;flex-direction:column;align-items:center;">
         
         <h1 style="font-family: var(--serif); font-size: clamp(28px, 5vw, 50px); font-weight: 200; line-height: 1.1; margin-bottom: 4px; letter-spacing: -0.02em; color: #fff; max-width: 700px;">
           Operational Design Domain<br><span class="accent" style="color: #c4b8e8; font-style: italic;">Conformance</span>
@@ -2703,7 +2703,7 @@
     if (!radiusLocked || Math.abs(W - (c._lastW||0)) > 20 || Math.abs(H - (c._lastH||0)) > 20) {
       // Use fixed proportion of viewport — don't depend on text position
       cx = W * 0.5;
-      cy = H * 0.38;
+      cy = H * 0.48;
       radius = Math.min(W, H) * 0.34;
       lockedCx = cx; lockedCy = cy; lockedRadius = radius;
       radiusLocked = true;
