@@ -3067,11 +3067,13 @@
         for (var w = 0; w < 60; w++) updateAgents(16);
         enveloEvents = [];
         boundaryPulses = [];
+        for (var i=0; i<agents.length; i++) { agents[i].tier=0; agents[i].haltTimer=0; agents[i].mrcTimer=0; }
       } else {
         initAgents();
         for (var w = 0; w < 300; w++) updateAgents(16);
         enveloEvents = [];
         boundaryPulses = [];
+        for (var i=0; i<agents.length; i++) { agents[i].tier=0; agents[i].haltTimer=0; agents[i].mrcTimer=0; }
       }
     }, 150);
   });
@@ -3083,9 +3085,14 @@
       initAgents();
       // Warm up: 500 frames = ~8s simulated — agents fully settled
       for (var w=0; w<500; w++) updateAgents(16);
-      // Clear any boundary events from warm-up so first frame has no flashes
+      // Clear all warm-up visual state so first frame is clean
       enveloEvents = [];
       boundaryPulses = [];
+      for (var i=0; i<agents.length; i++) {
+        agents[i].tier = 0;
+        agents[i].haltTimer = 0;
+        agents[i].mrcTimer = 0;
+      }
       requestAnimationFrame(animate);
     }, 200);
   }
