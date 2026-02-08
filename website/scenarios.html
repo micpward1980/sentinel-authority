@@ -1871,6 +1871,20 @@
       }
     }
 
+  
+    /* NUCLEAR HUD OVERRIDE */
+    .section *:not(.hud-dot):not(.hud-dot-green):not(.hud-dot-amber):not(.hud-dot-red):not([style*="border-radius: 50%"]):not(canvas) {
+      border-radius: 0 !important;
+    }
+    .section *:not(canvas):not([id*="dot"]) {
+      box-shadow: none !important;
+    }
+    footer, footer * { border-radius: 0 !important; }
+    nav, nav * { border-radius: 0 !important; }
+    .nav-drawer { border-radius: 0 !important; }
+    .nav-badge { border-radius: 0 !important; }
+    .nav-toggle { border-radius: 0 !important; }
+
   </style>
 </head>
 <body>
