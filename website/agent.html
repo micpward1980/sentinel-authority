@@ -9,7 +9,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Source+Serif+4:wght@200;400&display=swap" rel="stylesheet" />
   <style>
-    /* ═══ EXACT index.html variables ═══ */
     :root{
       color-scheme:dark;
       --purple-primary:#5B4B8A;
@@ -44,12 +43,11 @@
     a{color:inherit;text-decoration:none;}
     a:hover{text-decoration:underline;text-underline-offset:4px;}
     ::selection{background:var(--purple-primary);color:#fff;}
-    a:focus-visible,button:focus-visible{outline:2px solid rgba(157,140,207,.75);outline-offset:3px;border-radius:10px;}
+    a:focus-visible,button:focus-visible{outline:2px solid rgba(157,140,207,.75);outline-offset:3px;}
 
-    /* ═══ Grid overlay ═══ */
     .grid-overlay{position:fixed;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px);background-size:var(--space-12) var(--space-12);opacity:.2;mask-image:radial-gradient(ellipse at center,rgba(0,0,0,.9) 20%,transparent 70%);-webkit-mask-image:radial-gradient(ellipse at center,rgba(0,0,0,.9) 20%,transparent 70%);}
 
-    /* ═══ Nav — exact match ═══ */
+    /* Nav — exact match */
     .site-header{position:fixed;top:0;width:100%;z-index:50;padding:0 var(--space-2);height:var(--nav-height);border-bottom:1px solid rgba(255,255,255,.06);background:rgba(42,47,61,.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);display:flex;align-items:center;}
     .nav-inner{max-width:var(--max);margin:0 auto;width:100%;display:flex;align-items:center;justify-content:space-between;gap:var(--space-2);}
     .brand{display:flex;align-items:center;gap:var(--space-1);flex-shrink:0;text-decoration:none;}.brand:hover{text-decoration:none;}
@@ -59,83 +57,66 @@
     .brand-name{font-family:var(--mono);font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.86);white-space:nowrap;}
     .back-link{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-tertiary);transition:color .2s;}.back-link:hover{color:var(--text-primary);text-decoration:none;}
 
-    /* ═══ Layout ═══ */
+    /* Layout */
     .content-wrap{position:relative;z-index:1;max-width:var(--max);margin:0 auto;padding:calc(var(--nav-height) + 48px) var(--space-2) 80px;}
 
-    /* ═══ HUD System — exact match ═══ */
-    .hud-frame{position:relative;padding:20px 16px;border:none;overflow:hidden;}
-    .hud-frame::before,.hud-frame::after,.hud-frame>i::before,.hud-frame>i::after{content:'';position:absolute;width:12px;height:12px;border-color:rgba(255,255,255,0.08);border-style:solid;pointer-events:none;animation:corner-breathe 4s ease-in-out infinite;}
-    .hud-frame::before{top:0;left:0;border-width:1px 0 0 1px;}
-    .hud-frame::after{top:0;right:0;border-width:1px 1px 0 0;}
-    .hud-frame>i::before{bottom:0;left:0;border-width:0 0 1px 1px;position:absolute;}
-    .hud-frame>i::after{bottom:0;right:0;border-width:0 1px 1px 0;position:absolute;}
-    .hud-frame>i{position:absolute;inset:0;pointer-events:none;}
-    @keyframes corner-breathe{0%,100%{border-color:rgba(255,255,255,0.06);}50%{border-color:rgba(157,140,207,0.2);}}
-    .hud-frame-green::before,.hud-frame-green::after,.hud-frame-green>i::before,.hud-frame-green>i::after{animation:corner-breathe-green 4s ease-in-out infinite !important;}
-    @keyframes corner-breathe-green{0%,100%{border-color:rgba(92,214,133,0.08);}50%{border-color:rgba(92,214,133,0.25);}}
-
-    .hud-scanline{border-bottom:1px solid rgba(255,255,255,0.04);}
-    .hud-dot{display:inline-block;width:4px;height:4px;border-radius:50%;background:rgba(157,140,207,0.5);margin-right:8px;flex-shrink:0;}
-    .hud-dot-green{background:rgba(92,214,133,0.6);animation:hud-breathe 3s ease-in-out infinite;position:relative;}
-    @keyframes hud-breathe{0%,100%{opacity:0.4;}50%{opacity:1;}}
-    .hud-row{padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.02);}.hud-row:last-child{border-bottom:none;}
-    .hud-label{font-family:var(--mono);font-size:9px;letter-spacing:2px;color:rgba(255,255,255,0.35);text-transform:uppercase;}
-    .hud-title{font-size:14px;color:rgba(255,255,255,0.92);font-weight:400;margin:2px 0;}
-    .hud-desc{font-size:12px;color:rgba(255,255,255,0.50);line-height:1.5;}
-    .hud-num{font-family:var(--mono);font-size:9px;letter-spacing:1px;color:rgba(157,140,207,0.4);margin-right:12px;}
-    .hud-link{font-family:var(--mono);font-size:11px;letter-spacing:2px;color:rgba(157,140,207,0.7);text-decoration:none !important;border-bottom:none !important;padding-bottom:2px;transition:all 0.2s;position:relative;overflow:hidden;}
-    .hud-link:hover{color:rgba(157,140,207,0.95);text-decoration:none !important;}
-    .hud-link::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(157,140,207,0.4),transparent);transform:translateX(-100%);transition:transform 0.4s ease;}
-    .hud-link:hover::after{transform:translateX(0);}
-
-    /* ═══ Section titles — exact match ═══ */
+    /* Sections — open, no boxes */
+    .section{padding:var(--space-10) 0;border-top:1px solid var(--border-glass);}
+    .section:first-child{border-top:none;padding-top:0;}
     .section-label{font-family:var(--mono);font-size:10px;letter-spacing:5px;text-transform:uppercase;color:var(--purple-bright);display:block;margin-bottom:12px;}
     .section-title{font-family:var(--serif);font-size:clamp(30px,4vw,50px);font-weight:normal;line-height:1.1;margin:0;letter-spacing:-0.01em;}
     .section-title .accent{font-style:italic;color:var(--purple-bright);}
     .section-lead{max-width:70ch;color:var(--text-secondary);font-weight:300;line-height:1.85;margin:var(--space-2) 0 0;font-size:16px;}
 
-    /* ═══ Buttons — exact match ═══ */
-    .btn{appearance:none;border:1px solid rgba(255,255,255,.10);background:transparent;color:rgba(255,255,255,.7);padding:12px 20px;border-radius:0;font-family:var(--mono);font-size:10px;letter-spacing:2.5px;text-transform:uppercase;cursor:pointer;transition:color .2s ease,border-color .2s ease;position:relative;overflow:visible;}
-    .btn:hover{border-color:rgba(157,140,207,.4);color:rgba(157,140,207,.95);background:transparent;text-decoration:none;}
-    .btn::before,.btn::after{content:'';position:absolute;width:6px;height:6px;border-style:solid;border-color:rgba(157,140,207,0.25);pointer-events:none;transition:border-color 0.3s ease;}
-    .btn::before{top:-1px;left:-1px;border-width:1px 0 0 1px;}
-    .btn::after{bottom:-1px;right:-1px;border-width:0 1px 1px 0;}
-    .btn:hover::before,.btn:hover::after{border-color:rgba(157,140,207,0.6);}
+    /* HUD rows — the main content pattern */
+    .hud-row{padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.02);transition:background 0.3s ease;}
+    .hud-row:last-child{border-bottom:none;}
+    .hud-row:hover{background:rgba(157,140,207,0.02);}
+    .hud-label{font-family:var(--mono);font-size:9px;letter-spacing:2px;color:rgba(255,255,255,0.35);text-transform:uppercase;}
+    .hud-title{font-size:14px;color:rgba(255,255,255,0.92);font-weight:400;margin:2px 0;}
+    .hud-desc{font-size:12px;color:rgba(255,255,255,0.50);line-height:1.5;}
+    .hud-num{font-family:var(--mono);font-size:9px;letter-spacing:1px;color:rgba(157,140,207,0.4);margin-right:12px;}
+    .hud-dot{display:inline-block;width:4px;height:4px;border-radius:50%;background:rgba(157,140,207,0.5);margin-right:8px;flex-shrink:0;}
+    .hud-dot-green{background:rgba(92,214,133,0.6);animation:hud-breathe 3s ease-in-out infinite;}
+    @keyframes hud-breathe{0%,100%{opacity:0.4;}50%{opacity:1;}}
+    .hud-link{font-family:var(--mono);font-size:11px;letter-spacing:2px;color:rgba(157,140,207,0.7);text-decoration:none !important;padding-bottom:2px;transition:all 0.2s;position:relative;overflow:hidden;}
+    .hud-link:hover{color:rgba(157,140,207,0.95);text-decoration:none !important;}
+    .hud-link::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(157,140,207,0.4),transparent);transform:translateX(-100%);transition:transform 0.4s ease;}
+    .hud-link:hover::after{transform:translateX(0);}
 
-    /* ═══ Code block ═══ */
-    .code-block{background:rgba(0,0,0,0.3);border:1px solid var(--border-glass);padding:14px 18px;margin:12px 0;font-family:var(--mono);font-size:13px;color:var(--accent-green);overflow-x:auto;position:relative;line-height:1.6;border-radius:0;}
-    .copy-btn{appearance:none;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.04);color:rgba(255,255,255,.65);padding:4px 8px;border-radius:0;font-family:var(--mono);font-size:9px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all .2s ease;position:absolute;top:8px;right:8px;}
-    .copy-btn:hover{border-color:rgba(157,140,207,.55);background:rgba(91,75,138,.18);color:rgba(255,255,255,.90);}
+    /* Code block */
+    .code-block{background:none;border:none;border-left:1px solid rgba(92,214,133,0.15);padding:8px 0 8px 14px;margin:8px 0;font-family:var(--mono);font-size:13px;color:var(--accent-green);overflow-x:auto;position:relative;line-height:1.6;}
+    .copy-btn{appearance:none;border:none;background:none;color:rgba(255,255,255,.35);padding:4px 0;font-family:var(--mono);font-size:9px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all .2s ease;position:absolute;top:4px;right:0;}
+    .copy-btn:hover{color:rgba(157,140,207,.85);}
 
-    /* ═══ CLI table ═══ */
+    /* CLI table — flat rows */
     .cli-table{width:100%;border-collapse:collapse;margin:12px 0;}
-    .cli-table td{padding:8px 12px;border-bottom:1px solid rgba(255,255,255,0.02);font-size:13px;transition:background 0.3s ease;}
+    .cli-table td{padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.02);font-size:13px;transition:background 0.3s ease;}
     .cli-table tr:last-child td{border-bottom:none;}
-    .cli-table td:first-child{font-family:var(--mono);color:var(--accent-green);font-size:12px;white-space:nowrap;}
+    .cli-table td:first-child{font-family:var(--mono);color:var(--accent-green);font-size:12px;white-space:nowrap;padding-right:20px;}
     .cli-table td:last-child{color:var(--text-secondary);}
     .cli-table tr:hover td{background:rgba(157,140,207,0.02);}
-    .cli-group{font-family:var(--mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.35);margin:20px 0 8px;padding-top:4px;}
+    .cli-group{font-family:var(--mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.35);margin:20px 0 8px;padding-top:8px;border-top:1px solid var(--border-subtle);}
+    .cli-group:first-child{border-top:none;margin-top:0;}
 
-    /* ═══ Step rows ═══ */
+    /* Step rows */
     .step-row{display:flex;align-items:flex-start;gap:16px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.02);}.step-row:last-child{border-bottom:none;}
     .step-num{font-family:var(--mono);font-size:9px;letter-spacing:1px;color:rgba(157,140,207,0.4);min-width:20px;padding-top:2px;}
     .step-content h3{font-size:14px;font-weight:400;color:rgba(255,255,255,0.92);margin:0 0 4px;}
     .step-content p{color:var(--text-secondary);font-size:13px;line-height:1.6;margin:0;}
 
-    /* ═══ Security list ═══ */
-    .sec-item{display:flex;align-items:flex-start;gap:10px;padding:8px 0;color:var(--text-secondary);font-size:13px;line-height:1.5;}
+    /* Security items — flat rows */
+    .sec-item{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.02);color:var(--text-secondary);font-size:13px;line-height:1.5;}
+    .sec-item:last-child{border-bottom:none;}
     .sec-dot{margin-top:5px;flex-shrink:0;}
 
-    /* ═══ Version badge ═══ */
-    .v-badge{font-family:var(--mono);font-size:9px;letter-spacing:1px;color:rgba(92,214,133,0.7);border:1px solid rgba(92,214,133,0.2);padding:2px 8px;border-radius:0;}
+    /* Version badge */
+    .v-badge{font-family:var(--mono);font-size:9px;letter-spacing:1px;color:rgba(92,214,133,0.5);}
 
-    /* ═══ Footer — exact match ═══ */
+    /* Footer — exact match */
     footer{border-top:1px solid var(--border-glass);padding:var(--space-6) 0 var(--space-4);margin-top:var(--space-4);color:rgba(255,255,255,.45);font-family:var(--mono);font-size:10px;letter-spacing:1px;}
     .footer-inner{max-width:var(--max);margin:0 auto;padding:0 var(--space-2);display:flex;justify-content:space-between;align-items:flex-start;gap:var(--space-2);flex-wrap:wrap;}
     .foot-links a{color:rgba(255,255,255,.48);font-size:13px;}.foot-links a:hover{color:rgba(255,255,255,.82);text-decoration:none;}
-
-    /* ═══ Nuclear override ═══ */
-    *:not(.hud-dot):not(.hud-dot-green):not(.brand-mark-inner):not(canvas){border-radius:0 !important;}
 
     @media(max-width:600px){.cli-table td:first-child{white-space:normal;}.footer-inner{flex-direction:column;gap:12px;}}
     @media(max-width:768px){.content-wrap{padding:calc(var(--nav-height) + 32px) 16px 60px;}}
@@ -155,27 +136,28 @@
   </header>
 
   <div class="content-wrap">
-    <div style="margin-bottom:var(--space-4);">
+
+    <!-- ── Hero ── -->
+    <div class="section" style="border-top:none;padding-top:0;">
       <div class="section-label">RUNTIME ENFORCEMENT</div>
       <h1 class="section-title">ENVELO <span class="accent">Agent</span></h1>
       <p class="section-lead">Enforced Non-Violable Execution-Limit Override. One command installs. One command starts. The agent does everything.</p>
     </div>
 
     <!-- ── Quick Start ── -->
-    <div class="hud-frame" style="margin-bottom:var(--space-3);"><i></i>
-      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+    <div class="section">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:var(--space-2);">
         <span class="hud-label">QUICK START</span>
         <span class="v-badge">V2.0</span>
       </div>
-      <div class="hud-title" style="margin-bottom:4px;">Install &amp; Deploy</div>
-      <p class="hud-desc" style="margin-bottom:12px;">Open a terminal on the target system and run:</p>
+      <p style="color:var(--text-secondary);font-size:14px;line-height:1.6;margin-bottom:12px;">Open a terminal on the target system and run:</p>
       <div class="code-block">curl -sSL https://get.sentinelauthority.org | bash<button class="copy-btn" onclick="navigator.clipboard.writeText('curl -sSL https://get.sentinelauthority.org | bash').then(()=>this.textContent='COPIED')">COPY</button></div>
       <p style="color:var(--text-tertiary);font-size:12px;line-height:1.6;margin-top:12px;">The installer prompts for your Certificate ID and API Key (both visible in the <a href="https://app.sentinelauthority.org" class="hud-link" style="font-size:12px;letter-spacing:0;">portal</a> under ENVELO Agent tab). Automatically downloads boundaries, scans for telemetry sources, and configures everything.</p>
     </div>
 
-    <!-- ── Three Steps ── -->
-    <div class="hud-frame" style="margin-bottom:var(--space-3);"><i></i>
-      <div class="hud-label" style="margin-bottom:12px;">AFTER INSTALL</div>
+    <!-- ── After Install ── -->
+    <div class="section">
+      <div class="hud-label" style="margin-bottom:var(--space-2);">AFTER INSTALL</div>
       <div class="step-row">
         <span class="step-num">01</span>
         <div class="step-content">
@@ -189,7 +171,7 @@
         <div class="step-content">
           <h3>Start</h3>
           <div class="code-block" style="margin:6px 0;">envelo start -d</div>
-          <p>Starts the enforcement agent as a background daemon. For auto-start: <code style="background:rgba(0,0,0,.3);padding:2px 6px;font-size:12px;font-family:var(--mono);">envelo service install</code></p>
+          <p>Starts the enforcement agent as a background daemon. For auto-start: <code style="padding:0;font-size:12px;font-family:var(--mono);">envelo service install</code></p>
         </div>
       </div>
       <div class="step-row">
@@ -202,12 +184,12 @@
     </div>
 
     <!-- ── CLI Reference ── -->
-    <div class="hud-frame hud-scanline" style="margin-bottom:var(--space-3);"><i></i>
+    <div class="section">
       <div class="hud-label" style="margin-bottom:4px;">ENVELO CLI — COMPLETE REFERENCE</div>
       <div class="hud-title" style="margin-bottom:4px;">The Agent Does Everything</div>
       <p class="hud-desc" style="margin-bottom:16px;">Every operation — monitoring, diagnostics, infrastructure, boundaries — is a single command.</p>
 
-      <div class="cli-group">Running</div>
+      <div class="cli-group" style="border-top:none;margin-top:0;">Running</div>
       <table class="cli-table"><tr><td>envelo start [-d]</td><td>Start enforcement (foreground or daemon)</td></tr><tr><td>envelo stop</td><td>Stop running agent</td></tr><tr><td>envelo restart</td><td>Stop and restart</td></tr><tr><td>envelo validate</td><td>Pre-flight configuration check</td></tr></table>
 
       <div class="cli-group">Monitoring</div>
@@ -227,8 +209,8 @@
     </div>
 
     <!-- ── Security Model ── -->
-    <div class="hud-frame hud-frame-green" style="margin-bottom:var(--space-3);"><i></i>
-      <div class="hud-label" style="margin-bottom:12px;">SECURITY MODEL</div>
+    <div class="section">
+      <div class="hud-label" style="margin-bottom:8px;">SECURITY MODEL</div>
       <div class="hud-title" style="margin-bottom:16px;">Zero Inbound. Zero Trust.</div>
       <div class="sec-item"><span class="hud-dot hud-dot-green sec-dot"></span><span>Outbound only — ENVELO opens zero inbound ports on your network</span></div>
       <div class="sec-item"><span class="hud-dot hud-dot-green sec-dot"></span><span>No remote access — Sentinel cannot access your system, network, or data</span></div>
@@ -240,7 +222,7 @@
     </div>
 
     <!-- ── Requirements ── -->
-    <div class="hud-frame" style="margin-bottom:var(--space-3);"><i></i>
+    <div class="section">
       <div class="hud-label" style="margin-bottom:12px;">SYSTEM REQUIREMENTS</div>
       <table class="cli-table">
         <tr><td style="color:var(--text-primary);">OS</td><td>Linux (Ubuntu 20.04+, RHEL 8+), macOS 12+, Windows Server 2019+</td></tr>
@@ -253,7 +235,7 @@
     </div>
 
     <!-- ── Alternative Deploy ── -->
-    <div class="hud-frame" style="margin-bottom:var(--space-3);"><i></i>
+    <div class="section">
       <div class="hud-label" style="margin-bottom:16px;">ALTERNATIVE DEPLOYMENT</div>
 
       <div class="hud-title" style="margin-bottom:6px;">Docker</div>
@@ -279,7 +261,7 @@ def move_robot(speed, position):
     </div>
 
     <!-- ── Cert Guide ── -->
-    <div class="hud-frame" style="text-align:center;padding:var(--space-4) 16px;margin-bottom:var(--space-3);"><i></i>
+    <div class="section" style="text-align:center;">
       <div class="hud-title" style="font-size:16px;margin-bottom:8px;">ODDC Certification Guide</div>
       <p class="hud-desc" style="margin-bottom:20px;max-width:500px;display:inline-block;">Complete walkthrough: application through certification. Deployment, CLI reference, three-tier enforcement, boundary specification format.</p>
       <div><a href="downloads/ODDC_Certification_Guide_v3.pdf" class="hud-link">DOWNLOAD PDF — V3.0</a></div>
