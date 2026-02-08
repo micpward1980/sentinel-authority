@@ -2941,9 +2941,14 @@
 
       var gl=ctx.createRadialGradient(a.x,a.y,0,a.x,a.y,a.size*2.8);
       gl.addColorStop(0,rgb(col,al*0.28));gl.addColorStop(1,rgb(col,0));
-      ctx.fillStyle=gl;ctx.beginPath();ctx.arc(a.x,a.y,a.size*2.8*1.2,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle=gl;ctx.beginPath();ctx.arc(a.x,a.y,a.size*4.5,0,Math.PI*2);ctx.fill();
+      var g2=ctx.createRadialGradient(a.x,a.y,0,a.x,a.y,a.size*2);
+      g2.addColorStop(0,rgb(col,al*0.7));g2.addColorStop(1,rgb(col,0));
+      ctx.fillStyle=g2;ctx.beginPath();ctx.arc(a.x,a.y,a.size*2,0,Math.PI*2);ctx.fill();
       ctx.beginPath();ctx.arc(a.x,a.y,a.size,0,Math.PI*2);
       ctx.fillStyle=rgb(col,al);ctx.fill();
+      ctx.beginPath();ctx.arc(a.x,a.y,a.size*0.25,0,Math.PI*2);
+      ctx.fillStyle='rgba(255,255,255,'+(al*0.12)+')';ctx.fill();
     }
 
     // ENVELO halt events (flash + fade)
@@ -4644,14 +4649,24 @@
               col=GREEN; al=halted?0.15:0.65; glowSize=a.size*2.8;
             }
 
-            var gl=ctx.createRadialGradient(a.x,a.y,0,a.x,a.y,glowSize);
+            var gl=ctx.createRadialGradient(a.x,a.y,0,a.x,a.y,a.size*2.8);
             gl.addColorStop(0,rgb(col,al*0.28));
             gl.addColorStop(1,rgb(col,0));
             ctx.fillStyle=gl;
-            ctx.beginPath(); ctx.arc(a.x,a.y,glowSize*1.2,0,Math.PI*2); ctx.fill();
+            ctx.beginPath(); ctx.arc(a.x,a.y,a.size*4.5,0,Math.PI*2); ctx.fill();
+
+            var g2=ctx.createRadialGradient(a.x,a.y,0,a.x,a.y,a.size*2);
+            g2.addColorStop(0,rgb(col,al*0.7));
+            g2.addColorStop(1,rgb(col,0));
+            ctx.fillStyle=g2;
+            ctx.beginPath(); ctx.arc(a.x,a.y,a.size*2,0,Math.PI*2); ctx.fill();
 
             ctx.beginPath(); ctx.arc(a.x,a.y,a.size,0,Math.PI*2);
             ctx.fillStyle=rgb(col,al);
+            ctx.fill();
+
+            ctx.beginPath(); ctx.arc(a.x,a.y,a.size*0.25,0,Math.PI*2);
+            ctx.fillStyle='rgba(255,255,255,'+(al*0.12)+')';
             ctx.fill();
           }
 
