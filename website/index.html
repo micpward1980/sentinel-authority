@@ -2892,6 +2892,30 @@
 
   var heroOddRadius;
 
+  // ── GRID ──
+  function drawGrid() {
+    var sp=W<600?36:48;ctx.strokeStyle='rgba(255,255,255,0.015)';ctx.lineWidth=0.5;
+    for(var x=sp;x<W;x+=sp){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+    for(var y=sp;y<H;y+=sp){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+    for(var x=sp*2;x<W;x+=sp*2)for(var y=sp*2;y<H;y+=sp*2){
+      ctx.beginPath();ctx.moveTo(x-2,y);ctx.lineTo(x+2,y);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(x,y-2);ctx.lineTo(x,y+2);ctx.stroke();}
+  }
+
+  // ── BRACKETS on ENVELO circle ──
+  function drawBrackets() {
+    var r=radius, x=cx, y=cy, ml=8;
+    ctx.strokeStyle=rgb(PURPLE,0.22);ctx.lineWidth=0.6;
+    ctx.beginPath();ctx.moveTo(x-r+4,y-r);ctx.lineTo(x-r+4+ml,y-r);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(x-r,y-r+4);ctx.lineTo(x-r,y-r+4+ml);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(x+r-4,y-r);ctx.lineTo(x+r-4-ml,y-r);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(x+r,y-r+4);ctx.lineTo(x+r,y-r+4+ml);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(x-r+4,y+r);ctx.lineTo(x-r+4+ml,y+r);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(x-r,y+r-4);ctx.lineTo(x-r,y+r-4-ml);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(x+r-4,y+r);ctx.lineTo(x+r-4-ml,y+r);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(x+r,y+r-4);ctx.lineTo(x+r,y+r-4-ml);ctx.stroke();
+  }
+
   function drawBoundary(now) {
     var enveloR = radius;
     heroOddRadius = radius * 0.76;
@@ -3064,7 +3088,9 @@
     updateAgents(dt);
     spawnTelemetry(now);
 
+    drawGrid();
     drawBoundary(now);
+    drawBrackets();
     drawPulses();
     drawTelemetry();
     drawAgents();
@@ -4501,6 +4527,30 @@
         var oddRadius;
         var enveloFlashes = [];
 
+        // ── GRID ──
+        function drawGrid() {
+          var sp=W<550?36:48;ctx.strokeStyle='rgba(255,255,255,0.015)';ctx.lineWidth=0.5;
+          for(var x=sp;x<W;x+=sp){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+          for(var y=sp;y<H;y+=sp){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+          for(var x=sp*2;x<W;x+=sp*2)for(var y=sp*2;y<H;y+=sp*2){
+            ctx.beginPath();ctx.moveTo(x-2,y);ctx.lineTo(x+2,y);ctx.stroke();
+            ctx.beginPath();ctx.moveTo(x,y-2);ctx.lineTo(x,y+2);ctx.stroke();}
+        }
+
+        // ── BRACKETS on ENVELO circle ──
+        function drawBrackets() {
+          var r=radius, x=cx, y=cy, ml=8;
+          ctx.strokeStyle=rgb(PURPLE,0.22);ctx.lineWidth=0.6;
+          ctx.beginPath();ctx.moveTo(x-r+4,y-r);ctx.lineTo(x-r+4+ml,y-r);ctx.stroke();
+          ctx.beginPath();ctx.moveTo(x-r,y-r+4);ctx.lineTo(x-r,y-r+4+ml);ctx.stroke();
+          ctx.beginPath();ctx.moveTo(x+r-4,y-r);ctx.lineTo(x+r-4-ml,y-r);ctx.stroke();
+          ctx.beginPath();ctx.moveTo(x+r,y-r+4);ctx.lineTo(x+r,y-r+4+ml);ctx.stroke();
+          ctx.beginPath();ctx.moveTo(x-r+4,y+r);ctx.lineTo(x-r+4+ml,y+r);ctx.stroke();
+          ctx.beginPath();ctx.moveTo(x-r,y+r-4);ctx.lineTo(x-r,y+r-4-ml);ctx.stroke();
+          ctx.beginPath();ctx.moveTo(x+r-4,y+r);ctx.lineTo(x+r-4-ml,y+r);ctx.stroke();
+          ctx.beginPath();ctx.moveTo(x+r,y+r-4);ctx.lineTo(x+r,y+r-4-ml);ctx.stroke();
+        }
+
         function drawBoundary(now) {
           var pc = PHASE_COLORS[phase];
           oddRadius = radius * 0.76;
@@ -4839,7 +4889,9 @@
           spawnBlock(now);
           spawnStress(now);
 
+          drawGrid();
           drawBoundary(now);
+          drawBrackets();
           drawPulses();
           drawTelemetry();
           drawAgents();
