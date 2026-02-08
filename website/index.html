@@ -2089,11 +2089,11 @@
     }
     
     /* Link underline animation */
-    a:not(.btn):not(.brand):not(.nav-badge) {
+    a:not(.btn):not(.brand) {
       position: relative;
     }
     
-    a:not(.btn):not(.brand):not(.nav-badge)::after {
+    a:not(.btn):not(.brand)::after {
       content: '';
       position: absolute;
       bottom: -2px;
@@ -2104,7 +2104,7 @@
       transition: width 0.3s ease;
     }
     
-    a:not(.btn):not(.brand):not(.nav-badge):hover::after {
+    a:not(.btn):not(.brand):hover::after {
       width: 100%;
     }
     
