@@ -449,7 +449,7 @@
        ============================================ */
     .hero{
       position: relative;
-      padding: 0 0 152px;
+      padding: 0;
       margin: 0;
       margin-top: var(--nav-height);
       overflow: visible;
@@ -855,7 +855,7 @@
     /* Hero responsive */
     @media (max-width: 600px){
       .hero-content-bottom {
-        bottom: 3vh !important;
+        
         padding: 0 20px !important;
       }
       .hero-content-bottom h1 {
@@ -875,7 +875,7 @@
     @media (max-height: 500px){
       /* Landscape phone */
       .hero-content-bottom {
-        bottom: 1vh !important;
+        
         padding: 0 clamp(16px, 4vw, 40px) !important;
       }
       .hero-content-bottom h1 {
@@ -1457,7 +1457,7 @@
         min-height: 100dvh;
       }
       .hero-content-bottom {
-        bottom: 4vh !important;
+        
         padding: 0 16px !important;
       }
       .hero-content-bottom h1 {
@@ -1500,7 +1500,7 @@
     /* Small phones */
     @media (max-width: 480px) {
       .hero-content-bottom {
-        bottom: 2vh !important;
+        
         padding: 0 12px !important;
       }
       .hero-content-bottom h1 {
@@ -2622,7 +2622,7 @@
       <!-- Full-viewport canvas -->
       <div style="position:relative;display:flex;justify-content:center;margin:0 auto;max-width:880px;padding-top:0;"><div style="width:100%;"><canvas id="hero-canvas" style="width:100%;display:block;opacity:0;transition:opacity 0.35s ease;"></canvas></div>
       <!-- Hero Content overlaid on canvas -->
-      <div id="hero-text" class="hero-content-bottom" style="position:absolute;bottom:-144px;left:0;right:0;z-index:10;text-align:center;padding:0 16px 16px;display:flex;flex-direction:column;align-items:center;">
+      <div id="hero-text" class="hero-content-bottom" style="position:relative;z-index:10;text-align:center;padding:8px 16px 0;display:flex;flex-direction:column;align-items:center;">
         
         <h1 style="font-family: var(--serif); font-size: clamp(28px, 5vw, 50px); font-weight: 200; line-height: 1.1; margin-bottom: 4px; letter-spacing: -0.02em; color: #fff; max-width: 700px;">
           Operational Design Domain<br><span class="accent" style="color: #c4b8e8; font-style: italic;">Conformance</span>
@@ -4232,8 +4232,6 @@
     /* ===== MOBILE HERO LAYOUT FIX (PORTRAIT) ===== */
     @media (max-width: 768px) and (orientation: portrait) {
       .hero-content-bottom {
-        bottom: auto !important;
-        top: 48% !important;
         padding: 0 20px !important;
       }
       .hero-content-bottom h1 {
@@ -4255,7 +4253,7 @@
     /* ===== MOBILE HERO LAYOUT FIX (LANDSCAPE) ===== */
     @media (max-height: 500px) and (orientation: landscape) {
       .hero-content-bottom {
-        bottom: 2vh !important;
+        
       }
     }
     </style>
