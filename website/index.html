@@ -4500,10 +4500,10 @@
 
         // ── GRID ──
         function drawGrid() {
-          var sp=W<550?36:48;ctx.strokeStyle='rgba(255,255,255,0.025)';ctx.lineWidth=0.5;
-          for(var x=sp;x<W;x+=sp){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
-          for(var y=sp;y<H;y+=sp){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
-          for(var x=sp*2;x<W;x+=sp*2)for(var y=sp*2;y<H;y+=sp*2){
+          var sp=W<550?36:48;var clipH=H*0.8;ctx.strokeStyle='rgba(255,255,255,0.025)';ctx.lineWidth=0.5;
+          for(var x=sp;x<W;x+=sp){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,clipH);ctx.stroke();}
+          for(var y=sp;y<clipH;y+=sp){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+          for(var x=sp*2;x<W;x+=sp*2)for(var y=sp*2;y<clipH;y+=sp*2){
             ctx.beginPath();ctx.moveTo(x-2,y);ctx.lineTo(x+2,y);ctx.stroke();
             ctx.beginPath();ctx.moveTo(x,y-2);ctx.lineTo(x,y+2);ctx.stroke();}
         }
