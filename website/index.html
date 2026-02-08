@@ -2839,7 +2839,7 @@
 
   // ── GRID ──
   function drawGrid() {
-    var sp=W<600?36:48;ctx.strokeStyle='rgba(255,255,255,0.015)';ctx.lineWidth=0.5;
+    var sp=W<600?36:48;ctx.strokeStyle='rgba(255,255,255,0.025)';ctx.lineWidth=0.5;
     for(var x=sp;x<W;x+=sp){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
     for(var y=sp;y<H;y+=sp){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
     for(var x=sp*2;x<W;x+=sp*2)for(var y=sp*2;y<H;y+=sp*2){
@@ -2850,7 +2850,7 @@
   // ── BRACKETS on ENVELO circle ──
   function drawBrackets() {
     var r=radius, x=cx, y=cy, ml=8;
-    ctx.strokeStyle=rgb(PURPLE,0.22);ctx.lineWidth=0.6;
+    ctx.strokeStyle=rgb(PURPLE,0.32);ctx.lineWidth=0.6;
     ctx.beginPath();ctx.moveTo(x-r+4,y-r);ctx.lineTo(x-r+4+ml,y-r);ctx.stroke();
     ctx.beginPath();ctx.moveTo(x-r,y-r+4);ctx.lineTo(x-r,y-r+4+ml);ctx.stroke();
     ctx.beginPath();ctx.moveTo(x+r-4,y-r);ctx.lineTo(x+r-4-ml,y-r);ctx.stroke();
@@ -2869,7 +2869,7 @@
 
     // ENVELO outer ring (purple, solid)
     ctx.beginPath(); ctx.arc(cx,cy,enveloR,0,Math.PI*2);
-    ctx.strokeStyle = rgb(PURPLE,0.2);
+    ctx.strokeStyle = rgb(PURPLE,0.35);
     ctx.lineWidth = 1.5; ctx.stroke();
 
     // Outer glow removed — transparent to match page bg
@@ -2878,7 +2878,7 @@
     ctx.save(); ctx.translate(cx,cy); ctx.rotate(now*0.0001);
     ctx.beginPath(); ctx.arc(0,0,heroOddRadius,0,Math.PI*2);
     ctx.setLineDash([4,8]);
-    ctx.strokeStyle = rgb(GREEN,0.18);
+    ctx.strokeStyle = rgb(GREEN,0.3);
     ctx.lineWidth = 1; ctx.stroke();
     ctx.setLineDash([]); ctx.restore();
 
@@ -2917,18 +2917,18 @@
       var col, al, glowSize;
 
       if (tier === 3) {
-        col = RED; al = 0.3 + Math.sin(Date.now()*0.008)*0.1; glowSize = a.size*4.5;
+        col = RED; al = 0.5 + Math.sin(Date.now()*0.008)*0.1; glowSize = a.size*4.5;
         // Halt X marker
-        ctx.strokeStyle = rgb(RED,0.35);
+        ctx.strokeStyle = rgb(RED,0.55);
         ctx.lineWidth = 1.5;
         ctx.beginPath(); ctx.moveTo(a.x-4,a.y-4); ctx.lineTo(a.x+4,a.y+4); ctx.stroke();
         ctx.beginPath(); ctx.moveTo(a.x+4,a.y-4); ctx.lineTo(a.x-4,a.y+4); ctx.stroke();
       } else if (tier === 2) {
-        col = RED; al = 0.55; glowSize = a.size*4;
+        col = RED; al = 0.8; glowSize = a.size*4;
       } else if (tier === 1) {
-        col = AMBER; al = 0.45; glowSize = a.size*3.5;
+        col = AMBER; al = 0.7; glowSize = a.size*3.5;
       } else {
-        col = GREEN; al = 0.4; glowSize = a.size*2.8;
+        col = GREEN; al = 0.65; glowSize = a.size*2.8;
       }
 
       var gl=ctx.createRadialGradient(a.x,a.y,0,a.x,a.y,a.size*2.8);
@@ -3356,7 +3356,7 @@
           ctx.moveTo(rx+rr,ry);ctx.arcTo(rx+w,ry,rx+w,ry+h,rr);
           ctx.arcTo(rx+w,ry+h,rx,ry+h,rr);ctx.arcTo(rx,ry+h,rx,ry,rr);
           ctx.arcTo(rx,ry,rx+w,ry,rr);ctx.closePath();
-          ctx.fillStyle='rgba(255,255,255,0.015)';ctx.fill();
+          ctx.fillStyle='rgba(255,255,255,0.025)';ctx.fill();
           ctx.strokeStyle=rgb(col,0.28);ctx.lineWidth=0.8;ctx.stroke();
 
           ctx.beginPath();ctx.moveTo(rx+rr+3,ry+0.5);ctx.lineTo(rx+w-rr-3,ry+0.5);
@@ -3463,7 +3463,7 @@
 
         function spawn(ts) {
           packets.push({state:0,t:0,speed:0.00022+Math.random()*0.00012,
-            decision:(function(){var r=Math.random();return r<0.65?'exec':(r<0.90?'mrc':'halt');})(),opacity:0.65,r:2.2+Math.random()*1,
+            decision:(function(){var r=Math.random();return r<0.65?'exec':(r<0.90?'mrc':'halt');})(),opacity:0.85,r:2.2+Math.random()*1,
             trail:[],x:0,y:0,label:dataLabels[Math.floor(Math.random()*dataLabels.length)],
             labelOpacity:1,spawned:ts});
           nextDelay=1800+Math.random()*2200;lastSpawn=ts;
@@ -3674,7 +3674,7 @@
 
         // ── GRID ──
         function drawGrid(){
-          var sp=W<550?36:48;ctx.strokeStyle='rgba(255,255,255,0.015)';ctx.lineWidth=0.5;
+          var sp=W<550?36:48;ctx.strokeStyle='rgba(255,255,255,0.025)';ctx.lineWidth=0.5;
           for(var x=sp;x<W;x+=sp){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
           for(var y=sp;y<H;y+=sp){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
           /* grid removed */
@@ -3886,11 +3886,11 @@
         }
 
         function spawnOut(ts){outPackets.push({state:0,t:0,speed:0.00025+Math.random()*0.00015,
-          opacity:0.65,r:2.2+Math.random()*1,trail:[],x:0,y:0,
+          opacity:0.85,r:2.2+Math.random()*1,trail:[],x:0,y:0,
           label:telemetryLabels[Math.floor(Math.random()*telemetryLabels.length)],labelOpacity:1});
           nextOutDelay=1200+Math.random()*1800;lastOutSpawn=ts;}
         function spawnIn(ts){inPackets.push({t:0,speed:0.00018+Math.random()*0.0001,
-          opacity:0.65,r:2.2+Math.random()*1.2,trail:[],x:0,y:0,
+          opacity:0.85,r:2.2+Math.random()*1.2,trail:[],x:0,y:0,
           label:attackLabels[Math.floor(Math.random()*attackLabels.length)],
           rejected:false,offset:(Math.random()-0.5)*25});
           nextInDelay=3500+Math.random()*4000;lastInSpawn=ts;}
@@ -4494,7 +4494,7 @@
 
         // ── GRID ──
         function drawGrid() {
-          var sp=W<550?36:48;ctx.strokeStyle='rgba(255,255,255,0.015)';ctx.lineWidth=0.5;
+          var sp=W<550?36:48;ctx.strokeStyle='rgba(255,255,255,0.025)';ctx.lineWidth=0.5;
           for(var x=sp;x<W;x+=sp){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
           for(var y=sp;y<H;y+=sp){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
           for(var x=sp*2;x<W;x+=sp*2)for(var y=sp*2;y<H;y+=sp*2){
@@ -4505,7 +4505,7 @@
         // ── BRACKETS on ENVELO circle ──
         function drawBrackets() {
           var r=radius, x=cx, y=cy, ml=8;
-          ctx.strokeStyle=rgb(PURPLE,0.22);ctx.lineWidth=0.6;
+          ctx.strokeStyle=rgb(PURPLE,0.32);ctx.lineWidth=0.6;
           ctx.beginPath();ctx.moveTo(x-r+4,y-r);ctx.lineTo(x-r+4+ml,y-r);ctx.stroke();
           ctx.beginPath();ctx.moveTo(x-r,y-r+4);ctx.lineTo(x-r,y-r+4+ml);ctx.stroke();
           ctx.beginPath();ctx.moveTo(x+r-4,y-r);ctx.lineTo(x+r-4-ml,y-r);ctx.stroke();
@@ -4525,7 +4525,7 @@
 
           // — ENVELO outer ring (purple, solid) —
           ctx.beginPath(); ctx.arc(cx,cy,enveloR,0,Math.PI*2);
-          ctx.strokeStyle = rgb(PURPLE,0.2);
+          ctx.strokeStyle = rgb(PURPLE,0.35);
           ctx.lineWidth = 1.5; ctx.stroke();
 
           // Outer glow removed — transparent to match page bg
@@ -4534,7 +4534,7 @@
           ctx.save(); ctx.translate(cx,cy); ctx.rotate(now*0.0001);
           ctx.beginPath(); ctx.arc(0,0,oddRadius,0,Math.PI*2);
           ctx.setLineDash([4,8]);
-          ctx.strokeStyle = rgb(GREEN,0.18);
+          ctx.strokeStyle = rgb(GREEN,0.3);
           ctx.lineWidth = 1; ctx.stroke();
           ctx.setLineDash([]); ctx.restore();
 
@@ -4626,16 +4626,16 @@
             var col, al, glowSize;
 
             if (tier===3) {
-              col=RED; al=0.3+Math.sin(Date.now()*0.008)*0.1; glowSize=a.size*4.5;
-              ctx.strokeStyle=rgb(RED,0.35); ctx.lineWidth=1.5;
+              col=RED; al=0.5+Math.sin(Date.now()*0.008)*0.1; glowSize=a.size*4.5;
+              ctx.strokeStyle=rgb(RED,0.55); ctx.lineWidth=1.5;
               ctx.beginPath(); ctx.moveTo(a.x-4,a.y-4); ctx.lineTo(a.x+4,a.y+4); ctx.stroke();
               ctx.beginPath(); ctx.moveTo(a.x+4,a.y-4); ctx.lineTo(a.x-4,a.y+4); ctx.stroke();
             } else if (tier===2) {
-              col=RED; al=0.55; glowSize=a.size*4;
+              col=RED; al=0.8; glowSize=a.size*4;
             } else if (tier===1) {
-              col=AMBER; al=0.45; glowSize=a.size*3.5;
+              col=AMBER; al=0.7; glowSize=a.size*3.5;
             } else {
-              col=GREEN; al=halted?0.1:0.4; glowSize=a.size*2.8;
+              col=GREEN; al=halted?0.15:0.65; glowSize=a.size*2.8;
             }
 
             var gl=ctx.createRadialGradient(a.x,a.y,0,a.x,a.y,glowSize);
@@ -5014,7 +5014,7 @@
 
         function drawConn(a,b,col){
           var g=ctx.createLinearGradient(a.x,a.y,b.x,b.y);
-          g.addColorStop(0,rgb(col,0.12));g.addColorStop(0.5,rgb(col,0.06));g.addColorStop(1,rgb(col,0.12));
+          g.addColorStop(0,rgb(col,0.2));g.addColorStop(0.5,rgb(col,0.1));g.addColorStop(1,rgb(col,0.2));
           ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);
           ctx.strokeStyle=g;ctx.lineWidth=1;ctx.stroke();
         }
@@ -5029,7 +5029,7 @@
           // Main ring
           ctx.beginPath();ctx.arc(x,y,rr,0,Math.PI*2);
           if(step.dashed){ctx.setLineDash([5,4]);ctx.strokeStyle=rgb(col,0.18);}
-          else ctx.strokeStyle=rgb(col,step.big?0.4:0.25);
+          else ctx.strokeStyle=rgb(col,step.big?0.6:0.4);
           ctx.lineWidth=1.2;ctx.stroke();ctx.setLineDash([]);
 
           // Rotating dashed inner ring
@@ -5115,7 +5115,7 @@
           }
 
           // 4-layer drawPacket style — matches ENVELO/security diagrams
-          var baseOp=0.65, sz=3;
+          var baseOp=0.85, sz=3;
           // Outer glow
           var g1=ctx.createRadialGradient(cx,cy,0,cx,cy,sz*2.8);
           g1.addColorStop(0,rgb(col,baseOp*0.28));g1.addColorStop(1,rgb(col,0));
