@@ -2899,15 +2899,15 @@
     // Enforcement margin fill
     var mg = ctx.createRadialGradient(cx,cy,heroOddRadius, cx,cy,enveloR);
     mg.addColorStop(0, rgb(PURPLE,0));
-    mg.addColorStop(0.3, rgb(PURPLE,0.015));
-    mg.addColorStop(1, rgb(PURPLE,0.025));
+    mg.addColorStop(0.5, rgb(PURPLE,0.04));
+    mg.addColorStop(1, rgb(PURPLE,0));
     ctx.fillStyle = mg;
     ctx.beginPath(); ctx.arc(cx,cy,enveloR,0,Math.PI*2); ctx.fill();
 
     // ENVELO outer ring (purple, solid)
     ctx.beginPath(); ctx.arc(cx,cy,enveloR,0,Math.PI*2);
-    ctx.strokeStyle = rgb(PURPLE,0.25);
-    ctx.lineWidth = 2; ctx.stroke();
+    ctx.strokeStyle = rgb(PURPLE,0.2);
+    ctx.lineWidth = 1.5; ctx.stroke();
 
     // Outer glow
     var eg = ctx.createRadialGradient(cx,cy,enveloR-4, cx,cy,enveloR+12);
@@ -2945,7 +2945,7 @@
       if (p.alpha<=0) {boundaryPulses.splice(i,1);continue;}
       var bx=cx+Math.cos(p.angle)*radius, by=cy+Math.sin(p.angle)*radius;
       var g=ctx.createRadialGradient(bx,by,0,bx,by,p.spread+12);
-      g.addColorStop(0,rgb(PURPLE,p.alpha*0.2));
+      g.addColorStop(0,rgb(PURPLE,p.alpha*0.28));
       g.addColorStop(1,rgb(PURPLE,0));
       ctx.fillStyle=g;
       ctx.beginPath(); ctx.arc(bx,by,p.spread+12,0,Math.PI*2); ctx.fill();
@@ -2959,29 +2959,30 @@
       var col, al, glowSize;
 
       if (tier === 3) {
-        col = RED; al = 0.12 + Math.sin(Date.now()*0.008)*0.06; glowSize = a.size*5;
+        col = RED; al = 0.3 + Math.sin(Date.now()*0.008)*0.1; glowSize = a.size*4.5;
         // Halt X marker
-        ctx.strokeStyle = rgb(RED,0.2);
+        ctx.strokeStyle = rgb(RED,0.35);
         ctx.lineWidth = 1.5;
         ctx.beginPath(); ctx.moveTo(a.x-4,a.y-4); ctx.lineTo(a.x+4,a.y+4); ctx.stroke();
         ctx.beginPath(); ctx.moveTo(a.x+4,a.y-4); ctx.lineTo(a.x-4,a.y+4); ctx.stroke();
       } else if (tier === 2) {
-        col = RED; al = 0.25; glowSize = a.size*4;
+        col = RED; al = 0.55; glowSize = a.size*4;
       } else if (tier === 1) {
-        col = AMBER; al = 0.22; glowSize = a.size*3.5;
+        col = AMBER; al = 0.45; glowSize = a.size*3.5;
       } else {
-        col = GREEN; al = 0.18; glowSize = a.size*2.8;
+        col = GREEN; al = 0.4; glowSize = a.size*2.8;
       }
 
-      var gl=ctx.createRadialGradient(a.x,a.y,0,a.x,a.y,glowSize);
-      gl.addColorStop(0,rgb(col,al*0.15));
-      gl.addColorStop(1,rgb(col,0));
-      ctx.fillStyle=gl;
-      ctx.beginPath(); ctx.arc(a.x,a.y,glowSize*1.2,0,Math.PI*2); ctx.fill();
-
-      ctx.beginPath(); ctx.arc(a.x,a.y,a.size,0,Math.PI*2);
-      ctx.fillStyle=rgb(col,al);
-      ctx.fill();
+      var g1=ctx.createRadialGradient(a.x,a.y,0,a.x,a.y,a.size*2.8);
+      g1.addColorStop(0,rgb(col,al*0.28));g1.addColorStop(1,rgb(col,0));
+      ctx.fillStyle=g1;ctx.beginPath();ctx.arc(a.x,a.y,a.size*4.5,0,Math.PI*2);ctx.fill();
+      var g2=ctx.createRadialGradient(a.x,a.y,0,a.x,a.y,a.size*2);
+      g2.addColorStop(0,rgb(col,al*0.7));g2.addColorStop(1,rgb(col,0));
+      ctx.fillStyle=g2;ctx.beginPath();ctx.arc(a.x,a.y,a.size*2,0,Math.PI*2);ctx.fill();
+      ctx.beginPath();ctx.arc(a.x,a.y,a.size,0,Math.PI*2);
+      ctx.fillStyle=rgb(col,al);ctx.fill();
+      ctx.beginPath();ctx.arc(a.x,a.y,a.size*0.25,0,Math.PI*2);
+      ctx.fillStyle='rgba(255,255,255,'+(al*0.12)+')';ctx.fill();
     }
 
     // ENVELO halt events (flash + fade)
@@ -2990,7 +2991,7 @@
       ev.alpha -= 0.008;
       if (ev.alpha<=0) { enveloEvents.splice(e,1); continue; }
       ctx.font='500 7px "IBM Plex Mono"';
-      ctx.fillStyle=rgb(RED,ev.alpha*0.3);
+      ctx.fillStyle=rgb(RED,ev.alpha*0.5);
       ctx.textAlign='center';
       ctx.fillText('HALT',ev.x,ev.y-10);
     }
@@ -4519,15 +4520,15 @@
           // — ENFORCEMENT MARGIN fill (between ODD and ENVELO) —
           var mg = ctx.createRadialGradient(cx,cy,oddRadius, cx,cy,enveloR);
           mg.addColorStop(0, rgb(PURPLE,0));
-          mg.addColorStop(0.3, rgb(PURPLE,0.015));
-          mg.addColorStop(1, rgb(PURPLE,0.025));
+          mg.addColorStop(0.5, rgb(PURPLE,0.04));
+          mg.addColorStop(1, rgb(PURPLE,0));
           ctx.fillStyle = mg;
           ctx.beginPath(); ctx.arc(cx,cy,enveloR,0,Math.PI*2); ctx.fill();
 
           // — ENVELO outer ring (purple, solid) —
           ctx.beginPath(); ctx.arc(cx,cy,enveloR,0,Math.PI*2);
-          ctx.strokeStyle = rgb(PURPLE,0.25);
-          ctx.lineWidth = 2; ctx.stroke();
+          ctx.strokeStyle = rgb(PURPLE,0.2);
+          ctx.lineWidth = 1.5; ctx.stroke();
 
           // Outer glow
           var eg = ctx.createRadialGradient(cx,cy,enveloR-4, cx,cy,enveloR+12);
@@ -4618,7 +4619,7 @@
             if (p.alpha<=0) {boundaryPulses.splice(i,1);continue;}
             var bx=cx+Math.cos(p.angle)*radius, by=cy+Math.sin(p.angle)*radius;
             var g=ctx.createRadialGradient(bx,by,0,bx,by,p.spread+12);
-            g.addColorStop(0,rgb(RED,p.alpha*0.2));
+            g.addColorStop(0,rgb(RED,p.alpha*0.28));
             g.addColorStop(1,rgb(RED,0));
             ctx.fillStyle=g;
             ctx.beginPath(); ctx.arc(bx,by,p.spread+12,0,Math.PI*2); ctx.fill();
@@ -4632,20 +4633,20 @@
             var col, al, glowSize;
 
             if (tier===3) {
-              col=RED; al=0.12+Math.sin(Date.now()*0.008)*0.06; glowSize=a.size*5;
-              ctx.strokeStyle=rgb(RED,0.2); ctx.lineWidth=1.5;
+              col=RED; al=0.3+Math.sin(Date.now()*0.008)*0.1; glowSize=a.size*4.5;
+              ctx.strokeStyle=rgb(RED,0.35); ctx.lineWidth=1.5;
               ctx.beginPath(); ctx.moveTo(a.x-4,a.y-4); ctx.lineTo(a.x+4,a.y+4); ctx.stroke();
               ctx.beginPath(); ctx.moveTo(a.x+4,a.y-4); ctx.lineTo(a.x-4,a.y+4); ctx.stroke();
             } else if (tier===2) {
-              col=RED; al=0.25; glowSize=a.size*4;
+              col=RED; al=0.55; glowSize=a.size*4;
             } else if (tier===1) {
-              col=AMBER; al=0.22; glowSize=a.size*3.5;
+              col=AMBER; al=0.45; glowSize=a.size*3.5;
             } else {
-              col=GREEN; al=halted?0.06:0.18; glowSize=a.size*2.8;
+              col=GREEN; al=halted?0.1:0.4; glowSize=a.size*2.8;
             }
 
             var gl=ctx.createRadialGradient(a.x,a.y,0,a.x,a.y,glowSize);
-            gl.addColorStop(0,rgb(col,al*0.15));
+            gl.addColorStop(0,rgb(col,al*0.28));
             gl.addColorStop(1,rgb(col,0));
             ctx.fillStyle=gl;
             ctx.beginPath(); ctx.arc(a.x,a.y,glowSize*1.2,0,Math.PI*2); ctx.fill();
