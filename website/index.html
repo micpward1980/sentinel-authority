@@ -2694,7 +2694,7 @@
   function resize() {
     var r = c.parentElement.getBoundingClientRect();
     W = r.width;
-    H = W < 550 ? 420 : 440;
+    H = W < 550 ? W * 1.05 : W * 0.6;
     c.width = W * dpr;
     c.height = H * dpr;
     c.style.height = H + 'px';
@@ -2705,9 +2705,7 @@
       // Use fixed proportion of viewport — don't depend on text position
       cx = W * 0.5;
       cy = H * 0.48;
-      radius = Math.min(W * 0.25, H * 0.38);
-      if (radius < 60) radius = 60;
-      if (radius > 180) radius = 180;
+      radius = Math.min(W, H) * 0.34;
       lockedCx = cx; lockedCy = cy; lockedRadius = radius;
       radiusLocked = true;
       c._lastW = W; c._lastH = H;
@@ -2934,16 +2932,11 @@
         col = GREEN; al = 0.4; glowSize = a.size*2.8;
       }
 
-      var g1=ctx.createRadialGradient(a.x,a.y,0,a.x,a.y,a.size*2.8);
-      g1.addColorStop(0,rgb(col,al*0.28));g1.addColorStop(1,rgb(col,0));
-      ctx.fillStyle=g1;ctx.beginPath();ctx.arc(a.x,a.y,a.size*4.5,0,Math.PI*2);ctx.fill();
-      var g2=ctx.createRadialGradient(a.x,a.y,0,a.x,a.y,a.size*2);
-      g2.addColorStop(0,rgb(col,al*0.7));g2.addColorStop(1,rgb(col,0));
-      ctx.fillStyle=g2;ctx.beginPath();ctx.arc(a.x,a.y,a.size*2,0,Math.PI*2);ctx.fill();
+      var gl=ctx.createRadialGradient(a.x,a.y,0,a.x,a.y,a.size*2.8);
+      gl.addColorStop(0,rgb(col,al*0.28));gl.addColorStop(1,rgb(col,0));
+      ctx.fillStyle=gl;ctx.beginPath();ctx.arc(a.x,a.y,a.size*2.8*1.2,0,Math.PI*2);ctx.fill();
       ctx.beginPath();ctx.arc(a.x,a.y,a.size,0,Math.PI*2);
       ctx.fillStyle=rgb(col,al);ctx.fill();
-      ctx.beginPath();ctx.arc(a.x,a.y,a.size*0.25,0,Math.PI*2);
-      ctx.fillStyle='rgba(255,255,255,'+(al*0.12)+')';ctx.fill();
     }
 
     // ENVELO halt events (flash + fade)
@@ -3085,13 +3078,24 @@
       initAgents();
       // Warm up: 500 frames = ~8s simulated — agents fully settled
       for (var w=0; w<500; w++) updateAgents(16);
-      // Clear all warm-up visual state so first frame is clean
+      // Clear ALL warm-up visual state so first frame is clean
       enveloEvents = [];
       boundaryPulses = [];
+      telemetry = [];
       for (var i=0; i<agents.length; i++) {
         agents[i].tier = 0;
         agents[i].haltTimer = 0;
         agents[i].mrcTimer = 0;
+        // Push any agents near boundary inward so they don't immediately flash
+        var dx = agents[i].x - cx, dy = agents[i].y - cy;
+        var dist = Math.sqrt(dx*dx+dy*dy);
+        if (dist > radius * 0.7) {
+          var scale = (radius * 0.65) / dist;
+          agents[i].x = cx + dx * scale;
+          agents[i].y = cy + dy * scale;
+          agents[i].vx *= 0.3;
+          agents[i].vy *= 0.3;
+        }
       }
       requestAnimationFrame(animate);
     }, 200);
