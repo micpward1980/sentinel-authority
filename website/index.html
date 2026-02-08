@@ -3499,7 +3499,7 @@
 
         function spawn(ts) {
           packets.push({state:0,t:0,speed:0.00022+Math.random()*0.00012,
-            decision:(function(){var r=Math.random();return r<0.65?'exec':(r<0.90?'mrc':'halt');})(),opacity:1,r:2.2+Math.random()*1,
+            decision:(function(){var r=Math.random();return r<0.65?'exec':(r<0.90?'mrc':'halt');})(),opacity:0.4,r:2.2+Math.random()*1,
             trail:[],x:0,y:0,label:dataLabels[Math.floor(Math.random()*dataLabels.length)],
             labelOpacity:1,spawned:ts});
           nextDelay=1800+Math.random()*2200;lastSpawn=ts;
@@ -3922,11 +3922,11 @@
         }
 
         function spawnOut(ts){outPackets.push({state:0,t:0,speed:0.00025+Math.random()*0.00015,
-          opacity:1,r:2.2+Math.random()*1,trail:[],x:0,y:0,
+          opacity:0.4,r:2.2+Math.random()*1,trail:[],x:0,y:0,
           label:telemetryLabels[Math.floor(Math.random()*telemetryLabels.length)],labelOpacity:1});
           nextOutDelay=1200+Math.random()*1800;lastOutSpawn=ts;}
         function spawnIn(ts){inPackets.push({t:0,speed:0.00018+Math.random()*0.0001,
-          opacity:1,r:2.2+Math.random()*1.2,trail:[],x:0,y:0,
+          opacity:0.4,r:2.2+Math.random()*1.2,trail:[],x:0,y:0,
           label:attackLabels[Math.floor(Math.random()*attackLabels.length)],
           rejected:false,offset:(Math.random()-0.5)*25});
           nextInDelay=3500+Math.random()*4000;lastInSpawn=ts;}
