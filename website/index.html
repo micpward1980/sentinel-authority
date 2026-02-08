@@ -2941,14 +2941,9 @@
 
       var gl=ctx.createRadialGradient(a.x,a.y,0,a.x,a.y,a.size*2.8);
       gl.addColorStop(0,rgb(col,al*0.28));gl.addColorStop(1,rgb(col,0));
-      ctx.fillStyle=gl;ctx.beginPath();ctx.arc(a.x,a.y,a.size*4.5,0,Math.PI*2);ctx.fill();
-      var g2=ctx.createRadialGradient(a.x,a.y,0,a.x,a.y,a.size*2);
-      g2.addColorStop(0,rgb(col,al*0.7));g2.addColorStop(1,rgb(col,0));
-      ctx.fillStyle=g2;ctx.beginPath();ctx.arc(a.x,a.y,a.size*2,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle=gl;ctx.beginPath();ctx.arc(a.x,a.y,a.size*2.8*1.2,0,Math.PI*2);ctx.fill();
       ctx.beginPath();ctx.arc(a.x,a.y,a.size,0,Math.PI*2);
       ctx.fillStyle=rgb(col,al);ctx.fill();
-      ctx.beginPath();ctx.arc(a.x,a.y,a.size*0.25,0,Math.PI*2);
-      ctx.fillStyle='rgba(255,255,255,'+(al*0.12)+')';ctx.fill();
     }
 
     // ENVELO halt events (flash + fade)
@@ -3464,14 +3459,9 @@
         function drawPacket(px,py,size,col,opacity) {
           var g1=ctx.createRadialGradient(px,py,0,px,py,size*2.8);
           g1.addColorStop(0,rgb(col,opacity*0.28));g1.addColorStop(1,rgb(col,0));
-          ctx.fillStyle=g1;ctx.beginPath();ctx.arc(px,py,size*4.5,0,Math.PI*2);ctx.fill();
-          var g2=ctx.createRadialGradient(px,py,0,px,py,size*2);
-          g2.addColorStop(0,rgb(col,opacity*0.7));g2.addColorStop(1,rgb(col,0));
-          ctx.fillStyle=g2;ctx.beginPath();ctx.arc(px,py,size*2,0,Math.PI*2);ctx.fill();
+          ctx.fillStyle=g1;ctx.beginPath();ctx.arc(px,py,size*2.8*1.2,0,Math.PI*2);ctx.fill();
           ctx.beginPath();ctx.arc(px,py,size,0,Math.PI*2);
-          ctx.fillStyle=rgb(col,opacity*1.0);ctx.fill();
-          ctx.beginPath();ctx.arc(px,py,size*0.25,0,Math.PI*2);
-          ctx.fillStyle='rgba(255,255,255,'+(opacity*0.12)+')';ctx.fill();
+          ctx.fillStyle=rgb(col,opacity);ctx.fill();
         }
 
         function spawn(ts) {
@@ -3889,13 +3879,8 @@
         function drawPacket(px,py,size,col,opacity){
           var g1=ctx.createRadialGradient(px,py,0,px,py,size*2.8);
           g1.addColorStop(0,rgb(col,opacity*0.28));g1.addColorStop(1,rgb(col,0));
-          ctx.fillStyle=g1;ctx.beginPath();ctx.arc(px,py,size*4.5,0,Math.PI*2);ctx.fill();
-          var g2=ctx.createRadialGradient(px,py,0,px,py,size*2);
-          g2.addColorStop(0,rgb(col,opacity*0.7));g2.addColorStop(1,rgb(col,0));
-          ctx.fillStyle=g2;ctx.beginPath();ctx.arc(px,py,size*2,0,Math.PI*2);ctx.fill();
-          ctx.beginPath();ctx.arc(px,py,size,0,Math.PI*2);ctx.fillStyle=rgb(col,opacity*1.0);ctx.fill();
-          ctx.beginPath();ctx.arc(px,py,size*0.25,0,Math.PI*2);
-          ctx.fillStyle='rgba(255,255,255,'+(opacity*0.12)+')';ctx.fill();
+          ctx.fillStyle=g1;ctx.beginPath();ctx.arc(px,py,size*2.8*1.2,0,Math.PI*2);ctx.fill();
+          ctx.beginPath();ctx.arc(px,py,size,0,Math.PI*2);ctx.fillStyle=rgb(col,opacity);ctx.fill();
         }
 
         function spawnOut(ts){outPackets.push({state:0,t:0,speed:0.00025+Math.random()*0.00015,
@@ -4649,24 +4634,14 @@
               col=GREEN; al=halted?0.15:0.65; glowSize=a.size*2.8;
             }
 
-            var gl=ctx.createRadialGradient(a.x,a.y,0,a.x,a.y,a.size*2.8);
+            var gl=ctx.createRadialGradient(a.x,a.y,0,a.x,a.y,glowSize);
             gl.addColorStop(0,rgb(col,al*0.28));
             gl.addColorStop(1,rgb(col,0));
             ctx.fillStyle=gl;
-            ctx.beginPath(); ctx.arc(a.x,a.y,a.size*4.5,0,Math.PI*2); ctx.fill();
-
-            var g2=ctx.createRadialGradient(a.x,a.y,0,a.x,a.y,a.size*2);
-            g2.addColorStop(0,rgb(col,al*0.7));
-            g2.addColorStop(1,rgb(col,0));
-            ctx.fillStyle=g2;
-            ctx.beginPath(); ctx.arc(a.x,a.y,a.size*2,0,Math.PI*2); ctx.fill();
+            ctx.beginPath(); ctx.arc(a.x,a.y,glowSize*1.2,0,Math.PI*2); ctx.fill();
 
             ctx.beginPath(); ctx.arc(a.x,a.y,a.size,0,Math.PI*2);
             ctx.fillStyle=rgb(col,al);
-            ctx.fill();
-
-            ctx.beginPath(); ctx.arc(a.x,a.y,a.size*0.25,0,Math.PI*2);
-            ctx.fillStyle='rgba(255,255,255,'+(al*0.12)+')';
             ctx.fill();
           }
 
@@ -5135,22 +5110,15 @@
             ctx.fillStyle=rgb(d.col,d.alpha*0.3);ctx.fill();
           }
 
-          // 4-layer drawPacket style — matches ENVELO/security diagrams
+          // 2-layer drawPacket style — matches hero/CAT-72 agents
           var baseOp=0.85, sz=3;
           // Outer glow
           var g1=ctx.createRadialGradient(cx,cy,0,cx,cy,sz*2.8);
           g1.addColorStop(0,rgb(col,baseOp*0.28));g1.addColorStop(1,rgb(col,0));
-          ctx.fillStyle=g1;ctx.beginPath();ctx.arc(cx,cy,sz*2.8,0,Math.PI*2);ctx.fill();
-          // Mid glow
-          var g2=ctx.createRadialGradient(cx,cy,0,cx,cy,sz*2);
-          g2.addColorStop(0,rgb(col,baseOp*0.7));g2.addColorStop(1,rgb(col,0));
-          ctx.fillStyle=g2;ctx.beginPath();ctx.arc(cx,cy,sz*2,0,Math.PI*2);ctx.fill();
+          ctx.fillStyle=g1;ctx.beginPath();ctx.arc(cx,cy,sz*2.8*1.2,0,Math.PI*2);ctx.fill();
           // Core
           ctx.beginPath();ctx.arc(cx,cy,sz,0,Math.PI*2);
-          ctx.fillStyle=rgb(col,baseOp*1.0);ctx.fill();
-          // White center
-          ctx.beginPath();ctx.arc(cx,cy,sz*0.25,0,Math.PI*2);
-          ctx.fillStyle='rgba(255,255,255,'+baseOp*0.12+')';ctx.fill();
+          ctx.fillStyle=rgb(col,baseOp);ctx.fill();
 
           // Breathing ring while paused
           if(!traveling){
