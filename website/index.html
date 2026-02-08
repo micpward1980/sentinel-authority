@@ -5014,34 +5014,15 @@
         function drawNode(x,y,step,time){
           var r=step.r,col=step.col;
 
-          // Outer glow — soft bloom
-          var h=ctx.createRadialGradient(x,y,r*0.88,x,y,r*1.08);
-          h.addColorStop(0,rgb(col,0));
-          h.addColorStop(0.4,rgb(col,step.big?0.05:0.03));
-          h.addColorStop(1,rgb(col,0));
-          ctx.fillStyle=h;ctx.beginPath();ctx.arc(x,y,r*1.08,0,Math.PI*2);ctx.fill();
-
+          // Circle interior — transparent to match other diagrams
           var rr=r;
           if(step.big)rr=r+1.2*Math.sin(time*1.2);
-
-          // Frosted glass fill — the deck's signature
-          var fg=ctx.createRadialGradient(x,y-r*0.3,0,x,y,rr);
-          fg.addColorStop(0,'rgba(255,255,255,0.04)');
-          fg.addColorStop(1,'rgba(255,255,255,0.01)');
-          ctx.beginPath();ctx.arc(x,y,rr,0,Math.PI*2);
-          ctx.fillStyle=fg;ctx.fill();
 
           // Main ring
           ctx.beginPath();ctx.arc(x,y,rr,0,Math.PI*2);
           if(step.dashed){ctx.setLineDash([5,4]);ctx.strokeStyle=rgb(col,0.18);}
           else ctx.strokeStyle=rgb(col,step.big?0.4:0.25);
           ctx.lineWidth=1.2;ctx.stroke();ctx.setLineDash([]);
-
-          // Top highlight arc — the glass sheen
-          ctx.beginPath();ctx.arc(x,y,rr,-Math.PI*0.8,-Math.PI*0.2);
-          var tg=ctx.createLinearGradient(x-rr,y-rr,x+rr,y-rr);
-          tg.addColorStop(0,rgb(col,0));tg.addColorStop(0.5,rgb(col,0.2));tg.addColorStop(1,rgb(col,0));
-          ctx.strokeStyle=tg;ctx.lineWidth=0.6;ctx.stroke();
 
           // Rotating dashed inner ring
           ctx.save();ctx.translate(x,y);ctx.rotate(time*0.12);
@@ -5115,28 +5096,32 @@
 
           // Trail — only when moving
           if(traveling){
-            dotTrail.push({x:cx,y:cy,col:col.slice(),alpha:0.5,size:3});
+            dotTrail.push({x:cx,y:cy,col:col.slice(),alpha:0.2,size:3});
             if(dotTrail.length>18)dotTrail.shift();
           }
           for(var i=dotTrail.length-1;i>=0;i--){
             var d=dotTrail[i];d.alpha*=0.9;d.size*=0.96;
             if(d.alpha<0.01){dotTrail.splice(i,1);continue;}
             ctx.beginPath();ctx.arc(d.x,d.y,d.size*0.5,0,Math.PI*2);
-            ctx.fillStyle=rgb(d.col,d.alpha*0.5);ctx.fill();
+            ctx.fillStyle=rgb(d.col,d.alpha*0.3);ctx.fill();
           }
 
-          // Bloom
-          var dg=ctx.createRadialGradient(cx,cy,0,cx,cy,10);
-          dg.addColorStop(0,rgb(col,0.35));dg.addColorStop(1,rgb(col,0));
-          ctx.fillStyle=dg;ctx.beginPath();ctx.arc(cx,cy,10,0,Math.PI*2);ctx.fill();
-
-          // Core dot
-          ctx.beginPath();ctx.arc(cx,cy,3,0,Math.PI*2);
-          ctx.fillStyle=rgb(col,0.9);ctx.fill();
-
-          // Hot center
-          ctx.beginPath();ctx.arc(cx,cy,1.2,0,Math.PI*2);
-          ctx.fillStyle='rgba(255,255,255,0.78)';ctx.fill();
+          // 4-layer drawPacket style — matches ENVELO/security diagrams
+          var baseOp=0.4, sz=3;
+          // Outer glow
+          var g1=ctx.createRadialGradient(cx,cy,0,cx,cy,sz*2.8);
+          g1.addColorStop(0,rgb(col,baseOp*0.28));g1.addColorStop(1,rgb(col,0));
+          ctx.fillStyle=g1;ctx.beginPath();ctx.arc(cx,cy,sz*2.8,0,Math.PI*2);ctx.fill();
+          // Mid glow
+          var g2=ctx.createRadialGradient(cx,cy,0,cx,cy,sz*2);
+          g2.addColorStop(0,rgb(col,baseOp*0.7));g2.addColorStop(1,rgb(col,0));
+          ctx.fillStyle=g2;ctx.beginPath();ctx.arc(cx,cy,sz*2,0,Math.PI*2);ctx.fill();
+          // Core
+          ctx.beginPath();ctx.arc(cx,cy,sz,0,Math.PI*2);
+          ctx.fillStyle=rgb(col,baseOp*1.0);ctx.fill();
+          // White center
+          ctx.beginPath();ctx.arc(cx,cy,sz*0.25,0,Math.PI*2);
+          ctx.fillStyle='rgba(255,255,255,'+baseOp*0.12+')';ctx.fill();
 
           // Breathing ring while paused
           if(!traveling){
