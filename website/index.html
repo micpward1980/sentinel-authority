@@ -1840,10 +1840,11 @@
        REVEAL ANIMATION
        ============================================ */
     .reveal{ 
-      opacity: 1; 
-      transform: none; 
+      opacity: 0; 
+      transform: translateY(8px); 
+      transition: opacity .15s ease, transform .15s ease; 
     }
-    .reveal.active{ opacity: 1; transform: none; }
+    .reveal.active{ opacity: 1; transform: translateY(0); }
     
     @media (prefers-reduced-motion: reduce){
       .reveal{ opacity: 1; transform: none; transition: none; }
@@ -2610,7 +2611,7 @@
     <!-- HERO -->
     <section class="hero">
       <!-- Full-viewport canvas -->
-      <div style="display:flex;justify-content:center;margin:0 auto;max-width:880px;padding-top:60px;"><div style="width:100%;"><canvas id="hero-canvas" style="width:100%;display:block;"></canvas></div></div>
+      <div style="display:flex;justify-content:center;margin:0 auto;max-width:880px;padding-top:60px;"><div style="width:100%;"><canvas id="hero-canvas" style="width:100%;display:block;opacity:0;transition:opacity 0.15s ease;"></canvas></div></div>
       
       <!-- Hero Content -->
       <div id="hero-text" class="hero-content-bottom" style="position: relative; z-index: 10; text-align: center; padding: 12px 16px 0; display: flex; flex-direction: column; align-items: center;">
@@ -3025,8 +3026,10 @@
   }
 
   var lastTime=0;
+  var fadeTriggered = false;
   function animate(now) {
     if(!lastTime) lastTime=now;
+    if (!fadeTriggered) { c.style.opacity = '1'; fadeTriggered = true; }
     var dt=Math.min(now-lastTime, 32); lastTime=now;
     ctx.clearRect(0,0,W,H);
 
