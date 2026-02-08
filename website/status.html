@@ -2569,6 +2569,12 @@
     
     /* ═══ PAGE-SPECIFIC ═══ */
 
+    .back-link{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-tertiary);transition:color .2s;text-decoration:none;}
+    .back-link:hover{color:var(--text-primary);text-decoration:none;}
+    .foot-links{display:flex;gap:20px;}
+    .foot-links a{color:rgba(255,255,255,.48);font-size:13px;}
+    .foot-links a:hover{color:rgba(255,255,255,.82);text-decoration:none;}
+
     main{position:relative;z-index:1;max-width:880px;margin:0 auto;padding:calc(var(--nav-height) + 60px) 20px 60px;}
     .spinner{width:20px;height:20px;border:2px solid rgba(255,255,255,.06);border-top-color:var(--purple-bright);border-radius:50%;animation:spin .7s linear infinite;display:inline-block;vertical-align:middle;margin-right:8px;}
     @keyframes spin{to{transform:rotate(360deg);}}
@@ -2579,55 +2585,19 @@
 <body>
 
   <a href="#main" class="skip-link">Skip to content</a>
-    
-  <a href="#main" class="skip-link">Skip to content</a>
-  <div class="grid-overlay" aria-hidden="true"></div>
-
   <header class="site-header">
-    <div class="nav-inner">
+    <nav class="nav-inner">
       <a href="index.html" class="brand">
-        <div class="brand-mark" aria-hidden="true">
-          <div class="brand-mark-inner"></div>
-        </div>
+        <div class="brand-mark"><div class="brand-mark-inner"></div></div>
         <div class="brand-name">Sentinel Authority</div>
       </a>
-
-      <nav class="nav-links" aria-label="Main navigation" aria-label="Section navigation">
-        <a href="index.html#envelo">ENVELO</a>
-        <a href="index.html#security">SECURITY</a>
-        <a href="index.html#criteria">CRITERIA</a>
-        <a href="index.html#artifacts">ARTIFACTS</a>
-        <a href="index.html#verify">VERIFY</a>
-        <a href="index.html#contact">CONTACT</a>
-        <a href="https://app.sentinelauthority.org">SIGN IN</a>
-          </nav>
-      <a href="draft.html" class="nav-badge" title="v1.0 — Effective January 2026" aria-describedby="draft-note">
-        <span>v1.0</span>
+      <a href="index.html#verify" class="back-link">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:4px;"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Back
       </a>
-      <span id="draft-note" class="sr-only">
-        Specification v1.0 — Effective January 2026
-      </span>
-      
-      <button class="nav-toggle" aria-label="Open navigation menu" aria-expanded="false" aria-controls="nav-drawer">
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
-    </div>
+    </nav>
   </header>
-  
-  <div class="drawer-overlay" aria-hidden="true"></div>
-  <div id="nav-drawer" class="nav-drawer" role="navigation" aria-label="Mobile navigation">
-    <a href="index.html#envelo">ENVELO</a>
-    <a href="index.html#security">SECURITY</a>
-    <a href="index.html#criteria">CRITERIA</a>
-    <a href="index.html#artifacts">ARTIFACTS</a>
-    <a href="index.html#verify">VERIFY</a>
-    <a href="index.html#contact">CONTACT</a>
-    <a href="https://app.sentinelauthority.org" class="nav-signin">SIGN IN</a>
-  </div>
-
-  <main id="main" role="main">
+<main id="main" role="main">
 <div style="margin-bottom:40px;">
       <span class="section-label">CAT-72 CONFORMANCE</span>
       <h1 class="section-title">Test Status</h1>
@@ -2670,40 +2640,11 @@
 
     <footer>
       <div class="footer-inner">
-        <div>
-          <div>© <span id="year"></span> SENTINEL AUTHORITY — ODDC</div>
-          <div class="footer-spec">ODDC v1.0 — Effective January 2026. Specifications subject to revision. Examples are non-normative.</div>
-          <div class="footer-disclaimer">
-            Independent conformance determination. Not a regulator. Not legal advice. Implementations remain the responsibility of system operators.
-          </div>
-        </div>
+        <div>&#169; <span id="year"></span> SENTINEL AUTHORITY</div>
         <div class="foot-links">
-          <div class="foot-col">
-            <div class="foot-col-title">FRAMEWORK</div>
-            <a href="index.html#envelo">ENVELO</a>
-            <a href="index.html#security">Security</a>
-            <a href="index.html#criteria">Criteria</a>
-            <a href="index.html#cat72">CAT-72</a>
-            <a href="index.html#process">Process</a>
-          </div>
-          <div class="foot-col">
-            <div class="foot-col-title">RESOURCES</div>
-            <a href="index.html#artifacts">Artifacts</a>
-            <a href="scenarios.html">Scenarios</a>
-            <a href="index.html#verify" data-section="verify">Verify</a>
-            
-          </div>
-          <div class="foot-col">
-            <div class="foot-col-title">LEGAL</div>
-            <a href="privacy.html">Privacy</a>
-            <a href="terms.html">Terms</a>
-            <a href="conformance-agreement.html">Conformance</a>
-          </div>
-          <div class="foot-col">
-            <div class="foot-col-title">CONNECT</div>
-            <a href="index.html#contact">Contact</a>
-            <a href="https://app.sentinelauthority.org">Sign In</a>
-          </div>
+          <a href="https://app.sentinelauthority.org">Portal</a>
+          <a href="index.html">Home</a>
+          <a href="agent.html">Agent</a>
         </div>
       </div>
     </footer>

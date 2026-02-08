@@ -2569,6 +2569,12 @@
     
     /* ═══ PAGE-SPECIFIC ═══ */
 
+    .back-link{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-tertiary);transition:color .2s;text-decoration:none;}
+    .back-link:hover{color:var(--text-primary);text-decoration:none;}
+    .foot-links{display:flex;gap:20px;}
+    .foot-links a{color:rgba(255,255,255,.48);font-size:13px;}
+    .foot-links a:hover{color:rgba(255,255,255,.82);text-decoration:none;}
+
     .badge{font-family:var(--mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;padding:6px 8px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.03);color:rgba(255,255,255,.80);white-space:nowrap;}
     .badge.green{border-color:rgba(92,214,133,.22);color:rgba(92,214,133,.90);background:rgba(92,214,133,.06);}
     .badge.red{border-color:rgba(214,92,92,.22);color:rgba(214,92,92,.95);background:rgba(214,92,92,.06);}
@@ -2583,55 +2589,19 @@
 <body>
 
   <a href="#main" class="skip-link">Skip to content</a>
-    
-  <a href="#main" class="skip-link">Skip to content</a>
-  <div class="grid-overlay" aria-hidden="true"></div>
-
   <header class="site-header">
-    <div class="nav-inner">
+    <nav class="nav-inner">
       <a href="index.html" class="brand">
-        <div class="brand-mark" aria-hidden="true">
-          <div class="brand-mark-inner"></div>
-        </div>
+        <div class="brand-mark"><div class="brand-mark-inner"></div></div>
         <div class="brand-name">Sentinel Authority</div>
       </a>
-
-      <nav class="nav-links" aria-label="Main navigation" aria-label="Section navigation">
-        <a href="index.html#envelo">ENVELO</a>
-        <a href="index.html#security">SECURITY</a>
-        <a href="index.html#criteria">CRITERIA</a>
-        <a href="index.html#artifacts">ARTIFACTS</a>
-        <a href="index.html#verify">VERIFY</a>
-        <a href="index.html#contact">CONTACT</a>
-        <a href="https://app.sentinelauthority.org">SIGN IN</a>
-          </nav>
-      <a href="draft.html" class="nav-badge" title="v1.0 — Effective January 2026" aria-describedby="draft-note">
-        <span>v1.0</span>
+      <a href="index.html#security" class="back-link">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:4px;"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Back
       </a>
-      <span id="draft-note" class="sr-only">
-        Specification v1.0 — Effective January 2026
-      </span>
-      
-      <button class="nav-toggle" aria-label="Open navigation menu" aria-expanded="false" aria-controls="nav-drawer">
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
-    </div>
+    </nav>
   </header>
-  
-  <div class="drawer-overlay" aria-hidden="true"></div>
-  <div id="nav-drawer" class="nav-drawer" role="navigation" aria-label="Mobile navigation">
-    <a href="index.html#envelo">ENVELO</a>
-    <a href="index.html#security">SECURITY</a>
-    <a href="index.html#criteria">CRITERIA</a>
-    <a href="index.html#artifacts">ARTIFACTS</a>
-    <a href="index.html#verify">VERIFY</a>
-    <a href="index.html#contact">CONTACT</a>
-    <a href="https://app.sentinelauthority.org" class="nav-signin">SIGN IN</a>
-  </div>
-
-  <main id="main" role="main">
+<main id="main" role="main">
 <div class="section" style="border-top:none;padding-top:calc(var(--nav-height) + 48px);">
       <div class="section-label">SECURITY ARCHITECTURE</div>
       <h1 class="section-title" style="font-family:var(--serif);">Zero Trust by <span class="accent">Design</span></h1>
@@ -2642,12 +2612,10 @@
       <div class="hud-frame hud-frame-green"><i></i>
         <div class="hud-label" style="margin-bottom:var(--space-2);">CORE GUARANTEE</div>
         <div class="hud-title" style="margin-bottom:var(--space-2);">What ENVELO cannot do — by architecture, not policy</div>
-        <div class="badge-row">
-          <span class="badge red">NO INBOUND PORTS</span>
-          <span class="badge red">NO REMOTE ACCESS</span>
-          <span class="badge red">NO DATA COLLECTION</span>
-          <span class="badge red">NO CLOUD COMMANDS</span>
-        </div>
+        <div class="hud-row" style="display:flex;align-items:center;gap:10px;"><span class="hud-dot hud-dot-red"></span><span class="hud-desc" style="color:rgba(214,92,92,0.9);">NO INBOUND PORTS</span></div>
+        <div class="hud-row" style="display:flex;align-items:center;gap:10px;"><span class="hud-dot hud-dot-red"></span><span class="hud-desc" style="color:rgba(214,92,92,0.9);">NO REMOTE ACCESS</span></div>
+        <div class="hud-row" style="display:flex;align-items:center;gap:10px;"><span class="hud-dot hud-dot-red"></span><span class="hud-desc" style="color:rgba(214,92,92,0.9);">NO DATA COLLECTION</span></div>
+        <div class="hud-row" style="display:flex;align-items:center;gap:10px;"><span class="hud-dot hud-dot-red"></span><span class="hud-desc" style="color:rgba(214,92,92,0.9);">NO CLOUD COMMANDS</span></div>
         <p style="color:var(--text-tertiary);font-size:12px;line-height:1.6;margin-top:16px;">The agent opens zero listening ports. Sentinel Authority has no mechanism to connect to, access, or control your infrastructure. Communication is strictly one-way: telemetry out, nothing in.</p>
       </div>
     </div>
@@ -2723,40 +2691,11 @@
 
     <footer>
       <div class="footer-inner">
-        <div>
-          <div>© <span id="year"></span> SENTINEL AUTHORITY — ODDC</div>
-          <div class="footer-spec">ODDC v1.0 — Effective January 2026. Specifications subject to revision. Examples are non-normative.</div>
-          <div class="footer-disclaimer">
-            Independent conformance determination. Not a regulator. Not legal advice. Implementations remain the responsibility of system operators.
-          </div>
-        </div>
+        <div>&#169; <span id="year"></span> SENTINEL AUTHORITY</div>
         <div class="foot-links">
-          <div class="foot-col">
-            <div class="foot-col-title">FRAMEWORK</div>
-            <a href="index.html#envelo">ENVELO</a>
-            <a href="index.html#security">Security</a>
-            <a href="index.html#criteria">Criteria</a>
-            <a href="index.html#cat72">CAT-72</a>
-            <a href="index.html#process">Process</a>
-          </div>
-          <div class="foot-col">
-            <div class="foot-col-title">RESOURCES</div>
-            <a href="index.html#artifacts">Artifacts</a>
-            <a href="scenarios.html">Scenarios</a>
-            <a href="index.html#verify" data-section="verify">Verify</a>
-            
-          </div>
-          <div class="foot-col">
-            <div class="foot-col-title">LEGAL</div>
-            <a href="privacy.html">Privacy</a>
-            <a href="terms.html">Terms</a>
-            <a href="conformance-agreement.html">Conformance</a>
-          </div>
-          <div class="foot-col">
-            <div class="foot-col-title">CONNECT</div>
-            <a href="index.html#contact">Contact</a>
-            <a href="https://app.sentinelauthority.org">Sign In</a>
-          </div>
+          <a href="https://app.sentinelauthority.org">Portal</a>
+          <a href="index.html">Home</a>
+          <a href="agent.html">Agent</a>
         </div>
       </div>
     </footer>
