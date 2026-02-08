@@ -2869,6 +2869,25 @@
     ctx.beginPath();ctx.moveTo(x+r,y+r-4);ctx.lineTo(x+r,y+r-4-ml);ctx.stroke();
   }
 
+  // ── LEGEND ──
+  function drawLegend() {
+    var lx = 12, ly = H - 42;
+    ctx.font = '600 8px "IBM Plex Mono"';
+    ctx.textAlign = 'left';
+    var items = [
+      {col: GREEN, label: 'NOMINAL'},
+      {col: AMBER, label: 'MRC'},
+      {col: RED, label: 'HALT'}
+    ];
+    for (var i = 0; i < items.length; i++) {
+      var ix = lx + i * 72;
+      ctx.beginPath(); ctx.arc(ix, ly, 3, 0, Math.PI * 2);
+      ctx.fillStyle = rgb(items[i].col, 0.7); ctx.fill();
+      ctx.fillStyle = rgb(items[i].col, 0.45);
+      ctx.fillText(items[i].label, ix + 8, ly + 3);
+    }
+  }
+
   function drawBoundary(now) {
     var enveloR = radius;
     heroOddRadius = radius * 0.76;
@@ -3043,6 +3062,7 @@
     drawTelemetry();
     drawAgents();
     drawHash(now);
+    drawLegend();
 
     ctx.restore();
     requestAnimationFrame(animate);
@@ -4512,6 +4532,25 @@
           ctx.beginPath();ctx.moveTo(x+r,y+r-4);ctx.lineTo(x+r,y+r-4-ml);ctx.stroke();
         }
 
+        // ── LEGEND ──
+        function drawLegend() {
+          var lx = 12, ly = H - 42;
+          ctx.font = '600 8px "IBM Plex Mono"';
+          ctx.textAlign = 'left';
+          var items = [
+            {col: GREEN, label: 'NOMINAL'},
+            {col: AMBER, label: 'MRC'},
+            {col: RED, label: 'HALT'}
+          ];
+          for (var i = 0; i < items.length; i++) {
+            var ix = lx + i * 72;
+            ctx.beginPath(); ctx.arc(ix, ly, 3, 0, Math.PI * 2);
+            ctx.fillStyle = rgb(items[i].col, 0.7); ctx.fill();
+            ctx.fillStyle = rgb(items[i].col, 0.45);
+            ctx.fillText(items[i].label, ix + 8, ly + 3);
+          }
+        }
+
         function drawBoundary(now) {
           var pc = PHASE_COLORS[phase];
           oddRadius = radius * 0.76;
@@ -4860,6 +4899,7 @@
           drawCenter();
           drawHash(now);
           drawFail(now);
+          drawLegend();
 
           requestAnimationFrame(animate);
         }
