@@ -4,15 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <title>Security — Sentinel Authority</title>
-  <meta name="description" content="ENVELO Agent security architecture. Zero trust, zero access design for enterprise IT teams." />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect x='6' y='6' width='20' height='20' rx='5' fill='%235B4B8A' stroke='%239d8ccf' stroke-width='2'/><circle cx='16' cy='16' r='4' fill='%239d8ccf'/></svg>" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <meta name="description" content="Security architecture and data privacy guarantees for ENVELO and ODDC certification." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Source+Serif+4:wght@200;400&display=swap" rel="stylesheet" />
   <style>
-    /* ═══ EXACT index.html variables ═══ */
+    /* EXACT index.html variables */
     :root{
-      color-scheme:dark;
+      color-scheme: dark;
       --purple-primary:#5B4B8A;
       --purple-bright:#a896d6;
       --purple-glow:rgba(157,140,207,.20);
@@ -29,195 +27,281 @@
       --serif:Georgia,'Source Serif 4',serif;
       --mono:Consolas,'IBM Plex Mono',monospace;
       --sans:Calibri,'Inter',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-      --ease:cubic-bezier(0.16,1,0.3,1);
-      --ease-out:cubic-bezier(0.33,1,0.68,1);
-      --space-1:10px;--space-2:20px;--space-3:20px;--space-4:28px;--space-5:35px;--space-6:40px;--space-8:50px;--space-10:60px;--space-12:120px;
-      --max:780px;
-      --nav-height:72px;
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-out: cubic-bezier(0.33, 1, 0.68, 1);
+      --space-1: 10px;--space-2: 20px;--space-3: 20px;--space-4: 28px;--space-5: 35px;--space-6: 40px;--space-8: 50px;--space-10: 60px;--space-12: 120px;
+      --max: 1200px;
+      --nav-height: 72px;
     }
-    *{box-sizing:border-box;}
-    html{scroll-behavior:smooth;background:var(--bg-deep);}
+    *{ box-sizing:border-box; }
+    html{ scroll-behavior:smooth; background:var(--bg-deep); }
     body{
-      margin:0;font-family:var(--sans);
-      background:radial-gradient(1200px 700px at 15% 10%,rgba(91,75,138,.10),transparent 55%),radial-gradient(900px 600px at 85% 80%,rgba(92,214,133,.04),transparent 55%),var(--bg-deep);
-      color:var(--text-primary);overflow-x:hidden;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
+      margin:0; font-family:var(--sans);
+      background: radial-gradient(1200px 700px at 15% 10%, rgba(91,75,138,.10), transparent 55%),
+                  radial-gradient(900px 600px at 85% 80%, rgba(92,214,133,.04), transparent 55%),
+                  var(--bg-deep);
+      color:var(--text-primary); overflow-x:hidden;
+      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
     }
-    a{color:inherit;text-decoration:none;}
-    a:hover{text-decoration:underline;text-underline-offset:4px;}
-    ::selection{background:var(--purple-primary);color:#fff;}
-    a:focus-visible,button:focus-visible{outline:2px solid rgba(157,140,207,.75);outline-offset:3px;}
+    a{ color:inherit; text-decoration:none; }
+    a:hover{ text-decoration:underline; text-underline-offset:4px; }
+    ::selection{ background:var(--purple-primary); color:#fff; }
+    a:focus-visible, button:focus-visible { outline: 2px solid rgba(157,140,207,.75); outline-offset: 3px; border-radius: 10px; }
 
-    /* ═══ Grid overlay ═══ */
-    .grid-overlay{position:fixed;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px);background-size:var(--space-12) var(--space-12);opacity:.2;mask-image:radial-gradient(ellipse at center,rgba(0,0,0,.9) 20%,transparent 70%);-webkit-mask-image:radial-gradient(ellipse at center,rgba(0,0,0,.9) 20%,transparent 70%);}
+    .grid-overlay{
+      position:fixed; inset:0; pointer-events:none; z-index:0;
+      background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: var(--space-12) var(--space-12); opacity:.2;
+      mask-image: radial-gradient(ellipse at center, rgba(0,0,0,.9) 20%, transparent 70%);
+      -webkit-mask-image: radial-gradient(ellipse at center, rgba(0,0,0,.9) 20%, transparent 70%);
+    }
 
-    /* ═══ Nav — exact match ═══ */
-    .site-header{position:fixed;top:0;width:100%;z-index:50;padding:0 var(--space-2);height:var(--nav-height);border-bottom:1px solid rgba(255,255,255,.06);background:rgba(42,47,61,.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);display:flex;align-items:center;}
-    .nav-inner{max-width:var(--max);margin:0 auto;width:100%;display:flex;align-items:center;justify-content:space-between;gap:var(--space-2);}
-    .brand{display:flex;align-items:center;gap:var(--space-1);flex-shrink:0;text-decoration:none;}.brand:hover{text-decoration:none;}
-    .brand-mark{width:24px;height:24px;background:var(--purple-primary);border:2px solid var(--purple-bright);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-    .brand-mark-inner{width:8px;height:8px;background:#c4b8e8;border-radius:50%;animation:eye-pulse 7s ease-in-out infinite;}
-    @keyframes eye-pulse{0%,100%{opacity:.75;transform:scale(.98);box-shadow:0 0 0 rgba(196,184,232,0);}50%{opacity:1;transform:scale(1.02);box-shadow:0 0 10px rgba(157,140,207,.22);}}
-    .brand-name{font-family:var(--mono);font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.86);white-space:nowrap;}
-    .back-link{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-tertiary);transition:color .2s;display:flex;align-items:center;gap:6px;}.back-link:hover{color:var(--text-primary);text-decoration:none;}
+    .site-header{
+      position:fixed; top:0; width:100%; z-index:50; padding:0 var(--space-2);
+      height: var(--nav-height); border-bottom:1px solid rgba(255,255,255,.06);
+      background: rgba(42,47,61,.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      display: flex; align-items: center;
+    }
+    .nav-inner{ max-width: var(--max); margin:0 auto; width: 100%; display:flex; align-items:center; justify-content:space-between; gap: var(--space-2); }
+    .brand{ display:flex; align-items:center; gap: var(--space-1); flex-shrink: 0; text-decoration: none; }
+    .brand:hover{ text-decoration: none; }
+    .brand-mark{ width: 24px; height: 24px; background: var(--purple-primary); border: 2px solid var(--purple-bright); border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .brand-mark-inner{ width: 8px; height: 8px; background: #c4b8e8; border-radius: 50%; animation: eye-pulse 7s ease-in-out infinite; }
+    @keyframes eye-pulse { 0%, 100% { opacity: .75; transform: scale(.98); box-shadow: 0 0 0 rgba(196,184,232,0); } 50% { opacity: 1; transform: scale(1.02); box-shadow: 0 0 10px rgba(157,140,207,.22); } }
+    .brand-name{ font-family: var(--mono); font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: rgba(255,255,255,.86); white-space: nowrap; }
+    .back-link{ font-family: var(--mono); font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-tertiary); transition: color .2s; }
+    .back-link:hover{ color: var(--text-primary); text-decoration: none; }
 
-    /* ═══ Layout ═══ */
-    .content-wrap{position:relative;z-index:1;max-width:var(--max);margin:0 auto;padding:calc(var(--nav-height) + 48px) var(--space-2) 80px;}
+    main{ position: relative; z-index: 1; max-width: var(--max); margin: 0 auto; padding: 0 var(--space-2); }
 
-    /* ═══ HUD System — exact match ═══ */
-    .hud-frame{position:relative;padding:20px 16px;border:none;overflow:hidden;}
-    .hud-frame::before,.hud-frame::after,.hud-frame>i::before,.hud-frame>i::after{content:'';position:absolute;width:12px;height:12px;border-color:rgba(255,255,255,0.08);border-style:solid;pointer-events:none;animation:corner-breathe 4s ease-in-out infinite;}
+    .section{ padding: var(--space-10) 0; border-top: 1px solid var(--border-glass); scroll-margin-top: calc(var(--nav-height) + 24px); position: relative; }
+    .section-label{ font-family: var(--mono); font-size: 10px; letter-spacing: 5px; text-transform: uppercase; color: var(--purple-bright); display:block; margin-bottom: 12px; }
+    .section-title{ font-family: var(--serif); font-size: clamp(30px, 4vw, 50px); font-weight: normal; line-height: 1.1; margin: 0; letter-spacing: -0.01em; }
+    .section-title .accent{ font-style: italic; color: var(--purple-bright); }
+    .section-lead{ max-width: 70ch; color: var(--text-secondary); font-weight: 300; line-height: 1.85; margin: var(--space-2) 0 0; font-size: 16px; }
+
+    /* HUD System base */
+    .hud-frame{position:relative;padding:20px 16px;border:none;}
+    .hud-frame::before,.hud-frame::after,.hud-frame>i::before,.hud-frame>i::after{
+      content:'';position:absolute;width:8px;height:8px;
+      border-color:rgba(255,255,255,0.08);border-style:solid;pointer-events:none;
+    }
     .hud-frame::before{top:0;left:0;border-width:1px 0 0 1px;}
     .hud-frame::after{top:0;right:0;border-width:1px 1px 0 0;}
     .hud-frame>i::before{bottom:0;left:0;border-width:0 0 1px 1px;position:absolute;}
     .hud-frame>i::after{bottom:0;right:0;border-width:0 1px 1px 0;position:absolute;}
     .hud-frame>i{position:absolute;inset:0;pointer-events:none;}
-    @keyframes corner-breathe{0%,100%{border-color:rgba(255,255,255,0.06);}50%{border-color:rgba(157,140,207,0.2);}}
+    .hud-frame-green::before,.hud-frame-green::after,.hud-frame-green>i::before,.hud-frame-green>i::after{border-color:rgba(92,214,133,0.12);}
     .hud-frame-red::before,.hud-frame-red::after,.hud-frame-red>i::before,.hud-frame-red>i::after{border-color:rgba(214,92,92,0.12);}
-    .hud-frame-green::before,.hud-frame-green::after,.hud-frame-green>i::before,.hud-frame-green>i::after{animation:corner-breathe-green 4s ease-in-out infinite !important;}
-    @keyframes corner-breathe-green{0%,100%{border-color:rgba(92,214,133,0.08);}50%{border-color:rgba(92,214,133,0.25);}}
-
     .hud-scanline{border-bottom:1px solid rgba(255,255,255,0.04);}
-    .hud-dot{display:inline-block;width:4px;height:4px;border-radius:50%;background:rgba(157,140,207,0.5);margin-right:8px;flex-shrink:0;}
-    .hud-dot-green{background:rgba(92,214,133,0.6);animation:hud-breathe 3s ease-in-out infinite;}
-    .hud-dot-red{background:rgba(214,92,92,0.5);}
-    @keyframes hud-breathe{0%,100%{opacity:0.4;}50%{opacity:1;}}
-    .hud-row{padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.02);}.hud-row:last-child{border-bottom:none;}
     .hud-label{font-family:var(--mono);font-size:9px;letter-spacing:2px;color:rgba(255,255,255,0.35);text-transform:uppercase;}
     .hud-title{font-size:14px;color:rgba(255,255,255,0.92);font-weight:400;margin:2px 0;}
     .hud-desc{font-size:12px;color:rgba(255,255,255,0.50);line-height:1.5;}
     .hud-link{font-family:var(--mono);font-size:11px;letter-spacing:2px;color:rgba(157,140,207,0.7);text-decoration:none !important;border-bottom:none !important;padding-bottom:2px;transition:all 0.2s;position:relative;overflow:hidden;}
-    .hud-link:hover{color:rgba(157,140,207,0.95);text-decoration:none !important;}
+    .hud-link:hover{color:rgba(157,140,207,0.95);}
     .hud-link::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(157,140,207,0.4),transparent);transform:translateX(-100%);transition:transform 0.4s ease;}
     .hud-link:hover::after{transform:translateX(0);}
 
-    /* ═══ Section titles — exact match ═══ */
-    .section-label{font-family:var(--mono);font-size:10px;letter-spacing:5px;text-transform:uppercase;color:var(--purple-bright);display:block;margin-bottom:12px;}
-    .section-title{font-family:var(--serif);font-size:clamp(28px,4.5vw,44px);font-weight:normal;line-height:1.15;margin:0 0 16px;letter-spacing:-0.02em;}
-    .section-lead{max-width:55ch;color:var(--text-secondary);font-weight:300;line-height:1.85;margin-bottom:var(--space-6);font-size:16px;}
+    /* 2050 HUD overlay */
+    .section::before{
+      content:''; position:absolute; top:0; left:10%; right:10%; height:1px;
+      background:linear-gradient(90deg, transparent, rgba(157,140,207,0.12) 30%, rgba(157,140,207,0.2) 50%, rgba(157,140,207,0.12) 70%, transparent);
+      animation:edge-pulse 4s ease-in-out infinite;
+    }
+    @keyframes edge-pulse{0%,100%{opacity:0.3;}50%{opacity:1;}}
+    .hud-frame::before,.hud-frame::after,.hud-frame>i::before,.hud-frame>i::after{
+      width:12px !important; height:12px !important;
+      transition:border-color 1.5s ease;
+      animation:corner-breathe 4s ease-in-out infinite;
+    }
+    @keyframes corner-breathe{0%,100%{border-color:rgba(255,255,255,0.06);}50%{border-color:rgba(157,140,207,0.2);}}
+    .hud-frame-green::before,.hud-frame-green::after,.hud-frame-green>i::before,.hud-frame-green>i::after{
+      animation:corner-breathe-green 4s ease-in-out infinite !important;
+    }
+    @keyframes corner-breathe-green{0%,100%{border-color:rgba(92,214,133,0.08);}50%{border-color:rgba(92,214,133,0.25);}}
+    .hud-frame{position:relative;overflow:hidden;}
 
-    /* ═══ Badge row ═══ */
+    /* Nuclear override — scoped to .section */
+    .section *:not(.hud-dot):not(.hud-dot-green):not(.hud-dot-amber):not(.hud-dot-red):not([style*="border-radius: 50%"]):not(canvas){
+      border-radius: 0 !important;
+    }
+    .section *:not(canvas):not([id*="dot"]){
+      box-shadow: none !important;
+    }
+    footer, footer *{ border-radius: 0 !important; }
+    nav, nav *{ border-radius: 0 !important; }
+
+    /* Badges — exact match */
+    .badge{
+      font-family:var(--mono); font-size:9px; letter-spacing:2px; text-transform:uppercase;
+      padding:6px 8px; border-radius:999px; border:1px solid rgba(255,255,255,.14);
+      background:rgba(255,255,255,.03); color:rgba(255,255,255,.80); white-space:nowrap;
+    }
+    .badge.green{border-color:rgba(92,214,133,.22);color:rgba(92,214,133,.90);background:rgba(92,214,133,.06);}
+    .badge.red{border-color:rgba(214,92,92,.22);color:rgba(214,92,92,.95);background:rgba(214,92,92,.06);}
+
+    /* AWWWARDS layer */
+    .sa-noise{
+      position:fixed;inset:0;pointer-events:none;z-index:99990;opacity:0.025;
+      background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-repeat:repeat;background-size:256px 256px;
+    }
+    .sa-vignette{
+      position:fixed;inset:0;pointer-events:none;z-index:99989;
+      background:radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.15) 80%, rgba(0,0,0,0.35) 100%);
+    }
+
+    /* Footer */
+    footer{
+      border-top:1px solid var(--border-glass); padding:var(--space-6) 0 var(--space-4);
+      margin-top:var(--space-4); color:rgba(255,255,255,.45);
+      font-family:var(--mono); font-size:10px; letter-spacing:1px;
+    }
+    .footer-inner{
+      max-width:var(--max); margin:0 auto; padding:0 var(--space-2);
+      display:flex; justify-content:space-between; align-items:flex-start;
+      gap:var(--space-2); flex-wrap:wrap;
+    }
+    .foot-links a{color:rgba(255,255,255,.48);font-size:13px;}
+    .foot-links a:hover{color:rgba(255,255,255,.82);text-decoration:none;}
+
+    /* Page-specific: FAQ */
+    .faq-group-label{font-family:var(--mono);font-size:9px;letter-spacing:2px;color:rgba(255,255,255,0.35);text-transform:uppercase;margin:24px 0 12px;padding-top:8px;}
+    .faq-item{padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.02);}
+    .faq-item:last-child{border-bottom:none;}
+    .faq-q{font-size:14px;color:rgba(255,255,255,0.92);font-weight:400;margin:0 0 6px;}
+    .faq-a{font-size:13px;color:var(--text-secondary);line-height:1.65;margin:0;}
     .badge-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;}
-    .badge{font-family:var(--mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;padding:6px 0;color:rgba(255,255,255,.65);white-space:nowrap;}
-    .badge.red{color:rgba(214,92,92,.85);}
 
-    /* ═══ FAQ ═══ */
-    .faq-group-label{font-family:var(--mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border-subtle);}
-    .faq-item{padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.02);}.faq-item:last-child{border-bottom:none;padding-bottom:0;}
-    .faq-q{font-size:14px;font-weight:500;color:rgba(255,255,255,0.92);margin-bottom:6px;line-height:1.4;}
-    .faq-a{font-size:13px;color:var(--text-secondary);line-height:1.75;margin:0;}
-
-    /* ═══ Footer — exact match ═══ */
-    footer{border-top:1px solid var(--border-glass);padding:var(--space-6) 0 var(--space-4);margin-top:var(--space-4);color:rgba(255,255,255,.45);font-family:var(--mono);font-size:10px;letter-spacing:1px;}
-    .footer-inner{max-width:var(--max);margin:0 auto;padding:0 var(--space-2);display:flex;justify-content:space-between;align-items:flex-start;gap:var(--space-2);flex-wrap:wrap;}
-
-    /* ═══ Nuclear override ═══ */
-    *:not(.hud-dot):not(.hud-dot-green):not(.hud-dot-red):not(.brand-mark-inner):not(canvas){border-radius:0 !important;}
-
-    @media(max-width:768px){.content-wrap{padding:calc(var(--nav-height) + 32px) 16px 60px;}.badge-row{gap:6px;}.badge{font-size:8px;padding:5px 6px;}}
-    @media(max-width:480px){.section-title{font-size:22px;}.badge-row{flex-direction:column;}}
+    @media(max-width:768px){
+      :root{--nav-height:60px;}
+      .site-header{padding:0 16px;height:60px;}
+      .brand-name{font-size:11px !important;letter-spacing:1.5px !important;}
+    }
   </style>
 </head>
 <body>
-  <div class="grid-overlay" aria-hidden="true"></div>
+
+  <div class="grid-overlay"></div>
+  <div class="sa-noise"></div>
+  <div class="sa-vignette"></div>
 
   <header class="site-header">
-    <div class="nav-inner">
+    <nav class="nav-inner">
       <a href="index.html" class="brand">
         <div class="brand-mark"><div class="brand-mark-inner"></div></div>
         <div class="brand-name">Sentinel Authority</div>
       </a>
       <a href="index.html#security" class="back-link">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:4px;"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
         Back
       </a>
-    </div>
+    </nav>
   </header>
 
-  <div class="content-wrap">
-    <div class="section-label">SECURITY ARCHITECTURE</div>
-    <h1 class="section-title">Security FAQ for IT &amp; Compliance Teams</h1>
-    <p class="section-lead">Enterprise security teams ask tough questions. Here are the answers, backed by architecture.</p>
+  <main>
 
-    <!-- ── Core Guarantee ── -->
-    <div class="hud-frame hud-frame-green" style="margin-bottom:var(--space-4);"><i></i>
-      <div class="hud-label" style="color:rgba(92,214,133,0.6);margin-bottom:12px;">THE CORE GUARANTEE</div>
-      <p style="font-size:15px;color:var(--text-secondary);line-height:1.7;margin:0;">Sentinel Authority <strong style="color:var(--text-primary);">cannot</strong> send commands to your system, execute code on your infrastructure, access your network, or control your autonomous systems. This is architecturally enforced, not policy-based.</p>
-      <div class="badge-row">
-        <span class="badge red">✕ NO REMOTE COMMANDS</span>
-        <span class="badge red">✕ NO CODE EXECUTION</span>
-        <span class="badge red">✕ NO NETWORK ACCESS</span>
-        <span class="badge red">✕ NO ACTUATOR CONTROL</span>
+    <div class="section" style="border-top:none;padding-top:calc(var(--nav-height) + 48px);">
+      <div class="section-label">SECURITY ARCHITECTURE</div>
+      <h1 class="section-title" style="font-family:var(--serif);">Zero Trust by <span class="accent">Design</span></h1>
+      <p class="section-lead">ENVELO was built so Sentinel Authority never needs access to your systems, data, or network. Every security property is structural, not contractual.</p>
+    </div>
+
+    <div class="section">
+      <div class="hud-frame hud-frame-green"><i></i>
+        <div class="hud-label" style="margin-bottom:var(--space-2);">CORE GUARANTEE</div>
+        <div class="hud-title" style="margin-bottom:var(--space-2);">What ENVELO cannot do — by architecture, not policy</div>
+        <div class="badge-row">
+          <span class="badge red">NO INBOUND PORTS</span>
+          <span class="badge red">NO REMOTE ACCESS</span>
+          <span class="badge red">NO DATA COLLECTION</span>
+          <span class="badge red">NO CLOUD COMMANDS</span>
+        </div>
+        <p style="color:var(--text-tertiary);font-size:12px;line-height:1.6;margin-top:16px;">The agent opens zero listening ports. Sentinel Authority has no mechanism to connect to, access, or control your infrastructure. Communication is strictly one-way: telemetry out, nothing in.</p>
       </div>
     </div>
 
-    <!-- ── Attack Surface ── -->
-    <div class="hud-frame" style="margin-bottom:var(--space-3);"><i></i>
-      <div class="faq-group-label">ATTACK SURFACE &amp; COMPROMISE</div>
-      <div class="faq-item">
-        <div class="faq-q">What if Sentinel Authority is compromised?</div>
-        <div class="faq-a">There is no path back to your systems. The agent opens no listening ports and accepts no inbound connections. Even a fully compromised Sentinel Authority cannot send commands, push code, or access your infrastructure. The one-way architecture makes this physically impossible.</div>
-      </div>
-      <div class="faq-item">
-        <div class="faq-q">Can Sentinel push updates or execute code on our systems?</div>
-        <div class="faq-a">No. All updates are customer-initiated. We cannot remotely modify, patch, or execute anything on your infrastructure. The agent fetches boundary configurations (JSON data only) but never accepts executable code.</div>
-      </div>
-      <div class="faq-item">
-        <div class="faq-q">Can the agent access our application data?</div>
-        <div class="faq-a">No. ENVELO validates action boundaries only. It cannot read, store, or transmit your application data, databases, or files. It sees only the parameters you explicitly pass to boundary checks (e.g., "speed=50").</div>
-      </div>
-    </div>
-
-    <!-- ── Data Privacy ── -->
-    <div class="hud-frame" style="margin-bottom:var(--space-3);"><i></i>
-      <div class="faq-group-label">DATA PRIVACY &amp; HIPAA</div>
-      <div class="faq-item">
-        <div class="faq-q">Does ENVELO transmit PHI or PII?</div>
-        <div class="faq-a">No. Telemetry contains only operational metrics — boundary proximity, enforcement events, timestamps. No patient data, no payload content, no PII ever leaves your system. You control what parameters are passed to the agent.</div>
-      </div>
-      <div class="faq-item">
-        <div class="faq-q">Is a BAA (Business Associate Agreement) available?</div>
-        <div class="faq-a">Yes. Business Associate Agreements are available for healthcare customers upon request. Contact <a href="mailto:conformance@sentinelauthority.org" class="hud-link" style="font-size:13px;letter-spacing:0;">conformance@sentinelauthority.org</a>.</div>
+    <div class="section">
+      <div class="hud-frame hud-scanline"><i></i>
+        <div class="faq-group-label">ATTACK SURFACE</div>
+        <div class="faq-item">
+          <div class="faq-q">Can Sentinel Authority access our systems remotely?</div>
+          <div class="faq-a">No. ENVELO opens zero inbound ports and accepts zero inbound connections. There is no SSH, no API endpoint, no reverse tunnel. The architecture makes remote access structurally impossible — not just policy-prohibited.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q">What happens if the connection to Sentinel drops?</div>
+          <div class="faq-a">The agent enters fail-closed mode: all autonomous actions are blocked until connectivity is restored. This is the safe state. No data is lost — telemetry is queued locally with cryptographic ordering and transmitted when the connection resumes.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q">Could a compromised Sentinel server send malicious commands?</div>
+          <div class="faq-a">No. The agent does not accept commands from any external source. It only transmits telemetry outbound. Even if Sentinel's servers were fully compromised, there is no code path to send instructions to the agent.</div>
+        </div>
       </div>
     </div>
 
-    <!-- ── Network ── -->
-    <div class="hud-frame" style="margin-bottom:var(--space-3);"><i></i>
-      <div class="faq-group-label">NETWORK &amp; FIREWALL</div>
-      <div class="faq-item">
-        <div class="faq-q">What firewall rules are required?</div>
-        <div class="faq-a">Outbound HTTPS (port 443) to api.sentinelauthority.org only. No inbound ports. No DMZ exposure. No VPN tunnels. The agent initiates all connections.</div>
-      </div>
-      <div class="faq-item">
-        <div class="faq-q">What if Sentinel Authority goes offline?</div>
-        <div class="faq-a">ENVELO continues enforcing locally using cached boundaries. Enforcement decisions never depend on external connectivity. Your system remains protected. Telemetry is buffered and synced when connectivity returns.</div>
-      </div>
-    </div>
-
-    <!-- ── Auditability ── -->
-    <div class="hud-frame" style="margin-bottom:var(--space-3);"><i></i>
-      <div class="faq-group-label">AUDITABILITY &amp; COMPLIANCE</div>
-      <div class="faq-item">
-        <div class="faq-q">Is the agent code auditable?</div>
-        <div class="faq-a">Yes. Enterprise customers receive full source access for security review prior to deployment. We welcome third-party security audits.</div>
-      </div>
-      <div class="faq-item">
-        <div class="faq-q">What compliance certifications do you have?</div>
-        <div class="faq-a">SOC 2 Type II in progress. Architecture designed to exceed SOC 2 requirements. Annual third-party penetration testing. Contact us for the latest compliance documentation.</div>
+    <div class="section">
+      <div class="hud-frame"><i></i>
+        <div class="faq-group-label">DATA PRIVACY</div>
+        <div class="faq-item">
+          <div class="faq-q">What data does ENVELO transmit?</div>
+          <div class="faq-a">Only ODD parameter values: speed, position, heading, obstacle distance, weather classification — the operational telemetry defined in your boundary specification. No PHI, no PII, no business data, no logs, no screenshots, no video.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q">Is ENVELO compatible with HIPAA / SOC 2 / ISO 27001?</div>
+          <div class="faq-a">Yes. Because ENVELO transmits no PHI or PII, it operates outside the scope of HIPAA covered data. For SOC 2 and ISO 27001 environments, the agent's outbound-only architecture, certificate pinning, and cryptographic audit trail satisfy access control and logging requirements. BAA available on request.</div>
+        </div>
       </div>
     </div>
 
-    <!-- ── Contact ── -->
-    <div class="hud-frame" style="text-align:center;padding:var(--space-4) 16px;"><i></i>
-      <div class="hud-label" style="margin-bottom:10px;">STILL HAVE QUESTIONS?</div>
-      <p style="font-size:14px;color:var(--text-secondary);line-height:1.7;margin:0;">Our security team is available to discuss your specific requirements.<br>Contact <a href="mailto:conformance@sentinelauthority.org" class="hud-link" style="font-size:14px;letter-spacing:0;">conformance@sentinelauthority.org</a></p>
+    <div class="section">
+      <div class="hud-frame"><i></i>
+        <div class="faq-group-label">NETWORK</div>
+        <div class="faq-item">
+          <div class="faq-q">What network access does ENVELO require?</div>
+          <div class="faq-a">Outbound HTTPS only (port 443) to api.sentinelauthority.org. No inbound ports, no UDP, no custom protocols. Compatible with corporate proxies and firewalls — allowlist a single domain.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q">How is the connection secured?</div>
+          <div class="faq-a">TLS 1.3 with certificate pinning. The agent pins Sentinel Authority's certificate fingerprint at install time, preventing MITM interception even if a CA is compromised. All telemetry is additionally signed with the agent's private key.</div>
+        </div>
+      </div>
     </div>
-  </div>
+
+    <div class="section">
+      <div class="hud-frame"><i></i>
+        <div class="faq-group-label">AUDITABILITY</div>
+        <div class="faq-item">
+          <div class="faq-q">How can we verify what the agent is sending?</div>
+          <div class="faq-a">Run <span style="font-family:var(--mono);font-size:12px;color:var(--accent-green);">envelo export</span> to generate an auditor-ready bundle containing every boundary, every telemetry schema, and every enforcement rule. Run <span style="font-family:var(--mono);font-size:12px;color:var(--accent-green);">envelo events</span> for the full violation and enforcement log.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q">Is the telemetry tamper-proof?</div>
+          <div class="faq-a">Yes. Every telemetry packet is cryptographically signed and hash-chain linked to the previous packet. Any gap, reorder, or modification breaks the chain and is flagged automatically. This provides non-repudiable evidence for certification and audit.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section" style="text-align:center;padding:var(--space-8) 0;">
+      <div class="hud-frame" style="padding:var(--space-4) 16px;"><i></i>
+        <div class="hud-label" style="margin-bottom:8px;">SECURITY QUESTIONS</div>
+        <p style="color:var(--text-secondary);font-size:14px;line-height:1.7;margin:0 0 var(--space-2);">For security reviews, penetration test coordination, or compliance documentation requests.</p>
+        <a href="mailto:security@sentinelauthority.org" class="hud-link" style="font-size:13px;">security@sentinelauthority.org</a>
+      </div>
+    </div>
+
+  </main>
 
   <footer>
     <div class="footer-inner">
-      <span>© SENTINEL AUTHORITY — ODDC V1.0</span>
+      <div>&#169; 2026 SENTINEL AUTHORITY</div>
+      <div class="foot-links">
+        <a href="https://app.sentinelauthority.org">Portal</a>
+        <a href="index.html">Home</a>
+        <a href="agent.html">Agent</a>
+      </div>
     </div>
   </footer>
+
 </body>
 </html>
 

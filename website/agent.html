@@ -4,13 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <title>ENVELO Agent — Sentinel Authority</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect x='6' y='6' width='20' height='20' rx='5' fill='%235B4B8A' stroke='%239d8ccf' stroke-width='2'/><circle cx='16' cy='16' r='4' fill='%239d8ccf'/></svg>" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <meta name="description" content="Install and configure the ENVELO runtime enforcement agent for ODDC certification." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Source+Serif+4:wght@200;400&display=swap" rel="stylesheet" />
   <style>
+    /* ═══ EXACT index.html variables ═══ */
     :root{
-      color-scheme:dark;
+      color-scheme: dark;
       --purple-primary:#5B4B8A;
       --purple-bright:#a896d6;
       --purple-glow:rgba(157,140,207,.20);
@@ -27,48 +27,81 @@
       --serif:Georgia,'Source Serif 4',serif;
       --mono:Consolas,'IBM Plex Mono',monospace;
       --sans:Calibri,'Inter',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-      --ease:cubic-bezier(0.16,1,0.3,1);
-      --ease-out:cubic-bezier(0.33,1,0.68,1);
-      --space-1:10px;--space-2:20px;--space-3:20px;--space-4:28px;--space-5:35px;--space-6:40px;--space-8:50px;--space-10:60px;--space-12:120px;
-      --max:900px;
-      --nav-height:72px;
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-out: cubic-bezier(0.33, 1, 0.68, 1);
+      --space-1: 10px;--space-2: 20px;--space-3: 20px;--space-4: 28px;--space-5: 35px;--space-6: 40px;--space-8: 50px;--space-10: 60px;--space-12: 120px;
+      --max: 1200px;
+      --nav-height: 72px;
     }
-    *{box-sizing:border-box;}
-    html{scroll-behavior:smooth;background:var(--bg-deep);}
+
+    /* ═══ Resets — exact match ═══ */
+    *{ box-sizing:border-box; }
+    html{ scroll-behavior:smooth; background:var(--bg-deep); }
     body{
-      margin:0;font-family:var(--sans);
-      background:radial-gradient(1200px 700px at 15% 10%,rgba(91,75,138,.10),transparent 55%),radial-gradient(900px 600px at 85% 80%,rgba(92,214,133,.04),transparent 55%),var(--bg-deep);
-      color:var(--text-primary);overflow-x:hidden;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
+      margin:0; font-family:var(--sans);
+      background: radial-gradient(1200px 700px at 15% 10%, rgba(91,75,138,.10), transparent 55%),
+                  radial-gradient(900px 600px at 85% 80%, rgba(92,214,133,.04), transparent 55%),
+                  var(--bg-deep);
+      color:var(--text-primary); overflow-x:hidden;
+      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
     }
-    a{color:inherit;text-decoration:none;}
-    a:hover{text-decoration:underline;text-underline-offset:4px;}
-    ::selection{background:var(--purple-primary);color:#fff;}
-    a:focus-visible,button:focus-visible{outline:2px solid rgba(157,140,207,.75);outline-offset:3px;}
+    a{ color:inherit; text-decoration:none; }
+    a:hover{ text-decoration:underline; text-underline-offset:4px; }
+    ::selection{ background:var(--purple-primary); color:#fff; }
+    a:focus-visible, button:focus-visible { outline: 2px solid rgba(157,140,207,.75); outline-offset: 3px; border-radius: 10px; }
 
-    .grid-overlay{position:fixed;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px);background-size:var(--space-12) var(--space-12);opacity:.2;mask-image:radial-gradient(ellipse at center,rgba(0,0,0,.9) 20%,transparent 70%);-webkit-mask-image:radial-gradient(ellipse at center,rgba(0,0,0,.9) 20%,transparent 70%);}
+    /* ═══ Grid overlay — exact match ═══ */
+    .grid-overlay{
+      position:fixed; inset:0; pointer-events:none; z-index:0;
+      background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: var(--space-12) var(--space-12); opacity:.2;
+      mask-image: radial-gradient(ellipse at center, rgba(0,0,0,.9) 20%, transparent 70%);
+      -webkit-mask-image: radial-gradient(ellipse at center, rgba(0,0,0,.9) 20%, transparent 70%);
+    }
 
-    /* Nav — exact match */
-    .site-header{position:fixed;top:0;width:100%;z-index:50;padding:0 var(--space-2);height:var(--nav-height);border-bottom:1px solid rgba(255,255,255,.06);background:rgba(42,47,61,.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);display:flex;align-items:center;}
-    .nav-inner{max-width:var(--max);margin:0 auto;width:100%;display:flex;align-items:center;justify-content:space-between;gap:var(--space-2);}
-    .brand{display:flex;align-items:center;gap:var(--space-1);flex-shrink:0;text-decoration:none;}.brand:hover{text-decoration:none;}
-    .brand-mark{width:24px;height:24px;background:var(--purple-primary);border:2px solid var(--purple-bright);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-    .brand-mark-inner{width:8px;height:8px;background:#c4b8e8;border-radius:50%;animation:eye-pulse 7s ease-in-out infinite;}
-    @keyframes eye-pulse{0%,100%{opacity:.75;transform:scale(.98);box-shadow:0 0 0 rgba(196,184,232,0);}50%{opacity:1;transform:scale(1.02);box-shadow:0 0 10px rgba(157,140,207,.22);}}
-    .brand-name{font-family:var(--mono);font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.86);white-space:nowrap;}
-    .back-link{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-tertiary);transition:color .2s;}.back-link:hover{color:var(--text-primary);text-decoration:none;}
+    /* ═══ Nav — exact match ═══ */
+    .site-header{
+      position:fixed; top:0; width:100%; z-index:50; padding:0 var(--space-2);
+      height: var(--nav-height); border-bottom:1px solid rgba(255,255,255,.06);
+      background: rgba(42,47,61,.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      display: flex; align-items: center;
+    }
+    .nav-inner{ max-width: var(--max); margin:0 auto; width: 100%; display:flex; align-items:center; justify-content:space-between; gap: var(--space-2); }
+    .brand{ display:flex; align-items:center; gap: var(--space-1); flex-shrink: 0; text-decoration: none; }
+    .brand:hover{ text-decoration: none; }
+    .brand-mark{ width: 24px; height: 24px; background: var(--purple-primary); border: 2px solid var(--purple-bright); border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .brand-mark-inner{ width: 8px; height: 8px; background: #c4b8e8; border-radius: 50%; animation: eye-pulse 7s ease-in-out infinite; }
+    @keyframes eye-pulse { 0%, 100% { opacity: .75; transform: scale(.98); box-shadow: 0 0 0 rgba(196,184,232,0); } 50% { opacity: 1; transform: scale(1.02); box-shadow: 0 0 10px rgba(157,140,207,.22); } }
+    .brand-name{ font-family: var(--mono); font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: rgba(255,255,255,.86); white-space: nowrap; }
+    .back-link{ font-family: var(--mono); font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-tertiary); transition: color .2s; }
+    .back-link:hover{ color: var(--text-primary); text-decoration: none; }
 
-    /* Layout */
-    .content-wrap{position:relative;z-index:1;max-width:var(--max);margin:0 auto;padding:calc(var(--nav-height) + 48px) var(--space-2) 80px;}
+    /* ═══ Layout — exact match ═══ */
+    main{ position: relative; z-index: 1; max-width: var(--max); margin: 0 auto; padding: 0 var(--space-2); }
 
-    /* Sections — open, no boxes */
-    .section{padding:var(--space-10) 0;border-top:1px solid var(--border-glass);}
-    .section:first-child{border-top:none;padding-top:0;}
-    .section-label{font-family:var(--mono);font-size:10px;letter-spacing:5px;text-transform:uppercase;color:var(--purple-bright);display:block;margin-bottom:12px;}
-    .section-title{font-family:var(--serif);font-size:clamp(30px,4vw,50px);font-weight:normal;line-height:1.1;margin:0;letter-spacing:-0.01em;}
-    .section-title .accent{font-style:italic;color:var(--purple-bright);}
-    .section-lead{max-width:70ch;color:var(--text-secondary);font-weight:300;line-height:1.85;margin:var(--space-2) 0 0;font-size:16px;}
+    /* ═══ Sections — exact match ═══ */
+    .section{ padding: var(--space-10) 0; border-top: 1px solid var(--border-glass); scroll-margin-top: calc(var(--nav-height) + 24px); position: relative; }
+    .section-label{ font-family: var(--mono); font-size: 10px; letter-spacing: 5px; text-transform: uppercase; color: var(--purple-bright); display:block; margin-bottom: 12px; }
+    .section-title{ font-family: var(--serif); font-size: clamp(30px, 4vw, 50px); font-weight: normal; line-height: 1.1; margin: 0; letter-spacing: -0.01em; }
+    .section-title .accent{ font-style: italic; color: var(--purple-bright); }
+    .section-lead{ max-width: 70ch; color: var(--text-secondary); font-weight: 300; line-height: 1.85; margin: var(--space-2) 0 0; font-size: 16px; }
 
-    /* HUD rows — the main content pattern */
+    /* ═══ HUD System — exact match (base) ═══ */
+    .hud-frame{position:relative;padding:20px 16px;border:none;}
+    .hud-frame::before,.hud-frame::after,.hud-frame>i::before,.hud-frame>i::after{
+      content:'';position:absolute;width:8px;height:8px;
+      border-color:rgba(255,255,255,0.08);border-style:solid;pointer-events:none;
+    }
+    .hud-frame::before{top:0;left:0;border-width:1px 0 0 1px;}
+    .hud-frame::after{top:0;right:0;border-width:1px 1px 0 0;}
+    .hud-frame>i::before{bottom:0;left:0;border-width:0 0 1px 1px;position:absolute;}
+    .hud-frame>i::after{bottom:0;right:0;border-width:0 1px 1px 0;position:absolute;}
+    .hud-frame>i{position:absolute;inset:0;pointer-events:none;}
+    .hud-frame-green::before,.hud-frame-green::after,.hud-frame-green>i::before,.hud-frame-green>i::after{border-color:rgba(92,214,133,0.12);}
+    .hud-scanline{border-bottom:1px solid rgba(255,255,255,0.04);}
+    .hud-dot{display:inline-block;width:4px;height:4px;border-radius:50%;background:rgba(157,140,207,0.5);margin-right:8px;flex-shrink:0;}
+    .hud-dot-green{background:rgba(92,214,133,0.6);animation:hud-breathe 3s ease-in-out infinite;position:relative;}
+    @keyframes hud-breathe{0%,100%{opacity:0.4;}50%{opacity:1;}}
     .hud-row{padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.02);transition:background 0.3s ease;}
     .hud-row:last-child{border-bottom:none;}
     .hud-row:hover{background:rgba(157,140,207,0.02);}
@@ -76,208 +109,333 @@
     .hud-title{font-size:14px;color:rgba(255,255,255,0.92);font-weight:400;margin:2px 0;}
     .hud-desc{font-size:12px;color:rgba(255,255,255,0.50);line-height:1.5;}
     .hud-num{font-family:var(--mono);font-size:9px;letter-spacing:1px;color:rgba(157,140,207,0.4);margin-right:12px;}
-    .hud-dot{display:inline-block;width:4px;height:4px;border-radius:50%;background:rgba(157,140,207,0.5);margin-right:8px;flex-shrink:0;}
-    .hud-dot-green{background:rgba(92,214,133,0.6);animation:hud-breathe 3s ease-in-out infinite;}
-    @keyframes hud-breathe{0%,100%{opacity:0.4;}50%{opacity:1;}}
-    .hud-link{font-family:var(--mono);font-size:11px;letter-spacing:2px;color:rgba(157,140,207,0.7);text-decoration:none !important;padding-bottom:2px;transition:all 0.2s;position:relative;overflow:hidden;}
-    .hud-link:hover{color:rgba(157,140,207,0.95);text-decoration:none !important;}
+    .hud-link{font-family:var(--mono);font-size:11px;letter-spacing:2px;color:rgba(157,140,207,0.7);text-decoration:none !important;border-bottom:none !important;padding-bottom:2px;transition:all 0.2s;position:relative;overflow:hidden;}
+    .hud-link:hover{color:rgba(157,140,207,0.95);}
     .hud-link::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(157,140,207,0.4),transparent);transform:translateX(-100%);transition:transform 0.4s ease;}
     .hud-link:hover::after{transform:translateX(0);}
 
-    /* Code block */
-    .code-block{background:none;border:none;border-left:1px solid rgba(92,214,133,0.15);padding:8px 0 8px 14px;margin:8px 0;font-family:var(--mono);font-size:13px;color:var(--accent-green);overflow-x:auto;position:relative;line-height:1.6;}
-    .copy-btn{appearance:none;border:none;background:none;color:rgba(255,255,255,.35);padding:4px 0;font-family:var(--mono);font-size:9px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all .2s ease;position:absolute;top:4px;right:0;}
-    .copy-btn:hover{color:rgba(157,140,207,.85);}
+    /* ═══ 2050 HUD overlay — exact match ═══ */
+    .section::before{
+      content:''; position:absolute; top:0; left:10%; right:10%; height:1px;
+      background:linear-gradient(90deg, transparent, rgba(157,140,207,0.12) 30%, rgba(157,140,207,0.2) 50%, rgba(157,140,207,0.12) 70%, transparent);
+      animation:edge-pulse 4s ease-in-out infinite;
+    }
+    @keyframes edge-pulse{0%,100%{opacity:0.3;}50%{opacity:1;}}
 
-    /* CLI table — flat rows */
+    .hud-frame::before,.hud-frame::after,.hud-frame>i::before,.hud-frame>i::after{
+      width:12px !important; height:12px !important;
+      transition:border-color 1.5s ease;
+      animation:corner-breathe 4s ease-in-out infinite;
+    }
+    @keyframes corner-breathe{0%,100%{border-color:rgba(255,255,255,0.06);}50%{border-color:rgba(157,140,207,0.2);}}
+    .hud-frame-green::before,.hud-frame-green::after,.hud-frame-green>i::before,.hud-frame-green>i::after{
+      animation:corner-breathe-green 4s ease-in-out infinite !important;
+    }
+    @keyframes corner-breathe-green{0%,100%{border-color:rgba(92,214,133,0.08);}50%{border-color:rgba(92,214,133,0.25);}}
+
+    .hud-frame{position:relative;overflow:hidden;}
+    .hud-frame .hud-shimmer{
+      position:absolute;top:0;left:-100%;right:0;bottom:0;width:100%;
+      background:linear-gradient(105deg, transparent 40%, rgba(157,140,207,0.03) 45%, rgba(157,140,207,0.06) 50%, rgba(157,140,207,0.03) 55%, transparent 60%);
+      pointer-events:none;z-index:0;
+    }
+    @keyframes shimmer-sweep{from{left:-100%;}to{left:200%;}}
+
+    .hud-dot-green::after{
+      content:'';position:absolute;inset:-4px;border-radius:50%;
+      background:rgba(92,214,133,0.15);animation:dot-breathe 3s ease-in-out infinite;pointer-events:none;
+    }
+    @keyframes dot-breathe{0%,100%{transform:scale(0.8);opacity:0;}50%{transform:scale(1.8);opacity:1;}}
+
+    /* ═══ Nuclear override — exact match (scoped to .section) ═══ */
+    .section *:not(.hud-dot):not(.hud-dot-green):not(.hud-dot-amber):not(.hud-dot-red):not([style*="border-radius: 50%"]):not(canvas){
+      border-radius: 0 !important;
+    }
+    .section *:not(canvas):not([id*="dot"]){
+      box-shadow: none !important;
+    }
+    footer, footer *{ border-radius: 0 !important; }
+    nav, nav *{ border-radius: 0 !important; }
+
+    /* ═══ Buttons — exact match ═══ */
+    .btn{
+      appearance:none; border:1px solid rgba(255,255,255,.10); background: transparent;
+      color: rgba(255,255,255,.7); padding: 12px 20px; border-radius: 0;
+      font-family: var(--mono); font-size: 10px; letter-spacing: 2.5px; text-transform: uppercase;
+      cursor: pointer; transition: color .2s ease, border-color .2s ease;
+      position: relative; overflow:visible;
+    }
+    .btn:hover{ border-color: rgba(157,140,207,.4); color: rgba(157,140,207,.95); background: transparent; text-decoration: none; }
+    .btn::before,.btn::after{
+      content:''; position:absolute; width:6px; height:6px;
+      border-style:solid; border-color:rgba(157,140,207,0.25);
+      pointer-events:none; transition:border-color 0.3s ease;
+    }
+    .btn::before{top:-1px;left:-1px;border-width:1px 0 0 1px;}
+    .btn::after{bottom:-1px;right:-1px;border-width:0 1px 1px 0;}
+    .btn:hover::before,.btn:hover::after{border-color:rgba(157,140,207,0.6);}
+
+    /* ═══ Badges — exact match ═══ */
+    .badge{
+      font-family:var(--mono); font-size:9px; letter-spacing:2px; text-transform:uppercase;
+      padding:6px 8px; border-radius:999px; border:1px solid rgba(255,255,255,.14);
+      background:rgba(255,255,255,.03); color:rgba(255,255,255,.80); white-space:nowrap;
+    }
+    .badge.green{border-color:rgba(92,214,133,.22);color:rgba(92,214,133,.90);background:rgba(92,214,133,.06);}
+    .badge.red{border-color:rgba(214,92,92,.22);color:rgba(214,92,92,.95);background:rgba(214,92,92,.06);}
+
+    /* ═══ Copy button — exact match ═══ */
+    .copy-btn{
+      appearance:none; border:1px solid rgba(255,255,255,.18); background:rgba(255,255,255,.04);
+      color:rgba(255,255,255,.65); padding:4px 8px; border-radius:6px;
+      font-family:var(--mono); font-size:9px; letter-spacing:1px; text-transform:uppercase;
+      cursor:pointer; transition:all .2s ease;
+    }
+    .copy-btn:hover{ border-color:rgba(157,140,207,.55); background:rgba(91,75,138,.18); color:rgba(255,255,255,.90); }
+
+    /* ═══ AWWWARDS layer — exact match ═══ */
+    .sa-noise{
+      position:fixed;inset:0;pointer-events:none;z-index:99990;opacity:0.025;
+      background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-repeat:repeat;background-size:256px 256px;
+    }
+    .sa-vignette{
+      position:fixed;inset:0;pointer-events:none;z-index:99989;
+      background:radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.15) 80%, rgba(0,0,0,0.35) 100%);
+    }
+
+    /* ═══ Footer — exact match ═══ */
+    footer{
+      border-top:1px solid var(--border-glass); padding:var(--space-6) 0 var(--space-4);
+      margin-top:var(--space-4); color:rgba(255,255,255,.45);
+      font-family:var(--mono); font-size:10px; letter-spacing:1px;
+    }
+    .footer-inner{
+      max-width:var(--max); margin:0 auto; padding:0 var(--space-2);
+      display:flex; justify-content:space-between; align-items:flex-start;
+      gap:var(--space-2); flex-wrap:wrap;
+    }
+    .foot-links a{color:rgba(255,255,255,.48);font-size:13px;}
+    .foot-links a:hover{color:rgba(255,255,255,.82);text-decoration:none;}
+
+    /* ═══ Page-specific: CLI table ═══ */
     .cli-table{width:100%;border-collapse:collapse;margin:12px 0;}
-    .cli-table td{padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.02);font-size:13px;transition:background 0.3s ease;}
+    .cli-table td{padding:8px 12px;border-bottom:1px solid rgba(255,255,255,0.02);font-size:13px;transition:background 0.3s ease;}
     .cli-table tr:last-child td{border-bottom:none;}
-    .cli-table td:first-child{font-family:var(--mono);color:var(--accent-green);font-size:12px;white-space:nowrap;padding-right:20px;}
+    .cli-table td:first-child{font-family:var(--mono);color:var(--accent-green);font-size:12px;white-space:nowrap;}
     .cli-table td:last-child{color:var(--text-secondary);}
     .cli-table tr:hover td{background:rgba(157,140,207,0.02);}
-    .cli-group{font-family:var(--mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.35);margin:20px 0 8px;padding-top:8px;border-top:1px solid var(--border-subtle);}
-    .cli-group:first-child{border-top:none;margin-top:0;}
+    .cli-group{font-family:var(--mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.35);margin:20px 0 8px;padding-top:4px;}
 
-    /* Step rows */
-    .step-row{display:flex;align-items:flex-start;gap:16px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.02);}.step-row:last-child{border-bottom:none;}
+    /* ═══ Page-specific: code display ═══ */
+    .code-line{font-family:var(--mono);font-size:13px;color:var(--accent-green);line-height:1.6;padding:8px 0;}
+
+    /* ═══ Page-specific: steps ═══ */
+    .step-row{display:flex;align-items:flex-start;gap:16px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.02);}
+    .step-row:last-child{border-bottom:none;}
     .step-num{font-family:var(--mono);font-size:9px;letter-spacing:1px;color:rgba(157,140,207,0.4);min-width:20px;padding-top:2px;}
     .step-content h3{font-size:14px;font-weight:400;color:rgba(255,255,255,0.92);margin:0 0 4px;}
     .step-content p{color:var(--text-secondary);font-size:13px;line-height:1.6;margin:0;}
 
-    /* Security items — flat rows */
-    .sec-item{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.02);color:var(--text-secondary);font-size:13px;line-height:1.5;}
-    .sec-item:last-child{border-bottom:none;}
+    /* ═══ Page-specific: security list ═══ */
+    .sec-item{display:flex;align-items:flex-start;gap:10px;padding:8px 0;color:var(--text-secondary);font-size:13px;line-height:1.5;}
     .sec-dot{margin-top:5px;flex-shrink:0;}
 
-    /* Version badge */
-    .v-badge{font-family:var(--mono);font-size:9px;letter-spacing:1px;color:rgba(92,214,133,0.5);}
+    /* ═══ Page-specific: system req table ═══ */
+    .req-table{width:100%;border-collapse:collapse;}
+    .req-table td{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,0.02);font-size:13px;}
+    .req-table tr:last-child td{border-bottom:none;}
+    .req-table td:first-child{font-family:var(--mono);color:rgba(255,255,255,0.35);font-size:10px;letter-spacing:1px;text-transform:uppercase;white-space:nowrap;width:80px;}
+    .req-table td:last-child{color:var(--text-secondary);}
 
-    /* Footer — exact match */
-    footer{border-top:1px solid var(--border-glass);padding:var(--space-6) 0 var(--space-4);margin-top:var(--space-4);color:rgba(255,255,255,.45);font-family:var(--mono);font-size:10px;letter-spacing:1px;}
-    .footer-inner{max-width:var(--max);margin:0 auto;padding:0 var(--space-2);display:flex;justify-content:space-between;align-items:flex-start;gap:var(--space-2);flex-wrap:wrap;}
-    .foot-links a{color:rgba(255,255,255,.48);font-size:13px;}.foot-links a:hover{color:rgba(255,255,255,.82);text-decoration:none;}
-
-    @media(max-width:600px){.cli-table td:first-child{white-space:normal;}.footer-inner{flex-direction:column;gap:12px;}}
-    @media(max-width:768px){.content-wrap{padding:calc(var(--nav-height) + 32px) 16px 60px;}}
+    /* ═══ Responsive ═══ */
+    @media(max-width:768px){
+      :root{--nav-height:60px;}
+      .site-header{padding:0 16px;height:60px;}
+      .brand-name{font-size:11px !important;letter-spacing:1.5px !important;}
+    }
+    @media(max-width:600px){.cli-table td:first-child{white-space:normal;}}
   </style>
 </head>
 <body>
-  <div class="grid-overlay" aria-hidden="true"></div>
 
+  <div class="grid-overlay"></div>
+  <div class="sa-noise"></div>
+  <div class="sa-vignette"></div>
+
+  <!-- ── Nav ── -->
   <header class="site-header">
-    <div class="nav-inner">
+    <nav class="nav-inner">
       <a href="index.html" class="brand">
         <div class="brand-mark"><div class="brand-mark-inner"></div></div>
         <div class="brand-name">Sentinel Authority</div>
       </a>
-      <a href="index.html#artifacts" class="back-link">← Back</a>
-    </div>
+      <a href="index.html#artifacts" class="back-link">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:4px;"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Back
+      </a>
+    </nav>
   </header>
 
-  <div class="content-wrap">
+  <!-- ── Content ── -->
+  <main>
 
-    <!-- ── Hero ── -->
-    <div class="section" style="border-top:none;padding-top:0;">
+    <!-- Hero -->
+    <div class="section" style="border-top:none;padding-top:calc(var(--nav-height) + 48px);">
       <div class="section-label">RUNTIME ENFORCEMENT</div>
-      <h1 class="section-title">ENVELO <span class="accent">Agent</span></h1>
+      <h1 class="section-title" style="font-family:var(--serif);">ENVELO <span class="accent">Agent</span></h1>
       <p class="section-lead">Enforced Non-Violable Execution-Limit Override. One command installs. One command starts. The agent does everything.</p>
     </div>
 
-    <!-- ── Quick Start ── -->
+    <!-- Quick Start -->
     <div class="section">
-      <div style="display:flex;align-items:center;gap:12px;margin-bottom:var(--space-2);">
-        <span class="hud-label">QUICK START</span>
-        <span class="v-badge">V2.0</span>
+      <div class="hud-frame" style="margin-bottom:var(--space-3);"><i></i>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:var(--space-2);">
+          <span class="hud-label">QUICK START</span>
+          <span class="badge green">V2.0</span>
+        </div>
+        <div class="hud-title" style="margin-bottom:8px;">Install &amp; Deploy</div>
+        <p class="hud-desc" style="margin-bottom:12px;">Open a terminal on the target system and run:</p>
+        <div class="code-line" style="position:relative;padding-right:60px;">curl -sSL https://get.sentinelauthority.org | bash<button class="copy-btn" style="position:absolute;top:8px;right:0;" onclick="navigator.clipboard.writeText('curl -sSL https://get.sentinelauthority.org | bash').then(()=>this.textContent='COPIED')">COPY</button></div>
+        <p style="color:var(--text-tertiary);font-size:12px;line-height:1.6;margin-top:12px;">The installer prompts for your Certificate ID and API Key (both visible in the <a href="https://app.sentinelauthority.org" class="hud-link" style="font-size:12px;letter-spacing:0;">portal</a> under ENVELO Agent tab). Automatically downloads boundaries, scans for telemetry sources, and configures everything.</p>
       </div>
-      <p style="color:var(--text-secondary);font-size:14px;line-height:1.6;margin-bottom:12px;">Open a terminal on the target system and run:</p>
-      <div class="code-block">curl -sSL https://get.sentinelauthority.org | bash<button class="copy-btn" onclick="navigator.clipboard.writeText('curl -sSL https://get.sentinelauthority.org | bash').then(()=>this.textContent='COPIED')">COPY</button></div>
-      <p style="color:var(--text-tertiary);font-size:12px;line-height:1.6;margin-top:12px;">The installer prompts for your Certificate ID and API Key (both visible in the <a href="https://app.sentinelauthority.org" class="hud-link" style="font-size:12px;letter-spacing:0;">portal</a> under ENVELO Agent tab). Automatically downloads boundaries, scans for telemetry sources, and configures everything.</p>
     </div>
 
-    <!-- ── After Install ── -->
+    <!-- After Install -->
     <div class="section">
-      <div class="hud-label" style="margin-bottom:var(--space-2);">AFTER INSTALL</div>
-      <div class="step-row">
-        <span class="step-num">01</span>
-        <div class="step-content">
-          <h3>Validate</h3>
-          <div class="code-block" style="margin:6px 0;">envelo validate</div>
-          <p>Pre-flight check: credentials, API connectivity, source mappings, fail-closed mode.</p>
+      <div class="hud-frame" style="margin-bottom:var(--space-3);"><i></i>
+        <div class="hud-label" style="margin-bottom:var(--space-2);">AFTER INSTALL</div>
+        <div class="step-row">
+          <span class="step-num">01</span>
+          <div class="step-content">
+            <h3>Validate</h3>
+            <div class="code-line" style="margin:4px 0;">envelo validate</div>
+            <p>Pre-flight check: credentials, API connectivity, source mappings, fail-closed mode.</p>
+          </div>
+        </div>
+        <div class="step-row">
+          <span class="step-num">02</span>
+          <div class="step-content">
+            <h3>Start</h3>
+            <div class="code-line" style="margin:4px 0;">envelo start -d</div>
+            <p>Starts the enforcement agent as a background daemon. For auto-start: <span style="font-family:var(--mono);font-size:12px;color:var(--accent-green);">envelo service install</span></p>
+          </div>
+        </div>
+        <div class="step-row">
+          <span class="step-num">03</span>
+          <div class="step-content">
+            <h3>Begin CAT-72</h3>
+            <p>Go to <a href="https://app.sentinelauthority.org" class="hud-link" style="font-size:13px;letter-spacing:0;">app.sentinelauthority.org</a> &rarr; your case &rarr; CAT-72 tab &rarr; click <strong>Begin Test</strong>. The 72-hour timer starts immediately.</p>
+          </div>
         </div>
       </div>
-      <div class="step-row">
-        <span class="step-num">02</span>
-        <div class="step-content">
-          <h3>Start</h3>
-          <div class="code-block" style="margin:6px 0;">envelo start -d</div>
-          <p>Starts the enforcement agent as a background daemon. For auto-start: <code style="padding:0;font-size:12px;font-family:var(--mono);">envelo service install</code></p>
-        </div>
+    </div>
+
+    <!-- CLI Reference -->
+    <div class="section">
+      <div class="hud-frame hud-scanline" style="margin-bottom:var(--space-3);"><i></i>
+        <div class="hud-label" style="margin-bottom:4px;">ENVELO CLI — COMPLETE REFERENCE</div>
+        <div class="hud-title" style="margin-bottom:var(--space-2);">The Agent Does Everything</div>
+        <p class="hud-desc" style="margin-bottom:var(--space-3);">Every operation — monitoring, diagnostics, infrastructure, boundaries — is a single command.</p>
+
+        <div class="cli-group">Running</div>
+        <table class="cli-table"><tr><td>envelo start [-d]</td><td>Start enforcement (foreground or daemon)</td></tr><tr><td>envelo stop</td><td>Stop running agent</td></tr><tr><td>envelo restart</td><td>Stop and restart</td></tr><tr><td>envelo validate</td><td>Pre-flight configuration check</td></tr></table>
+
+        <div class="cli-group">Monitoring</div>
+        <table class="cli-table"><tr><td>envelo status</td><td>Full health check (agent, API, TLS, sources)</td></tr><tr><td>envelo monitor</td><td>Live terminal dashboard (refreshes every 2s)</td></tr><tr><td>envelo events</td><td>Violation and enforcement history</td></tr><tr><td>envelo logs -f</td><td>Follow agent logs in real-time</td></tr><tr><td>envelo cat72</td><td>CAT-72 test status and progress</td></tr></table>
+
+        <div class="cli-group">Boundaries</div>
+        <table class="cli-table"><tr><td>envelo boundaries</td><td>Show all enforced boundaries</td></tr><tr><td>envelo resync</td><td>Force re-fetch from Sentinel Authority</td></tr><tr><td>envelo simulate &lt;p&gt; &lt;v&gt;</td><td>Dry-run boundary check (shows tier result)</td></tr></table>
+
+        <div class="cli-group">Sources</div>
+        <table class="cli-table"><tr><td>envelo test</td><td>Test all telemetry source connections</td></tr><tr><td>envelo rediscover</td><td>Re-scan environment for telemetry sources</td></tr><tr><td>envelo benchmark</td><td>Measure enforcement latency</td></tr></table>
+
+        <div class="cli-group">Infrastructure</div>
+        <table class="cli-table"><tr><td>envelo service install</td><td>Auto-start on boot (systemd / launchd)</td></tr><tr><td>envelo docker</td><td>Generate Dockerfile + docker-compose.yml</td></tr><tr><td>envelo k8s</td><td>Generate Kubernetes DaemonSet + Secret</td></tr></table>
+
+        <div class="cli-group">Maintenance</div>
+        <table class="cli-table"><tr><td>envelo diagnose</td><td>Generate support bundle (redacted)</td></tr><tr><td>envelo network</td><td>Full network diagnostic</td></tr><tr><td>envelo export</td><td>Auditor-ready boundary bundle</td></tr><tr><td>envelo rotate-key</td><td>Rotate API key</td></tr><tr><td>envelo update</td><td>Self-update</td></tr><tr><td>envelo rollback</td><td>Uninstall (suspends conformance)</td></tr></table>
       </div>
-      <div class="step-row">
-        <span class="step-num">03</span>
-        <div class="step-content">
-          <h3>Begin CAT-72</h3>
-          <p>Go to <a href="https://app.sentinelauthority.org" class="hud-link" style="font-size:12px;letter-spacing:0;">app.sentinelauthority.org</a> → your case → CAT-72 tab → click <strong>Begin Test</strong>. The 72-hour timer starts immediately.</p>
-        </div>
+    </div>
+
+    <!-- Security Model -->
+    <div class="section">
+      <div class="hud-frame hud-frame-green" style="margin-bottom:var(--space-3);"><i></i>
+        <div class="hud-label" style="margin-bottom:var(--space-2);">SECURITY MODEL</div>
+        <div class="hud-title" style="margin-bottom:var(--space-2);">Zero Inbound. Zero Trust.</div>
+        <div class="sec-item"><span class="hud-dot hud-dot-green sec-dot"></span>Outbound only — ENVELO opens zero inbound ports on your network</div>
+        <div class="sec-item"><span class="hud-dot hud-dot-green sec-dot"></span>No remote access — Sentinel cannot access your system, network, or data</div>
+        <div class="sec-item"><span class="hud-dot hud-dot-green sec-dot"></span>No commands from cloud — One-way: telemetry out, nothing in</div>
+        <div class="sec-item"><span class="hud-dot hud-dot-green sec-dot"></span>No PHI/PII — Only ODD parameter values transmitted. No business data.</div>
+        <div class="sec-item"><span class="hud-dot hud-dot-green sec-dot"></span>Signed telemetry — Cryptographically signed and hash-chain linked</div>
+        <div class="sec-item"><span class="hud-dot hud-dot-green sec-dot"></span>Fail-closed — Connection drops &rarr; agent blocks all actions (safe state)</div>
+        <div class="sec-item"><span class="hud-dot hud-dot-green sec-dot"></span>Certificate pinning — TLS 1.3 with pinning prevents MITM interception</div>
       </div>
     </div>
 
-    <!-- ── CLI Reference ── -->
+    <!-- System Requirements -->
     <div class="section">
-      <div class="hud-label" style="margin-bottom:4px;">ENVELO CLI — COMPLETE REFERENCE</div>
-      <div class="hud-title" style="margin-bottom:4px;">The Agent Does Everything</div>
-      <p class="hud-desc" style="margin-bottom:16px;">Every operation — monitoring, diagnostics, infrastructure, boundaries — is a single command.</p>
-
-      <div class="cli-group" style="border-top:none;margin-top:0;">Running</div>
-      <table class="cli-table"><tr><td>envelo start [-d]</td><td>Start enforcement (foreground or daemon)</td></tr><tr><td>envelo stop</td><td>Stop running agent</td></tr><tr><td>envelo restart</td><td>Stop and restart</td></tr><tr><td>envelo validate</td><td>Pre-flight configuration check</td></tr></table>
-
-      <div class="cli-group">Monitoring</div>
-      <table class="cli-table"><tr><td>envelo status</td><td>Full health check (agent, API, TLS, sources)</td></tr><tr><td>envelo monitor</td><td>Live terminal dashboard (refreshes every 2s)</td></tr><tr><td>envelo events</td><td>Violation and enforcement history</td></tr><tr><td>envelo logs -f</td><td>Follow agent logs in real-time</td></tr><tr><td>envelo cat72</td><td>CAT-72 test status and progress</td></tr></table>
-
-      <div class="cli-group">Boundaries</div>
-      <table class="cli-table"><tr><td>envelo boundaries</td><td>Show all enforced boundaries</td></tr><tr><td>envelo resync</td><td>Force re-fetch from Sentinel Authority</td></tr><tr><td>envelo simulate &lt;p&gt; &lt;v&gt;</td><td>Dry-run boundary check (shows tier result)</td></tr></table>
-
-      <div class="cli-group">Sources</div>
-      <table class="cli-table"><tr><td>envelo test</td><td>Test all telemetry source connections</td></tr><tr><td>envelo rediscover</td><td>Re-scan environment for telemetry sources</td></tr><tr><td>envelo benchmark</td><td>Measure enforcement latency</td></tr></table>
-
-      <div class="cli-group">Infrastructure</div>
-      <table class="cli-table"><tr><td>envelo service install</td><td>Auto-start on boot (systemd / launchd)</td></tr><tr><td>envelo docker</td><td>Generate Dockerfile + docker-compose.yml</td></tr><tr><td>envelo k8s</td><td>Generate Kubernetes DaemonSet + Secret</td></tr></table>
-
-      <div class="cli-group">Maintenance</div>
-      <table class="cli-table"><tr><td>envelo diagnose</td><td>Generate support bundle (redacted)</td></tr><tr><td>envelo network</td><td>Full network diagnostic</td></tr><tr><td>envelo export</td><td>Auditor-ready boundary bundle</td></tr><tr><td>envelo rotate-key</td><td>Rotate API key</td></tr><tr><td>envelo update</td><td>Self-update</td></tr><tr><td>envelo rollback</td><td>Uninstall (suspends conformance)</td></tr></table>
+      <div class="hud-frame" style="margin-bottom:var(--space-3);"><i></i>
+        <div class="hud-label" style="margin-bottom:var(--space-2);">SYSTEM REQUIREMENTS</div>
+        <table class="req-table">
+          <tr><td>OS</td><td>Linux (Ubuntu 20.04+, RHEL 8+), macOS 12+, Windows Server 2019+</td></tr>
+          <tr><td>Python</td><td>3.7 or higher</td></tr>
+          <tr><td>CPU</td><td>2 cores minimum</td></tr>
+          <tr><td>RAM</td><td>512 MB for ENVELO agent</td></tr>
+          <tr><td>Network</td><td>Outbound HTTPS (port 443)</td></tr>
+          <tr><td>Clock</td><td>NTP-synchronized (&plusmn;1 second)</td></tr>
+        </table>
+      </div>
     </div>
 
-    <!-- ── Security Model ── -->
+    <!-- Alternative Deployment -->
     <div class="section">
-      <div class="hud-label" style="margin-bottom:8px;">SECURITY MODEL</div>
-      <div class="hud-title" style="margin-bottom:16px;">Zero Inbound. Zero Trust.</div>
-      <div class="sec-item"><span class="hud-dot hud-dot-green sec-dot"></span><span>Outbound only — ENVELO opens zero inbound ports on your network</span></div>
-      <div class="sec-item"><span class="hud-dot hud-dot-green sec-dot"></span><span>No remote access — Sentinel cannot access your system, network, or data</span></div>
-      <div class="sec-item"><span class="hud-dot hud-dot-green sec-dot"></span><span>No commands from cloud — One-way: telemetry out, nothing in</span></div>
-      <div class="sec-item"><span class="hud-dot hud-dot-green sec-dot"></span><span>No PHI/PII — Only ODD parameter values transmitted. No business data.</span></div>
-      <div class="sec-item"><span class="hud-dot hud-dot-green sec-dot"></span><span>Signed telemetry — Cryptographically signed and hash-chain linked</span></div>
-      <div class="sec-item"><span class="hud-dot hud-dot-green sec-dot"></span><span>Fail-closed — Connection drops → agent blocks all actions (safe state)</span></div>
-      <div class="sec-item"><span class="hud-dot hud-dot-green sec-dot"></span><span>Certificate pinning — TLS 1.3 with pinning prevents MITM interception</span></div>
+      <div class="hud-frame" style="margin-bottom:var(--space-3);"><i></i>
+        <div class="hud-label" style="margin-bottom:var(--space-2);">ALTERNATIVE DEPLOYMENT</div>
+        <div class="hud-title" style="margin-bottom:4px;">Docker</div>
+        <div class="code-line">envelo docker</div>
+        <div class="code-line" style="margin-bottom:16px;">cd envelo-docker &amp;&amp; docker compose up -d</div>
+
+        <div class="hud-title" style="margin-bottom:4px;">Kubernetes</div>
+        <div class="code-line">envelo k8s</div>
+        <div class="code-line" style="margin-bottom:16px;">kubectl apply -f envelo-k8s.yaml</div>
+
+        <div class="hud-title" style="margin-bottom:4px;">SDK Integration</div>
+        <div class="code-line" style="color:var(--text-secondary);">from envelo import EnveloAgent, EnveloConfig</div>
+        <div class="code-line" style="color:var(--text-secondary);">agent = EnveloAgent(EnveloConfig(</div>
+        <div class="code-line" style="color:var(--text-secondary);padding-left:24px;">api_key="sa_live_...",</div>
+        <div class="code-line" style="color:var(--text-secondary);padding-left:24px;">certificate_number="ODDC-2026-XXXXX"</div>
+        <div class="code-line" style="color:var(--text-secondary);">))</div>
+        <div class="code-line" style="color:var(--text-secondary);">agent.start()</div>
+        <div class="code-line" style="color:var(--text-secondary);">@agent.enforce</div>
+        <div class="code-line" style="color:var(--text-secondary);">def move_robot(speed, position):</div>
+        <div class="code-line" style="color:var(--text-secondary);padding-left:24px;">motors.actuate(speed, position)</div>
+      </div>
     </div>
 
-    <!-- ── Requirements ── -->
-    <div class="section">
-      <div class="hud-label" style="margin-bottom:12px;">SYSTEM REQUIREMENTS</div>
-      <table class="cli-table">
-        <tr><td style="color:var(--text-primary);">OS</td><td>Linux (Ubuntu 20.04+, RHEL 8+), macOS 12+, Windows Server 2019+</td></tr>
-        <tr><td style="color:var(--text-primary);">Python</td><td>3.7 or higher</td></tr>
-        <tr><td style="color:var(--text-primary);">CPU</td><td>2 cores minimum</td></tr>
-        <tr><td style="color:var(--text-primary);">RAM</td><td>512 MB for ENVELO agent</td></tr>
-        <tr><td style="color:var(--text-primary);">Network</td><td>Outbound HTTPS (port 443)</td></tr>
-        <tr><td style="color:var(--text-primary);">Clock</td><td>NTP-synchronized (±1 second)</td></tr>
-      </table>
+    <!-- Cert Guide -->
+    <div class="section" style="text-align:center;padding:var(--space-8) 0;">
+      <div class="hud-frame" style="padding:var(--space-4) 16px;"><i></i>
+        <div class="hud-label" style="margin-bottom:8px;">ODDC Certification Guide</div>
+        <p style="color:var(--text-secondary);font-size:14px;line-height:1.7;margin:0 0 var(--space-2);">Complete walkthrough: application through certification. Deployment, CLI reference, three-tier enforcement, boundary specification format.</p>
+        <a href="downloads/ODDC_Certification_Guide_v3.pdf" class="btn">DOWNLOAD PDF — V3.0</a>
+      </div>
     </div>
 
-    <!-- ── Alternative Deploy ── -->
-    <div class="section">
-      <div class="hud-label" style="margin-bottom:16px;">ALTERNATIVE DEPLOYMENT</div>
+  </main>
 
-      <div class="hud-title" style="margin-bottom:6px;">Docker</div>
-      <div class="code-block">envelo docker
-cd envelo-docker &amp;&amp; docker compose up -d<button class="copy-btn" onclick="navigator.clipboard.writeText('envelo docker && cd envelo-docker && docker compose up -d').then(()=>this.textContent='COPIED')">COPY</button></div>
-
-      <div class="hud-title" style="margin:20px 0 6px;">Kubernetes</div>
-      <div class="code-block">envelo k8s
-kubectl apply -f envelo-k8s.yaml<button class="copy-btn" onclick="navigator.clipboard.writeText('envelo k8s && kubectl apply -f envelo-k8s.yaml').then(()=>this.textContent='COPIED')">COPY</button></div>
-
-      <div class="hud-title" style="margin:20px 0 6px;">SDK Integration</div>
-      <div class="code-block" style="color:var(--text-secondary);">from envelo import EnveloAgent, EnveloConfig
-
-agent = EnveloAgent(EnveloConfig(
-    api_key="sa_live_...",
-    certificate_number="ODDC-2026-XXXXX"
-))
-agent.start()
-
-@agent.enforce
-def move_robot(speed, position):
-    motors.actuate(speed, position)</div>
-    </div>
-
-    <!-- ── Cert Guide ── -->
-    <div class="section" style="text-align:center;">
-      <div class="hud-title" style="font-size:16px;margin-bottom:8px;">ODDC Certification Guide</div>
-      <p class="hud-desc" style="margin-bottom:20px;max-width:500px;display:inline-block;">Complete walkthrough: application through certification. Deployment, CLI reference, three-tier enforcement, boundary specification format.</p>
-      <div><a href="downloads/ODDC_Certification_Guide_v3.pdf" class="hud-link">DOWNLOAD PDF — V3.0</a></div>
-    </div>
-  </div>
-
+  <!-- Footer -->
   <footer>
     <div class="footer-inner">
-      <span>© 2026 SENTINEL AUTHORITY</span>
-      <div class="foot-links" style="display:flex;gap:var(--space-2);">
+      <div>&copy; 2026 SENTINEL AUTHORITY</div>
+      <div class="foot-links">
         <a href="https://app.sentinelauthority.org">Portal</a>
         <a href="index.html">Home</a>
         <a href="security.html">Security</a>
       </div>
     </div>
   </footer>
+
 </body>
 </html>
 
