@@ -2945,7 +2945,7 @@
       if (p.alpha<=0) {boundaryPulses.splice(i,1);continue;}
       var bx=cx+Math.cos(p.angle)*radius, by=cy+Math.sin(p.angle)*radius;
       var g=ctx.createRadialGradient(bx,by,0,bx,by,p.spread+12);
-      g.addColorStop(0,rgb(PURPLE,p.alpha*0.5));
+      g.addColorStop(0,rgb(PURPLE,p.alpha*0.2));
       g.addColorStop(1,rgb(PURPLE,0));
       ctx.fillStyle=g;
       ctx.beginPath(); ctx.arc(bx,by,p.spread+12,0,Math.PI*2); ctx.fill();
@@ -2959,22 +2959,22 @@
       var col, al, glowSize;
 
       if (tier === 3) {
-        col = RED; al = 0.3 + Math.sin(Date.now()*0.008)*0.15; glowSize = a.size*5;
+        col = RED; al = 0.12 + Math.sin(Date.now()*0.008)*0.06; glowSize = a.size*5;
         // Halt X marker
-        ctx.strokeStyle = rgb(RED,0.5);
+        ctx.strokeStyle = rgb(RED,0.2);
         ctx.lineWidth = 1.5;
         ctx.beginPath(); ctx.moveTo(a.x-4,a.y-4); ctx.lineTo(a.x+4,a.y+4); ctx.stroke();
         ctx.beginPath(); ctx.moveTo(a.x+4,a.y-4); ctx.lineTo(a.x-4,a.y+4); ctx.stroke();
       } else if (tier === 2) {
-        col = RED; al = 0.7; glowSize = a.size*4;
+        col = RED; al = 0.25; glowSize = a.size*4;
       } else if (tier === 1) {
-        col = AMBER; al = 0.6; glowSize = a.size*3.5;
+        col = AMBER; al = 0.22; glowSize = a.size*3.5;
       } else {
-        col = GREEN; al = 0.5; glowSize = a.size*2.8;
+        col = GREEN; al = 0.18; glowSize = a.size*2.8;
       }
 
       var gl=ctx.createRadialGradient(a.x,a.y,0,a.x,a.y,glowSize);
-      gl.addColorStop(0,rgb(col,al*0.25));
+      gl.addColorStop(0,rgb(col,al*0.15));
       gl.addColorStop(1,rgb(col,0));
       ctx.fillStyle=gl;
       ctx.beginPath(); ctx.arc(a.x,a.y,glowSize*1.2,0,Math.PI*2); ctx.fill();
@@ -2990,7 +2990,7 @@
       ev.alpha -= 0.008;
       if (ev.alpha<=0) { enveloEvents.splice(e,1); continue; }
       ctx.font='500 7px "IBM Plex Mono"';
-      ctx.fillStyle=rgb(RED,ev.alpha*0.8);
+      ctx.fillStyle=rgb(RED,ev.alpha*0.3);
       ctx.textAlign='center';
       ctx.fillText('HALT',ev.x,ev.y-10);
     }
@@ -4618,7 +4618,7 @@
             if (p.alpha<=0) {boundaryPulses.splice(i,1);continue;}
             var bx=cx+Math.cos(p.angle)*radius, by=cy+Math.sin(p.angle)*radius;
             var g=ctx.createRadialGradient(bx,by,0,bx,by,p.spread+12);
-            g.addColorStop(0,rgb(RED,p.alpha*0.5));
+            g.addColorStop(0,rgb(RED,p.alpha*0.2));
             g.addColorStop(1,rgb(RED,0));
             ctx.fillStyle=g;
             ctx.beginPath(); ctx.arc(bx,by,p.spread+12,0,Math.PI*2); ctx.fill();
@@ -4632,20 +4632,20 @@
             var col, al, glowSize;
 
             if (tier===3) {
-              col=RED; al=0.3+Math.sin(Date.now()*0.008)*0.15; glowSize=a.size*5;
-              ctx.strokeStyle=rgb(RED,0.5); ctx.lineWidth=1.5;
+              col=RED; al=0.12+Math.sin(Date.now()*0.008)*0.06; glowSize=a.size*5;
+              ctx.strokeStyle=rgb(RED,0.2); ctx.lineWidth=1.5;
               ctx.beginPath(); ctx.moveTo(a.x-4,a.y-4); ctx.lineTo(a.x+4,a.y+4); ctx.stroke();
               ctx.beginPath(); ctx.moveTo(a.x+4,a.y-4); ctx.lineTo(a.x-4,a.y+4); ctx.stroke();
             } else if (tier===2) {
-              col=RED; al=0.7; glowSize=a.size*4;
+              col=RED; al=0.25; glowSize=a.size*4;
             } else if (tier===1) {
-              col=AMBER; al=0.6; glowSize=a.size*3.5;
+              col=AMBER; al=0.22; glowSize=a.size*3.5;
             } else {
-              col=GREEN; al=halted?0.15:0.5; glowSize=a.size*2.8;
+              col=GREEN; al=halted?0.06:0.18; glowSize=a.size*2.8;
             }
 
             var gl=ctx.createRadialGradient(a.x,a.y,0,a.x,a.y,glowSize);
-            gl.addColorStop(0,rgb(col,al*0.25));
+            gl.addColorStop(0,rgb(col,al*0.15));
             gl.addColorStop(1,rgb(col,0));
             ctx.fillStyle=gl;
             ctx.beginPath(); ctx.arc(a.x,a.y,glowSize*1.2,0,Math.PI*2); ctx.fill();
