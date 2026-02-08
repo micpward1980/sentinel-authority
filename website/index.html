@@ -449,8 +449,9 @@
        ============================================ */
     .hero{
       position: relative;
-      padding: 16px 0 16px;
+      padding: 0;
       margin: 0;
+      margin-top: var(--nav-height);
       overflow: visible;
     }
     .hero::before{ display: none; }
@@ -2611,10 +2612,10 @@
     <!-- HERO -->
     <section class="hero">
       <!-- Full-viewport canvas -->
-      <div style="display:flex;justify-content:center;margin:0 auto;max-width:880px;padding-top:60px;"><div style="width:100%;"><canvas id="hero-canvas" style="width:100%;display:block;opacity:0;transition:opacity 0.35s ease;"></canvas></div></div>
+      <div style="display:flex;justify-content:center;margin:0 auto;max-width:880px;padding-top:0;"><div style="width:100%;"><canvas id="hero-canvas" style="width:100%;display:block;opacity:0;transition:opacity 0.35s ease;"></canvas></div></div>
       
       <!-- Hero Content -->
-      <div id="hero-text" class="hero-content-bottom" style="position: relative; z-index: 10; text-align: center; padding: 12px 16px 0; display: flex; flex-direction: column; align-items: center;">
+      <div id="hero-text" class="hero-content-bottom" style="position: relative; z-index: 10; text-align: center; padding: 4px 16px 0; display: flex; flex-direction: column; align-items: center;">
         
         <h1 style="font-family: var(--serif); font-size: clamp(28px, 5vw, 50px); font-weight: 200; line-height: 1.1; margin-bottom: 4px; letter-spacing: -0.02em; color: #fff; max-width: 700px;">
           Operational Design Domain<br><span class="accent" style="color: #c4b8e8; font-style: italic;">Conformance</span>
@@ -2694,7 +2695,7 @@
   function resize() {
     var r = c.parentElement.getBoundingClientRect();
     W = r.width;
-    H = W < 550 ? W * 1.05 : W * 0.6;
+    H = W < 550 ? W * 0.75 : W * 0.36;
     c.width = W * dpr;
     c.height = H * dpr;
     c.style.height = H + 'px';
