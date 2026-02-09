@@ -21,16 +21,24 @@ Base = declarative_base()
 
 
 async def init_db():
-    """Run alembic migrations on startup."""
-    from alembic.config import Config
-    from alembic import command
-    import os
-    alembic_cfg = Config(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "alembic.ini"))
-    alembic_cfg.set_main_option("script_location", os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "alembic"))
+    """Run alembic migrations on startup via subprocess."""
+    import subprocess, os, logging
+    logger = logging.getLogger("main")
+    alembic_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
     try:
-        command.upgrade(alembic_cfg, "head")
-    except Exception:
-        command.stamp(alembic_cfg, "head")
+        result = subprocess.run(
+            ["alembic", "upgrade", "head"],
+            cwd=alembic_dir, capture_output=True, text=True, timeout=30
+        )
+        if result.returncode != 0:
+            logger.warning(f"Alembic upgrade failed, stamping: {result.stderr}")
+            subprocess.run(
+                ["alembic", "stamp", "head"],
+                cwd=alembic_dir, capture_output=True, text=True, timeout=30
+            )
+        logger.info("Database migrations complete")
+    except Exception as e:
+        logger.warning(f"Migration skipped: {e}")
 
 
 class RetrySession(AsyncSession):
