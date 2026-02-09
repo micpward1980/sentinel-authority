@@ -169,7 +169,7 @@ async def create_test(
     # Notify applicant
     try:
         from app.models.models import User
-        owner_result = await db.execute(select(User).where(User.id == application.user_id))
+        owner_result = await db.execute(select(User).where(User.id == application.applicant_id))
         owner = owner_result.scalar_one_or_none()
         if owner and owner.email:
             from app.services.email_service import send_test_scheduled
@@ -290,7 +290,7 @@ async def start_test(
         application = app_result.scalar_one_or_none()
         if application:
             from app.models.models import User
-            owner_result = await db.execute(select(User).where(User.id == application.user_id))
+            owner_result = await db.execute(select(User).where(User.id == application.applicant_id))
             owner = owner_result.scalar_one_or_none()
             if owner and owner.email:
                 await send_test_started(owner.email, application.system_name, test.test_id)
@@ -480,7 +480,7 @@ async def stop_test(
         application = app_result.scalar_one_or_none()
         if application:
             from app.models.models import User
-            owner_result = await db.execute(select(User).where(User.id == application.user_id))
+            owner_result = await db.execute(select(User).where(User.id == application.applicant_id))
             owner = owner_result.scalar_one_or_none()
             if owner and owner.email:
                 if test.result == "PASS":

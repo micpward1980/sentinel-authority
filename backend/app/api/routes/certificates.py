@@ -210,32 +210,3 @@ async def reinstate_certificate(certificate_number: str, db: AsyncSession = Depe
     cert.history = (cert.history or []) + [{"action": "reinstated", "timestamp": datetime.utcnow().isoformat(), "by": user["email"]}]
     await db.commit()
     return {"message": "Certificate reinstated", "state": cert.state}
-
-
-@router.get("/{cert_id}/pdf", summary="Download ODDC certificate as PDF")
-async def download_certificate_pdf(
-    cert_id: int,
-    db: AsyncSession = Depends(get_db),
-    user: dict = Depends(get_current_user),
-):
-    """Download a certificate as a professional PDF document."""
-    result = await db.execute(select(Certificate).where(Certificate.id == cert_id))
-    cert = result.scalar_one_or_none()
-    if not cert:
-        raise HTTPException(status_code=404, detail="Certificate not found")
-    pdf_bytes = generate_certificate_pdf({
-        'certificate_number': cert.certificate_number,
-        'organization_name': cert.organization_name,
-        'system_name': cert.system_name,
-        'system_version': cert.system_version,
-        'convergence_score': cert.convergence_score,
-        'issued_at': cert.issued_at,
-        'expires_at': cert.expires_at,
-        'signature': cert.signature,
-        'audit_log_ref': cert.audit_log_ref,
-        'odd_specification': cert.odd_specification,
-        'verification_url': cert.verification_url or f'https://app.sentinelauthority.org/verify/{cert.certificate_number}',
-    })
-    filename = f"ODDC-Certificate-{cert.certificate_number}.pdf"
-    return Response(content=pdf_bytes, media_type="application/pdf",
-                    headers={"Content-Disposition": f'attachment; filename=\"{filename}\"'})

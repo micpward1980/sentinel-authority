@@ -9,7 +9,7 @@ from typing import Optional, Dict, Any
 
 from app.core.database import get_db
 from app.core.security import get_current_user, require_role
-from app.models.models import Application, AuditLog, ApplicationComment
+from app.models.models import Application, AuditLog, ApplicationComment, CertificationState, User
 from app.services.audit_service import write_audit_log
 from app.services.email_service import (
     notify_admin_new_application, send_application_received,
@@ -423,7 +423,7 @@ async def delete_application(
         raise HTTPException(status_code=404, detail="Application not found")
     
     await write_audit_log(db, action="application_deleted", resource_type="application", resource_id=application.id,
-        user_id=int(user["sub"]), user_email=user.get("email"), details={"application_number": application.application_number})
+        user_id=int(current_user["sub"]), user_email=current_user.get("email"), details={"application_number": application.application_number})
     await db.delete(application)
     await db.commit()
     
