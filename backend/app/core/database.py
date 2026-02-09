@@ -21,8 +21,16 @@ Base = declarative_base()
 
 
 async def init_db():
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+    """Run alembic migrations on startup."""
+    from alembic.config import Config
+    from alembic import command
+    import os
+    alembic_cfg = Config(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "alembic.ini"))
+    alembic_cfg.set_main_option("script_location", os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "alembic"))
+    try:
+        command.upgrade(alembic_cfg, "head")
+    except Exception:
+        command.stamp(alembic_cfg, "head")
 
 
 class RetrySession(AsyncSession):
