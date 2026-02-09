@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { api, API_BASE } from '../config/api';
-import { styles } from '../config/styles';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { useConfirm } from '../context/ConfirmContext';
@@ -76,35 +75,35 @@ function CAT72Console() {
   return (
     <div className="space-y-6">
       <div>
-        <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', color: styles.purpleBright, marginBottom: '8px'}}>Testing</p>
+        <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', color: '#a896d6', marginBottom: '8px'}}>Testing</p>
         <h1 style={{fontFamily: "Georgia, 'Source Serif 4', serif", fontSize: 'clamp(24px, 5vw, 36px)', fontWeight: 200, margin: 0}}>CAT-72 Console</h1>
-        <p style={{color: styles.textSecondary, marginTop: '8px'}}>{user?.role === 'admin' ? '72-hour Convergence Authorization Tests · Auto-refreshes every 15s' : 'Monitor your 72-hour conformance test in real time'}</p>
+        <p style={{color: 'rgba(255,255,255,.78)', marginTop: '8px'}}>{user?.role === 'admin' ? '72-hour Convergence Authorization Tests · Auto-refreshes every 15s' : 'Monitor your 72-hour conformance test in real time'}</p>
       </div>
 
       {/* Summary Stats */}
       <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px'}}>
-        <div style={{padding: '16px', background: 'transparent', border: `1px solid ${styles.borderGlass}`, textAlign: 'center'}}>
-          <div style={{fontFamily: styles.serif, fontSize: 'clamp(18px, 4vw, 24px)', fontWeight: 200, color: styles.accentAmber}}>{runningTests.length}</div>
-          <div style={{fontFamily: styles.mono, fontSize: '9px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px', marginTop: '4px'}}>Running</div>
+        <div style={{padding: '16px', background: 'transparent', border: `1px solid ${'rgba(255,255,255,.07)'}`, textAlign: 'center'}}>
+          <div style={{fontFamily: "Georgia, 'Source Serif 4', serif", fontSize: 'clamp(18px, 4vw, 24px)', fontWeight: 200, color: '#D6A05C'}}>{runningTests.length}</div>
+          <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,.50)', textTransform: 'uppercase', letterSpacing: '1px', marginTop: '4px'}}>Running</div>
         </div>
-        <div style={{padding: '16px', background: 'transparent', border: `1px solid ${styles.borderGlass}`, textAlign: 'center'}}>
-          <div style={{fontFamily: styles.serif, fontSize: 'clamp(18px, 4vw, 24px)', fontWeight: 200, color: styles.purpleBright}}>{scheduledTests.length}</div>
-          <div style={{fontFamily: styles.mono, fontSize: '9px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px', marginTop: '4px'}}>Scheduled</div>
+        <div style={{padding: '16px', background: 'transparent', border: `1px solid ${'rgba(255,255,255,.07)'}`, textAlign: 'center'}}>
+          <div style={{fontFamily: "Georgia, 'Source Serif 4', serif", fontSize: 'clamp(18px, 4vw, 24px)', fontWeight: 200, color: '#a896d6'}}>{scheduledTests.length}</div>
+          <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,.50)', textTransform: 'uppercase', letterSpacing: '1px', marginTop: '4px'}}>Scheduled</div>
         </div>
-        <div style={{padding: '16px', background: 'transparent', border: `1px solid ${styles.borderGlass}`, textAlign: 'center'}}>
-          <div style={{fontFamily: styles.serif, fontSize: 'clamp(18px, 4vw, 24px)', fontWeight: 200, color: styles.accentGreen}}>{completedTests.filter(t => t.result === 'PASS').length}</div>
-          <div style={{fontFamily: styles.mono, fontSize: '9px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px', marginTop: '4px'}}>Passed</div>
+        <div style={{padding: '16px', background: 'transparent', border: `1px solid ${'rgba(255,255,255,.07)'}`, textAlign: 'center'}}>
+          <div style={{fontFamily: "Georgia, 'Source Serif 4', serif", fontSize: 'clamp(18px, 4vw, 24px)', fontWeight: 200, color: '#5CD685'}}>{completedTests.filter(t => t.result === 'PASS').length}</div>
+          <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,.50)', textTransform: 'uppercase', letterSpacing: '1px', marginTop: '4px'}}>Passed</div>
         </div>
-        <div style={{padding: '16px', background: 'transparent', border: `1px solid ${styles.borderGlass}`, textAlign: 'center'}}>
-          <div style={{fontFamily: styles.serif, fontSize: 'clamp(18px, 4vw, 24px)', fontWeight: 200, color: styles.accentRed}}>{completedTests.filter(t => t.result === 'FAIL').length}</div>
-          <div style={{fontFamily: styles.mono, fontSize: '9px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px', marginTop: '4px'}}>Failed</div>
+        <div style={{padding: '16px', background: 'transparent', border: `1px solid ${'rgba(255,255,255,.07)'}`, textAlign: 'center'}}>
+          <div style={{fontFamily: "Georgia, 'Source Serif 4', serif", fontSize: 'clamp(18px, 4vw, 24px)', fontWeight: 200, color: '#D65C5C'}}>{completedTests.filter(t => t.result === 'FAIL').length}</div>
+          <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,.50)', textTransform: 'uppercase', letterSpacing: '1px', marginTop: '4px'}}>Failed</div>
         </div>
       </div>
 
       {/* Running Tests — Card View */}
       {runningTests.length > 0 && (
         <div>
-          <h2 style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.accentAmber, marginBottom: '12px'}}>● Live Tests</h2>
+          <h2 style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: '#D6A05C', marginBottom: '12px'}}>● Live Tests</h2>
           <div className="space-y-4">
             {runningTests.map(test => {
               const totalSec = test.duration_hours * 3600;
@@ -114,26 +113,26 @@ function CAT72Console() {
                 <Panel key={test.id}>
                   <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px', marginBottom: '16px'}}>
                     <div>
-                      <div style={{fontWeight: 500, fontSize: '16px', color: styles.textPrimary, marginBottom: '4px'}}>{test.organization_name} — {test.system_name}</div>
-                      <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', color: styles.textTertiary}}>Test ID: {test.test_id} · Duration: {test.duration_hours}h</div>
+                      <div style={{fontWeight: 500, fontSize: '16px', color: 'rgba(255,255,255,.94)', marginBottom: '4px'}}>{test.organization_name} — {test.system_name}</div>
+                      <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', color: 'rgba(255,255,255,.50)'}}>Test ID: {test.test_id} · Duration: {test.duration_hours}h</div>
                     </div>
                     {user?.role === 'admin' && <button onClick={() => handleStop(test.test_id)} disabled={loading[test.test_id]} className="px-4 py-2 btn">
                       {loading[test.test_id] === 'stopping' ? '...' : 'Stop & Evaluate'}
                     </button>}
                   </div>
                   <div style={{display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '8px'}}>
-                    <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: 'clamp(20px, 4vw, 28px)', fontWeight: 200, color: styles.purpleBright, letterSpacing: '2px'}}>{formatTime(test.elapsed_seconds)}</div>
+                    <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: 'clamp(20px, 4vw, 28px)', fontWeight: 200, color: '#a896d6', letterSpacing: '2px'}}>{formatTime(test.elapsed_seconds)}</div>
                     <div style={{flex: 1}}>
                       <div className="w-full h-3 overflow-hidden" style={{background: 'transparent'}}>
-                        <div className="h-full transition-all" style={{width: `${pct}%`, background: pct >= 100 ? styles.accentGreen : styles.purplePrimary}} />
+                        <div className="h-full transition-all" style={{width: `${pct}%`, background: pct >= 100 ? '#5CD685' : '#5B4B8A'}} />
                       </div>
                     </div>
-                    <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '14px', color: pct >= 100 ? styles.accentGreen : styles.textSecondary, fontWeight: 500}}>{pct}%</span>
+                    <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '14px', color: pct >= 100 ? '#5CD685' : 'rgba(255,255,255,.78)', fontWeight: 500}}>{pct}%</span>
                   </div>
                   <div style={{display: 'flex', gap: '24px'}}>
-                    <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary}}>Remaining: {formatTime(remaining)}</span>
-                    <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary}}>Telemetry: {test.telemetry_count || 0} events</span>
-                    <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: test.violations_count > 0 ? styles.accentRed : styles.textTertiary}}>Violations: {test.violations_count || 0}</span>
+                    <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: 'rgba(255,255,255,.50)'}}>Remaining: {formatTime(remaining)}</span>
+                    <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: 'rgba(255,255,255,.50)'}}>Telemetry: {test.telemetry_count || 0} events</span>
+                    <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: test.violations_count > 0 ? '#D65C5C' : 'rgba(255,255,255,.50)'}}>Violations: {test.violations_count || 0}</span>
                   </div>
                 </Panel>
               );
@@ -148,10 +147,10 @@ function CAT72Console() {
           <div className="hud-label" style={{marginBottom: '16px'}}>Scheduled</div>
           <div className="space-y-3">
             {scheduledTests.map(test => (
-              <div key={test.id} style={{padding: '14px 16px', background: 'transparent', border: `1px solid ${styles.borderGlass}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px'}}>
+              <div key={test.id} style={{padding: '14px 16px', background: 'transparent', border: `1px solid ${'rgba(255,255,255,.07)'}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px'}}>
                 <div>
-                  <div style={{fontWeight: 500, color: styles.textPrimary, marginBottom: '2px'}}>{test.organization_name} — {test.system_name}</div>
-                  <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', color: styles.textTertiary}}>{test.test_id} · {test.duration_hours}h test</div>
+                  <div style={{fontWeight: 500, color: 'rgba(255,255,255,.94)', marginBottom: '2px'}}>{test.organization_name} — {test.system_name}</div>
+                  <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', color: 'rgba(255,255,255,.50)'}}>{test.test_id} · {test.duration_hours}h test</div>
                 </div>
                 {user?.role === 'admin' && <button onClick={() => handleStart(test.test_id)} disabled={loading[test.test_id]} className="px-4 py-2 btn">
                   {loading[test.test_id] === 'starting' ? '...' : 'Start Test'}
@@ -168,24 +167,24 @@ function CAT72Console() {
           <div className="hud-label" style={{marginBottom: '16px'}}>Completed</div>
           <table className="w-full">
             <thead>
-              <tr style={{borderBottom: `1px solid ${styles.borderGlass}`}}>
-                <th className="px-4 py-3 text-left" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>System</th>
-                <th className="px-4 py-3 text-left" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>Result</th>
-                <th className="px-4 py-3 text-left" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>Duration</th>
-                <th className="px-4 py-3 text-left" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>Actions</th>
+              <tr style={{borderBottom: `1px solid ${'rgba(255,255,255,.07)'}`}}>
+                <th className="px-4 py-3 text-left" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: 'rgba(255,255,255,.50)', fontWeight: 400}}>System</th>
+                <th className="px-4 py-3 text-left" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: 'rgba(255,255,255,.50)', fontWeight: 400}}>Result</th>
+                <th className="px-4 py-3 text-left" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: 'rgba(255,255,255,.50)', fontWeight: 400}}>Duration</th>
+                <th className="px-4 py-3 text-left" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: 'rgba(255,255,255,.50)', fontWeight: 400}}>Actions</th>
               </tr>
             </thead>
             <tbody>
               {completedTests.map(test => (
-                <tr key={test.id} style={{borderBottom: `1px solid ${styles.borderGlass}`}}>
+                <tr key={test.id} style={{borderBottom: `1px solid ${'rgba(255,255,255,.07)'}`}}>
                   <td className="px-4 py-4">
-                    <div style={{fontWeight: 500, color: styles.textPrimary}}>{test.organization_name} — {test.system_name}</div>
-                    <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary, marginTop: '2px'}}>{test.test_id}</div>
+                    <div style={{fontWeight: 500, color: 'rgba(255,255,255,.94)'}}>{test.organization_name} — {test.system_name}</div>
+                    <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: 'rgba(255,255,255,.50)', marginTop: '2px'}}>{test.test_id}</div>
                   </td>
                   <td className="px-4 py-4">
-                    <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px', fontWeight: 600, color: test.result === 'PASS' ? styles.accentGreen : styles.accentRed, padding: '4px 10px', background: test.result === 'PASS' ? 'rgba(92,214,133,0.04)' : 'rgba(214,92,92,0.04)'}}>{test.result}</span>
+                    <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px', fontWeight: 600, color: test.result === 'PASS' ? '#5CD685' : '#D65C5C', padding: '4px 10px', background: test.result === 'PASS' ? 'rgba(92,214,133,0.04)' : 'rgba(214,92,92,0.04)'}}>{test.result}</span>
                   </td>
-                  <td className="px-4 py-4" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px', color: styles.textSecondary}}>{formatTime(test.elapsed_seconds)}</td>
+                  <td className="px-4 py-4" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px', color: 'rgba(255,255,255,.78)'}}>{formatTime(test.elapsed_seconds)}</td>
                   <td className="px-4 py-4">
                     <div className="flex gap-2">
                       {user?.role === 'admin' && test.result === 'PASS' && !test.certificate_issued && (
@@ -194,7 +193,7 @@ function CAT72Console() {
                         </button>
                       )}
                       {test.certificate_issued && (
-                        <><span style={{color: styles.accentGreen, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px'}}>✓ Certified</span><a href={`${API_BASE}/api/certificates/${test.certificate_number || test.test_id}/pdf`} target="_blank" style={{marginLeft: '8px', padding: '2px 8px', background: styles.purplePrimary, color: 'rgba(255,255,255,.94)', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', textDecoration: 'none'}}>PDF</a></>
+                        <><span style={{color: '#5CD685', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px'}}>✓ Certified</span><a href={`${API_BASE}/api/certificates/${test.certificate_number || test.test_id}/pdf`} target="_blank" style={{marginLeft: '8px', padding: '2px 8px', background: '#5B4B8A', color: 'rgba(255,255,255,.94)', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', textDecoration: 'none'}}>PDF</a></>
                       )}
                     </div>
                   </td>
@@ -207,7 +206,7 @@ function CAT72Console() {
 
       {tests.length === 0 && (
         <Panel>
-          <div className="text-center py-12" style={{color: styles.textTertiary}}>
+          <div className="text-center py-12" style={{color: 'rgba(255,255,255,.50)'}}>
             <p style={{marginBottom: '8px'}}>{user?.role === 'admin' ? 'No tests yet' : 'No active tests'}</p>
             <p style={{fontSize: '13px'}}>{user?.role === 'admin' ? 'Approve an application and schedule a CAT-72 test to get started.' : 'When your application is approved and a CAT-72 test is scheduled, you can monitor its progress here in real time.'}</p>
           </div>

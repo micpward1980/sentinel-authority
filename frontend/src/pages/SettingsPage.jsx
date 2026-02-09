@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../config/api';
-import { styles } from '../config/styles';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { useConfirm } from '../context/ConfirmContext';
@@ -108,7 +107,7 @@ function SettingsPage() {
     { key: 'marketing', label: 'Product Updates', desc: 'New features, platform updates, and industry news from Sentinel Authority' },
   ];
 
-  if (!prefs) return <div style={{color: styles.textTertiary, padding: 'clamp(16px, 4vw, 40px)', textAlign: 'center'}}>Loading preferences...</div>;
+  if (!prefs) return <div style={{color: 'rgba(255,255,255,.50)', padding: 'clamp(16px, 4vw, 40px)', textAlign: 'center'}}>Loading preferences...</div>;
 
   const fieldLabel = (text) => (
     <label className="hud-label" style={{display: 'block', marginBottom: '6px'}}>{text}</label>
@@ -133,11 +132,11 @@ function SettingsPage() {
           <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '16px'}}>
             <div>
               <span className="hud-label">Email</span>
-              <div style={{color: styles.textPrimary, marginTop: '6px', fontSize: '13px'}}>{user?.email || '-'}</div>
+              <div style={{color: 'rgba(255,255,255,.94)', marginTop: '6px', fontSize: '13px'}}>{user?.email || '-'}</div>
             </div>
             <div>
               <span className="hud-label">Role</span>
-              <div style={{color: styles.purpleBright, marginTop: '6px', fontFamily: 'var(--mono)', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1px'}}>{user?.role || '-'}</div>
+              <div style={{color: '#a896d6', marginTop: '6px', fontFamily: 'var(--mono)', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1px'}}>{user?.role || '-'}</div>
             </div>
           </div>
           <button onClick={handleSaveProfile} disabled={profileSaving} className="btn" style={{alignSelf: 'flex-start'}}>
@@ -165,7 +164,7 @@ function SettingsPage() {
             <input type="password" value={pwForm.confirm} onChange={e => setPwForm({...pwForm, confirm: e.target.value})} />
           </div>
           {pwError && <div style={{color: 'var(--accent-red)', fontSize: '12px'}}>{pwError}</div>}
-          <div style={{fontSize: '11px', color: styles.textTertiary}}>Min 8 chars, 1 uppercase, 1 lowercase, 1 number</div>
+          <div style={{fontSize: '11px', color: 'rgba(255,255,255,.50)'}}>Min 8 chars, 1 uppercase, 1 lowercase, 1 number</div>
           <button onClick={handleChangePassword} disabled={pwSaving} className="btn" style={{alignSelf: 'flex-start'}}>
             {pwSaving ? 'Changing...' : 'Change Password'}
           </button>
@@ -178,7 +177,7 @@ function SettingsPage() {
       <div>
         <div className="hud-label" style={{marginBottom: '20px'}}>Two-Factor Authentication</div>
         {twoFA.loading ? (
-          <div style={{color: styles.textTertiary, fontSize: '13px'}}>Loading...</div>
+          <div style={{color: 'rgba(255,255,255,.50)', fontSize: '13px'}}>Loading...</div>
         ) : twoFA.enabled ? (
           <div>
             <div style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px'}}>
@@ -193,7 +192,7 @@ function SettingsPage() {
                 <p className="hud-desc" style={{marginBottom: '12px'}}>Use these if you lose your authenticator. Each code works once.</p>
                 <div style={{display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '4px'}}>
                   {twoFA.backupCodes.map((code, i) => (
-                    <span key={i} style={{fontFamily: 'var(--mono)', fontSize: '13px', color: styles.textPrimary, padding: '4px 8px', textAlign: 'center'}}>{code}</span>
+                    <span key={i} style={{fontFamily: 'var(--mono)', fontSize: '13px', color: 'rgba(255,255,255,.94)', padding: '4px 8px', textAlign: 'center'}}>{code}</span>
                   ))}
                 </div>
                 <button onClick={() => {navigator.clipboard.writeText(twoFA.backupCodes.join(String.fromCharCode(10))); toast.show('Backup codes copied');}} className="btn" style={{marginTop: '12px'}}>
@@ -237,14 +236,14 @@ function SettingsPage() {
       <div style={{paddingBottom: '40px'}}>
         <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '20px'}}>
           <div className="hud-label">Email Notifications</div>
-          <span style={{fontSize: '11px', color: styles.textTertiary}}>from notifications@sentinelauthority.org</span>
+          <span style={{fontSize: '11px', color: 'rgba(255,255,255,.50)'}}>from notifications@sentinelauthority.org</span>
         </div>
         <div>
           {cats.map(cat => (
             <div key={cat.key} className="hud-row" style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', padding: '16px 0'}}>
               <div style={{flex: 1}}>
-                <div style={{color: styles.textPrimary, fontSize: '14px', marginBottom: '4px'}}>{cat.label}</div>
-                <div style={{color: styles.textTertiary, fontSize: '12px', lineHeight: '1.5'}}>{cat.desc}</div>
+                <div style={{color: 'rgba(255,255,255,.94)', fontSize: '14px', marginBottom: '4px'}}>{cat.label}</div>
+                <div style={{color: 'rgba(255,255,255,.50)', fontSize: '12px', lineHeight: '1.5'}}>{cat.desc}</div>
               </div>
               <button
                 onClick={() => togglePref(cat.key)}
@@ -263,7 +262,7 @@ function SettingsPage() {
           ))}
         </div>
         <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginTop: '20px', paddingTop: '16px', borderTop: '1px solid rgba(255,255,255,0.04)'}}>
-          <span style={{fontSize: '11px', color: styles.textTertiary}}>Admin and security emails are always sent.</span>
+          <span style={{fontSize: '11px', color: 'rgba(255,255,255,.50)'}}>Admin and security emails are always sent.</span>
           <button onClick={savePrefs} disabled={saving} className="btn primary" style={{color: saved ? 'var(--accent-green)' : undefined}}>
             {saved ? '✓ Saved' : saving ? 'Saving...' : 'Save Preferences'}
           </button>

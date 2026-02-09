@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Shield, Download, RefreshCw } from 'lucide-react';
 import { api, API_BASE } from '../config/api';
-import { styles } from '../config/styles';
 import { useToast } from '../context/ToastContext';
 import { useConfirm } from '../context/ConfirmContext';
 import { useAuth } from '../context/AuthContext';
@@ -472,9 +471,9 @@ function AgentSimulator({ apiKey }) {
           disabled={running || !apiKey}
           style={{
             padding: '12px 24px',
-            background: running ? 'rgba(0,0,0,0.3)' : styles.accentGreen,
+            background: running ? 'rgba(0,0,0,0.3)' : '#5CD685',
             border: 'none',
-            color: running ? styles.textTertiary : '#000',
+            color: running ? 'rgba(255,255,255,.50)' : '#000',
             fontFamily: "Consolas, 'IBM Plex Mono', monospace",
             fontSize: '12px',
             fontWeight: 400,
@@ -486,18 +485,18 @@ function AgentSimulator({ apiKey }) {
         >
           {running ? '⟳ Running...' : '▶ Run Test Simulation'}
         </button>
-        {!apiKey && <span style={{color: styles.textTertiary, fontSize: '12px'}}>Generate an API key first</span>}
+        {!apiKey && <span style={{color: 'rgba(255,255,255,.50)', fontSize: '12px'}}>Generate an API key first</span>}
       </div>
       
       {stats.pass + stats.block > 0 && (
         <div style={{display: 'flex', gap: '24px', marginBottom: '16px'}}>
           <div style={{padding: '12px 20px', background: 'transparent', border: '1px solid rgba(255,255,255,0.07)' }}>
-            <div style={{fontSize: 'clamp(18px, 4vw, 24px)', fontWeight: 500, color: styles.accentGreen}}>{stats.pass}</div>
-            <div style={{fontSize: '11px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px'}}>Passed</div>
+            <div style={{fontSize: 'clamp(18px, 4vw, 24px)', fontWeight: 500, color: '#5CD685'}}>{stats.pass}</div>
+            <div style={{fontSize: '11px', color: 'rgba(255,255,255,.50)', textTransform: 'uppercase', letterSpacing: '1px'}}>Passed</div>
           </div>
           <div style={{padding: '12px 20px', background: 'transparent', border: '1px solid rgba(255,255,255,0.07)' }}>
             <div style={{fontSize: 'clamp(18px, 4vw, 24px)', fontWeight: 500, color: '#D65C5C'}}>{stats.block}</div>
-            <div style={{fontSize: '11px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px'}}>Blocked</div>
+            <div style={{fontSize: '11px', color: 'rgba(255,255,255,.50)', textTransform: 'uppercase', letterSpacing: '1px'}}>Blocked</div>
           </div>
         </div>
       )}
@@ -505,7 +504,7 @@ function AgentSimulator({ apiKey }) {
       {logs.length > 0 && (
         <div style={{
           background: 'rgba(255,255,255,.05)',
-          border: `1px solid ${styles.borderGlass}`,
+          border: `1px solid ${'rgba(255,255,255,.07)'}`,
           padding: '16px',
           maxHeight: '300px',
           overflowY: 'auto',
@@ -514,7 +513,7 @@ function AgentSimulator({ apiKey }) {
         }}>
           {logs.map((log, i) => (
             <div key={i} style={{
-              color: log.type === 'success' ? styles.accentGreen : log.type === 'error' ? '#D65C5C' : styles.textSecondary,
+              color: log.type === 'success' ? '#5CD685' : log.type === 'error' ? '#D65C5C' : 'rgba(255,255,255,.78)',
               marginBottom: '4px'
             }}>
               {log.msg}
@@ -723,24 +722,24 @@ function APIKeyManager({ onKeyGenerated }) {
     }
   };
 
-  if (loading) return <div style={{color: styles.textTertiary}}>Loading...</div>;
+  if (loading) return <div style={{color: 'rgba(255,255,255,.50)'}}>Loading...</div>;
 
   return (
     <div>
       {generatedKey && (
         <div style={{background: 'transparent', border: '1px solid rgba(255,255,255,0.07)', padding: '16px', marginBottom: '20px'}}>
-          <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', color: styles.accentGreen, marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '1px'}}>✓ New API Key Generated</div>
-          <div style={{background: 'rgba(255,255,255,.05)', padding: '12px', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '13px', color: styles.textPrimary, wordBreak: 'break-all', marginBottom: '12px'}}>
+          <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', color: '#5CD685', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '1px'}}>✓ New API Key Generated</div>
+          <div style={{background: 'rgba(255,255,255,.05)', padding: '12px', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '13px', color: 'rgba(255,255,255,.94)', wordBreak: 'break-all', marginBottom: '12px'}}>
             {generatedKey.key}
           </div>
           <div style={{display: 'flex', gap: '12px'}}>
             <button onClick={copyKey} className="btn primary">Copy to Clipboard</button>
-            <button onClick={() => setGeneratedKey(null)} style={{padding: '8px 16px', background: 'transparent', border: `1px solid ${styles.borderGlass}`, color: styles.textSecondary, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', cursor: 'pointer'}}>Dismiss</button>
+            <button onClick={() => setGeneratedKey(null)} style={{padding: '8px 16px', background: 'transparent', border: `1px solid ${'rgba(255,255,255,.07)'}`, color: 'rgba(255,255,255,.78)', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', cursor: 'pointer'}}>Dismiss</button>
           </div>
-          <p style={{color: styles.textTertiary, fontSize: '12px', marginTop: '12px'}}>⚠️ Save this key now. You won't be able to see it again.</p>
+          <p style={{color: 'rgba(255,255,255,.50)', fontSize: '12px', marginTop: '12px'}}>⚠️ Save this key now. You won't be able to see it again.</p>
           <div style={{marginTop: '16px', padding: '16px', background: 'rgba(91,75,138,0.2)', border: '1px solid rgba(91,75,138,0.3)' }}>
-            <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', color: styles.purpleBright, marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '1px'}}>Next Step</div>
-            <p style={{color: styles.textSecondary, fontSize: '13px', marginBottom: '12px'}}>Download the ENVELO Interlock pre-configured with your credentials:</p>
+            <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', color: '#a896d6', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '1px'}}>Next Step</div>
+            <p style={{color: 'rgba(255,255,255,.78)', fontSize: '13px', marginBottom: '12px'}}>Download the ENVELO Interlock pre-configured with your credentials:</p>
             <button 
               onClick={() => downloadConfiguredAgent(generatedKey.key)}
               className="btn primary"
@@ -757,7 +756,7 @@ function APIKeyManager({ onKeyGenerated }) {
           placeholder="Key name (e.g., Production)"
           value={newKeyName}
           onChange={(e) => setNewKeyName(e.target.value)}
-          style={{flex: 1, padding: '10px 14px', background: 'rgba(255,255,255,.05)', border: `1px solid ${styles.borderGlass}`, color: styles.textPrimary, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '13px'}}
+          style={{flex: 1, padding: '10px 14px', background: 'rgba(255,255,255,.05)', border: `1px solid ${'rgba(255,255,255,.07)'}`, color: 'rgba(255,255,255,.94)', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '13px'}}
         />
         <button
           onClick={generateKey}
@@ -770,22 +769,22 @@ function APIKeyManager({ onKeyGenerated }) {
 
       {keys.length > 0 ? (
         <div>
-          <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary, marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '1px'}}>Your API Keys</div>
+          <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: 'rgba(255,255,255,.50)', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '1px'}}>Your API Keys</div>
           {keys.map((k) => (
-            <div key={k.id} style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', padding: '12px 16px', background: 'transparent', border: `1px solid ${styles.borderGlass}`, marginBottom: '8px'}}>
+            <div key={k.id} style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', padding: '12px 16px', background: 'transparent', border: `1px solid ${'rgba(255,255,255,.07)'}`, marginBottom: '8px'}}>
               <div>
-                <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '13px', color: styles.textPrimary}}>{k.name}</div>
-                <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', color: styles.textTertiary, marginTop: '4px'}}>{k.key_prefix}••••••••</div>
+                <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '13px', color: 'rgba(255,255,255,.94)'}}>{k.name}</div>
+                <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', color: 'rgba(255,255,255,.50)', marginTop: '4px'}}>{k.key_prefix}••••••••</div>
               </div>
               <div style={{display: 'flex', alignItems: 'center', gap: '16px'}}>
-                <span style={{fontSize: '11px', color: styles.textTertiary}}>{k.last_used_at ? `Last used: ${new Date(k.last_used_at).toLocaleDateString()}` : 'Never used'}</span>
+                <span style={{fontSize: '11px', color: 'rgba(255,255,255,.50)'}}>{k.last_used_at ? `Last used: ${new Date(k.last_used_at).toLocaleDateString()}` : 'Never used'}</span>
                 <button onClick={() => revokeKey(k.id)} style={{padding: '6px 12px', background: 'rgba(255,100,100,0.1)', border: '1px solid rgba(255,100,100,0.3)', color: '#ff6464', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', cursor: 'pointer'}}>Revoke</button>
               </div>
             </div>
           ))}
         </div>
       ) : (
-        <p style={{color: styles.textTertiary, fontSize: '14px'}}>No API keys yet. Generate one to connect the ENVELO Interlock.</p>
+        <p style={{color: 'rgba(255,255,255,.50)', fontSize: '14px'}}>No API keys yet. Generate one to connect the ENVELO Interlock.</p>
       )}
     </div>
   );
@@ -886,9 +885,9 @@ function BoundaryConfigurator({ certificateNumber, initialBoundaries, onSave }) 
     setSaving(false);
   };
 
-  const inputStyle = { background: 'rgba(255,255,255,0.03)', border: '1px solid ' + styles.borderGlass, color: styles.textPrimary, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px', outline: 'none' };
-  const sectionTitle = (text) => <div style={{ fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.purpleBright, marginBottom: '8px', marginTop: '20px' }}>{text}</div>;
-  const helpText = (text) => <p style={{ color: styles.textTertiary, fontSize: '11px', marginBottom: '8px' }}>{text}</p>;
+  const inputStyle = { background: 'rgba(255,255,255,0.03)', border: '1px solid ' + 'rgba(255,255,255,.07)', color: 'rgba(255,255,255,.94)', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px', outline: 'none' };
+  const sectionTitle = (text) => <div style={{ fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: '#a896d6', marginBottom: '8px', marginTop: '20px' }}>{text}</div>;
+  const helpText = (text) => <p style={{ color: 'rgba(255,255,255,.50)', fontSize: '11px', marginBottom: '8px' }}>{text}</p>;
   const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
   const totalCount = bounds.numeric.filter(b => b.name).length + bounds.geo.filter(b => b.name).length + bounds.time.filter(b => b.name).length + bounds.state.filter(b => b.name).length;
@@ -898,10 +897,10 @@ function BoundaryConfigurator({ certificateNumber, initialBoundaries, onSave }) 
       {/* Summary Bar */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '20px', padding: '12px 16px', background: dirty ? 'rgba(214,160,92,0.03)' : 'rgba(92,214,133,0.05)', border: '1px solid ' + (dirty ? 'rgba(214,160,92,0.2)' : 'rgba(92,214,133,0.04)') }}>
         <div style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
-          <span style={{ fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', color: styles.textTertiary }}>{totalCount} boundaries defined</span>
-          {dirty && <span style={{ fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.accentAmber, letterSpacing: '1px', textTransform: 'uppercase' }}>● Unsaved changes</span>}
+          <span style={{ fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', color: 'rgba(255,255,255,.50)' }}>{totalCount} boundaries defined</span>
+          {dirty && <span style={{ fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: '#D6A05C', letterSpacing: '1px', textTransform: 'uppercase' }}>● Unsaved changes</span>}
         </div>
-        <button onClick={handleSave} disabled={saving || !dirty} style={{ padding: '8px 24px', background: dirty ? styles.purplePrimary : 'rgba(255,255,255,0.05)', border: '1px solid ' + (dirty ? styles.purpleBright : styles.borderGlass), color: dirty ? '#fff' : styles.textTertiary, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: dirty ? 'pointer' : 'default', opacity: saving ? 0.6 : 1 }}>
+        <button onClick={handleSave} disabled={saving || !dirty} style={{ padding: '8px 24px', background: dirty ? '#5B4B8A' : 'rgba(255,255,255,0.05)', border: '1px solid ' + (dirty ? '#a896d6' : 'rgba(255,255,255,.07)'), color: dirty ? '#fff' : 'rgba(255,255,255,.50)', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: dirty ? 'pointer' : 'default', opacity: saving ? 0.6 : 1 }}>
           {saving ? 'Saving...' : dirty ? 'Save Boundaries' : 'Saved ✓'}
         </button>
       </div>
@@ -910,7 +909,7 @@ function BoundaryConfigurator({ certificateNumber, initialBoundaries, onSave }) 
       {sectionTitle('Numeric Boundaries')}
       {helpText('Measurable limits: speed, temperature, altitude, weight, pressure, distance.')}
       {bounds.numeric.map((b, i) => (
-        <div key={i} style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid ' + styles.borderGlass, padding: '12px', marginBottom: '8px' }}>
+        <div key={i} style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid ' + 'rgba(255,255,255,.07)', padding: '12px', marginBottom: '8px' }}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '8px' }}>
             <input type="text" value={b.name} onChange={e => update('numeric', i, 'name', e.target.value)} className="px-3 py-2" style={{ ...inputStyle }} placeholder="Name (e.g., Speed Limit)" />
             <input type="text" value={b.parameter} onChange={e => update('numeric', i, 'parameter', e.target.value)} className="px-3 py-2" style={{ ...inputStyle }} placeholder="Parameter (e.g., speed)" />
@@ -922,18 +921,18 @@ function BoundaryConfigurator({ certificateNumber, initialBoundaries, onSave }) 
             <input type="text" value={b.unit} onChange={e => update('numeric', i, 'unit', e.target.value)} className="px-3 py-2" style={{ ...inputStyle }} placeholder="Unit" />
             <div style={{ display: 'flex', gap: '4px' }}>
               <input type="number" value={b.tolerance} onChange={e => update('numeric', i, 'tolerance', e.target.value)} className="px-3 py-2" style={{ ...inputStyle, flex: 1 }} placeholder="±Tol" />
-              {bounds.numeric.length > 1 && <button onClick={() => removeRow('numeric', i)} style={{ background: 'transparent', border: 'none', color: styles.accentRed, cursor: 'pointer', padding: '0 8px', fontSize: '14px' }}>×</button>}
+              {bounds.numeric.length > 1 && <button onClick={() => removeRow('numeric', i)} style={{ background: 'transparent', border: 'none', color: '#D65C5C', cursor: 'pointer', padding: '0 8px', fontSize: '14px' }}>×</button>}
             </div>
           </div>
         </div>
       ))}
-      <button onClick={() => addRow('numeric', { name: '', parameter: '', min_value: '', max_value: '', hard_limit: '', unit: '', tolerance: '' })} style={{ width: '100%', marginBottom: '4px', background: 'transparent', border: '1px dashed ' + styles.borderGlass, padding: '8px', color: styles.purpleBright, cursor: 'pointer', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px' }}>+ Add Numeric Boundary</button>
+      <button onClick={() => addRow('numeric', { name: '', parameter: '', min_value: '', max_value: '', hard_limit: '', unit: '', tolerance: '' })} style={{ width: '100%', marginBottom: '4px', background: 'transparent', border: '1px dashed ' + 'rgba(255,255,255,.07)', padding: '8px', color: '#a896d6', cursor: 'pointer', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px' }}>+ Add Numeric Boundary</button>
 
       {/* ── GEOGRAPHIC ── */}
       {sectionTitle('Geographic Boundaries')}
       {helpText('Physical operating zone — center coordinates + radius.')}
       {bounds.geo.map((b, i) => (
-        <div key={i} style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid ' + styles.borderGlass, padding: '12px', marginBottom: '8px' }}>
+        <div key={i} style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid ' + 'rgba(255,255,255,.07)', padding: '12px', marginBottom: '8px' }}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '8px' }}>
             <input type="text" value={b.name} onChange={e => update('geo', i, 'name', e.target.value)} className="px-3 py-2" style={{ ...inputStyle }} placeholder="Name (e.g., Operating Zone)" />
             <select value={b.boundary_type} onChange={e => update('geo', i, 'boundary_type', e.target.value)} className="px-3 py-2" style={{ ...inputStyle }}>
@@ -947,18 +946,18 @@ function BoundaryConfigurator({ certificateNumber, initialBoundaries, onSave }) 
             <input type="number" value={b.radius_meters} onChange={e => update('geo', i, 'radius_meters', e.target.value)} className="px-3 py-2" style={{ ...inputStyle }} placeholder="Radius (m)" />
             <div style={{ display: 'flex', gap: '4px' }}>
               <input type="number" value={b.altitude_max} onChange={e => update('geo', i, 'altitude_max', e.target.value)} className="px-3 py-2" style={{ ...inputStyle, flex: 1 }} placeholder="Alt max (m)" />
-              {bounds.geo.length > 1 && <button onClick={() => removeRow('geo', i)} style={{ background: 'transparent', border: 'none', color: styles.accentRed, cursor: 'pointer', padding: '0 8px', fontSize: '14px' }}>×</button>}
+              {bounds.geo.length > 1 && <button onClick={() => removeRow('geo', i)} style={{ background: 'transparent', border: 'none', color: '#D65C5C', cursor: 'pointer', padding: '0 8px', fontSize: '14px' }}>×</button>}
             </div>
           </div>
         </div>
       ))}
-      <button onClick={() => addRow('geo', { name: '', boundary_type: 'circle', lat: '', lon: '', radius_meters: '', altitude_min: '', altitude_max: '' })} style={{ width: '100%', marginBottom: '4px', background: 'transparent', border: '1px dashed ' + styles.borderGlass, padding: '8px', color: styles.purpleBright, cursor: 'pointer', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px' }}>+ Add Geographic Boundary</button>
+      <button onClick={() => addRow('geo', { name: '', boundary_type: 'circle', lat: '', lon: '', radius_meters: '', altitude_min: '', altitude_max: '' })} style={{ width: '100%', marginBottom: '4px', background: 'transparent', border: '1px dashed ' + 'rgba(255,255,255,.07)', padding: '8px', color: '#a896d6', cursor: 'pointer', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px' }}>+ Add Geographic Boundary</button>
 
       {/* ── TIME ── */}
       {sectionTitle('Time Boundaries')}
       {helpText('Allowed operating hours and days of week.')}
       {bounds.time.map((b, i) => (
-        <div key={i} style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid ' + styles.borderGlass, padding: '12px', marginBottom: '8px' }}>
+        <div key={i} style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid ' + 'rgba(255,255,255,.07)', padding: '12px', marginBottom: '8px' }}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '8px', marginBottom: '8px' }}>
             <input type="text" value={b.name} onChange={e => update('time', i, 'name', e.target.value)} className="px-3 py-2" style={{ ...inputStyle }} placeholder="Name" />
             <input type="number" min="0" max="23" value={b.start_hour} onChange={e => update('time', i, 'start_hour', e.target.value)} className="px-3 py-2" style={{ ...inputStyle }} placeholder="Start hour" />
@@ -975,24 +974,24 @@ function BoundaryConfigurator({ certificateNumber, initialBoundaries, onSave }) 
             </select>
           </div>
           <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', alignItems: 'center' }}>
-            <span style={{ color: styles.textTertiary, fontSize: '11px', marginRight: '4px' }}>Days:</span>
+            <span style={{ color: 'rgba(255,255,255,.50)', fontSize: '11px', marginRight: '4px' }}>Days:</span>
             {dayNames.map((d, di) => (
               <button key={di} onClick={() => {
                   const newDays = b.days.includes(di) ? b.days.filter(x => x !== di) : [...b.days, di].sort();
                   update('time', i, 'days', newDays);
                 }} className="btn" style={{ padding: '2px 6px', fontSize: '10px', minWidth: '28px', justifyContent: 'center', color: b.days.includes(di) ? 'var(--purple-bright)' : 'var(--text-tertiary)', borderColor: b.days.includes(di) ? 'rgba(157,140,207,.3)' : 'rgba(255,255,255,.04)' }}>{d}</button>
             ))}
-            {bounds.time.length > 1 && <button onClick={() => removeRow('time', i)} style={{ marginLeft: 'auto', background: 'transparent', border: 'none', color: styles.accentRed, cursor: 'pointer', padding: '2px 8px', fontSize: '14px' }}>×</button>}
+            {bounds.time.length > 1 && <button onClick={() => removeRow('time', i)} style={{ marginLeft: 'auto', background: 'transparent', border: 'none', color: '#D65C5C', cursor: 'pointer', padding: '2px 8px', fontSize: '14px' }}>×</button>}
           </div>
         </div>
       ))}
-      <button onClick={() => addRow('time', { name: '', start_hour: '6', end_hour: '22', timezone: 'America/Chicago', days: [0,1,2,3,4,5,6] })} style={{ width: '100%', marginBottom: '4px', background: 'transparent', border: '1px dashed ' + styles.borderGlass, padding: '8px', color: styles.purpleBright, cursor: 'pointer', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px' }}>+ Add Time Boundary</button>
+      <button onClick={() => addRow('time', { name: '', start_hour: '6', end_hour: '22', timezone: 'America/Chicago', days: [0,1,2,3,4,5,6] })} style={{ width: '100%', marginBottom: '4px', background: 'transparent', border: '1px dashed ' + 'rgba(255,255,255,.07)', padding: '8px', color: '#a896d6', cursor: 'pointer', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px' }}>+ Add Time Boundary</button>
 
       {/* ── STATE ── */}
       {sectionTitle('State Boundaries')}
       {helpText('Allowed/forbidden operational states and modes.')}
       {bounds.state.map((b, i) => (
-        <div key={i} style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid ' + styles.borderGlass, padding: '12px', marginBottom: '8px' }}>
+        <div key={i} style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid ' + 'rgba(255,255,255,.07)', padding: '12px', marginBottom: '8px' }}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '8px' }}>
             <input type="text" value={b.name} onChange={e => update('state', i, 'name', e.target.value)} className="px-3 py-2" style={{ ...inputStyle }} placeholder="Name (e.g., Mode Check)" />
             <input type="text" value={b.parameter} onChange={e => update('state', i, 'parameter', e.target.value)} className="px-3 py-2" style={{ ...inputStyle }} placeholder="Parameter (e.g., mode)" />
@@ -1000,19 +999,19 @@ function BoundaryConfigurator({ certificateNumber, initialBoundaries, onSave }) 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
             <div>
               <input type="text" value={b.allowed_values} onChange={e => update('state', i, 'allowed_values', e.target.value)} className="w-full px-3 py-2" style={{ ...inputStyle }} placeholder="Allowed (comma-sep)" />
-              <span style={{ fontSize: '9px', color: styles.textTertiary }}>e.g., autonomous, semi-autonomous</span>
+              <span style={{ fontSize: '9px', color: 'rgba(255,255,255,.50)' }}>e.g., autonomous, semi-autonomous</span>
             </div>
             <div style={{ display: 'flex', gap: '4px' }}>
               <div style={{ flex: 1 }}>
                 <input type="text" value={b.forbidden_values} onChange={e => update('state', i, 'forbidden_values', e.target.value)} className="w-full px-3 py-2" style={{ ...inputStyle }} placeholder="Forbidden (comma-sep)" />
-                <span style={{ fontSize: '9px', color: styles.textTertiary }}>e.g., manual_override, degraded</span>
+                <span style={{ fontSize: '9px', color: 'rgba(255,255,255,.50)' }}>e.g., manual_override, degraded</span>
               </div>
-              {bounds.state.length > 1 && <button onClick={() => removeRow('state', i)} style={{ background: 'transparent', border: 'none', color: styles.accentRed, cursor: 'pointer', padding: '0 8px', fontSize: '14px', alignSelf: 'flex-start' }}>×</button>}
+              {bounds.state.length > 1 && <button onClick={() => removeRow('state', i)} style={{ background: 'transparent', border: 'none', color: '#D65C5C', cursor: 'pointer', padding: '0 8px', fontSize: '14px', alignSelf: 'flex-start' }}>×</button>}
             </div>
           </div>
         </div>
       ))}
-      <button onClick={() => addRow('state', { name: '', parameter: '', allowed_values: '', forbidden_values: '' })} style={{ width: '100%', marginBottom: '4px', background: 'transparent', border: '1px dashed ' + styles.borderGlass, padding: '8px', color: styles.purpleBright, cursor: 'pointer', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px' }}>+ Add State Boundary</button>
+      <button onClick={() => addRow('state', { name: '', parameter: '', allowed_values: '', forbidden_values: '' })} style={{ width: '100%', marginBottom: '4px', background: 'transparent', border: '1px dashed ' + 'rgba(255,255,255,.07)', padding: '8px', color: '#a896d6', cursor: 'pointer', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px' }}>+ Add State Boundary</button>
     </div>
   );
 }
@@ -1058,7 +1057,7 @@ function EnveloAdminView() {
   }, []);
 
   if (loading) {
-    return <div style={{color: styles.textTertiary, padding: 'clamp(16px, 4vw, 40px)', textAlign: 'center'}}><RefreshCw size={24} style={{animation: 'spin 1s linear infinite'}} /></div>;
+    return <div style={{color: 'rgba(255,255,255,.50)', padding: 'clamp(16px, 4vw, 40px)', textAlign: 'center'}}><RefreshCw size={24} style={{animation: 'spin 1s linear infinite'}} /></div>;
   }
 
   const activeSessions = sessions.filter(s => s.status === 'active');
@@ -1094,7 +1093,7 @@ function EnveloAdminView() {
       />
 
       {/* Tab Navigation */}
-      <div style={{display: 'flex', gap: '8px', borderBottom: `1px solid ${styles.borderGlass}`, paddingBottom: '16px', overflowX: 'auto', WebkitOverflowScrolling: 'touch'}}>
+      <div style={{display: 'flex', gap: '8px', borderBottom: `1px solid ${'rgba(255,255,255,.07)'}`, paddingBottom: '16px', overflowX: 'auto', WebkitOverflowScrolling: 'touch'}}>
         {[
           { id: 'monitoring', label: 'Live Monitoring' },
           { id: 'customers', label: 'Customer Systems' },
@@ -1114,19 +1113,19 @@ function EnveloAdminView() {
       <div className="grid gap-4" style={{gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))"}}>
         <Panel>
           <div className="hud-label" style={{marginBottom: '12px'}}>Active Sessions</div>
-          <p style={{fontSize: 'clamp(24px, 5vw, 36px)', fontWeight: 200, color: styles.accentGreen}}>{activeSessions.length}</p>
+          <p style={{fontSize: 'clamp(24px, 5vw, 36px)', fontWeight: 200, color: '#5CD685'}}>{activeSessions.length}</p>
         </Panel>
         <Panel>
           <div className="hud-label" style={{marginBottom: '12px'}}>Attested Systems</div>
-          <p style={{fontSize: 'clamp(24px, 5vw, 36px)', fontWeight: 200, color: styles.purpleBright}}>{activeCerts.length}</p>
+          <p style={{fontSize: 'clamp(24px, 5vw, 36px)', fontWeight: 200, color: '#a896d6'}}>{activeCerts.length}</p>
         </Panel>
         <Panel>
           <div className="hud-label" style={{marginBottom: '12px'}}>CAT-72 In Progress</div>
-          <p style={{fontSize: 'clamp(24px, 5vw, 36px)', fontWeight: 200, color: styles.accentAmber}}>{pendingApps.length}</p>
+          <p style={{fontSize: 'clamp(24px, 5vw, 36px)', fontWeight: 200, color: '#D6A05C'}}>{pendingApps.length}</p>
         </Panel>
         <Panel>
           <div className="hud-label" style={{marginBottom: '12px'}}>Violations (Total)</div>
-          <p style={{fontSize: 'clamp(24px, 5vw, 36px)', fontWeight: 200, color: totalViolations > 0 ? styles.accentRed : styles.accentGreen}}>{totalViolations}</p>
+          <p style={{fontSize: 'clamp(24px, 5vw, 36px)', fontWeight: 200, color: totalViolations > 0 ? '#D65C5C' : '#5CD685'}}>{totalViolations}</p>
         </Panel>
       </div>
 
@@ -1138,8 +1137,8 @@ function EnveloAdminView() {
             <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '20px'}}>
               <div className="hud-label">Active Sessions</div>
               <div style={{display: 'flex', alignItems: 'center', gap: '8px', padding: '4px 12px', background: 'transparent' }}>
-                <div style={{width: '6px', height: '6px', borderRadius: '50%', background: styles.accentGreen, boxShadow: `0 0 8px ${styles.accentGreen}`, animation: 'pulse 2s infinite'}}></div>
-                <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.accentGreen, textTransform: 'uppercase'}}>Live</span>
+                <div style={{width: '6px', height: '6px', borderRadius: '50%', background: '#5CD685', boxShadow: `0 0 8px ${'#5CD685'}`, animation: 'pulse 2s infinite'}}></div>
+                <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: '#5CD685', textTransform: 'uppercase'}}>Live</span>
               </div>
             </div>
             
@@ -1147,28 +1146,28 @@ function EnveloAdminView() {
               <div className='table-scroll' style={{overflowX: 'auto', WebkitOverflowScrolling: 'touch'}}>
                 <table className="w-full">
                   <thead>
-                    <tr style={{borderBottom: `1px solid ${styles.borderGlass}`}}>
-                      <th style={{padding: '12px 16px', textAlign: 'left', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>Certificate</th>
-                      <th style={{padding: '12px 16px', textAlign: 'left', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>Status</th>
-                      <th style={{padding: '12px 16px', textAlign: 'left', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>Pass</th>
-                      <th style={{padding: '12px 16px', textAlign: 'left', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>Block</th>
-                      <th style={{padding: '12px 16px', textAlign: 'left', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>Actions</th>
+                    <tr style={{borderBottom: `1px solid ${'rgba(255,255,255,.07)'}`}}>
+                      <th style={{padding: '12px 16px', textAlign: 'left', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: 'rgba(255,255,255,.50)', fontWeight: 400}}>Certificate</th>
+                      <th style={{padding: '12px 16px', textAlign: 'left', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: 'rgba(255,255,255,.50)', fontWeight: 400}}>Status</th>
+                      <th style={{padding: '12px 16px', textAlign: 'left', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: 'rgba(255,255,255,.50)', fontWeight: 400}}>Pass</th>
+                      <th style={{padding: '12px 16px', textAlign: 'left', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: 'rgba(255,255,255,.50)', fontWeight: 400}}>Block</th>
+                      <th style={{padding: '12px 16px', textAlign: 'left', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: 'rgba(255,255,255,.50)', fontWeight: 400}}>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
                     {sessions.map((s, i) => (
-                      <tr key={i}  style={{borderBottom: `1px solid ${styles.borderGlass}`}}>
-                        <td style={{padding: '16px', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px', color: styles.purpleBright}}>{s.certificate_id || 'N/A'}</td>
+                      <tr key={i}  style={{borderBottom: `1px solid ${'rgba(255,255,255,.07)'}`}}>
+                        <td style={{padding: '16px', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px', color: '#a896d6'}}>{s.certificate_id || 'N/A'}</td>
                         <td style={{padding: '16px'}}>
                           <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
-                            <div style={{width: '8px', height: '8px', borderRadius: '50%', background: s.status === 'active' ? styles.accentGreen : styles.textTertiary, boxShadow: s.status === 'active' ? `0 0 8px ${styles.accentGreen}` : 'none'}}></div>
-                            <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', textTransform: 'uppercase', color: s.status === 'active' ? styles.accentGreen : styles.textTertiary}}>{s.status}</span>
+                            <div style={{width: '8px', height: '8px', borderRadius: '50%', background: s.status === 'active' ? '#5CD685' : 'rgba(255,255,255,.50)', boxShadow: s.status === 'active' ? `0 0 8px ${'#5CD685'}` : 'none'}}></div>
+                            <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', textTransform: 'uppercase', color: s.status === 'active' ? '#5CD685' : 'rgba(255,255,255,.50)'}}>{s.status}</span>
                           </div>
                         </td>
-                        <td style={{padding: '16px', color: styles.accentGreen}}>{s.pass_count || 0}</td>
-                        <td style={{padding: '16px', color: (s.block_count || 0) > 0 ? styles.accentRed : styles.textTertiary}}>{s.block_count || 0}</td>
+                        <td style={{padding: '16px', color: '#5CD685'}}>{s.pass_count || 0}</td>
+                        <td style={{padding: '16px', color: (s.block_count || 0) > 0 ? '#D65C5C' : 'rgba(255,255,255,.50)'}}>{s.block_count || 0}</td>
                         <td style={{padding: '16px'}}>
-                          <button onClick={() => setSelectedSession(s)} style={{padding: '6px 12px', background: 'transparent', border: `1px solid ${styles.purpleBright}`, color: styles.purpleBright, fontSize: '11px', cursor: 'pointer'}}>View Details</button>
+                          <button onClick={() => setSelectedSession(s)} style={{padding: '6px 12px', background: 'transparent', border: `1px solid ${'#a896d6'}`, color: '#a896d6', fontSize: '11px', cursor: 'pointer'}}>View Details</button>
                         </td>
                       </tr>
                     ))}
@@ -1176,7 +1175,7 @@ function EnveloAdminView() {
                 </table>
               </div>
             ) : (
-              <p style={{color: styles.textTertiary, textAlign: 'center', padding: 'clamp(16px, 4vw, 40px)'}}>No sessions found.</p>
+              <p style={{color: 'rgba(255,255,255,.50)', textAlign: 'center', padding: 'clamp(16px, 4vw, 40px)'}}>No sessions found.</p>
             )}
           </Panel>
 
@@ -1195,8 +1194,8 @@ function EnveloAdminView() {
                       link.download = `CAT72-Report-${selectedSession.session_id}.pdf`;
                       link.click();
                     } catch(e) { toast.show('Failed: ' + e.message, 'error'); }
-                  }} style={{padding: '8px 16px', background: styles.purplePrimary, border: 'none', color: 'rgba(255,255,255,.94)', fontSize: '11px', cursor: 'pointer'}}>Download Report</button>
-                  <button onClick={() => setSelectedSession(null)} style={{padding: '8px 16px', background: 'transparent', border: `1px solid ${styles.borderGlass}`, color: styles.textTertiary, cursor: 'pointer', fontSize: '11px'}}>✕ Close</button>
+                  }} style={{padding: '8px 16px', background: '#5B4B8A', border: 'none', color: 'rgba(255,255,255,.94)', fontSize: '11px', cursor: 'pointer'}}>Download Report</button>
+                  <button onClick={() => setSelectedSession(null)} style={{padding: '8px 16px', background: 'transparent', border: `1px solid ${'rgba(255,255,255,.07)'}`, color: 'rgba(255,255,255,.50)', cursor: 'pointer', fontSize: '11px'}}>✕ Close</button>
                 </div>
               </div>
               <SessionReport session={selectedSession} />
@@ -1216,21 +1215,21 @@ function EnveloAdminView() {
             {activeCerts.length > 0 ? (
               <div className="space-y-4">
                 {activeCerts.map(cert => (
-                  <div key={cert.id} style={{padding: '20px', background: 'transparent', border: `1px solid ${styles.borderGlass}` }}>
+                  <div key={cert.id} style={{padding: '20px', background: 'transparent', border: `1px solid ${'rgba(255,255,255,.07)'}` }}>
                     <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px'}}>
                       <div>
-                        <h3 style={{fontSize: '16px', fontWeight: 500, color: styles.textPrimary, margin: '0 0 4px 0'}}>{cert.system_name || 'Unnamed'}</h3>
-                        <p style={{fontSize: '13px', color: styles.textSecondary, marginBottom: '8px'}}>{cert.organization_name}</p>
-                        <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px', color: styles.purpleBright}}>{cert.certificate_number}</p>
+                        <h3 style={{fontSize: '16px', fontWeight: 500, color: 'rgba(255,255,255,.94)', margin: '0 0 4px 0'}}>{cert.system_name || 'Unnamed'}</h3>
+                        <p style={{fontSize: '13px', color: 'rgba(255,255,255,.78)', marginBottom: '8px'}}>{cert.organization_name}</p>
+                        <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px', color: '#a896d6'}}>{cert.certificate_number}</p>
                       </div>
                       <div style={{display: 'flex', gap: '8px', flexWrap: 'wrap'}}>
-                        <button onClick={() => { setReviewingCert(cert); setActiveTab('review'); }} style={{padding: '8px 16px', background: 'transparent', border: `1px solid ${styles.purpleBright}`, color: styles.purpleBright, fontSize: '11px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px'}}>
+                        <button onClick={() => { setReviewingCert(cert); setActiveTab('review'); }} style={{padding: '8px 16px', background: 'transparent', border: `1px solid ${'#a896d6'}`, color: '#a896d6', fontSize: '11px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px'}}>
                           <Shield fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} size={12} /> Review Boundaries
                         </button>
-                        <span style={{padding: '8px 16px', background: 'transparent', border: '1px solid rgba(255,255,255,0.06)', color: styles.accentGreen, fontSize: '11px', display: 'flex', alignItems: 'center', gap: '6px'}}>
+                        <span style={{padding: '8px 16px', background: 'transparent', border: '1px solid rgba(255,255,255,0.06)', color: '#5CD685', fontSize: '11px', display: 'flex', alignItems: 'center', gap: '6px'}}>
                           ✓ Auto-provisioned on Approve
                         </span>
-                        <button onClick={() => downloadAgentForCert(cert)} style={{padding: '8px 16px', background: 'transparent', border: `1px solid ${styles.borderGlass}`, color: styles.textSecondary, fontSize: '11px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px'}}>
+                        <button onClick={() => downloadAgentForCert(cert)} style={{padding: '8px 16px', background: 'transparent', border: `1px solid ${'rgba(255,255,255,.07)'}`, color: 'rgba(255,255,255,.78)', fontSize: '11px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px'}}>
                           <Download size={12} /> Download Only
                         </button>
                       </div>
@@ -1239,21 +1238,21 @@ function EnveloAdminView() {
                 ))}
               </div>
             ) : (
-              <p style={{color: styles.textTertiary, textAlign: 'center', padding: '24px'}}>No attested systems yet.</p>
+              <p style={{color: 'rgba(255,255,255,.50)', textAlign: 'center', padding: '24px'}}>No attested systems yet.</p>
             )}
           </Panel>
 
           {/* Pending CAT-72 */}
           {pendingApps.length > 0 && (
             <Panel accent="amber">
-              <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.accentAmber, marginBottom: '20px'}}>CAT-72 Testing In Progress</p>
+              <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: '#D6A05C', marginBottom: '20px'}}>CAT-72 Testing In Progress</p>
               <div className="space-y-4">
                 {pendingApps.map(app => (
-                  <div key={app.id} style={{padding: '16px', background: 'transparent', border: `1px solid ${styles.borderGlass}`}}>
+                  <div key={app.id} style={{padding: '16px', background: 'transparent', border: `1px solid ${'rgba(255,255,255,.07)'}`}}>
                     <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px'}}>
                       <div>
-                        <p style={{fontSize: '14px', color: styles.textPrimary, marginBottom: '4px'}}>{app.system_name}</p>
-                        <p style={{fontSize: '12px', color: styles.textSecondary}}>{app.organization_name}</p>
+                        <p style={{fontSize: '14px', color: 'rgba(255,255,255,.94)', marginBottom: '4px'}}>{app.system_name}</p>
+                        <p style={{fontSize: '12px', color: 'rgba(255,255,255,.78)'}}>{app.organization_name}</p>
                       </div>
                       <span className="btn">
                         {app.cat72_started ? 'In Progress' : 'Ready'}
@@ -1287,19 +1286,19 @@ function EnveloAdminView() {
               <Panel glow>
                 <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px'}}>
                   <div>
-                    <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.purpleBright, marginBottom: '8px'}}>Boundary Review — Read Only</p>
+                    <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: '#a896d6', marginBottom: '8px'}}>Boundary Review — Read Only</p>
                     <h2 style={{fontSize: 'clamp(18px, 4vw, 24px)', fontWeight: 200, margin: '0 0 4px 0'}}>{reviewingCert.system_name}</h2>
-                    <p style={{color: styles.textSecondary}}>{reviewingCert.organization_name} • {reviewingCert.certificate_number}</p>
+                    <p style={{color: 'rgba(255,255,255,.78)'}}>{reviewingCert.organization_name} • {reviewingCert.certificate_number}</p>
                   </div>
-                  <button onClick={() => setReviewingCert(null)} style={{padding: '8px 16px', background: 'transparent', border: `1px solid ${styles.borderGlass}`, color: styles.textTertiary, cursor: 'pointer', fontSize: '11px'}}>← Back</button>
+                  <button onClick={() => setReviewingCert(null)} style={{padding: '8px 16px', background: 'transparent', border: `1px solid ${'rgba(255,255,255,.07)'}`, color: 'rgba(255,255,255,.50)', cursor: 'pointer', fontSize: '11px'}}>← Back</button>
                 </div>
 
                 <div style={{padding: '12px 16px', background: 'transparent', border: '1px solid rgba(255,255,255,.10)', marginBottom: '24px'}}>
-                  <p style={{color: styles.accentAmber, fontSize: '13px', margin: 0}}>⚠ Sentinel Authority does not modify customer boundaries. Review and approve as submitted, or reject with required changes.</p>
+                  <p style={{color: '#D6A05C', fontSize: '13px', margin: 0}}>⚠ Sentinel Authority does not modify customer boundaries. Review and approve as submitted, or reject with required changes.</p>
                 </div>
 
                 {!hasBoundaries ? (
-                  <p style={{color: styles.textTertiary, textAlign: 'center', padding: 'clamp(16px, 4vw, 40px)'}}>No boundaries defined in this application.</p>
+                  <p style={{color: 'rgba(255,255,255,.50)', textAlign: 'center', padding: 'clamp(16px, 4vw, 40px)'}}>No boundaries defined in this application.</p>
                 ) : (
                   <div className="space-y-6">
                     {numeric.length > 0 && (
@@ -1307,22 +1306,22 @@ function EnveloAdminView() {
                         <div className="hud-label" style={{marginBottom: '12px'}}>Numeric Boundaries ({numeric.length})</div>
                         <div style={{display: 'grid', gap: '8px'}}>
                           {numeric.map((b, i) => (
-                            <div key={i} style={{padding: '14px 16px', background: 'transparent', border: `1px solid ${styles.borderGlass}`, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '16px', alignItems: 'center'}}>
+                            <div key={i} style={{padding: '14px 16px', background: 'transparent', border: `1px solid ${'rgba(255,255,255,.07)'}`, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '16px', alignItems: 'center'}}>
                               <div>
-                                <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary, marginBottom: '2px'}}>Parameter</p>
-                                <p style={{fontWeight: 500, color: styles.textPrimary, fontSize: '14px'}}>{b.name || b.parameter || '—'}</p>
+                                <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: 'rgba(255,255,255,.50)', marginBottom: '2px'}}>Parameter</p>
+                                <p style={{fontWeight: 500, color: 'rgba(255,255,255,.94)', fontSize: '14px'}}>{b.name || b.parameter || '—'}</p>
                               </div>
                               <div>
-                                <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary, marginBottom: '2px'}}>Range</p>
-                                <p style={{color: styles.purpleBright, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '13px'}}>{b.min_value ?? '—'} → {b.max_value ?? '—'} {b.unit || ''}</p>
+                                <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: 'rgba(255,255,255,.50)', marginBottom: '2px'}}>Range</p>
+                                <p style={{color: '#a896d6', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '13px'}}>{b.min_value ?? '—'} → {b.max_value ?? '—'} {b.unit || ''}</p>
                               </div>
                               <div>
-                                <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary, marginBottom: '2px'}}>Hard Limit</p>
-                                <p style={{color: b.hard_limit ? styles.accentRed : styles.textTertiary, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '13px'}}>{b.hard_limit ?? 'None'}</p>
+                                <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: 'rgba(255,255,255,.50)', marginBottom: '2px'}}>Hard Limit</p>
+                                <p style={{color: b.hard_limit ? '#D65C5C' : 'rgba(255,255,255,.50)', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '13px'}}>{b.hard_limit ?? 'None'}</p>
                               </div>
                               <div>
-                                <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary, marginBottom: '2px'}}>Tolerance</p>
-                                <p style={{color: styles.textSecondary, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '13px'}}>±{b.tolerance || 0}</p>
+                                <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: 'rgba(255,255,255,.50)', marginBottom: '2px'}}>Tolerance</p>
+                                <p style={{color: 'rgba(255,255,255,.78)', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '13px'}}>±{b.tolerance || 0}</p>
                               </div>
                             </div>
                           ))}
@@ -1335,22 +1334,22 @@ function EnveloAdminView() {
                         <div className="hud-label" style={{marginBottom: '12px'}}>Geographic Boundaries ({geo.length})</div>
                         <div style={{display: 'grid', gap: '8px'}}>
                           {geo.map((b, i) => (
-                            <div key={i} style={{padding: '14px 16px', background: 'transparent', border: `1px solid ${styles.borderGlass}`, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '16px', alignItems: 'center'}}>
+                            <div key={i} style={{padding: '14px 16px', background: 'transparent', border: `1px solid ${'rgba(255,255,255,.07)'}`, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '16px', alignItems: 'center'}}>
                               <div>
-                                <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary, marginBottom: '2px'}}>Zone</p>
-                                <p style={{fontWeight: 500, color: styles.textPrimary, fontSize: '14px'}}>{b.name || '—'}</p>
+                                <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: 'rgba(255,255,255,.50)', marginBottom: '2px'}}>Zone</p>
+                                <p style={{fontWeight: 500, color: 'rgba(255,255,255,.94)', fontSize: '14px'}}>{b.name || '—'}</p>
                               </div>
                               <div>
-                                <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary, marginBottom: '2px'}}>Type</p>
-                                <p style={{color: styles.textSecondary, fontSize: '13px'}}>{b.boundary_type || 'circle'}</p>
+                                <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: 'rgba(255,255,255,.50)', marginBottom: '2px'}}>Type</p>
+                                <p style={{color: 'rgba(255,255,255,.78)', fontSize: '13px'}}>{b.boundary_type || 'circle'}</p>
                               </div>
                               <div>
-                                <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary, marginBottom: '2px'}}>Center</p>
-                                <p style={{color: styles.purpleBright, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px'}}>{(b.center?.lat || b.lat || '—')}, {(b.center?.lon || b.lon || '—')}</p>
+                                <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: 'rgba(255,255,255,.50)', marginBottom: '2px'}}>Center</p>
+                                <p style={{color: '#a896d6', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px'}}>{(b.center?.lat || b.lat || '—')}, {(b.center?.lon || b.lon || '—')}</p>
                               </div>
                               <div>
-                                <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary, marginBottom: '2px'}}>Radius</p>
-                                <p style={{color: styles.textSecondary, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '13px'}}>{b.radius_meters || '—'}m</p>
+                                <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: 'rgba(255,255,255,.50)', marginBottom: '2px'}}>Radius</p>
+                                <p style={{color: 'rgba(255,255,255,.78)', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '13px'}}>{b.radius_meters || '—'}m</p>
                               </div>
                             </div>
                           ))}
@@ -1363,18 +1362,18 @@ function EnveloAdminView() {
                         <div className="hud-label" style={{marginBottom: '12px'}}>Time Boundaries ({time.length})</div>
                         <div style={{display: 'grid', gap: '8px'}}>
                           {time.map((b, i) => (
-                            <div key={i} style={{padding: '14px 16px', background: 'transparent', border: `1px solid ${styles.borderGlass}`, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '16px', alignItems: 'center'}}>
+                            <div key={i} style={{padding: '14px 16px', background: 'transparent', border: `1px solid ${'rgba(255,255,255,.07)'}`, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '16px', alignItems: 'center'}}>
                               <div>
-                                <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary, marginBottom: '2px'}}>Schedule</p>
-                                <p style={{fontWeight: 500, color: styles.textPrimary, fontSize: '14px'}}>{b.name || '—'}</p>
+                                <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: 'rgba(255,255,255,.50)', marginBottom: '2px'}}>Schedule</p>
+                                <p style={{fontWeight: 500, color: 'rgba(255,255,255,.94)', fontSize: '14px'}}>{b.name || '—'}</p>
                               </div>
                               <div>
-                                <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary, marginBottom: '2px'}}>Hours</p>
-                                <p style={{color: styles.purpleBright, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '13px'}}>{b.allowed_hours_start ?? b.start_hour ?? 0}:00 → {b.allowed_hours_end ?? b.end_hour ?? 24}:00 {b.timezone || 'UTC'}</p>
+                                <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: 'rgba(255,255,255,.50)', marginBottom: '2px'}}>Hours</p>
+                                <p style={{color: '#a896d6', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '13px'}}>{b.allowed_hours_start ?? b.start_hour ?? 0}:00 → {b.allowed_hours_end ?? b.end_hour ?? 24}:00 {b.timezone || 'UTC'}</p>
                               </div>
                               <div>
-                                <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary, marginBottom: '2px'}}>Days</p>
-                                <p style={{color: styles.textSecondary, fontSize: '12px'}}>{(b.allowed_days || b.days || []).map(d => ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d] || d).join(', ') || 'All'}</p>
+                                <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: 'rgba(255,255,255,.50)', marginBottom: '2px'}}>Days</p>
+                                <p style={{color: 'rgba(255,255,255,.78)', fontSize: '12px'}}>{(b.allowed_days || b.days || []).map(d => ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d] || d).join(', ') || 'All'}</p>
                               </div>
                             </div>
                           ))}
@@ -1387,18 +1386,18 @@ function EnveloAdminView() {
                         <div className="hud-label" style={{marginBottom: '12px'}}>State Boundaries ({state.length})</div>
                         <div style={{display: 'grid', gap: '8px'}}>
                           {state.map((b, i) => (
-                            <div key={i} style={{padding: '14px 16px', background: 'transparent', border: `1px solid ${styles.borderGlass}`, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '16px', alignItems: 'center'}}>
+                            <div key={i} style={{padding: '14px 16px', background: 'transparent', border: `1px solid ${'rgba(255,255,255,.07)'}`, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '16px', alignItems: 'center'}}>
                               <div>
-                                <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary, marginBottom: '2px'}}>Parameter</p>
-                                <p style={{fontWeight: 500, color: styles.textPrimary, fontSize: '14px'}}>{b.name || b.parameter || '—'}</p>
+                                <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: 'rgba(255,255,255,.50)', marginBottom: '2px'}}>Parameter</p>
+                                <p style={{fontWeight: 500, color: 'rgba(255,255,255,.94)', fontSize: '14px'}}>{b.name || b.parameter || '—'}</p>
                               </div>
                               <div>
-                                <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary, marginBottom: '2px'}}>Allowed</p>
-                                <p style={{color: styles.accentGreen, fontSize: '12px'}}>{(b.allowed_values || []).join(', ') || '—'}</p>
+                                <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: 'rgba(255,255,255,.50)', marginBottom: '2px'}}>Allowed</p>
+                                <p style={{color: '#5CD685', fontSize: '12px'}}>{(b.allowed_values || []).join(', ') || '—'}</p>
                               </div>
                               <div>
-                                <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary, marginBottom: '2px'}}>Forbidden</p>
-                                <p style={{color: styles.accentRed, fontSize: '12px'}}>{(b.forbidden_values || []).join(', ') || '—'}</p>
+                                <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: 'rgba(255,255,255,.50)', marginBottom: '2px'}}>Forbidden</p>
+                                <p style={{color: '#D65C5C', fontSize: '12px'}}>{(b.forbidden_values || []).join(', ') || '—'}</p>
                               </div>
                             </div>
                           ))}
@@ -1409,7 +1408,7 @@ function EnveloAdminView() {
                 )}
 
                 {/* Approve / Reject Actions */}
-                <div style={{marginTop: '32px', paddingTop: '24px', borderTop: `1px solid ${styles.borderGlass}`}}>
+                <div style={{marginTop: '32px', paddingTop: '24px', borderTop: `1px solid ${'rgba(255,255,255,.07)'}`}}>
                   <div className="hud-label" style={{marginBottom: '16px'}}>Review Decision</div>
                   
                   <textarea
@@ -1418,8 +1417,8 @@ function EnveloAdminView() {
                     placeholder="Review notes (required for rejection, optional for approval)..."
                     style={{
                       width: '100%', minHeight: '80px', padding: '12px 16px',
-                      background: 'rgba(255,255,255,.05)', border: `1px solid ${styles.borderGlass}`,
-                      color: styles.textPrimary, fontSize: '13px',
+                      background: 'rgba(255,255,255,.05)', border: `1px solid ${'rgba(255,255,255,.07)'}`,
+                      color: 'rgba(255,255,255,.94)', fontSize: '13px',
                       fontFamily: "Georgia, 'Source Serif 4', serif", resize: 'vertical'
                     }}
                   />
@@ -1469,9 +1468,9 @@ function EnveloAdminView() {
           })() : (
             <Panel>
               <div style={{textAlign: 'center', padding: 'clamp(24px, 5vw, 60px) clamp(12px, 3vw, 20px)'}}>
-                <Shield fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} size={48} style={{color: styles.textTertiary, margin: '0 auto 16px'}} />
+                <Shield fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} size={48} style={{color: 'rgba(255,255,255,.50)', margin: '0 auto 16px'}} />
                 <h2 style={{fontSize: '20px', fontWeight: 200, marginBottom: '8px'}}>Select a System to Review</h2>
-                <p style={{color: styles.textSecondary, marginBottom: '24px'}}>Choose a system from the Customer Systems tab to review its submitted boundaries.</p>
+                <p style={{color: 'rgba(255,255,255,.78)', marginBottom: '24px'}}>Choose a system from the Customer Systems tab to review its submitted boundaries.</p>
                 <button onClick={() => setActiveTab('customers')} className="btn">View Customer Systems</button>
               </div>
             </Panel>
@@ -1559,7 +1558,7 @@ function EnveloCustomerView() {
   };
 
   if (loading) {
-    return <div style={{color: styles.textTertiary, padding: 'clamp(16px, 4vw, 40px)', textAlign: 'center'}}><RefreshCw size={24} style={{animation: 'spin 1s linear infinite'}} /></div>;
+    return <div style={{color: 'rgba(255,255,255,.50)', padding: 'clamp(16px, 4vw, 40px)', textAlign: 'center'}}><RefreshCw size={24} style={{animation: 'spin 1s linear infinite'}} /></div>;
   }
 
   // ── STATE 1: Not approved yet ──────────────────────────
@@ -1569,9 +1568,9 @@ function EnveloCustomerView() {
         <SectionHeader label="ENVELO Interlock" title="Application Required" />
         <Panel>
           <div style={{textAlign: 'center', padding: 'clamp(24px, 5vw, 60px) clamp(12px, 3vw, 20px)'}}>
-            <Shield fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} size={48} style={{color: styles.textTertiary, margin: '0 auto 16px'}} />
+            <Shield fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} size={48} style={{color: 'rgba(255,255,255,.50)', margin: '0 auto 16px'}} />
             <h2 style={{fontFamily: "Georgia, 'Source Serif 4', serif", fontSize: 'clamp(18px, 4vw, 24px)', fontWeight: 200, marginBottom: '12px'}}>Pending Approval</h2>
-            <p style={{color: styles.textSecondary, maxWidth: 'min(400px, 90vw)', margin: '0 auto'}}>Your application is being reviewed. Once approved, you'll deploy the ENVELO agent with a single command.</p>
+            <p style={{color: 'rgba(255,255,255,.78)', maxWidth: 'min(400px, 90vw)', margin: '0 auto'}}>Your application is being reviewed. Once approved, you'll deploy the ENVELO agent with a single command.</p>
           </div>
         </Panel>
       </div>
@@ -1591,29 +1590,29 @@ function EnveloCustomerView() {
             <Panel key={cert.id} glow={isOnline}>
               <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '20px'}}>
                 <div>
-                  <h3 style={{fontSize: '20px', fontWeight: 500, color: styles.textPrimary, margin: '0 0 8px 0'}}>{cert.system_name || 'System'}</h3>
-                  <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '13px', color: styles.purpleBright, marginBottom: '4px'}}>{cert.certificate_number}</p>
-                  <p style={{fontSize: '12px', color: styles.textTertiary}}>
+                  <h3 style={{fontSize: '20px', fontWeight: 500, color: 'rgba(255,255,255,.94)', margin: '0 0 8px 0'}}>{cert.system_name || 'System'}</h3>
+                  <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '13px', color: '#a896d6', marginBottom: '4px'}}>{cert.certificate_number}</p>
+                  <p style={{fontSize: '12px', color: 'rgba(255,255,255,.50)'}}>
                     {'Attested ' + (cert.issued_at ? new Date(cert.issued_at).toLocaleDateString() : 'N/A')}
                   </p>
                 </div>
                 <div style={{display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px', background: 'transparent' }}>
-                  <div style={{width: '8px', height: '8px', borderRadius: '50%', background: styles.accentGreen, animation: 'pulse 2s infinite'}}></div>
-                  <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', textTransform: 'uppercase', color: styles.accentGreen}}>ENVELO Active</span>
+                  <div style={{width: '8px', height: '8px', borderRadius: '50%', background: '#5CD685', animation: 'pulse 2s infinite'}}></div>
+                  <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', textTransform: 'uppercase', color: '#5CD685'}}>ENVELO Active</span>
                 </div>
               </div>
               {session && (
-                <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '16px', marginTop: '24px', paddingTop: '24px', borderTop: '1px solid ' + styles.borderGlass}}>
+                <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '16px', marginTop: '24px', paddingTop: '24px', borderTop: '1px solid ' + 'rgba(255,255,255,.07)'}}>
                   <div style={{textAlign: 'center'}}>
-                    <p style={{fontSize: 'clamp(20px, 4vw, 28px)', fontWeight: 200, color: styles.accentGreen}}>{session.uptime || '0h'}</p>
+                    <p style={{fontSize: 'clamp(20px, 4vw, 28px)', fontWeight: 200, color: '#5CD685'}}>{session.uptime || '0h'}</p>
                     <div className="hud-label">Uptime</div>
                   </div>
                   <div style={{textAlign: 'center'}}>
-                    <p style={{fontSize: 'clamp(20px, 4vw, 28px)', fontWeight: 200, color: styles.purpleBright}}>{session.record_count || 0}</p>
+                    <p style={{fontSize: 'clamp(20px, 4vw, 28px)', fontWeight: 200, color: '#a896d6'}}>{session.record_count || 0}</p>
                     <div className="hud-label">Telemetry</div>
                   </div>
                   <div style={{textAlign: 'center'}}>
-                    <p style={{fontSize: 'clamp(20px, 4vw, 28px)', fontWeight: 200, color: (session.violations || 0) > 0 ? styles.accentRed : styles.accentGreen}}>{session.violations || 0}</p>
+                    <p style={{fontSize: 'clamp(20px, 4vw, 28px)', fontWeight: 200, color: (session.violations || 0) > 0 ? '#D65C5C' : '#5CD685'}}>{session.violations || 0}</p>
                     <div className="hud-label">Violations</div>
                   </div>
                 </div>
@@ -1628,26 +1627,26 @@ function EnveloCustomerView() {
             <Panel key={app.id} glow>
               <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px'}}>
                 <div>
-                  <h3 style={{fontSize: '20px', fontWeight: 500, color: styles.textPrimary, margin: '0 0 4px 0'}}>{app.system_name}</h3>
-                  <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '13px', color: styles.accentAmber}}>{app.application_number} — CAT-72 Testing</p>
+                  <h3 style={{fontSize: '20px', fontWeight: 500, color: 'rgba(255,255,255,.94)', margin: '0 0 4px 0'}}>{app.system_name}</h3>
+                  <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '13px', color: '#D6A05C'}}>{app.application_number} — CAT-72 Testing</p>
                 </div>
                 <div style={{display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px', background: 'transparent' }}>
-                  <div style={{width: '8px', height: '8px', borderRadius: '50%', background: styles.accentGreen, animation: 'pulse 2s infinite'}}></div>
-                  <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', textTransform: 'uppercase', color: styles.accentGreen}}>ENVELO Active</span>
+                  <div style={{width: '8px', height: '8px', borderRadius: '50%', background: '#5CD685', animation: 'pulse 2s infinite'}}></div>
+                  <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', textTransform: 'uppercase', color: '#5CD685'}}>ENVELO Active</span>
                 </div>
               </div>
               {session && (
-                <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '16px', marginTop: '24px', paddingTop: '24px', borderTop: '1px solid ' + styles.borderGlass}}>
+                <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '16px', marginTop: '24px', paddingTop: '24px', borderTop: '1px solid ' + 'rgba(255,255,255,.07)'}}>
                   <div style={{textAlign: 'center'}}>
-                    <p style={{fontSize: 'clamp(20px, 4vw, 28px)', fontWeight: 200, color: styles.accentGreen}}>{session.pass_count || 0}</p>
+                    <p style={{fontSize: 'clamp(20px, 4vw, 28px)', fontWeight: 200, color: '#5CD685'}}>{session.pass_count || 0}</p>
                     <div className="hud-label">Passed</div>
                   </div>
                   <div style={{textAlign: 'center'}}>
-                    <p style={{fontSize: 'clamp(20px, 4vw, 28px)', fontWeight: 200, color: (session.block_count || 0) > 0 ? styles.accentRed : styles.accentGreen}}>{session.block_count || 0}</p>
+                    <p style={{fontSize: 'clamp(20px, 4vw, 28px)', fontWeight: 200, color: (session.block_count || 0) > 0 ? '#D65C5C' : '#5CD685'}}>{session.block_count || 0}</p>
                     <div className="hud-label">Blocked</div>
                   </div>
                   <div style={{textAlign: 'center'}}>
-                    <p style={{fontSize: 'clamp(20px, 4vw, 28px)', fontWeight: 200, color: styles.purpleBright}}>{(session.pass_count || 0) + (session.block_count || 0)}</p>
+                    <p style={{fontSize: 'clamp(20px, 4vw, 28px)', fontWeight: 200, color: '#a896d6'}}>{(session.pass_count || 0) + (session.block_count || 0)}</p>
                     <div className="hud-label">Total</div>
                   </div>
                 </div>
@@ -1675,8 +1674,8 @@ function EnveloCustomerView() {
               }}
               style={{padding: '16px', background: 'transparent', border: '1px solid rgba(255,255,255,.10)', cursor: 'pointer', textAlign: 'left'}}
             >
-              <p style={{fontWeight: 500, color: styles.accentRed, marginBottom: '4px', fontSize: '14px'}}>⏹ Stop Agent</p>
-              <p style={{color: styles.textTertiary, fontSize: '11px', margin: 0}}>Revokes API key. Agent shuts down within 30s.</p>
+              <p style={{fontWeight: 500, color: '#D65C5C', marginBottom: '4px', fontSize: '14px'}}>⏹ Stop Agent</p>
+              <p style={{color: 'rgba(255,255,255,.50)', fontSize: '11px', margin: 0}}>Revokes API key. Agent shuts down within 30s.</p>
             </button>
 
             <button
@@ -1695,8 +1694,8 @@ function EnveloCustomerView() {
               }}
               style={{padding: '16px', background: 'transparent', border: '1px solid rgba(91,75,138,0.2)', cursor: 'pointer', textAlign: 'left'}}
             >
-              <p style={{fontWeight: 500, color: styles.purpleBright, marginBottom: '4px', fontSize: '14px'}}>↻ Redeploy</p>
-              <p style={{color: styles.textTertiary, fontSize: '11px', margin: 0}}>Stop current agent and get a fresh deploy command.</p>
+              <p style={{fontWeight: 500, color: '#a896d6', marginBottom: '4px', fontSize: '14px'}}>↻ Redeploy</p>
+              <p style={{color: 'rgba(255,255,255,.50)', fontSize: '11px', margin: 0}}>Stop current agent and get a fresh deploy command.</p>
             </button>
 
             <button
@@ -1713,25 +1712,25 @@ function EnveloCustomerView() {
                   toast.show('Failed: ' + (e.response?.data?.detail || e.message), 'error');
                 }
               }}
-              style={{padding: '16px', background: 'rgba(255,255,255,0.03)', border: '1px solid ' + styles.borderGlass, cursor: 'pointer', textAlign: 'left'}}
+              style={{padding: '16px', background: 'rgba(255,255,255,0.03)', border: '1px solid ' + 'rgba(255,255,255,.07)', cursor: 'pointer', textAlign: 'left'}}
             >
-              <p style={{fontWeight: 500, color: styles.textSecondary, marginBottom: '4px', fontSize: '14px'}}>⊘ Uninstall</p>
-              <p style={{color: styles.textTertiary, fontSize: '11px', margin: 0}}>Remove agent, config, and auto-restart service.</p>
+              <p style={{fontWeight: 500, color: 'rgba(255,255,255,.78)', marginBottom: '4px', fontSize: '14px'}}>⊘ Uninstall</p>
+              <p style={{color: 'rgba(255,255,255,.50)', fontSize: '11px', margin: 0}}>Remove agent, config, and auto-restart service.</p>
             </button>
           </div>
 
           {showUninstall && (
-            <div style={{marginTop: '16px', padding: '16px', background: 'rgba(255,255,255,.05)', border: '1px solid ' + styles.borderGlass}}>
-              <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', color: styles.accentAmber, marginBottom: '8px'}}>Paste in terminal to fully remove</p>
-              <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px', color: styles.textSecondary, padding: '12px', background: 'rgba(255,255,255,.05)', whiteSpace: 'pre-wrap', lineHeight: '1.8'}}>
+            <div style={{marginTop: '16px', padding: '16px', background: 'rgba(255,255,255,.05)', border: '1px solid ' + 'rgba(255,255,255,.07)'}}>
+              <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', color: '#D6A05C', marginBottom: '8px'}}>Paste in terminal to fully remove</p>
+              <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px', color: 'rgba(255,255,255,.78)', padding: '12px', background: 'rgba(255,255,255,.05)', whiteSpace: 'pre-wrap', lineHeight: '1.8'}}>
                 {'# Stop agent\nkill $(cat ~/.envelo/envelo.pid) 2>/dev/null\n\n# Remove systemd service (Linux)\nsystemctl --user stop envelo.service 2>/dev/null\nsystemctl --user disable envelo.service 2>/dev/null\nrm -f ~/.config/systemd/user/envelo.service\n\n# Remove launchd (macOS)\nlaunchctl unload ~/Library/LaunchAgents/org.sentinelauthority.envelo.plist 2>/dev/null\nrm -f ~/Library/LaunchAgents/org.sentinelauthority.envelo.plist\n\n# Remove files\nrm -rf ~/.envelo\n\necho "✓ ENVELO uninstalled"'}
               </div>
             </div>
           )}
 
           <div style={{marginTop: '16px', padding: '12px', background: 'transparent' }}>
-            <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '8px'}}>Logs</p>
-            <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px', color: styles.textSecondary, padding: '8px', background: 'rgba(255,255,255,.05)' }}>cat ~/.envelo/envelo.log</div>
+            <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', color: 'rgba(255,255,255,.50)', marginBottom: '8px'}}>Logs</p>
+            <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px', color: 'rgba(255,255,255,.78)', padding: '8px', background: 'rgba(255,255,255,.05)' }}>cat ~/.envelo/envelo.log</div>
           </div>
         </Panel>
       </div>
@@ -1750,9 +1749,9 @@ function EnveloCustomerView() {
         <div style={{textAlign: 'center', padding: 'clamp(20px, 4vw, 40px) clamp(12px, 3vw, 20px)'}}>
           {!deployKey ? (
             <>
-              <Shield fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} size={56} style={{color: styles.purpleBright, margin: '0 auto 20px'}} />
-              <h2 style={{fontFamily: "Georgia, 'Source Serif 4', serif", fontSize: 'clamp(20px, 4vw, 28px)', fontWeight: 200, marginBottom: '12px', color: styles.textPrimary}}>One Command. That's It.</h2>
-              <p style={{color: styles.textSecondary, maxWidth: 'min(440px, 90vw)', margin: '0 auto 32px', lineHeight: '1.6'}}>
+              <Shield fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} size={56} style={{color: '#a896d6', margin: '0 auto 20px'}} />
+              <h2 style={{fontFamily: "Georgia, 'Source Serif 4', serif", fontSize: 'clamp(20px, 4vw, 28px)', fontWeight: 200, marginBottom: '12px', color: 'rgba(255,255,255,.94)'}}>One Command. That's It.</h2>
+              <p style={{color: 'rgba(255,255,255,.78)', maxWidth: 'min(440px, 90vw)', margin: '0 auto 32px', lineHeight: '1.6'}}>
                 Generate your deploy command. Paste it in a terminal. The ENVELO agent installs, configures your approved boundaries, starts running, and auto-restarts on reboot.
               </p>
               <button
@@ -1761,7 +1760,7 @@ function EnveloCustomerView() {
                 style={{
                   padding: '16px 48px',
                   background: 'transparent',
-                  border: '1px solid ' + styles.purpleBright,
+                  border: '1px solid ' + '#a896d6',
                   color: 'rgba(255,255,255,.94)',
                   fontFamily: "Consolas, 'IBM Plex Mono', monospace",
                   fontSize: '14px',
@@ -1778,29 +1777,29 @@ function EnveloCustomerView() {
             <>
               <div style={{marginBottom: '24px'}}>
                 <div style={{display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '8px 16px', background: 'transparent', marginBottom: '16px'}}>
-                  <div style={{width: '8px', height: '8px', borderRadius: '50%', background: styles.accentGreen}}></div>
-                  <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', color: styles.accentGreen, textTransform: 'uppercase', letterSpacing: '1px'}}>Ready to Deploy</span>
+                  <div style={{width: '8px', height: '8px', borderRadius: '50%', background: '#5CD685'}}></div>
+                  <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', color: '#5CD685', textTransform: 'uppercase', letterSpacing: '1px'}}>Ready to Deploy</span>
                 </div>
-                <h2 style={{fontFamily: "Georgia, 'Source Serif 4', serif", fontSize: 'clamp(18px, 4vw, 24px)', fontWeight: 200, color: styles.textPrimary, margin: '0 0 8px 0'}}>Paste in your terminal</h2>
+                <h2 style={{fontFamily: "Georgia, 'Source Serif 4', serif", fontSize: 'clamp(18px, 4vw, 24px)', fontWeight: 200, color: 'rgba(255,255,255,.94)', margin: '0 0 8px 0'}}>Paste in your terminal</h2>
               </div>
 
               {/* Terminal */}
               <div style={{maxWidth: 'min(700px, 95vw)', margin: '0 auto', textAlign: 'left'}}>
-                <div style={{background: 'rgba(255,255,255,.05)', border: '1px solid ' + styles.purpleBright, overflow: 'hidden'}}>
-                  <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 16px', background: 'rgba(255,255,255,.05)', borderBottom: '1px solid ' + styles.borderGlass}}>
+                <div style={{background: 'rgba(255,255,255,.05)', border: '1px solid ' + '#a896d6', overflow: 'hidden'}}>
+                  <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 16px', background: 'rgba(255,255,255,.05)', borderBottom: '1px solid ' + 'rgba(255,255,255,.07)'}}>
                     <div style={{display: 'flex', gap: '6px'}}>
                       <div style={{width: '10px', height: '10px', borderRadius: '50%', background: '#ff5f57'}}></div>
                       <div style={{width: '10px', height: '10px', borderRadius: '50%', background: '#febc2e'}}></div>
                       <div style={{width: '10px', height: '10px', borderRadius: '50%', background: '#28c840'}}></div>
                     </div>
-                    <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary}}>Terminal</span>
+                    <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: 'rgba(255,255,255,.50)'}}>Terminal</span>
                     <button
                       onClick={copyCommand}
                       style={{
                         padding: '4px 16px',
-                        background: copied ? 'rgba(92,214,133,0.2)' : styles.purplePrimary,
-                        border: '1px solid ' + (copied ? styles.accentGreen : styles.purpleBright),
-                        color: copied ? styles.accentGreen : '#fff',
+                        background: copied ? 'rgba(92,214,133,0.2)' : '#5B4B8A',
+                        border: '1px solid ' + (copied ? '#5CD685' : '#a896d6'),
+                        color: copied ? '#5CD685' : '#fff',
                         fontFamily: "Consolas, 'IBM Plex Mono', monospace",
                         fontSize: '11px',
                         letterSpacing: '1px',
@@ -1812,13 +1811,13 @@ function EnveloCustomerView() {
                     </button>
                   </div>
                   <div style={{padding: '20px', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '13px', lineHeight: '1.6', overflowX: 'auto', whiteSpace: 'pre-wrap', wordBreak: 'break-all'}}>
-                    <span style={{color: styles.accentGreen}}>$</span>{' '}
-                    <span style={{color: styles.textPrimary}}>{cmd}</span>
+                    <span style={{color: '#5CD685'}}>$</span>{' '}
+                    <span style={{color: 'rgba(255,255,255,.94)'}}>{cmd}</span>
                   </div>
                 </div>
 
-                <div style={{marginTop: '20px', padding: '16px', background: 'transparent', border: '1px solid ' + styles.borderGlass}}>
-                  <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '12px'}}>What happens</p>
+                <div style={{marginTop: '20px', padding: '16px', background: 'transparent', border: '1px solid ' + 'rgba(255,255,255,.07)'}}>
+                  <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', color: 'rgba(255,255,255,.50)', marginBottom: '12px'}}>What happens</p>
                   <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '12px', textAlign: 'center'}}>
                     {[
                       { icon: '↓', label: 'Installs' },
@@ -1828,18 +1827,18 @@ function EnveloCustomerView() {
                     ].map((s, i) => (
                       <div key={i}>
                         <div style={{fontSize: '18px', marginBottom: '4px'}}>{s.icon}</div>
-                        <div style={{fontSize: '11px', color: styles.textSecondary}}>{s.label}</div>
+                        <div style={{fontSize: '11px', color: 'rgba(255,255,255,.78)'}}>{s.label}</div>
                       </div>
                     ))}
                   </div>
                 </div>
 
-                <p style={{color: styles.accentAmber, fontSize: '12px', marginTop: '16px', textAlign: 'center'}}>
+                <p style={{color: '#D6A05C', fontSize: '12px', marginTop: '16px', textAlign: 'center'}}>
                   ⚠ This command contains your API key. Don't share it.
                 </p>
 
                 <div style={{textAlign: 'center', marginTop: '16px'}}>
-                  <button onClick={() => setDeployKey(null)} style={{background: 'transparent', border: 'none', color: styles.textTertiary, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', cursor: 'pointer', textDecoration: 'underline'}}>
+                  <button onClick={() => setDeployKey(null)} style={{background: 'transparent', border: 'none', color: 'rgba(255,255,255,.50)', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', cursor: 'pointer', textDecoration: 'underline'}}>
                     Generate new key
                   </button>
                 </div>

@@ -146,7 +146,7 @@ function LoginPage() {
               </button>
             </form>
             {!isRegister && (
-              <button onClick={() => {}} style={{ fontFamily: mono, fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: purple, background: 'none', border: 'none', cursor: 'pointer', marginTop: '20px', padding: 0 }}>Forgot password?</button>
+              <a href='mailto:support@sentinelauthority.org?subject=Password%20Reset%20Request' style={{ fontFamily: mono, fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: purple, marginTop: '20px', display: 'inline-block' }}>Forgot password?</a>
             )}
           </div>
         )}

@@ -19,7 +19,7 @@ AVAILABLE_DOCS = {
         "filename": "ODDC_Certification_Guide.pdf",
         "title": "ODDC Certification Guide (Legacy)",
         "description": "Version 1.0 — superseded by v3.0",
-        "version": "1.0",
+        "version": "3.0",
         "roles": ["admin"],
     },
 }

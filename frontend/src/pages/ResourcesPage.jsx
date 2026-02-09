@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Download, BookOpen } from 'lucide-react';
 import { api } from '../config/api';
-import { styles } from '../config/styles';
 import { useAuth } from '../context/AuthContext';
 
 function ResourcesPage() {
@@ -37,25 +36,25 @@ function ResourcesPage() {
         <p style={{
           fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px',
           letterSpacing: '2px', textTransform: 'uppercase',
-          color: styles.purpleBright, marginBottom: '8px'
+          color: '#a896d6', marginBottom: '8px'
         }}>RESOURCES</p>
         <h1 style={{
           fontFamily: "Georgia, 'Source Serif 4', serif", fontSize: 'clamp(20px, 4vw, 28px)',
-          fontWeight: 200, color: styles.textPrimary, margin: 0
+          fontWeight: 200, color: 'rgba(255,255,255,.94)', margin: 0
         }}>Documents & Guides</h1>
-        <p style={{ color: styles.textTertiary, marginTop: '8px', fontSize: '14px' }}>
+        <p style={{ color: 'rgba(255,255,255,.50)', marginTop: '8px', fontSize: '14px' }}>
           Reference materials for the ODDC certification process.
         </p>
       </div>
 
       {loading ? (
-        <div style={{ color: styles.textTertiary, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px' }}>
+        <div style={{ color: 'rgba(255,255,255,.50)', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px' }}>
           Loading documents...
         </div>
       ) : documents.length === 0 ? (
         <div style={{
-          padding: 'clamp(16px, 4vw, 40px)', textAlign: 'center', border: '1px solid ' + styles.borderGlass, background: styles.bgDeep,
-          color: styles.textTertiary
+          padding: 'clamp(16px, 4vw, 40px)', textAlign: 'center', border: '1px solid ' + 'rgba(255,255,255,.07)', background: '#2a2f3d',
+          color: 'rgba(255,255,255,.50)'
         }}>
           No documents available.
         </div>
@@ -63,26 +62,26 @@ function ResourcesPage() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           {documents.map(doc => (
             <div key={doc.id} style={{
-              padding: '24px', border: '1px solid ' + styles.borderGlass, background: styles.bgDeep,
+              padding: '24px', border: '1px solid ' + 'rgba(255,255,255,.07)', background: '#2a2f3d',
               display: 'flex', alignItems: 'center', gap: '20px'
             }}>
               <div style={{
-                width: '48px', height: '48px', background: styles.purplePrimary + '22',
-                border: '1px solid ' + styles.purplePrimary + '44',
+                width: '48px', height: '48px', background: '#5B4B8A' + '22',
+                border: '1px solid ' + '#5B4B8A' + '44',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
               }}>
-                <BookOpen fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} style={{ width: '22px', height: '22px', color: styles.purpleBright }} />
+                <BookOpen fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} style={{ width: '22px', height: '22px', color: '#a896d6' }} />
               </div>
               <div style={{ flex: 1 }}>
-                <div style={{ fontWeight: 600, color: styles.textPrimary, fontSize: '15px', marginBottom: '4px' }}>
+                <div style={{ fontWeight: 600, color: 'rgba(255,255,255,.94)', fontSize: '15px', marginBottom: '4px' }}>
                   {doc.title}
                 </div>
-                <div style={{ color: styles.textTertiary, fontSize: '13px', lineHeight: '1.4' }}>
+                <div style={{ color: 'rgba(255,255,255,.50)', fontSize: '13px', lineHeight: '1.4' }}>
                   {doc.description}
                 </div>
                 <div style={{
                   fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px',
-                  color: styles.textTertiary, marginTop: '6px',
+                  color: 'rgba(255,255,255,.50)', marginTop: '6px',
                   letterSpacing: '1px', textTransform: 'uppercase'
                 }}>
                   {'PDF • v' + doc.version}
@@ -91,8 +90,8 @@ function ResourcesPage() {
               <button
                 onClick={() => handleDownload(doc.id, doc.title)}
                 style={{
-                  padding: '10px 20px', background: styles.purplePrimary,
-                  border: '1px solid ' + styles.purpleBright,
+                  padding: '10px 20px', background: '#5B4B8A',
+                  border: '1px solid ' + '#a896d6',
                   color: 'rgba(255,255,255,.94)', fontFamily: "Consolas, 'IBM Plex Mono', monospace",
                   fontSize: '11px', letterSpacing: '1px',
                   textTransform: 'uppercase', cursor: 'pointer', flexShrink: 0
@@ -107,8 +106,8 @@ function ResourcesPage() {
 
       {user && user.role === 'admin' && (
         <div style={{
-          marginTop: '40px', padding: '20px', border: '1px dashed ' + styles.borderGlass,
-          color: styles.textTertiary, fontSize: '12px',
+          marginTop: '40px', padding: '20px', border: '1px dashed ' + 'rgba(255,255,255,.07)',
+          color: 'rgba(255,255,255,.50)', fontSize: '12px',
           fontFamily: "Consolas, 'IBM Plex Mono', monospace"
         }}>
           ADMIN: To add documents, place PDFs in backend/static/documents/ and register them in documents.py

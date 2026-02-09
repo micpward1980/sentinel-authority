@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FileText, Search } from 'lucide-react';
 import { api } from '../config/api';
-import { styles } from '../config/styles';
 import { useAuth } from '../context/AuthContext';
 import { useConfirm } from '../context/ConfirmContext';
 import { useToast } from '../context/ToastContext';
@@ -157,17 +156,17 @@ function ApplicationsList() {
   const filtered = applications;
 
   const stateColor = (state) => {
-    if (state === 'conformant') return styles.accentGreen;
-    if (state === 'revoked' || state === 'suspended') return styles.accentRed;
-    if (state === 'testing' || state === 'approved') return styles.purpleBright;
-    return styles.accentAmber;
+    if (state === 'conformant') return '#5CD685';
+    if (state === 'revoked' || state === 'suspended') return '#D65C5C';
+    if (state === 'testing' || state === 'approved') return '#a896d6';
+    return '#D6A05C';
   };
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-start">
         <div>
-          <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', color: styles.purpleBright, marginBottom: '8px'}}>{user?.role === 'admin' ? 'Conformance' : 'My Organization'}</p>
+          <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', color: '#a896d6', marginBottom: '8px'}}>{user?.role === 'admin' ? 'Conformance' : 'My Organization'}</p>
           <h1 style={{fontFamily: "Georgia, 'Source Serif 4', serif", fontSize: 'clamp(24px, 5vw, 36px)', fontWeight: 200, margin: 0}}>{user?.role === 'admin' ? 'Applications' : 'Certification Status'}</h1>
         </div>
         
@@ -175,10 +174,10 @@ function ApplicationsList() {
 
 {user?.role === "admin" && <div style={{display: "flex", gap: "12px", alignItems: "center"}}>
         <div style={{position: "relative", flex: 1, maxWidth: 'min(400px, 90vw)'}}>
-          <Search className="w-4 h-4" style={{position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", color: styles.textTertiary}} />
-          <input value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="Search by name, org, or ID..." style={{width: "100%", background: "rgba(255,255,255,0.03)", border: `1px solid ${styles.borderGlass}`, padding: "8px 12px 8px 36px", color: styles.textPrimary, fontSize: "13px", fontFamily: "Consolas, 'IBM Plex Mono', monospace", outline: "none"}} />
+          <Search className="w-4 h-4" style={{position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", color: 'rgba(255,255,255,.50)'}} />
+          <input value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="Search by name, org, or ID..." style={{width: "100%", background: "rgba(255,255,255,0.03)", border: `1px solid ${'rgba(255,255,255,.07)'}`, padding: "8px 12px 8px 36px", color: 'rgba(255,255,255,.94)', fontSize: "13px", fontFamily: "Consolas, 'IBM Plex Mono', monospace", outline: "none"}} />
         </div>
-        <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: "11px", color: styles.textTertiary}}>{filtered.length} of {appTotal}</span>
+        <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: "11px", color: 'rgba(255,255,255,.50)'}}>{filtered.length} of {appTotal}</span>
       </div>}
 
       {/* Filter Tabs */}
@@ -191,8 +190,8 @@ function ApplicationsList() {
                 padding: '6px 14px', cursor: 'pointer',
                 fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase',
                 background: filter === f.key ? 'rgba(157,140,207,0.2)' : 'rgba(255,255,255,0.03)',
-                border: `1px solid ${filter === f.key ? styles.purpleBright : styles.borderGlass}`,
-                color: filter === f.key ? styles.purpleBright : styles.textTertiary
+                border: `1px solid ${filter === f.key ? '#a896d6' : 'rgba(255,255,255,.07)'}`,
+                color: filter === f.key ? '#a896d6' : 'rgba(255,255,255,.50)'
               }}>
                 {f.label} {count > 0 ? `(${count})` : ''}
               </button>
@@ -204,24 +203,24 @@ function ApplicationsList() {
       <Panel>
         <div style={{overflowX: "auto", WebkitOverflowScrolling: "touch"}}><table className="w-full" style={{minWidth: "700px"}}>
           <thead>
-            <tr style={{borderBottom: `1px solid ${styles.borderGlass}`}}>
-              {user?.role === 'admin' && <th className="px-2 py-3 text-center" style={{width: '40px'}}><input type="checkbox" checked={selected.size > 0 && selected.size === filtered.length} onChange={e => e.target.checked ? selectAll() : selectNone()} style={{cursor: 'pointer', accentColor: styles.purpleBright}} /></th>}
-              <th className="px-4 py-3 text-left" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>System Name</th>
-              {user?.role === 'admin' && <th className="px-4 py-3 text-left" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>Organization</th>}
-              <th className="px-4 py-3 text-left" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>State</th>
-              <th className="px-4 py-3 text-left" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>Submitted</th>
-              {user?.role === 'admin' && <th className="px-4 py-3 text-left" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>Actions</th>}
+            <tr style={{borderBottom: `1px solid ${'rgba(255,255,255,.07)'}`}}>
+              {user?.role === 'admin' && <th className="px-2 py-3 text-center" style={{width: '40px'}}><input type="checkbox" checked={selected.size > 0 && selected.size === filtered.length} onChange={e => e.target.checked ? selectAll() : selectNone()} style={{cursor: 'pointer', accentColor: '#a896d6'}} /></th>}
+              <th className="px-4 py-3 text-left" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: 'rgba(255,255,255,.50)', fontWeight: 400}}>System Name</th>
+              {user?.role === 'admin' && <th className="px-4 py-3 text-left" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: 'rgba(255,255,255,.50)', fontWeight: 400}}>Organization</th>}
+              <th className="px-4 py-3 text-left" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: 'rgba(255,255,255,.50)', fontWeight: 400}}>State</th>
+              <th className="px-4 py-3 text-left" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: 'rgba(255,255,255,.50)', fontWeight: 400}}>Submitted</th>
+              {user?.role === 'admin' && <th className="px-4 py-3 text-left" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: 'rgba(255,255,255,.50)', fontWeight: 400}}>Actions</th>}
             </tr>
           </thead>
           <tbody>
             {filtered.map((app) => (
-              <tr key={app.id} className="transition-colors" style={{borderBottom: `1px solid ${styles.borderGlass}`, background: selected.has(app.id) ? 'rgba(157,140,207,0.08)' : 'transparent'}}>
-                {user?.role === 'admin' && <td className="px-2 py-4 text-center"><input type="checkbox" checked={selected.has(app.id)} onChange={() => toggleSelect(app.id)} style={{cursor: 'pointer', accentColor: styles.purpleBright}} /></td>}
+              <tr key={app.id} className="transition-colors" style={{borderBottom: `1px solid ${'rgba(255,255,255,.07)'}`, background: selected.has(app.id) ? 'rgba(157,140,207,0.08)' : 'transparent'}}>
+                {user?.role === 'admin' && <td className="px-2 py-4 text-center"><input type="checkbox" checked={selected.has(app.id)} onChange={() => toggleSelect(app.id)} style={{cursor: 'pointer', accentColor: '#a896d6'}} /></td>}
                 <td className="px-4 py-4">
-                  <Link to={`/applications/${app.id}`} style={{color: styles.purpleBright, textDecoration: 'none'}}>{app.system_name}</Link>
-                  <div style={{fontSize: '11px', color: styles.textTertiary, fontFamily: "Consolas, 'IBM Plex Mono', monospace", marginTop: '2px'}}>{app.application_number}</div>
+                  <Link to={`/applications/${app.id}`} style={{color: '#a896d6', textDecoration: 'none'}}>{app.system_name}</Link>
+                  <div style={{fontSize: '11px', color: 'rgba(255,255,255,.50)', fontFamily: "Consolas, 'IBM Plex Mono', monospace", marginTop: '2px'}}>{app.application_number}</div>
                 </td>
-                {user?.role === 'admin' && <td className="px-4 py-4" style={{color: styles.textSecondary}}>{app.organization_name}</td>}
+                {user?.role === 'admin' && <td className="px-4 py-4" style={{color: 'rgba(255,255,255,.78)'}}>{app.organization_name}</td>}
                 <td className="px-4 py-4">
                   <span className="px-2 py-1" style={{
                     background: `${stateColor(app.state)}06`,
@@ -230,30 +229,30 @@ function ApplicationsList() {
                     fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase'
                   }}>{app.state?.replace('_', ' ')}</span>
                 </td>
-                <td className="px-4 py-4" style={{color: styles.textTertiary, fontSize: '14px'}}>{app.submitted_at ? new Date(app.submitted_at).toLocaleDateString() : "N/A"}</td>
+                <td className="px-4 py-4" style={{color: 'rgba(255,255,255,.50)', fontSize: '14px'}}>{app.submitted_at ? new Date(app.submitted_at).toLocaleDateString() : "N/A"}</td>
                 {user?.role === 'admin' && (
                 <td className="px-4 py-4">
                   <div style={{display: 'flex', gap: '6px'}}>
                     {app.state === 'pending' && (
-                      <button onClick={(e) => { e.stopPropagation(); handleQuickAdvance(app.id, 'under_review', `Begin review for ${app.system_name}`); }} className="btn" style={{padding: '4px 10px', color: styles.accentAmber}}>Review</button>
+                      <button onClick={(e) => { e.stopPropagation(); handleQuickAdvance(app.id, 'under_review', `Begin review for ${app.system_name}`); }} className="btn" style={{padding: '4px 10px', color: '#D6A05C'}}>Review</button>
                     )}
                     {(app.state === 'pending' || app.state === 'under_review') && (
-                      <button onClick={(e) => { e.stopPropagation(); handleQuickAdvance(app.id, 'approved', `Approve ${app.system_name}`); }} className="btn" style={{padding: '4px 10px', color: styles.accentGreen}}>Approve</button>
+                      <button onClick={(e) => { e.stopPropagation(); handleQuickAdvance(app.id, 'approved', `Approve ${app.system_name}`); }} className="btn" style={{padding: '4px 10px', color: '#5CD685'}}>Approve</button>
                     )}
                     {app.state === 'approved' && (
                       <Link to={`/applications/${app.id}`} className="px-2 py-1 no-underline btn">Schedule Test</Link>
                     )}
                     {app.state === 'conformant' && (
-                      <span style={{color: styles.accentGreen, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px'}}>✓ Certified</span>
+                      <span style={{color: '#5CD685', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px'}}>✓ Certified</span>
                     )}
                     {app.state === 'testing' && (
                       <Link to="/cat72" className="px-2 py-1 no-underline btn">View Test</Link>
                     )}
                     {['pending','under_review','approved','testing','conformant'].includes(app.state) && (
-                      <button onClick={(e) => { e.stopPropagation(); handleQuickAdvance(app.id, 'suspended', `Suspend ${app.system_name}`); }} className="btn" style={{padding: '4px 10px', color: styles.accentRed}}>Suspend</button>
+                      <button onClick={(e) => { e.stopPropagation(); handleQuickAdvance(app.id, 'suspended', `Suspend ${app.system_name}`); }} className="btn" style={{padding: '4px 10px', color: '#D65C5C'}}>Suspend</button>
                     )}
                     {(app.state === 'suspended' || app.state === 'revoked') && (
-                      <button onClick={(e) => { e.stopPropagation(); handleQuickAdvance(app.id, 'pending', `Reinstate ${app.system_name} to pending`); }} className="btn" style={{padding: '4px 10px', color: styles.accentGreen}}>Reinstate</button>
+                      <button onClick={(e) => { e.stopPropagation(); handleQuickAdvance(app.id, 'pending', `Reinstate ${app.system_name} to pending`); }} className="btn" style={{padding: '4px 10px', color: '#5CD685'}}>Reinstate</button>
                     )}
                   </div>
                 </td>
@@ -268,9 +267,9 @@ function ApplicationsList() {
             position: 'sticky', bottom: '16px', zIndex: 50,
             display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px',
             padding: '12px 20px', margin: '16px',
-            background: 'rgba(18,12,30,0.95)', backdropFilter: 'blur(12px)',
-            border: `1px solid ${styles.purpleBright}` }}>
-            <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px', color: styles.purpleBright}}>
+            background: 'rgba(18,12,30,0.95)',
+            border: `1px solid ${'#a896d6'}` }}>
+            <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px', color: '#a896d6'}}>
               {selected.size} selected
             </span>
             <div style={{display: 'flex', gap: '8px', alignItems: 'center'}}>
@@ -278,10 +277,10 @@ function ApplicationsList() {
               <button onClick={() => handleBulkAction('review', 'under_review')} disabled={bulkLoading} className="btn" style={{padding: '6px 14px', color: '#D6A05C'}}>Review</button>
               <button onClick={() => handleBulkAction('suspend', 'suspended')} disabled={bulkLoading} className="btn" style={{padding: '6px 14px', color: '#D65C5C'}}>Suspend</button>
               <button onClick={() => handleBulkAction('reinstate', 'pending')} disabled={bulkLoading} className="btn" style={{padding: '6px 14px', color: 'var(--accent-green)'}}>Reinstate</button>
-              <div style={{width: '1px', height: '20px', background: styles.borderGlass, margin: '0 4px'}} />
+              <div style={{width: '1px', height: '20px', background: 'rgba(255,255,255,.07)', margin: '0 4px'}} />
               <button onClick={() => handleBulkAction('delete')} disabled={bulkLoading} className="btn" style={{padding: '6px 14px', color: '#D65C5C'}}>Delete</button>
               <button onClick={selectNone} className="btn">Cancel</button>
-              {bulkLoading && <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary}}>Processing...</span>}
+              {bulkLoading && <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: 'rgba(255,255,255,.50)'}}>Processing...</span>}
             </div>
           </div>
         )}

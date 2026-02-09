@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { X, ArrowLeft } from 'lucide-react';
 import { api } from '../config/api';
-import { styles } from '../config/styles';
 import { useAuth } from '../context/AuthContext';
 import { useConfirm } from '../context/ConfirmContext';
 import { useToast } from '../context/ToastContext';
@@ -152,30 +151,30 @@ function ApplicationDetail() {
     }
   };
 
-  if (!app) return <div style={{color: styles.textTertiary}}>Loading...</div>;
+  if (!app) return <div style={{color: 'rgba(255,255,255,.50)'}}>Loading...</div>;
 
   return (
     <div className="space-y-6">
       {emailPreview && (
-        <div style={{position: 'fixed', inset: 0, zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)'}}>
-          <div style={{background: styles.bgDeep, border: '1px solid ' + styles.borderGlass, maxWidth: 'min(650px, 95vw)', width: '95%', maxHeight: '80vh', overflow: 'hidden', display: 'flex', flexDirection: 'column'}}>
-            <div style={{padding: '20px 24px', borderBottom: '1px solid ' + styles.borderGlass, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px'}}>
+        <div className="sa-modal-overlay" style={{position: 'fixed', inset: 0, zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+          <div style={{background: '#2a2f3d', border: '1px solid ' + 'rgba(255,255,255,.07)', maxWidth: 'min(650px, 95vw)', width: '95%', maxHeight: '80vh', overflow: 'hidden', display: 'flex', flexDirection: 'column'}}>
+            <div style={{padding: '20px 24px', borderBottom: '1px solid ' + 'rgba(255,255,255,.07)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px'}}>
               <div>
-                <h3 style={{margin: 0, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.purpleBright}}>Email Preview</h3>
-                <p style={{margin: '4px 0 0', fontSize: '12px', color: styles.textTertiary}}>This email will be sent to <strong style={{color: styles.textPrimary}}>{emailPreview.to}</strong></p>
+                <h3 style={{margin: 0, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: '#a896d6'}}>Email Preview</h3>
+                <p style={{margin: '4px 0 0', fontSize: '12px', color: 'rgba(255,255,255,.50)'}}>This email will be sent to <strong style={{color: 'rgba(255,255,255,.94)'}}>{emailPreview.to}</strong></p>
               </div>
-              <button onClick={() => setEmailPreview(null)} style={{background: 'none', border: 'none', color: styles.textTertiary, cursor: 'pointer', fontSize: '20px', padding: '4px 8px'}}>X</button>
+              <button onClick={() => setEmailPreview(null)} style={{background: 'none', border: 'none', color: 'rgba(255,255,255,.50)', cursor: 'pointer', fontSize: '20px', padding: '4px 8px'}}>X</button>
             </div>
-            <div style={{padding: '16px 24px', borderBottom: '1px solid ' + styles.borderGlass, background: 'transparent'}}>
-              <div style={{fontSize: '11px', color: styles.textTertiary, marginBottom: '2px'}}>Subject</div>
-              <div style={{fontSize: '14px', color: styles.textPrimary, fontWeight: 500}}>{emailPreview.subject}</div>
+            <div style={{padding: '16px 24px', borderBottom: '1px solid ' + 'rgba(255,255,255,.07)', background: 'transparent'}}>
+              <div style={{fontSize: '11px', color: 'rgba(255,255,255,.50)', marginBottom: '2px'}}>Subject</div>
+              <div style={{fontSize: '14px', color: 'rgba(255,255,255,.94)', fontWeight: 500}}>{emailPreview.subject}</div>
             </div>
             <div style={{flex: 1, overflow: 'auto', padding: '20px 24px'}}>
               <div style={{background: '#fff', overflow: 'hidden'}} dangerouslySetInnerHTML={{__html: emailPreview.html}} />
             </div>
-            <div style={{padding: '16px 24px', borderTop: '1px solid ' + styles.borderGlass, display: 'flex', justifyContent: 'flex-end', gap: '10px'}}>
-              <button onClick={() => setEmailPreview(null)} style={{padding: '8px 20px', background: 'transparent', border: '1px solid ' + styles.borderGlass, color: styles.textSecondary, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>Cancel</button>
-              <button onClick={confirmStateChange}  style={{padding: '8px 20px', background: emailPreview.newState === 'suspended' ? 'rgba(214,92,92,0.2)' : styles.purplePrimary, border: '1px solid ' + (emailPreview.newState === 'suspended' ? 'rgba(214,92,92,0.4)' : styles.purpleBright), color: emailPreview.newState === 'suspended' ? '#D65C5C' : '#fff', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>
+            <div style={{padding: '16px 24px', borderTop: '1px solid ' + 'rgba(255,255,255,.07)', display: 'flex', justifyContent: 'flex-end', gap: '10px'}}>
+              <button onClick={() => setEmailPreview(null)} style={{padding: '8px 20px', background: 'transparent', border: '1px solid ' + 'rgba(255,255,255,.07)', color: 'rgba(255,255,255,.78)', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>Cancel</button>
+              <button onClick={confirmStateChange}  style={{padding: '8px 20px', background: emailPreview.newState === 'suspended' ? 'rgba(214,92,92,0.2)' : '#5B4B8A', border: '1px solid ' + (emailPreview.newState === 'suspended' ? 'rgba(214,92,92,0.4)' : '#a896d6'), color: emailPreview.newState === 'suspended' ? '#D65C5C' : '#fff', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>
                 {emailPreview.label} + Send Email
               </button>
             </div>
@@ -184,7 +183,7 @@ function ApplicationDetail() {
       )}
 
             <div className="flex items-center justify-between">
-        <Link to="/applications" className="flex items-center gap-2 no-underline" style={{color: styles.textTertiary, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase'}}>
+        <Link to="/applications" className="flex items-center gap-2 no-underline" style={{color: 'rgba(255,255,255,.50)', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase'}}>
           <ArrowLeft className="w-4 h-4" />
           Back to Applications
         </Link>
@@ -237,18 +236,18 @@ function ApplicationDetail() {
               const isPending = currentStageIdx < i;
               return (
                 <React.Fragment key={stage.key}>
-                  {i > 0 && <div style={{flex: 1, height: '2px', background: isComplete ? styles.accentGreen : styles.borderGlass, margin: '0 8px'}} />}
+                  {i > 0 && <div style={{flex: 1, height: '2px', background: isComplete ? '#5CD685' : 'rgba(255,255,255,.07)', margin: '0 8px'}} />}
                   <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', minWidth: '80px'}}>
                     <div style={{
                       width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
                       fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px', fontWeight: 'bold',
                       background: isComplete ? 'rgba(92,214,133,0.2)' : isActive ? 'rgba(157,140,207,0.25)' : 'rgba(255,255,255,0.03)',
-                      border: `2px solid ${isComplete ? styles.accentGreen : isActive ? styles.purpleBright : styles.borderGlass}`,
-                      color: isComplete ? styles.accentGreen : isActive ? styles.purpleBright : styles.textTertiary
+                      border: `2px solid ${isComplete ? '#5CD685' : isActive ? '#a896d6' : 'rgba(255,255,255,.07)'}`,
+                      color: isComplete ? '#5CD685' : isActive ? '#a896d6' : 'rgba(255,255,255,.50)'
                     }}>
                       {isComplete ? '✓' : stage.icon}
                     </div>
-                    <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '0.5px', textTransform: 'uppercase', color: isActive ? styles.purpleBright : isComplete ? styles.accentGreen : styles.textTertiary, textAlign: 'center'}}>
+                    <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '0.5px', textTransform: 'uppercase', color: isActive ? '#a896d6' : isComplete ? '#5CD685' : 'rgba(255,255,255,.50)', textAlign: 'center'}}>
                       {stage.label}
                     </span>
                   </div>
@@ -258,43 +257,43 @@ function ApplicationDetail() {
           </div>
           {isSuspended && (
             <div style={{padding: '12px 16px', background: 'transparent', border: '1px solid rgba(255,255,255,0.07)', marginBottom: '12px'}}>
-              <span style={{color: styles.accentRed, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px'}}>⚠ SUSPENDED — This application has been suspended pending review.</span>
+              <span style={{color: '#D65C5C', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px'}}>⚠ SUSPENDED — This application has been suspended pending review.</span>
             </div>
           )}
-          <div style={{padding: '12px 16px', background: 'transparent', border: `1px solid ${styles.borderGlass}` }}>
-            <span style={{color: styles.textSecondary, fontSize: '13px', lineHeight: '1.5'}}>{nextStepText()}</span>
+          <div style={{padding: '12px 16px', background: 'transparent', border: `1px solid ${'rgba(255,255,255,.07)'}` }}>
+            <span style={{color: 'rgba(255,255,255,.78)', fontSize: '13px', lineHeight: '1.5'}}>{nextStepText()}</span>
           </div>
         </div>
       </Panel>
       
       {testCreated && (
         <div className="p-4" style={{background: 'transparent', border: '1px solid rgba(255,255,255,0.07)'}}>
-          <p style={{color: styles.accentGreen, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px'}}>
-            Test Created: {testCreated.test_id} — <Link to="/cat72" style={{color: styles.purpleBright}}>Go to CAT-72 Console</Link>
+          <p style={{color: '#5CD685', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px'}}>
+            Test Created: {testCreated.test_id} — <Link to="/cat72" style={{color: '#a896d6'}}>Go to CAT-72 Console</Link>
           </p>
         </div>
       )}
       
       <div>
-        <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', color: styles.purpleBright, marginBottom: '8px'}}>Application {app.application_number}</p>
+        <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', color: '#a896d6', marginBottom: '8px'}}>Application {app.application_number}</p>
         <h1 style={{fontFamily: "Georgia, 'Source Serif 4', serif", fontSize: 'clamp(24px, 5vw, 36px)', fontWeight: 200, margin: 0}}>{app.system_name}</h1>
-        <p style={{color: styles.textSecondary, marginTop: '8px'}}>{app.system_description}</p>
+        <p style={{color: 'rgba(255,255,255,.78)', marginTop: '8px'}}>{app.system_description}</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Panel>
           <div className="hud-label" style={{marginBottom: '16px'}}>Organization</div>
-          <p style={{color: styles.textPrimary, fontSize: '18px', marginBottom: '8px'}}>{app.organization_name}</p>
-          <p style={{color: styles.textSecondary, marginBottom: '4px'}}><strong>Contact:</strong> {app.contact_name}</p>
-          <p style={{color: styles.textSecondary, marginBottom: '4px'}}><strong>Email:</strong> {app.contact_email}</p>
-          {app.contact_phone && <p style={{color: styles.textSecondary}}><strong>Phone:</strong> {app.contact_phone}</p>}
+          <p style={{color: 'rgba(255,255,255,.94)', fontSize: '18px', marginBottom: '8px'}}>{app.organization_name}</p>
+          <p style={{color: 'rgba(255,255,255,.78)', marginBottom: '4px'}}><strong>Contact:</strong> {app.contact_name}</p>
+          <p style={{color: 'rgba(255,255,255,.78)', marginBottom: '4px'}}><strong>Email:</strong> {app.contact_email}</p>
+          {app.contact_phone && <p style={{color: 'rgba(255,255,255,.78)'}}><strong>Phone:</strong> {app.contact_phone}</p>}
         </Panel>
         <Panel>
           <div className="hud-label" style={{marginBottom: '16px'}}>Status</div>
           <div className="flex items-center gap-4 mb-4">
             <span className="px-3 py-1" style={{
               background: app.state === 'conformant' ? 'rgba(92,214,133,0.04)' : app.state === 'revoked' ? 'rgba(214,92,92,0.04)' : 'rgba(214,160,92,0.04)',
-              color: app.state === 'conformant' ? styles.accentGreen : app.state === 'revoked' ? styles.accentRed : styles.accentAmber,
+              color: app.state === 'conformant' ? '#5CD685' : app.state === 'revoked' ? '#D65C5C' : '#D6A05C',
               fontFamily: "Consolas, 'IBM Plex Mono', monospace",
               fontSize: '12px',
               letterSpacing: '1px',
@@ -317,7 +316,7 @@ function ApplicationDetail() {
             params: { application_id: id, send_email: true }
           });
         } catch (provErr) {
-          console.log('Auto-provision note:', provErr.message);
+          console.error('Auto-provision:', provErr.message);
         }
       }
                   setApp({...app, state: newState});
@@ -326,7 +325,7 @@ function ApplicationDetail() {
                 }
               }}
               className="px-3 py-2"
-              style={{background: 'transparent', border: `1px solid ${styles.borderGlass}`, color: styles.textPrimary, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px'}}
+              style={{background: 'transparent', border: `1px solid ${'rgba(255,255,255,.07)'}`, color: 'rgba(255,255,255,.94)', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px'}}
             >
               <option value="pending">Pending</option>
               <option value="under_review">Under Review</option>
@@ -337,21 +336,21 @@ function ApplicationDetail() {
             </select>
             )}
           </div>
-          <p style={{color: styles.textSecondary}}><strong>Submitted:</strong> {app.submitted_at ? new Date(app.submitted_at).toLocaleString() : 'N/A'}</p>
+          <p style={{color: 'rgba(255,255,255,.78)'}}><strong>Submitted:</strong> {app.submitted_at ? new Date(app.submitted_at).toLocaleString() : 'N/A'}</p>
         </Panel>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Panel>
           <div className="hud-label" style={{marginBottom: '16px'}}>System Details</div>
-          <p style={{color: styles.textSecondary, marginBottom: '8px'}}><strong>Version:</strong> {app.system_version || 'N/A'}</p>
-          <p style={{color: styles.textSecondary, marginBottom: '8px'}}><strong>Manufacturer:</strong> {app.manufacturer || 'N/A'}</p>
-          {app.facility_location && <p style={{color: styles.textSecondary, marginBottom: '8px'}}><strong>Facility:</strong> {app.facility_location}</p>}
-          {app.preferred_test_date && <p style={{color: styles.textSecondary}}><strong>Preferred Test Date:</strong> {new Date(app.preferred_test_date).toLocaleDateString()}</p>}
+          <p style={{color: 'rgba(255,255,255,.78)', marginBottom: '8px'}}><strong>Version:</strong> {app.system_version || 'N/A'}</p>
+          <p style={{color: 'rgba(255,255,255,.78)', marginBottom: '8px'}}><strong>Manufacturer:</strong> {app.manufacturer || 'N/A'}</p>
+          {app.facility_location && <p style={{color: 'rgba(255,255,255,.78)', marginBottom: '8px'}}><strong>Facility:</strong> {app.facility_location}</p>}
+          {app.preferred_test_date && <p style={{color: 'rgba(255,255,255,.78)'}}><strong>Preferred Test Date:</strong> {new Date(app.preferred_test_date).toLocaleDateString()}</p>}
         </Panel>
         <Panel>
           <div className="hud-label" style={{marginBottom: '16px'}}>Safety Boundaries & Operational Limits</div>
-          <p style={{color: styles.textSecondary, lineHeight: 1.7, whiteSpace: 'pre-wrap'}}>{typeof app.envelope_definition === 'object' ? JSON.stringify(app.envelope_definition, null, 2) : (app.envelope_definition || 'Not specified')}</p>
+          <p style={{color: 'rgba(255,255,255,.78)', lineHeight: 1.7, whiteSpace: 'pre-wrap'}}>{typeof app.envelope_definition === 'object' ? JSON.stringify(app.envelope_definition, null, 2) : (app.envelope_definition || 'Not specified')}</p>
         </Panel>
       </div>
 
@@ -376,21 +375,21 @@ function ApplicationDetail() {
           <div className="hud-label" style={{marginBottom: '16px'}}>State Change History</div>
           <div style={{position: 'relative', paddingLeft: '28px'}}>
             {/* Vertical line */}
-            <div style={{position: 'absolute', left: '8px', top: '4px', bottom: '4px', width: '2px', background: styles.borderGlass}} />
+            <div style={{position: 'absolute', left: '8px', top: '4px', bottom: '4px', width: '2px', background: 'rgba(255,255,255,.07)'}} />
             {history.map((entry, i) => {
               const actionColors = {
-                submitted: styles.purpleBright,
+                submitted: '#a896d6',
                 state_changed: (() => {
                   const ns = entry.details?.new_state;
-                  if (ns === 'conformant') return styles.accentGreen;
+                  if (ns === 'conformant') return '#5CD685';
                   if (ns === 'suspended' || ns === 'revoked') return '#D65C5C';
-                  if (ns === 'approved') return styles.accentGreen;
-                  if (ns === 'under_review' || ns === 'testing') return styles.purpleBright;
+                  if (ns === 'approved') return '#5CD685';
+                  if (ns === 'under_review' || ns === 'testing') return '#a896d6';
                   return '#D6A05C';
                 })(),
-                certificate_issued: styles.accentGreen
+                certificate_issued: '#5CD685'
               };
-              const color = actionColors[entry.action] || styles.textTertiary;
+              const color = actionColors[entry.action] || 'rgba(255,255,255,.50)';
               const stateLabel = entry.details?.new_state?.replace('_', ' ') || entry.action?.replace('_', ' ');
               const fromLabel = entry.details?.old_state?.replace('_', ' ');
               const ts = entry.timestamp ? new Date(entry.timestamp) : null;
@@ -403,17 +402,17 @@ function ApplicationDetail() {
                     <div>
                       <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px', fontWeight: 500, color: color, textTransform: 'uppercase', letterSpacing: '0.5px'}}>{stateLabel}</span>
                       {fromLabel && entry.action !== 'submitted' && (
-                        <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary, marginLeft: '8px'}}>from {fromLabel}</span>
+                        <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: 'rgba(255,255,255,.50)', marginLeft: '8px'}}>from {fromLabel}</span>
                       )}
                       <div style={{marginTop: '4px'}}>
-                        <span style={{fontSize: '12px', color: styles.textTertiary}}>{entry.user_email}</span>
+                        <span style={{fontSize: '12px', color: 'rgba(255,255,255,.50)'}}>{entry.user_email}</span>
                       </div>
                     </div>
                     <div style={{textAlign: 'right', flexShrink: 0}}>
                       {ts && (
                         <>
-                          <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', color: styles.textTertiary}}>{ts.toLocaleDateString()}</div>
-                          <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary}}>{ts.toLocaleTimeString()}</div>
+                          <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', color: 'rgba(255,255,255,.50)'}}>{ts.toLocaleDateString()}</div>
+                          <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: 'rgba(255,255,255,.50)'}}>{ts.toLocaleTimeString()}</div>
                         </>
                       )}
                     </div>
@@ -427,7 +426,7 @@ function ApplicationDetail() {
 
       <Panel>
         <div className="hud-label" style={{marginBottom: '16px'}}>ODD Specification</div>
-        <p style={{color: styles.textSecondary, lineHeight: 1.7, whiteSpace: 'pre-wrap'}}>{typeof app.odd_specification === 'object' ? (app.odd_specification?.description || JSON.stringify(app.odd_specification, null, 2)) : app.odd_specification}</p>
+        <p style={{color: 'rgba(255,255,255,.78)', lineHeight: 1.7, whiteSpace: 'pre-wrap'}}>{typeof app.odd_specification === 'object' ? (app.odd_specification?.description || JSON.stringify(app.odd_specification, null, 2)) : app.odd_specification}</p>
       </Panel>
 
       {/* Comments Thread */}
@@ -442,9 +441,9 @@ function ApplicationDetail() {
             rows={3}
             placeholder="Add a comment or note..."
             className="w-full px-4 py-3 outline-none resize-none"
-            style={{background: 'rgba(255,255,255,0.03)', border: `1px solid ${styles.borderGlass}`, color: styles.textPrimary, fontSize: '13px', fontFamily: 'inherit', transition: 'border-color 0.2s'}}
-            onFocus={(e) => e.target.style.borderColor = styles.purpleBright}
-            onBlur={(e) => e.target.style.borderColor = styles.borderGlass}
+            style={{background: 'rgba(255,255,255,0.03)', border: `1px solid ${'rgba(255,255,255,.07)'}`, color: 'rgba(255,255,255,.94)', fontSize: '13px', fontFamily: 'inherit', transition: 'border-color 0.2s'}}
+            onFocus={(e) => e.target.style.borderColor = '#a896d6'}
+            onBlur={(e) => e.target.style.borderColor = 'rgba(255,255,255,.07)'}
           />
           <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginTop: '8px'}}>
             <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
@@ -466,37 +465,37 @@ function ApplicationDetail() {
         
         {/* Comment List */}
         {comments.length > 0 && (
-          <div style={{borderTop: `1px solid ${styles.borderGlass}`, paddingTop: '16px'}}>
+          <div style={{borderTop: `1px solid ${'rgba(255,255,255,.07)'}`, paddingTop: '16px'}}>
             {comments.map((c) => (
               <div key={c.id} style={{padding: '12px 0', borderBottom: `1px solid rgba(255,255,255,0.04)`}}>
                 <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px', marginBottom: '6px'}}>
                   <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
-                    <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px', color: c.user_role === 'admin' ? styles.purpleBright : styles.textSecondary, fontWeight: 500}}>{c.user_email}</span>
-                    {c.user_role === 'admin' && <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', padding: '2px 6px', background: 'transparent', color: styles.purpleBright, textTransform: 'uppercase', letterSpacing: '0.5px'}}>Admin</span>}
-                    {c.is_internal && <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', padding: '2px 6px', background: 'transparent', color: styles.accentAmber, textTransform: 'uppercase', letterSpacing: '0.5px'}}>Internal</span>}
+                    <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px', color: c.user_role === 'admin' ? '#a896d6' : 'rgba(255,255,255,.78)', fontWeight: 500}}>{c.user_email}</span>
+                    {c.user_role === 'admin' && <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', padding: '2px 6px', background: 'transparent', color: '#a896d6', textTransform: 'uppercase', letterSpacing: '0.5px'}}>Admin</span>}
+                    {c.is_internal && <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', padding: '2px 6px', background: 'transparent', color: '#D6A05C', textTransform: 'uppercase', letterSpacing: '0.5px'}}>Internal</span>}
                   </div>
                   <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
-                    <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary}}>{c.created_at ? new Date(c.created_at).toLocaleString() : ''}</span>
+                    <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: 'rgba(255,255,255,.50)'}}>{c.created_at ? new Date(c.created_at).toLocaleString() : ''}</span>
                     {(user?.role === 'admin' || user?.email === c.user_email) && (
-                      <button onClick={() => handleDeleteComment(c.id)} style={{background: 'none', border: 'none', color: styles.textTertiary, cursor: 'pointer', fontSize: '12px', padding: '0', opacity: 0.5}} title="Delete comment">×</button>
+                      <button onClick={() => handleDeleteComment(c.id)} style={{background: 'none', border: 'none', color: 'rgba(255,255,255,.50)', cursor: 'pointer', fontSize: '12px', padding: '0', opacity: 0.5}} title="Delete comment">×</button>
                     )}
                   </div>
                 </div>
-                <p style={{color: styles.textSecondary, fontSize: '13px', lineHeight: 1.6, margin: 0, whiteSpace: 'pre-wrap'}}>{c.content}</p>
+                <p style={{color: 'rgba(255,255,255,.78)', fontSize: '13px', lineHeight: 1.6, margin: 0, whiteSpace: 'pre-wrap'}}>{c.content}</p>
               </div>
             ))}
           </div>
         )}
         
         {comments.length === 0 && !newComment && (
-          <p style={{color: styles.textTertiary, fontSize: '13px', fontStyle: 'italic', margin: 0}}>No comments yet</p>
+          <p style={{color: 'rgba(255,255,255,.50)', fontSize: '13px', fontStyle: 'italic', margin: 0}}>No comments yet</p>
         )}
       </Panel>
 
       {app.notes && (
         <Panel>
           <div className="hud-label" style={{marginBottom: '16px'}}>Applicant Notes</div>
-          <p style={{color: styles.textSecondary, lineHeight: 1.7, whiteSpace: 'pre-wrap'}}>{app.notes}</p>
+          <p style={{color: 'rgba(255,255,255,.78)', lineHeight: 1.7, whiteSpace: 'pre-wrap'}}>{app.notes}</p>
         </Panel>
       )}
     </div>
