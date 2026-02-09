@@ -5,7 +5,7 @@ from app.core.security import get_current_user
 
 router = APIRouter(tags=["documents"])
 
-DOCS_DIR = Path("/app/static/documents")
+DOCS_DIR = Path(__file__).resolve().parent.parent.parent.parent / "static" / "documents"
 
 AVAILABLE_DOCS = {
     "oddc-certification-guide": {
