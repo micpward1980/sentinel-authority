@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter, Depends, HTTPException, status, Response
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, text
 from pydantic import BaseModel, EmailStr
 from typing import Optional, List
 
@@ -238,6 +238,8 @@ async def delete_user(
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     
+    # Delete related sessions first
+    await db.execute(text("DELETE FROM user_sessions WHERE user_id = :uid"), {"uid": user_id})
     await db.delete(user)
     await db.commit()
     
