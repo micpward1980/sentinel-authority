@@ -49,15 +49,3 @@ async def download_document(doc_id: str, current_user: dict = Depends(get_curren
     return FileResponse(path=str(file_path), filename=doc["filename"], media_type="application/pdf")
 
 
-@router.get("/debug-files")
-async def debug_files():
-    """Temp debug - remove after fixing."""
-    import os
-    docs_dir = DOCS_DIR
-    return {
-        "docs_dir": str(docs_dir),
-        "exists": docs_dir.exists(),
-        "files": {f.name: f.stat().st_size for f in docs_dir.iterdir()} if docs_dir.exists() else [],
-        "cwd": os.getcwd(),
-        "file_path": str(DOCS_DIR / "ODDC_Certification_Guide_v3.pdf"),
-    }
