@@ -142,7 +142,11 @@ async def list_applications(
     count_q = select(Application.state, func.count(Application.id)).group_by(Application.state)
     if user.get("role") not in ["admin", "operator"]:
         count_q = count_q.where((Application.organization_id == user.get("organization_id")) if user.get("organization_id") else (Application.applicant_id == int(user["sub"])))
-    count_result = await db.execute(count_q)
+    try:
+        count_result = await db.execute(count_q)
+    except Exception:
+        await db.rollback()
+        count_result = await db.execute(count_q)
     state_counts = {"all": 0}
     for row in count_result.fetchall():
         key = row[0].value if hasattr(row[0], "value") else row[0]
