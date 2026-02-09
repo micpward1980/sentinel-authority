@@ -226,7 +226,9 @@ class ErrorCatchMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request, call_next):
         try:
             return await call_next(request)
-        except Exception:
+        except Exception as e:
+            import logging
+            logging.getLogger("sentinel.errors").exception(f"Unhandled error: {e}")
             return JSONResponse(status_code=500, content={"detail": "Internal server error"})
 
 app.add_middleware(ErrorCatchMiddleware)
