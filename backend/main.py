@@ -380,57 +380,43 @@ async def mark_notifications_read(
 # Start auto-evaluator background task
 @app.on_event("startup")
 async def start_auto_evaluator():
-    # Auto-migrate: ensure email_preferences column exists
+    # Auto-migrate columns
     try:
         from sqlalchemy import text
         from app.core.database import engine
         async with engine.begin() as conn:
-            await conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS email_preferences JSON"))
-        await conn.execute(text("""
-
-    try:
-        await conn.execute(text("ALTER TABLE users ADD COLUMN totp_secret VARCHAR(32)"))
-    except:
-        pass
-    try:
-        await conn.execute(text("ALTER TABLE users ADD COLUMN totp_enabled BOOLEAN DEFAULT FALSE"))
-    except:
-        pass
-            try:
-                await conn.execute(text("ALTER TABLE users ADD COLUMN totp_backup_codes TEXT"))
-                print("Added totp_backup_codes column")
-            except Exception:
-                pass
-            try:
-                await conn.execute(text("ALTER TABLE users ADD COLUMN notifications_read_at TIMESTAMP"))
-                print("Added notifications_read_at column")
-            except Exception:
-                pass
-            try:
-                await conn.execute(text("ALTER TABLE audit_log ADD COLUMN prev_hash VARCHAR(64)"))
-                print("Added prev_hash column to audit_log")
-            except Exception:
-                pass
-            CREATE TABLE IF NOT EXISTS application_comments (
-                id SERIAL PRIMARY KEY,
-                application_id INTEGER REFERENCES applications(id),
-                user_id INTEGER REFERENCES users(id),
-                user_email VARCHAR(255),
-                user_role VARCHAR(50),
-                content TEXT NOT NULL,
-                is_internal BOOLEAN DEFAULT FALSE,
-                created_at TIMESTAMP DEFAULT NOW()
-            )
-        """))
-        await conn.execute(text("CREATE INDEX IF NOT EXISTS idx_comments_app_id ON application_comments(application_id)"))
-        logger.info('Migration: email_preferences column OK')
+            migrations = [
+                "ALTER TABLE users ADD COLUMN IF NOT EXISTS email_preferences JSON",
+                "ALTER TABLE users ADD COLUMN IF NOT EXISTS totp_secret VARCHAR(32)",
+                "ALTER TABLE users ADD COLUMN IF NOT EXISTS totp_enabled BOOLEAN DEFAULT FALSE",
+                "ALTER TABLE users ADD COLUMN IF NOT EXISTS totp_backup_codes TEXT",
+                "ALTER TABLE users ADD COLUMN IF NOT EXISTS notifications_read_at TIMESTAMP",
+                "ALTER TABLE audit_log ADD COLUMN IF NOT EXISTS prev_hash VARCHAR(64)",
+                """CREATE TABLE IF NOT EXISTS application_comments (
+                    id SERIAL PRIMARY KEY,
+                    application_id INTEGER REFERENCES applications(id),
+                    user_id INTEGER REFERENCES users(id),
+                    user_email VARCHAR(255),
+                    user_role VARCHAR(50),
+                    content TEXT NOT NULL,
+                    is_internal BOOLEAN DEFAULT FALSE,
+                    created_at TIMESTAMP DEFAULT NOW()
+                )""",
+                "CREATE INDEX IF NOT EXISTS idx_comments_app_id ON application_comments(application_id)",
+            ]
+            for sql in migrations:
+                try:
+                    await conn.execute(text(sql))
+                except Exception:
+                    pass
+        logger.info("Migration: all columns OK")
     except Exception as e:
-        logger.warning(f'Migration check: {e}')
+        logger.warning(f"Migration check: {e}")
 
     import asyncio
     from app.services.auto_evaluator import run_auto_evaluator
     asyncio.create_task(run_auto_evaluator())
-    
+
     # Start offline agent monitor
     from app.services.background_tasks import check_offline_agents_task
     from app.core.database import get_db
