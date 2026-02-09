@@ -13,7 +13,7 @@ engine = create_async_engine(
     DATABASE_URL, 
     echo=settings.DEBUG, 
     future=True,
-    poolclass=NullPool,  # Disable connection pooling to prevent stale connections
+    poolclass=NullPool, connect_args={"statement_cache_size": 0},  # Disable connection pooling to prevent stale connections
 )
 AsyncSessionLocal = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 Base = declarative_base()

@@ -22,13 +22,13 @@ async def search_registry(
     Public registry search - find certificates by organization or system name.
     """
     # Base query - conformant certificates only by default
-    states = [CertificationState.CONFORMANT]
+    states = ["conformant"]
     if status:
         status_map = {
-            "conformant": CertificationState.CONFORMANT,
-            "expired": CertificationState.EXPIRED,
-            "suspended": CertificationState.SUSPENDED,
-            "revoked": CertificationState.REVOKED,
+            "conformant": "conformant",
+            "expired": "expired",
+            "suspended": "suspended",
+            "revoked": "revoked",
         }
         if status.lower() in status_map:
             states = [status_map[status.lower()]]
@@ -63,7 +63,7 @@ async def search_registry(
             "organization_name": cert.organization_name,
             "system_name": cert.system_name,
             "system_version": cert.system_version,
-            "state": cert.state.value if hasattr(cert.state, 'value') else str(cert.state),
+            "state": cert.state,
             "issued_at": cert.issued_at.isoformat() if cert.issued_at else None,
             "expires_at": cert.expires_at.isoformat() if cert.expires_at else None,
         }
@@ -103,7 +103,7 @@ async def registry_stats(db: AsyncSession = Depends(get_db)):
     # Total active certificates
     result = await db.execute(
         select(func.count(Certificate.id)).where(
-            Certificate.state.in_([CertificationState.CONFORMANT])
+            Certificate.state.in_(["conformant"])
         )
     )
     active_count = result.scalar() or 0
@@ -111,7 +111,7 @@ async def registry_stats(db: AsyncSession = Depends(get_db)):
     # Total organizations
     result = await db.execute(
         select(func.count(func.distinct(Certificate.organization_name))).where(
-            Certificate.state.in_([CertificationState.CONFORMANT])
+            Certificate.state.in_(["conformant"])
         )
     )
     org_count = result.scalar() or 0
@@ -120,7 +120,7 @@ async def registry_stats(db: AsyncSession = Depends(get_db)):
     cutoff = datetime.utcnow() - timedelta(days=30)
     result = await db.execute(
         select(func.count(Certificate.id)).where(
-            Certificate.state.in_([CertificationState.CONFORMANT]),
+            Certificate.state.in_(["conformant"]),
             Certificate.issued_at >= cutoff
         )
     )

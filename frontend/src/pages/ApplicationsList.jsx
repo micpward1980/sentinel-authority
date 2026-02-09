@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { FileText, Search, Plus } from 'lucide-react';
+import { FileText, Search } from 'lucide-react';
 import { api } from '../config/api';
 import { styles } from '../config/styles';
 import { useAuth } from '../context/AuthContext';
@@ -53,22 +53,22 @@ function BulkImportModal({ isOpen, onClose, onImport, boundaryType }) {
   if (!isOpen) return null;
   return (
     <div style={{position:'fixed',top:0,left:0,right:0,bottom:0,background:'rgba(0,0,0,0.7)',zIndex:1000,display:'flex',alignItems:'center',justifyContent:'center',padding:'20px'}} onClick={onClose}>
-      <div style={{background:'#1a1a2e',border:'1px solid rgba(157,140,207,0.2)',borderRadius:'16px',padding:'32px',maxWidth:'min(700px, 95vw)',width:'100%',maxHeight:'80vh',overflowY:'auto'}} onClick={e => e.stopPropagation()}>
+      <div style={{background:'#1a1a2e',border:'1px solid rgba(157,140,207,0.2)',padding:'32px',maxWidth:'min(700px, 95vw)',width:'100%',maxHeight:'80vh',overflowY:'auto'}} onClick={e => e.stopPropagation()}>
         <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'20px'}}>
           <h3 style={{fontFamily:"Georgia, 'Source Serif 4', serif",fontSize:'20px',fontWeight:200,margin:0}}>Bulk Import — {boundaryType}</h3>
           <button onClick={onClose} style={{background:'none',border:'none',color:'#6a6a80',fontSize:'20px',cursor:'pointer'}}>×</button>
         </div>
         <div style={{display:'flex',gap:'8px',marginBottom:'16px'}}>
-          {['json','csv'].map(f => (<button key={f} onClick={() => {setFormat(f); setError(''); setPreview(null);}} style={{padding:'6px 16px',borderRadius:'6px',border:'1px solid '+(format===f?'#8b5cf6':'rgba(255,255,255,0.1)'),background:format===f?'rgba(139,92,246,0.15)':'transparent',color:format===f?'#8b5cf6':'#a0a0b0',fontFamily:"Consolas, 'IBM Plex Mono', monospace",fontSize:'11px',letterSpacing:'1px',textTransform:'uppercase',cursor:'pointer'}}>{f}</button>))}
-          <button onClick={() => setRaw(templates[boundaryType]?.[format] || '')} style={{marginLeft:'auto',padding:'6px 12px',borderRadius:'6px',border:'1px solid rgba(255,255,255,0.1)',background:'transparent',color:'#a0a0b0',fontSize:'11px',cursor:'pointer'}}>Load Example</button>
+          {['json','csv'].map(f => (<button key={f} onClick={() => {setFormat(f); setError(''); setPreview(null);}} style={{padding:'6px 16px',border:'1px solid '+(format===f?'#8b5cf6':'rgba(255,255,255,0.1)'),background:format===f?'rgba(139,92,246,0.15)':'transparent',color:format===f?'#8b5cf6':'#a0a0b0',fontFamily:"Consolas, 'IBM Plex Mono', monospace",fontSize:'11px',letterSpacing:'1px',textTransform:'uppercase',cursor:'pointer'}}>{f}</button>))}
+          <button onClick={() => setRaw(templates[boundaryType]?.[format] || '')} style={{marginLeft:'auto',padding:'6px 12px',border:'1px solid rgba(255,255,255,0.1)',background:'transparent',color:'#a0a0b0',fontSize:'11px',cursor:'pointer'}}>Load Example</button>
         </div>
-        <textarea value={raw} onChange={e => setRaw(e.target.value)} rows={10} placeholder={format === 'json' ? 'Paste JSON array of boundaries...' : 'Paste CSV with header row...'} style={{width:'100%',background:'rgba(0,0,0,0.3)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:'8px',padding:'12px',color:'#e8e8f0',fontFamily:"Consolas, 'IBM Plex Mono', monospace",fontSize:'12px',lineHeight:'1.5',resize:'vertical',outline:'none'}} />
+        <textarea value={raw} onChange={e => setRaw(e.target.value)} rows={10} placeholder={format === 'json' ? 'Paste JSON array of boundaries...' : 'Paste CSV with header row...'} style={{width:'100%',background: 'rgba(255,255,255,.05)',border:'1px solid rgba(255,255,255,0.1)',padding:'12px',color:'#e8e8f0',fontFamily:"Consolas, 'IBM Plex Mono', monospace",fontSize:'12px',lineHeight:'1.5',resize:'vertical',outline:'none'}} />
         {error && <p style={{color:'#ef4444',fontSize:'12px',marginTop:'8px'}}>⚠ {error}</p>}
         <div style={{display:'flex',gap:'8px',marginTop:'16px'}}>
-          <button onClick={parseData} style={{padding:'8px 20px',borderRadius:'8px',border:'1px solid #8b5cf6',background:'transparent',color:'#8b5cf6',fontSize:'12px',cursor:'pointer'}}>Preview</button>
-          {preview && <button onClick={() => { onImport(preview); onClose(); setRaw(''); setPreview(null); }} style={{padding:'8px 20px',borderRadius:'8px',border:'none',background:'linear-gradient(135deg,#5B4B8A,#8b5cf6)',color:'#fff',fontSize:'12px',cursor:'pointer',fontWeight:500}}>Import {preview.length} {preview.length === 1 ? 'boundary' : 'boundaries'}</button>}
+          <button onClick={parseData} style={{padding:'8px 20px',border:'1px solid #8b5cf6',background:'transparent',color:'#8b5cf6',fontSize:'12px',cursor:'pointer'}}>Preview</button>
+          {preview && <button onClick={() => { onImport(preview); onClose(); setRaw(''); setPreview(null); }} style={{padding:'8px 20px',border:'none',background: 'transparent',color: 'rgba(255,255,255,.94)',fontSize:'12px',cursor:'pointer',fontWeight:500}}>Import {preview.length} {preview.length === 1 ? 'boundary' : 'boundaries'}</button>}
         </div>
-        {preview && (<div style={{marginTop:'16px',background:'rgba(0,0,0,0.2)',borderRadius:'8px',padding:'12px',maxHeight:'200px',overflowY:'auto'}}>
+        {preview && (<div style={{marginTop:'16px',background:'transparent',padding:'12px',maxHeight:'200px',overflowY:'auto'}}>
           <p style={{fontFamily:"Consolas, 'IBM Plex Mono', monospace",fontSize:'10px',color:'#6a6a80',marginBottom:'8px'}}>PREVIEW ({preview.length} rows)</p>
           {preview.map((row, i) => (<div key={i} style={{fontSize:'11px',color:'#a0a0b0',padding:'4px 0',borderBottom:'1px solid rgba(255,255,255,0.05)'}}>{Object.entries(row).map(([k,v]) => `${k}: ${v}`).join(' · ')}</div>))}
         </div>)}
@@ -176,7 +176,7 @@ function ApplicationsList() {
 {user?.role === "admin" && <div style={{display: "flex", gap: "12px", alignItems: "center"}}>
         <div style={{position: "relative", flex: 1, maxWidth: 'min(400px, 90vw)'}}>
           <Search className="w-4 h-4" style={{position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", color: styles.textTertiary}} />
-          <input value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="Search by name, org, or ID..." style={{width: "100%", background: "rgba(255,255,255,0.03)", border: `1px solid ${styles.borderGlass}`, borderRadius: "8px", padding: "8px 12px 8px 36px", color: styles.textPrimary, fontSize: "13px", fontFamily: "Consolas, 'IBM Plex Mono', monospace", outline: "none"}} />
+          <input value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="Search by name, org, or ID..." style={{width: "100%", background: "rgba(255,255,255,0.03)", border: `1px solid ${styles.borderGlass}`, padding: "8px 12px 8px 36px", color: styles.textPrimary, fontSize: "13px", fontFamily: "Consolas, 'IBM Plex Mono', monospace", outline: "none"}} />
         </div>
         <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: "11px", color: styles.textTertiary}}>{filtered.length} of {appTotal}</span>
       </div>}
@@ -188,11 +188,11 @@ function ApplicationsList() {
             const count = f.key === 'all' ? (stateCounts.all || 0) : f.key === 'revoked' ? ((stateCounts.suspended || 0) + (stateCounts.revoked || 0)) : (stateCounts[f.key] || 0);
             return (
               <button key={f.key} onClick={() => setFilter(f.key)} style={{
-                padding: '6px 14px', borderRadius: '6px', cursor: 'pointer',
+                padding: '6px 14px', cursor: 'pointer',
                 fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase',
                 background: filter === f.key ? 'rgba(157,140,207,0.2)' : 'rgba(255,255,255,0.03)',
                 border: `1px solid ${filter === f.key ? styles.purpleBright : styles.borderGlass}`,
-                color: filter === f.key ? styles.purpleBright : styles.textTertiary,
+                color: filter === f.key ? styles.purpleBright : styles.textTertiary
               }}>
                 {f.label} {count > 0 ? `(${count})` : ''}
               </button>
@@ -223,11 +223,11 @@ function ApplicationsList() {
                 </td>
                 {user?.role === 'admin' && <td className="px-4 py-4" style={{color: styles.textSecondary}}>{app.organization_name}</td>}
                 <td className="px-4 py-4">
-                  <span className="px-2 py-1 rounded" style={{
-                    background: `${stateColor(app.state)}20`,
+                  <span className="px-2 py-1" style={{
+                    background: `${stateColor(app.state)}06`,
                     color: stateColor(app.state),
-                    border: `1px solid ${stateColor(app.state)}40`,
-                    fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase',
+                    border: `1px solid ${stateColor(app.state)}10`,
+                    fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase'
                   }}>{app.state?.replace('_', ' ')}</span>
                 </td>
                 <td className="px-4 py-4" style={{color: styles.textTertiary, fontSize: '14px'}}>{app.submitted_at ? new Date(app.submitted_at).toLocaleDateString() : "N/A"}</td>
@@ -235,25 +235,25 @@ function ApplicationsList() {
                 <td className="px-4 py-4">
                   <div style={{display: 'flex', gap: '6px'}}>
                     {app.state === 'pending' && (
-                      <button onClick={(e) => { e.stopPropagation(); handleQuickAdvance(app.id, 'under_review', `Begin review for ${app.system_name}`); }} className="px-2 py-1 rounded" style={{background: 'rgba(214,160,92,0.15)', border: '1px solid rgba(214,160,92,0.3)', color: styles.accentAmber, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.5px'}}>Review</button>
+                      <button onClick={(e) => { e.stopPropagation(); handleQuickAdvance(app.id, 'under_review', `Begin review for ${app.system_name}`); }} className="btn" style={{padding: '4px 10px', color: styles.accentAmber}}>Review</button>
                     )}
                     {(app.state === 'pending' || app.state === 'under_review') && (
-                      <button onClick={(e) => { e.stopPropagation(); handleQuickAdvance(app.id, 'approved', `Approve ${app.system_name}`); }} className="px-2 py-1 rounded" style={{background: 'rgba(92,214,133,0.15)', border: '1px solid rgba(92,214,133,0.3)', color: styles.accentGreen, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.5px'}}>Approve</button>
+                      <button onClick={(e) => { e.stopPropagation(); handleQuickAdvance(app.id, 'approved', `Approve ${app.system_name}`); }} className="btn" style={{padding: '4px 10px', color: styles.accentGreen}}>Approve</button>
                     )}
                     {app.state === 'approved' && (
-                      <Link to={`/applications/${app.id}`} className="px-2 py-1 rounded no-underline" style={{background: 'rgba(157,140,207,0.15)', border: `1px solid ${styles.borderGlass}`, color: styles.purpleBright, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.5px'}}>Schedule Test</Link>
+                      <Link to={`/applications/${app.id}`} className="px-2 py-1 no-underline" className="btn">Schedule Test</Link>
                     )}
                     {app.state === 'conformant' && (
                       <span style={{color: styles.accentGreen, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px'}}>✓ Certified</span>
                     )}
                     {app.state === 'testing' && (
-                      <Link to="/cat72" className="px-2 py-1 rounded no-underline" style={{background: 'rgba(157,140,207,0.15)', border: `1px solid ${styles.borderGlass}`, color: styles.purpleBright, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.5px'}}>View Test</Link>
+                      <Link to="/cat72" className="px-2 py-1 no-underline" className="btn">View Test</Link>
                     )}
                     {['pending','under_review','approved','testing','conformant'].includes(app.state) && (
-                      <button onClick={(e) => { e.stopPropagation(); handleQuickAdvance(app.id, 'suspended', `Suspend ${app.system_name}`); }} className="px-2 py-1 rounded" style={{background: 'rgba(214,92,92,0.1)', border: '1px solid rgba(214,92,92,0.3)', color: styles.accentRed, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.5px'}}>Suspend</button>
+                      <button onClick={(e) => { e.stopPropagation(); handleQuickAdvance(app.id, 'suspended', `Suspend ${app.system_name}`); }} className="btn" style={{padding: '4px 10px', color: styles.accentRed}}>Suspend</button>
                     )}
                     {(app.state === 'suspended' || app.state === 'revoked') && (
-                      <button onClick={(e) => { e.stopPropagation(); handleQuickAdvance(app.id, 'pending', `Reinstate ${app.system_name} to pending`); }} className="px-2 py-1 rounded" style={{background: 'rgba(92,214,133,0.1)', border: '1px solid rgba(92,214,133,0.3)', color: styles.accentGreen, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.5px'}}>Reinstate</button>
+                      <button onClick={(e) => { e.stopPropagation(); handleQuickAdvance(app.id, 'pending', `Reinstate ${app.system_name} to pending`); }} className="btn" style={{padding: '4px 10px', color: styles.accentGreen}}>Reinstate</button>
                     )}
                   </div>
                 </td>
@@ -269,20 +269,18 @@ function ApplicationsList() {
             display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px',
             padding: '12px 20px', margin: '16px',
             background: 'rgba(18,12,30,0.95)', backdropFilter: 'blur(12px)',
-            border: `1px solid ${styles.purpleBright}`, borderRadius: '12px',
-            boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
-          }}>
+            border: `1px solid ${styles.purpleBright}` }}>
             <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px', color: styles.purpleBright}}>
               {selected.size} selected
             </span>
             <div style={{display: 'flex', gap: '8px', alignItems: 'center'}}>
-              <button onClick={() => handleBulkAction('approve', 'approved')} disabled={bulkLoading} style={{padding: '6px 14px', borderRadius: '6px', background: 'rgba(92,214,133,0.15)', border: '1px solid rgba(92,214,133,0.3)', color: styles.accentGreen, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>Approve</button>
-              <button onClick={() => handleBulkAction('review', 'under_review')} disabled={bulkLoading} style={{padding: '6px 14px', borderRadius: '6px', background: 'rgba(214,160,92,0.15)', border: '1px solid rgba(214,160,92,0.3)', color: '#D6A05C', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>Review</button>
-              <button onClick={() => handleBulkAction('suspend', 'suspended')} disabled={bulkLoading} style={{padding: '6px 14px', borderRadius: '6px', background: 'rgba(214,92,92,0.1)', border: '1px solid rgba(214,92,92,0.3)', color: '#D65C5C', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>Suspend</button>
-              <button onClick={() => handleBulkAction('reinstate', 'pending')} disabled={bulkLoading} style={{padding: '6px 14px', borderRadius: '6px', background: 'rgba(92,214,133,0.1)', border: '1px solid rgba(92,214,133,0.3)', color: styles.accentGreen, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>Reinstate</button>
+              <button onClick={() => handleBulkAction('approve', 'approved')} disabled={bulkLoading} className="btn" style={{padding: '6px 14px', color: 'var(--accent-green)'}}>Approve</button>
+              <button onClick={() => handleBulkAction('review', 'under_review')} disabled={bulkLoading} className="btn" style={{padding: '6px 14px', color: '#D6A05C'}}>Review</button>
+              <button onClick={() => handleBulkAction('suspend', 'suspended')} disabled={bulkLoading} className="btn" style={{padding: '6px 14px', color: '#D65C5C'}}>Suspend</button>
+              <button onClick={() => handleBulkAction('reinstate', 'pending')} disabled={bulkLoading} className="btn" style={{padding: '6px 14px', color: 'var(--accent-green)'}}>Reinstate</button>
               <div style={{width: '1px', height: '20px', background: styles.borderGlass, margin: '0 4px'}} />
-              <button onClick={() => handleBulkAction('delete')} disabled={bulkLoading} style={{padding: '6px 14px', borderRadius: '6px', background: 'rgba(214,92,92,0.1)', border: '1px solid rgba(214,92,92,0.3)', color: '#D65C5C', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>Delete</button>
-              <button onClick={selectNone} style={{padding: '6px 14px', borderRadius: '6px', background: 'rgba(255,255,255,0.05)', border: `1px solid ${styles.borderGlass}`, color: styles.textTertiary, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>Cancel</button>
+              <button onClick={() => handleBulkAction('delete')} disabled={bulkLoading} className="btn" style={{padding: '6px 14px', color: '#D65C5C'}}>Delete</button>
+              <button onClick={selectNone} className="btn">Cancel</button>
               {bulkLoading && <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary}}>Processing...</span>}
             </div>
           </div>

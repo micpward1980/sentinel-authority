@@ -158,7 +158,7 @@ function ApplicationDetail() {
     <div className="space-y-6">
       {emailPreview && (
         <div style={{position: 'fixed', inset: 0, zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)'}}>
-          <div style={{background: styles.bgCard, border: '1px solid ' + styles.borderGlass, borderRadius: '16px', maxWidth: 'min(650px, 95vw)', width: '95%', maxHeight: '80vh', overflow: 'hidden', display: 'flex', flexDirection: 'column'}}>
+          <div style={{background: styles.bgDeep, border: '1px solid ' + styles.borderGlass, maxWidth: 'min(650px, 95vw)', width: '95%', maxHeight: '80vh', overflow: 'hidden', display: 'flex', flexDirection: 'column'}}>
             <div style={{padding: '20px 24px', borderBottom: '1px solid ' + styles.borderGlass, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px'}}>
               <div>
                 <h3 style={{margin: 0, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.purpleBright}}>Email Preview</h3>
@@ -166,16 +166,16 @@ function ApplicationDetail() {
               </div>
               <button onClick={() => setEmailPreview(null)} style={{background: 'none', border: 'none', color: styles.textTertiary, cursor: 'pointer', fontSize: '20px', padding: '4px 8px'}}>X</button>
             </div>
-            <div style={{padding: '16px 24px', borderBottom: '1px solid ' + styles.borderGlass, background: 'rgba(0,0,0,0.1)'}}>
+            <div style={{padding: '16px 24px', borderBottom: '1px solid ' + styles.borderGlass, background: 'transparent'}}>
               <div style={{fontSize: '11px', color: styles.textTertiary, marginBottom: '2px'}}>Subject</div>
               <div style={{fontSize: '14px', color: styles.textPrimary, fontWeight: 500}}>{emailPreview.subject}</div>
             </div>
             <div style={{flex: 1, overflow: 'auto', padding: '20px 24px'}}>
-              <div style={{background: '#fff', borderRadius: '8px', overflow: 'hidden'}} dangerouslySetInnerHTML={{__html: emailPreview.html}} />
+              <div style={{background: '#fff', overflow: 'hidden'}} dangerouslySetInnerHTML={{__html: emailPreview.html}} />
             </div>
             <div style={{padding: '16px 24px', borderTop: '1px solid ' + styles.borderGlass, display: 'flex', justifyContent: 'flex-end', gap: '10px'}}>
-              <button onClick={() => setEmailPreview(null)} style={{padding: '8px 20px', borderRadius: '8px', background: 'rgba(255,255,255,0.05)', border: '1px solid ' + styles.borderGlass, color: styles.textSecondary, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>Cancel</button>
-              <button onClick={confirmStateChange} className="sexy-btn" style={{padding: '8px 20px', borderRadius: '8px', background: emailPreview.newState === 'suspended' ? 'rgba(214,92,92,0.2)' : styles.purplePrimary, border: '1px solid ' + (emailPreview.newState === 'suspended' ? 'rgba(214,92,92,0.4)' : styles.purpleBright), color: emailPreview.newState === 'suspended' ? '#D65C5C' : '#fff', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>
+              <button onClick={() => setEmailPreview(null)} style={{padding: '8px 20px', background: 'transparent', border: '1px solid ' + styles.borderGlass, color: styles.textSecondary, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>Cancel</button>
+              <button onClick={confirmStateChange}  style={{padding: '8px 20px', background: emailPreview.newState === 'suspended' ? 'rgba(214,92,92,0.2)' : styles.purplePrimary, border: '1px solid ' + (emailPreview.newState === 'suspended' ? 'rgba(214,92,92,0.4)' : styles.purpleBright), color: emailPreview.newState === 'suspended' ? '#D65C5C' : '#fff', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>
                 {emailPreview.label} + Send Email
               </button>
             </div>
@@ -191,36 +191,36 @@ function ApplicationDetail() {
         {user?.role === 'admin' && (
         <div style={{display: 'flex', gap: '12px'}}>
           {app.state === 'pending' && (
-            <button onClick={handleAdvanceToReview} className="px-4 py-2 rounded-lg transition-all" style={{background: 'rgba(214,160,92,0.15)', border: '1px solid rgba(214,160,92,0.4)', color: styles.accentAmber, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>
+            <button onClick={handleAdvanceToReview} className="px-4 py-2 transition-all" className="btn">
               Begin Review
             </button>
           )}
           {(app.state === 'pending' || app.state === 'under_review') && (
-            <button onClick={handleApprove} className="px-4 py-2 rounded-lg transition-all" style={{background: 'rgba(92,214,133,0.15)', border: '1px solid rgba(92,214,133,0.4)', color: styles.accentGreen, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>
+            <button onClick={handleApprove} className="px-4 py-2 transition-all" className="btn">
               Approve Application
             </button>
           )}
           {app.state === 'approved' && (
-            <button onClick={handleScheduleTest} disabled={scheduling} className="px-4 py-2 rounded-lg transition-all" style={{background: styles.purplePrimary, border: `1px solid ${styles.purpleBright}`, color: '#fff', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: scheduling ? 'wait' : 'pointer', opacity: scheduling ? 0.7 : 1}}>
+            <button onClick={handleScheduleTest} disabled={scheduling} className="px-4 py-2 transition-all" className="btn">
               {scheduling ? 'Scheduling...' : 'Schedule CAT-72 Test'}
             </button>
           )}
           {['pending','under_review','approved','testing','conformant'].includes(app.state) && (
-            <button onClick={handleSuspend} className="px-4 py-2 rounded-lg transition-all" style={{background: 'rgba(214,92,92,0.1)', border: '1px solid rgba(214,92,92,0.3)', color: '#D65C5C', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>
+            <button onClick={handleSuspend} className="px-4 py-2 transition-all" className="btn">
               Suspend
             </button>
           )}
           {(app.state === 'suspended' || app.state === 'revoked') && (
-            <button onClick={handleReinstate} className="px-4 py-2 rounded-lg transition-all" style={{background: 'rgba(92,214,133,0.15)', border: '1px solid rgba(92,214,133,0.4)', color: styles.accentGreen, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>
+            <button onClick={handleReinstate} className="px-4 py-2 transition-all" className="btn">
               Reinstate
             </button>
           )}
           {app.state === 'expired' && (
-            <button onClick={handleReinstate} className="px-4 py-2 rounded-lg transition-all" style={{background: 'rgba(157,140,207,0.15)', border: `1px solid ${styles.purpleBright}`, color: styles.purpleBright, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>
+            <button onClick={handleReinstate} className="px-4 py-2 transition-all" className="btn">
               Re-open
             </button>
           )}
-          <button onClick={handleDeleteApplication} className="px-4 py-2 rounded-lg transition-all" style={{background: 'rgba(214,92,92,0.1)', border: '1px solid rgba(214,92,92,0.3)', color: '#D65C5C', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>
+          <button onClick={handleDeleteApplication} className="px-4 py-2 transition-all" className="btn">
             Delete
           </button>
         </div>
@@ -244,7 +244,7 @@ function ApplicationDetail() {
                       fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px', fontWeight: 'bold',
                       background: isComplete ? 'rgba(92,214,133,0.2)' : isActive ? 'rgba(157,140,207,0.25)' : 'rgba(255,255,255,0.03)',
                       border: `2px solid ${isComplete ? styles.accentGreen : isActive ? styles.purpleBright : styles.borderGlass}`,
-                      color: isComplete ? styles.accentGreen : isActive ? styles.purpleBright : styles.textTertiary,
+                      color: isComplete ? styles.accentGreen : isActive ? styles.purpleBright : styles.textTertiary
                     }}>
                       {isComplete ? '✓' : stage.icon}
                     </div>
@@ -257,18 +257,18 @@ function ApplicationDetail() {
             })}
           </div>
           {isSuspended && (
-            <div style={{padding: '12px 16px', background: 'rgba(214,92,92,0.1)', border: '1px solid rgba(214,92,92,0.3)', borderRadius: '8px', marginBottom: '12px'}}>
+            <div style={{padding: '12px 16px', background: 'transparent', border: '1px solid rgba(255,255,255,0.07)', marginBottom: '12px'}}>
               <span style={{color: styles.accentRed, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px'}}>⚠ SUSPENDED — This application has been suspended pending review.</span>
             </div>
           )}
-          <div style={{padding: '12px 16px', background: 'rgba(157,140,207,0.08)', border: `1px solid ${styles.borderGlass}`, borderRadius: '8px'}}>
+          <div style={{padding: '12px 16px', background: 'transparent', border: `1px solid ${styles.borderGlass}` }}>
             <span style={{color: styles.textSecondary, fontSize: '13px', lineHeight: '1.5'}}>{nextStepText()}</span>
           </div>
         </div>
       </Panel>
       
       {testCreated && (
-        <div className="p-4 rounded-lg" style={{background: 'rgba(92,214,133,0.1)', border: '1px solid rgba(157,140,207,0.3)'}}>
+        <div className="p-4" style={{background: 'transparent', border: '1px solid rgba(255,255,255,0.07)'}}>
           <p style={{color: styles.accentGreen, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px'}}>
             Test Created: {testCreated.test_id} — <Link to="/cat72" style={{color: styles.purpleBright}}>Go to CAT-72 Console</Link>
           </p>
@@ -283,22 +283,22 @@ function ApplicationDetail() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Panel>
-          <h2 style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Organization</h2>
+          <div className="hud-label" style={{marginBottom: '16px'}}>Organization</div>
           <p style={{color: styles.textPrimary, fontSize: '18px', marginBottom: '8px'}}>{app.organization_name}</p>
           <p style={{color: styles.textSecondary, marginBottom: '4px'}}><strong>Contact:</strong> {app.contact_name}</p>
           <p style={{color: styles.textSecondary, marginBottom: '4px'}}><strong>Email:</strong> {app.contact_email}</p>
           {app.contact_phone && <p style={{color: styles.textSecondary}}><strong>Phone:</strong> {app.contact_phone}</p>}
         </Panel>
         <Panel>
-          <h2 style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Status</h2>
+          <div className="hud-label" style={{marginBottom: '16px'}}>Status</div>
           <div className="flex items-center gap-4 mb-4">
-            <span className="px-3 py-1 rounded" style={{
-              background: app.state === 'conformant' ? 'rgba(92,214,133,0.15)' : app.state === 'revoked' ? 'rgba(214,92,92,0.15)' : 'rgba(214,160,92,0.15)',
+            <span className="px-3 py-1" style={{
+              background: app.state === 'conformant' ? 'rgba(92,214,133,0.04)' : app.state === 'revoked' ? 'rgba(214,92,92,0.04)' : 'rgba(214,160,92,0.04)',
               color: app.state === 'conformant' ? styles.accentGreen : app.state === 'revoked' ? styles.accentRed : styles.accentAmber,
               fontFamily: "Consolas, 'IBM Plex Mono', monospace",
               fontSize: '12px',
               letterSpacing: '1px',
-              textTransform: 'uppercase',
+              textTransform: 'uppercase'
             }}>
               {app.state}
             </span>
@@ -325,8 +325,8 @@ function ApplicationDetail() {
                   toast.show('Failed to update state: ' + (err.response?.data?.detail || err.message), 'error');
                 }
               }}
-              className="px-3 py-2 rounded-lg"
-              style={{background: 'rgba(255,255,255,0.05)', border: `1px solid ${styles.borderGlass}`, color: styles.textPrimary, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px'}}
+              className="px-3 py-2"
+              style={{background: 'transparent', border: `1px solid ${styles.borderGlass}`, color: styles.textPrimary, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px'}}
             >
               <option value="pending">Pending</option>
               <option value="under_review">Under Review</option>
@@ -343,14 +343,14 @@ function ApplicationDetail() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Panel>
-          <h2 style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>System Details</h2>
+          <div className="hud-label" style={{marginBottom: '16px'}}>System Details</div>
           <p style={{color: styles.textSecondary, marginBottom: '8px'}}><strong>Version:</strong> {app.system_version || 'N/A'}</p>
           <p style={{color: styles.textSecondary, marginBottom: '8px'}}><strong>Manufacturer:</strong> {app.manufacturer || 'N/A'}</p>
           {app.facility_location && <p style={{color: styles.textSecondary, marginBottom: '8px'}}><strong>Facility:</strong> {app.facility_location}</p>}
           {app.preferred_test_date && <p style={{color: styles.textSecondary}}><strong>Preferred Test Date:</strong> {new Date(app.preferred_test_date).toLocaleDateString()}</p>}
         </Panel>
         <Panel>
-          <h2 style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Safety Boundaries & Operational Limits</h2>
+          <div className="hud-label" style={{marginBottom: '16px'}}>Safety Boundaries & Operational Limits</div>
           <p style={{color: styles.textSecondary, lineHeight: 1.7, whiteSpace: 'pre-wrap'}}>{typeof app.envelope_definition === 'object' ? JSON.stringify(app.envelope_definition, null, 2) : (app.envelope_definition || 'Not specified')}</p>
         </Panel>
       </div>
@@ -373,7 +373,7 @@ function ApplicationDetail() {
       {/* State Change Timeline */}
       {history.length > 0 && (
         <Panel>
-          <h2 style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '20px'}}>State Change History</h2>
+          <div className="hud-label" style={{marginBottom: '16px'}}>State Change History</div>
           <div style={{position: 'relative', paddingLeft: '28px'}}>
             {/* Vertical line */}
             <div style={{position: 'absolute', left: '8px', top: '4px', bottom: '4px', width: '2px', background: styles.borderGlass}} />
@@ -388,7 +388,7 @@ function ApplicationDetail() {
                   if (ns === 'under_review' || ns === 'testing') return styles.purpleBright;
                   return '#D6A05C';
                 })(),
-                certificate_issued: styles.accentGreen,
+                certificate_issued: styles.accentGreen
               };
               const color = actionColors[entry.action] || styles.textTertiary;
               const stateLabel = entry.details?.new_state?.replace('_', ' ') || entry.action?.replace('_', ' ');
@@ -397,7 +397,7 @@ function ApplicationDetail() {
               return (
                 <div key={i} style={{position: 'relative', paddingBottom: i < history.length - 1 ? '20px' : '0', marginBottom: i < history.length - 1 ? '0' : '0'}}>
                   {/* Dot */}
-                  <div style={{position: 'absolute', left: '-24px', top: '2px', width: '12px', height: '12px', borderRadius: '50%', background: `${color}30`, border: `2px solid ${color}`}} />
+                  <div style={{position: 'absolute', left: '-24px', top: '2px', width: '12px', height: '12px', borderRadius: '50%', background: `${color}08`, border: `2px solid ${color}`}} />
                   {/* Content */}
                   <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px'}}>
                     <div>
@@ -426,13 +426,13 @@ function ApplicationDetail() {
       )}
 
       <Panel>
-        <h2 style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>ODD Specification</h2>
+        <div className="hud-label" style={{marginBottom: '16px'}}>ODD Specification</div>
         <p style={{color: styles.textSecondary, lineHeight: 1.7, whiteSpace: 'pre-wrap'}}>{typeof app.odd_specification === 'object' ? (app.odd_specification?.description || JSON.stringify(app.odd_specification, null, 2)) : app.odd_specification}</p>
       </Panel>
 
       {/* Comments Thread */}
       <Panel>
-        <h2 style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Comments & Notes</h2>
+        <div className="hud-label" style={{marginBottom: '16px'}}>Comments & Notes</div>
         
         {/* New Comment Form */}
         <div style={{marginBottom: comments.length > 0 ? '20px' : '0'}}>
@@ -441,7 +441,7 @@ function ApplicationDetail() {
             onChange={(e) => setNewComment(e.target.value)}
             rows={3}
             placeholder="Add a comment or note..."
-            className="w-full px-4 py-3 rounded-lg outline-none resize-none"
+            className="w-full px-4 py-3 outline-none resize-none"
             style={{background: 'rgba(255,255,255,0.03)', border: `1px solid ${styles.borderGlass}`, color: styles.textPrimary, fontSize: '13px', fontFamily: 'inherit', transition: 'border-color 0.2s'}}
             onFocus={(e) => e.target.style.borderColor = styles.purpleBright}
             onBlur={(e) => e.target.style.borderColor = styles.borderGlass}
@@ -449,17 +449,16 @@ function ApplicationDetail() {
           <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginTop: '8px'}}>
             <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
               {user?.role === 'admin' && (
-                <label style={{display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer'}}>
-                  <input type="checkbox" checked={isInternal} onChange={(e) => setIsInternal(e.target.checked)} style={{accentColor: styles.purpleBright}} />
-                  <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary, letterSpacing: '0.5px', textTransform: 'uppercase'}}>Internal only</span>
-                </label>
+                <button onClick={() => setIsInternal(!isInternal)} className="btn" style={{padding: '4px 10px', color: isInternal ? 'var(--accent-green)' : 'var(--text-tertiary)', borderColor: isInternal ? 'rgba(92,214,133,0.2)' : 'rgba(255,255,255,0.06)'}}>
+                  Internal {isInternal ? 'ON' : 'OFF'}
+                </button>
               )}
             </div>
             <button
               onClick={handlePostComment}
               disabled={postingComment || !newComment.trim()}
-              className="px-4 py-2 rounded-lg"
-              style={{background: newComment.trim() ? styles.purplePrimary : 'rgba(255,255,255,0.05)', border: `1px solid ${newComment.trim() ? styles.purpleBright : styles.borderGlass}`, color: newComment.trim() ? '#fff' : styles.textTertiary, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: newComment.trim() ? 'pointer' : 'default', opacity: postingComment ? 0.6 : 1}}
+              className="px-4 py-2"
+              className="btn"
             >
               {postingComment ? 'Posting...' : 'Post Comment'}
             </button>
@@ -474,8 +473,8 @@ function ApplicationDetail() {
                 <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px', marginBottom: '6px'}}>
                   <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
                     <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px', color: c.user_role === 'admin' ? styles.purpleBright : styles.textSecondary, fontWeight: 500}}>{c.user_email}</span>
-                    {c.user_role === 'admin' && <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', padding: '2px 6px', borderRadius: '4px', background: 'rgba(157,140,207,0.15)', color: styles.purpleBright, textTransform: 'uppercase', letterSpacing: '0.5px'}}>Admin</span>}
-                    {c.is_internal && <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', padding: '2px 6px', borderRadius: '4px', background: 'rgba(214,160,92,0.15)', color: styles.accentAmber, textTransform: 'uppercase', letterSpacing: '0.5px'}}>Internal</span>}
+                    {c.user_role === 'admin' && <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', padding: '2px 6px', background: 'transparent', color: styles.purpleBright, textTransform: 'uppercase', letterSpacing: '0.5px'}}>Admin</span>}
+                    {c.is_internal && <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', padding: '2px 6px', background: 'transparent', color: styles.accentAmber, textTransform: 'uppercase', letterSpacing: '0.5px'}}>Internal</span>}
                   </div>
                   <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
                     <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary}}>{c.created_at ? new Date(c.created_at).toLocaleString() : ''}</span>
@@ -497,7 +496,7 @@ function ApplicationDetail() {
 
       {app.notes && (
         <Panel>
-          <h2 style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Applicant Notes</h2>
+          <div className="hud-label" style={{marginBottom: '16px'}}>Applicant Notes</div>
           <p style={{color: styles.textSecondary, lineHeight: 1.7, whiteSpace: 'pre-wrap'}}>{app.notes}</p>
         </Panel>
       )}

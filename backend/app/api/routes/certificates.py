@@ -25,7 +25,7 @@ async def issue_certificate(test_id: str, db: AsyncSession = Depends(get_db), us
     result = await db.execute(select(CAT72Test).where(CAT72Test.test_id == test_id))
     test = result.scalar_one_or_none()
     if not test: raise HTTPException(status_code=404, detail="Test not found")
-    if test.state != TestState.COMPLETED: raise HTTPException(status_code=400, detail="Test must be completed")
+    if test.state != "completed": raise HTTPException(status_code=400, detail="Test must be completed")
     if test.result != "PASS": raise HTTPException(status_code=400, detail="Cannot issue certificate for failed test")
     app_result = await db.execute(select(Application).where(Application.id == test.application_id))
     application = app_result.scalar_one_or_none()
@@ -40,9 +40,9 @@ async def issue_certificate(test_id: str, db: AsyncSession = Depends(get_db), us
     signature = f"SA-SIG-{sig_num}"
     audit_log_ref = f"SA-LOG-{now.year}-{sig_num:04d}"
     
-    certificate = Certificate(certificate_number=cert_number, application_id=application.id, organization_name=application.organization_name, system_name=application.system_name, system_version=application.system_version, odd_specification=application.odd_specification, envelope_definition=application.envelope_definition, state=CertificationState.CONFORMANT, issued_at=now, expires_at=now + timedelta(days=365), issued_by=int(user["sub"]), test_id=test.id, convergence_score=test.convergence_score, evidence_hash=test.evidence_hash, signature=signature, audit_log_ref=audit_log_ref, verification_url=f"https://sentinelauthority.org/verify.html?cert={cert_number}", history=[{"action": "issued", "timestamp": now.isoformat(), "by": user["email"]}])
+    certificate = Certificate(certificate_number=cert_number, application_id=application.id, organization_name=application.organization_name, system_name=application.system_name, system_version=application.system_version, odd_specification=application.odd_specification, envelope_definition=application.envelope_definition, state="conformant", issued_at=now, expires_at=now + timedelta(days=365), issued_by=int(user["sub"]), test_id=test.id, convergence_score=test.convergence_score, evidence_hash=test.evidence_hash, signature=signature, audit_log_ref=audit_log_ref, verification_url=f"https://sentinelauthority.org/verify.html?cert={cert_number}", history=[{"action": "issued", "timestamp": now.isoformat(), "by": user["email"]}])
     db.add(certificate)
-    application.state = CertificationState.CONFORMANT
+    application.state = "conformant"
     await db.commit()
     await db.refresh(certificate)
     # Generate and store PDF
@@ -69,7 +69,7 @@ async def issue_certificate(test_id: str, db: AsyncSession = Depends(get_db), us
         print(f"[CERT] PDF generation failed for {certificate.certificate_number}: {e}")
     # Send notification email
     await notify_certificate_issued(application.contact_email, certificate.system_name, certificate.certificate_number, certificate.organization_name)
-    return {"certificate_number": certificate.certificate_number, "organization_name": certificate.organization_name, "system_name": certificate.system_name, "state": certificate.state.value, "issued_at": certificate.issued_at.isoformat(), "expires_at": certificate.expires_at.isoformat(), "verification_url": certificate.verification_url}
+    return {"certificate_number": certificate.certificate_number, "organization_name": certificate.organization_name, "system_name": certificate.system_name, "state": certificate.state, "issued_at": certificate.issued_at.isoformat(), "expires_at": certificate.expires_at.isoformat(), "verification_url": certificate.verification_url}
 
 @router.get("/", summary="List all certificates")
 async def list_certificates(db: AsyncSession = Depends(get_db), user: dict = Depends(get_current_user)):
@@ -93,21 +93,21 @@ async def list_certificates(db: AsyncSession = Depends(get_db), user: dict = Dep
         else:
             return []
     
-    return [{"id": c.id, "certificate_number": c.certificate_number, "organization_name": c.organization_name, "system_name": c.system_name, "state": c.state.value, "issued_at": c.issued_at.isoformat() if c.issued_at else None, "expires_at": c.expires_at.isoformat() if c.expires_at else None, "application_id": c.application_id, "envelope_definition": c.envelope_definition, "applicant_id": getattr(c, "issued_by", None)} for c in result.scalars().all()]
+    return [{"id": c.id, "certificate_number": c.certificate_number, "organization_name": c.organization_name, "system_name": c.system_name, "state": c.state, "issued_at": c.issued_at.isoformat() if c.issued_at else None, "expires_at": c.expires_at.isoformat() if c.expires_at else None, "application_id": c.application_id, "envelope_definition": c.envelope_definition, "applicant_id": getattr(c, "issued_by", None)} for c in result.scalars().all()]
 
 @router.get("/{certificate_number}", summary="Get certificate details")
 async def get_certificate(certificate_number: str, db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(Certificate).where(Certificate.certificate_number == certificate_number))
     cert = result.scalar_one_or_none()
     if not cert: raise HTTPException(status_code=404, detail="Certificate not found")
-    return {"certificate_number": cert.certificate_number, "organization_name": cert.organization_name, "system_name": cert.system_name, "state": cert.state.value, "issued_at": cert.issued_at.isoformat() if cert.issued_at else None, "expires_at": cert.expires_at.isoformat() if cert.expires_at else None, "convergence_score": cert.convergence_score, "evidence_hash": cert.evidence_hash}
+    return {"certificate_number": cert.certificate_number, "organization_name": cert.organization_name, "system_name": cert.system_name, "state": cert.state, "issued_at": cert.issued_at.isoformat() if cert.issued_at else None, "expires_at": cert.expires_at.isoformat() if cert.expires_at else None, "convergence_score": cert.convergence_score, "evidence_hash": cert.evidence_hash}
 
 @router.get("/{certificate_number}/pdf", summary="Download certificate PDF")
 async def download_pdf(certificate_number: str, db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(Certificate).where(Certificate.certificate_number == certificate_number))
     cert = result.scalar_one_or_none()
     if not cert: raise HTTPException(status_code=404, detail="Certificate not found")
-    if cert.state == CertificationState.REVOKED: raise HTTPException(status_code=400, detail="Cannot download revoked certificate")
+    if cert.state == "revoked": raise HTTPException(status_code=400, detail="Cannot download revoked certificate")
     test_result = await db.execute(select(CAT72Test).where(CAT72Test.id == cert.test_id))
     test = test_result.scalar_one_or_none()
     odd_spec = cert.odd_specification or {}
@@ -168,31 +168,31 @@ async def suspend_certificate(certificate_number: str, reason: str, db: AsyncSes
     result = await db.execute(select(Certificate).where(Certificate.certificate_number == certificate_number))
     cert = result.scalar_one_or_none()
     if not cert: raise HTTPException(status_code=404, detail="Certificate not found")
-    cert.state = CertificationState.SUSPENDED
+    cert.state = "suspended"
     cert.history = (cert.history or []) + [{"action": "suspended", "timestamp": datetime.utcnow().isoformat(), "by": user["email"], "reason": reason}]
     await db.commit()
-    return {"message": "Certificate suspended", "state": cert.state.value}
+    return {"message": "Certificate suspended", "state": cert.state}
 
 @router.patch("/{certificate_number}/revoke", summary="Revoke certificate")
 async def revoke_certificate(certificate_number: str, reason: str, db: AsyncSession = Depends(get_db), user: dict = Depends(require_role(["admin"]))):
     result = await db.execute(select(Certificate).where(Certificate.certificate_number == certificate_number))
     cert = result.scalar_one_or_none()
     if not cert: raise HTTPException(status_code=404, detail="Certificate not found")
-    cert.state = CertificationState.REVOKED
+    cert.state = "revoked"
     cert.history = (cert.history or []) + [{"action": "revoked", "timestamp": datetime.utcnow().isoformat(), "by": user["email"], "reason": reason}]
     await db.commit()
-    return {"message": "Certificate revoked", "state": cert.state.value}
+    return {"message": "Certificate revoked", "state": cert.state}
 
 @router.patch("/{certificate_number}/reinstate", summary="Reinstate suspended certificate")
 async def reinstate_certificate(certificate_number: str, db: AsyncSession = Depends(get_db), user: dict = Depends(require_role(["admin"]))):
     result = await db.execute(select(Certificate).where(Certificate.certificate_number == certificate_number))
     cert = result.scalar_one_or_none()
     if not cert: raise HTTPException(status_code=404, detail="Certificate not found")
-    if cert.state != CertificationState.SUSPENDED: raise HTTPException(status_code=400, detail="Only suspended certificates can be reinstated")
-    cert.state = CertificationState.CONFORMANT
+    if cert.state != "suspended": raise HTTPException(status_code=400, detail="Only suspended certificates can be reinstated")
+    cert.state = "conformant"
     cert.history = (cert.history or []) + [{"action": "reinstated", "timestamp": datetime.utcnow().isoformat(), "by": user["email"]}]
     await db.commit()
-    return {"message": "Certificate reinstated", "state": cert.state.value}
+    return {"message": "Certificate reinstated", "state": cert.state}
 
 
 @router.get("/{cert_id}/pdf", summary="Download ODDC certificate as PDF")

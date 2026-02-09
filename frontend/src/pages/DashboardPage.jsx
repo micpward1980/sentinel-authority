@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Wifi, FileText, Activity, Award, AlertTriangle, Plus, Shield, Download, RefreshCw, AlertCircle, Clock } from 'lucide-react';
+import { Wifi, FileText, Activity, Award, AlertTriangle, Plus, Shield, Download, RefreshCw, AlertCircle } from 'lucide-react';
 import { api, API_BASE } from '../config/api';
-import { styles } from '../config/styles';
+
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { useConfirm } from '../context/ConfirmContext';
@@ -10,14 +10,15 @@ import Panel from '../components/Panel';
 import StatCard from '../components/StatCard';
 import EmptyState from '../components/EmptyState';
 
+/* ═══════════════════════════════════════
+   CUSTOMER DASHBOARD
+   ═══════════════════════════════════════ */
 function CustomerDashboard() {
   const confirm = useConfirm();
   const { user } = useAuth();
   const toast = useToast();
   const navigate = useNavigate();
   const [applications, setApplications] = useState([]);
-  const [appTotal, setAppTotal] = useState(0);
-  const [stateCounts, setStateCounts] = useState({});
   const [certificates, setCertificates] = useState([]);
   const [loading, setLoading] = useState(true);
   const [monitoring, setMonitoring] = useState(null);
@@ -45,9 +46,13 @@ function CustomerDashboard() {
     { key: 'testing', label: 'Testing' },
     { key: 'conformant', label: 'Conformant' },
   ];
-
   const stageIdx = (state) => STAGES.findIndex(s => s.key === state);
-
+  const stateColor = (state) => {
+    if (state === 'conformant') return 'var(--accent-green)';
+    if (state === 'revoked' || state === 'suspended') return 'var(--accent-red)';
+    if (state === 'testing' || state === 'approved') return 'var(--purple-bright)';
+    return 'var(--accent-amber)';
+  };
   const nextAction = (state) => {
     switch(state) {
       case 'pending': return 'Awaiting review';
@@ -60,92 +65,77 @@ function CustomerDashboard() {
     }
   };
 
-  const stateColor = (state) => {
-    if (state === 'conformant') return styles.accentGreen;
-    if (state === 'revoked' || state === 'suspended') return styles.accentRed;
-    if (state === 'testing' || state === 'approved') return styles.purpleBright;
-    return styles.accentAmber;
-  };
+  if (loading) return <div className="hud-label" style={{padding:'60px',textAlign:'center'}}>Loading…</div>;
 
-  if (loading) return <div style={{color: styles.textTertiary, padding: 'clamp(16px, 4vw, 40px)', textAlign: 'center'}}>Loading...</div>;
+  const sessions = monitoring?.sessions || [];
+  const online = sessions.filter(s => {
+    const la = s.last_heartbeat_at || s.last_telemetry_at || s.last_activity || s.started_at;
+    return s.status === 'active' && la && (Date.now() - new Date(la).getTime()) < 120000;
+  }).length;
+  const totalSessions = monitoring?.summary?.total || 0;
 
   return (
-    <div className="space-y-6" style={{maxWidth: "1000px", margin: "0 auto"}}>
-      {/* Header */}
-      <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px'}}>
-        <div>
-          <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', color: styles.purpleBright, marginBottom: '8px'}}>ODDC Certification</p>
-          <h1 style={{fontFamily: "Georgia, 'Source Serif 4', serif", fontSize: 'clamp(24px, 5vw, 36px)', fontWeight: 200, margin: 0}}>Welcome{user?.full_name ? `, ${user.full_name.split(' ')[0]}` : ''}</h1>
-          <p style={{color: styles.textSecondary, marginTop: '8px'}}>{user?.organization ? user.organization + ' · ' : ''}Track your certification progress and manage your systems.</p>
-        </div>
+    <div style={{maxWidth:'1000px',margin:'0 auto'}}>
 
+      {/* ── Section Header ── */}
+      <div style={{marginBottom:'32px'}}>
+        <span className="hud-label" style={{color:'var(--purple-bright)',letterSpacing:'4px',display:'flex',alignItems:'center',gap:'12px',marginBottom:'10px'}}>
+          <span style={{width:'24px',height:'1px',background:'var(--purple-bright)'}}></span>
+          ODDC CERTIFICATION
+        </span>
+        <h1 style={{fontFamily:'var(--serif)',fontSize:'clamp(26px,5vw,38px)',fontWeight:200,margin:'0 0 6px',letterSpacing:'-0.02em'}}>
+          Welcome{user?.full_name ? `, ${user.full_name.split(' ')[0]}` : ''}
+        </h1>
+        <p style={{color:'var(--text-tertiary)',fontFamily:'var(--mono)',fontSize:'11px',letterSpacing:'1px'}}>
+          {new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})}
+          {user?.organization_name ? ` · ${user.organization_name}` : ''}
+        </p>
       </div>
 
-      {/* Quick Stats */}
-      <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px'}}>
-        <StatCard onClick={() => navigate("/applications")} label="Applications" value={applications.length} color={styles.purpleBright} icon={<FileText fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{color: styles.purpleBright}} />} subtitle={applications.filter(a => a.state === 'pending' || a.state === 'under_review').length > 0 ? `${applications.filter(a => a.state === 'pending' || a.state === 'under_review').length} in review` : null} />
-        <StatCard onClick={() => navigate("/certificates")} label="Certificates" value={certificates.length} color={styles.accentGreen} icon={<Award fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{color: styles.accentGreen}} />} subtitle={certificates.filter(c => c.state === 'conformant').length > 0 ? `${certificates.filter(c => c.state === 'conformant').length} active` : null} />
-        <StatCard onClick={() => navigate("/cat72")} label="Active Tests" value={applications.filter(a => a.state === 'testing').length} color={styles.accentAmber} icon={<Activity fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{color: styles.accentAmber}} />} />
-        {(() => {
-          const sessions = monitoring?.sessions || [];
-          const online = sessions.filter(s => {
-            const la = s.last_heartbeat_at || s.last_telemetry_at || s.last_activity || s.started_at;
-            return s.status === 'active' && la && (Date.now() - new Date(la).getTime()) < 120000;
-          }).length;
-          const total = monitoring?.summary?.total || 0;
-          const hasAgents = total > 0;
-          const statusColor = hasAgents ? (online > 0 ? styles.accentGreen : styles.accentAmber) : styles.textTertiary;
-          const statusText = hasAgents ? (online > 0 ? `${online} of ${total} online` : 'All systems offline') : 'No active systems';
-          return <StatCard onClick={() => navigate('/monitoring')} label="Live Status" value={hasAgents ? online : '—'} color={statusColor} icon={<Wifi fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{color: statusColor}} />} subtitle={statusText} />;
-        })()}
+      {/* ── Stat Cards ── */}
+      <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit, minmax(180px, 1fr))',gap:'0',marginBottom:'32px',borderTop:'none',borderBottom:'none'}}>
+        <StatCard onClick={() => navigate("/applications")} label="Applications" value={applications.length} color="var(--purple-bright)" icon={<FileText size={16} strokeWidth={1.5}/>}
+          sublabel={applications.filter(a=>a.state==='pending'||a.state==='under_review').length>0 ? `${applications.filter(a=>a.state==='pending'||a.state==='under_review').length} in review` : null} />
+        <StatCard onClick={() => navigate("/certificates")} label="Certificates" value={certificates.length} color="var(--accent-green)" icon={<Award size={16} strokeWidth={1.5}/>}
+          sublabel={certificates.filter(c=>c.state==='conformant').length>0 ? `${certificates.filter(c=>c.state==='conformant').length} active` : null} />
+        <StatCard onClick={() => navigate("/cat72")} label="Active Tests" value={applications.filter(a=>a.state==='testing').length} color="var(--accent-amber)" icon={<Activity size={16} strokeWidth={1.5}/>} />
+        <StatCard onClick={() => navigate('/monitoring')} label="Live Status" value={totalSessions>0 ? online : '—'} color={totalSessions>0 ? (online>0?'var(--accent-green)':'var(--accent-amber)') : 'var(--text-tertiary)'} icon={<Wifi size={16} strokeWidth={1.5}/>}
+          sublabel={totalSessions>0 ? (online>0?`${online} of ${totalSessions} online`:'All offline') : null} />
       </div>
 
-      {/* Applications with Progress */}
-      <Panel>
-        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '16px'}}>
-          <h2 style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, margin: 0}}>Your Applications</h2>
-          {applications.length > 0 && (
-            <Link to="/applications" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.purpleBright, textDecoration: 'none', letterSpacing: '1px'}}>View All →</Link>
-          )}
+      {/* ── Applications ── */}
+      <div style={{marginBottom:'32px'}}>
+        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'16px'}}>
+          <span className="hud-label">Your Applications</span>
+          {applications.length>0 && <Link to="/applications" className="hud-link" style={{fontSize:'10px'}}>View All →</Link>}
         </div>
         {applications.length === 0 ? (
-          <div style={{textAlign: 'center', padding: '56px 20px'}}>
-            <div style={{width: '72px', height: '72px', borderRadius: '20px', background: 'rgba(91,75,138,0.12)', border: '1px solid rgba(157,140,207,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px'}}>
-              <Shield fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} size={32} style={{color: styles.purpleBright, opacity: 0.7}} />
-            </div>
-            <p style={{color: styles.textPrimary, fontSize: '17px', fontWeight: 500, marginBottom: '8px', fontFamily: "Georgia, 'Source Serif 4', serif"}}>Begin Your Certification</p>
-            <p style={{color: styles.textTertiary, fontSize: '13px', marginBottom: '28px', maxWidth: '360px', margin: '0 auto 28px', lineHeight: '1.6'}}>Submit your autonomous system for ODDC certification. Our CAT-72 test validates real-time boundary enforcement over 72 hours.</p>
-            <Link to="/applications/new" className="inline-flex items-center gap-2 px-6 py-3 rounded-lg no-underline" style={{background: `linear-gradient(135deg, ${styles.purplePrimary} 0%, ${styles.purpleBright} 100%)`, border: 'none', color: '#fff', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', boxShadow: '0 4px 20px rgba(91,75,138,0.3)'}}>
-              <Plus className="w-4 h-4" />
-              New Application
-            </Link>
+          <div className="hud-frame" style={{textAlign:'center',padding:'48px 20px'}}><i></i>
+            <Shield size={28} strokeWidth={1} style={{color:'var(--purple-bright)',opacity:0.4,marginBottom:'16px'}}/>
+            <p style={{fontFamily:'var(--serif)',fontSize:'17px',color:'var(--text-secondary)',marginBottom:'8px'}}>Begin Your Certification</p>
+            <p style={{fontSize:'12px',color:'var(--text-tertiary)',maxWidth:'360px',margin:'0 auto 20px',lineHeight:1.7}}>Submit your autonomous system for ODDC certification. Our CAT-72 test validates real-time boundary enforcement over 72 hours.</p>
+            <Link to="/applications/new" className="btn primary"><Plus size={12}/> New Application</Link>
           </div>
         ) : (
-          <div className="space-y-4">
-            {applications.map(app => {
-              const idx = stageIdx(app.state);
+          <div className="hud-frame"><i></i>
+            {applications.map((app, idx) => {
+              const si = stageIdx(app.state);
               return (
-                <Link key={app.id} to={`/applications/${app.id}`} style={{textDecoration: 'none', display: 'block'}}>
-                  <div style={{padding: '20px', background: 'rgba(0,0,0,0.2)', borderRadius: '10px', border: `1px solid ${styles.borderGlass}`, cursor: 'pointer', transition: 'border-color 0.2s'}} onMouseEnter={e => e.currentTarget.style.borderColor = styles.purpleBright} onMouseLeave={e => e.currentTarget.style.borderColor = styles.borderGlass}>
-                    {/* Top row: name + badge */}
-                    <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '16px'}}>
-                      <div>
-                        <div style={{fontWeight: 500, color: styles.textPrimary, fontSize: '15px', marginBottom: '4px'}}>{app.system_name}</div>
-                        <div style={{fontSize: '11px', color: styles.textTertiary, fontFamily: "Consolas, 'IBM Plex Mono', monospace"}}>{app.application_number} · {app.system_type?.replace(/_/g, ' ')}</div>
-                      </div>
-                      <div style={{display: 'flex', alignItems: 'center', gap: '12px'}}>
-                        <span style={{fontSize: '12px', color: styles.textTertiary}}>{nextAction(app.state)}</span>
-                        <span style={{padding: '4px 12px', borderRadius: '4px', fontSize: '10px', fontFamily: "Consolas, 'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '1px',
-                          background: `${stateColor(app.state)}20`,
-                          color: stateColor(app.state),
-                          border: `1px solid ${stateColor(app.state)}40`,
-                        }}>{app.state}</span>
+                <Link key={app.id} to={`/applications/${app.id}`} style={{textDecoration:'none',display:'block'}}>
+                  <div className="hud-row" style={{display:'flex',alignItems:'center',gap:'12px',cursor:'pointer',paddingTop:'14px',paddingBottom:'14px'}}>
+                    <span className="hud-num" style={{minWidth:'20px'}}>{String(idx+1).padStart(2,'0')}</span>
+                    <span className="hud-dot" style={{background:stateColor(app.state),marginRight:0}}></span>
+                    <div style={{flex:1,minWidth:0}}>
+                      <div className="hud-title">{app.system_name}</div>
+                      <div style={{fontFamily:'var(--mono)',fontSize:'10px',letterSpacing:'1px',color:'var(--text-tertiary)',marginTop:'2px'}}>
+                        {app.application_number} · {nextAction(app.state)}
                       </div>
                     </div>
-                    {/* Mini progress bar */}
-                    <div style={{display: 'flex', gap: '3px', height: '4px'}}>
-                      {STAGES.map((s, i) => (
-                        <div key={s.key} style={{flex: 1, borderRadius: '2px', background: i <= idx ? stateColor(app.state) : 'rgba(255,255,255,0.05)'}} />
+                    <span style={{fontFamily:'var(--mono)',fontSize:'9px',letterSpacing:'2px',textTransform:'uppercase',color:stateColor(app.state)}}>{app.state?.replace(/_/g,' ')}</span>
+                    {/* Mini progress */}
+                    <div style={{display:'flex',gap:'2px',width:'60px'}}>
+                      {STAGES.map((s,i) => (
+                        <div key={s.key} className="sa-fill" style={{flex:1,height:'3px','--sa-bg':i<=si ? stateColor(app.state) : 'rgba(255,255,255,0.04)'}}/>
                       ))}
                     </div>
                   </div>
@@ -154,128 +144,105 @@ function CustomerDashboard() {
             })}
           </div>
         )}
-      </Panel>
+      </div>
 
-      {/* Certificates */}
-      
-        {certificates.length === 0 && (
-          <EmptyState icon={Award} title="No Certificates Yet" description="Certificates are issued after your system passes the 72-hour CAT-72 conformance test. Submit an application to begin."  />
-        )}
-        {certificates.length > 0 && (
-        <Panel>
-          <h2 style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Your Certificates</h2>
-          <div className="space-y-3">
-            {certificates.map(cert => (
-              <div key={cert.id} style={{padding: '16px', background: 'rgba(92,214,133,0.08)', border: '1px solid rgba(92,214,133,0.2)', borderRadius: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px'}}>
+      {/* ── Certificates ── */}
+      {certificates.length > 0 && (
+        <div style={{marginBottom:'32px'}}>
+          <span className="hud-label" style={{marginBottom:'16px',display:'block'}}>Your Certificates</span>
+          <div className="hud-frame"><i></i>
+            {certificates.map((cert,idx) => (
+              <div key={cert.id} className="hud-row" style={{display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:'12px'}}>
                 <div>
-                  <div style={{fontWeight: 500, color: styles.accentGreen, marginBottom: '4px', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '14px'}}>{cert.certificate_number}</div>
-                  <div style={{fontSize: '12px', color: styles.textTertiary}}>Issued: {new Date(cert.issued_at).toLocaleDateString()}{cert.expires_at ? ` · Expires: ${new Date(cert.expires_at).toLocaleDateString()}` : ''}</div>
+                  <div style={{fontFamily:'var(--mono)',fontSize:'13px',color:'var(--accent-green)',letterSpacing:'1px'}}>{cert.certificate_number}</div>
+                  <div style={{fontSize:'11px',color:'var(--text-tertiary)',marginTop:'2px'}}>
+                    Issued: {cert.issued_at ? new Date(cert.issued_at).toLocaleDateString() : '—'}
+                    {cert.expires_at ? ` · Expires: ${new Date(cert.expires_at).toLocaleDateString()}` : ''}
+                  </div>
                 </div>
-                <div style={{display: 'flex', gap: '8px'}}>
-                  <a href={`${API_BASE}/api/certificates/${cert.certificate_number}/pdf`}
-                     target="_blank"
-                     style={{padding: '8px 16px', background: styles.purplePrimary, borderRadius: '6px', color: '#fff', fontSize: '11px', fontFamily: "Consolas, 'IBM Plex Mono', monospace", textDecoration: 'none'}}>
-                    Download PDF
-                  </a>
-                </div>
+                <a href={`${API_BASE}/api/certificates/${cert.certificate_number}/pdf`} target="_blank" className="btn" style={{padding:'6px 14px',fontSize:'9px'}}>
+                  <Download size={11}/> PDF
+                </a>
               </div>
             ))}
           </div>
-        </Panel>
+        </div>
       )}
 
+      {certificates.length === 0 && (
+        <div style={{marginBottom:'32px'}}>
+          <span className="hud-label" style={{marginBottom:'16px',display:'block'}}>Certificates</span>
+          <div style={{textAlign:'center',padding:'32px 20px',borderTop:'none'}}>
+            <p style={{fontSize:'12px',color:'var(--text-tertiary)',fontFamily:'var(--mono)',letterSpacing:'0.5px'}}>
+              Certificates are issued after your system passes the 72-hour CAT-72 conformance test.
+            </p>
+          </div>
+        </div>
+      )}
 
-
-      {/* Recent Activity */}
-      <Panel>
-        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '16px'}}>
-          <h2 style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, margin: 0}}>Recent Activity</h2>
-          <Link to="/my-activity" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.purpleBright, textDecoration: 'none', letterSpacing: '1px'}}>View All →</Link>
+      {/* ── Recent Activity ── */}
+      <div>
+        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'16px'}}>
+          <span className="hud-label">Recent Activity</span>
+          <Link to="/my-activity" className="hud-link" style={{fontSize:'10px'}}>View All →</Link>
         </div>
         {recentActivity.length === 0 ? (
-          <p style={{color: styles.textTertiary, fontSize: '13px', textAlign: 'center', padding: '20px 0'}}>No activity yet</p>
+          <p style={{color:'var(--text-tertiary)',fontSize:'12px',fontFamily:'var(--mono)',textAlign:'center',padding:'20px 0'}}>No activity yet</p>
         ) : (
-          <div style={{display: 'flex', flexDirection: 'column', gap: '1px'}}>
-            {recentActivity.map((log, i) => {
-              const actionLabels = {
-                user_login: 'Signed in',
-                user_registered: 'Account created',
-                login_failed: 'Failed login attempt',
-                application_submitted: 'Application submitted',
-                application_state_changed: 'Application status updated',
-                application_deleted: 'Application deleted',
-                test_created: 'CAT-72 test scheduled',
-                test_started: 'CAT-72 test started',
-                test_completed: 'CAT-72 test completed',
-                certificate_issued: 'Certificate issued',
-                certificate_suspended: 'Certificate suspended',
-                certificate_revoked: 'Certificate revoked',
-                certificate_reinstated: 'Certificate reinstated',
-                api_key_created: 'API key created',
-                api_key_revoked: 'API key revoked',
-                password_changed: 'Password changed',
-                profile_updated: 'Profile updated',
-                '2fa_enabled': 'Two-factor authentication enabled',
-                '2fa_disabled': 'Two-factor authentication disabled',
+          <div className="hud-frame"><i></i>
+            {recentActivity.map((log,i) => {
+              const labels = {
+                user_login:'Signed in', user_registered:'Account created', login_failed:'Failed login',
+                application_submitted:'Application submitted', application_state_changed:'Status updated',
+                application_deleted:'Application deleted', test_created:'CAT-72 test scheduled',
+                test_started:'CAT-72 test started', test_completed:'CAT-72 test completed',
+                certificate_issued:'Certificate issued', certificate_suspended:'Certificate suspended',
+                certificate_revoked:'Certificate revoked', certificate_reinstated:'Certificate reinstated',
+                api_key_created:'API key created', api_key_revoked:'API key revoked',
+                password_changed:'Password changed', profile_updated:'Profile updated',
+                '2fa_enabled':'2FA enabled', '2fa_disabled':'2FA disabled'
               };
-              const actionColors = {
-                user_login: styles.textTertiary,
-                login_failed: '#D65C5C',
-                application_submitted: styles.purpleBright,
-                application_state_changed: styles.accentAmber,
-                test_created: styles.purpleBright,
-                test_started: styles.accentAmber,
-                test_completed: styles.accentGreen,
-                certificate_issued: styles.accentGreen,
-                certificate_suspended: styles.accentAmber,
-                certificate_revoked: '#D65C5C',
-                api_key_created: styles.purpleBright,
-                api_key_revoked: '#D65C5C',
+              const dotColors = {
+                certificate_issued:'var(--accent-green)', test_completed:'var(--accent-green)',
+                certificate_revoked:'var(--accent-red)', login_failed:'var(--accent-red)', certificate_suspended:'var(--accent-amber)',
+                application_submitted:'var(--purple-bright)', test_created:'var(--purple-bright)'
               };
-              const label = actionLabels[log.action] || log.action.replace(/_/g, ' ');
-              const color = actionColors[log.action] || styles.textSecondary;
-              const detail = log.details?.system_name || log.details?.application_number || log.details?.test_id || log.details?.certificate_number || log.details?.key_name || '';
+              const label = labels[log.action] || log.action?.replace(/_/g,' ');
+              const dotColor = dotColors[log.action] || 'rgba(157,140,207,0.5)';
+              const detail = log.details?.system_name || log.details?.application_number || '';
               const timeAgo = (ts) => {
-                const diff = Date.now() - new Date(ts).getTime();
-                const mins = Math.floor(diff / 60000);
-                if (mins < 1) return 'just now';
-                if (mins < 60) return mins + 'm ago';
-                const hrs = Math.floor(mins / 60);
-                if (hrs < 24) return hrs + 'h ago';
-                const days = Math.floor(hrs / 24);
-                return days + 'd ago';
+                const d = Date.now() - new Date(ts).getTime();
+                const m = Math.floor(d/60000);
+                if (m<1) return 'just now';
+                if (m<60) return m+'m ago';
+                const h = Math.floor(m/60);
+                if (h<24) return h+'h ago';
+                return Math.floor(h/24)+'d ago';
               };
               return (
-                <div key={log.id || i} style={{display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 0', borderBottom: i < recentActivity.length - 1 ? '1px solid rgba(255,255,255,0.04)' : 'none'}}>
-                  <div style={{width: '6px', height: '6px', borderRadius: '50%', background: color, flexShrink: 0}} />
-                  <div style={{flex: 1, minWidth: 0}}>
-                    <span style={{fontSize: '13px', color: styles.textPrimary}}>{label}</span>
-                    {detail && <span style={{fontSize: '12px', color: styles.textTertiary, marginLeft: '8px'}}>{detail}</span>}
+                <div key={log.id||i} className="hud-row" style={{display:'flex',alignItems:'center',gap:'10px'}}>
+                  <span className="hud-dot" style={{background:dotColor,marginRight:0}}></span>
+                  <div style={{flex:1,minWidth:0}}>
+                    <span style={{fontSize:'12px',color:'var(--text-secondary)'}}>{label}</span>
+                    {detail && <span style={{fontSize:'11px',color:'var(--text-tertiary)',marginLeft:'8px'}}>{detail}</span>}
                   </div>
-                  <span style={{fontSize: '11px', color: styles.textTertiary, fontFamily: "Consolas, 'IBM Plex Mono', monospace", flexShrink: 0}}>{timeAgo(log.timestamp)}</span>
+                  <span style={{fontFamily:'var(--mono)',fontSize:'9px',color:'var(--text-tertiary)',letterSpacing:'0.5px',flexShrink:0}}>
+                    {log.timestamp ? timeAgo(log.timestamp) : ''}
+                  </span>
                 </div>
               );
             })}
           </div>
         )}
-      </Panel>
-
+      </div>
     </div>
   );
 }
 
 
-// Role-based dashboard routing
-
-function RoleBasedDashboard() {
-  const { user } = useAuth();
-  if (user?.role === 'admin') {
-    return <Dashboard />;
-  }
-  return <CustomerDashboard />;
-}
-
-
+/* ═══════════════════════════════════════
+   ADMIN DASHBOARD
+   ═══════════════════════════════════════ */
 function Dashboard() {
   const { user } = useAuth();
   const toast = useToast();
@@ -306,189 +273,181 @@ function Dashboard() {
     return () => clearInterval(interval);
   }, []);
 
-  // Pipeline breakdown
   const pipeline = {
     pending: allApps.filter(a => a.state === 'pending').length,
     under_review: allApps.filter(a => a.state === 'under_review').length,
     approved: allApps.filter(a => a.state === 'approved').length,
     testing: allApps.filter(a => a.state === 'testing').length,
     conformant: allApps.filter(a => a.state === 'conformant').length,
-    revoked: allApps.filter(a => a.state === 'revoked' || a.state === 'suspended').length,
+    revoked: allApps.filter(a => a.state === 'revoked' || a.state === 'suspended').length
   };
-
   const needsAction = allApps.filter(a => a.state === 'pending' || a.state === 'under_review');
 
   const handleQuickAdvance = async (appId, newState, label) => {
     if (!await confirm({title: 'Confirm', message: label + '?'})) return;
     try {
       await api.patch(`/api/applications/${appId}/state?new_state=${newState}`);
-      // Auto-provision API key when approving
       if (newState === 'approved') {
         try {
-          await api.post('/api/apikeys/admin/provision', null, {
-            params: { application_id: appId, send_email: true }
-          });
-          toast.show('Approved — API key provisioned and emailed to applicant', 'success');
-        } catch (provErr) {
-          // Non-fatal: key may already exist or endpoint may not support it yet
-          toast.show('Approved — applicant can generate key from their dashboard', 'success');
-        }
+          await api.post('/api/apikeys/admin/provision', null, { params: { application_id: appId, send_email: true } });
+          toast.show('Approved — API key provisioned', 'success');
+        } catch { toast.show('Approved', 'success'); }
       }
       loadData();
-    } catch (err) {
-      toast.show('Failed: ' + (err.response?.data?.detail || err.message), 'error');
-    }
+    } catch (err) { toast.show('Failed: ' + (err.response?.data?.detail || err.message), 'error'); }
   };
 
+  const onlineAgents = monitoring?.sessions?.filter(s => {
+    const la = s.last_heartbeat_at || s.last_telemetry_at || s.started_at;
+    return s.status === 'active' && la && (Date.now() - new Date(la).getTime()) < 120000;
+  }).length || monitoring?.summary?.active || 0;
+  const expiringCount = recentCerts.filter(c => c.expires_at && c.state === 'conformant' && new Date(c.expires_at) < new Date(Date.now() + 30*24*60*60*1000)).length;
+  const actionCount = needsAction.length + expiringCount;
+
   return (
-    <div className="space-y-6" style={{maxWidth: "1200px", margin: "0 auto"}}>
-      <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px', marginBottom: '28px', flexWrap: 'wrap', gap: '16px'}}>
+    <div style={{maxWidth:'1200px',margin:'0 auto'}}>
+
+      {/* ── Header ── */}
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',flexWrap:'wrap',gap:'16px',marginBottom:'32px'}}>
         <div>
-          <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', color: styles.purpleBright, marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '12px'}}>
-            <span style={{width: '24px', height: '1px', background: styles.purpleBright}}></span>
-            Administration
+          <span className="hud-label" style={{color:'var(--purple-bright)',letterSpacing:'4px',display:'flex',alignItems:'center',gap:'12px',marginBottom:'10px'}}>
+            <span style={{width:'24px',height:'1px',background:'var(--purple-bright)'}}></span>
+            ADMINISTRATION
+          </span>
+          <h1 style={{fontFamily:'var(--serif)',fontSize:'clamp(26px,5vw,38px)',fontWeight:200,margin:'0 0 6px',letterSpacing:'-0.02em'}}>
+            Welcome{user?.full_name ? `, ${user.full_name.split(' ')[0]}` : ''}
+          </h1>
+          <p style={{color:'var(--text-tertiary)',fontFamily:'var(--mono)',fontSize:'11px',letterSpacing:'1px'}}>
+            {new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})}
           </p>
-          <h1 style={{fontFamily: "Georgia, 'Source Serif 4', serif", fontSize: 'clamp(24px, 5vw, 36px)', fontWeight: 200, margin: 0}}>Welcome{user?.full_name ? `, ${user.full_name.split(' ')[0]}` : ''}</h1>
-          <p style={{color: styles.textTertiary, marginTop: '6px', fontSize: '13px', fontFamily: "Consolas, 'IBM Plex Mono', monospace"}}>{new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</p>
         </div>
-        <div style={{display: 'flex', gap: '10px'}}>
-          <button onClick={() => loadData(true)} style={{background: 'rgba(255,255,255,0.03)', border: `1px solid ${styles.borderGlass}`, borderRadius: '10px', padding: '10px 16px', color: styles.textSecondary, cursor: 'pointer', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '8px'}}><RefreshCw fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} size={14} style={refreshing ? {animation: "spin 0.8s linear infinite"} : {}} /> {refreshing ? "Refreshing..." : "Refresh"}</button>
-        </div>
+        <button onClick={() => loadData(true)} className="btn" style={{padding:'8px 16px'}}>
+          <RefreshCw size={12} style={refreshing ? {animation:'spin 0.8s linear infinite'} : {}}/> {refreshing ? 'Refreshing…' : 'Refresh'}
+        </button>
       </div>
 
-      {/* Stats Row */}
-      {(() => {
-        const onlineAgents = monitoring?.sessions?.filter(s => {
-          const la = s.last_heartbeat_at || s.last_telemetry_at || s.started_at;
-          return s.status === 'active' && la && (Date.now() - new Date(la).getTime()) < 120000;
-        }).length || monitoring?.summary?.active || 0;
-        const expiringCount = recentCerts.filter(c => c.expires_at && c.state === 'conformant' && new Date(c.expires_at) < new Date(Date.now() + 30*24*60*60*1000)).length;
-        const actionCount = needsAction.length + expiringCount;
-        return (
-          <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px'}}>
-            <StatCard label="Total Applications" value={stats?.total_applications || 0} color={styles.purpleBright} icon={<FileText fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{color: styles.purpleBright}} />} />
-            <StatCard onClick={() => navigate("/cat72")} label="Active Tests" value={stats?.active_tests || 0} color={styles.accentAmber} icon={<Activity fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{color: styles.accentAmber}} />} />
-            <StatCard label="Active Certificates" value={stats?.certificates_active || 0} color={styles.accentGreen} icon={<Shield fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{color: styles.accentGreen}} />} />
-            <StatCard label="Online Agents" value={onlineAgents} color={onlineAgents > 0 ? styles.accentGreen : styles.textTertiary} icon={<Wifi fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{color: onlineAgents > 0 ? styles.accentGreen : styles.textTertiary}} />} />
-            <StatCard label="Certificates Issued" value={stats?.certificates_issued || 0} color={styles.purpleBright} icon={<Award fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{color: styles.purpleBright}} />} />
-            <StatCard label="Needs Action" value={actionCount} color={actionCount > 0 ? '#D6A05C' : styles.textTertiary} icon={<AlertCircle fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{color: actionCount > 0 ? '#D6A05C' : styles.textTertiary}} />} />
-          </div>
-        );
-      })()}
+      {/* ── Stats Grid ── */}
+      <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit, minmax(160px, 1fr))',gap:'0',marginBottom:'32px',borderTop:'none',borderBottom:'none'}}>
+        <StatCard label="Applications" value={stats?.total_applications || 0} color="var(--purple-bright)" icon={<FileText size={16} strokeWidth={1.5}/>}/>
+        <StatCard onClick={() => navigate("/cat72")} label="Active Tests" value={stats?.active_tests || 0} color="var(--accent-amber)" icon={<Activity size={16} strokeWidth={1.5}/>}/>
+        <StatCard label="Active Certs" value={stats?.certificates_active || 0} color="var(--accent-green)" icon={<Shield size={16} strokeWidth={1.5}/>}/>
+        <StatCard label="Online Interlocks" value={onlineAgents} color={onlineAgents>0?'var(--accent-green)':'var(--text-tertiary)'} icon={<Wifi size={16} strokeWidth={1.5}/>}/>
+        <StatCard label="Certs Issued" value={stats?.certificates_issued || 0} color="var(--purple-bright)" icon={<Award size={16} strokeWidth={1.5}/>}/>
+        <StatCard label="Needs Action" value={actionCount} color={actionCount>0?'var(--accent-amber)':'var(--text-tertiary)'} icon={<AlertCircle size={16} strokeWidth={1.5}/>}/>
+      </div>
 
-      {/* Pipeline Breakdown */}
-      <Panel>
-        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '16px'}}>
-          <h2 style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, margin: 0}}>Certification Pipeline</h2>
-          <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', color: styles.textTertiary}}>{allApps.length} total</span>
+      {/* ── Pipeline ── */}
+      <div style={{marginBottom:'32px'}}>
+        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'12px'}}>
+          <span className="hud-label">Certification Pipeline</span>
+          <span style={{fontFamily:'var(--mono)',fontSize:'10px',color:'var(--text-tertiary)',letterSpacing:'1px'}}>{allApps.length} total</span>
         </div>
-        <div style={{display: 'flex', gap: '4px', height: '32px', borderRadius: '6px', overflow: 'hidden'}}>
+        <div style={{display:'flex',gap:'2px',height:'28px',overflow:'hidden'}}>
           {[
-            { key: 'pending', label: 'Pending', color: '#D6A05C', count: pipeline.pending },
-            { key: 'under_review', label: 'Review', color: '#D6A05C', count: pipeline.under_review },
-            { key: 'approved', label: 'Approved', color: styles.purpleBright, count: pipeline.approved },
-            { key: 'testing', label: 'Testing', color: styles.purpleBright, count: pipeline.testing },
-            { key: 'conformant', label: 'Conformant', color: styles.accentGreen, count: pipeline.conformant },
-            { key: 'revoked', label: 'Suspended', color: styles.accentRed, count: pipeline.revoked },
-          ].map(stage => {
+            {key:'pending',label:'Pending',color:'var(--accent-amber)',count:pipeline.pending},
+            {key:'review',label:'Review',color:'var(--accent-amber)',count:pipeline.under_review},
+            {key:'approved',label:'Approved',color:'var(--purple-bright)',count:pipeline.approved},
+            {key:'testing',label:'Testing',color:'var(--purple-bright)',count:pipeline.testing},
+            {key:'conformant',label:'Conformant',color:'var(--accent-green)',count:pipeline.conformant},
+            {key:'suspended',label:'Suspended',color:'var(--accent-red)',count:pipeline.revoked},
+          ].map(s => {
             const total = allApps.length || 1;
-            const pct = Math.max((stage.count / total) * 100, stage.count > 0 ? 8 : 0);
-            return stage.count > 0 ? (
-              <div key={stage.key} style={{width: `${pct}%`, background: `${stage.color}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: '48px', position: 'relative', borderLeft: `2px solid ${stage.color}`}} title={`${stage.label}: ${stage.count}`}>
-                <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: stage.color, whiteSpace: 'nowrap'}}>{stage.count} {stage.label}</span>
+            const pct = Math.max((s.count/total)*100, s.count>0?8:0);
+            return s.count>0 ? (
+              <div key={s.key} className="sa-fill" style={{width:`${pct}%`,minWidth:'48px',display:'flex',alignItems:'center',justifyContent:'center','--sa-bg':'rgba(255,255,255,0.02)','--sa-accent':s.color,borderLeftWidth:'2px'}} title={`${s.label}: ${s.count}`}>
+                <span style={{fontFamily:'var(--mono)',fontSize:'9px',letterSpacing:'1px',color:s.color,whiteSpace:'nowrap'}}>{s.count} {s.label}</span>
               </div>
             ) : null;
           })}
-          {allApps.length === 0 && <div style={{flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.03)', padding: 'clamp(20px, 4vw, 40px) clamp(12px, 3vw, 20px)', textAlign: 'center'}}>
-            <div style={{width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(91,75,138,0.12)', border: '1px solid rgba(157,140,207,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px'}}><FileText fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} size={22} style={{color: styles.purpleBright, opacity: 0.6}} /></div>
-            <p style={{color: styles.textSecondary, fontSize: '14px', fontWeight: 500, margin: '0 0 6px 0'}}>No applications yet</p>
-            <p style={{color: styles.textTertiary, fontSize: '12px', margin: '0 0 16px 0', maxWidth: '260px'}}>Submit your first ODDC certification application to get started.</p>
-
+          {allApps.length===0 && <div style={{flex:1,display:'flex',alignItems:'center',justifyContent:'center',background:'rgba(255,255,255,0.02)'}}>
+            <span style={{fontFamily:'var(--mono)',fontSize:'10px',color:'var(--text-tertiary)',letterSpacing:'1px'}}>No applications yet</span>
           </div>}
         </div>
-      </Panel>
+      </div>
 
-      {/* Review Queue */}
+      {/* ── Review Queue ── */}
       {needsAction.length > 0 && (
-        <Panel>
-          <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '16px'}}>
-            <h2 style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.accentAmber, margin: 0}}>⚡ Review Queue ({needsAction.length})</h2>
-            <Link to="/applications" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.purpleBright, textDecoration: 'none'}}>View All →</Link>
-          </div>
-          <div className="space-y-3">
-            {needsAction.slice(0, 5).map(app => (
-              <div key={app.id} style={{padding: '14px 16px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px', border: `1px solid ${styles.borderGlass}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px'}}>
-                <div style={{display: 'flex', alignItems: 'center', gap: '16px'}}>
-                  <Link to={`/applications/${app.id}`} style={{color: styles.purpleBright, textDecoration: 'none', fontWeight: 500, fontSize: '14px'}}>{app.system_name}</Link>
-                  <span style={{color: styles.textTertiary, fontSize: '12px'}}>{app.organization_name}</span>
-                  <span className="px-2 py-1 rounded" style={{background: 'rgba(214,160,92,0.15)', color: styles.accentAmber, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1px', textTransform: 'uppercase'}}>{app.state?.replace('_', ' ')}</span>
+        <div style={{marginBottom:'32px'}}>
+          <span className="hud-label" style={{color:'var(--accent-amber)',marginBottom:'12px',display:'block'}}>
+            ⚡ REVIEW QUEUE ({needsAction.length})
+          </span>
+          <div className="hud-frame"><i></i>
+            {needsAction.slice(0,5).map((app,idx) => (
+              <div key={app.id} className="hud-row" style={{display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:'12px'}}>
+                <div style={{display:'flex',alignItems:'center',gap:'12px',minWidth:0,flex:1}}>
+                  <span className="hud-num">{String(idx+1).padStart(2,'0')}</span>
+                  <span className="hud-dot" style={{background:app.state==='pending'?'var(--accent-amber)':'var(--purple-bright)',marginRight:0}}></span>
+                  <div style={{minWidth:0}}>
+                    <Link to={`/applications/${app.id}`} className="hud-title" style={{textDecoration:'none',color:'var(--text-primary)'}}>{app.system_name}</Link>
+                    <div style={{fontSize:'10px',color:'var(--text-tertiary)',fontFamily:'var(--mono)',letterSpacing:'0.5px'}}>{app.organization_name} · {app.state?.replace(/_/g,' ')}</div>
+                  </div>
                 </div>
-                <div style={{display: 'flex', gap: '8px'}}>
+                <div style={{display:'flex',gap:'6px',flexShrink:0}}>
                   {app.state === 'pending' && (
-                    <button onClick={() => handleQuickAdvance(app.id, 'under_review', `Begin review for ${app.system_name}`)} className="px-3 py-1 rounded" style={{background: 'rgba(214,160,92,0.15)', border: '1px solid rgba(214,160,92,0.3)', color: styles.accentAmber, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>Begin Review</button>
+                    <button onClick={() => handleQuickAdvance(app.id, 'under_review', `Begin review for ${app.system_name}`)} className="btn" style={{padding:'5px 10px',fontSize:'8px',letterSpacing:'1px'}}>Review</button>
                   )}
-                  <button onClick={() => handleQuickAdvance(app.id, 'approved', `Approve ${app.system_name}`)} className="px-3 py-1 rounded" style={{background: 'rgba(92,214,133,0.15)', border: '1px solid rgba(92,214,133,0.3)', color: styles.accentGreen, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>Approve</button>
-                  <button onClick={() => handleQuickAdvance(app.id, 'suspended', `Suspend ${app.system_name}`)} className="px-3 py-1 rounded" style={{background: 'rgba(214,92,92,0.1)', border: '1px solid rgba(214,92,92,0.3)', color: styles.accentRed, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>Suspend</button>
-                  <Link to={`/applications/${app.id}`} className="px-3 py-1 rounded no-underline" style={{background: 'rgba(157,140,207,0.1)', border: `1px solid ${styles.borderGlass}`, color: styles.purpleBright, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1px', textTransform: 'uppercase'}}>View</Link>
+                  <button onClick={() => handleQuickAdvance(app.id, 'approved', `Approve ${app.system_name}`)} className="btn" style={{padding:'5px 10px',fontSize:'8px',letterSpacing:'1px',color:'var(--accent-green)',borderColor:'rgba(92,214,133,0.2)'}}>Approve</button>
+                  <button onClick={() => handleQuickAdvance(app.id, 'suspended', `Suspend ${app.system_name}`)} className="btn" style={{padding:'5px 10px',fontSize:'8px',letterSpacing:'1px',color:'var(--accent-red)',borderColor:'rgba(214,92,92,0.2)'}}>Suspend</button>
+                  <Link to={`/applications/${app.id}`} className="btn" style={{padding:'5px 10px',fontSize:'8px',letterSpacing:'1px'}}>View</Link>
                 </div>
               </div>
             ))}
           </div>
-        </Panel>
+        </div>
       )}
 
-      {/* Active Tests */}
+      {/* ── Active Tests ── */}
       {activeTests.length > 0 && (
-        <Panel>
-          <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '16px'}}>
-            <h2 style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, margin: 0}}>Active CAT-72 Tests</h2>
-            <Link to="/cat72" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.purpleBright, textDecoration: 'none'}}>Console →</Link>
+        <div style={{marginBottom:'32px'}}>
+          <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'12px'}}>
+            <span className="hud-label">Active CAT-72 Tests</span>
+            <Link to="/cat72" className="hud-link" style={{fontSize:'10px'}}>Console →</Link>
           </div>
-          <div className="space-y-3">
-            {activeTests.map((test) => {
+          <div className="hud-frame"><i></i>
+            {activeTests.map((test,idx) => {
               const pct = Math.round((test.elapsed_seconds / (test.duration_hours * 3600)) * 100);
               const hoursLeft = Math.max(0, ((test.duration_hours * 3600) - test.elapsed_seconds) / 3600).toFixed(1);
               return (
-                <div key={test.id} className="p-4 rounded-lg" style={{background: 'rgba(255,255,255,0.03)', border: `1px solid ${styles.borderGlass}`}}>
-                  <div className="flex justify-between items-center mb-2">
-                    <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px', color: styles.purpleBright}}>{test.organization_name} — {test.system_name}</span>
-                    <div style={{display: 'flex', alignItems: 'center', gap: '12px'}}>
-                      <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', color: styles.textTertiary}}>{hoursLeft}h remaining</span>
-                      <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', color: styles.accentAmber}}>{pct}%</span>
+                <div key={test.id} className="hud-row">
+                  <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'8px'}}>
+                    <span style={{fontFamily:'var(--mono)',fontSize:'11px',letterSpacing:'1px',color:'var(--purple-bright)'}}>{test.organization_name} — {test.system_name}</span>
+                    <div style={{display:'flex',gap:'16px'}}>
+                      <span style={{fontFamily:'var(--mono)',fontSize:'10px',color:'var(--text-tertiary)'}}>{hoursLeft}h remaining</span>
+                      <span style={{fontFamily:'var(--mono)',fontSize:'10px',color:'var(--accent-amber)'}}>{pct}%</span>
                     </div>
                   </div>
-                  <div className="w-full h-2 rounded-full overflow-hidden" style={{background: 'rgba(255,255,255,0.1)'}}>
-                    <div className="h-full rounded-full transition-all" style={{width: `${pct}%`, background: pct >= 100 ? styles.accentGreen : styles.purpleBright}} />
+                  <div className="sa-fill" style={{height:'3px','--sa-bg':'rgba(255,255,255,0.04)',overflow:'hidden'}}>
+                    <div className="sa-fill" style={{height:'100%',width:`${pct}%`,'--sa-bg':pct>=100?'var(--accent-green)':'var(--purple-bright)',transition:'width 0.4s ease'}}/>
                   </div>
                 </div>
               );
             })}
           </div>
-        </Panel>
+        </div>
       )}
 
-      {/* Expiring Certificates Warning */}
+      {/* ── Expiring Certs Warning ── */}
       {(() => {
         const expiring = recentCerts.filter(c => c.expires_at && c.state === 'conformant' && new Date(c.expires_at) < new Date(Date.now() + 30*24*60*60*1000));
         if (expiring.length === 0) return null;
         return (
-          <div style={{background: 'rgba(214,160,92,0.08)', border: '1px solid rgba(214,160,92,0.25)', borderRadius: '12px', padding: '16px'}}>
-            <div style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px'}}>
-              <AlertTriangle fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} size={16} style={{color: '#D6A05C'}} />
-              <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', color: '#D6A05C', fontWeight: 500}}>{expiring.length} Certificate{expiring.length > 1 ? 's' : ''} Expiring Within 30 Days</span>
-            </div>
-            <div style={{display: 'flex', flexDirection: 'column', gap: '8px'}}>
+          <div style={{marginBottom:'32px'}}>
+            <div className="hud-frame hud-frame-amber"><i></i>
+              <div style={{display:'flex',alignItems:'center',gap:'8px',marginBottom:'12px'}}>
+                <AlertTriangle size={14} style={{color:'var(--accent-amber)'}}/>
+                <span className="hud-label" style={{color:'var(--accent-amber)'}}>{expiring.length} Certificate{expiring.length>1?'s':''} Expiring Within 30 Days</span>
+              </div>
               {expiring.map(c => {
                 const daysLeft = Math.ceil((new Date(c.expires_at) - Date.now()) / (1000*60*60*24));
                 return (
-                  <div key={c.id} style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', background: 'rgba(0,0,0,0.15)', borderRadius: '8px', padding: '10px 14px'}}>
+                  <div key={c.id} className="hud-row" style={{display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:'8px'}}>
                     <div>
-                      <span style={{color: styles.textPrimary, fontWeight: 500, fontSize: '13px'}}>{c.system_name}</span>
-                      <span style={{color: styles.textTertiary, fontSize: '12px', marginLeft: '12px'}}>{c.organization_name}</span>
+                      <span style={{color:'var(--text-primary)',fontSize:'13px'}}>{c.system_name}</span>
+                      <span style={{color:'var(--text-tertiary)',fontSize:'11px',marginLeft:'10px'}}>{c.organization_name}</span>
                     </div>
-                    <div style={{display: 'flex', alignItems: 'center', gap: '12px'}}>
-                      <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', color: daysLeft <= 7 ? '#D65C5C' : '#D6A05C', fontWeight: 500}}>{daysLeft}d remaining</span>
-                      <Link to={`/verify?cert=${c.certificate_number}`} style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.purpleBright, textDecoration: 'none'}}>{c.certificate_number}</Link>
+                    <div style={{display:'flex',alignItems:'center',gap:'12px'}}>
+                      <span style={{fontFamily:'var(--mono)',fontSize:'10px',color:daysLeft<=7?'var(--accent-red)':'var(--accent-amber)'}}>{daysLeft}d remaining</span>
+                      <Link to={`/verify?cert=${c.certificate_number}`} className="hud-link" style={{fontSize:'10px'}}>{c.certificate_number}</Link>
                     </div>
                   </div>
                 );
@@ -498,79 +457,79 @@ function Dashboard() {
         );
       })()}
 
-      {/* Recent Certificates */}
+      {/* ── Recent Certificates ── */}
       {recentCerts.length > 0 && (
-        <Panel>
-          <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '16px'}}>
-            <h2 style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, margin: 0}}>Recent Certificates</h2>
-            <Link to="/certificates" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.purpleBright, textDecoration: 'none'}}>View All →</Link>
+        <div style={{marginBottom:'32px'}}>
+          <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'12px'}}>
+            <span className="hud-label">Recent Certificates</span>
+            <Link to="/certificates" className="hud-link" style={{fontSize:'10px'}}>View All →</Link>
           </div>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr style={{borderBottom: `1px solid ${styles.borderGlass}`}}>
-                  {['Certificate', 'System', 'Status', 'Issued', 'Expires'].map(h => (
-                    <th key={h} className="px-4 py-3 text-left" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>{h}</th>
+          <Panel>
+            <div style={{overflowX:'auto'}}>
+              <table>
+                <thead>
+                  <tr>
+                    {['Certificate','System','Status','Issued','Expires'].map(h => <th key={h}>{h}</th>)}
+                  </tr>
+                </thead>
+                <tbody>
+                  {recentCerts.slice(0,5).map(c => (
+                    <tr key={c.id}>
+                      <td><Link to={`/verify?cert=${c.certificate_number}`} style={{color:'var(--purple-bright)',fontFamily:'var(--mono)',fontSize:'12px',letterSpacing:'0.5px'}}>{c.certificate_number}</Link></td>
+                      <td><span style={{color:'var(--text-primary)',fontSize:'13px'}}>{c.system_name}</span> <span style={{color:'var(--text-tertiary)',fontSize:'11px'}}>{c.organization_name}</span></td>
+                      <td><span style={{fontFamily:'var(--mono)',fontSize:'9px',letterSpacing:'1.5px',textTransform:'uppercase',color:c.state==='conformant'?'var(--accent-green)':'var(--accent-red)'}}>{c.state}</span></td>
+                      <td style={{color:'var(--text-tertiary)',fontSize:'12px'}}>{c.issued_at ? new Date(c.issued_at).toLocaleDateString() : '—'}</td>
+                      <td style={{fontFamily:'var(--mono)',fontSize:'11px',color:c.expires_at && new Date(c.expires_at)<new Date(Date.now()+30*24*60*60*1000) ? 'var(--accent-amber)':'var(--text-tertiary)'}}>{c.expires_at ? new Date(c.expires_at).toLocaleDateString() : '—'}</td>
+                    </tr>
                   ))}
+                </tbody>
+              </table>
+            </div>
+          </Panel>
+        </div>
+      )}
+
+      {/* ── Recent Applications ── */}
+      <div>
+        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'12px'}}>
+          <span className="hud-label">Recent Applications</span>
+          <Link to="/applications" className="hud-link" style={{fontSize:'10px'}}>View All →</Link>
+        </div>
+        <Panel>
+          <div style={{overflowX:'auto'}}>
+            <table>
+              <thead>
+                <tr>
+                  {['System','Organization','State','Submitted'].map(h => <th key={h}>{h}</th>)}
                 </tr>
               </thead>
               <tbody>
-                {recentCerts.slice(0, 5).map(c => (
-                  <tr key={c.id} style={{borderBottom: `1px solid ${styles.borderGlass}`}}>
-                    <td className="px-4 py-3"><Link to={`/verify?cert=${c.certificate_number}`} style={{color: styles.purpleBright, textDecoration: 'none', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px'}}>{c.certificate_number}</Link></td>
-                    <td className="px-4 py-3"><span style={{color: styles.textPrimary, fontSize: '13px'}}>{c.system_name}</span><span style={{color: styles.textTertiary, fontSize: '11px', marginLeft: '8px'}}>{c.organization_name}</span></td>
-                    <td className="px-4 py-3"><span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', padding: '2px 8px', borderRadius: '4px', background: c.state === 'conformant' ? 'rgba(92,214,133,0.15)' : 'rgba(214,92,92,0.15)', color: c.state === 'conformant' ? styles.accentGreen : '#D65C5C'}}>{c.state}</span></td>
-                    <td className="px-4 py-3" style={{color: styles.textTertiary, fontSize: '13px'}}>{c.issued_at ? new Date(c.issued_at).toLocaleDateString() : '-'}</td>
-                    <td className="px-4 py-3" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px', color: c.expires_at && new Date(c.expires_at) < new Date(Date.now() + 30*24*60*60*1000) ? '#D6A05C' : styles.textTertiary}}>{c.expires_at ? new Date(c.expires_at).toLocaleDateString() : '-'}</td>
+                {recentApps.map(app => (
+                  <tr key={app.id} style={{cursor:'pointer'}} onClick={() => navigate(`/applications/${app.id}`)}>
+                    <td><Link to={`/applications/${app.id}`} style={{color:'var(--purple-bright)'}}>{app.system_name}</Link></td>
+                    <td>{app.organization_name}</td>
+                    <td><span style={{fontFamily:'var(--mono)',fontSize:'9px',letterSpacing:'1.5px',textTransform:'uppercase',
+                      color:app.state==='conformant'?'var(--accent-green)':app.state==='revoked'?'var(--accent-red)':app.state==='testing'||app.state==='approved'?'var(--purple-bright)':'var(--accent-amber)'
+                    }}>{app.state}</span></td>
+                    <td style={{color:'var(--text-tertiary)',fontSize:'13px'}}>{app.submitted_at ? new Date(app.submitted_at).toLocaleDateString() : '—'}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
         </Panel>
-      )}
-
-      {/* Recent Applications */}
-      <Panel>
-        <div className="flex justify-between items-center mb-4">
-          <h2 style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, margin: 0}}>Recent Applications</h2>
-          <Link to="/applications" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.purpleBright, textDecoration: 'none'}}>View All →</Link>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr style={{borderBottom: `1px solid ${styles.borderGlass}`}}>
-                <th className="px-4 py-3 text-left" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>System</th>
-                <th className="px-4 py-3 text-left" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>Organization</th>
-                <th className="px-4 py-3 text-left" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>State</th>
-                <th className="px-4 py-3 text-left" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>Submitted</th>
-              </tr>
-            </thead>
-            <tbody>
-              {recentApps.map((app) => (
-                <tr key={app.id} className="transition-colors cursor-pointer" style={{borderBottom: `1px solid ${styles.borderGlass}`}} onClick={() => window.location.hash = `#/applications/${app.id}`}>
-                  <td className="px-4 py-3"><Link to={`/applications/${app.id}`} style={{color: styles.purpleBright, textDecoration: 'none'}}>{app.system_name}</Link></td>
-                  <td className="px-4 py-3" style={{color: styles.textSecondary}}>{app.organization_name}</td>
-                  <td className="px-4 py-3">
-                    <span className="px-2 py-1 rounded text-xs" style={{
-                      background: app.state === 'conformant' ? 'rgba(92,214,133,0.15)' : app.state === 'observe' ? 'rgba(157,140,207,0.15)' : app.state === 'revoked' ? 'rgba(214,92,92,0.15)' : 'rgba(214,160,92,0.15)',
-                      color: app.state === 'conformant' ? styles.accentGreen : app.state === 'observe' ? styles.purpleBright : app.state === 'revoked' ? styles.accentRed : styles.accentAmber,
-                      fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase',
-                    }}>{app.state}</span>
-                  </td>
-                  <td className="px-4 py-3" style={{color: styles.textTertiary, fontSize: '14px'}}>{app.submitted_at ? new Date(app.submitted_at).toLocaleDateString() : "N/A"}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </Panel>
+      </div>
     </div>
   );
 }
 
-// Applications List
+
+/* ═══════════════════════════════════════ */
+function RoleBasedDashboard() {
+  const { user } = useAuth();
+  if (user?.role === 'admin') return <Dashboard />;
+  return <CustomerDashboard />;
+}
 
 export { CustomerDashboard, RoleBasedDashboard };
 export default Dashboard;
-

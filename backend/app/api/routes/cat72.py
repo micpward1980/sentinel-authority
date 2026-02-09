@@ -141,7 +141,7 @@ async def create_test(
     if not application:
         raise HTTPException(status_code=404, detail="Application not found")
     
-    if application.state not in [CertificationState.UNDER_REVIEW, CertificationState.OBSERVE]:
+    if application.state not in ["under_review", "observe"]:
         raise HTTPException(status_code=400, detail=f"Application must be in UNDER_REVIEW or OBSERVE state")
     
     test_id = await generate_test_id(db)
@@ -151,7 +151,7 @@ async def create_test(
         application_id=application.id,
         duration_hours=data.duration_hours,
         envelope_definition=application.envelope_definition,
-        state=TestState.SCHEDULED,
+        state="scheduled",
         operator_id=int(user["sub"]),
         evidence_chain=[],
     )
@@ -180,7 +180,7 @@ async def create_test(
     return {
         "id": test.id,
         "test_id": test.test_id,
-        "state": test.state.value,
+        "state": test.state,
         "duration_hours": test.duration_hours,
         "message": "Test created and scheduled"
     }
@@ -202,7 +202,7 @@ async def list_tests(
             "organization_name": a.organization_name,
             "system_name": a.system_name,
             "application_id": t.application_id,
-            "state": t.state.value,
+            "state": t.state,
             "duration_hours": t.duration_hours,
             "elapsed_seconds": t.elapsed_seconds,
             "total_samples": t.total_samples,
@@ -233,7 +233,7 @@ async def get_test(
         "id": test.id,
         "test_id": test.test_id,
         "application_id": test.application_id,
-        "state": test.state.value,
+        "state": test.state,
         "duration_hours": test.duration_hours,
         "elapsed_seconds": test.elapsed_seconds,
         "started_at": test.started_at.isoformat() if test.started_at else None,
@@ -264,10 +264,10 @@ async def start_test(
     if not test:
         raise HTTPException(status_code=404, detail="Test not found")
     
-    if test.state != TestState.SCHEDULED:
-        raise HTTPException(status_code=400, detail=f"Test must be SCHEDULED to start, currently {test.state.value}")
+    if test.state != "scheduled":
+        raise HTTPException(status_code=400, detail=f"Test must be SCHEDULED to start, currently {test.state}")
     
-    test.state = TestState.RUNNING
+    test.state = "running"
     test.started_at = datetime.utcnow()
     
     # Initialize evidence chain with genesis block
@@ -299,7 +299,7 @@ async def start_test(
     
     return {
         "test_id": test.test_id,
-        "state": test.state.value,
+        "state": test.state,
         "started_at": test.started_at.isoformat(),
         "genesis_hash": genesis_hash,
         "message": "Test started - 72-hour timer running"
@@ -319,7 +319,7 @@ async def ingest_telemetry(
     if not test:
         raise HTTPException(status_code=404, detail="Test not found")
     
-    if test.state != TestState.RUNNING:
+    if test.state != "running":
         raise HTTPException(status_code=400, detail="Test is not running")
     
     timestamp = (data.timestamp.replace(tzinfo=None) if data.timestamp else datetime.utcnow())
@@ -328,7 +328,7 @@ async def ingest_telemetry(
     # Check if test duration exceeded
     max_seconds = test.duration_hours * 3600
     if elapsed >= max_seconds:
-        test.state = TestState.COMPLETED
+        test.state = "completed"
         test.ended_at = timestamp
         await db.commit()
         raise HTTPException(status_code=400, detail="Test duration exceeded")
@@ -427,10 +427,10 @@ async def stop_test(
     if not test:
         raise HTTPException(status_code=404, detail="Test not found")
     
-    if test.state != TestState.RUNNING:
+    if test.state != "running":
         raise HTTPException(status_code=400, detail="Test is not running")
     
-    test.state = TestState.COMPLETED
+    test.state = "completed"
     test.ended_at = datetime.utcnow()
     
     # Compute final metrics
@@ -506,7 +506,7 @@ async def stop_test(
     
     return {
         "test_id": test.test_id,
-        "state": test.state.value,
+        "state": test.state,
         "result": test.result,
         "ended_at": test.ended_at.isoformat(),
         "total_samples": test.total_samples,
@@ -544,7 +544,7 @@ async def get_test_metrics(
     
     return {
         "test_id": test.test_id,
-        "state": test.state.value,
+        "state": test.state,
         "elapsed_seconds": test.elapsed_seconds or 0,
         "remaining_seconds": remaining,
         "progress_percent": round(progress, 2),

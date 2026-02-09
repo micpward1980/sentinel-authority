@@ -66,7 +66,7 @@ async def list_users(
             full_name=u.full_name,
             company=u.organization,
             organization=u.organization,
-            role=u.role.value if hasattr(u.role, 'value') else str(u.role),
+            role=u.role,
             is_active=u.is_active if u.is_active is not None else True
         )
         for u in users
@@ -138,7 +138,7 @@ async def get_user(
         full_name=user.full_name,
         company=user.organization,
         organization=user.organization,
-        role=user.role.value if hasattr(user.role, 'value') else str(user.role),
+        role=user.role,
         is_active=user.is_active if user.is_active is not None else True
     )
 
@@ -156,7 +156,7 @@ async def create_user(
         raise HTTPException(status_code=400, detail="Email already registered")
     
     # Map role string to enum
-    role = UserRole.ADMIN if user_data.role == "admin" else UserRole.APPLICANT
+    role = "admin" if user_data.role == "admin" else "applicant"
     
     user = User(
         email=user_data.email,
@@ -176,7 +176,7 @@ async def create_user(
         full_name=user.full_name,
         company=user.organization,
         organization=user.organization,
-        role=user.role.value if hasattr(user.role, 'value') else str(user.role),
+        role=user.role,
         is_active=user.is_active if user.is_active is not None else True
     )
 
@@ -202,7 +202,7 @@ async def update_user(
     if user_data.organization is not None:
         user.organization = user_data.organization
     if user_data.role is not None:
-        user.role = UserRole.ADMIN if user_data.role == "admin" else UserRole.APPLICANT
+        user.role = "admin" if user_data.role == "admin" else "applicant"
     if user_data.is_active is not None:
         user.is_active = user_data.is_active
     if user_data.password is not None:
@@ -217,7 +217,7 @@ async def update_user(
         full_name=user.full_name,
         company=user.organization,
         organization=user.organization,
-        role=user.role.value if hasattr(user.role, 'value') else str(user.role),
+        role=user.role,
         is_active=user.is_active if user.is_active is not None else True
     )
 
@@ -285,7 +285,7 @@ async def approve_user(user_id: int, db: AsyncSession = Depends(get_db), admin: 
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     user.is_active = True
-    user.role = UserRole.APPLICANT
+    user.role = "applicant"
     await db.commit()
     await db.refresh(user)
     return {"message": "User approved", "id": user.id, "email": user.email}

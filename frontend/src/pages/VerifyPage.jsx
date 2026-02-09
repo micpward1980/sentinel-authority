@@ -4,7 +4,6 @@ import { Home, CheckCircle, AlertTriangle, Search, Download, RefreshCw } from 'l
 import QRCode from 'qrcode';
 import { api, API_BASE } from '../config/api';
 import { styles } from '../config/styles';
-import Panel from '../components/Panel';
 
 function VerifyPage() {
   const [mode, setMode] = useState("verify");
@@ -30,7 +29,7 @@ function VerifyPage() {
         width: 256,
         margin: 2,
         color: { dark: '#5B4B8A', light: '#ffffff' },
-        errorCorrectionLevel: 'H',
+        errorCorrectionLevel: 'H'
       });
       setQrDataUrl(dataUrl);
     } catch (err) {
@@ -141,39 +140,39 @@ function VerifyPage() {
         color: styles.textTertiary, fontFamily: "Consolas, 'IBM Plex Mono', monospace",
         fontSize: '10px', letterSpacing: '1.5px', textTransform: 'uppercase',
         textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '6px',
-        transition: 'color 0.2s',
+        transition: 'color 0.2s'
       }}><Home fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-3.5 h-3.5" /> Dashboard</Link>
       {/* Animated background gradients */}
       <div style={{
         position: 'absolute', top: '-20%', left: '-10%', width: '600px', height: '600px',
         background: 'radial-gradient(circle, rgba(91,75,138,0.18) 0%, transparent 65%)',
-        animation: 'float1 25s ease-in-out infinite', pointerEvents: 'none',
+        animation: 'float1 25s ease-in-out infinite', pointerEvents: 'none'
       }} />
       <div style={{
         position: 'absolute', bottom: '-30%', right: '-15%', width: '800px', height: '800px',
         background: 'radial-gradient(circle, rgba(92,214,133,0.06) 0%, transparent 65%)',
-        animation: 'float2 30s ease-in-out infinite', pointerEvents: 'none',
+        animation: 'float2 30s ease-in-out infinite', pointerEvents: 'none'
       }} />
       <div style={{
         position: 'absolute', top: '40%', right: '10%', width: '400px', height: '400px',
         background: 'radial-gradient(circle, rgba(157,140,207,0.10) 0%, transparent 65%)',
-        animation: 'float3 15s ease-in-out infinite', pointerEvents: 'none',
+        animation: 'float3 15s ease-in-out infinite', pointerEvents: 'none'
       }} />
       
       {/* Grid overlay */}
       <div style={{
         position: 'fixed', inset: 0,
-        backgroundImage: 'linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)',
+        backgroundImage: 'none',
         backgroundSize: '120px 120px', opacity: 0.2, pointerEvents: 'none',
-        maskImage: 'radial-gradient(ellipse at center, rgba(0,0,0,0.9) 20%, transparent 70%)', WebkitMaskImage: 'radial-gradient(ellipse at center, rgba(0,0,0,0.9) 20%, transparent 70%)',
+        maskImage: 'radial-gradient(ellipse at center, rgba(0,0,0,0.9) 20%, transparent 70%)', WebkitMaskImage: 'radial-gradient(ellipse at center, rgba(0,0,0,0.9) 20%, transparent 70%)'
       }} />
 
       {/* Decorative elements */}
       <div style={{ position: 'absolute', top: '15%', left: '8%', width: '1px', height: '150px',
-        background: 'linear-gradient(to bottom, transparent, rgba(157,140,207,0.4), transparent)',
+        background: 'transparent'
       }} />
       <div style={{ position: 'absolute', bottom: '20%', right: '5%', width: '100px', height: '1px',
-        background: 'linear-gradient(to right, transparent, rgba(92,214,133,0.4), transparent)',
+        background: 'transparent'
       }} />
 
       <style>{`
@@ -183,7 +182,7 @@ function VerifyPage() {
         @keyframes pulse-ring { 0% { transform: scale(0.9); opacity: 0.6; } 50% { transform: scale(1.1); opacity: 0; } 100% { transform: scale(0.9); opacity: 0.6; } }
         @keyframes scan { 0% { top: 0; } 100% { top: 100%; } }
         .verify-input { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .verify-input:focus { border-color: rgba(157,140,207,0.6) !important; box-shadow: 0 0 0 3px rgba(157,140,207,0.1), 0 4px 20px rgba(0,0,0,0.2); transform: translateY(-1px); }
+        .verify-input:focus { border-color: rgba(157,140,207,0.6) !important; box-shadow: 0 0 0 3px rgba(157,140,207,0.1), 0 4px 20px transparent; transform: translateY(-1px); }
         .verify-btn { position: relative; overflow: hidden; transition: all 0.3s ease; }
         .verify-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(91,75,138,0.5); }
         .verify-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
@@ -195,52 +194,49 @@ function VerifyPage() {
           <div className="relative flex justify-center mb-6" style={{height: '100px', alignItems: 'center'}}>
             <div style={{
               position: 'absolute', width: '80px', height: '80px',
-              border: '1px solid rgba(157,140,207,0.3)', borderRadius: '50%',
-              animation: 'pulse-ring 3s ease-out infinite',
+              border: '1px solid rgba(255,255,255,0.07)', borderRadius: '50%',
+              animation: 'pulse-ring 3s ease-out infinite'
             }} />
             <div style={{
               position: 'absolute', width: '100px', height: '100px',
-              border: '1px solid rgba(157,140,207,0.15)', borderRadius: '50%',
-              animation: 'pulse-ring 3s ease-out infinite 0.5s',
+              border: '1px solid rgba(255,255,255,0.06)', borderRadius: '50%',
+              animation: 'pulse-ring 3s ease-out infinite 0.5s'
             }} />
             <div style={{
               width: '56px', height: '56px',
-              background: 'linear-gradient(135deg, #5B4B8A 0%, #8b5cf6 100%)',
-              border: '2px solid #a896d6', borderRadius: '14px',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              boxShadow: '0 8px 32px rgba(157,140,207,0.4), inset 0 1px 0 rgba(255,255,255,0.2)',
-            }}>
+              background: 'transparent',
+              border: '2px solid #a896d6', display: 'flex', alignItems: 'center', justifyContent: 'center'
+              }}>
               <div style={{
                 width: '18px', height: '18px',
                 background: 'radial-gradient(circle, #e8e0ff 0%, #c4b8e8 100%)',
-                borderRadius: '50%', boxShadow: '0 0 20px rgba(196,184,232,0.5)',
-              }} />
+                borderRadius: '50%' }} />
             </div>
           </div>
           
           <h1 style={{
             fontFamily: "Georgia, 'Source Serif 4', serif", fontSize: 'clamp(24px, 5vw, 36px)', fontWeight: 200,
-            color: styles.textPrimary, margin: '0 0 8px 0', letterSpacing: '-0.02em',
+            color: styles.textPrimary, margin: '0 0 8px 0', letterSpacing: '-0.02em'
           }}>
             Certificate <span style={{color: styles.purpleBright, fontStyle: 'italic'}}>Verification</span>
           </h1>
           
           <p style={{
             color: styles.textTertiary, fontFamily: "Consolas, 'IBM Plex Mono', monospace",
-            fontSize: '11px', letterSpacing: '3px', textTransform: 'uppercase', marginTop: '16px',
+            fontSize: '11px', letterSpacing: '3px', textTransform: 'uppercase', marginTop: '16px'
           }}>Sentinel Authority • ODDC Registry</p>
 
         {/* Mode Tabs */}
         <div style={{display: "flex", justifyContent: "center", gap: "8px", marginTop: "24px"}}>
           <button onClick={() => setMode("verify")} style={{
-            padding: "10px 24px", borderRadius: "20px", border: "none", cursor: "pointer",
+            padding: "10px 24px", border: "none", cursor: "pointer",
             fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: "11px", letterSpacing: "1px",
             background: mode === "verify" ? styles.purplePrimary : "rgba(255,255,255,0.05)",
             color: mode === "verify" ? "#fff" : styles.textTertiary,
             transition: "all 0.2s"
           }}>Verify Certificate</button>
           <button onClick={() => setMode("search")} style={{
-            padding: "10px 24px", borderRadius: "20px", border: "none", cursor: "pointer",
+            padding: "10px 24px", border: "none", cursor: "pointer",
             fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: "11px", letterSpacing: "1px",
             background: mode === "search" ? styles.purplePrimary : "rgba(255,255,255,0.05)",
             color: mode === "search" ? "#fff" : styles.textTertiary,
@@ -252,8 +248,8 @@ function VerifyPage() {
         {/* Verification card */}
         <div style={{
           background: 'rgba(255,255,255,0.03)', backdropFilter: 'blur(20px)',
-          border: '1px solid rgba(255,255,255,0.08)', borderRadius: '24px', padding: 'clamp(16px, 4vw, 40px)',
-          boxShadow: '0 25px 50px -12px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.05) inset', transition: 'all 0.3s ease', minHeight: '280px',
+          border: '1px solid rgba(255,255,255,0.08)', padding: 'clamp(16px, 4vw, 40px)',
+          transition: 'all 0.3s ease', minHeight: '280px'
         }}>
 {mode === "verify" && (
           <form onSubmit={handleVerify} className="space-y-6">
@@ -261,33 +257,26 @@ function VerifyPage() {
               <label style={{
                 display: 'block', marginBottom: '10px', color: styles.textTertiary,
                 fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px',
-                letterSpacing: '2px', textTransform: 'uppercase', textAlign: 'center',
+                letterSpacing: '2px', textTransform: 'uppercase', textAlign: 'center'
               }}>Certificate Number</label>
               <input
                 type="text"
                 placeholder="ODDC-2026-00001"
                 value={certNumber}
                 onChange={(e) => { setCertNumber(e.target.value.toUpperCase()); setError(""); setResult(null); }}
-                className="verify-input w-full px-5 py-4 rounded-xl outline-none"
+                className="verify-input w-full px-5 py-4 outline-none"
                 style={{
-                  background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.08)',
+                  background: 'transparent', border: '1px solid rgba(255,255,255,0.08)',
                   color: styles.textPrimary, fontFamily: "Consolas, 'IBM Plex Mono', monospace",
-                  fontSize: '18px', textAlign: 'center', letterSpacing: '2px',
+                  fontSize: '18px', textAlign: 'center', letterSpacing: '2px'
                 }}
               />
             </div>
             <button 
               type="submit" 
               disabled={loading || !certNumber.trim()}
-              className="verify-btn w-full py-4 rounded-xl font-medium"
-              style={{
-                background: 'linear-gradient(135deg, #5B4B8A 0%, #7B6BAA 100%)',
-                border: '1px solid rgba(157,140,207,0.5)', color: '#fff',
-                fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px',
-                letterSpacing: '2px', textTransform: 'uppercase', cursor: 'pointer',
-                boxShadow: '0 4px 20px rgba(91,75,138,0.4)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
-              }}>
+              className="verify-btn w-full py-4 font-medium"
+              className="btn">
               {loading ? (
                 <><RefreshCw className="w-4 h-4" style={{animation: 'spin 1s linear infinite'}} /> Verifying...</>
               ) : (
@@ -319,18 +308,18 @@ function VerifyPage() {
               <label style={{
                 display: 'block', marginBottom: '10px', color: styles.textTertiary,
                 fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px',
-                letterSpacing: '2px', textTransform: 'uppercase', textAlign: 'center',
+                letterSpacing: '2px', textTransform: 'uppercase', textAlign: 'center'
               }}>Organization or System Name</label>
               <input
                 type="text"
                 placeholder="Company name or system..."
                 value={searchQuery}
                 onChange={(e) => { setSearchQuery(e.target.value); setError(""); }}
-                className="verify-input w-full px-5 py-4 rounded-xl outline-none"
+                className="verify-input w-full px-5 py-4 outline-none"
                 style={{
-                  background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.08)',
+                  background: 'transparent', border: '1px solid rgba(255,255,255,0.08)',
                   color: styles.textPrimary, fontFamily: "Consolas, 'IBM Plex Mono', monospace",
-                  fontSize: '18px', textAlign: 'center', letterSpacing: '2px',
+                  fontSize: '18px', textAlign: 'center', letterSpacing: '2px'
                 }}
               />
             </div>
@@ -339,12 +328,7 @@ function VerifyPage() {
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                style={{
-                  background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.08)',
-                  color: styles.textPrimary, fontFamily: "Consolas, 'IBM Plex Mono', monospace",
-                  fontSize: '11px', padding: '8px 16px', borderRadius: '8px', outline: 'none',
-                  letterSpacing: '1px', textTransform: 'uppercase',
-                }}
+                className="btn"
               >
                 <option value="conformant">Conformant</option>
                 <option value="expired">Expired</option>
@@ -355,15 +339,8 @@ function VerifyPage() {
             <button 
               type="submit" 
               disabled={loading}
-              className="verify-btn w-full py-4 rounded-xl font-medium"
-              style={{
-                background: 'linear-gradient(135deg, #5B4B8A 0%, #7B6BAA 100%)',
-                border: '1px solid rgba(157,140,207,0.5)', color: '#fff',
-                fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px',
-                letterSpacing: '2px', textTransform: 'uppercase', cursor: 'pointer',
-                boxShadow: '0 4px 20px rgba(91,75,138,0.4)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
-              }}>
+              className="verify-btn w-full py-4 font-medium"
+              className="btn">
               {loading ? (
                 <><RefreshCw className="w-4 h-4" style={{animation: 'spin 1s linear infinite'}} /> Searching...</>
               ) : (
@@ -379,8 +356,8 @@ function VerifyPage() {
                   {searchResults.map((cert) => (
                     <div key={cert.certificate_number} onClick={() => {setCertNumber(cert.certificate_number); setMode("verify"); setTimeout(() => document.querySelector("form")?.requestSubmit(), 100);}} style={{
                       background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)",
-                      borderRadius: "12px", padding: "16px", marginBottom: "8px", cursor: "pointer",
-                      transition: "all 0.2s",
+                      padding: "16px", marginBottom: "8px", cursor: "pointer",
+                      transition: "all 0.2s"
                     }}>
                       <div style={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
                         <div>
@@ -399,8 +376,8 @@ function VerifyPage() {
           </>)}
           <div style={{minHeight: '80px', marginTop: '16px'}}>
           {error && (
-            <div className="p-5 rounded-xl text-center" style={{
-              background: 'rgba(214,92,92,0.1)', border: '1px solid rgba(214,92,92,0.3)',
+            <div className="p-5 text-center" style={{
+              background: 'transparent', border: '1px solid rgba(255,255,255,0.07)'
             }}>
               <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', marginBottom: '8px'}}>
                 <AlertTriangle fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{color: styles.accentRed}} />
@@ -411,8 +388,8 @@ function VerifyPage() {
           )}
 
           {result && (result.status === 'NOT_FOUND' || result.state === 'NOT_FOUND') && (
-            <div className="mt-6 p-5 rounded-xl text-center" style={{
-              background: 'rgba(214,92,92,0.1)', border: '1px solid rgba(214,92,92,0.3)',
+            <div className="mt-6 p-5 text-center" style={{
+              background: 'transparent', border: '1px solid rgba(255,255,255,0.07)'
             }}>
               <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', marginBottom: '8px'}}>
                 <AlertTriangle fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{color: styles.accentRed}} />
@@ -426,10 +403,10 @@ function VerifyPage() {
             const isValid = result.valid;
             const status = (result.status || '').toUpperCase();
             const statusConfig = {
-              CONFORMANT: { color: styles.accentGreen, bg: 'rgba(92,214,133,0.08)', border: 'rgba(92,214,133,0.25)', headerBg: 'rgba(92,214,133,0.15)', icon: 'Valid Certificate', label: 'CONFORMANT' },
-              SUSPENDED: { color: '#D6A05C', bg: 'rgba(214,160,92,0.08)', border: 'rgba(214,160,92,0.25)', headerBg: 'rgba(214,160,92,0.15)', icon: 'Suspended', label: 'SUSPENDED' },
-              REVOKED: { color: '#D65C5C', bg: 'rgba(214,92,92,0.08)', border: 'rgba(214,92,92,0.25)', headerBg: 'rgba(214,92,92,0.15)', icon: 'Revoked', label: 'REVOKED' },
-              EXPIRED: { color: '#D65C5C', bg: 'rgba(214,92,92,0.08)', border: 'rgba(214,92,92,0.25)', headerBg: 'rgba(214,92,92,0.15)', icon: 'Expired', label: 'EXPIRED' },
+              CONFORMANT: { color: styles.accentGreen, bg: 'rgba(92,214,133,0.03)', border: 'rgba(92,214,133,0.25)', headerBg: 'rgba(92,214,133,0.04)', icon: 'Valid Certificate', label: 'CONFORMANT' },
+              SUSPENDED: { color: '#D6A05C', bg: 'rgba(214,160,92,0.03)', border: 'rgba(214,160,92,0.25)', headerBg: 'rgba(214,160,92,0.04)', icon: 'Suspended', label: 'SUSPENDED' },
+              REVOKED: { color: '#D65C5C', bg: 'rgba(214,92,92,0.08)', border: 'rgba(214,92,92,0.25)', headerBg: 'rgba(214,92,92,0.04)', icon: 'Revoked', label: 'REVOKED' },
+              EXPIRED: { color: '#D65C5C', bg: 'rgba(214,92,92,0.08)', border: 'rgba(214,92,92,0.25)', headerBg: 'rgba(214,92,92,0.04)', icon: 'Expired', label: 'EXPIRED' }
             };
             const cfg = statusConfig[status] || statusConfig.CONFORMANT;
             const rowStyle = {display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', paddingBottom: '12px', borderBottom: '1px solid rgba(255,255,255,0.06)'};
@@ -437,7 +414,7 @@ function VerifyPage() {
             const valSt = {color: styles.textPrimary, fontSize: '14px'};
             
             return (
-            <div className="mt-6 rounded-xl overflow-hidden" style={{background: cfg.bg, border: '1px solid ' + cfg.border}}>
+            <div className="mt-6 overflow-hidden" style={{background: cfg.bg, border: '1px solid ' + cfg.border}}>
               {/* Status Header */}
               <div style={{padding: '16px 20px', background: cfg.headerBg, borderBottom: '1px solid ' + cfg.border, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px'}}>
                 <div style={{display: 'flex', alignItems: 'center', gap: '10px'}}>
@@ -445,8 +422,8 @@ function VerifyPage() {
                   <span style={{color: cfg.color, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', fontWeight: 500}}>{cfg.icon}</span>
                 </div>
                 <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
-                  <span style={{padding: '4px 12px', borderRadius: '20px', fontSize: '10px', background: cfg.bg, color: cfg.color, fontFamily: "Consolas, 'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '1px', display: 'flex', alignItems: 'center', gap: '6px', border: '1px solid ' + cfg.border}}>
-                    <span style={{width: '6px', height: '6px', borderRadius: '50%', background: cfg.color, boxShadow: '0 0 8px ' + cfg.color}}></span>
+                  <span style={{padding: '4px 12px', fontSize: '10px', background: cfg.bg, color: cfg.color, fontFamily: "Consolas, 'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '1px', display: 'flex', alignItems: 'center', gap: '6px', border: '1px solid ' + cfg.border}}>
+                    <span style={{width: '6px', height: '6px', borderRadius: '50%', background: cfg.color}}></span>
                     {cfg.label}
                   </span>
                 </div>
@@ -454,7 +431,7 @@ function VerifyPage() {
               
               {/* Status Message */}
               {result.message && (
-                <div style={{padding: '12px 20px', background: 'rgba(0,0,0,0.15)', borderBottom: '1px solid rgba(255,255,255,0.04)'}}>
+                <div style={{padding: '12px 20px', background: 'transparent', borderBottom: '1px solid rgba(255,255,255,0.04)'}}>
                   <p style={{margin: 0, color: cfg.color, fontSize: '13px'}}>{result.message}</p>
                 </div>
               )}
@@ -498,17 +475,12 @@ function VerifyPage() {
                 
                 {/* Action Buttons */}
                 <div style={{display: 'flex', gap: '8px', marginTop: '20px', flexWrap: 'wrap'}}>
-                  <button onClick={copyVerificationUrl} style={{
-                    padding: '8px 16px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
-                    borderRadius: '8px', color: styles.textSecondary, cursor: 'pointer',
-                    fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase',
-                    display: 'flex', alignItems: 'center', gap: '6px'
-                  }}>
+                  <button onClick={copyVerificationUrl} className="btn">
                     {copied ? '✓ Copied!' : '⎘ Share Link'}
                   </button>
                   <button onClick={() => setShowQR(!showQR)} style={{
                     padding: '8px 16px', background: showQR ? 'rgba(91,75,138,0.25)' : 'rgba(255,255,255,0.05)', border: showQR ? '1px solid rgba(91,75,138,0.4)' : '1px solid rgba(255,255,255,0.1)',
-                    borderRadius: '8px', color: showQR ? styles.purpleBright : styles.textSecondary, cursor: 'pointer',
+                    color: showQR ? styles.purpleBright : styles.textSecondary, cursor: 'pointer',
                     fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase',
                     display: 'flex', alignItems: 'center', gap: '6px'
                   }}>
@@ -519,23 +491,13 @@ function VerifyPage() {
                       href={`${API_BASE}/api/certificates/${certNumber}/pdf`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      style={{
-                        padding: '8px 16px', background: 'rgba(92,214,133,0.1)', border: '1px solid rgba(92,214,133,0.3)',
-                        borderRadius: '8px', color: styles.accentGreen, cursor: 'pointer',
-                        fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase',
-                        display: 'flex', alignItems: 'center', gap: '6px', textDecoration: 'none'
-                      }}
+                      className="btn"
                     >
                       <Download size={12} /> Certificate PDF
                     </a>
                   )}
                   {isValid && (
-                    <button onClick={fetchEvidence} style={{
-                      padding: '8px 16px', background: 'rgba(91,75,138,0.15)', border: '1px solid rgba(91,75,138,0.3)',
-                      borderRadius: '8px', color: styles.purpleBright, cursor: 'pointer',
-                      fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase',
-                      display: 'flex', alignItems: 'center', gap: '6px'
-                    }}>
+                    <button onClick={fetchEvidence} className="btn">
                       {showEvidence ? '▾ Hide Evidence' : '▸ View Evidence'}
                     </button>
                   )}
@@ -543,18 +505,13 @@ function VerifyPage() {
                 
                 {/* QR Code Panel */}
                 {showQR && qrDataUrl && (
-                  <div style={{marginTop: '16px', padding: '20px', background: 'rgba(0,0,0,0.2)', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.06)', textAlign: 'center'}}>
-                    <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Verification QR Code</div>
-                    <div style={{display: 'inline-block', padding: '12px', background: '#fff', borderRadius: '12px', boxShadow: '0 4px 20px rgba(0,0,0,0.3)'}}>
+                  <div style={{marginTop: '16px', padding: '20px', background: 'transparent', border: '1px solid rgba(255,255,255,0.06)', textAlign: 'center'}}>
+                    <div className="hud-label" style={{marginBottom: '16px'}}>Verification QR Code</div>
+                    <div style={{display: 'inline-block', padding: '12px', background: '#fff' }}>
                       <img src={qrDataUrl} alt="Verification QR Code" style={{width: '200px', height: '200px', display: 'block'}} />
                     </div>
                     <div style={{marginTop: '12px', display: 'flex', justifyContent: 'center', gap: '8px'}}>
-                      <button onClick={downloadQR} style={{
-                        padding: '6px 14px', background: 'rgba(91,75,138,0.15)', border: '1px solid rgba(91,75,138,0.3)',
-                        borderRadius: '6px', color: styles.purpleBright, cursor: 'pointer',
-                        fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1px', textTransform: 'uppercase',
-                        display: 'flex', alignItems: 'center', gap: '6px'
-                      }}>
+                      <button onClick={downloadQR} className="btn">
                         <Download size={12} /> Download PNG
                       </button>
                     </div>
@@ -564,8 +521,8 @@ function VerifyPage() {
 
                 {/* Evidence Panel */}
                 {showEvidence && evidence && (
-                  <div style={{marginTop: '16px', padding: '16px', background: 'rgba(0,0,0,0.2)', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.06)'}}>
-                    <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '12px'}}>Evidence Chain</div>
+                  <div style={{marginTop: '16px', padding: '16px', background: 'transparent', border: '1px solid rgba(255,255,255,0.06)'}}>
+                    <div className="hud-label" style={{marginBottom: '12px'}}>Evidence Chain</div>
                     <div style={{display: 'grid', gap: '10px'}}>
                       <div>
                         <span style={{fontSize: '11px', color: styles.textTertiary}}>Evidence Hash (SHA-256)</span>
@@ -581,7 +538,7 @@ function VerifyPage() {
                           <div style={{fontSize: '13px', color: styles.textPrimary, marginTop: '4px'}}>{evidence.odd_scope.environment_type}</div>
                         </div>
                       )}
-                      <div style={{marginTop: '8px', padding: '12px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px'}}>
+                      <div style={{marginTop: '8px', padding: '12px', background: 'transparent' }}>
                         <p style={{fontSize: '11px', color: styles.textTertiary, lineHeight: '1.6', whiteSpace: 'pre-line', margin: 0}}>{evidence.verification_instructions || ''}</p>
                       </div>
                     </div>

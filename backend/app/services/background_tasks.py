@@ -69,7 +69,7 @@ async def enforce_session_compliance(db: AsyncSession, session: EnveloSession, n
     )
     cert = cert_result.scalar_one_or_none()
     
-    if not cert or cert.state in [CertificationState.REVOKED, CertificationState.EXPIRED]:
+    if not cert or cert.state in ["revoked", "expired"]:
         return  # Already terminal state
     
     # Get user info for notifications
@@ -98,7 +98,7 @@ async def enforce_session_compliance(db: AsyncSession, session: EnveloSession, n
     
     # Rule 1: Offline > 72 hours → AUTO-REVOKE
     if offline_hours >= OFFLINE_REVOKE_HOURS:
-        if cert.state != CertificationState.REVOKED:
+        if cert.state != "revoked":
             await auto_revoke_certificate(
                 db, cert, session, user,
                 f"ENVELO Agent offline for {int(offline_hours)} hours (threshold: {OFFLINE_REVOKE_HOURS}h)"
@@ -107,7 +107,7 @@ async def enforce_session_compliance(db: AsyncSession, session: EnveloSession, n
     
     # Rule 2: Offline > 24 hours → AUTO-SUSPEND
     elif offline_hours >= OFFLINE_SUSPEND_HOURS:
-        if cert.state == CertificationState.CONFORMANT:
+        if cert.state == "conformant":
             await auto_suspend_certificate(
                 db, cert, session, user,
                 f"ENVELO Agent offline for {int(offline_hours)} hours (threshold: {OFFLINE_SUSPEND_HOURS}h)"
@@ -116,7 +116,7 @@ async def enforce_session_compliance(db: AsyncSession, session: EnveloSession, n
     
     # Rule 3: Violation rate > 20% → AUTO-SUSPEND
     if violation_rate >= VIOLATION_RATE_SUSPEND_THRESHOLD:
-        if cert.state == CertificationState.CONFORMANT:
+        if cert.state == "conformant":
             await auto_suspend_certificate(
                 db, cert, session, user,
                 f"Violation rate {violation_rate*100:.1f}% exceeds threshold ({VIOLATION_RATE_SUSPEND_THRESHOLD*100}%)"
@@ -137,7 +137,7 @@ async def auto_suspend_certificate(
     """Automatically suspend a certificate"""
     logger.warning(f"AUTO-SUSPENDING certificate {cert.certificate_number}: {reason}")
     
-    cert.state = CertificationState.SUSPENDED
+    cert.state = "suspended"
     history = cert.history or []
     history.append({
         "action": "auto_suspended",
@@ -222,7 +222,7 @@ async def auto_revoke_certificate(
     """Automatically revoke a certificate - this is permanent"""
     logger.warning(f"AUTO-REVOKING certificate {cert.certificate_number}: {reason}")
     
-    cert.state = CertificationState.REVOKED
+    cert.state = "revoked"
     history = cert.history or []
     history.append({
         "action": "auto_revoked",
@@ -319,7 +319,7 @@ async def check_certificate_expiry():
         # Get all conformant certificates
         result = await db.execute(
             select(Certificate).where(
-                Certificate.state == CertificationState.CONFORMANT
+                Certificate.state == "conformant"
             )
         )
         certificates = result.scalars().all()
@@ -335,7 +335,7 @@ async def check_certificate_expiry():
             
             # === AUTO-EXPIRE past-due certificates ===
             if days_remaining <= 0:
-                cert.state = CertificationState.EXPIRED
+                cert.state = "expired"
                 history = cert.history or []
                 history.append({
                     "action": "auto_expired",

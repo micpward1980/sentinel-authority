@@ -12,9 +12,6 @@ export default defineConfig({
         }
       }
     },
-    chunkSizeWarningLimit: 600,
+    chunkSizeWarningLimit: 800,
   },
-  preview: {
-    allowedHosts: ['sincere-respect-production.up.railway.app', 'localhost']
-  }
 })

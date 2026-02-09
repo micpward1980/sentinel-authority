@@ -78,7 +78,7 @@ async def create_application(
         preferred_test_date=app_data.preferred_test_date,
         facility_location=app_data.facility_location,
         notes=app_data.notes,
-        state=CertificationState.PENDING,
+        state="pending",
         submitted_at=datetime.utcnow(),
     )
     
@@ -103,7 +103,7 @@ async def create_application(
     return {
         "id": application.id,
         "application_number": application.application_number,
-        "state": application.state.value,
+        "state": application.state,
         "submitted_at": application.submitted_at.isoformat() + "Z",
         "message": "Application submitted successfully"
     }
@@ -158,7 +158,7 @@ async def list_applications(
                 "organization_name": a.organization_name,
                 "system_name": a.system_name,
                 "system_version": a.system_version,
-                "state": a.state.value,
+                "state": a.state,
                 "contact_email": a.contact_email,
                 "submitted_at": a.submitted_at.isoformat() + "Z" if a.submitted_at else None,
             }
@@ -196,7 +196,7 @@ async def get_application(
         "manufacturer": app.manufacturer,
         "odd_specification": app.odd_specification,
         "envelope_definition": app.envelope_definition,
-        "state": app.state.value,
+        "state": app.state,
         "submitted_at": app.submitted_at.isoformat() + "Z" if app.submitted_at else None,
         "preferred_test_date": app.preferred_test_date.isoformat() + "Z" if app.preferred_test_date else None,
         "facility_location": app.facility_location,
@@ -232,7 +232,7 @@ async def update_application_state(
         "expired": ["pending"],
     }
     
-    current = app.state.value if hasattr(app.state, 'value') else str(app.state)
+    current = app.state
     allowed = VALID_TRANSITIONS.get(current, [])
     
     # Admin override: allow any transition
@@ -619,7 +619,7 @@ async def bulk_update_state(
                 results["failed"].append({"id": app_id, "error": "Not found"})
                 continue
             
-            old_state = app.state.value if hasattr(app.state, 'value') else str(app.state)
+            old_state = app.state
             app.state = CertificationState(new_state)
             app.reviewed_at = datetime.utcnow()
             results["success"].append({"id": app_id, "old_state": old_state, "new_state": new_state})

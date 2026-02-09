@@ -27,16 +27,16 @@ async def get_stats(db: AsyncSession = Depends(get_db), user: dict = Depends(get
     if user.get("role") == "applicant":
         org = user.get("organization")
         total_apps = await db.execute(select(func.count(Application.id)).where(Application.organization_name == org))
-        pending_apps = await db.execute(select(func.count(Application.id)).where(Application.state == CertificationState.PENDING, Application.organization_name == org))
-        active_tests = await db.execute(select(func.count(CAT72Test.id)).where(CAT72Test.state == TestState.RUNNING))
+        pending_apps = await db.execute(select(func.count(Application.id)).where(Application.state == "pending", Application.organization_name == org))
+        active_tests = await db.execute(select(func.count(CAT72Test.id)).where(CAT72Test.state == "running"))
         total_certs = await db.execute(select(func.count(Certificate.id)).where(Certificate.organization_name == org))
-        active_certs = await db.execute(select(func.count(Certificate.id)).where(Certificate.state == CertificationState.CONFORMANT, Certificate.organization_name == org))
+        active_certs = await db.execute(select(func.count(Certificate.id)).where(Certificate.state == "conformant", Certificate.organization_name == org))
     else:
         total_apps = await db.execute(select(func.count(Application.id)))
-        pending_apps = await db.execute(select(func.count(Application.id)).where(Application.state == CertificationState.PENDING))
-        active_tests = await db.execute(select(func.count(CAT72Test.id)).where(CAT72Test.state == TestState.RUNNING))
+        pending_apps = await db.execute(select(func.count(Application.id)).where(Application.state == "pending"))
+        active_tests = await db.execute(select(func.count(CAT72Test.id)).where(CAT72Test.state == "running"))
         total_certs = await db.execute(select(func.count(Certificate.id)))
-        active_certs = await db.execute(select(func.count(Certificate.id)).where(Certificate.state == CertificationState.CONFORMANT))
+        active_certs = await db.execute(select(func.count(Certificate.id)).where(Certificate.state == "conformant"))
     
     return {
         "total_applications": total_apps.scalar() or 0,
@@ -63,7 +63,7 @@ async def get_recent_applications(db: AsyncSession = Depends(get_db), user: dict
             "application_number": a.application_number,
             "organization_name": a.organization_name,
             "system_name": a.system_name,
-            "state": a.state.value,
+            "state": a.state,
             "submitted_at": a.submitted_at.isoformat() if a.submitted_at else None,
         }
         for a in result.scalars().all()
@@ -72,7 +72,7 @@ async def get_recent_applications(db: AsyncSession = Depends(get_db), user: dict
 
 @router.get("/active-tests", summary="Currently running CAT-72 tests")
 async def get_active_tests(db: AsyncSession = Depends(get_db), user: dict = Depends(get_current_user)):
-    q = select(CAT72Test, Application).join(Application, CAT72Test.application_id == Application.id).where(CAT72Test.state == TestState.RUNNING)
+    q = select(CAT72Test, Application).join(Application, CAT72Test.application_id == Application.id).where(CAT72Test.state == "running")
     if user.get("role") == "applicant":
         q = q.where(Application.organization_name == user.get("organization"))
     result = await db.execute(q.order_by(CAT72Test.started_at.desc()))
@@ -83,7 +83,7 @@ async def get_active_tests(db: AsyncSession = Depends(get_db), user: dict = Depe
             "test_id": t.test_id,
             "organization_name": a.organization_name if hasattr(a, "organization_name") else "",
             "system_name": a.system_name if hasattr(a, "system_name") else "",
-            "state": t.state.value,
+            "state": t.state,
             "elapsed_seconds": t.elapsed_seconds,
             "duration_hours": t.duration_hours,
             "convergence_score": t.convergence_score,
@@ -109,7 +109,7 @@ async def get_recent_certificates(db: AsyncSession = Depends(get_db), user: dict
             "certificate_number": c.certificate_number,
             "organization_name": c.organization_name,
             "system_name": c.system_name,
-            "state": c.state.value,
+            "state": c.state,
             "issued_at": c.issued_at.isoformat() if c.issued_at else None,
             "expires_at": c.expires_at.isoformat() if c.expires_at else None,
         }

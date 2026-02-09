@@ -1,18 +1,17 @@
 import React from 'react';
-import { styles } from '../config/styles';
 
-function EmptyState({ icon: Icon, title, description, actionLabel, onAction }) {
+export default function EmptyState({ icon: Icon, title, message, description, action }) {
+  const text = message || description;
   return (
-    <div style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"64px 24px",textAlign:"center"}}>
-      <div style={{width:"64px",height:"64px",borderRadius:"16px",background:"rgba(91,75,138,0.12)",border:"1px solid rgba(157,140,207,0.15)",display:"flex",alignItems:"center",justifyContent:"center",marginBottom:"20px"}}>
-        <Icon size={28} style={{color:styles.purpleBright,opacity:0.7}} />
-      </div>
-      <h3 style={{color:styles.textPrimary,fontSize:"16px",fontWeight:500,margin:"0 0 8px 0",fontFamily:"Source Serif 4, Georgia, serif"}}>{title}</h3>
-      <p style={{color:styles.textTertiary,fontSize:"13px",lineHeight:"1.5",maxWidth:"340px",margin:"0 0 24px 0"}}>{description}</p>
-      {actionLabel && <button onClick={onAction} style={{background:"linear-gradient(135deg, "+styles.purplePrimary+" 0%, "+styles.purpleBright+" 100%)",border:"none",borderRadius:"8px",padding:"10px 24px",color:"#fff",fontFamily:"IBM Plex Mono, monospace",fontSize:"11px",letterSpacing:"1px",textTransform:"uppercase",cursor:"pointer"}}>{actionLabel}</button>}
+    <div style={{ textAlign: 'center', padding: '48px 20px', fontFamily: 'var(--mono)' }}>
+      {Icon && (
+        <div style={{ marginBottom: '16px', opacity: 0.4, display: 'flex', justifyContent: 'center' }}>
+          {React.isValidElement(Icon) ? Icon : <Icon size={28} strokeWidth={1.5} />}
+        </div>
+      )}
+      {title && <div style={{ fontFamily: 'var(--serif)', fontSize: '20px', fontWeight: 'normal', color: 'var(--text-secondary)', marginBottom: '8px' }}>{title}</div>}
+      {text && <div style={{ fontSize: '12px', letterSpacing: '0.5px', color: 'var(--text-tertiary)', maxWidth: '380px', margin: '0 auto', lineHeight: 1.7 }}>{text}</div>}
+      {action && <div style={{ marginTop: '20px' }}>{action}</div>}
     </div>
   );
 }
-
-export default EmptyState;
-

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Award, AlertTriangle, Clock, ExternalLink, Shield, Download, RefreshCw, BookOpen } from 'lucide-react';
+import { Shield, Download, RefreshCw } from 'lucide-react';
 import { api, API_BASE } from '../config/api';
 import { styles } from '../config/styles';
 import { useToast } from '../context/ToastContext';
@@ -12,7 +12,7 @@ function buildProductionAgent({ apiEndpoint, apiKey, certificateNumber, systemNa
   const ts = new Date().toISOString();
   return `#!/usr/bin/env python3
 """
-ENVELO Agent - Sentinel Authority
+ENVELO Interlock - Sentinel Authority
 Enforced Non-Violable Execution-Limit Override
 
 System:       ${systemName}
@@ -99,7 +99,7 @@ class EnveloAgent:
     # ── lifecycle ──────────────────────────────────────────────
 
     def start(self):
-        log.info("Starting ENVELO Agent v2.0.0")
+        log.info("Starting ENVELO Interlock v2.0.0")
         log.info(f"  System:      {SYSTEM_NAME}")
         log.info(f"  Certificate: {CERTIFICATE}")
         log.info(f"  Endpoint:    {API_ENDPOINT}")
@@ -128,7 +128,7 @@ class EnveloAgent:
                 "boundaries": [
                     {"name": b.name, "min": b.min_value, "max": b.max_value}
                     for b in self.boundaries.values()
-                ],
+                ]
             })
             log.info(f"  Session:     {self.session_id[:16]}...")
         except Exception as e:
@@ -154,8 +154,8 @@ class EnveloAgent:
                 "ended_at": datetime.now(timezone.utc).isoformat(),
                 "final_stats": {
                     "pass_count": self.stats["pass"],
-                    "block_count": self.stats["block"],
-                },
+                    "block_count": self.stats["block"]
+                }
             })
         except:
             pass
@@ -213,7 +213,7 @@ class EnveloAgent:
             "action_type": "boundary_check",
             "result": result,
             "parameters": {k: v for k, v in params.items()},
-            "boundary_evaluations": evals,
+            "boundary_evaluations": evals
         })
 
         if violations:
@@ -244,7 +244,7 @@ class EnveloAgent:
                     "session_id": self.session_id,
                     "certificate_id": CERTIFICATE,
                     "timestamp": datetime.now(timezone.utc).isoformat(),
-                    "stats": self.stats,
+                    "stats": self.stats
                 })
                 if res.status_code == 401:
                     log.warning("API key revoked — shutting down")
@@ -275,7 +275,7 @@ class EnveloAgent:
                 "certificate_id": CERTIFICATE,
                 "session_id": self.session_id,
                 "records": batch,
-                "stats": {"pass_count": self.stats["pass"], "block_count": self.stats["block"]},
+                "stats": {"pass_count": self.stats["pass"], "block_count": self.stats["block"]}
             })
             if res.status_code == 401:
                 log.warning("API key revoked — shutting down")
@@ -301,7 +301,7 @@ signal.signal(signal.SIGTERM, _shutdown)
 if __name__ == "__main__":
     print()
     print("${"\u2554" + "\u2550".repeat(59) + "\u2557"}")
-    print("${"\u2551"}  ENVELO Agent \u2014 Sentinel Authority                         ${"\u2551"}")
+    print("${"\u2551"}  ENVELO Interlock \u2014 Sentinel Authority                         ${"\u2551"}")
     print("${"\u2551"}  Enforced Non-Violable Execution-Limit Override              ${"\u2551"}")
     print("${"\u255a" + "\u2550".repeat(59) + "\u255d"}")
     print()
@@ -358,7 +358,7 @@ function AgentSimulator({ apiKey }) {
     const sessionId = Math.random().toString(36).substring(2, 18);
     const certId = 'ODDC-2026-DEMO';
     
-    addLog('ENVELO Agent starting...', 'info');
+    addLog('ENVELO Interlock starting...', 'info');
     addLog(`Session: ${sessionId}`, 'info');
     addLog('', 'info');
     
@@ -474,7 +474,6 @@ function AgentSimulator({ apiKey }) {
             padding: '12px 24px',
             background: running ? 'rgba(0,0,0,0.3)' : styles.accentGreen,
             border: 'none',
-            borderRadius: '6px',
             color: running ? styles.textTertiary : '#000',
             fontFamily: "Consolas, 'IBM Plex Mono', monospace",
             fontSize: '12px',
@@ -492,11 +491,11 @@ function AgentSimulator({ apiKey }) {
       
       {stats.pass + stats.block > 0 && (
         <div style={{display: 'flex', gap: '24px', marginBottom: '16px'}}>
-          <div style={{padding: '12px 20px', background: 'rgba(92,214,133,0.1)', border: '1px solid rgba(157,140,207,0.3)', borderRadius: '6px'}}>
+          <div style={{padding: '12px 20px', background: 'transparent', border: '1px solid rgba(255,255,255,0.07)' }}>
             <div style={{fontSize: 'clamp(18px, 4vw, 24px)', fontWeight: 500, color: styles.accentGreen}}>{stats.pass}</div>
             <div style={{fontSize: '11px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px'}}>Passed</div>
           </div>
-          <div style={{padding: '12px 20px', background: 'rgba(214,92,92,0.1)', border: '1px solid rgba(214,92,92,0.3)', borderRadius: '6px'}}>
+          <div style={{padding: '12px 20px', background: 'transparent', border: '1px solid rgba(255,255,255,0.07)' }}>
             <div style={{fontSize: 'clamp(18px, 4vw, 24px)', fontWeight: 500, color: '#D65C5C'}}>{stats.block}</div>
             <div style={{fontSize: '11px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px'}}>Blocked</div>
           </div>
@@ -505,9 +504,8 @@ function AgentSimulator({ apiKey }) {
       
       {logs.length > 0 && (
         <div style={{
-          background: 'rgba(0,0,0,0.4)',
+          background: 'rgba(255,255,255,.05)',
           border: `1px solid ${styles.borderGlass}`,
-          borderRadius: '8px',
           padding: '16px',
           maxHeight: '300px',
           overflowY: 'auto',
@@ -539,19 +537,19 @@ function SessionReport({ session }) {
   return (
     <div>
       <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '24px'}}>
-        <div style={{padding: '16px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px', textAlign: 'center'}}>
-          <div style={{fontSize: 'clamp(20px, 4vw, 28px)', fontWeight: 500, color: '#fff'}}>{(session.pass_count || 0) + (session.block_count || 0)}</div>
+        <div style={{padding: '16px', background: 'transparent', textAlign: 'center'}}>
+          <div style={{fontSize: 'clamp(20px, 4vw, 28px)', fontWeight: 500, color: 'rgba(255,255,255,.94)'}}>{(session.pass_count || 0) + (session.block_count || 0)}</div>
           <div style={{fontSize: '11px', color: '#888', textTransform: 'uppercase'}}>Total Actions</div>
         </div>
-        <div style={{padding: '16px', background: 'rgba(92,214,133,0.1)', borderRadius: '8px', textAlign: 'center'}}>
+        <div style={{padding: '16px', background: 'transparent', textAlign: 'center'}}>
           <div style={{fontSize: 'clamp(20px, 4vw, 28px)', fontWeight: 500, color: '#5CD685'}}>{session.pass_count || 0}</div>
           <div style={{fontSize: '11px', color: '#888', textTransform: 'uppercase'}}>Passed</div>
         </div>
-        <div style={{padding: '16px', background: 'rgba(214,92,92,0.1)', borderRadius: '8px', textAlign: 'center'}}>
+        <div style={{padding: '16px', background: 'transparent', textAlign: 'center'}}>
           <div style={{fontSize: 'clamp(20px, 4vw, 28px)', fontWeight: 500, color: '#D65C5C'}}>{session.block_count || 0}</div>
           <div style={{fontSize: '11px', color: '#888', textTransform: 'uppercase'}}>Blocked</div>
         </div>
-        <div style={{padding: '16px', background: passRate >= 95 ? 'rgba(92,214,133,0.1)' : 'rgba(214,92,92,0.1)', borderRadius: '8px', textAlign: 'center'}}>
+        <div style={{padding: '16px', background: passRate >= 95 ? 'rgba(92,214,133,0.1)' : 'rgba(214,92,92,0.03)', textAlign: 'center'}}>
           <div style={{fontSize: 'clamp(20px, 4vw, 28px)', fontWeight: 500, color: passRate >= 95 ? '#5CD685' : '#D65C5C'}}>{passRate}%</div>
           <div style={{fontSize: '11px', color: '#888', textTransform: 'uppercase'}}>Pass Rate</div>
         </div>
@@ -560,7 +558,7 @@ function SessionReport({ session }) {
         <div><div style={{fontSize: '11px', color: '#888', marginBottom: '4px'}}>SESSION ID</div><div style={{fontFamily: 'monospace', color: '#ccc'}}>{session.session_id}</div></div>
         <div><div style={{fontSize: '11px', color: '#888', marginBottom: '4px'}}>CERTIFICATE</div><div style={{color: '#ccc'}}>{session.certificate_id || 'N/A'}</div></div>
         <div><div style={{fontSize: '11px', color: '#888', marginBottom: '4px'}}>STARTED</div><div style={{color: '#ccc'}}>{session.started_at ? new Date(session.started_at).toLocaleString() : 'N/A'}</div></div>
-        <div><div style={{fontSize: '11px', color: '#888', marginBottom: '4px'}}>STATUS</div><span style={{padding: '4px 12px', borderRadius: '4px', fontSize: '12px', background: session.status === 'active' ? 'rgba(92,214,133,0.2)' : 'rgba(255,255,255,0.1)', color: session.status === 'active' ? '#5CD685' : '#888'}}>{session.status?.toUpperCase()}</span></div>
+        <div><div style={{fontSize: '11px', color: '#888', marginBottom: '4px'}}>STATUS</div><span style={{padding: '4px 12px', fontSize: '12px', background: session.status === 'active' ? 'rgba(92,214,133,0.2)' : 'rgba(255,255,255,0.1)', color: session.status === 'active' ? '#5CD685' : '#888'}}>{session.status?.toUpperCase()}</span></div>
       </div>
     </div>
   );
@@ -584,7 +582,7 @@ function TelemetryLog({ sessionId }) {
     <div style={{maxHeight: '300px', overflowY: 'auto'}}>
       <table style={{width: '100%', borderCollapse: 'collapse', fontSize: '12px'}}>
         <thead><tr style={{borderBottom: '1px solid rgba(255,255,255,0.1)'}}><th style={{padding: '8px', textAlign: 'left', color: '#888'}}>Time</th><th style={{padding: '8px', textAlign: 'left', color: '#888'}}>Action</th><th style={{padding: '8px', textAlign: 'left', color: '#888'}}>Result</th><th style={{padding: '8px', textAlign: 'left', color: '#888'}}>Params</th></tr></thead>
-        <tbody>{records.map((r, i) => (<tr key={i} style={{borderBottom: '1px solid rgba(255,255,255,0.05)'}}><td style={{padding: '8px', fontFamily: 'monospace', fontSize: '11px', color: '#aaa'}}>{r.timestamp ? new Date(r.timestamp).toLocaleTimeString() : '-'}</td><td style={{padding: '8px', color: '#fff'}}>{r.action_type}</td><td style={{padding: '8px'}}><span style={{padding: '2px 8px', borderRadius: '4px', fontSize: '10px', fontWeight: 400, background: r.result === 'PASS' ? 'rgba(92,214,133,0.2)' : 'rgba(214,92,92,0.2)', color: r.result === 'PASS' ? '#5CD685' : '#D65C5C'}}>{r.result}</span></td><td style={{padding: '8px', color: '#666', fontFamily: 'monospace', fontSize: '10px'}}>{JSON.stringify(r.parameters || {})}</td></tr>))}</tbody>
+        <tbody>{records.map((r, i) => (<tr key={i} style={{borderBottom: '1px solid rgba(255,255,255,0.05)'}}><td style={{padding: '8px', fontFamily: 'monospace', fontSize: '11px', color: '#aaa'}}>{r.timestamp ? new Date(r.timestamp).toLocaleTimeString() : '-'}</td><td style={{padding: '8px', color: 'rgba(255,255,255,.94)'}}>{r.action_type}</td><td style={{padding: '8px'}}><span style={{padding: '2px 8px', fontSize: '10px', fontWeight: 400, background: r.result === 'PASS' ? 'rgba(92,214,133,0.2)' : 'rgba(214,92,92,0.2)', color: r.result === 'PASS' ? '#5CD685' : '#D65C5C'}}>{r.result}</span></td><td style={{padding: '8px', color: '#666', fontFamily: 'monospace', fontSize: '10px'}}>{JSON.stringify(r.parameters || {})}</td></tr>))}</tbody>
       </table>
     </div>
   );
@@ -614,7 +612,7 @@ function APIKeyManager({ onKeyGenerated }) {
       apiKey: apiKey,
       certificateNumber: certInfo?.certificate_number || 'PENDING',
       systemName: certInfo?.system_name || 'My System',
-      organizationName: certInfo?.organization_name || '',
+      organizationName: certInfo?.organization_name || ''
     });
     const blob = new Blob([agentCode], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
@@ -656,7 +654,7 @@ function APIKeyManager({ onKeyGenerated }) {
         user_id: parseInt(keyData.user_id || '0'),
         certificate_id: certId,
         name: keyData.name,
-        send_email: false,
+        send_email: false
       });
       if (res.data?.agent_code) {
         const blob = new Blob([res.data.agent_code], { type: 'text/plain' });
@@ -693,7 +691,7 @@ function APIKeyManager({ onKeyGenerated }) {
       apiKey: apiKey,
       certificateNumber: certInfo?.certificate_number || 'PENDING',
       systemName: certInfo?.system_name || 'My System',
-      organizationName: certInfo?.organization_name || '',
+      organizationName: certInfo?.organization_name || ''
     });
   };
 
@@ -730,24 +728,24 @@ function APIKeyManager({ onKeyGenerated }) {
   return (
     <div>
       {generatedKey && (
-        <div style={{background: 'rgba(92,214,133,0.1)', border: '1px solid rgba(157,140,207,0.3)', borderRadius: '8px', padding: '16px', marginBottom: '20px'}}>
+        <div style={{background: 'transparent', border: '1px solid rgba(255,255,255,0.07)', padding: '16px', marginBottom: '20px'}}>
           <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', color: styles.accentGreen, marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '1px'}}>✓ New API Key Generated</div>
-          <div style={{background: 'rgba(0,0,0,0.3)', padding: '12px', borderRadius: '6px', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '13px', color: styles.textPrimary, wordBreak: 'break-all', marginBottom: '12px'}}>
+          <div style={{background: 'rgba(255,255,255,.05)', padding: '12px', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '13px', color: styles.textPrimary, wordBreak: 'break-all', marginBottom: '12px'}}>
             {generatedKey.key}
           </div>
           <div style={{display: 'flex', gap: '12px'}}>
-            <button onClick={copyKey} style={{padding: '8px 16px', background: styles.purplePrimary, border: `1px solid ${styles.purpleBright}`, borderRadius: '6px', color: '#fff', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', cursor: 'pointer'}}>Copy to Clipboard</button>
-            <button onClick={() => setGeneratedKey(null)} style={{padding: '8px 16px', background: 'transparent', border: `1px solid ${styles.borderGlass}`, borderRadius: '6px', color: styles.textSecondary, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', cursor: 'pointer'}}>Dismiss</button>
+            <button onClick={copyKey} className="btn primary">Copy to Clipboard</button>
+            <button onClick={() => setGeneratedKey(null)} style={{padding: '8px 16px', background: 'transparent', border: `1px solid ${styles.borderGlass}`, color: styles.textSecondary, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', cursor: 'pointer'}}>Dismiss</button>
           </div>
           <p style={{color: styles.textTertiary, fontSize: '12px', marginTop: '12px'}}>⚠️ Save this key now. You won't be able to see it again.</p>
-          <div style={{marginTop: '16px', padding: '16px', background: 'rgba(91,75,138,0.2)', border: '1px solid rgba(91,75,138,0.3)', borderRadius: '8px'}}>
+          <div style={{marginTop: '16px', padding: '16px', background: 'rgba(91,75,138,0.2)', border: '1px solid rgba(91,75,138,0.3)' }}>
             <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', color: styles.purpleBright, marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '1px'}}>Next Step</div>
-            <p style={{color: styles.textSecondary, fontSize: '13px', marginBottom: '12px'}}>Download the ENVELO Agent pre-configured with your credentials:</p>
+            <p style={{color: styles.textSecondary, fontSize: '13px', marginBottom: '12px'}}>Download the ENVELO Interlock pre-configured with your credentials:</p>
             <button 
               onClick={() => downloadConfiguredAgent(generatedKey.key)}
-              style={{padding: '12px 24px', background: styles.purplePrimary, border: `1px solid ${styles.purpleBright}`, borderRadius: '6px', color: '#fff', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px'}}
+              className="btn primary"
             >
-              <Download size={16} /> Download ENVELO Agent
+              <Download size={16} /> Download ENVELO Interlock
             </button>
           </div>
         </div>
@@ -759,12 +757,12 @@ function APIKeyManager({ onKeyGenerated }) {
           placeholder="Key name (e.g., Production)"
           value={newKeyName}
           onChange={(e) => setNewKeyName(e.target.value)}
-          style={{flex: 1, padding: '10px 14px', background: 'rgba(0,0,0,0.3)', border: `1px solid ${styles.borderGlass}`, borderRadius: '6px', color: styles.textPrimary, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '13px'}}
+          style={{flex: 1, padding: '10px 14px', background: 'rgba(255,255,255,.05)', border: `1px solid ${styles.borderGlass}`, color: styles.textPrimary, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '13px'}}
         />
         <button
           onClick={generateKey}
           disabled={!newKeyName.trim()}
-          style={{padding: '10px 20px', background: newKeyName.trim() ? styles.purplePrimary : 'rgba(0,0,0,0.2)', border: `1px solid ${newKeyName.trim() ? styles.purpleBright : styles.borderGlass}`, borderRadius: '6px', color: newKeyName.trim() ? '#fff' : styles.textTertiary, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: newKeyName.trim() ? 'pointer' : 'not-allowed'}}
+          className="btn"
         >
           Generate Key
         </button>
@@ -774,20 +772,20 @@ function APIKeyManager({ onKeyGenerated }) {
         <div>
           <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary, marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '1px'}}>Your API Keys</div>
           {keys.map((k) => (
-            <div key={k.id} style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', padding: '12px 16px', background: 'rgba(0,0,0,0.2)', border: `1px solid ${styles.borderGlass}`, borderRadius: '6px', marginBottom: '8px'}}>
+            <div key={k.id} style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', padding: '12px 16px', background: 'transparent', border: `1px solid ${styles.borderGlass}`, marginBottom: '8px'}}>
               <div>
                 <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '13px', color: styles.textPrimary}}>{k.name}</div>
                 <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', color: styles.textTertiary, marginTop: '4px'}}>{k.key_prefix}••••••••</div>
               </div>
               <div style={{display: 'flex', alignItems: 'center', gap: '16px'}}>
                 <span style={{fontSize: '11px', color: styles.textTertiary}}>{k.last_used_at ? `Last used: ${new Date(k.last_used_at).toLocaleDateString()}` : 'Never used'}</span>
-                <button onClick={() => revokeKey(k.id)} style={{padding: '6px 12px', background: 'rgba(255,100,100,0.1)', border: '1px solid rgba(255,100,100,0.3)', borderRadius: '4px', color: '#ff6464', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', cursor: 'pointer'}}>Revoke</button>
+                <button onClick={() => revokeKey(k.id)} style={{padding: '6px 12px', background: 'rgba(255,100,100,0.1)', border: '1px solid rgba(255,100,100,0.3)', color: '#ff6464', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', cursor: 'pointer'}}>Revoke</button>
               </div>
             </div>
           ))}
         </div>
       ) : (
-        <p style={{color: styles.textTertiary, fontSize: '14px'}}>No API keys yet. Generate one to connect the ENVELO Agent.</p>
+        <p style={{color: styles.textTertiary, fontSize: '14px'}}>No API keys yet. Generate one to connect the ENVELO Interlock.</p>
       )}
     </div>
   );
@@ -825,7 +823,7 @@ function BoundaryConfigurator({ certificateNumber, initialBoundaries, onSave }) 
       numeric: nb.length ? nb : [{ name: '', parameter: '', min_value: '', max_value: '', hard_limit: '', unit: '', tolerance: '' }],
       geo: gb.length ? gb : [{ name: '', boundary_type: 'circle', lat: '', lon: '', radius_meters: '', altitude_min: '', altitude_max: '' }],
       time: tb.length ? tb : [{ name: '', start_hour: '6', end_hour: '22', timezone: 'America/Chicago', days: [0,1,2,3,4,5,6] }],
-      state: sb.length ? sb : [{ name: '', parameter: '', allowed_values: '', forbidden_values: '' }],
+      state: sb.length ? sb : [{ name: '', parameter: '', allowed_values: '', forbidden_values: '' }]
     };
   };
 
@@ -856,24 +854,24 @@ function BoundaryConfigurator({ certificateNumber, initialBoundaries, onSave }) 
       min_value: b.min_value !== '' ? parseFloat(b.min_value) : null,
       max_value: b.max_value !== '' ? parseFloat(b.max_value) : null,
       hard_limit: b.hard_limit !== '' ? parseFloat(b.hard_limit) : null,
-      unit: b.unit || null, tolerance: b.tolerance !== '' ? parseFloat(b.tolerance) : 0,
+      unit: b.unit || null, tolerance: b.tolerance !== '' ? parseFloat(b.tolerance) : 0
     })),
     geographic_boundaries: bounds.geo.filter(b => b.name && b.lat && b.lon).map(b => ({
       name: b.name, boundary_type: b.boundary_type,
       center: { lat: parseFloat(b.lat), lon: parseFloat(b.lon) },
       radius_meters: b.radius_meters ? parseFloat(b.radius_meters) : 1000,
       altitude_min: b.altitude_min !== '' ? parseFloat(b.altitude_min) : null,
-      altitude_max: b.altitude_max !== '' ? parseFloat(b.altitude_max) : null,
+      altitude_max: b.altitude_max !== '' ? parseFloat(b.altitude_max) : null
     })),
     time_boundaries: bounds.time.filter(b => b.name).map(b => ({
       name: b.name, allowed_hours_start: parseInt(b.start_hour),
-      allowed_hours_end: parseInt(b.end_hour), allowed_days: b.days, timezone: b.timezone,
+      allowed_hours_end: parseInt(b.end_hour), allowed_days: b.days, timezone: b.timezone
     })),
     state_boundaries: bounds.state.filter(b => b.name && b.parameter).map(b => ({
       name: b.name, parameter: b.parameter,
       allowed_values: b.allowed_values ? b.allowed_values.split(',').map(s => s.trim()).filter(Boolean) : [],
-      forbidden_values: b.forbidden_values ? b.forbidden_values.split(',').map(s => s.trim()).filter(Boolean) : [],
-    })),
+      forbidden_values: b.forbidden_values ? b.forbidden_values.split(',').map(s => s.trim()).filter(Boolean) : []
+    }))
   });
 
   const handleSave = async () => {
@@ -898,12 +896,12 @@ function BoundaryConfigurator({ certificateNumber, initialBoundaries, onSave }) 
   return (
     <div>
       {/* Summary Bar */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '20px', padding: '12px 16px', background: dirty ? 'rgba(214,160,92,0.08)' : 'rgba(92,214,133,0.05)', border: '1px solid ' + (dirty ? 'rgba(214,160,92,0.2)' : 'rgba(92,214,133,0.15)'), borderRadius: '8px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '20px', padding: '12px 16px', background: dirty ? 'rgba(214,160,92,0.03)' : 'rgba(92,214,133,0.05)', border: '1px solid ' + (dirty ? 'rgba(214,160,92,0.2)' : 'rgba(92,214,133,0.04)') }}>
         <div style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
           <span style={{ fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', color: styles.textTertiary }}>{totalCount} boundaries defined</span>
           {dirty && <span style={{ fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.accentAmber, letterSpacing: '1px', textTransform: 'uppercase' }}>● Unsaved changes</span>}
         </div>
-        <button onClick={handleSave} disabled={saving || !dirty} style={{ padding: '8px 24px', borderRadius: '8px', background: dirty ? styles.purplePrimary : 'rgba(255,255,255,0.05)', border: '1px solid ' + (dirty ? styles.purpleBright : styles.borderGlass), color: dirty ? '#fff' : styles.textTertiary, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: dirty ? 'pointer' : 'default', opacity: saving ? 0.6 : 1 }}>
+        <button onClick={handleSave} disabled={saving || !dirty} style={{ padding: '8px 24px', background: dirty ? styles.purplePrimary : 'rgba(255,255,255,0.05)', border: '1px solid ' + (dirty ? styles.purpleBright : styles.borderGlass), color: dirty ? '#fff' : styles.textTertiary, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: dirty ? 'pointer' : 'default', opacity: saving ? 0.6 : 1 }}>
           {saving ? 'Saving...' : dirty ? 'Save Boundaries' : 'Saved ✓'}
         </button>
       </div>
@@ -912,60 +910,60 @@ function BoundaryConfigurator({ certificateNumber, initialBoundaries, onSave }) 
       {sectionTitle('Numeric Boundaries')}
       {helpText('Measurable limits: speed, temperature, altitude, weight, pressure, distance.')}
       {bounds.numeric.map((b, i) => (
-        <div key={i} style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid ' + styles.borderGlass, borderRadius: '8px', padding: '12px', marginBottom: '8px' }}>
+        <div key={i} style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid ' + styles.borderGlass, padding: '12px', marginBottom: '8px' }}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '8px' }}>
-            <input type="text" value={b.name} onChange={e => update('numeric', i, 'name', e.target.value)} className="px-3 py-2 rounded-lg" style={{ ...inputStyle }} placeholder="Name (e.g., Speed Limit)" />
-            <input type="text" value={b.parameter} onChange={e => update('numeric', i, 'parameter', e.target.value)} className="px-3 py-2 rounded-lg" style={{ ...inputStyle }} placeholder="Parameter (e.g., speed)" />
+            <input type="text" value={b.name} onChange={e => update('numeric', i, 'name', e.target.value)} className="px-3 py-2" style={{ ...inputStyle }} placeholder="Name (e.g., Speed Limit)" />
+            <input type="text" value={b.parameter} onChange={e => update('numeric', i, 'parameter', e.target.value)} className="px-3 py-2" style={{ ...inputStyle }} placeholder="Parameter (e.g., speed)" />
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '8px' }}>
-            <input type="number" value={b.min_value} onChange={e => update('numeric', i, 'min_value', e.target.value)} className="px-3 py-2 rounded-lg" style={{ ...inputStyle }} placeholder="Min" />
-            <input type="number" value={b.max_value} onChange={e => update('numeric', i, 'max_value', e.target.value)} className="px-3 py-2 rounded-lg" style={{ ...inputStyle }} placeholder="Max" />
-            <input type="number" value={b.hard_limit} onChange={e => update('numeric', i, 'hard_limit', e.target.value)} className="px-3 py-2 rounded-lg" style={{ ...inputStyle }} placeholder="Hard limit" />
-            <input type="text" value={b.unit} onChange={e => update('numeric', i, 'unit', e.target.value)} className="px-3 py-2 rounded-lg" style={{ ...inputStyle }} placeholder="Unit" />
+            <input type="number" value={b.min_value} onChange={e => update('numeric', i, 'min_value', e.target.value)} className="px-3 py-2" style={{ ...inputStyle }} placeholder="Min" />
+            <input type="number" value={b.max_value} onChange={e => update('numeric', i, 'max_value', e.target.value)} className="px-3 py-2" style={{ ...inputStyle }} placeholder="Max" />
+            <input type="number" value={b.hard_limit} onChange={e => update('numeric', i, 'hard_limit', e.target.value)} className="px-3 py-2" style={{ ...inputStyle }} placeholder="Hard limit" />
+            <input type="text" value={b.unit} onChange={e => update('numeric', i, 'unit', e.target.value)} className="px-3 py-2" style={{ ...inputStyle }} placeholder="Unit" />
             <div style={{ display: 'flex', gap: '4px' }}>
-              <input type="number" value={b.tolerance} onChange={e => update('numeric', i, 'tolerance', e.target.value)} className="px-3 py-2 rounded-lg" style={{ ...inputStyle, flex: 1 }} placeholder="±Tol" />
-              {bounds.numeric.length > 1 && <button onClick={() => removeRow('numeric', i)} style={{ background: 'rgba(214,92,92,0.15)', border: 'none', borderRadius: '6px', color: styles.accentRed, cursor: 'pointer', padding: '0 8px', fontSize: '14px' }}>×</button>}
+              <input type="number" value={b.tolerance} onChange={e => update('numeric', i, 'tolerance', e.target.value)} className="px-3 py-2" style={{ ...inputStyle, flex: 1 }} placeholder="±Tol" />
+              {bounds.numeric.length > 1 && <button onClick={() => removeRow('numeric', i)} style={{ background: 'transparent', border: 'none', color: styles.accentRed, cursor: 'pointer', padding: '0 8px', fontSize: '14px' }}>×</button>}
             </div>
           </div>
         </div>
       ))}
-      <button onClick={() => addRow('numeric', { name: '', parameter: '', min_value: '', max_value: '', hard_limit: '', unit: '', tolerance: '' })} style={{ width: '100%', marginBottom: '4px', background: 'transparent', border: '1px dashed ' + styles.borderGlass, borderRadius: '6px', padding: '8px', color: styles.purpleBright, cursor: 'pointer', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px' }}>+ Add Numeric Boundary</button>
+      <button onClick={() => addRow('numeric', { name: '', parameter: '', min_value: '', max_value: '', hard_limit: '', unit: '', tolerance: '' })} style={{ width: '100%', marginBottom: '4px', background: 'transparent', border: '1px dashed ' + styles.borderGlass, padding: '8px', color: styles.purpleBright, cursor: 'pointer', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px' }}>+ Add Numeric Boundary</button>
 
       {/* ── GEOGRAPHIC ── */}
       {sectionTitle('Geographic Boundaries')}
       {helpText('Physical operating zone — center coordinates + radius.')}
       {bounds.geo.map((b, i) => (
-        <div key={i} style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid ' + styles.borderGlass, borderRadius: '8px', padding: '12px', marginBottom: '8px' }}>
+        <div key={i} style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid ' + styles.borderGlass, padding: '12px', marginBottom: '8px' }}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '8px' }}>
-            <input type="text" value={b.name} onChange={e => update('geo', i, 'name', e.target.value)} className="px-3 py-2 rounded-lg" style={{ ...inputStyle }} placeholder="Name (e.g., Operating Zone)" />
-            <select value={b.boundary_type} onChange={e => update('geo', i, 'boundary_type', e.target.value)} className="px-3 py-2 rounded-lg" style={{ ...inputStyle }}>
+            <input type="text" value={b.name} onChange={e => update('geo', i, 'name', e.target.value)} className="px-3 py-2" style={{ ...inputStyle }} placeholder="Name (e.g., Operating Zone)" />
+            <select value={b.boundary_type} onChange={e => update('geo', i, 'boundary_type', e.target.value)} className="px-3 py-2" style={{ ...inputStyle }}>
               <option value="circle">Radius from Point</option>
               <option value="polygon">Polygon (advanced)</option>
             </select>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '8px' }}>
-            <input type="number" step="any" value={b.lat} onChange={e => update('geo', i, 'lat', e.target.value)} className="px-3 py-2 rounded-lg" style={{ ...inputStyle }} placeholder="Latitude" />
-            <input type="number" step="any" value={b.lon} onChange={e => update('geo', i, 'lon', e.target.value)} className="px-3 py-2 rounded-lg" style={{ ...inputStyle }} placeholder="Longitude" />
-            <input type="number" value={b.radius_meters} onChange={e => update('geo', i, 'radius_meters', e.target.value)} className="px-3 py-2 rounded-lg" style={{ ...inputStyle }} placeholder="Radius (m)" />
+            <input type="number" step="any" value={b.lat} onChange={e => update('geo', i, 'lat', e.target.value)} className="px-3 py-2" style={{ ...inputStyle }} placeholder="Latitude" />
+            <input type="number" step="any" value={b.lon} onChange={e => update('geo', i, 'lon', e.target.value)} className="px-3 py-2" style={{ ...inputStyle }} placeholder="Longitude" />
+            <input type="number" value={b.radius_meters} onChange={e => update('geo', i, 'radius_meters', e.target.value)} className="px-3 py-2" style={{ ...inputStyle }} placeholder="Radius (m)" />
             <div style={{ display: 'flex', gap: '4px' }}>
-              <input type="number" value={b.altitude_max} onChange={e => update('geo', i, 'altitude_max', e.target.value)} className="px-3 py-2 rounded-lg" style={{ ...inputStyle, flex: 1 }} placeholder="Alt max (m)" />
-              {bounds.geo.length > 1 && <button onClick={() => removeRow('geo', i)} style={{ background: 'rgba(214,92,92,0.15)', border: 'none', borderRadius: '6px', color: styles.accentRed, cursor: 'pointer', padding: '0 8px', fontSize: '14px' }}>×</button>}
+              <input type="number" value={b.altitude_max} onChange={e => update('geo', i, 'altitude_max', e.target.value)} className="px-3 py-2" style={{ ...inputStyle, flex: 1 }} placeholder="Alt max (m)" />
+              {bounds.geo.length > 1 && <button onClick={() => removeRow('geo', i)} style={{ background: 'transparent', border: 'none', color: styles.accentRed, cursor: 'pointer', padding: '0 8px', fontSize: '14px' }}>×</button>}
             </div>
           </div>
         </div>
       ))}
-      <button onClick={() => addRow('geo', { name: '', boundary_type: 'circle', lat: '', lon: '', radius_meters: '', altitude_min: '', altitude_max: '' })} style={{ width: '100%', marginBottom: '4px', background: 'transparent', border: '1px dashed ' + styles.borderGlass, borderRadius: '6px', padding: '8px', color: styles.purpleBright, cursor: 'pointer', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px' }}>+ Add Geographic Boundary</button>
+      <button onClick={() => addRow('geo', { name: '', boundary_type: 'circle', lat: '', lon: '', radius_meters: '', altitude_min: '', altitude_max: '' })} style={{ width: '100%', marginBottom: '4px', background: 'transparent', border: '1px dashed ' + styles.borderGlass, padding: '8px', color: styles.purpleBright, cursor: 'pointer', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px' }}>+ Add Geographic Boundary</button>
 
       {/* ── TIME ── */}
       {sectionTitle('Time Boundaries')}
       {helpText('Allowed operating hours and days of week.')}
       {bounds.time.map((b, i) => (
-        <div key={i} style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid ' + styles.borderGlass, borderRadius: '8px', padding: '12px', marginBottom: '8px' }}>
+        <div key={i} style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid ' + styles.borderGlass, padding: '12px', marginBottom: '8px' }}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '8px', marginBottom: '8px' }}>
-            <input type="text" value={b.name} onChange={e => update('time', i, 'name', e.target.value)} className="px-3 py-2 rounded-lg" style={{ ...inputStyle }} placeholder="Name" />
-            <input type="number" min="0" max="23" value={b.start_hour} onChange={e => update('time', i, 'start_hour', e.target.value)} className="px-3 py-2 rounded-lg" style={{ ...inputStyle }} placeholder="Start hour" />
-            <input type="number" min="0" max="23" value={b.end_hour} onChange={e => update('time', i, 'end_hour', e.target.value)} className="px-3 py-2 rounded-lg" style={{ ...inputStyle }} placeholder="End hour" />
-            <select value={b.timezone} onChange={e => update('time', i, 'timezone', e.target.value)} className="px-3 py-2 rounded-lg" style={{ ...inputStyle }}>
+            <input type="text" value={b.name} onChange={e => update('time', i, 'name', e.target.value)} className="px-3 py-2" style={{ ...inputStyle }} placeholder="Name" />
+            <input type="number" min="0" max="23" value={b.start_hour} onChange={e => update('time', i, 'start_hour', e.target.value)} className="px-3 py-2" style={{ ...inputStyle }} placeholder="Start hour" />
+            <input type="number" min="0" max="23" value={b.end_hour} onChange={e => update('time', i, 'end_hour', e.target.value)} className="px-3 py-2" style={{ ...inputStyle }} placeholder="End hour" />
+            <select value={b.timezone} onChange={e => update('time', i, 'timezone', e.target.value)} className="px-3 py-2" style={{ ...inputStyle }}>
               <option value="America/New_York">Eastern</option>
               <option value="America/Chicago">Central</option>
               <option value="America/Denver">Mountain</option>
@@ -979,44 +977,42 @@ function BoundaryConfigurator({ certificateNumber, initialBoundaries, onSave }) 
           <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', alignItems: 'center' }}>
             <span style={{ color: styles.textTertiary, fontSize: '11px', marginRight: '4px' }}>Days:</span>
             {dayNames.map((d, di) => (
-              <label key={di} style={{ display: 'flex', alignItems: 'center', gap: '3px', cursor: 'pointer', fontSize: '11px', color: b.days.includes(di) ? styles.purpleBright : styles.textTertiary }}>
-                <input type="checkbox" checked={b.days.includes(di)} onChange={e => {
-                  const newDays = e.target.checked ? [...b.days, di].sort() : b.days.filter(x => x !== di);
+              <button key={di} onClick={() => {
+                  const newDays = b.days.includes(di) ? b.days.filter(x => x !== di) : [...b.days, di].sort();
                   update('time', i, 'days', newDays);
-                }} style={{ accentColor: styles.purpleBright, width: '12px', height: '12px' }} />{d}
-              </label>
+                }} className="btn" style={{ padding: '2px 6px', fontSize: '10px', minWidth: '28px', justifyContent: 'center', color: b.days.includes(di) ? 'var(--purple-bright)' : 'var(--text-tertiary)', borderColor: b.days.includes(di) ? 'rgba(157,140,207,.3)' : 'rgba(255,255,255,.04)' }}>{d}</button>
             ))}
-            {bounds.time.length > 1 && <button onClick={() => removeRow('time', i)} style={{ marginLeft: 'auto', background: 'rgba(214,92,92,0.15)', border: 'none', borderRadius: '6px', color: styles.accentRed, cursor: 'pointer', padding: '2px 8px', fontSize: '14px' }}>×</button>}
+            {bounds.time.length > 1 && <button onClick={() => removeRow('time', i)} style={{ marginLeft: 'auto', background: 'transparent', border: 'none', color: styles.accentRed, cursor: 'pointer', padding: '2px 8px', fontSize: '14px' }}>×</button>}
           </div>
         </div>
       ))}
-      <button onClick={() => addRow('time', { name: '', start_hour: '6', end_hour: '22', timezone: 'America/Chicago', days: [0,1,2,3,4,5,6] })} style={{ width: '100%', marginBottom: '4px', background: 'transparent', border: '1px dashed ' + styles.borderGlass, borderRadius: '6px', padding: '8px', color: styles.purpleBright, cursor: 'pointer', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px' }}>+ Add Time Boundary</button>
+      <button onClick={() => addRow('time', { name: '', start_hour: '6', end_hour: '22', timezone: 'America/Chicago', days: [0,1,2,3,4,5,6] })} style={{ width: '100%', marginBottom: '4px', background: 'transparent', border: '1px dashed ' + styles.borderGlass, padding: '8px', color: styles.purpleBright, cursor: 'pointer', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px' }}>+ Add Time Boundary</button>
 
       {/* ── STATE ── */}
       {sectionTitle('State Boundaries')}
       {helpText('Allowed/forbidden operational states and modes.')}
       {bounds.state.map((b, i) => (
-        <div key={i} style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid ' + styles.borderGlass, borderRadius: '8px', padding: '12px', marginBottom: '8px' }}>
+        <div key={i} style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid ' + styles.borderGlass, padding: '12px', marginBottom: '8px' }}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '8px' }}>
-            <input type="text" value={b.name} onChange={e => update('state', i, 'name', e.target.value)} className="px-3 py-2 rounded-lg" style={{ ...inputStyle }} placeholder="Name (e.g., Mode Check)" />
-            <input type="text" value={b.parameter} onChange={e => update('state', i, 'parameter', e.target.value)} className="px-3 py-2 rounded-lg" style={{ ...inputStyle }} placeholder="Parameter (e.g., mode)" />
+            <input type="text" value={b.name} onChange={e => update('state', i, 'name', e.target.value)} className="px-3 py-2" style={{ ...inputStyle }} placeholder="Name (e.g., Mode Check)" />
+            <input type="text" value={b.parameter} onChange={e => update('state', i, 'parameter', e.target.value)} className="px-3 py-2" style={{ ...inputStyle }} placeholder="Parameter (e.g., mode)" />
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
             <div>
-              <input type="text" value={b.allowed_values} onChange={e => update('state', i, 'allowed_values', e.target.value)} className="w-full px-3 py-2 rounded-lg" style={{ ...inputStyle }} placeholder="Allowed (comma-sep)" />
+              <input type="text" value={b.allowed_values} onChange={e => update('state', i, 'allowed_values', e.target.value)} className="w-full px-3 py-2" style={{ ...inputStyle }} placeholder="Allowed (comma-sep)" />
               <span style={{ fontSize: '9px', color: styles.textTertiary }}>e.g., autonomous, semi-autonomous</span>
             </div>
             <div style={{ display: 'flex', gap: '4px' }}>
               <div style={{ flex: 1 }}>
-                <input type="text" value={b.forbidden_values} onChange={e => update('state', i, 'forbidden_values', e.target.value)} className="w-full px-3 py-2 rounded-lg" style={{ ...inputStyle }} placeholder="Forbidden (comma-sep)" />
+                <input type="text" value={b.forbidden_values} onChange={e => update('state', i, 'forbidden_values', e.target.value)} className="w-full px-3 py-2" style={{ ...inputStyle }} placeholder="Forbidden (comma-sep)" />
                 <span style={{ fontSize: '9px', color: styles.textTertiary }}>e.g., manual_override, degraded</span>
               </div>
-              {bounds.state.length > 1 && <button onClick={() => removeRow('state', i)} style={{ background: 'rgba(214,92,92,0.15)', border: 'none', borderRadius: '6px', color: styles.accentRed, cursor: 'pointer', padding: '0 8px', fontSize: '14px', alignSelf: 'flex-start' }}>×</button>}
+              {bounds.state.length > 1 && <button onClick={() => removeRow('state', i)} style={{ background: 'transparent', border: 'none', color: styles.accentRed, cursor: 'pointer', padding: '0 8px', fontSize: '14px', alignSelf: 'flex-start' }}>×</button>}
             </div>
           </div>
         </div>
       ))}
-      <button onClick={() => addRow('state', { name: '', parameter: '', allowed_values: '', forbidden_values: '' })} style={{ width: '100%', marginBottom: '4px', background: 'transparent', border: '1px dashed ' + styles.borderGlass, borderRadius: '6px', padding: '8px', color: styles.purpleBright, cursor: 'pointer', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px' }}>+ Add State Boundary</button>
+      <button onClick={() => addRow('state', { name: '', parameter: '', allowed_values: '', forbidden_values: '' })} style={{ width: '100%', marginBottom: '4px', background: 'transparent', border: '1px dashed ' + styles.borderGlass, padding: '8px', color: styles.purpleBright, cursor: 'pointer', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px' }}>+ Add State Boundary</button>
     </div>
   );
 }
@@ -1076,7 +1072,7 @@ function EnveloAdminView() {
       apiKey: 'YOUR_API_KEY',
       certificateNumber: cert.certificate_number,
       systemName: cert.system_name || 'Unknown',
-      organizationName: cert.organization_name || 'Unknown',
+      organizationName: cert.organization_name || 'Unknown'
     });
     const blob = new Blob([agentCode], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
@@ -1107,19 +1103,7 @@ function EnveloAdminView() {
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            style={{
-              padding: '10px 20px',
-              background: activeTab === tab.id ? styles.purplePrimary : 'transparent',
-              border: `1px solid ${activeTab === tab.id ? styles.purpleBright : styles.borderGlass}`,
-              borderRadius: '8px',
-              color: activeTab === tab.id ? '#fff' : styles.textSecondary,
-              fontFamily: "Consolas, 'IBM Plex Mono', monospace",
-              fontSize: '11px',
-              letterSpacing: '1px',
-              textTransform: 'uppercase',
-              cursor: 'pointer',
-              transition: 'all 0.2s', whiteSpace: 'nowrap', flexShrink: 0
-            }}
+            className="btn"
           >
             {tab.label}
           </button>
@@ -1129,19 +1113,19 @@ function EnveloAdminView() {
       {/* Stats Grid - Always visible */}
       <div className="grid gap-4" style={{gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))"}}>
         <Panel>
-          <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '12px'}}>Active Sessions</p>
+          <div className="hud-label" style={{marginBottom: '12px'}}>Active Sessions</div>
           <p style={{fontSize: 'clamp(24px, 5vw, 36px)', fontWeight: 200, color: styles.accentGreen}}>{activeSessions.length}</p>
         </Panel>
         <Panel>
-          <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '12px'}}>Attested Systems</p>
+          <div className="hud-label" style={{marginBottom: '12px'}}>Attested Systems</div>
           <p style={{fontSize: 'clamp(24px, 5vw, 36px)', fontWeight: 200, color: styles.purpleBright}}>{activeCerts.length}</p>
         </Panel>
         <Panel>
-          <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '12px'}}>CAT-72 In Progress</p>
+          <div className="hud-label" style={{marginBottom: '12px'}}>CAT-72 In Progress</div>
           <p style={{fontSize: 'clamp(24px, 5vw, 36px)', fontWeight: 200, color: styles.accentAmber}}>{pendingApps.length}</p>
         </Panel>
         <Panel>
-          <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '12px'}}>Violations (Total)</p>
+          <div className="hud-label" style={{marginBottom: '12px'}}>Violations (Total)</div>
           <p style={{fontSize: 'clamp(24px, 5vw, 36px)', fontWeight: 200, color: totalViolations > 0 ? styles.accentRed : styles.accentGreen}}>{totalViolations}</p>
         </Panel>
       </div>
@@ -1152,8 +1136,8 @@ function EnveloAdminView() {
           {/* Active Sessions Table */}
           <Panel glow>
             <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '20px'}}>
-              <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary}}>Active Sessions</p>
-              <div style={{display: 'flex', alignItems: 'center', gap: '8px', padding: '4px 12px', background: 'rgba(92,214,133,0.15)', borderRadius: '20px'}}>
+              <div className="hud-label">Active Sessions</div>
+              <div style={{display: 'flex', alignItems: 'center', gap: '8px', padding: '4px 12px', background: 'transparent' }}>
                 <div style={{width: '6px', height: '6px', borderRadius: '50%', background: styles.accentGreen, boxShadow: `0 0 8px ${styles.accentGreen}`, animation: 'pulse 2s infinite'}}></div>
                 <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.accentGreen, textTransform: 'uppercase'}}>Live</span>
               </div>
@@ -1173,7 +1157,7 @@ function EnveloAdminView() {
                   </thead>
                   <tbody>
                     {sessions.map((s, i) => (
-                      <tr key={i} className="sexy-row" style={{borderBottom: `1px solid ${styles.borderGlass}`}}>
+                      <tr key={i}  style={{borderBottom: `1px solid ${styles.borderGlass}`}}>
                         <td style={{padding: '16px', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px', color: styles.purpleBright}}>{s.certificate_id || 'N/A'}</td>
                         <td style={{padding: '16px'}}>
                           <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
@@ -1184,7 +1168,7 @@ function EnveloAdminView() {
                         <td style={{padding: '16px', color: styles.accentGreen}}>{s.pass_count || 0}</td>
                         <td style={{padding: '16px', color: (s.block_count || 0) > 0 ? styles.accentRed : styles.textTertiary}}>{s.block_count || 0}</td>
                         <td style={{padding: '16px'}}>
-                          <button onClick={() => setSelectedSession(s)} style={{padding: '6px 12px', background: 'rgba(157,140,207,0.15)', border: `1px solid ${styles.purpleBright}`, borderRadius: '6px', color: styles.purpleBright, fontSize: '11px', cursor: 'pointer'}}>View Details</button>
+                          <button onClick={() => setSelectedSession(s)} style={{padding: '6px 12px', background: 'transparent', border: `1px solid ${styles.purpleBright}`, color: styles.purpleBright, fontSize: '11px', cursor: 'pointer'}}>View Details</button>
                         </td>
                       </tr>
                     ))}
@@ -1200,7 +1184,7 @@ function EnveloAdminView() {
           {selectedSession && (
             <Panel accent="purple">
               <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '20px'}}>
-                <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary}}>Session: {selectedSession.session_id?.substring(0, 16)}...</p>
+                <div className="hud-label">Session: {selectedSession.session_id?.substring(0, 16)}...</div>
                 <div style={{display: 'flex', gap: '12px'}}>
                   <button onClick={async () => {
                     try {
@@ -1211,8 +1195,8 @@ function EnveloAdminView() {
                       link.download = `CAT72-Report-${selectedSession.session_id}.pdf`;
                       link.click();
                     } catch(e) { toast.show('Failed: ' + e.message, 'error'); }
-                  }} style={{padding: '8px 16px', background: styles.purplePrimary, border: 'none', borderRadius: '6px', color: '#fff', fontSize: '11px', cursor: 'pointer'}}>Download Report</button>
-                  <button onClick={() => setSelectedSession(null)} style={{padding: '8px 16px', background: 'transparent', border: `1px solid ${styles.borderGlass}`, borderRadius: '6px', color: styles.textTertiary, cursor: 'pointer', fontSize: '11px'}}>✕ Close</button>
+                  }} style={{padding: '8px 16px', background: styles.purplePrimary, border: 'none', color: 'rgba(255,255,255,.94)', fontSize: '11px', cursor: 'pointer'}}>Download Report</button>
+                  <button onClick={() => setSelectedSession(null)} style={{padding: '8px 16px', background: 'transparent', border: `1px solid ${styles.borderGlass}`, color: styles.textTertiary, cursor: 'pointer', fontSize: '11px'}}>✕ Close</button>
                 </div>
               </div>
               <SessionReport session={selectedSession} />
@@ -1228,11 +1212,11 @@ function EnveloAdminView() {
         <>
           {/* Attested Systems */}
           <Panel>
-            <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '20px'}}>Attested Systems</p>
+            <div className="hud-label" style={{marginBottom: '20px'}}>Attested Systems</div>
             {activeCerts.length > 0 ? (
               <div className="space-y-4">
                 {activeCerts.map(cert => (
-                  <div key={cert.id} style={{padding: '20px', background: 'rgba(0,0,0,0.2)', border: `1px solid ${styles.borderGlass}`, borderRadius: '12px'}}>
+                  <div key={cert.id} style={{padding: '20px', background: 'transparent', border: `1px solid ${styles.borderGlass}` }}>
                     <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px'}}>
                       <div>
                         <h3 style={{fontSize: '16px', fontWeight: 500, color: styles.textPrimary, margin: '0 0 4px 0'}}>{cert.system_name || 'Unnamed'}</h3>
@@ -1240,13 +1224,13 @@ function EnveloAdminView() {
                         <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px', color: styles.purpleBright}}>{cert.certificate_number}</p>
                       </div>
                       <div style={{display: 'flex', gap: '8px', flexWrap: 'wrap'}}>
-                        <button onClick={() => { setReviewingCert(cert); setActiveTab('review'); }} style={{padding: '8px 16px', background: 'rgba(157,140,207,0.15)', border: `1px solid ${styles.purpleBright}`, borderRadius: '6px', color: styles.purpleBright, fontSize: '11px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px'}}>
+                        <button onClick={() => { setReviewingCert(cert); setActiveTab('review'); }} style={{padding: '8px 16px', background: 'transparent', border: `1px solid ${styles.purpleBright}`, color: styles.purpleBright, fontSize: '11px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px'}}>
                           <Shield fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} size={12} /> Review Boundaries
                         </button>
-                        <span style={{padding: '8px 16px', background: 'rgba(92,214,133,0.1)', border: '1px solid rgba(92,214,133,0.2)', borderRadius: '6px', color: styles.accentGreen, fontSize: '11px', display: 'flex', alignItems: 'center', gap: '6px'}}>
+                        <span style={{padding: '8px 16px', background: 'transparent', border: '1px solid rgba(255,255,255,0.06)', color: styles.accentGreen, fontSize: '11px', display: 'flex', alignItems: 'center', gap: '6px'}}>
                           ✓ Auto-provisioned on Approve
                         </span>
-                        <button onClick={() => downloadAgentForCert(cert)} style={{padding: '8px 16px', background: 'transparent', border: `1px solid ${styles.borderGlass}`, borderRadius: '6px', color: styles.textSecondary, fontSize: '11px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px'}}>
+                        <button onClick={() => downloadAgentForCert(cert)} style={{padding: '8px 16px', background: 'transparent', border: `1px solid ${styles.borderGlass}`, color: styles.textSecondary, fontSize: '11px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px'}}>
                           <Download size={12} /> Download Only
                         </button>
                       </div>
@@ -1265,13 +1249,13 @@ function EnveloAdminView() {
               <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.accentAmber, marginBottom: '20px'}}>CAT-72 Testing In Progress</p>
               <div className="space-y-4">
                 {pendingApps.map(app => (
-                  <div key={app.id} style={{padding: '16px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px', border: `1px solid ${styles.borderGlass}`}}>
+                  <div key={app.id} style={{padding: '16px', background: 'transparent', border: `1px solid ${styles.borderGlass}`}}>
                     <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px'}}>
                       <div>
                         <p style={{fontSize: '14px', color: styles.textPrimary, marginBottom: '4px'}}>{app.system_name}</p>
                         <p style={{fontSize: '12px', color: styles.textSecondary}}>{app.organization_name}</p>
                       </div>
-                      <span style={{padding: '4px 12px', background: 'rgba(214,160,92,0.15)', border: '1px solid rgba(214,160,92,0.3)', borderRadius: '20px', fontSize: '10px', color: styles.accentAmber, fontFamily: "Consolas, 'IBM Plex Mono', monospace", textTransform: 'uppercase'}}>
+                      <span className="btn">
                         {app.cat72_started ? 'In Progress' : 'Ready'}
                       </span>
                     </div>
@@ -1283,7 +1267,7 @@ function EnveloAdminView() {
 
           {/* API Key Management */}
           <Panel>
-            <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>API Key Management</p>
+            <div className="hud-label" style={{marginBottom: '16px'}}>API Key Management</div>
             <APIKeyManager />
           </Panel>
         </>
@@ -1307,10 +1291,10 @@ function EnveloAdminView() {
                     <h2 style={{fontSize: 'clamp(18px, 4vw, 24px)', fontWeight: 200, margin: '0 0 4px 0'}}>{reviewingCert.system_name}</h2>
                     <p style={{color: styles.textSecondary}}>{reviewingCert.organization_name} • {reviewingCert.certificate_number}</p>
                   </div>
-                  <button onClick={() => setReviewingCert(null)} style={{padding: '8px 16px', background: 'transparent', border: `1px solid ${styles.borderGlass}`, borderRadius: '6px', color: styles.textTertiary, cursor: 'pointer', fontSize: '11px'}}>← Back</button>
+                  <button onClick={() => setReviewingCert(null)} style={{padding: '8px 16px', background: 'transparent', border: `1px solid ${styles.borderGlass}`, color: styles.textTertiary, cursor: 'pointer', fontSize: '11px'}}>← Back</button>
                 </div>
 
-                <div style={{padding: '12px 16px', background: 'rgba(214,160,92,0.08)', border: '1px solid rgba(214,160,92,0.2)', borderRadius: '8px', marginBottom: '24px'}}>
+                <div style={{padding: '12px 16px', background: 'transparent', border: '1px solid rgba(255,255,255,.10)', marginBottom: '24px'}}>
                   <p style={{color: styles.accentAmber, fontSize: '13px', margin: 0}}>⚠ Sentinel Authority does not modify customer boundaries. Review and approve as submitted, or reject with required changes.</p>
                 </div>
 
@@ -1320,10 +1304,10 @@ function EnveloAdminView() {
                   <div className="space-y-6">
                     {numeric.length > 0 && (
                       <div>
-                        <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '12px'}}>Numeric Boundaries ({numeric.length})</p>
+                        <div className="hud-label" style={{marginBottom: '12px'}}>Numeric Boundaries ({numeric.length})</div>
                         <div style={{display: 'grid', gap: '8px'}}>
                           {numeric.map((b, i) => (
-                            <div key={i} style={{padding: '14px 16px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px', border: `1px solid ${styles.borderGlass}`, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '16px', alignItems: 'center'}}>
+                            <div key={i} style={{padding: '14px 16px', background: 'transparent', border: `1px solid ${styles.borderGlass}`, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '16px', alignItems: 'center'}}>
                               <div>
                                 <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary, marginBottom: '2px'}}>Parameter</p>
                                 <p style={{fontWeight: 500, color: styles.textPrimary, fontSize: '14px'}}>{b.name || b.parameter || '—'}</p>
@@ -1348,10 +1332,10 @@ function EnveloAdminView() {
 
                     {geo.length > 0 && (
                       <div>
-                        <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '12px'}}>Geographic Boundaries ({geo.length})</p>
+                        <div className="hud-label" style={{marginBottom: '12px'}}>Geographic Boundaries ({geo.length})</div>
                         <div style={{display: 'grid', gap: '8px'}}>
                           {geo.map((b, i) => (
-                            <div key={i} style={{padding: '14px 16px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px', border: `1px solid ${styles.borderGlass}`, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '16px', alignItems: 'center'}}>
+                            <div key={i} style={{padding: '14px 16px', background: 'transparent', border: `1px solid ${styles.borderGlass}`, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '16px', alignItems: 'center'}}>
                               <div>
                                 <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary, marginBottom: '2px'}}>Zone</p>
                                 <p style={{fontWeight: 500, color: styles.textPrimary, fontSize: '14px'}}>{b.name || '—'}</p>
@@ -1376,10 +1360,10 @@ function EnveloAdminView() {
 
                     {time.length > 0 && (
                       <div>
-                        <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '12px'}}>Time Boundaries ({time.length})</p>
+                        <div className="hud-label" style={{marginBottom: '12px'}}>Time Boundaries ({time.length})</div>
                         <div style={{display: 'grid', gap: '8px'}}>
                           {time.map((b, i) => (
-                            <div key={i} style={{padding: '14px 16px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px', border: `1px solid ${styles.borderGlass}`, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '16px', alignItems: 'center'}}>
+                            <div key={i} style={{padding: '14px 16px', background: 'transparent', border: `1px solid ${styles.borderGlass}`, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '16px', alignItems: 'center'}}>
                               <div>
                                 <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary, marginBottom: '2px'}}>Schedule</p>
                                 <p style={{fontWeight: 500, color: styles.textPrimary, fontSize: '14px'}}>{b.name || '—'}</p>
@@ -1400,10 +1384,10 @@ function EnveloAdminView() {
 
                     {state.length > 0 && (
                       <div>
-                        <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '12px'}}>State Boundaries ({state.length})</p>
+                        <div className="hud-label" style={{marginBottom: '12px'}}>State Boundaries ({state.length})</div>
                         <div style={{display: 'grid', gap: '8px'}}>
                           {state.map((b, i) => (
-                            <div key={i} style={{padding: '14px 16px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px', border: `1px solid ${styles.borderGlass}`, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '16px', alignItems: 'center'}}>
+                            <div key={i} style={{padding: '14px 16px', background: 'transparent', border: `1px solid ${styles.borderGlass}`, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '16px', alignItems: 'center'}}>
                               <div>
                                 <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary, marginBottom: '2px'}}>Parameter</p>
                                 <p style={{fontWeight: 500, color: styles.textPrimary, fontSize: '14px'}}>{b.name || b.parameter || '—'}</p>
@@ -1426,7 +1410,7 @@ function EnveloAdminView() {
 
                 {/* Approve / Reject Actions */}
                 <div style={{marginTop: '32px', paddingTop: '24px', borderTop: `1px solid ${styles.borderGlass}`}}>
-                  <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Review Decision</p>
+                  <div className="hud-label" style={{marginBottom: '16px'}}>Review Decision</div>
                   
                   <textarea
                     value={reviewComment}
@@ -1434,9 +1418,9 @@ function EnveloAdminView() {
                     placeholder="Review notes (required for rejection, optional for approval)..."
                     style={{
                       width: '100%', minHeight: '80px', padding: '12px 16px',
-                      background: 'rgba(0,0,0,0.3)', border: `1px solid ${styles.borderGlass}`,
-                      borderRadius: '8px', color: styles.textPrimary, fontSize: '13px',
-                      fontFamily: "Georgia, 'Source Serif 4', serif", resize: 'vertical',
+                      background: 'rgba(255,255,255,.05)', border: `1px solid ${styles.borderGlass}`,
+                      color: styles.textPrimary, fontSize: '13px',
+                      fontFamily: "Georgia, 'Source Serif 4', serif", resize: 'vertical'
                     }}
                   />
 
@@ -1453,13 +1437,7 @@ function EnveloAdminView() {
                           setReviewComment('');
                         } catch (e) { toast.show('Failed: ' + (e.response?.data?.detail || e.message), 'error'); }
                       }}
-                      style={{
-                        flex: 1, padding: '14px', background: 'rgba(92,214,133,0.1)',
-                        border: `1px solid ${styles.accentGreen}`, borderRadius: '8px',
-                        color: styles.accentGreen, fontFamily: "Consolas, 'IBM Plex Mono', monospace",
-                        fontSize: '12px', letterSpacing: '1px', textTransform: 'uppercase',
-                        cursor: 'pointer',
-                      }}
+                      className="btn"
                     >
                       ✓ Approve Boundaries
                     </button>
@@ -1480,13 +1458,7 @@ function EnveloAdminView() {
                           setReviewComment('');
                         } catch (e) { toast.show('Failed: ' + (e.response?.data?.detail || e.message), 'error'); }
                       }}
-                      style={{
-                        flex: 1, padding: '14px', background: 'rgba(214,92,92,0.08)',
-                        border: '1px solid rgba(214,92,92,0.3)', borderRadius: '8px',
-                        color: styles.accentRed, fontFamily: "Consolas, 'IBM Plex Mono', monospace",
-                        fontSize: '12px', letterSpacing: '1px', textTransform: 'uppercase',
-                        cursor: 'pointer',
-                      }}
+                      className="btn"
                     >
                       ✗ Reject — Require Changes
                     </button>
@@ -1500,7 +1472,7 @@ function EnveloAdminView() {
                 <Shield fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} size={48} style={{color: styles.textTertiary, margin: '0 auto 16px'}} />
                 <h2 style={{fontSize: '20px', fontWeight: 200, marginBottom: '8px'}}>Select a System to Review</h2>
                 <p style={{color: styles.textSecondary, marginBottom: '24px'}}>Choose a system from the Customer Systems tab to review its submitted boundaries.</p>
-                <button onClick={() => setActiveTab('customers')} style={{padding: '12px 24px', background: styles.purplePrimary, border: `1px solid ${styles.purpleBright}`, borderRadius: '8px', color: '#fff', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>View Customer Systems</button>
+                <button onClick={() => setActiveTab('customers')} className="btn">View Customer Systems</button>
               </div>
             </Panel>
           )}
@@ -1594,7 +1566,7 @@ function EnveloCustomerView() {
   if (!canAccessAgent) {
     return (
       <div className="space-y-6">
-        <SectionHeader label="ENVELO Agent" title="Application Required" />
+        <SectionHeader label="ENVELO Interlock" title="Application Required" />
         <Panel>
           <div style={{textAlign: 'center', padding: 'clamp(24px, 5vw, 60px) clamp(12px, 3vw, 20px)'}}>
             <Shield fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} size={48} style={{color: styles.textTertiary, margin: '0 auto 16px'}} />
@@ -1610,7 +1582,7 @@ function EnveloCustomerView() {
   if (isDeployed) {
     return (
       <div className="space-y-6">
-        <SectionHeader label="ENVELO Agent" title="Active" description="Your agent is connected and enforcing boundaries" />
+        <SectionHeader label="ENVELO Interlock" title="Active" description="Your agent is connected and enforcing boundaries" />
 
         {certifiedSystems.map(cert => {
           const session = sessions.find(s => s.certificate_id === cert.certificate_number);
@@ -1625,8 +1597,8 @@ function EnveloCustomerView() {
                     {'Attested ' + (cert.issued_at ? new Date(cert.issued_at).toLocaleDateString() : 'N/A')}
                   </p>
                 </div>
-                <div style={{display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px', background: 'rgba(92,214,133,0.15)', borderRadius: '20px'}}>
-                  <div style={{width: '8px', height: '8px', borderRadius: '50%', background: styles.accentGreen, boxShadow: '0 0 8px ' + styles.accentGreen, animation: 'pulse 2s infinite'}}></div>
+                <div style={{display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px', background: 'transparent' }}>
+                  <div style={{width: '8px', height: '8px', borderRadius: '50%', background: styles.accentGreen, animation: 'pulse 2s infinite'}}></div>
                   <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', textTransform: 'uppercase', color: styles.accentGreen}}>ENVELO Active</span>
                 </div>
               </div>
@@ -1634,15 +1606,15 @@ function EnveloCustomerView() {
                 <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '16px', marginTop: '24px', paddingTop: '24px', borderTop: '1px solid ' + styles.borderGlass}}>
                   <div style={{textAlign: 'center'}}>
                     <p style={{fontSize: 'clamp(20px, 4vw, 28px)', fontWeight: 200, color: styles.accentGreen}}>{session.uptime || '0h'}</p>
-                    <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary}}>Uptime</p>
+                    <div className="hud-label">Uptime</div>
                   </div>
                   <div style={{textAlign: 'center'}}>
                     <p style={{fontSize: 'clamp(20px, 4vw, 28px)', fontWeight: 200, color: styles.purpleBright}}>{session.record_count || 0}</p>
-                    <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary}}>Telemetry</p>
+                    <div className="hud-label">Telemetry</div>
                   </div>
                   <div style={{textAlign: 'center'}}>
                     <p style={{fontSize: 'clamp(20px, 4vw, 28px)', fontWeight: 200, color: (session.violations || 0) > 0 ? styles.accentRed : styles.accentGreen}}>{session.violations || 0}</p>
-                    <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary}}>Violations</p>
+                    <div className="hud-label">Violations</div>
                   </div>
                 </div>
               )}
@@ -1659,8 +1631,8 @@ function EnveloCustomerView() {
                   <h3 style={{fontSize: '20px', fontWeight: 500, color: styles.textPrimary, margin: '0 0 4px 0'}}>{app.system_name}</h3>
                   <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '13px', color: styles.accentAmber}}>{app.application_number} — CAT-72 Testing</p>
                 </div>
-                <div style={{display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px', background: 'rgba(92,214,133,0.15)', borderRadius: '20px'}}>
-                  <div style={{width: '8px', height: '8px', borderRadius: '50%', background: styles.accentGreen, boxShadow: '0 0 8px ' + styles.accentGreen, animation: 'pulse 2s infinite'}}></div>
+                <div style={{display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px', background: 'transparent' }}>
+                  <div style={{width: '8px', height: '8px', borderRadius: '50%', background: styles.accentGreen, animation: 'pulse 2s infinite'}}></div>
                   <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', textTransform: 'uppercase', color: styles.accentGreen}}>ENVELO Active</span>
                 </div>
               </div>
@@ -1668,15 +1640,15 @@ function EnveloCustomerView() {
                 <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '16px', marginTop: '24px', paddingTop: '24px', borderTop: '1px solid ' + styles.borderGlass}}>
                   <div style={{textAlign: 'center'}}>
                     <p style={{fontSize: 'clamp(20px, 4vw, 28px)', fontWeight: 200, color: styles.accentGreen}}>{session.pass_count || 0}</p>
-                    <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary}}>Passed</p>
+                    <div className="hud-label">Passed</div>
                   </div>
                   <div style={{textAlign: 'center'}}>
                     <p style={{fontSize: 'clamp(20px, 4vw, 28px)', fontWeight: 200, color: (session.block_count || 0) > 0 ? styles.accentRed : styles.accentGreen}}>{session.block_count || 0}</p>
-                    <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary}}>Blocked</p>
+                    <div className="hud-label">Blocked</div>
                   </div>
                   <div style={{textAlign: 'center'}}>
                     <p style={{fontSize: 'clamp(20px, 4vw, 28px)', fontWeight: 200, color: styles.purpleBright}}>{(session.pass_count || 0) + (session.block_count || 0)}</p>
-                    <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary}}>Total</p>
+                    <div className="hud-label">Total</div>
                   </div>
                 </div>
               )}
@@ -1685,7 +1657,7 @@ function EnveloCustomerView() {
         })}
 
         <Panel>
-          <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Agent Control</p>
+          <div className="hud-label" style={{marginBottom: '16px'}}>Agent Control</div>
           <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px'}}>
             <button
               onClick={async () => {
@@ -1701,7 +1673,7 @@ function EnveloCustomerView() {
                   toast.show('Failed: ' + (e.response?.data?.detail || e.message), 'error');
                 }
               }}
-              style={{padding: '16px', background: 'rgba(214,92,92,0.08)', border: '1px solid rgba(214,92,92,0.2)', borderRadius: '8px', cursor: 'pointer', textAlign: 'left'}}
+              style={{padding: '16px', background: 'transparent', border: '1px solid rgba(255,255,255,.10)', cursor: 'pointer', textAlign: 'left'}}
             >
               <p style={{fontWeight: 500, color: styles.accentRed, marginBottom: '4px', fontSize: '14px'}}>⏹ Stop Agent</p>
               <p style={{color: styles.textTertiary, fontSize: '11px', margin: 0}}>Revokes API key. Agent shuts down within 30s.</p>
@@ -1721,7 +1693,7 @@ function EnveloCustomerView() {
                   toast.show('Failed: ' + (e.response?.data?.detail || e.message), 'error');
                 }
               }}
-              style={{padding: '16px', background: 'rgba(91,75,138,0.08)', border: '1px solid rgba(91,75,138,0.2)', borderRadius: '8px', cursor: 'pointer', textAlign: 'left'}}
+              style={{padding: '16px', background: 'transparent', border: '1px solid rgba(91,75,138,0.2)', cursor: 'pointer', textAlign: 'left'}}
             >
               <p style={{fontWeight: 500, color: styles.purpleBright, marginBottom: '4px', fontSize: '14px'}}>↻ Redeploy</p>
               <p style={{color: styles.textTertiary, fontSize: '11px', margin: 0}}>Stop current agent and get a fresh deploy command.</p>
@@ -1741,7 +1713,7 @@ function EnveloCustomerView() {
                   toast.show('Failed: ' + (e.response?.data?.detail || e.message), 'error');
                 }
               }}
-              style={{padding: '16px', background: 'rgba(255,255,255,0.03)', border: '1px solid ' + styles.borderGlass, borderRadius: '8px', cursor: 'pointer', textAlign: 'left'}}
+              style={{padding: '16px', background: 'rgba(255,255,255,0.03)', border: '1px solid ' + styles.borderGlass, cursor: 'pointer', textAlign: 'left'}}
             >
               <p style={{fontWeight: 500, color: styles.textSecondary, marginBottom: '4px', fontSize: '14px'}}>⊘ Uninstall</p>
               <p style={{color: styles.textTertiary, fontSize: '11px', margin: 0}}>Remove agent, config, and auto-restart service.</p>
@@ -1749,17 +1721,17 @@ function EnveloCustomerView() {
           </div>
 
           {showUninstall && (
-            <div style={{marginTop: '16px', padding: '16px', background: 'rgba(0,0,0,0.3)', borderRadius: '8px', border: '1px solid ' + styles.borderGlass}}>
+            <div style={{marginTop: '16px', padding: '16px', background: 'rgba(255,255,255,.05)', border: '1px solid ' + styles.borderGlass}}>
               <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', color: styles.accentAmber, marginBottom: '8px'}}>Paste in terminal to fully remove</p>
-              <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px', color: styles.textSecondary, padding: '12px', background: 'rgba(0,0,0,0.3)', borderRadius: '6px', whiteSpace: 'pre-wrap', lineHeight: '1.8'}}>
+              <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px', color: styles.textSecondary, padding: '12px', background: 'rgba(255,255,255,.05)', whiteSpace: 'pre-wrap', lineHeight: '1.8'}}>
                 {'# Stop agent\nkill $(cat ~/.envelo/envelo.pid) 2>/dev/null\n\n# Remove systemd service (Linux)\nsystemctl --user stop envelo.service 2>/dev/null\nsystemctl --user disable envelo.service 2>/dev/null\nrm -f ~/.config/systemd/user/envelo.service\n\n# Remove launchd (macOS)\nlaunchctl unload ~/Library/LaunchAgents/org.sentinelauthority.envelo.plist 2>/dev/null\nrm -f ~/Library/LaunchAgents/org.sentinelauthority.envelo.plist\n\n# Remove files\nrm -rf ~/.envelo\n\necho "✓ ENVELO uninstalled"'}
               </div>
             </div>
           )}
 
-          <div style={{marginTop: '16px', padding: '12px', background: 'rgba(0,0,0,0.15)', borderRadius: '8px'}}>
+          <div style={{marginTop: '16px', padding: '12px', background: 'transparent' }}>
             <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '8px'}}>Logs</p>
-            <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px', color: styles.textSecondary, padding: '8px', background: 'rgba(0,0,0,0.3)', borderRadius: '6px'}}>cat ~/.envelo/envelo.log</div>
+            <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px', color: styles.textSecondary, padding: '8px', background: 'rgba(255,255,255,.05)' }}>cat ~/.envelo/envelo.log</div>
           </div>
         </Panel>
       </div>
@@ -1772,7 +1744,7 @@ function EnveloCustomerView() {
 
   return (
     <div className="space-y-6">
-      <SectionHeader label="ENVELO Agent" title="Deploy" description={'Ready to deploy ' + sysName} />
+      <SectionHeader label="ENVELO Interlock" title="Deploy" description={'Ready to deploy ' + sysName} />
 
       <Panel glow>
         <div style={{textAlign: 'center', padding: 'clamp(20px, 4vw, 40px) clamp(12px, 3vw, 20px)'}}>
@@ -1788,17 +1760,15 @@ function EnveloCustomerView() {
                 disabled={generating}
                 style={{
                   padding: '16px 48px',
-                  background: 'linear-gradient(135deg, #5B4B8A 0%, #7B6BAA 100%)',
+                  background: 'transparent',
                   border: '1px solid ' + styles.purpleBright,
-                  borderRadius: '12px',
-                  color: '#fff',
+                  color: 'rgba(255,255,255,.94)',
                   fontFamily: "Consolas, 'IBM Plex Mono', monospace",
                   fontSize: '14px',
                   letterSpacing: '1px',
                   cursor: generating ? 'wait' : 'pointer',
                   opacity: generating ? 0.7 : 1,
-                  boxShadow: '0 4px 24px rgba(91,75,138,0.3)',
-                  transition: 'all 0.2s',
+                  transition: 'all 0.2s'
                 }}
               >
                 {generating ? '⟳ Generating...' : '⬡ Generate Deploy Command'}
@@ -1807,7 +1777,7 @@ function EnveloCustomerView() {
           ) : (
             <>
               <div style={{marginBottom: '24px'}}>
-                <div style={{display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '8px 16px', background: 'rgba(92,214,133,0.1)', borderRadius: '20px', marginBottom: '16px'}}>
+                <div style={{display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '8px 16px', background: 'transparent', marginBottom: '16px'}}>
                   <div style={{width: '8px', height: '8px', borderRadius: '50%', background: styles.accentGreen}}></div>
                   <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', color: styles.accentGreen, textTransform: 'uppercase', letterSpacing: '1px'}}>Ready to Deploy</span>
                 </div>
@@ -1816,8 +1786,8 @@ function EnveloCustomerView() {
 
               {/* Terminal */}
               <div style={{maxWidth: 'min(700px, 95vw)', margin: '0 auto', textAlign: 'left'}}>
-                <div style={{background: 'rgba(0,0,0,0.5)', borderRadius: '12px', border: '1px solid ' + styles.purpleBright, overflow: 'hidden'}}>
-                  <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 16px', background: 'rgba(0,0,0,0.3)', borderBottom: '1px solid ' + styles.borderGlass}}>
+                <div style={{background: 'rgba(255,255,255,.05)', border: '1px solid ' + styles.purpleBright, overflow: 'hidden'}}>
+                  <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 16px', background: 'rgba(255,255,255,.05)', borderBottom: '1px solid ' + styles.borderGlass}}>
                     <div style={{display: 'flex', gap: '6px'}}>
                       <div style={{width: '10px', height: '10px', borderRadius: '50%', background: '#ff5f57'}}></div>
                       <div style={{width: '10px', height: '10px', borderRadius: '50%', background: '#febc2e'}}></div>
@@ -1830,13 +1800,12 @@ function EnveloCustomerView() {
                         padding: '4px 16px',
                         background: copied ? 'rgba(92,214,133,0.2)' : styles.purplePrimary,
                         border: '1px solid ' + (copied ? styles.accentGreen : styles.purpleBright),
-                        borderRadius: '6px',
                         color: copied ? styles.accentGreen : '#fff',
                         fontFamily: "Consolas, 'IBM Plex Mono', monospace",
                         fontSize: '11px',
                         letterSpacing: '1px',
                         textTransform: 'uppercase',
-                        cursor: 'pointer',
+                        cursor: 'pointer'
                       }}
                     >
                       {copied ? '✓ Copied' : 'Copy'}
@@ -1848,7 +1817,7 @@ function EnveloCustomerView() {
                   </div>
                 </div>
 
-                <div style={{marginTop: '20px', padding: '16px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px', border: '1px solid ' + styles.borderGlass}}>
+                <div style={{marginTop: '20px', padding: '16px', background: 'transparent', border: '1px solid ' + styles.borderGlass}}>
                   <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '12px'}}>What happens</p>
                   <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '12px', textAlign: 'center'}}>
                     {[

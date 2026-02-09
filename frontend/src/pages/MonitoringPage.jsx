@@ -5,7 +5,6 @@ import { useToast } from '../context/ToastContext';
 import { useConfirm } from '../context/ConfirmContext';
 import { styles } from '../config/styles';
 import { useAuth } from '../context/AuthContext';
-import Panel from '../components/Panel';
 
 function MonitoringPage() {
   const [overview, setOverview] = useState(null);
@@ -78,7 +77,7 @@ function MonitoringPage() {
         total_actions: total,
         pass_rate: passRate + '%',
         agent_version: s.agent_version || '',
-        last_activity: s.last_activity || '',
+        last_activity: s.last_activity || ''
       };
     });
     if (rows.length === 0) { toast.show('No sessions to export', 'warning'); return; }
@@ -131,33 +130,22 @@ function MonitoringPage() {
           </p>
         </div>
         <div style={{display: 'flex', gap: '12px', alignItems: 'center'}}>
-          <label style={{display: 'flex', alignItems: 'center', gap: '8px', color: styles.textSecondary, fontSize: '13px', cursor: 'pointer'}}>
-            <input 
-              type="checkbox" 
-              checked={autoRefresh} 
-              onChange={(e) => setAutoRefresh(e.target.checked)}
-              style={{accentColor: styles.purpleBright}}
-            />
-            Auto-refresh
-          </label>
+          <button 
+            onClick={() => setAutoRefresh(!autoRefresh)}
+            className="btn"
+            style={{padding: '6px 12px', color: autoRefresh ? 'var(--accent-green)' : 'var(--text-tertiary)', borderColor: autoRefresh ? 'rgba(92,214,133,0.2)' : 'rgba(255,255,255,0.06)'}}
+          >
+            Auto-refresh {autoRefresh ? 'ON' : 'OFF'}
+          </button>
           <button 
             onClick={async () => { setRefreshing(true); await fetchData(); setTimeout(() => setRefreshing(false), 600); }}
-            style={{
-              background: styles.bgPanel, border: `1px solid ${styles.borderGlass}`,
-              borderRadius: '8px', padding: '8px 16px', color: styles.textPrimary,
-              cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px'
-            }}
+            className="btn"
           >
             <RefreshCw size={14} style={refreshing ? {animation: "spin 1s linear infinite"} : {}} /> {refreshing ? "Refreshing..." : "Refresh"}
           </button>
           {user?.role === 'admin' && <button 
             onClick={exportSessionsCSV}
-            style={{
-              background: styles.bgPanel, border: `1px solid ${styles.borderGlass}`,
-              borderRadius: '8px', padding: '8px 16px', color: styles.textPrimary,
-              cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px',
-              fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '0.5px'
-            }}
+            className="btn"
           >
             <Download size={14} /> Export CSV
           </button>}
@@ -168,8 +156,7 @@ function MonitoringPage() {
       {alerts.length > 0 && (
         <div style={{
           background: 'rgba(214, 92, 92, 0.1)',
-          border: '1px solid rgba(214, 92, 92, 0.3)',
-          borderRadius: '12px',
+          border: '1px solid rgba(255,255,255,.10)',
           padding: '16px',
           marginBottom: '24px'
         }}>
@@ -181,7 +168,7 @@ function MonitoringPage() {
             {alerts.map((alert, i) => (
               <div key={i} style={{
                 display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px',
-                background: 'rgba(0,0,0,0.2)', borderRadius: '8px', padding: '10px 14px'
+                background: 'transparent', padding: '10px 14px'
               }}>
                 <div>
                   <span style={{
@@ -209,7 +196,7 @@ function MonitoringPage() {
         const offlineCount = sessions.filter(s => !s.is_online && s.status !== 'ended').length;
         const totalFleet = onlineCount + offlineCount;
         const healthPct = totalFleet > 0 ? (onlineCount / totalFleet * 100) : 0;
-        const cardStyle = {background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '16px', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', padding: '20px'};
+        const cardStyle = {background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', padding: '20px'};
         const labelStyle = {fontSize: '10px', fontFamily: "Consolas, 'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '2px', color: styles.textTertiary, marginBottom: '8px'};
         const subStyle = {fontSize: '12px', color: styles.textSecondary, marginTop: '4px'};
         return (
@@ -223,8 +210,8 @@ function MonitoringPage() {
                     {healthPct.toFixed(0)}% Online
                   </div>
                 </div>
-                <div style={{height: '8px', borderRadius: '4px', background: 'rgba(255,255,255,0.05)', overflow: 'hidden', display: 'flex'}}>
-                  {onlineCount > 0 && <div style={{width: (onlineCount / totalFleet * 100) + '%', background: styles.accentGreen, borderRadius: '4px 0 0 4px', transition: 'width 0.5s'}} />}
+                <div style={{height: '8px', background: 'transparent', overflow: 'hidden', display: 'flex'}}>
+                  {onlineCount > 0 && <div style={{width: (onlineCount / totalFleet * 100) + '%', background: styles.accentGreen, transition: 'width 0.5s'}} />}
                   {offlineCount > 0 && <div style={{width: (offlineCount / totalFleet * 100) + '%', background: '#D65C5C', transition: 'width 0.5s'}} />}
                 </div>
                 <div style={{display: 'flex', gap: '16px', marginTop: '8px'}}>
@@ -278,22 +265,20 @@ function MonitoringPage() {
       })()}
 
       {/* Sessions Table */}
-      <div style={{background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '16px', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', overflow: 'hidden'}}>
+      <div style={{background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', overflow: 'hidden'}}>
         <div style={{padding: '16px 20px', borderBottom: `1px solid ${styles.borderGlass}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px'}}>
-          <h2 style={{margin: 0, fontSize: '14px', fontFamily: "Consolas, 'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '2px', color: styles.textTertiary}}>{user?.role === 'admin' ? 'Agent Sessions' : 'System Monitoring'}</h2>
+          <div className="hud-label" style={{marginBottom: '16px'}}>{user?.role === 'admin' ? 'Agent Sessions' : 'System Monitoring'}</div>
           <div style={{display: 'flex', gap: '12px', alignItems: 'center'}}>
-            {user?.role === 'admin' && <select value={customerFilter} onChange={(e) => setCustomerFilter(e.target.value)} style={{background: styles.bgDeep, border: `1px solid ${styles.borderGlass}`, borderRadius: '6px', padding: '6px 10px', color: styles.textPrimary, fontSize: '12px'}}>
+            {user?.role === 'admin' && <select value={customerFilter} onChange={(e) => setCustomerFilter(e.target.value)} style={{background: styles.bgDeep, border: `1px solid ${styles.borderGlass}`, padding: '6px 10px', color: styles.textPrimary, fontSize: '12px'}}>
               <option value="">All Customers</option>
               {[...new Set(sessions.map(s => s.organization_name).filter(Boolean))].map(org => <option key={org} value={org}>{org}</option>)}
             </select>}
-            <label style={{display: 'flex', alignItems: 'center', gap: '6px', color: styles.textSecondary, fontSize: '12px', cursor: 'pointer'}}>
-              <input type="checkbox" checked={hideEnded} onChange={(e) => setHideEnded(e.target.checked)} style={{accentColor: styles.purpleBright}} />
-              Hide ended
-            </label>
-            <label style={{display: 'flex', alignItems: 'center', gap: '6px', color: styles.textSecondary, fontSize: '12px', cursor: 'pointer'}}>
-              <input type="checkbox" checked={onlineOnly} onChange={(e) => setOnlineOnly(e.target.checked)} style={{accentColor: styles.purpleBright}} />
-              Online only
-            </label>
+            <button onClick={() => setHideEnded(!hideEnded)} className="btn" style={{padding: '4px 10px', color: hideEnded ? 'var(--accent-green)' : 'var(--text-tertiary)', borderColor: hideEnded ? 'rgba(92,214,133,0.2)' : 'rgba(255,255,255,0.06)'}}>
+              Hide ended {hideEnded ? 'ON' : 'OFF'}
+            </button>
+            <button onClick={() => setOnlineOnly(!onlineOnly)} className="btn" style={{padding: '4px 10px', color: onlineOnly ? 'var(--accent-green)' : 'var(--text-tertiary)', borderColor: onlineOnly ? 'rgba(92,214,133,0.2)' : 'rgba(255,255,255,0.06)'}}>
+              Online only {onlineOnly ? 'ON' : 'OFF'}
+            </button>
           </div>
         </div>        
         {filteredSessions.length === 0 ? (
@@ -304,7 +289,7 @@ function MonitoringPage() {
           <div className='table-scroll' style={{overflowX: 'auto', WebkitOverflowScrolling: 'touch'}}>
             <table style={{width: '100%', borderCollapse: 'collapse'}}>
               <thead>
-                <tr style={{background: 'rgba(0,0,0,0.2)'}}>
+                <tr style={{background: 'transparent'}}>
                   {(() => { const th = {padding: '12px 16px', textAlign: 'left', fontSize: '10px', fontFamily: "Consolas, 'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '1px', color: styles.textTertiary}; const thr = {...th, textAlign: 'right'}; return (<>
                   <th style={th}>Status</th>
                   <th style={th}>Organization</th>
@@ -394,13 +379,10 @@ function MonitoringPage() {
           marginTop: '24px',
           background: styles.bgPanel,
           border: `1px solid ${styles.borderGlass}`,
-          borderRadius: '12px',
           overflow: 'hidden'
         }}>
           <div style={{padding: '16px 20px', borderBottom: `1px solid ${styles.borderGlass}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px'}}>
-            <h2 style={{margin: 0, fontSize: '14px', fontFamily: "Consolas, 'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '2px', color: styles.textTertiary}}>
-              Session Detail: {selectedSession.session_id}
-            </h2>
+            <div className="hud-label" style={{marginBottom: '16px'}}>Session Detail: {selectedSession.session_id}</div>
             <button 
               onClick={() => setSelectedSession(null)}
               style={{background: 'none', border: 'none', color: styles.textTertiary, cursor: 'pointer', fontSize: '18px'}}
@@ -411,7 +393,7 @@ function MonitoringPage() {
           
           <div style={{padding: '20px'}}>
             {/* Session Info Header */}
-            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px', marginBottom: '24px', flexWrap: 'wrap', gap: '16px'}}>
+            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px', marginBottom: '24px'}}>
               <div>
                 <h3 style={{margin: '0 0 4px 0', fontSize: '18px', fontWeight: 400, color: styles.textPrimary}}>{selectedSession.organization_name || 'Unknown Organization'}</h3>
                 <p style={{margin: 0, fontSize: '13px', color: styles.textSecondary}}>{selectedSession.system_name || 'Unknown System'} · {selectedSession.certificate_id || 'No certificate'}</p>
@@ -427,7 +409,7 @@ function MonitoringPage() {
                       fetchData();
                     } catch (e) { toast.show('Failed: ' + e.message, 'error'); }
                   }}
-                  style={{padding: '8px 16px', background: 'rgba(214,92,92,0.1)', border: '1px solid rgba(214,92,92,0.3)', borderRadius: '8px', color: '#D65C5C', cursor: 'pointer', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase'}}
+                  className="btn"
                 >
                   Force End Session
                 </button>
@@ -436,29 +418,29 @@ function MonitoringPage() {
             
             {/* Stats Grid */}
             <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '16px', marginBottom: '24px'}}>
-              <div style={{background: 'rgba(0,0,0,0.2)', borderRadius: '10px', padding: '14px'}}>
+              <div style={{background: 'transparent', padding: '14px'}}>
                 <div style={{fontSize: '10px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '6px'}}>Started</div>
                 <div style={{color: styles.textPrimary, fontSize: '13px'}}>{selectedSession.started_at ? new Date(selectedSession.started_at).toLocaleString() : '-'}</div>
               </div>
-              <div style={{background: 'rgba(0,0,0,0.2)', borderRadius: '10px', padding: '14px'}}>
+              <div style={{background: 'transparent', padding: '14px'}}>
                 <div style={{fontSize: '10px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '6px'}}>Uptime</div>
                 <div style={{color: styles.textPrimary, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '18px'}}>{selectedSession.uptime_hours?.toFixed(1) || '0'}h</div>
               </div>
-              <div style={{background: 'rgba(92,214,133,0.08)', borderRadius: '10px', padding: '14px'}}>
+              <div style={{background: 'transparent', padding: '14px'}}>
                 <div style={{fontSize: '10px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '6px'}}>Passed</div>
                 <div style={{color: styles.accentGreen, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '18px'}}>{(selectedSession.pass_count || 0).toLocaleString()}</div>
               </div>
-              <div style={{background: 'rgba(214,92,92,0.08)', borderRadius: '10px', padding: '14px'}}>
+              <div style={{background: 'transparent', padding: '14px'}}>
                 <div style={{fontSize: '10px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '6px'}}>Blocked</div>
                 <div style={{color: '#D65C5C', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '18px'}}>{(selectedSession.block_count || 0).toLocaleString()}</div>
               </div>
-              <div style={{background: 'rgba(0,0,0,0.2)', borderRadius: '10px', padding: '14px'}}>
+              <div style={{background: 'transparent', padding: '14px'}}>
                 <div style={{fontSize: '10px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '6px'}}>Pass Rate</div>
                 {(() => { const t = (selectedSession.pass_count || 0) + (selectedSession.block_count || 0); const r = t > 0 ? (selectedSession.pass_count / t * 100) : 0; return (
                   <div style={{color: r >= 99 ? styles.accentGreen : r >= 95 ? '#D6A05C' : '#D65C5C', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '18px'}}>{r.toFixed(1)}%</div>
                 ); })()}
               </div>
-              <div style={{background: 'rgba(0,0,0,0.2)', borderRadius: '10px', padding: '14px'}}>
+              <div style={{background: 'transparent', padding: '14px'}}>
                 <div style={{fontSize: '10px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '6px'}}>Certificate</div>
                 <div style={{color: styles.purpleBright, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px'}}>{selectedSession.certificate_id || '-'}</div>
               </div>
@@ -468,7 +450,7 @@ function MonitoringPage() {
             {(() => { const t = (selectedSession.pass_count || 0) + (selectedSession.block_count || 0); if (t === 0) return null; const pp = selectedSession.pass_count / t * 100; return (
               <div style={{marginBottom: '24px'}}>
                 <div style={{fontSize: '10px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px'}}>Enforcement Distribution</div>
-                <div style={{height: '12px', borderRadius: '6px', background: 'rgba(255,255,255,0.05)', overflow: 'hidden', display: 'flex'}}>
+                <div style={{height: '12px', background: 'transparent', overflow: 'hidden', display: 'flex'}}>
                   <div style={{width: pp + '%', background: 'linear-gradient(90deg, ' + styles.accentGreen + ', #4BC87A)', transition: 'width 0.5s'}} />
                   <div style={{width: (100 - pp) + '%', background: '#D65C5C', transition: 'width 0.5s'}} />
                 </div>
@@ -499,7 +481,7 @@ function MonitoringPage() {
                     link.click();
                   } catch (e) { toast.show('Failed to download telemetry', 'error'); }
                 }}
-                style={{padding: '8px 16px', background: 'rgba(157,140,207,0.1)', border: '1px solid rgba(157,140,207,0.3)', borderRadius: '8px', color: styles.purpleBright, cursor: 'pointer', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px'}}
+                className="btn"
               >
                 ↓ Telemetry CSV
               </button>
@@ -520,7 +502,7 @@ function MonitoringPage() {
                     link.click();
                   } catch (e) { toast.show('Failed to download violations', 'error'); }
                 }}
-                style={{padding: '8px 16px', background: 'rgba(214,92,92,0.08)', border: '1px solid rgba(214,92,92,0.25)', borderRadius: '8px', color: '#D65C5C', cursor: 'pointer', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px'}}
+                className="btn"
               >
                 ↓ Violations CSV
               </button>
@@ -537,7 +519,7 @@ function MonitoringPage() {
                     link.click();
                   } catch (e) { toast.show('Failed to download report', 'error'); }
                 }}
-                style={{padding: '8px 16px', background: 'rgba(92,214,133,0.08)', border: '1px solid rgba(92,214,133,0.25)', borderRadius: '8px', color: styles.accentGreen, cursor: 'pointer', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px'}}
+                className="btn"
               >
                 ↓ CAT-72 Report PDF
               </button>
@@ -561,7 +543,6 @@ function MonitoringPage() {
                           flex: 1,
                           height: `${Math.max(height, 2)}%`,
                           background: passRatio >= 0.99 ? styles.accentGreen : passRatio >= 0.95 ? '#D6A05C' : '#D65C5C',
-                          borderRadius: '2px 2px 0 0',
                           opacity: 0.8
                         }}
                         title={`${new Date(point.hour).toLocaleTimeString()}: ${point.total} actions (${point.pass} pass, ${point.block} block)`}

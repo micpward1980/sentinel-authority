@@ -158,8 +158,8 @@ async def get_boundary_config(
                 select(Certificate).join(Application).where(
                     Application.applicant_id == user.id,
                     Certificate.state.in_([
-                        CertificationState.CONFORMANT,
-                        CertificationState.OBSERVE,
+                        "conformant",
+                        "observe",
                         CertificationState.BOUNDED
                     ])
                 ).order_by(Certificate.issued_at.desc())
@@ -243,9 +243,9 @@ async def get_test_boundary_config(
         select(Application).where(
             Application.applicant_id == user.id,
             Application.state.in_([
-                CertificationState.OBSERVE,
+                "observe",
                 CertificationState.BOUNDED,
-                CertificationState.APPROVED  # Add if you have this state
+                "approved"  # Add if you have this state
             ])
         ).order_by(Application.submitted_at.desc())
     )

@@ -1,0 +1,211 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+  --purple-primary: #5B4B8A;
+  --purple-bright: #a896d6;
+  --purple-glow: rgba(157,140,207,.20);
+  --bg-deep: #2a2f3d;
+  --bg-panel: rgba(255,255,255,.03);
+  --accent-green: #5CD685;
+  --accent-amber: #D6A05C;
+  --accent-red: #D65C5C;
+  --text-primary: rgba(255,255,255,.94);
+  --text-secondary: rgba(255,255,255,.78);
+  --text-tertiary: rgba(255,255,255,.50);
+  --text-dim: rgba(255,255,255,.35);
+  --border-glass: rgba(255,255,255,.07);
+  --border-subtle: rgba(255,255,255,.04);
+  --serif: Georgia, 'Source Serif 4', serif;
+  --mono: Consolas, 'IBM Plex Mono', monospace;
+  --sans: Calibri, 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  --nav-height: 72px;
+  --max: 1200px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; background: var(--bg-deep); }
+
+body {
+  font-family: var(--sans);
+  background:
+    radial-gradient(1200px 700px at 15% 10%, rgba(91,75,138,.10), transparent 55%),
+    radial-gradient(900px 600px at 85% 80%, rgba(92,214,133,.04), transparent 55%),
+    var(--bg-deep);
+  color: var(--text-primary);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(157,140,207,0.2); }
+::-webkit-scrollbar-thumb:hover { background: rgba(157,140,207,0.35); }
+
+table { border-collapse: collapse; }
+input:focus, select:focus, textarea:focus { outline: none; }
+a:focus-visible, button:focus-visible { outline: 2px solid rgba(157,140,207,.75); outline-offset: 3px; }
+
+/* ── Vignette ── */
+.sa-vignette {
+  position: fixed; inset: 0;
+  pointer-events: none; z-index: 99989;
+  background: radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.15) 80%, rgba(0,0,0,0.35) 100%);
+}
+
+/* ── Grid overlay ── */
+.sa-grid-overlay {
+  position: fixed; inset: 0;
+  pointer-events: none; z-index: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+  background-size: 120px 120px;
+  opacity: .2;
+  mask-image: radial-gradient(ellipse at center, rgba(0,0,0,.9) 20%, transparent 70%);
+  -webkit-mask-image: radial-gradient(ellipse at center, rgba(0,0,0,.9) 20%, transparent 70%);
+}
+
+/* ── HUD bracket corners ── */
+.hud-frame { position: relative; padding: 20px 16px; border: none; }
+.hud-frame::before, .hud-frame::after,
+.hud-frame > .hud-corners::before, .hud-frame > .hud-corners::after {
+  content: ''; position: absolute; width: 8px; height: 8px;
+  border-color: rgba(255,255,255,0.08); border-style: solid; pointer-events: none;
+}
+.hud-frame::before { top: 0; left: 0; border-width: 1px 0 0 1px; }
+.hud-frame::after  { top: 0; right: 0; border-width: 1px 1px 0 0; }
+.hud-frame > .hud-corners { position: absolute; inset: 0; pointer-events: none; }
+.hud-frame > .hud-corners::before { content: ''; position: absolute; bottom: 0; left: 0; width: 8px; height: 8px; border-color: rgba(255,255,255,0.08); border-style: solid; border-width: 0 0 1px 1px; }
+.hud-frame > .hud-corners::after  { content: ''; position: absolute; bottom: 0; right: 0; width: 8px; height: 8px; border-color: rgba(255,255,255,0.08); border-style: solid; border-width: 0 1px 1px 0; }
+
+/* ── HUD text classes ── */
+.hud-label { font-family: var(--mono); font-size: 9px; letter-spacing: 2px; color: rgba(255,255,255,0.35); text-transform: uppercase; }
+.hud-dot { display: inline-block; width: 4px; height: 4px; border-radius: 50% !important; background: rgba(157,140,207,0.5); margin-right: 8px; flex-shrink: 0; }
+.hud-link { font-family: var(--mono); font-size: 11px; letter-spacing: 2px; color: rgba(157,140,207,0.7); text-decoration: none; transition: all 0.2s; }
+.hud-link:hover { color: var(--purple-bright); }
+.hud-row { padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.02); }
+
+/* ── Animations ── */
+@keyframes eye-pulse {
+  0%, 100% { opacity: .75; transform: scale(.98); box-shadow: 0 0 0 rgba(196,184,232,0); }
+  50% { opacity: 1; transform: scale(1.02); box-shadow: 0 0 10px rgba(157,140,207,.22); }
+}
+@keyframes hud-breathe { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+/* ── Interactive states ── */
+.sa-hover-row { transition: background 0.15s; }
+.sa-hover-row:hover { background: rgba(157,140,207,0.04) !important; }
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+/* GLOBAL HUD ENFORCEMENT                         */
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+/* ZERO rounded corners on everything */
+*, *::before, *::after {
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+/* EXCEPT: status dots */
+.sa-status-dot,
+[data-dot="true"] {
+  border-radius: 50% !important;
+}
+
+/* Buttons: flat HUD style */
+button, [role="button"], input[type="submit"] {
+  font-family: var(--mono) !important;
+  letter-spacing: 1.5px !important;
+  text-transform: uppercase !important;
+  font-size: 10px !important;
+  cursor: pointer;
+  transition: all 0.2s !important;
+  background: transparent !important;
+  border: 1px solid rgba(255,255,255,0.07) !important;
+  color: rgba(255,255,255,0.50) !important;
+  padding: 10px 20px !important;
+}
+button:hover, [role="button"]:hover, input[type="submit"]:hover {
+  color: rgba(255,255,255,0.94) !important;
+  border-color: rgba(255,255,255,0.15) !important;
+  background: rgba(255,255,255,0.03) !important;
+}
+/* Primary action buttons */
+button.sa-primary, .sa-primary {
+  background: #5B4B8A !important;
+  border: 1px solid rgba(157,140,207,0.3) !important;
+  color: rgba(255,255,255,0.94) !important;
+}
+button.sa-primary:hover, .sa-primary:hover {
+  background: rgba(91,75,138,0.8) !important;
+  border-color: #a896d6 !important;
+}
+
+/* Inputs: flat HUD */
+input:not([type="checkbox"]):not([type="radio"]),
+select, textarea {
+  background: rgba(255,255,255,0.03) !important;
+  border: 1px solid rgba(255,255,255,0.07) !important;
+  color: rgba(255,255,255,0.94) !important;
+  font-family: var(--mono) !important;
+  font-size: 12px !important;
+  padding: 10px 14px !important;
+  transition: border-color 0.2s !important;
+}
+input:focus, select:focus, textarea:focus {
+  border-color: rgba(157,140,207,0.4) !important;
+}
+input::placeholder, textarea::placeholder {
+  color: rgba(255,255,255,0.25) !important;
+  font-family: var(--mono) !important;
+  font-size: 10px !important;
+  letter-spacing: 1px !important;
+  text-transform: uppercase !important;
+}
+
+/* Tables: flat HUD */
+table { width: 100%; }
+table th {
+  font-family: var(--mono) !important;
+  font-size: 9px !important;
+  letter-spacing: 2px !important;
+  text-transform: uppercase !important;
+  color: rgba(255,255,255,0.35) !important;
+  font-weight: 400 !important;
+  text-align: left !important;
+  padding: 10px 12px !important;
+  border-bottom: 1px solid rgba(255,255,255,0.06) !important;
+  background: transparent !important;
+}
+table td {
+  padding: 12px !important;
+  border-bottom: 1px solid rgba(255,255,255,0.03) !important;
+  font-size: 13px !important;
+  color: rgba(255,255,255,0.78) !important;
+  background: transparent !important;
+}
+table tr:hover td { background: rgba(157,140,207,0.03) !important; }
+
+/* Select dropdown arrow */
+select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.35)' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 12px center !important;
+  padding-right: 36px !important;
+}
+
+/* Links */
+a:not([class]) { color: rgba(157,140,207,0.7); text-decoration: none; transition: color 0.2s; }
+a:not([class]):hover { color: #a896d6; }
+
+/* Mobile */
+@media (max-width: 768px) {
+  .sa-main-content { padding: 16px !important; }
+  .sa-header-links { display: none !important; }
+}

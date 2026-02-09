@@ -23,7 +23,7 @@ function CertificatesPage() {
     all: certificates.length,
     active: certificates.filter(c => c.state === 'conformant' || c.state === 'active' || c.state === 'issued').length,
     suspended: certificates.filter(c => c.state === 'suspended').length,
-    revoked: certificates.filter(c => c.state === 'revoked').length,
+    revoked: certificates.filter(c => c.state === 'revoked').length
   };
 
   const filterTabs = [
@@ -42,7 +42,7 @@ function CertificatesPage() {
       </div>
 
       {/* Filter Tabs */}
-      <div style={{display: 'flex', gap: '4px', background: 'rgba(255,255,255,0.03)', borderRadius: '8px', padding: '4px', border: `1px solid ${styles.borderGlass}`}}>
+      <div style={{display: 'flex', gap: '4px', background: 'rgba(255,255,255,0.03)', padding: '4px', border: `1px solid ${styles.borderGlass}`}}>
         {filterTabs.map(tab => (
           <button
             key={tab.key}
@@ -50,7 +50,6 @@ function CertificatesPage() {
             style={{
               flex: 1,
               padding: '8px 16px',
-              borderRadius: '6px',
               border: 'none',
               cursor: 'pointer',
               fontFamily: "Consolas, 'IBM Plex Mono', monospace",
@@ -59,7 +58,7 @@ function CertificatesPage() {
               textTransform: 'uppercase',
               transition: 'all 0.2s',
               background: statusFilter === tab.key ? styles.purplePrimary : 'transparent',
-              color: statusFilter === tab.key ? '#fff' : styles.textTertiary,
+              color: statusFilter === tab.key ? '#fff' : styles.textTertiary
             }}
           >
             {tab.label} {counts[tab.key] > 0 ? `(${counts[tab.key]})` : ''}
@@ -86,13 +85,13 @@ function CertificatesPage() {
                 <td className="px-4 py-4" style={{color: styles.textPrimary}}>{cert.system_name}</td>
                 <td className="px-4 py-4" style={{color: styles.textSecondary}}>{cert.organization_name}</td>
                 <td className="px-4 py-4">
-                  <span className="px-2 py-1 rounded" style={{
-                    background: cert.state === 'conformant' ? 'rgba(92,214,133,0.15)' : cert.state === 'suspended' ? 'rgba(214,160,92,0.15)' : 'rgba(214,92,92,0.15)',
+                  <span className="px-2 py-1" style={{
+                    background: cert.state === 'conformant' ? 'rgba(92,214,133,0.04)' : cert.state === 'suspended' ? 'rgba(214,160,92,0.04)' : 'rgba(214,92,92,0.04)',
                     color: cert.state === 'conformant' ? styles.accentGreen : cert.state === 'suspended' ? styles.accentAmber : styles.accentRed,
                     fontFamily: "Consolas, 'IBM Plex Mono', monospace",
                     fontSize: '10px',
                     letterSpacing: '1px',
-                    textTransform: 'uppercase',
+                    textTransform: 'uppercase'
                   }}>
                     {cert.state}
                   </span>
@@ -105,8 +104,8 @@ function CertificatesPage() {
                         href={`${API_BASE}/api/certificates/${cert.certificate_number}/pdf`} 
                         target="_blank" 
                         rel="noopener noreferrer" 
-                        className="px-3 py-1 rounded transition-colors no-underline"
-                        style={{background: styles.purplePrimary, border: `1px solid ${styles.purpleBright}`, color: '#fff', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase'}}
+                        className="px-3 py-1 transition-colors no-underline"
+                        className="btn"
                       >
                         Download PDF
                       </a>
@@ -115,7 +114,7 @@ function CertificatesPage() {
                         {cert.state === 'revoked' ? 'Revoked' : 'Suspended'}
                       </span>
                     )}
-                    <Link to={`/verify?cert=${cert.certificate_number}`} className="px-2 py-1 rounded no-underline" style={{background: 'rgba(255,255,255,0.05)', border: `1px solid ${styles.borderGlass}`, color: styles.textSecondary, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '0.5px', textTransform: 'uppercase'}}>Verify</Link>
+                    <Link to={`/verify?cert=${cert.certificate_number}`} className="px-2 py-1 no-underline" className="btn">Verify</Link>
                   </div>
                 </td>
               </tr>

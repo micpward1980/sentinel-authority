@@ -35,7 +35,7 @@ async def _create_session_token(user, request, db):
     await db.commit()
     return create_access_token({
         "sub": str(user.id), "email": user.email,
-        "role": user.role.value, "organization": user.organization,
+        "role": user.role, "organization": user.organization,
         "sid": sid,
     })
 
@@ -227,7 +227,7 @@ async def verify_2fa_login(
     return {
         "access_token": token,
         "token_type": "bearer",
-        "user": {"id": user.id, "email": user.email, "full_name": user.full_name, "role": user.role.value, "organization": user.organization, "organization_id": user.organization_id}
+        "user": {"id": user.id, "email": user.email, "full_name": user.full_name, "role": user.role, "organization": user.organization, "organization_id": user.organization_id}
     }
 
 class ChangePasswordRequest(BaseModel):
@@ -276,7 +276,7 @@ async def register(request: Request, user_data: UserCreate, db: AsyncSession = D
         hashed_password=get_password_hash(user_data.password),
         full_name=user_data.full_name,
         organization=user_data.organization,
-        role=UserRole.PENDING,
+        role="pending",
     )
     db.add(user)
     await db.commit()
@@ -310,7 +310,7 @@ async def register(request: Request, user_data: UserCreate, db: AsyncSession = D
     return {
         "access_token": token,
         "token_type": "bearer",
-        "user": {"id": user.id, "email": user.email, "full_name": user.full_name, "role": user.role.value, "organization": user.organization, "organization_id": user.organization_id}
+        "user": {"id": user.id, "email": user.email, "full_name": user.full_name, "role": user.role, "organization": user.organization, "organization_id": user.organization_id}
     }
 
 
@@ -348,11 +348,11 @@ async def login(request: Request, credentials: UserLogin, db: AsyncSession = Dep
     
     # Check if 2FA is enabled
     if user.totp_enabled and user.totp_secret:
-        temp_token = create_access_token({"sub": str(user.id), "email": user.email, "role": user.role.value, "organization": user.organization, "organization_id": user.organization_id}, expires_minutes=5)
+        temp_token = create_access_token({"sub": str(user.id), "email": user.email, "role": user.role, "organization": user.organization, "organization_id": user.organization_id}, expires_minutes=5)
         return {
             "requires_2fa": True,
             "temp_token": temp_token,
-            "user": {"id": user.id, "email": user.email, "full_name": user.full_name, "role": user.role.value, "organization": user.organization, "organization_id": user.organization_id}
+            "user": {"id": user.id, "email": user.email, "full_name": user.full_name, "role": user.role, "organization": user.organization, "organization_id": user.organization_id}
         }
     
     token = await _create_session_token(user, request, db)
@@ -364,7 +364,7 @@ async def login(request: Request, credentials: UserLogin, db: AsyncSession = Dep
     return {
         "access_token": token,
         "token_type": "bearer",
-        "user": {"id": user.id, "email": user.email, "full_name": user.full_name, "role": user.role.value, "organization": user.organization, "organization_id": user.organization_id}
+        "user": {"id": user.id, "email": user.email, "full_name": user.full_name, "role": user.role, "organization": user.organization, "organization_id": user.organization_id}
     }
 
 
@@ -435,7 +435,7 @@ async def update_profile(
             "id": user.id,
             "email": user.email,
             "full_name": user.full_name,
-            "role": user.role.value,
+            "role": user.role,
             "organization": user.organization,
             "organization_id": user.organization_id
         }
@@ -447,7 +447,7 @@ async def get_me(current_user: dict = Depends(get_current_user), db: AsyncSessio
     user = result.scalar_one_or_none()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
-    return {"id": user.id, "email": user.email, "full_name": user.full_name, "organization": user.organization, "role": user.role.value, "totp_enabled": user.totp_enabled or False}
+    return {"id": user.id, "email": user.email, "full_name": user.full_name, "organization": user.organization, "role": user.role, "totp_enabled": user.totp_enabled or False}
 
 @router.post("/forgot-password", summary="Request password reset email")
 @limiter.limit("3/minute")

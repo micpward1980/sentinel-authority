@@ -44,7 +44,7 @@ function UserManagementPage() {
     admins: users.filter(u => u.role === 'admin').length,
     applicants: users.filter(u => u.role === 'applicant').length,
     pending: users.filter(u => u.role === 'pending').length,
-    inactive: users.filter(u => u.is_active === false).length,
+    inactive: users.filter(u => u.is_active === false).length
   };
 
   const handleInvite = async () => {
@@ -133,7 +133,7 @@ function UserManagementPage() {
   return (
     <div className="space-y-6">
       <SectionHeader label="Administration" title="User Management" description="Manage admin and applicant accounts"
-        action={<button onClick={() => setShowInviteModal(true)} className="sexy-btn px-4 py-2 rounded-lg flex items-center gap-2" style={{background: styles.purplePrimary, border: '1px solid ' + styles.purpleBright, color: '#fff'}}><Plus className="w-4 h-4" /> Invite User</button>}
+        action={<button onClick={() => setShowInviteModal(true)} className="btn px-4 py-2 flex items-center gap-2" style={{background: styles.purplePrimary, border: '1px solid ' + styles.purpleBright, color: 'rgba(255,255,255,.94)'}}><Plus className="w-4 h-4" /> Invite User</button>}
       />
       <div className="grid gap-4" style={{gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))"}}>
         <StatCard label="Total Users" value={stats.total} color={styles.textPrimary} />
@@ -145,7 +145,7 @@ function UserManagementPage() {
       <Panel>
         <div className="flex items-center gap-3">
           <Search className="w-5 h-5" style={{color: styles.textTertiary}} />
-          <input type="text" placeholder="Search by name, email, or company..." value={search} onChange={(e) => setSearch(e.target.value)} className="sexy-input flex-1 px-4 py-3 rounded-lg" style={{background: 'rgba(255,255,255,0.03)', border: '1px solid ' + styles.borderGlass, color: styles.textPrimary, outline: 'none'}} />
+          <input type="text" placeholder="Search by name, email, or company..." value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1 px-4 py-3" style={{background: 'rgba(255,255,255,0.03)', border: '1px solid ' + styles.borderGlass, color: styles.textPrimary, outline: 'none'}} />
         </div>
       </Panel>
       <Panel>
@@ -159,22 +159,22 @@ function UserManagementPage() {
         ) : (
           <div className="space-y-2">
             {filteredUsers.map(user => (
-              <div key={user.id || user.email} onClick={() => { setSelectedUser(user); setShowEditModal(true); }} className="flex items-center gap-4 p-4 rounded-lg cursor-pointer transition-all" style={{background: 'rgba(255,255,255,0.02)', border: '1px solid ' + styles.borderGlass}}>
-                <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style={{background: styles.purplePrimary, color: '#fff', fontWeight: '400'}}>{user.full_name?.[0] || user.email?.[0] || '?'}</div>
+              <div key={user.id || user.email} onClick={() => { setSelectedUser(user); setShowEditModal(true); }} className="flex items-center gap-4 p-4 cursor-pointer transition-all" style={{background: 'rgba(255,255,255,0.02)', border: '1px solid ' + styles.borderGlass}}>
+                <div className="w-10 h-10 flex items-center justify-center flex-shrink-0" style={{background: styles.purplePrimary, color: 'rgba(255,255,255,.94)', fontWeight: '400'}}>{user.full_name?.[0] || user.email?.[0] || '?'}</div>
                 <div className="flex-1 min-w-0">
                   <p style={{color: styles.textPrimary, fontWeight: '500'}}>{user.full_name || 'No Name'}</p>
                   <p style={{color: styles.textTertiary, fontSize: '13px'}}>{user.email}</p>
                   {user.company && <p style={{color: styles.textTertiary, fontSize: '12px'}}>{user.company}</p>}
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="px-2 py-1 rounded text-xs" style={{background: user.role === 'admin' ? 'rgba(157,140,207,0.2)' : user.role === 'pending' ? 'rgba(245,158,11,0.15)' : 'rgba(255,255,255,0.1)', color: user.role === 'admin' ? styles.purpleBright : user.role === 'pending' ? '#f59e0b' : styles.textTertiary, fontFamily: "Consolas, 'IBM Plex Mono', monospace", textTransform: 'uppercase'}}>{user.role}</span>
+                  <span className="px-2 py-1 text-xs" style={{background: user.role === 'admin' ? 'rgba(157,140,207,0.2)' : user.role === 'pending' ? 'rgba(245,158,11,0.15)' : 'rgba(255,255,255,0.1)', color: user.role === 'admin' ? styles.purpleBright : user.role === 'pending' ? '#f59e0b' : styles.textTertiary, fontFamily: "Consolas, 'IBM Plex Mono', monospace", textTransform: 'uppercase'}}>{user.role}</span>
                   {user.role === 'pending' && (
                     <div className="flex gap-1" onClick={e => e.stopPropagation()}>
-                      <button onClick={() => handleApproveUser(user.id, user.email)} className="px-2 py-1 rounded text-xs" style={{background: 'rgba(34,197,94,0.15)', color: '#22c55e', border: '1px solid rgba(34,197,94,0.3)', cursor: 'pointer'}}>Approve</button>
-                      <button onClick={() => handleRejectUser(user.id, user.email)} className="px-2 py-1 rounded text-xs" style={{background: 'rgba(214,92,92,0.15)', color: '#d65c5c', border: '1px solid rgba(214,92,92,0.3)', cursor: 'pointer'}}>Reject</button>
+                      <button onClick={() => handleApproveUser(user.id, user.email)} className="btn" style={{padding: '4px 12px', color: 'var(--accent-green)'}}>Approve</button>
+                      <button onClick={() => handleRejectUser(user.id, user.email)} className="btn" style={{padding: '4px 12px', color: 'var(--accent-red)'}}>Reject</button>
                     </div>
                   )}
-                  {user.is_active === false && <span className="px-2 py-1 rounded text-xs" style={{background: 'rgba(214,92,92,0.15)', color: styles.accentRed}}>Inactive</span>}
+                  {user.is_active === false && <span className="px-2 py-1 text-xs" style={{background: 'transparent', color: styles.accentRed}}>Inactive</span>}
                 </div>
               </div>
             ))}
@@ -183,49 +183,49 @@ function UserManagementPage() {
       </Panel>
       {showInviteModal && (
         <div className="fixed inset-0 flex items-center justify-center z-50" style={{background: 'rgba(0,0,0,0.7)'}}>
-          <div className="w-full max-w-md mx-4 p-6 rounded-xl" style={{background: styles.bgDeep, border: '1px solid ' + styles.borderGlass}}>
+          <div className="w-full max-w-md mx-4 p-6" style={{background: styles.bgDeep, border: '1px solid ' + styles.borderGlass}}>
             <h2 style={{color: styles.textPrimary, fontSize: '20px', fontWeight: '400', marginBottom: '24px', textAlign: 'center'}}>Invite New User</h2>
             <div className="space-y-4">
-              <div><label style={{color: styles.textSecondary, fontSize: '12px', display: 'block', marginBottom: '6px'}}>Email *</label><input type="email" value={inviteForm.email} onChange={(e) => setInviteForm({...inviteForm, email: e.target.value})} placeholder="user@company.com" className="sexy-input w-full px-4 py-3 rounded-lg" style={{background: 'rgba(255,255,255,0.05)', border: '1px solid ' + styles.borderGlass, color: styles.textPrimary, outline: 'none'}} /></div>
-              <div><label style={{color: styles.textSecondary, fontSize: '12px', display: 'block', marginBottom: '6px'}}>Full Name *</label><input type="text" value={inviteForm.full_name} onChange={(e) => setInviteForm({...inviteForm, full_name: e.target.value})} placeholder="John Smith" className="sexy-input w-full px-4 py-3 rounded-lg" style={{background: 'rgba(255,255,255,0.05)', border: '1px solid ' + styles.borderGlass, color: styles.textPrimary, outline: 'none'}} /></div>
-              <div><label style={{color: styles.textSecondary, fontSize: '12px', display: 'block', marginBottom: '6px'}}>Company</label><input type="text" value={inviteForm.company} onChange={(e) => setInviteForm({...inviteForm, company: e.target.value})} placeholder="Company name" className="sexy-input w-full px-4 py-3 rounded-lg" style={{background: 'rgba(255,255,255,0.05)', border: '1px solid ' + styles.borderGlass, color: styles.textPrimary, outline: 'none'}} /></div>
+              <div><label style={{color: styles.textSecondary, fontSize: '12px', display: 'block', marginBottom: '6px'}}>Email *</label><input type="email" value={inviteForm.email} onChange={(e) => setInviteForm({...inviteForm, email: e.target.value})} placeholder="user@company.com" className="w-full px-4 py-3" style={{background: 'transparent', border: '1px solid ' + styles.borderGlass, color: styles.textPrimary, outline: 'none'}} /></div>
+              <div><label style={{color: styles.textSecondary, fontSize: '12px', display: 'block', marginBottom: '6px'}}>Full Name *</label><input type="text" value={inviteForm.full_name} onChange={(e) => setInviteForm({...inviteForm, full_name: e.target.value})} placeholder="John Smith" className="w-full px-4 py-3" style={{background: 'transparent', border: '1px solid ' + styles.borderGlass, color: styles.textPrimary, outline: 'none'}} /></div>
+              <div><label style={{color: styles.textSecondary, fontSize: '12px', display: 'block', marginBottom: '6px'}}>Company</label><input type="text" value={inviteForm.company} onChange={(e) => setInviteForm({...inviteForm, company: e.target.value})} placeholder="Company name" className="w-full px-4 py-3" style={{background: 'transparent', border: '1px solid ' + styles.borderGlass, color: styles.textPrimary, outline: 'none'}} /></div>
               <div><label style={{color: styles.textSecondary, fontSize: '12px', display: 'block', marginBottom: '6px'}}>Role</label>
                 <div className="flex gap-3">
-                  <button onClick={() => setInviteForm({...inviteForm, role: 'applicant'})} className="flex-1 px-4 py-3 rounded-lg" style={{background: inviteForm.role === 'applicant' ? 'rgba(157,140,207,0.2)' : 'rgba(255,255,255,0.05)', border: '1px solid ' + (inviteForm.role === 'applicant' ? styles.purpleBright : styles.borderGlass), color: inviteForm.role === 'applicant' ? styles.purpleBright : styles.textTertiary}}>Applicant</button>
-                  <button onClick={() => setInviteForm({...inviteForm, role: 'admin'})} className="flex-1 px-4 py-3 rounded-lg" style={{background: inviteForm.role === 'admin' ? 'rgba(157,140,207,0.2)' : 'rgba(255,255,255,0.05)', border: '1px solid ' + (inviteForm.role === 'admin' ? styles.purpleBright : styles.borderGlass), color: inviteForm.role === 'admin' ? styles.purpleBright : styles.textTertiary}}>Admin</button>
+                  <button onClick={() => setInviteForm({...inviteForm, role: 'applicant'})} className="btn" style={{padding: '10px 16px', flex: 1, justifyContent: 'center', color: inviteForm.role === 'applicant' ? 'var(--purple-bright)' : 'var(--text-tertiary)', borderColor: inviteForm.role === 'applicant' ? 'rgba(157,140,207,.3)' : 'rgba(255,255,255,.06)'}}>Applicant</button>
+                  <button onClick={() => setInviteForm({...inviteForm, role: 'admin'})} className="btn" style={{padding: '10px 16px', flex: 1, justifyContent: 'center', color: inviteForm.role === 'admin' ? 'var(--purple-bright)' : 'var(--text-tertiary)', borderColor: inviteForm.role === 'admin' ? 'rgba(157,140,207,.3)' : 'rgba(255,255,255,.06)'}}>Admin</button>
                 </div>
               </div>
             </div>
             <div className="mt-6 space-y-3">
-              <button onClick={handleInvite} disabled={inviteLoading} className="sexy-btn w-full px-4 py-3 rounded-lg" style={{background: styles.purplePrimary, border: '1px solid ' + styles.purpleBright, color: '#fff', opacity: inviteLoading ? 0.7 : 1}}>{inviteLoading ? 'Creating...' : 'Create Account'}</button>
-              <button onClick={() => { setShowInviteModal(false); setInviteForm({ email: '', full_name: '', company: '', role: 'applicant' }); }} className="w-full px-4 py-3 rounded-lg" style={{background: 'transparent', border: 'none', color: styles.textTertiary}}>Cancel</button>
+              <button onClick={handleInvite} disabled={inviteLoading} className="btn primary" style={{width: '100%', opacity: inviteLoading ? 0.7 : 1}}>{inviteLoading ? 'Creating...' : 'Create Account'}</button>
+              <button onClick={() => { setShowInviteModal(false); setInviteForm({ email: '', full_name: '', company: '', role: 'applicant' }); }} className="w-full px-4 py-3" style={{background: 'transparent', border: 'none', color: styles.textTertiary}}>Cancel</button>
             </div>
           </div>
         </div>
       )}
       {showEditModal && selectedUser && (
         <div className="fixed inset-0 flex items-center justify-center z-50" style={{background: 'rgba(0,0,0,0.7)'}}>
-          <div className="w-full max-w-md mx-4 p-6 rounded-xl" style={{background: styles.bgDeep, border: '1px solid ' + styles.borderGlass}}>
+          <div className="w-full max-w-md mx-4 p-6" style={{background: styles.bgDeep, border: '1px solid ' + styles.borderGlass}}>
             <h2 style={{color: styles.textPrimary, fontSize: '20px', fontWeight: '400', marginBottom: '24px', textAlign: 'center'}}>Manage User</h2>
-            <div className="text-center mb-6 p-4 rounded-lg" style={{background: 'rgba(255,255,255,0.03)'}}>
-              <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3" style={{background: styles.purplePrimary, color: '#fff', fontSize: '24px', fontWeight: '400'}}>{selectedUser.full_name?.[0] || selectedUser.email?.[0] || '?'}</div>
+            <div className="text-center mb-6 p-4" style={{background: 'rgba(255,255,255,0.03)'}}>
+              <div className="w-16 h-16 flex items-center justify-center mx-auto mb-3" style={{background: styles.purplePrimary, color: 'rgba(255,255,255,.94)', fontSize: '24px', fontWeight: '400'}}>{selectedUser.full_name?.[0] || selectedUser.email?.[0] || '?'}</div>
               <p style={{color: styles.textPrimary, fontSize: '18px', fontWeight: '500'}}>{selectedUser.full_name || 'No Name'}</p>
               <p style={{color: styles.textTertiary, fontSize: '14px'}}>{selectedUser.email}</p>
             </div>
             <div className="mb-6">
               <label style={{color: styles.textTertiary, fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', display: 'block', marginBottom: '8px'}}>Role</label>
               <div className="flex gap-3">
-                <button onClick={() => handleUpdateRole(selectedUser.id, 'applicant')} className="flex-1 px-4 py-3 rounded-lg" style={{background: selectedUser.role === 'applicant' ? 'rgba(157,140,207,0.2)' : 'rgba(255,255,255,0.05)', border: '1px solid ' + (selectedUser.role === 'applicant' ? styles.purpleBright : styles.borderGlass), color: selectedUser.role === 'applicant' ? styles.purpleBright : styles.textTertiary}}>Applicant</button>
-                <button onClick={() => handleUpdateRole(selectedUser.id, 'admin')} className="flex-1 px-4 py-3 rounded-lg" style={{background: selectedUser.role === 'admin' ? 'rgba(157,140,207,0.2)' : 'rgba(255,255,255,0.05)', border: '1px solid ' + (selectedUser.role === 'admin' ? styles.purpleBright : styles.borderGlass), color: selectedUser.role === 'admin' ? styles.purpleBright : styles.textTertiary}}>Admin</button>
+                <button onClick={() => handleUpdateRole(selectedUser.id, 'applicant')} className="btn" style={{padding: '10px 16px', flex: 1, justifyContent: 'center', color: selectedUser.role === 'applicant' ? 'var(--purple-bright)' : 'var(--text-tertiary)', borderColor: selectedUser.role === 'applicant' ? 'rgba(157,140,207,.3)' : 'rgba(255,255,255,.06)'}}>Applicant</button>
+                <button onClick={() => handleUpdateRole(selectedUser.id, 'admin')} className="btn" style={{padding: '10px 16px', flex: 1, justifyContent: 'center', color: selectedUser.role === 'admin' ? 'var(--purple-bright)' : 'var(--text-tertiary)', borderColor: selectedUser.role === 'admin' ? 'rgba(157,140,207,.3)' : 'rgba(255,255,255,.06)'}}>Admin</button>
               </div>
             </div>
             <div className="space-y-2 mb-6">
               <label style={{color: styles.textTertiary, fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', display: 'block', marginBottom: '8px'}}>Actions</label>
-              <button onClick={() => handleResetPassword(selectedUser.id, selectedUser.email)} className="w-full px-4 py-3 rounded-lg flex items-center gap-3" style={{background: 'rgba(255,255,255,0.03)', border: '1px solid ' + styles.borderGlass, color: styles.textSecondary, textAlign: 'left'}}><RefreshCw className="w-4 h-4" style={{color: styles.purpleBright}} />Reset Password</button>
-              <button onClick={() => handleToggleActive(selectedUser.id, selectedUser.is_active !== false)} className="w-full px-4 py-3 rounded-lg flex items-center gap-3" style={{background: 'rgba(255,255,255,0.03)', border: '1px solid ' + styles.borderGlass, color: selectedUser.is_active === false ? styles.accentGreen : styles.accentRed, textAlign: 'left'}}>{selectedUser.is_active === false ? <><CheckCircle fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-4 h-4" /> Activate Account</> : <><X className="w-4 h-4" /> Deactivate Account</>}</button>
-              <button onClick={() => handleDeleteUser(selectedUser.id, selectedUser.email)} className="w-full px-4 py-3 rounded-lg flex items-center gap-3" style={{background: 'rgba(214,92,92,0.1)', border: '1px solid rgba(214,92,92,0.3)', color: styles.accentRed, textAlign: 'left'}}><X className="w-4 h-4" /> Delete User</button>
+              <button onClick={() => handleResetPassword(selectedUser.id, selectedUser.email)} className="w-full px-4 py-3 flex items-center gap-3" className="btn" style={{justifyContent: 'flex-start', width: '100%'}}><RefreshCw className="w-4 h-4" style={{color: styles.purpleBright}} />Reset Password</button>
+              <button onClick={() => handleToggleActive(selectedUser.id, selectedUser.is_active !== false)} className="w-full px-4 py-3 flex items-center gap-3" className="btn" style={{justifyContent: 'flex-start', width: '100%', color: selectedUser.is_active === false ? 'var(--accent-green)' : 'var(--accent-red)'}}>{selectedUser.is_active === false ? <><CheckCircle fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-4 h-4" /> Activate Account</> : <><X className="w-4 h-4" /> Deactivate Account</>}</button>
+              <button onClick={() => handleDeleteUser(selectedUser.id, selectedUser.email)} className="w-full px-4 py-3 flex items-center gap-3" className="btn" style={{justifyContent: 'flex-start', width: '100%', color: 'var(--accent-red)'}}><X className="w-4 h-4" /> Delete User</button>
             </div>
-            <button onClick={() => { setShowEditModal(false); setSelectedUser(null); }} className="w-full px-4 py-3 rounded-lg" style={{background: 'transparent', border: 'none', color: styles.textTertiary}}>Close</button>
+            <button onClick={() => { setShowEditModal(false); setSelectedUser(null); }} className="w-full px-4 py-3" style={{background: 'transparent', border: 'none', color: styles.textTertiary}}>Close</button>
           </div>
         </div>
       )}

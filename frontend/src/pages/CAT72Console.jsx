@@ -20,7 +20,7 @@ function CAT72Console() {
 
   useEffect(() => {
     loadTests();
-    const dataInterval = setInterval(loadTests, 15000);
+    const dataInterval = setInterval(loadTests, 60000);
     const tickInterval = setInterval(() => setNow(Date.now()), 1000);
     return () => { clearInterval(dataInterval); clearInterval(tickInterval); };
   }, []);
@@ -83,19 +83,19 @@ function CAT72Console() {
 
       {/* Summary Stats */}
       <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px'}}>
-        <div style={{padding: '16px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px', border: `1px solid ${styles.borderGlass}`, textAlign: 'center'}}>
+        <div style={{padding: '16px', background: 'transparent', border: `1px solid ${styles.borderGlass}`, textAlign: 'center'}}>
           <div style={{fontFamily: styles.serif, fontSize: 'clamp(18px, 4vw, 24px)', fontWeight: 200, color: styles.accentAmber}}>{runningTests.length}</div>
           <div style={{fontFamily: styles.mono, fontSize: '9px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px', marginTop: '4px'}}>Running</div>
         </div>
-        <div style={{padding: '16px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px', border: `1px solid ${styles.borderGlass}`, textAlign: 'center'}}>
+        <div style={{padding: '16px', background: 'transparent', border: `1px solid ${styles.borderGlass}`, textAlign: 'center'}}>
           <div style={{fontFamily: styles.serif, fontSize: 'clamp(18px, 4vw, 24px)', fontWeight: 200, color: styles.purpleBright}}>{scheduledTests.length}</div>
           <div style={{fontFamily: styles.mono, fontSize: '9px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px', marginTop: '4px'}}>Scheduled</div>
         </div>
-        <div style={{padding: '16px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px', border: `1px solid ${styles.borderGlass}`, textAlign: 'center'}}>
+        <div style={{padding: '16px', background: 'transparent', border: `1px solid ${styles.borderGlass}`, textAlign: 'center'}}>
           <div style={{fontFamily: styles.serif, fontSize: 'clamp(18px, 4vw, 24px)', fontWeight: 200, color: styles.accentGreen}}>{completedTests.filter(t => t.result === 'PASS').length}</div>
           <div style={{fontFamily: styles.mono, fontSize: '9px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px', marginTop: '4px'}}>Passed</div>
         </div>
-        <div style={{padding: '16px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px', border: `1px solid ${styles.borderGlass}`, textAlign: 'center'}}>
+        <div style={{padding: '16px', background: 'transparent', border: `1px solid ${styles.borderGlass}`, textAlign: 'center'}}>
           <div style={{fontFamily: styles.serif, fontSize: 'clamp(18px, 4vw, 24px)', fontWeight: 200, color: styles.accentRed}}>{completedTests.filter(t => t.result === 'FAIL').length}</div>
           <div style={{fontFamily: styles.mono, fontSize: '9px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px', marginTop: '4px'}}>Failed</div>
         </div>
@@ -117,15 +117,15 @@ function CAT72Console() {
                       <div style={{fontWeight: 500, fontSize: '16px', color: styles.textPrimary, marginBottom: '4px'}}>{test.organization_name} — {test.system_name}</div>
                       <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', color: styles.textTertiary}}>Test ID: {test.test_id} · Duration: {test.duration_hours}h</div>
                     </div>
-                    {user?.role === 'admin' && <button onClick={() => handleStop(test.test_id)} disabled={loading[test.test_id]} className="px-4 py-2 rounded-lg" style={{background: 'rgba(214,160,92,0.15)', border: '1px solid rgba(214,160,92,0.3)', color: styles.accentAmber, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>
+                    {user?.role === 'admin' && <button onClick={() => handleStop(test.test_id)} disabled={loading[test.test_id]} className="px-4 py-2" className="btn">
                       {loading[test.test_id] === 'stopping' ? '...' : 'Stop & Evaluate'}
                     </button>}
                   </div>
                   <div style={{display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '8px'}}>
                     <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: 'clamp(20px, 4vw, 28px)', fontWeight: 200, color: styles.purpleBright, letterSpacing: '2px'}}>{formatTime(test.elapsed_seconds)}</div>
                     <div style={{flex: 1}}>
-                      <div className="w-full h-3 rounded-full overflow-hidden" style={{background: 'rgba(255,255,255,0.08)'}}>
-                        <div className="h-full rounded-full transition-all" style={{width: `${pct}%`, background: pct >= 100 ? styles.accentGreen : `linear-gradient(90deg, ${styles.purplePrimary}, ${styles.purpleBright})`}} />
+                      <div className="w-full h-3 overflow-hidden" style={{background: 'transparent'}}>
+                        <div className="h-full transition-all" style={{width: `${pct}%`, background: pct >= 100 ? styles.accentGreen : `linear-gradient(90deg, ${styles.purplePrimary}, ${styles.purpleBright})`}} />
                       </div>
                     </div>
                     <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '14px', color: pct >= 100 ? styles.accentGreen : styles.textSecondary, fontWeight: 500}}>{pct}%</span>
@@ -145,15 +145,15 @@ function CAT72Console() {
       {/* Scheduled Tests */}
       {scheduledTests.length > 0 && (
         <Panel>
-          <h2 style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Scheduled</h2>
+          <div className="hud-label" style={{marginBottom: '16px'}}>Scheduled</div>
           <div className="space-y-3">
             {scheduledTests.map(test => (
-              <div key={test.id} style={{padding: '14px 16px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px', border: `1px solid ${styles.borderGlass}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px'}}>
+              <div key={test.id} style={{padding: '14px 16px', background: 'transparent', border: `1px solid ${styles.borderGlass}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px'}}>
                 <div>
                   <div style={{fontWeight: 500, color: styles.textPrimary, marginBottom: '2px'}}>{test.organization_name} — {test.system_name}</div>
                   <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', color: styles.textTertiary}}>{test.test_id} · {test.duration_hours}h test</div>
                 </div>
-                {user?.role === 'admin' && <button onClick={() => handleStart(test.test_id)} disabled={loading[test.test_id]} className="px-4 py-2 rounded-lg" style={{background: 'rgba(92,214,133,0.15)', border: '1px solid rgba(92,214,133,0.3)', color: styles.accentGreen, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>
+                {user?.role === 'admin' && <button onClick={() => handleStart(test.test_id)} disabled={loading[test.test_id]} className="px-4 py-2" className="btn">
                   {loading[test.test_id] === 'starting' ? '...' : 'Start Test'}
                 </button>}
               </div>
@@ -165,7 +165,7 @@ function CAT72Console() {
       {/* Completed Tests */}
       {completedTests.length > 0 && (
         <Panel>
-          <h2 style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Completed</h2>
+          <div className="hud-label" style={{marginBottom: '16px'}}>Completed</div>
           <table className="w-full">
             <thead>
               <tr style={{borderBottom: `1px solid ${styles.borderGlass}`}}>
@@ -183,18 +183,18 @@ function CAT72Console() {
                     <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: styles.textTertiary, marginTop: '2px'}}>{test.test_id}</div>
                   </td>
                   <td className="px-4 py-4">
-                    <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px', fontWeight: 600, color: test.result === 'PASS' ? styles.accentGreen : styles.accentRed, padding: '4px 10px', borderRadius: '4px', background: test.result === 'PASS' ? 'rgba(92,214,133,0.15)' : 'rgba(214,92,92,0.15)'}}>{test.result}</span>
+                    <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px', fontWeight: 600, color: test.result === 'PASS' ? styles.accentGreen : styles.accentRed, padding: '4px 10px', background: test.result === 'PASS' ? 'rgba(92,214,133,0.04)' : 'rgba(214,92,92,0.04)'}}>{test.result}</span>
                   </td>
                   <td className="px-4 py-4" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px', color: styles.textSecondary}}>{formatTime(test.elapsed_seconds)}</td>
                   <td className="px-4 py-4">
                     <div className="flex gap-2">
                       {user?.role === 'admin' && test.result === 'PASS' && !test.certificate_issued && (
-                        <button onClick={() => handleIssueCertificate(test.test_id)} disabled={loading[test.test_id]} className="px-3 py-1 rounded" style={{background: styles.purplePrimary, border: `1px solid ${styles.purpleBright}`, color: '#fff', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>
+                        <button onClick={() => handleIssueCertificate(test.test_id)} disabled={loading[test.test_id]} className="px-3 py-1" className="btn">
                           {loading[test.test_id] === 'issuing' ? '...' : 'Issue Certificate'}
                         </button>
                       )}
                       {test.certificate_issued && (
-                        <><span style={{color: styles.accentGreen, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px'}}>✓ Certified</span><a href={`${API_BASE}/api/certificates/${test.certificate_number || test.test_id}/pdf`} target="_blank" style={{marginLeft: '8px', padding: '2px 8px', background: styles.purplePrimary, borderRadius: '4px', color: '#fff', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', textDecoration: 'none'}}>PDF</a></>
+                        <><span style={{color: styles.accentGreen, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px'}}>✓ Certified</span><a href={`${API_BASE}/api/certificates/${test.certificate_number || test.test_id}/pdf`} target="_blank" style={{marginLeft: '8px', padding: '2px 8px', background: styles.purplePrimary, color: 'rgba(255,255,255,.94)', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', textDecoration: 'none'}}>PDF</a></>
                       )}
                     </div>
                   </td>

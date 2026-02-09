@@ -56,24 +56,24 @@ async def verify_certificate(
     now = datetime.utcnow()
     is_expired = cert.expires_at and cert.expires_at < now
     
-    if is_expired and cert.state == CertificationState.CONFORMANT:
-        cert.state = CertificationState.EXPIRED
+    if is_expired and cert.state == "conformant":
+        cert.state = "expired"
     
     # Determine validity
-    is_valid = cert.state == CertificationState.CONFORMANT and not is_expired
+    is_valid = cert.state == "conformant" and not is_expired
     
     # Status messages
     status_messages = {
-        CertificationState.CONFORMANT: "Certificate is valid and active",
-        CertificationState.SUSPENDED: "Certificate has been suspended - contact issuer for details",
-        CertificationState.REVOKED: "Certificate has been permanently revoked",
-        CertificationState.EXPIRED: "Certificate has expired",
+        "conformant": "Certificate is valid and active",
+        "suspended": "Certificate has been suspended - contact issuer for details",
+        "revoked": "Certificate has been permanently revoked",
+        "expired": "Certificate has expired",
     }
     
     return VerificationResponse(
         valid=is_valid,
         certificate_number=cert.certificate_number,
-        status=cert.state.value.upper(),
+        status=cert.state.upper(),
         organization_name=cert.organization_name,
         system_name=cert.system_name,
         system_version=cert.system_version,

@@ -54,8 +54,7 @@ function ResourcesPage() {
         </div>
       ) : documents.length === 0 ? (
         <div style={{
-          padding: 'clamp(16px, 4vw, 40px)', textAlign: 'center', borderRadius: '12px',
-          border: '1px solid ' + styles.borderGlass, background: styles.bgCard,
+          padding: 'clamp(16px, 4vw, 40px)', textAlign: 'center', border: '1px solid ' + styles.borderGlass, background: styles.bgDeep,
           color: styles.textTertiary
         }}>
           No documents available.
@@ -64,13 +63,11 @@ function ResourcesPage() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           {documents.map(doc => (
             <div key={doc.id} style={{
-              padding: '24px', borderRadius: '12px',
-              border: '1px solid ' + styles.borderGlass, background: styles.bgCard,
+              padding: '24px', border: '1px solid ' + styles.borderGlass, background: styles.bgDeep,
               display: 'flex', alignItems: 'center', gap: '20px'
             }}>
               <div style={{
-                width: '48px', height: '48px', borderRadius: '10px',
-                background: styles.purplePrimary + '22',
+                width: '48px', height: '48px', background: styles.purplePrimary + '22',
                 border: '1px solid ' + styles.purplePrimary + '44',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
               }}>
@@ -94,10 +91,9 @@ function ResourcesPage() {
               <button
                 onClick={() => handleDownload(doc.id, doc.title)}
                 style={{
-                  padding: '10px 20px', borderRadius: '8px',
-                  background: styles.purplePrimary,
+                  padding: '10px 20px', background: styles.purplePrimary,
                   border: '1px solid ' + styles.purpleBright,
-                  color: '#fff', fontFamily: "Consolas, 'IBM Plex Mono', monospace",
+                  color: 'rgba(255,255,255,.94)', fontFamily: "Consolas, 'IBM Plex Mono', monospace",
                   fontSize: '11px', letterSpacing: '1px',
                   textTransform: 'uppercase', cursor: 'pointer', flexShrink: 0
                 }}
@@ -111,8 +107,7 @@ function ResourcesPage() {
 
       {user && user.role === 'admin' && (
         <div style={{
-          marginTop: '40px', padding: '20px', borderRadius: '10px',
-          border: '1px dashed ' + styles.borderGlass,
+          marginTop: '40px', padding: '20px', border: '1px dashed ' + styles.borderGlass,
           color: styles.textTertiary, fontSize: '12px',
           fontFamily: "Consolas, 'IBM Plex Mono', monospace"
         }}>
