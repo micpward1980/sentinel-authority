@@ -3,6 +3,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.pool import NullPool
+from sqlalchemy.exc import NotSupportedError
 from app.core.config import settings
 
 DATABASE_URL = settings.DATABASE_URL
@@ -13,7 +14,7 @@ engine = create_async_engine(
     DATABASE_URL, 
     echo=settings.DEBUG, 
     future=True,
-    poolclass=NullPool, connect_args={"statement_cache_size": 0},  # Disable connection pooling to prevent stale connections
+    poolclass=NullPool, connect_args={"statement_cache_size": 0},
 )
 AsyncSessionLocal = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 Base = declarative_base()
@@ -24,8 +25,20 @@ async def init_db():
         await conn.run_sync(Base.metadata.create_all)
 
 
+class RetrySession(AsyncSession):
+    async def execute(self, statement, *args, **kwargs):
+        try:
+            return await super().execute(statement, *args, **kwargs)
+        except NotSupportedError:
+            await self.rollback()
+            return await super().execute(statement, *args, **kwargs)
+
+
+RetrySessionLocal = async_sessionmaker(engine, class_=RetrySession, expire_on_commit=False)
+
+
 async def get_db():
-    async with AsyncSessionLocal() as session:
+    async with RetrySessionLocal() as session:
         try:
             yield session
             await session.commit()
