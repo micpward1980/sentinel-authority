@@ -191,36 +191,36 @@ function ApplicationDetail() {
         {user?.role === 'admin' && (
         <div style={{display: 'flex', gap: '12px'}}>
           {app.state === 'pending' && (
-            <button onClick={handleAdvanceToReview} className="px-4 py-2 transition-all" className="btn">
+            <button onClick={handleAdvanceToReview} className="px-4 py-2 transition-all btn">
               Begin Review
             </button>
           )}
           {(app.state === 'pending' || app.state === 'under_review') && (
-            <button onClick={handleApprove} className="px-4 py-2 transition-all" className="btn">
+            <button onClick={handleApprove} className="px-4 py-2 transition-all btn">
               Approve Application
             </button>
           )}
           {app.state === 'approved' && (
-            <button onClick={handleScheduleTest} disabled={scheduling} className="px-4 py-2 transition-all" className="btn">
+            <button onClick={handleScheduleTest} disabled={scheduling} className="px-4 py-2 transition-all btn">
               {scheduling ? 'Scheduling...' : 'Schedule CAT-72 Test'}
             </button>
           )}
           {['pending','under_review','approved','testing','conformant'].includes(app.state) && (
-            <button onClick={handleSuspend} className="px-4 py-2 transition-all" className="btn">
+            <button onClick={handleSuspend} className="px-4 py-2 transition-all btn">
               Suspend
             </button>
           )}
           {(app.state === 'suspended' || app.state === 'revoked') && (
-            <button onClick={handleReinstate} className="px-4 py-2 transition-all" className="btn">
+            <button onClick={handleReinstate} className="px-4 py-2 transition-all btn">
               Reinstate
             </button>
           )}
           {app.state === 'expired' && (
-            <button onClick={handleReinstate} className="px-4 py-2 transition-all" className="btn">
+            <button onClick={handleReinstate} className="px-4 py-2 transition-all btn">
               Re-open
             </button>
           )}
-          <button onClick={handleDeleteApplication} className="px-4 py-2 transition-all" className="btn">
+          <button onClick={handleDeleteApplication} className="px-4 py-2 transition-all btn">
             Delete
           </button>
         </div>
@@ -457,8 +457,7 @@ function ApplicationDetail() {
             <button
               onClick={handlePostComment}
               disabled={postingComment || !newComment.trim()}
-              className="px-4 py-2"
-              className="btn"
+              className="px-4 py-2 btn"
             >
               {postingComment ? 'Posting...' : 'Post Comment'}
             </button>

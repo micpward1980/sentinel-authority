@@ -182,8 +182,8 @@ function UserManagementPage() {
         )}
       </Panel>
       {showInviteModal && (
-        <div className="fixed inset-0 flex items-center justify-center z-50" style={{background: 'rgba(0,0,0,0.7)'}}>
-          <div className="w-full max-w-md mx-4 p-6" style={{background: styles.bgDeep, border: '1px solid ' + styles.borderGlass}}>
+        <div className="fixed inset-0 flex items-center justify-center z-50 sa-modal-overlay">
+          <div className="w-full max-w-md mx-4 p-6 sa-modal-panel">
             <h2 style={{color: styles.textPrimary, fontSize: '20px', fontWeight: '400', marginBottom: '24px', textAlign: 'center'}}>Invite New User</h2>
             <div className="space-y-4">
               <div><label style={{color: styles.textSecondary, fontSize: '12px', display: 'block', marginBottom: '6px'}}>Email *</label><input type="email" value={inviteForm.email} onChange={(e) => setInviteForm({...inviteForm, email: e.target.value})} placeholder="user@company.com" className="w-full px-4 py-3" style={{background: 'transparent', border: '1px solid ' + styles.borderGlass, color: styles.textPrimary, outline: 'none'}} /></div>
@@ -204,11 +204,11 @@ function UserManagementPage() {
         </div>
       )}
       {showEditModal && selectedUser && (
-        <div className="fixed inset-0 flex items-center justify-center z-50" style={{background: 'rgba(0,0,0,0.7)'}}>
-          <div className="w-full max-w-md mx-4 p-6" style={{background: styles.bgDeep, border: '1px solid ' + styles.borderGlass}}>
+        <div className="fixed inset-0 flex items-center justify-center z-50 sa-modal-overlay">
+          <div className="w-full max-w-md mx-4 p-6 sa-modal-panel">
             <h2 style={{color: styles.textPrimary, fontSize: '20px', fontWeight: '400', marginBottom: '24px', textAlign: 'center'}}>Manage User</h2>
             <div className="text-center mb-6 p-4" style={{background: 'rgba(255,255,255,0.03)'}}>
-              <div className="w-16 h-16 flex items-center justify-center mx-auto mb-3" style={{background: styles.purplePrimary, color: 'rgba(255,255,255,.94)', fontSize: '24px', fontWeight: '400'}}>{selectedUser.full_name?.[0] || selectedUser.email?.[0] || '?'}</div>
+              <div className="w-16 h-16 flex items-center justify-center mx-auto mb-3 sa-avatar" style={{background: "#5B4B8A", border: "2px solid #9d8ccf", borderRadius: "6px", color: "rgba(255,255,255,.94)", fontSize: "24px", fontWeight: "200", fontFamily: "Georgia, serif"}}>{selectedUser.full_name?.[0] || selectedUser.email?.[0] || '?'}</div>
               <p style={{color: styles.textPrimary, fontSize: '18px', fontWeight: '500'}}>{selectedUser.full_name || 'No Name'}</p>
               <p style={{color: styles.textTertiary, fontSize: '14px'}}>{selectedUser.email}</p>
             </div>
@@ -221,9 +221,9 @@ function UserManagementPage() {
             </div>
             <div className="space-y-2 mb-6">
               <label style={{color: styles.textTertiary, fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', display: 'block', marginBottom: '8px'}}>Actions</label>
-              <button onClick={() => handleResetPassword(selectedUser.id, selectedUser.email)} className="w-full px-4 py-3 flex items-center gap-3" className="btn" style={{justifyContent: 'flex-start', width: '100%'}}><RefreshCw className="w-4 h-4" style={{color: styles.purpleBright}} />Reset Password</button>
-              <button onClick={() => handleToggleActive(selectedUser.id, selectedUser.is_active !== false)} className="w-full px-4 py-3 flex items-center gap-3" className="btn" style={{justifyContent: 'flex-start', width: '100%', color: selectedUser.is_active === false ? 'var(--accent-green)' : 'var(--accent-red)'}}>{selectedUser.is_active === false ? <><CheckCircle fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-4 h-4" /> Activate Account</> : <><X className="w-4 h-4" /> Deactivate Account</>}</button>
-              <button onClick={() => handleDeleteUser(selectedUser.id, selectedUser.email)} className="w-full px-4 py-3 flex items-center gap-3" className="btn" style={{justifyContent: 'flex-start', width: '100%', color: 'var(--accent-red)'}}><X className="w-4 h-4" /> Delete User</button>
+              <button onClick={() => handleResetPassword(selectedUser.id, selectedUser.email)} className="w-full px-4 py-3 flex items-center gap-3 btn" style={{justifyContent: 'flex-start', width: '100%'}}><RefreshCw className="w-4 h-4" style={{color: styles.purpleBright}} />Reset Password</button>
+              <button onClick={() => handleToggleActive(selectedUser.id, selectedUser.is_active !== false)} className="w-full px-4 py-3 flex items-center gap-3 btn" style={{justifyContent: 'flex-start', width: '100%', color: selectedUser.is_active === false ? 'var(--accent-green)' : 'var(--accent-red)'}}>{selectedUser.is_active === false ? <><CheckCircle fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-4 h-4" /> Activate Account</> : <><X className="w-4 h-4" /> Deactivate Account</>}</button>
+              <button onClick={() => handleDeleteUser(selectedUser.id, selectedUser.email)} className="w-full px-4 py-3 flex items-center gap-3 btn" style={{justifyContent: 'flex-start', width: '100%', color: 'var(--accent-red)'}}><X className="w-4 h-4" /> Delete User</button>
             </div>
             <button onClick={() => { setShowEditModal(false); setSelectedUser(null); }} className="w-full px-4 py-3" style={{background: 'transparent', border: 'none', color: styles.textTertiary}}>Close</button>
           </div>

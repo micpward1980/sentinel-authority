@@ -207,8 +207,8 @@ function NewApplication() {
           <p style={{color: styles.textSecondary, fontSize: '14px', lineHeight: '1.6', maxWidth: '480px', margin: '0 auto 8px'}}>Your application is now in the queue. Our team will review your ODD specification and boundary definitions.</p>
           <p style={{color: styles.textTertiary, fontSize: '13px', marginBottom: '32px'}}>You'll receive email updates as your application progresses through the certification pipeline.</p>
           <div style={{display: 'flex', gap: '12px', justifyContent: 'center'}}>
-            <Link to="/applications" className="no-underline px-6 py-3" className="btn">View Applications</Link>
-            <Link to="/dashboard" className="no-underline px-6 py-3" className="btn">Dashboard</Link>
+            <Link to="/applications" className="no-underline px-6 py-3 btn">View Applications</Link>
+            <Link to="/dashboard" className="no-underline px-6 py-3 btn">Dashboard</Link>
           </div>
         </div>
       )}

@@ -116,7 +116,7 @@ function Layout({ children }) {
 
         <div style={{ padding: '14px 16px', borderTop: '1px solid rgba(255,255,255,.06)', flexShrink: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
-            <div style={{ width: '26px', height: '26px', background: styles.purplePrimary, border: '1px solid rgba(157,140,207,.25)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div className="sa-avatar" style={{ width: "26px", height: "26px", display: "flex", alignItems: "center", justifyContent: "center" }}>
               <span style={{ color: '#fff', fontSize: '10px', fontWeight: 600 }}>{user?.full_name?.[0] || 'U'}</span>
             </div>
             <div>

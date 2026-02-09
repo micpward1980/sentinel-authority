@@ -451,7 +451,7 @@ function MonitoringPage() {
               <div style={{marginBottom: '24px'}}>
                 <div style={{fontSize: '10px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px'}}>Enforcement Distribution</div>
                 <div style={{height: '12px', background: 'transparent', overflow: 'hidden', display: 'flex'}}>
-                  <div style={{width: pp + '%', background: 'linear-gradient(90deg, ' + styles.accentGreen + ', #4BC87A)', transition: 'width 0.5s'}} />
+                  <div style={{width: pp + '%', background: styles.accentGreen, transition: 'width 0.5s'}} />
                   <div style={{width: (100 - pp) + '%', background: '#D65C5C', transition: 'width 0.5s'}} />
                 </div>
                 <div style={{display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px', marginTop: '4px', fontSize: '11px'}}>

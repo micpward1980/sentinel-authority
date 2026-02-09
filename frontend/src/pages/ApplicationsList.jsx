@@ -241,13 +241,13 @@ function ApplicationsList() {
                       <button onClick={(e) => { e.stopPropagation(); handleQuickAdvance(app.id, 'approved', `Approve ${app.system_name}`); }} className="btn" style={{padding: '4px 10px', color: styles.accentGreen}}>Approve</button>
                     )}
                     {app.state === 'approved' && (
-                      <Link to={`/applications/${app.id}`} className="px-2 py-1 no-underline" className="btn">Schedule Test</Link>
+                      <Link to={`/applications/${app.id}`} className="px-2 py-1 no-underline btn">Schedule Test</Link>
                     )}
                     {app.state === 'conformant' && (
                       <span style={{color: styles.accentGreen, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px'}}>✓ Certified</span>
                     )}
                     {app.state === 'testing' && (
-                      <Link to="/cat72" className="px-2 py-1 no-underline" className="btn">View Test</Link>
+                      <Link to="/cat72" className="px-2 py-1 no-underline btn">View Test</Link>
                     )}
                     {['pending','under_review','approved','testing','conformant'].includes(app.state) && (
                       <button onClick={(e) => { e.stopPropagation(); handleQuickAdvance(app.id, 'suspended', `Suspend ${app.system_name}`); }} className="btn" style={{padding: '4px 10px', color: styles.accentRed}}>Suspend</button>

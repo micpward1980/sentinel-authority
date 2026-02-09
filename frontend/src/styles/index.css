@@ -380,3 +380,35 @@ tbody tr:hover { background: rgba(255,255,255,.015); }
   from { transform: translateX(40px); opacity: 0; }
   to   { transform: translateX(0); opacity: 1; }
 }
+
+.sa-main-content .sa-modal-panel {
+  background: #2a2f3d !important;
+  border: 1px solid rgba(255,255,255,.07) !important;
+}
+
+/* MODAL — opt back in for overlay + panel */
+.sa-modal-overlay {
+  background: rgba(0,0,0,0.75) !important;
+  backdrop-filter: blur(4px) !important;
+  -webkit-backdrop-filter: blur(4px) !important;
+}
+.sa-main-content .sa-modal-panel,
+.sa-modal-panel {
+  background: #2a2f3d !important;
+  border: 1px solid rgba(255,255,255,.07) !important;
+  box-shadow: 0 24px 80px rgba(0,0,0,.5) !important;
+}
+
+/* Avatar — brand mark style */
+.sa-main-content .sa-avatar {
+  background: #5B4B8A !important;
+  border: 2px solid #9d8ccf !important;
+  border-radius: 6px !important;
+}
+
+/* Avatar — standalone (for sidebar outside .sa-main-content) */
+.sa-avatar {
+  background: #5B4B8A !important;
+  border: 2px solid #9d8ccf !important;
+  border-radius: 6px !important;
+}

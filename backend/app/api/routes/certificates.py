@@ -49,19 +49,20 @@ async def issue_certificate(test_id: str, db: AsyncSession = Depends(get_db), us
     try:
         odd_spec = certificate.odd_specification or {}
         odd_string = odd_spec.get("environment_type", "General") if isinstance(odd_spec, dict) else str(odd_spec)
-        pdf_bytes = generate_certificate_pdf(
-            certificate.certificate_number,
-            certificate.organization_name,
-            certificate.system_name,
-            odd_string,
-            certificate.issued_at,
-            certificate.expires_at,
-            test.test_id if test else "N/A",
-            certificate.convergence_score or 0.95,
-            test.stability_index if test else 0.95,
-            test.drift_rate if test else 0.01,
-            certificate.evidence_hash or "N/A"
-        )
+        pdf_bytes = generate_certificate_pdf({
+            "certificate_number": certificate.certificate_number,
+            "organization_name": certificate.organization_name,
+            "system_name": certificate.system_name,
+            "system_version": getattr(certificate, "system_version", ""),
+            "odd_specification": certificate.odd_specification,
+            "issued_at": certificate.issued_at,
+            "expires_at": certificate.expires_at,
+            "convergence_score": certificate.convergence_score or 0.95,
+            "evidence_hash": certificate.evidence_hash or "N/A",
+            "signature": certificate.evidence_hash[:16] if certificate.evidence_hash else "N/A",
+            "audit_log_ref": test.test_id if test else "N/A",
+            "verification_url": f"https://app.sentinelauthority.org/verify?cert={certificate.certificate_number}"
+        })
         certificate.certificate_pdf = pdf_bytes
         await db.commit()
         await db.refresh(certificate)
@@ -112,7 +113,7 @@ async def download_pdf(certificate_number: str, db: AsyncSession = Depends(get_d
     test = test_result.scalar_one_or_none()
     odd_spec = cert.odd_specification or {}
     odd_string = odd_spec.get("environment_type", "General") if isinstance(odd_spec, dict) else str(odd_spec)
-    pdf_bytes = generate_certificate_pdf(cert.certificate_number, cert.organization_name, cert.system_name, odd_string, cert.issued_at, cert.expires_at, test.test_id if test else "N/A", cert.convergence_score or 0.95, test.stability_index if test else 0.95, test.drift_rate if test else 0.01, cert.evidence_hash or "N/A")
+    pdf_bytes = generate_certificate_pdf({"certificate_number": cert.certificate_number, "organization_name": cert.organization_name, "system_name": cert.system_name, "system_version": cert.system_version if hasattr(cert, "system_version") else "", "odd_specification": cert.odd_specification, "issued_at": cert.issued_at, "expires_at": cert.expires_at, "convergence_score": cert.convergence_score or 0.95, "evidence_hash": cert.evidence_hash or "N/A", "signature": cert.evidence_hash[:16] if cert.evidence_hash else "N/A", "audit_log_ref": test.test_id if test else "N/A", "verification_url": f"https://app.sentinelauthority.org/verify?cert={cert.certificate_number}"})
     return Response(content=pdf_bytes, media_type="application/pdf", headers={"Content-Disposition": f"attachment; filename=ODDC-{cert.certificate_number}.pdf"})
 
 
@@ -127,12 +128,20 @@ async def regenerate_pdf(certificate_number: str, db: AsyncSession = Depends(get
     test = test_result.scalar_one_or_none()
     odd_spec = cert.odd_specification or {}
     odd_string = odd_spec.get("environment_type", "General") if isinstance(odd_spec, dict) else str(odd_spec)
-    pdf_bytes = generate_certificate_pdf(
-        cert.certificate_number, cert.organization_name, cert.system_name, odd_string,
-        cert.issued_at, cert.expires_at, test.test_id if test else "N/A",
-        cert.convergence_score or 0.95, test.stability_index if test else 0.95,
-        test.drift_rate if test else 0.01, cert.evidence_hash or "N/A"
-    )
+    pdf_bytes = generate_certificate_pdf({
+            "certificate_number": cert.certificate_number,
+            "organization_name": cert.organization_name,
+            "system_name": cert.system_name,
+            "system_version": getattr(cert, "system_version", ""),
+            "odd_specification": cert.odd_specification,
+            "issued_at": cert.issued_at,
+            "expires_at": cert.expires_at,
+            "convergence_score": cert.convergence_score or 0.95,
+            "evidence_hash": cert.evidence_hash or "N/A",
+            "signature": cert.evidence_hash[:16] if cert.evidence_hash else "N/A",
+            "audit_log_ref": test.test_id if test else "N/A",
+            "verification_url": f"https://app.sentinelauthority.org/verify?cert={cert.certificate_number}"
+        })
     cert.certificate_pdf = pdf_bytes
     await db.commit()
     return {"message": f"PDF regenerated for {cert.certificate_number}", "size_bytes": len(pdf_bytes)}
@@ -150,12 +159,20 @@ async def regenerate_all_pdfs(db: AsyncSession = Depends(get_db), user: dict = D
             test = test_result.scalar_one_or_none()
             odd_spec = cert.odd_specification or {}
             odd_string = odd_spec.get("environment_type", "General") if isinstance(odd_spec, dict) else str(odd_spec)
-            pdf_bytes = generate_certificate_pdf(
-                cert.certificate_number, cert.organization_name, cert.system_name, odd_string,
-                cert.issued_at, cert.expires_at, test.test_id if test else "N/A",
-                cert.convergence_score or 0.95, test.stability_index if test else 0.95,
-                test.drift_rate if test else 0.01, cert.evidence_hash or "N/A"
-            )
+            pdf_bytes = generate_certificate_pdf({
+            "certificate_number": cert.certificate_number,
+            "organization_name": cert.organization_name,
+            "system_name": cert.system_name,
+            "system_version": getattr(cert, "system_version", ""),
+            "odd_specification": cert.odd_specification,
+            "issued_at": cert.issued_at,
+            "expires_at": cert.expires_at,
+            "convergence_score": cert.convergence_score or 0.95,
+            "evidence_hash": cert.evidence_hash or "N/A",
+            "signature": cert.evidence_hash[:16] if cert.evidence_hash else "N/A",
+            "audit_log_ref": test.test_id if test else "N/A",
+            "verification_url": f"https://app.sentinelauthority.org/verify?cert={cert.certificate_number}"
+        })
             cert.certificate_pdf = pdf_bytes
             regenerated += 1
         except Exception as e:

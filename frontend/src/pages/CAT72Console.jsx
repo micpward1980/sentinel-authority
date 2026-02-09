@@ -117,7 +117,7 @@ function CAT72Console() {
                       <div style={{fontWeight: 500, fontSize: '16px', color: styles.textPrimary, marginBottom: '4px'}}>{test.organization_name} — {test.system_name}</div>
                       <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', color: styles.textTertiary}}>Test ID: {test.test_id} · Duration: {test.duration_hours}h</div>
                     </div>
-                    {user?.role === 'admin' && <button onClick={() => handleStop(test.test_id)} disabled={loading[test.test_id]} className="px-4 py-2" className="btn">
+                    {user?.role === 'admin' && <button onClick={() => handleStop(test.test_id)} disabled={loading[test.test_id]} className="px-4 py-2 btn">
                       {loading[test.test_id] === 'stopping' ? '...' : 'Stop & Evaluate'}
                     </button>}
                   </div>
@@ -125,7 +125,7 @@ function CAT72Console() {
                     <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: 'clamp(20px, 4vw, 28px)', fontWeight: 200, color: styles.purpleBright, letterSpacing: '2px'}}>{formatTime(test.elapsed_seconds)}</div>
                     <div style={{flex: 1}}>
                       <div className="w-full h-3 overflow-hidden" style={{background: 'transparent'}}>
-                        <div className="h-full transition-all" style={{width: `${pct}%`, background: pct >= 100 ? styles.accentGreen : `linear-gradient(90deg, ${styles.purplePrimary}, ${styles.purpleBright})`}} />
+                        <div className="h-full transition-all" style={{width: `${pct}%`, background: pct >= 100 ? styles.accentGreen : styles.purplePrimary}} />
                       </div>
                     </div>
                     <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '14px', color: pct >= 100 ? styles.accentGreen : styles.textSecondary, fontWeight: 500}}>{pct}%</span>
@@ -153,7 +153,7 @@ function CAT72Console() {
                   <div style={{fontWeight: 500, color: styles.textPrimary, marginBottom: '2px'}}>{test.organization_name} — {test.system_name}</div>
                   <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', color: styles.textTertiary}}>{test.test_id} · {test.duration_hours}h test</div>
                 </div>
-                {user?.role === 'admin' && <button onClick={() => handleStart(test.test_id)} disabled={loading[test.test_id]} className="px-4 py-2" className="btn">
+                {user?.role === 'admin' && <button onClick={() => handleStart(test.test_id)} disabled={loading[test.test_id]} className="px-4 py-2 btn">
                   {loading[test.test_id] === 'starting' ? '...' : 'Start Test'}
                 </button>}
               </div>
@@ -189,7 +189,7 @@ function CAT72Console() {
                   <td className="px-4 py-4">
                     <div className="flex gap-2">
                       {user?.role === 'admin' && test.result === 'PASS' && !test.certificate_issued && (
-                        <button onClick={() => handleIssueCertificate(test.test_id)} disabled={loading[test.test_id]} className="px-3 py-1" className="btn">
+                        <button onClick={() => handleIssueCertificate(test.test_id)} disabled={loading[test.test_id]} className="px-3 py-1 btn">
                           {loading[test.test_id] === 'issuing' ? '...' : 'Issue Certificate'}
                         </button>
                       )}

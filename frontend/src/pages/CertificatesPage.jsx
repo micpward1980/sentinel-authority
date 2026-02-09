@@ -104,8 +104,7 @@ function CertificatesPage() {
                         href={`${API_BASE}/api/certificates/${cert.certificate_number}/pdf`} 
                         target="_blank" 
                         rel="noopener noreferrer" 
-                        className="px-3 py-1 transition-colors no-underline"
-                        className="btn"
+                        className="px-3 py-1 transition-colors no-underline btn"
                       >
                         Download PDF
                       </a>
@@ -114,7 +113,7 @@ function CertificatesPage() {
                         {cert.state === 'revoked' ? 'Revoked' : 'Suspended'}
                       </span>
                     )}
-                    <Link to={`/verify?cert=${cert.certificate_number}`} className="px-2 py-1 no-underline" className="btn">Verify</Link>
+                    <Link to={`/verify?cert=${cert.certificate_number}`} className="px-2 py-1 no-underline btn">Verify</Link>
                   </div>
                 </td>
               </tr>
