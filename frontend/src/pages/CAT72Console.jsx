@@ -56,7 +56,7 @@ function CAT72Console() {
   }, []);
 
   const handleStart = async (testId) => {
-    if (!await confirm({title: 'Start Test', message: 'Start this CAT-72 test? The 72-hour timer will begin.'})) return;
+    if (!await confirm({title: 'Begin CAT-72 Window', message: 'Begin the 72-hour Conformance Authorization Test? The evaluation timer will start and the connected ENVELO Interlock will be monitored.'})) return;
     setLoading(prev => ({...prev, [testId]: 'starting'}));
     try {
       await api.post(`/api/cat72/tests/${testId}/start`);
@@ -118,11 +118,12 @@ function CAT72Console() {
         ))}
       </div>
 
-      {activeTab === 'live' ? (
-        <><input type="text" placeholder="Search sessions..." value={catSearch} onChange={e => setCatSearch(e.target.value)} style={{background:"rgba(255,255,255,.04)",border:"1px solid rgba(255,255,255,.08)",color:"rgba(255,255,255,.90)",padding:"6px 12px",fontFamily:"Consolas, monospace",fontSize:"11px",width:"200px",outline:"none",marginBottom:"12px"}} /><LiveSessionsPanel sessions={liveSessions} search={catSearch} /></>
-      ) : activeTab === 'scheduled' ? (<>
-      {/* Running Tests — Table */}
-      {runningTests.length > 0 && (
+      {activeTab === 'live' ? (<>
+        <input type="text" placeholder="Search sessions..." value={catSearch} onChange={e => setCatSearch(e.target.value)} style={{background:"rgba(255,255,255,.04)",border:"1px solid rgba(255,255,255,.08)",color:"rgba(255,255,255,.90)",padding:"6px 12px",fontFamily:"Consolas, monospace",fontSize:"11px",width:"200px",outline:"none",marginBottom:"12px"}} />
+        <LiveSessionsPanel sessions={liveSessions} search={catSearch} onStop={handleStop} loading={loading} user={user} />
+      </>) : activeTab === 'scheduled' ? (<>
+      {/* Scheduled Tests Only */}
+      {false && (
         <div style={{marginBottom:'24px'}}>
           <div className="hud-label" style={{marginBottom:'12px'}}>● Running</div>
           <Panel>
@@ -175,7 +176,7 @@ function CAT72Console() {
         </div>
       )}
 
-      {/* Scheduled Tests — Table */}
+      {/* Scheduled Tests */}
         <Panel>
           <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'16px'}}>
             <div className="hud-label">Scheduled</div>
@@ -204,7 +205,7 @@ function CAT72Console() {
                   <td className="px-4 py-4" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', color: 'rgba(255,255,255,.60)'}}>{test.created_at ? new Date(test.created_at).toLocaleDateString() : '—'}</td>
                   <td className="px-4 py-4">
                     {user?.role === 'admin' && <button onClick={() => handleStart(test.test_id)} disabled={loading[test.test_id]} className="px-3 py-1 btn">
-                      {loading[test.test_id] === 'starting' ? '...' : 'Start Test'}
+                      {loading[test.test_id] === 'starting' ? '...' : 'Begin 72h Window'}
                     </button>}
                   </td>
                 </tr>
@@ -295,7 +296,7 @@ function CAT72Console() {
 }
 
 
-function LiveSessionsPanel({ sessions, search }) {
+function LiveSessionsPanel({ sessions, search, onStop, loading, user }) {
   const [expanded, setExpanded] = useState(null);
   const filtered = sessions.filter(s => {
     if (!search) return true;
@@ -399,6 +400,13 @@ function LiveSessionsPanel({ sessions, search }) {
                     <div style={{height:'100%',width:`${pct72}%`,background:parseFloat(pct72)>=100?green:'var(--purple-bright)',transition:'width 0.3s'}}></div>
                   </div>
                 </div>
+                {user?.role === 'admin' && onStop && (
+                  <div style={{marginTop:'12px',paddingTop:'12px',borderTop:'1px solid rgba(91,75,138,0.15)',display:'flex',gap:'8px'}}>
+                    <button onClick={(e) => { e.stopPropagation(); onStop(s.test_id || s.session_id); }} disabled={loading?.[s.test_id || s.session_id]} className="px-3 py-1 btn" style={{fontFamily:mono,fontSize:'10px',letterSpacing:'1px',textTransform:'uppercase'}}>
+                      {loading?.[s.test_id || s.session_id] === 'stopping' ? '...' : 'Stop & Evaluate'}
+                    </button>
+                  </div>
+                )}
               </div>
           </td></tr>}
           </React.Fragment>);

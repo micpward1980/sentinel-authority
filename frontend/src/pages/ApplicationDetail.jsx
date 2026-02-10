@@ -143,9 +143,9 @@ function ApplicationDetail() {
     switch(app?.state) {
       case 'pending': return 'Your application is queued for review by the Sentinel Authority team.';
       case 'under_review': return 'Our team is evaluating your ODD specification and boundary definitions.';
-      case 'approved': return 'Your system is approved. The ENVELO Interlock is being configured for CAT-72 testing.';
-      case 'testing': return 'CAT-72 continuous conformance test is in progress (72-hour minimum).';
-      case 'conformant': return 'Your system has achieved ODDC Conformance. Your certificate and ENVELO Interlock credentials are active.';
+      case 'approved': return 'Your system is approved. Install the ENVELO Interlock on your system and connect to Sentinel Authority to begin CAT-72 testing.';
+      case 'testing': return 'CAT-72 Conformance Authorization Test is in progress. The ENVELO Interlock is reporting telemetry for a 72-hour evaluation window.';
+      case 'conformant': return 'Your system has achieved ODDC Conformance. Certificate issued — ENVELO Interlock is now in permanent production monitoring.';
       case 'revoked': return 'This application has been suspended. Contact info@sentinelauthority.org for remediation steps.';
       default: return '';
     }
@@ -329,7 +329,7 @@ function ApplicationDetail() {
             >
               <option value="pending">Pending</option>
               <option value="under_review">Under Review</option>
-              <option value="approved">Approved (Interlock Access)</option>
+              <option value="approved">Approved (Customer Installs Interlock)</option>
               <option value="testing">Testing (CAT-72 Active)</option>
               <option value="conformant">Conformant</option>
               <option value="revoked">Revoked</option>
