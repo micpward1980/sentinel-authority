@@ -260,7 +260,7 @@ function Dashboard() {
   const loadData = (manual) => {
     if (manual) setRefreshing(true);
     api.get('/api/dashboard/stats').then(res => setStats(res.data)).catch(console.error);
-    api.get('/api/dashboard/recent-applications').then(res => setRecentApps(res.data)).catch(console.error);
+    // Recent apps now pulled from allApps (intake pipeline only)
     api.get('/api/dashboard/active-tests').then(res => setActiveTests(res.data)).catch(console.error);
     api.get('/api/applications/').then(res => setAllApps(res.data.applications || res.data || [])).catch(console.error);
     api.get('/api/dashboard/recent-certificates').then(res => setRecentCerts(res.data)).catch(console.error);
@@ -278,9 +278,7 @@ function Dashboard() {
     pending: allApps.filter(a => a.state === 'pending').length,
     under_review: allApps.filter(a => a.state === 'under_review').length,
     approved: allApps.filter(a => a.state === 'approved').length,
-    testing: allApps.filter(a => a.state === 'testing').length,
-    conformant: allApps.filter(a => a.state === 'conformant').length,
-    revoked: allApps.filter(a => a.state === 'revoked' || a.state === 'suspended').length
+
   };
   const needsAction = allApps.filter(a => a.state === 'pending' || a.state === 'under_review');
 
@@ -329,7 +327,7 @@ function Dashboard() {
 
       {/* ── Stats Grid ── */}
       <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit, minmax(160px, 1fr))',gap:'12px',marginBottom:'32px'}}>
-        <StatCard onClick={() => navigate("/applications")} label="Applications" value={stats?.total_applications || 0} color="var(--purple-bright)" icon={<FileText size={16} strokeWidth={1.5}/>}/>
+        <StatCard onClick={() => navigate("/applications")} label="In Pipeline" value={allApps.length} color="var(--purple-bright)" icon={<FileText size={16} strokeWidth={1.5}/>}/>
         <StatCard onClick={() => navigate("/cat72")} label="Active Tests" value={stats?.active_tests || 0} color="var(--accent-amber)" icon={<Activity size={16} strokeWidth={1.5}/>}/>
         <StatCard onClick={() => navigate("/certificates")} label="Active Certs" value={stats?.certificates_active || 0} color="var(--accent-green)" icon={<BrandMark size={16} />}/>
         <StatCard onClick={() => navigate("/monitoring")} label="Online Interlocks" value={onlineAgents} color={onlineAgents>0?'var(--accent-green)':'var(--text-tertiary)'} icon={<Wifi size={16} strokeWidth={1.5}/>}/>
@@ -339,17 +337,14 @@ function Dashboard() {
       {/* ── Pipeline ── */}
       <div style={{marginBottom:'32px'}}>
         <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'12px'}}>
-          <span className="hud-label">Certification Pipeline</span>
+          <span className="hud-label">Application Pipeline</span>
           <span style={{fontFamily:'var(--mono)',fontSize:'10px',color:'var(--text-tertiary)',letterSpacing:'1px'}}>{allApps.length} total</span>
         </div>
         <div style={{display:'flex',gap:'2px',height:'28px',overflow:'hidden'}}>
           {[
             {key:'pending',label:'Pending',color:'var(--accent-amber)',count:pipeline.pending},
             {key:'review',label:'Review',color:'var(--accent-amber)',count:pipeline.under_review},
-            {key:'approved',label:'Approved',color:'var(--purple-bright)',count:pipeline.approved},
-            {key:'testing',label:'Testing',color:'var(--purple-bright)',count:pipeline.testing},
-            {key:'conformant',label:'Conformant',color:'var(--accent-green)',count:pipeline.conformant},
-            {key:'suspended',label:'Suspended',color:'var(--accent-red)',count:pipeline.revoked},
+            {key:'approved',label:'Awaiting Deploy',color:'var(--purple-bright)',count:pipeline.approved},
           ].map(s => {
             const total = allApps.length || 1;
             const pct = s.count > 0 ? Math.max((s.count/total)*100, 8) : 0;
@@ -387,7 +382,7 @@ function Dashboard() {
                     <button onClick={() => handleQuickAdvance(app.id, 'under_review', `Begin review for ${app.system_name}`)} className="btn" style={{padding:'5px 10px',fontSize:'8px',letterSpacing:'1px'}}>Review</button>
                   )}
                   <button onClick={() => handleQuickAdvance(app.id, 'approved', `Approve ${app.system_name}`)} className="btn" style={{padding:'5px 10px',fontSize:'8px',letterSpacing:'1px',color:'var(--accent-green)',borderColor:'rgba(92,214,133,0.2)'}}>Approve</button>
-                  <button onClick={() => handleQuickAdvance(app.id, 'suspended', `Suspend ${app.system_name}`)} className="btn" style={{padding:'5px 10px',fontSize:'8px',letterSpacing:'1px',color:'var(--accent-red)',borderColor:'rgba(214,92,92,0.2)'}}>Suspend</button>
+                  <button onClick={() => handleQuickAdvance(app.id, 'suspended', `Withdraw ${app.system_name}`)} className="btn" style={{padding:'5px 10px',fontSize:'8px',letterSpacing:'1px',color:'var(--accent-red)',borderColor:'rgba(214,92,92,0.2)'}}>Withdraw</button>
                   <Link to={`/applications/${app.id}`} className="btn" style={{padding:'5px 10px',fontSize:'8px',letterSpacing:'1px'}}>View</Link>
                 </div>
               </div>
@@ -492,7 +487,7 @@ function Dashboard() {
       {/* ── Recent Applications ── */}
       <div>
         <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'12px'}}>
-          <span className="hud-label">Recent Applications</span>
+          <span className="hud-label">Pending Applications</span>
           <Link to="/applications" className="hud-link" style={{fontSize:'10px'}}>View All →</Link>
         </div>
         <Panel>
@@ -504,13 +499,13 @@ function Dashboard() {
                 </tr>
               </thead>
               <tbody>
-                {recentApps.map(app => (
+                {allApps.slice(0,6).map(app => (
                   <tr key={app.id} style={{cursor:'pointer'}} onClick={() => navigate(`/applications/${app.id}`)}>
                     <td><Link to={`/applications/${app.id}`} style={{color:'var(--purple-bright)'}}>{app.system_name}</Link></td>
                     <td>{app.organization_name}</td>
                     <td><span style={{fontFamily:'var(--mono)',fontSize:'9px',letterSpacing:'1.5px',textTransform:'uppercase',
                       color:app.state==='conformant'?'var(--accent-green)':app.state==='revoked'?'var(--accent-red)':app.state==='testing'||app.state==='approved'?'var(--purple-bright)':'var(--accent-amber)'
-                    }}>{app.state}</span></td>
+                    }}>{app.state === 'approved' ? 'awaiting deploy' : app.state === 'under_review' ? 'in review' : app.state}</span></td>
                     <td style={{color:'var(--text-tertiary)',fontSize:'13px'}}>{app.submitted_at ? new Date(app.submitted_at).toLocaleDateString() : '—'}</td>
                   </tr>
                 ))}
