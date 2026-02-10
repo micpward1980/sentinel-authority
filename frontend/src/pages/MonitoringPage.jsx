@@ -137,7 +137,7 @@ function MonitoringPage() {
             System Monitoring
           </h1>
           <p style={{color: 'rgba(255,255,255,.78)', marginTop: '4px', fontSize: '14px'}}>
-            {user?.role === 'admin' ? 'Real-time ENVELO agent status and telemetry' : 'Track your certified systems\' compliance status'}
+            {user?.role === 'admin' ? 'Real-time ENVELO Interlock status and telemetry' : 'Track your certified systems\' compliance status'}
           </p>
         </div>
         <div style={{display: 'flex', gap: '12px', alignItems: 'center'}}>
@@ -296,7 +296,7 @@ function MonitoringPage() {
         </div>        
         {filteredSessions.length === 0 ? (
           <div style={{padding: 'clamp(16px, 4vw, 40px)', textAlign: 'center', color: 'rgba(255,255,255,.78)'}}>
-            {user?.role === 'admin' ? 'No ENVELO sessions found. Deploy an agent to begin monitoring.' : 'No active systems. Once your system is ODDC certified and running the ENVELO agent, real-time monitoring data will appear here.'}
+            {user?.role === 'admin' ? 'No ENVELO sessions found. Deploy an Interlock to begin monitoring.' : 'No active systems. Once your system is ODDC certified and running the ENVELO Interlock, real-time monitoring data will appear here.'}
           </div>
         ) : (
           <div className='table-scroll' style={{overflowX: 'auto', WebkitOverflowScrolling: 'touch'}}>
@@ -410,7 +410,7 @@ function MonitoringPage() {
               <div>
                 <h3 style={{margin: '0 0 4px 0', fontSize: '18px', fontWeight: 400, color: 'rgba(255,255,255,.94)'}}>{selectedSession.organization_name || 'Unknown Organization'}</h3>
                 <p style={{margin: 0, fontSize: '13px', color: 'rgba(255,255,255,.78)'}}>{selectedSession.system_name || 'Unknown System'} · {selectedSession.certificate_id || 'No certificate'}</p>
-                <p style={{margin: '4px 0 0', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', color: 'rgba(255,255,255,.50)'}}>Agent v{selectedSession.agent_version || '1.0.0'} · Session {selectedSession.session_id}</p>
+                <p style={{margin: '4px 0 0', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', color: 'rgba(255,255,255,.50)'}}>Interlock v{selectedSession.agent_version || '1.0.0'} · Session {selectedSession.session_id}</p>
               </div>
               {selectedSession.is_online && (
                 <button
