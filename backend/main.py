@@ -170,6 +170,14 @@ async def lifespan(app: FastAPI):
             logger.warning(f"Auto-anchor: {e}")
 
 
+    # Add session_type column to envelo_sessions
+    async with engine.begin() as conn_st:
+        try:
+            await conn_st.execute(raw_text("ALTER TABLE envelo_sessions ADD COLUMN session_type VARCHAR(20) DEFAULT 'production'"))
+            await conn_st.commit()
+        except Exception:
+            pass
+
     yield
     logger.info("Shutting down...")
 
