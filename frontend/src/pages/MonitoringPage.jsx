@@ -46,11 +46,11 @@ function MonitoringPage() {
 
   useEffect(() => {
     fetchData();
-    if (autoRefresh) {
+    if (autoRefresh && !selectedSession) {
       const interval = setInterval(fetchData, 10000); // Refresh every 10 seconds
       return () => clearInterval(interval);
     }
-  }, [autoRefresh, currentPage, sortField, sortOrder]);
+  }, [autoRefresh, currentPage, sortField, sortOrder, selectedSession]);
 
   const fetchTimeline = async (sessionId) => {
     try {
@@ -332,7 +332,7 @@ function MonitoringPage() {
                     <tr 
                       key={session.id}
                       onClick={() => {
-                        if (isSelected) { setExpandedId(null); setTimeout(() => setSelectedSession(null), 300); }
+                        if (isSelected) { const scrollY = window.scrollY; setExpandedId(null); setTimeout(() => { setSelectedSession(null); requestAnimationFrame(() => window.scrollTo(0, scrollY)); }, 300); }
                         else { setSelectedSession(session); requestAnimationFrame(() => setExpandedId(session.id)); }
                       }}
                       style={{
