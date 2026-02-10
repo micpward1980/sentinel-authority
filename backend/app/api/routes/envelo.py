@@ -132,28 +132,41 @@ async def receive_telemetry(
         telemetry = TelemetryRecord(
             session_id=session.id,
             timestamp=datetime.fromisoformat(record['timestamp'].replace('Z', '').replace('+00:00', '')),
-            action_id=record.get('action_id', ''),
-            action_type=record.get('action_type', ''),
-            result=record.get('result', ''),
+            action_id=record.get('action_id', record.get('action', '')),
+            action_type=record.get('action_type', record.get('parameter', '')),
+            result=record.get('result', record.get('decision', '')).upper(),
             execution_time_ms=record.get('execution_time_ms', 0),
-            parameters=json.dumps(record.get('parameters', {})),
+            parameters=json.dumps(record.get('parameters', {k: record.get(k) for k in ('parameter','value','boundary') if record.get(k) is not None})),
             boundary_evaluations=json.dumps(record.get('boundary_evaluations', [])),
             system_state=json.dumps(record.get('system_state', {}))
         )
         db.add(telemetry)
         
         # If violation, also add to violations table
-        if record.get('result') == 'BLOCK':
-            for eval in record.get('boundary_evaluations', []):
-                if not eval.get('passed', True):
-                    violation = Violation(
-                        session_id=session.id,
-                        timestamp=telemetry.timestamp,
-                        boundary_name=eval.get('boundary', ''),
-                        violation_message=eval.get('message', ''),
-                        parameters=json.dumps(record.get('parameters', {}))
-                    )
-                    db.add(violation)
+        result_val = record.get('result', record.get('decision', '')).upper()
+        if result_val == 'BLOCK':
+            evals = record.get('boundary_evaluations', [])
+            if evals:
+                for ev in evals:
+                    if not ev.get('passed', True):
+                        violation = Violation(
+                            session_id=session.id,
+                            timestamp=telemetry.timestamp,
+                            boundary_name=ev.get('boundary', ev.get('parameter', '')),
+                            violation_message=ev.get('message', f"{record.get('parameter','')}: {record.get('value','')} exceeded boundary"),
+                            parameters=json.dumps(record.get('parameters', {}))
+                        )
+                        db.add(violation)
+            else:
+                # No boundary_evaluations but still a block — record it
+                violation = Violation(
+                    session_id=session.id,
+                    timestamp=telemetry.timestamp,
+                    boundary_name=record.get('parameter', record.get('action', '')),
+                    violation_message=f"{record.get('parameter','')}: value={record.get('value','')} exceeded boundary={record.get('boundary','')}",
+                    parameters=json.dumps({k: record.get(k) for k in ('parameter','value','boundary','action') if record.get(k) is not None})
+                )
+                db.add(violation)
     
     # Update session stats
     session.last_telemetry_at = datetime.utcnow()
@@ -458,7 +471,7 @@ async def list_all_sessions(
 
 @router.get("/admin/sessions/{session_id}/telemetry")
 async def get_session_telemetry_admin(
-    session_id: int,
+    session_id: str,
     db: AsyncSession = Depends(get_db),
     current_user: dict = Depends(get_current_user)
 ):
@@ -467,9 +480,15 @@ async def get_session_telemetry_admin(
     if current_user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Admin access required")
     
+    # Look up session by string ID
+    sess_result = await db.execute(select(EnveloSession).where(EnveloSession.session_id == session_id))
+    sess = sess_result.scalar_one_or_none()
+    if not sess:
+        raise HTTPException(status_code=404, detail="Session not found")
+    
     result = await db.execute(
         select(TelemetryRecord).where(
-            TelemetryRecord.session_id == session_id
+            TelemetryRecord.session_id == sess.id
         ).order_by(TelemetryRecord.timestamp.desc()).limit(1000)
     )
     records = result.scalars().all()
@@ -493,7 +512,7 @@ async def get_session_telemetry_admin(
 
 @router.get("/admin/sessions/{session_id}/violations")
 async def get_session_violations_admin(
-    session_id: int,
+    session_id: str,
     db: AsyncSession = Depends(get_db),
     current_user: dict = Depends(get_current_user)
 ):
@@ -746,14 +765,13 @@ async def receive_heartbeat(
     
     await db.commit()
 
-    # Check for high violations
-    await check_and_notify_violations(session, api_key, db)
+    # Check for high violations on most recent session
+    if sessions:
+        try:
+            await check_and_notify_violations(sessions[-1], api_key, db)
+        except Exception:
+            pass
 
-    return {
-        "status": "received",
-        "records_stored": len(data.records)
-    }
-    
     return {"status": "ok", "timestamp": now.isoformat(), "sessions_updated": len(sessions)}
 
 

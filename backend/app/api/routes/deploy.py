@@ -481,7 +481,7 @@ async def deploy_script(
         if not application:
             raise HTTPException(status_code=404, detail=f"Case '{case_id}' not found")
 
-        state_str = application.state
+        state_str = application.state.value if hasattr(application.state, 'value') else str(application.state)
         if state_str not in ('approved', 'testing', 'conformant', 'active', 'certified'):
             raise HTTPException(status_code=403, detail=f"State is '{state_str}'. Must be approved.")
 
