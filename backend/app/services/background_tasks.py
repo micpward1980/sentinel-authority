@@ -9,7 +9,7 @@ import asyncio
 from datetime import datetime, timedelta
 from sqlalchemy import select, and_
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.core.database import async_session_maker
+from app.core.database import AsyncSessionLocal as async_session_maker
 from app.models.models import (
     Certificate, CertificationState, EnveloSession, 
     TelemetryRecord, APIKey, User
