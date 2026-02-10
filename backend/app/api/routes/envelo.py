@@ -122,6 +122,19 @@ async def receive_telemetry(
     
     if not session:
         # Auto-create session if not found
+        # Lookup org/system from API key's application
+        _org_name = None
+        _sys_name = None
+        try:
+            if hasattr(api_key, 'certificate_id') and api_key.certificate_id:
+                cert_r = await db.execute(select(Certificate).where(Certificate.id == api_key.certificate_id))
+                cert_obj = cert_r.scalar_one_or_none()
+                if cert_obj:
+                    _org_name = cert_obj.organization_name
+                    _sys_name = cert_obj.system_name
+        except Exception:
+            pass
+
         session = EnveloSession(
             session_id=data.session_id,
             api_key_id=api_key.id,
@@ -951,7 +964,9 @@ async def get_monitoring_overview(
             "pass_count": s.pass_count or 0,
             "block_count": s.block_count or 0,
             "uptime_hours": round((now - s.started_at).total_seconds() / 3600, 1) if s.started_at else 0,
-            "session_type": getattr(s, "session_type", "production") or "production"
+            "session_type": getattr(s, "session_type", "production") or "production",
+            "organization_name": getattr(s, "organization_name", None),
+            "system_name": getattr(s, "system_name", None)
         })
     
     total_for_pagination = total_count if current_user.get("role") == "admin" else len(session_data)

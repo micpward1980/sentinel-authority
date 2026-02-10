@@ -302,6 +302,8 @@ class EnveloSession(Base):
     pass_count = Column(Integer, default=0)
     block_count = Column(Integer, default=0)
     session_type = Column(String(20), default="production")  # production, cat72_test
+    organization_name = Column(String(255))
+    system_name = Column(String(255))
     
     certificate = relationship("Certificate", backref="envelo_sessions")
     api_key = relationship("APIKey", backref="sessions")

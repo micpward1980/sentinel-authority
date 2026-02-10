@@ -176,6 +176,18 @@ async def lifespan(app: FastAPI):
             await conn_st.execute(raw_text("ALTER TABLE envelo_sessions ADD COLUMN session_type VARCHAR(20) DEFAULT 'production'"))
         except Exception:
             pass
+    # Add org/system name columns
+    async with engine.begin() as conn_names:
+        try:
+            await conn_names.execute(raw_text("ALTER TABLE envelo_sessions ADD COLUMN organization_name VARCHAR(255)"))
+        except Exception:
+            pass
+    async with engine.begin() as conn_names2:
+        try:
+            await conn_names2.execute(raw_text("ALTER TABLE envelo_sessions ADD COLUMN system_name VARCHAR(255)"))
+        except Exception:
+            pass
+
     # Mark old sessions as cat72_test (separate connection to avoid aborted txn)
     async with engine.begin() as conn_st2:
         try:
