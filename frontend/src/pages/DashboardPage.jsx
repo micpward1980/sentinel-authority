@@ -334,7 +334,6 @@ function Dashboard() {
         <StatCard onClick={() => navigate("/certificates")} label="Active Certs" value={stats?.certificates_active || 0} color="var(--accent-green)" icon={<BrandMark size={16} />}/>
         <StatCard onClick={() => navigate("/monitoring")} label="Online Interlocks" value={onlineAgents} color={onlineAgents>0?'var(--accent-green)':'var(--text-tertiary)'} icon={<Wifi size={16} strokeWidth={1.5}/>}/>
         <StatCard onClick={() => navigate("/certificates")} label="Certs Issued" value={stats?.certificates_issued || 0} color="var(--purple-bright)" icon={<Award size={16} strokeWidth={1.5}/>}/>
-        <StatCard onClick={() => navigate("/applications")} label="Needs Action" value={actionCount} color={actionCount>0?'var(--accent-amber)':'var(--text-tertiary)'} icon={<AlertCircle size={16} strokeWidth={1.5}/>}/>
       </div>
 
       {/* ── Pipeline ── */}
