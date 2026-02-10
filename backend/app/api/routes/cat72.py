@@ -141,7 +141,7 @@ async def create_test(
     if not application:
         raise HTTPException(status_code=404, detail="Application not found")
     
-    if application.state not in ["under_review", "observe"]:
+    if application.state not in ["approved", "under_review", "observe"]:
         raise HTTPException(status_code=400, detail=f"Application must be in UNDER_REVIEW or OBSERVE state")
     
     test_id = await generate_test_id(db)
