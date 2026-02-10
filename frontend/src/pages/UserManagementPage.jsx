@@ -13,6 +13,8 @@ function UserManagementPage() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [roleFilter, setRoleFilter] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const PER_PAGE = 25;
   const [search, setSearch] = useState('');
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -142,11 +144,11 @@ function UserManagementPage() {
         action={<button onClick={() => setShowInviteModal(true)} className="btn px-4 py-2 flex items-center gap-2" ><Plus className="w-4 h-4" /> Invite User</button>}
       />
       <div className="grid gap-4" style={{gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))"}}>
-        <StatCard onClick={() => setRoleFilter("")} label="Total Users" value={stats.total} color={roleFilter === "" ? "rgba(255,255,255,.94)" : "rgba(255,255,255,.35)"} />
-        <StatCard onClick={() => setRoleFilter(roleFilter === "admin" ? "" : "admin")} label="Admins" value={stats.admins} color={roleFilter === "admin" ? "#a896d6" : "rgba(255,255,255,.35)"} />
-        <StatCard onClick={() => setRoleFilter(roleFilter === "applicant" ? "" : "applicant")} label="Applicants" value={stats.applicants} color={roleFilter === "applicant" ? "#5CD685" : "rgba(255,255,255,.35)"} />
-        <StatCard onClick={() => setRoleFilter(roleFilter === "pending" ? "" : "pending")} label="Pending" value={stats.pending} color={roleFilter === "pending" ? "#D6A05C" : "rgba(255,255,255,.35)"} />
-        <StatCard onClick={() => setRoleFilter(roleFilter === "inactive" ? "" : "inactive")} label="Inactive" value={stats.inactive} color={roleFilter === "inactive" ? "#D65C5C" : "rgba(255,255,255,.35)"} />
+        <StatCard onClick={() => { setRoleFilter(""); setCurrentPage(1); }} label="Total Users" value={stats.total} color={roleFilter === "" ? "rgba(255,255,255,.94)" : "rgba(255,255,255,.35)"} />
+        <StatCard onClick={() => { setRoleFilter(roleFilter === "admin" ? "" : "admin"); setCurrentPage(1); }} label="Admins" value={stats.admins} color={roleFilter === "admin" ? "#a896d6" : "rgba(255,255,255,.35)"} />
+        <StatCard onClick={() => { setRoleFilter(roleFilter === "applicant" ? "" : "applicant"); setCurrentPage(1); }} label="Applicants" value={stats.applicants} color={roleFilter === "applicant" ? "#5CD685" : "rgba(255,255,255,.35)"} />
+        <StatCard onClick={() => { setRoleFilter(roleFilter === "pending" ? "" : "pending"); setCurrentPage(1); }} label="Pending" value={stats.pending} color={roleFilter === "pending" ? "#D6A05C" : "rgba(255,255,255,.35)"} />
+        <StatCard onClick={() => { setRoleFilter(roleFilter === "inactive" ? "" : "inactive"); setCurrentPage(1); }} label="Inactive" value={stats.inactive} color={roleFilter === "inactive" ? "#D65C5C" : "rgba(255,255,255,.35)"} />
       </div>
       <Panel>
         <div className="flex items-center gap-3">
@@ -164,7 +166,7 @@ function UserManagementPage() {
           </div>
         ) : (
           <div className="space-y-2">
-            {filteredUsers.map(user => (
+            {filteredUsers.slice((currentPage - 1) * PER_PAGE, currentPage * PER_PAGE).map(user => (
               <div key={user.id || user.email} onClick={() => { setSelectedUser(user); setShowEditModal(true); }} className="flex items-center gap-4 p-4 cursor-pointer transition-all" style={{background: 'rgba(255,255,255,0.02)', border: '1px solid ' + 'rgba(255,255,255,.07)'}}>
                 <div className="w-10 h-10 flex items-center justify-center flex-shrink-0" style={{background: '#5B4B8A', color: 'rgba(255,255,255,.94)', fontWeight: '400'}}>{user.full_name?.[0] || user.email?.[0] || '?'}</div>
                 <div className="flex-1 min-w-0">
@@ -187,6 +189,7 @@ function UserManagementPage() {
           </div>
         )}
       </Panel>
+      <UserPagination total={filteredUsers.length} page={currentPage} perPage={PER_PAGE} onChange={setCurrentPage} />
       {showInviteModal && (
         <div className="fixed inset-0 flex items-center justify-center z-50 sa-modal-overlay">
           <div className="w-full max-w-md mx-4 p-6 sa-modal-panel">
@@ -243,6 +246,19 @@ function UserManagementPage() {
 // ═══ Settings Page ═══
 
 // ═══ Activity History / Audit Log ═══
+
+function UserPagination({ total, page, perPage, onChange }) {
+  const pages = Math.ceil(total / perPage);
+  if (pages <= 1) return null;
+  const mono = "Consolas, 'IBM Plex Mono', monospace";
+  return (
+    <div style={{display:'flex',justifyContent:'center',alignItems:'center',gap:'8px',padding:'16px 0'}}>
+      <button disabled={page<=1} onClick={() => onChange(page-1)} style={{padding:'6px 12px',background:'#2a2f3d',border:'1px solid rgba(255,255,255,.07)',color:page<=1?'rgba(255,255,255,.50)':'rgba(255,255,255,.94)',cursor:page<=1?'not-allowed':'pointer',fontFamily:mono,fontSize:'11px'}}>Prev</button>
+      <span style={{fontFamily:mono,fontSize:'11px',color:'rgba(255,255,255,.78)'}}>Page {page} of {pages}</span>
+      <button disabled={page>=pages} onClick={() => onChange(page+1)} style={{padding:'6px 12px',background:'#2a2f3d',border:'1px solid rgba(255,255,255,.07)',color:page>=pages?'rgba(255,255,255,.50)':'rgba(255,255,255,.94)',cursor:page>=pages?'not-allowed':'pointer',fontFamily:mono,fontSize:'11px'}}>Next</button>
+    </div>
+  );
+}
 
 export default UserManagementPage;
 
