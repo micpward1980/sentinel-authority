@@ -444,3 +444,41 @@ async def _get_certificate_owner(db, cert):
         return result.scalar_one_or_none()
     except Exception:
         return None
+
+
+async def demo_session_ticker():
+    """Tick demo sessions every 15s to simulate live telemetry."""
+    import random
+    from sqlalchemy import select, text
+    from app.core.database import AsyncSessionLocal
+    from app.models.models import EnveloSession
+
+    DEMO_IDS = [
+        '88dd4e8c18cc46d6b71c0440a99b71cd',
+        '316e05b066474399bc085497da10cf5d',
+        '32af8699f65e45a189a0f1163125d73c',
+        '4f9a9ea698dc4fe59f12b97d3d48d692',
+        '26346890eef9442ca4c868a40afda40f',
+        '78700dbda0ed4573b47ede666850b253',
+        '81c7db2674ad4727ac9b8aba99bc5b07',
+    ]
+
+    while True:
+        try:
+            async with AsyncSessionLocal() as db:
+                result = await db.execute(
+                    select(EnveloSession).where(EnveloSession.session_id.in_(DEMO_IDS))
+                )
+                sessions = result.scalars().all()
+                for s in sessions:
+                    actions = random.randint(1, 5)
+                    passed = actions if random.random() > 0.02 else actions - 1
+                    blocked = actions - passed
+                    s.pass_count = (s.pass_count or 0) + passed
+                    s.block_count = (s.block_count or 0) + blocked
+                    s.last_heartbeat = __import__('datetime').datetime.utcnow()
+                    s.is_online = True
+                await db.commit()
+        except Exception as e:
+            print(f"Demo ticker error: {e}")
+        await __import__('asyncio').sleep(15)

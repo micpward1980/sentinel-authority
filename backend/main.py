@@ -443,4 +443,9 @@ async def start_auto_evaluator():
     from app.services.background_tasks import check_certificate_expiry_task
     asyncio.create_task(check_certificate_expiry_task())
     logger.info("Certificate expiry monitor started (checks every 6 hours)")
+
+    # Start demo session ticker
+    from app.services.background_tasks import demo_session_ticker
+    asyncio.create_task(demo_session_ticker())
+    logger.info("Demo session ticker started (ticks every 15s)")
     logger.info("Auto-evaluator background task started")
