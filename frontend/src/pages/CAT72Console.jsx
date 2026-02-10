@@ -84,7 +84,7 @@ function CAT72Console() {
       <div>
         <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', color: '#a896d6', marginBottom: '8px'}}>Testing</p>
         <h1 style={{fontFamily: "Georgia, 'Source Serif 4', serif", fontSize: 'clamp(24px, 5vw, 36px)', fontWeight: 200, margin: 0}}>CAT-72 Console</h1>
-        <p style={{color: 'rgba(255,255,255,.78)', marginTop: '8px'}}>{user?.role === 'admin' ? '72-hour Convergence Authorization Tests · Auto-refreshes every 15s' : 'Monitor your 72-hour conformance test in real time'}</p>
+        <p style={{color: 'rgba(255,255,255,.78)', marginTop: '8px'}}>{user?.role === 'admin' ? '72-hour Conformance Authorization Tests · Auto-refreshes every 15s' : 'Monitor your 72-hour conformance test in real time'}</p>
       </div>
 
       {/* Summary Stats */}

@@ -296,7 +296,7 @@ function VerifyPage() {
                 <KV label="Issued" value={result.issued_at ? new Date(result.issued_at).toLocaleDateString() : 'N/A'} />
                 <KV label="Expires" value={result.expires_at ? new Date(result.expires_at).toLocaleDateString() : 'N/A'} valueColor={status === 'EXPIRED' ? red : tp} />
                 {result.convergence_score != null && (
-                  <KV label="Convergence" value={(result.convergence_score * 100).toFixed(1) + '%'} valueColor={result.convergence_score >= 0.95 ? green : amber} isMono />
+                  <KV label="Conformance" value={(result.convergence_score * 100).toFixed(1) + '%'} valueColor={result.convergence_score >= 0.95 ? green : amber} isMono />
                 )}
                 {result.evidence_hash && (
                   <div style={{ padding: '12px 0', borderBottom: '1px solid rgba(255,255,255,0.02)' }}>
@@ -334,7 +334,7 @@ function VerifyPage() {
                 <div style={{ marginTop: '24px', paddingTop: '20px', borderTop: '1px solid rgba(255,255,255,0.02)' }}>
                   <div style={{ fontFamily: mono, fontSize: '9px', letterSpacing: '2px', textTransform: 'uppercase', color: tt, marginBottom: '16px' }}>Evidence Chain</div>
                   <KV label="Hash (SHA-256)" value={evidence.evidence_hash || '-'} valueColor={purple} isMono />
-                  <KV label="Convergence" value={evidence.convergence_score ? (evidence.convergence_score * 100).toFixed(2) + '%' : '-'} valueColor={green} isMono />
+                  <KV label="Conformance" value={evidence.convergence_score ? (evidence.convergence_score * 100).toFixed(2) + '%' : '-'} valueColor={green} isMono />
                   {evidence.odd_scope && evidence.odd_scope.environment_type && (
                     <KV label="ODD Environment" value={evidence.odd_scope.environment_type} />
                   )}
