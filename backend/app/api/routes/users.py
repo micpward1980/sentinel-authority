@@ -246,7 +246,7 @@ async def delete_user(
         await db.execute(text("DELETE FROM envelo_sessions WHERE api_key_id IN (SELECT id FROM api_keys WHERE user_id = :uid)"), {"uid": user_id})
         await db.execute(text("DELETE FROM api_keys WHERE user_id = :uid"), {"uid": user_id})
         await db.execute(text("DELETE FROM user_sessions WHERE user_id = :uid"), {"uid": user_id})
-        await db.execute(text("DELETE FROM audit_log WHERE user_id = :uid"), {"uid": user_id})
+        await db.execute(text("UPDATE audit_log SET user_id = NULL WHERE user_id = :uid"), {"uid": user_id})
         await db.execute(text("UPDATE applications SET applicant_id = NULL WHERE applicant_id = :uid"), {"uid": user_id})
         await db.execute(text("UPDATE cat72_tests SET operator_id = NULL WHERE operator_id = :uid"), {"uid": user_id})
         await db.execute(text("UPDATE certificates SET issued_by = NULL WHERE issued_by = :uid"), {"uid": user_id})
