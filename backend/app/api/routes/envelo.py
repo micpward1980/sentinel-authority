@@ -441,6 +441,34 @@ async def get_global_stats(db: AsyncSession = Depends(get_db)):
     }
 
 
+@router.patch("/admin/sessions/{session_id}/type")
+async def update_session_type(
+    session_id: str, session_type: str = "cat72_test",
+    db: AsyncSession = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    if current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Admin only")
+    result = await db.execute(select(EnveloSession).where(EnveloSession.session_id == session_id))
+    s = result.scalar_one_or_none()
+    if not s: raise HTTPException(status_code=404)
+    s.session_type = session_type
+    await db.commit()
+    return {"ok": True, "session_id": session_id, "session_type": session_type}
+
+@router.patch("/admin/sessions/bulk-type")
+async def bulk_update_session_type(
+    max_id: int = 18, session_type: str = "cat72_test",
+    db: AsyncSession = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    if current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Admin only")
+    from sqlalchemy import update
+    result = await db.execute(update(EnveloSession).where(EnveloSession.id <= max_id).values(session_type=session_type))
+    await db.commit()
+    return {"ok": True, "updated": result.rowcount}
+
 @router.get("/admin/sessions", summary="Admin: list all sessions")
 async def list_all_sessions(
     db: AsyncSession = Depends(get_db),
