@@ -9,7 +9,7 @@ from sqlalchemy import select, func
 from app.core.database import get_db
 from app.core.security import get_current_user, require_role
 from app.core.config import settings
-from app.models.models import Certificate, CAT72Test, Application, CertificationState, TestState
+from app.models.models import Certificate, CAT72Test, Application, CertificationState, TestState, EnveloSession, APIKey
 from app.services.certificate_pdf import generate_certificate_pdf
 
 router = APIRouter()
@@ -43,6 +43,14 @@ async def issue_certificate(test_id: str, db: AsyncSession = Depends(get_db), us
     certificate = Certificate(certificate_number=cert_number, application_id=application.id, organization_name=application.organization_name, system_name=application.system_name, system_version=application.system_version, odd_specification=application.odd_specification, envelope_definition=application.envelope_definition, state="conformant", issued_at=now, expires_at=now + timedelta(days=365), issued_by=int(user["sub"]), test_id=test.id, convergence_score=test.convergence_score, evidence_hash=test.evidence_hash, signature=signature, audit_log_ref=audit_log_ref, verification_url=f"https://sentinelauthority.org/verify.html?cert={cert_number}", history=[{"action": "issued", "timestamp": now.isoformat(), "by": user["email"]}])
     db.add(certificate)
     application.state = "conformant"
+    # Promote cat72_test sessions to production for this application
+    try:
+        from sqlalchemy import update
+        key_ids = (await db.execute(select(APIKey.id).where(APIKey.application_id == application.id))).scalars().all()
+        if key_ids:
+            await db.execute(update(EnveloSession).where(EnveloSession.api_key_id.in_(key_ids)).values(session_type="production", certificate_id=certificate.id))
+    except Exception as e:
+        print(f"Session promotion note: {e}")
     await db.commit()
     await db.refresh(certificate)
     # Generate and store PDF
