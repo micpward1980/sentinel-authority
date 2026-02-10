@@ -1001,6 +1001,7 @@ async def get_monitoring_overview(
             "uptime_hours": round((now - s.started_at).total_seconds() / 3600, 1) if s.started_at else 0,
             "session_type": getattr(s, "session_type", "production") or "production",
             "is_demo": getattr(s, "is_demo", False),
+            "last_heartbeat_at": s.last_heartbeat_at.isoformat() if s.last_heartbeat_at else None,
             "organization_name": getattr(s, "organization_name", None),
             "system_name": getattr(s, "system_name", None)
         })
