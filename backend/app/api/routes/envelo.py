@@ -894,7 +894,7 @@ async def get_session_timeline(
     from sqlalchemy import and_
     
     # Get session
-    result = await db.execute(select(EnveloSession).where(EnveloSession.id == session_id))
+    result = await db.execute(select(EnveloSession).where(EnveloSession.session_id == session_id))
     session = result.scalar_one_or_none()
     
     if not session:
@@ -907,7 +907,7 @@ async def get_session_timeline(
     result = await db.execute(
         select(TelemetryRecord).where(
             and_(
-                TelemetryRecord.session_id == session_id,
+                TelemetryRecord.session_id == session.id,
                 TelemetryRecord.timestamp >= start_time
             )
         ).order_by(TelemetryRecord.timestamp)
