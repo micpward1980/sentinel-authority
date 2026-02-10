@@ -254,7 +254,7 @@ async def list_sessions(
         "sessions": [
             {
                 "session_id": s.session_id,
-                "certificate_id": s.certificate_id,
+                "certificate_id": cert_map.get(s.certificate_id, s.certificate_id),
                 "status": s.status,
                 "started_at": s.started_at.isoformat() if s.started_at else None,
                 "ended_at": s.ended_at.isoformat() if s.ended_at else None,
@@ -525,7 +525,7 @@ async def list_all_sessions(
             {
                 "id": s.id,
                 "session_id": s.session_id,
-                "certificate_id": s.certificate_id,
+                "certificate_id": cert_map.get(s.certificate_id, s.certificate_id),
                 "started_at": s.started_at.isoformat() if s.started_at else None,
                 "ended_at": s.ended_at.isoformat() if s.ended_at else None,
                 "agent_version": s.agent_version,
@@ -963,6 +963,15 @@ async def get_monitoring_overview(
     
     sessions = sessions_result.scalars().all()
     
+    # Build certificate number lookup
+    cert_ids = [s.certificate_id for s in sessions if s.certificate_id]
+    cert_map = {}
+    if cert_ids:
+        from app.models.models import Certificate
+        cert_result = await db.execute(select(Certificate).where(Certificate.id.in_(cert_ids)))
+        for c in cert_result.scalars().all():
+            cert_map[c.id] = c.certificate_number
+
     # Categorize sessions
     active_count = 0
     offline_count = 0
@@ -991,7 +1000,7 @@ async def get_monitoring_overview(
         session_data.append({
             "id": s.id,
             "session_id": s.session_id,
-            "certificate_id": s.certificate_id,
+            "certificate_id": cert_map.get(s.certificate_id, s.certificate_id),
             "status": s.status,
             "is_online": is_online,
             "started_at": s.started_at.isoformat() if s.started_at else None,
