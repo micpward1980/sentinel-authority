@@ -19,6 +19,7 @@ class UserRole(str, enum.Enum):
 class CertificationState(str, enum.Enum):
     PENDING = "pending"
     UNDER_REVIEW = "under_review"
+    APPROVED = "approved"
     OBSERVE = "observe"
     BOUNDED = "bounded"
     CONFORMANT = "conformant"
