@@ -186,6 +186,38 @@ async def lifespan(app: FastAPI):
             except Exception:
                 pass  # column already exists
 
+    # Start background tasks
+    import asyncio
+
+    try:
+        from app.services.auto_evaluator import run_auto_evaluator
+        asyncio.create_task(run_auto_evaluator())
+        logger.info("Auto evaluator started")
+    except Exception as e:
+        logger.warning(f"Auto evaluator failed to start: {e}")
+
+    try:
+        from app.services.background_tasks import check_offline_agents_task
+        from app.core.database import get_db
+        asyncio.create_task(check_offline_agents_task(get_db))
+        logger.info("Offline agent monitor started")
+    except Exception as e:
+        logger.warning(f"Offline agent monitor failed to start: {e}")
+
+    try:
+        from app.services.background_tasks import check_certificate_expiry_task
+        asyncio.create_task(check_certificate_expiry_task())
+        logger.info("Certificate expiry monitor started")
+    except Exception as e:
+        logger.warning(f"Certificate expiry monitor failed to start: {e}")
+
+    try:
+        from app.services.background_tasks import demo_session_ticker
+        asyncio.create_task(demo_session_ticker())
+        logger.info("Demo session ticker started")
+    except Exception as e:
+        logger.warning(f"Demo ticker failed to start: {e}")
+
     yield
     logger.info("Shutting down...")
 
