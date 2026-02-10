@@ -23,7 +23,7 @@ function ConfirmProvider({ children }) {
       {children}
       {state.open && (
         <div style={{ position: 'fixed', inset: 0, zIndex: 99999, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,.6)', backdropFilter: 'blur(6px)' }}>
-          <div style={{ background: styles.bgDeep, border: '1px solid rgba(157,140,207,0.2)', maxWidth: '400px', width: '90%' }}>
+          <div className="sa-modal-panel" style={{ maxWidth: '400px', width: '90%' }}>
             <div style={{ padding: '20px 20px 14px' }}>
               <h3 style={{ margin: '0 0 8px', fontFamily: styles.mono, fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: state.danger ? '#D65C5C' : styles.purpleBright }}>{state.title}</h3>
               <p style={{ margin: 0, color: styles.textSecondary, fontSize: '13px', lineHeight: 1.5 }}>{state.message}</p>
