@@ -198,6 +198,18 @@ async def suspend_certificate(certificate_number: str, reason: str, db: AsyncSes
     await db.commit()
     return {"message": "Certificate suspended", "state": cert.state}
 
+
+@router.patch("/{certificate_number}/reinstate", summary="Reinstate suspended certificate")
+async def reinstate_certificate(certificate_number: str, db: AsyncSession = Depends(get_db), user: dict = Depends(require_role(["admin"]))):
+    cert = await db.execute(select(Certificate).where(Certificate.certificate_number == certificate_number))
+    cert = cert.scalar_one_or_none()
+    if not cert: raise HTTPException(status_code=404, detail="Certificate not found")
+    if cert.state != "suspended": raise HTTPException(status_code=400, detail="Only suspended certificates can be reinstated")
+    cert.state = "conformant"
+    cert.history = (cert.history or []) + [{"action": "reinstated", "timestamp": datetime.utcnow().isoformat(), "by": user["email"]}]
+    await db.commit()
+    return {"message": "Certificate reinstated", "state": cert.state}
+
 @router.patch("/{certificate_number}/revoke", summary="Revoke certificate")
 async def revoke_certificate(certificate_number: str, reason: str, db: AsyncSession = Depends(get_db), user: dict = Depends(require_role(["admin"]))):
     result = await db.execute(select(Certificate).where(Certificate.certificate_number == certificate_number))
