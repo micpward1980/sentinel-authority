@@ -177,10 +177,16 @@ function MonitoringPage() {
           </div>
           <div style={{display: 'flex', flexDirection: 'column', gap: '8px'}}>
             {alerts.map((alert, i) => (
-              <div key={i} style={{
+              <div key={i} onClick={() => {
+                const s = sessions.find(s => s.session_id === alert.session_id);
+                if (s) setSelectedSession(s);
+              }} style={{
                 display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px',
-                background: 'transparent', padding: '10px 14px'
-              }}>
+                background: 'transparent', padding: '10px 14px', cursor: 'pointer',
+                transition: 'background .15s'
+              }}
+              onMouseEnter={e => e.currentTarget.style.background = 'rgba(214,92,92,0.08)'}
+              onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
                 <div>
                   <span style={{
                     fontSize: '10px', fontFamily: "Consolas, 'IBM Plex Mono', monospace",
