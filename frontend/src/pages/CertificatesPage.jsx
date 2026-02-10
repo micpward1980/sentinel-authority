@@ -66,6 +66,8 @@ function CertificatesPage() {
         ))}
       </div>
 
+      <input type="text" placeholder="Search cert, org, system..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} style={{background:"rgba(255,255,255,.04)",border:"1px solid rgba(255,255,255,.08)",color:"rgba(255,255,255,.90)",padding:"6px 12px",fontFamily:"Consolas, monospace",fontSize:"11px",width:"200px",outline:"none",marginBottom:"-8px"}} />
+
       <Panel>
         <div style={{overflowX: "auto", WebkitOverflowScrolling: "touch"}}><table className="w-full" style={{minWidth: "600px"}}>
           <thead>
