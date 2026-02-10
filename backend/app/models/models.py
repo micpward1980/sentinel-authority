@@ -189,6 +189,7 @@ class Certificate(Base):
     application_id = Column(Integer, ForeignKey("applications.id"))
     organization_name = Column(String(255))
     system_name = Column(String(255))
+    is_demo = Column(Boolean, default=False)
     system_version = Column(String(50))
     odd_specification = Column(JSON)
     envelope_definition = Column(JSON)
@@ -304,6 +305,7 @@ class EnveloSession(Base):
     session_type = Column(String(20), default="production")  # production, cat72_test
     organization_name = Column(String(255))
     system_name = Column(String(255))
+    is_demo = Column(Boolean, default=False)
     
     certificate = relationship("Certificate", backref="envelo_sessions")
     api_key = relationship("APIKey", backref="sessions")

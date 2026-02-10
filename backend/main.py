@@ -176,6 +176,13 @@ async def lifespan(app: FastAPI):
             await conn_st.execute(raw_text("ALTER TABLE envelo_sessions ADD COLUMN session_type VARCHAR(20) DEFAULT 'production'"))
         except Exception:
             pass
+    # Add is_demo column
+    async with engine.begin() as conn_demo:
+        try:
+            await conn_demo.execute(raw_text("ALTER TABLE envelo_sessions ADD COLUMN is_demo BOOLEAN DEFAULT FALSE"))
+        except Exception:
+            pass
+
     # Add org/system name columns
     async with engine.begin() as conn_names:
         try:

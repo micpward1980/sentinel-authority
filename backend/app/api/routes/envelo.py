@@ -471,7 +471,7 @@ async def update_session_type(
 
 @router.patch("/admin/sessions/{session_id}/meta")
 async def update_session_meta(
-    session_id: str, org: str = "", sys_name: str = "",
+    session_id: str, org: str = "", sys_name: str = "", demo: bool = None,
     db: AsyncSession = Depends(get_db),
     current_user: dict = Depends(get_current_user)
 ):
@@ -482,6 +482,7 @@ async def update_session_meta(
     if not s: raise HTTPException(status_code=404)
     if org: s.organization_name = org
     if sys_name: s.system_name = sys_name
+    if demo is not None: s.is_demo = demo
     await db.commit()
     return {"ok": True}
 
@@ -957,7 +958,9 @@ async def get_monitoring_overview(
         # Check if session is online (heartbeat within last 2 minutes)
         last_activity = s.last_heartbeat_at or s.last_telemetry_at or s.started_at
         is_online = False
-        if s.status == "active" and last_activity:
+        if getattr(s, "is_demo", False):
+            is_online = True
+        elif s.status == "active" and last_activity:
             is_online = (now - last_activity).total_seconds() < 120
         
         if s.status == "active":
@@ -981,6 +984,7 @@ async def get_monitoring_overview(
             "block_count": s.block_count or 0,
             "uptime_hours": round((now - s.started_at).total_seconds() / 3600, 1) if s.started_at else 0,
             "session_type": getattr(s, "session_type", "production") or "production",
+            "is_demo": getattr(s, "is_demo", False),
             "organization_name": getattr(s, "organization_name", None),
             "system_name": getattr(s, "system_name", None)
         })
