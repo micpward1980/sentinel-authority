@@ -86,8 +86,20 @@ async def register_session(
         status="active"
     )
     
-    db.add(session)
-    await db.commit()
+    try:
+        db.add(session)
+        await db.commit()
+    except Exception as e:
+        await db.rollback()
+        if "unique" in str(e).lower() or "duplicate" in str(e).lower():
+            # Session already exists — return it
+            result = await db.execute(
+                select(EnveloSession).where(EnveloSession.session_id == data.session_id)
+            )
+            existing = result.scalar_one_or_none()
+            if existing:
+                return {"status": "already_registered", "session_id": data.session_id}
+        raise HTTPException(status_code=500, detail=f"Session register failed: {str(e)}")
 
     return {"status": "registered", "session_id": data.session_id}
 

@@ -488,9 +488,12 @@ async def deploy_script(
         cert_num = certificate.certificate_number if certificate else application.application_number
         sys_name = application.system_name or "Autonomous System"
 
-        envelo_yaml = _build_yaml(application, certificate, key)
-        agent_py = _build_agent(key, cert_num, sys_name)
-        script = _build_installer(envelo_yaml, agent_py, case_id, sys_name)
+        try:
+            envelo_yaml = _build_yaml(application, certificate, key)
+            agent_py = _build_agent(key, cert_num, sys_name)
+            script = _build_installer(envelo_yaml, agent_py, case_id, sys_name)
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Build error: {str(e)}")
 
         return PlainTextResponse(
             content=script,
