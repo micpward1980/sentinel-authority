@@ -38,12 +38,12 @@
  */
 
 /* Kill ALL backgrounds on ALL elements */
-.sa-main-content div,
-.sa-main-content section,
-.sa-main-content span,
-.sa-main-content p,
-.sa-main-content li,
-.sa-main-content form {
+.sa-main-content > div div,
+.sa-main-content > div section,
+.sa-main-content > div span,
+.sa-main-content > div p,
+.sa-main-content > div li,
+.sa-main-content > div form {
   background: transparent !important;
   background-image: none !important;
 }
