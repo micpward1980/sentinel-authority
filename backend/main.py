@@ -177,6 +177,12 @@ async def lifespan(app: FastAPI):
             await conn_st.commit()
         except Exception:
             pass
+        try:
+            # Mark old stress-test sessions as cat72_test (sessions without a real certificate)
+            await conn_st.execute(raw_text("UPDATE envelo_sessions SET session_type = 'cat72_test' WHERE session_type = 'production' AND certificate_id IS NULL AND id < 19"))
+            await conn_st.commit()
+        except Exception:
+            pass
 
     yield
     logger.info("Shutting down...")
