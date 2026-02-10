@@ -243,6 +243,15 @@ def generate_certificate_pdf(cert_data: dict) -> bytes:
     foot_y -= 10
     c.drawString(margin + 30, foot_y, 'Unauthorized reproduction or alteration is prohibited.')
 
+    # Compliance notice — bold
+    notice_y = margin + 140
+    c.setFillColor(white)
+    c.setFont('Helvetica-Bold', 7.5)
+    notice_text = 'This certification requires continuous ENVELO Interlock monitoring. Systems falling below 95% conformance'
+    notice_text2 = 'are subject to a 30-day correction period followed by suspension and mandatory re-certification.'
+    c.drawString(margin + 30, notice_y, notice_text)
+    c.drawString(margin + 30, notice_y - 11, notice_text2)
+
     sig_y = margin + 105
     sig_x = margin + 30
     c.setStrokeColor(WHITE_30)
