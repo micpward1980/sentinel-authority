@@ -90,7 +90,7 @@ function CAT72Console() {
       {/* Summary Stats */}
       <div style={{display:"flex",gap:"16px",marginBottom:"16px"}}>
         <button onClick={() => setShowLive(false)} style={{background:!showLive?"rgba(91,75,138,0.25)":"transparent",border:"1px solid rgba(91,75,138,0.3)",color:!showLive?"rgba(255,255,255,.94)":"rgba(255,255,255,.50)",padding:"6px 16px",fontFamily:"Consolas, monospace",fontSize:"10px",textTransform:"uppercase",letterSpacing:"1px",cursor:"pointer"}}>Scheduled Tests</button>
-        <button onClick={() => setShowLive(true)} style={{background:showLive?"rgba(91,75,138,0.25)":"transparent",border:"1px solid rgba(91,75,138,0.3)",color:showLive?"rgba(255,255,255,.94)":"rgba(255,255,255,.50)",padding:"6px 16px",fontFamily:"Consolas, monospace",fontSize:"10px",textTransform:"uppercase",letterSpacing:"1px",cursor:"pointer"}}>Live Agent Sessions</button>
+        <button onClick={() => setShowLive(true)} style={{background:showLive?"rgba(91,75,138,0.25)":"transparent",border:"1px solid rgba(91,75,138,0.3)",color:showLive?"rgba(255,255,255,.94)":"rgba(255,255,255,.50)",padding:"6px 16px",fontFamily:"Consolas, monospace",fontSize:"10px",textTransform:"uppercase",letterSpacing:"1px",cursor:"pointer"}}>Live Interlock Sessions</button>
       </div>
 
       {showLive ? (
@@ -222,7 +222,7 @@ function LiveSessionsPanel({ sessions, search }) {
     const q = search.toLowerCase();
     return s.session_id.toLowerCase().includes(q) || (s.organization_name||"").toLowerCase().includes(q) || (s.system_name||"").toLowerCase().includes(q);
   });
-  if (!filtered.length) return <div style={{padding:'20px',textAlign:'center',color:'rgba(255,255,255,.4)',fontFamily:"Consolas, 'IBM Plex Mono', monospace",fontSize:'11px'}}>No active CAT-72 agent sessions</div>;
+  if (!filtered.length) return <div style={{padding:'20px',textAlign:'center',color:'rgba(255,255,255,.4)',fontFamily:"Consolas, 'IBM Plex Mono', monospace",fontSize:'11px'}}>No active CAT-72 interlock sessions</div>;
   return (
     <div style={{display:'flex',flexDirection:'column',gap:'8px'}}>
       {filtered.map(s => {

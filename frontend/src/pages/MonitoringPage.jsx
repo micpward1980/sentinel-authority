@@ -278,7 +278,7 @@ function MonitoringPage() {
       {/* Sessions Table */}
       <div style={{background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', overflow: 'hidden'}}>
         <div style={{padding: '16px 20px', borderBottom: `1px solid ${'rgba(255,255,255,.07)'}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px'}}>
-          <div className="hud-label" style={{marginBottom: '16px'}}>{user?.role === 'admin' ? 'Agent Sessions' : 'System Monitoring'}</div>
+          <div className="hud-label" style={{marginBottom: '16px'}}>{user?.role === 'admin' ? 'Interlock Sessions' : 'System Monitoring'}</div>
           <div style={{display: 'flex', gap: '12px', alignItems: 'center'}}>
             <input type="text" placeholder="Search session, system..." value={searchTerm} onChange={e => { setSearchTerm(e.target.value); setCurrentPage(1); }} style={{background:'rgba(255,255,255,.04)',border:'1px solid rgba(255,255,255,.08)',color:'rgba(255,255,255,.90)',padding:'6px 12px',fontFamily:"Consolas, monospace",fontSize:'11px',width:'200px',outline:'none'}} />
             {user?.role === 'admin' && <select value={customerFilter} onChange={(e) => setCustomerFilter(e.target.value)} style={{background: '#2a2f3d', border: `1px solid ${'rgba(255,255,255,.07)'}`, padding: '6px 10px', color: 'rgba(255,255,255,.94)', fontSize: '12px'}}>
