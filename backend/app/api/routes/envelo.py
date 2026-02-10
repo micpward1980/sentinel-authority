@@ -469,6 +469,22 @@ async def update_session_type(
     await db.commit()
     return {"ok": True, "session_id": session_id, "session_type": session_type}
 
+@router.patch("/admin/sessions/{session_id}/meta")
+async def update_session_meta(
+    session_id: str, org: str = "", sys_name: str = "",
+    db: AsyncSession = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    if current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Admin only")
+    result = await db.execute(select(EnveloSession).where(EnveloSession.session_id == session_id))
+    s = result.scalar_one_or_none()
+    if not s: raise HTTPException(status_code=404)
+    if org: s.organization_name = org
+    if sys_name: s.system_name = sys_name
+    await db.commit()
+    return {"ok": True}
+
 @router.patch("/admin/sessions/bulk-type")
 async def bulk_update_session_type(
     max_id: int = 18, session_type: str = "cat72_test",
