@@ -468,7 +468,7 @@ function MonitoringPage() {
                   try {
                     const isAdmin = user?.role === 'admin';
                     const base = isAdmin ? '/api/envelo/admin/sessions/' : '/api/envelo/my/sessions/';
-                    const res = await api.get(base + selectedSession.id + '/telemetry');
+                    const res = await api.get(base + selectedSession.session_id + '/telemetry');
                     const records = res.data.records || [];
                     if (records.length === 0) { toast.show('No telemetry data yet', 'info'); return; }
                     const headers = ['timestamp','action_id','action_type','result','execution_time_ms'];
@@ -489,7 +489,7 @@ function MonitoringPage() {
                   try {
                     const isAdmin = user?.role === 'admin';
                     const base = isAdmin ? '/api/envelo/admin/sessions/' : '/api/envelo/my/sessions/';
-                    const res = await api.get(base + selectedSession.id + '/violations');
+                    const res = await api.get(base + selectedSession.session_id + '/violations');
                     const violations = res.data.violations || [];
                     if (violations.length === 0) { toast.show('No violations recorded', 'info'); return; }
                     const headers = ['timestamp','boundary_name','violation_message'];
@@ -510,7 +510,7 @@ function MonitoringPage() {
                   try {
                     const isAdmin = user?.role === 'admin';
                     const base = isAdmin ? '/api/envelo/admin/sessions/' : '/api/envelo/my/sessions/';
-                    const res = await api.get(base + selectedSession.id + '/report', { responseType: 'blob' });
+                    const res = await api.get(base + selectedSession.session_id + '/report', { responseType: 'blob' });
                     const blob = new Blob([res.data], {type: 'application/pdf'});
                     const link = document.createElement('a');
                     link.href = URL.createObjectURL(blob);
