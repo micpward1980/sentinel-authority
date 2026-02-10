@@ -11,6 +11,7 @@ function CAT72Console() {
   const [tests, setTests] = useState([]);
   const [liveSessions, setLiveSessions] = useState([]);
   const [showLive, setShowLive] = useState(false);
+  const [catSearch, setCatSearch] = useState('');
   const toast = useToast();
   const [loading, setLoading] = useState({});
   const [now, setNow] = useState(Date.now());
@@ -93,7 +94,7 @@ function CAT72Console() {
       </div>
 
       {showLive ? (
-        <LiveSessionsPanel sessions={liveSessions} />
+        <><input type="text" placeholder="Search sessions..." value={catSearch} onChange={e => setCatSearch(e.target.value)} style={{background:"rgba(255,255,255,.04)",border:"1px solid rgba(255,255,255,.08)",color:"rgba(255,255,255,.90)",padding:"6px 12px",fontFamily:"Consolas, monospace",fontSize:"11px",width:"200px",outline:"none",marginBottom:"12px"}} /><LiveSessionsPanel sessions={liveSessions} search={catSearch} /></>
       ) : (<>
       {/* Running Tests — Card View */}
       {runningTests.length > 0 && (
@@ -215,11 +216,16 @@ function CAT72Console() {
 
 // Certificates
 
-function LiveSessionsPanel({ sessions }) {
-  if (!sessions.length) return <div style={{padding:'20px',textAlign:'center',color:'rgba(255,255,255,.4)',fontFamily:"Consolas, 'IBM Plex Mono', monospace",fontSize:'11px'}}>No active CAT-72 agent sessions</div>;
+function LiveSessionsPanel({ sessions, search }) {
+  const filtered = sessions.filter(s => {
+    if (!search) return true;
+    const q = search.toLowerCase();
+    return s.session_id.toLowerCase().includes(q);
+  });
+  if (!filtered.length) return <div style={{padding:'20px',textAlign:'center',color:'rgba(255,255,255,.4)',fontFamily:"Consolas, 'IBM Plex Mono', monospace",fontSize:'11px'}}>No active CAT-72 agent sessions</div>;
   return (
     <div style={{display:'flex',flexDirection:'column',gap:'8px'}}>
-      {sessions.map(s => {
+      {filtered.map(s => {
         const total = (s.pass_count || 0) + (s.block_count || 0);
         const rate = total > 0 ? ((s.pass_count || 0) / total * 100).toFixed(1) : '0.0';
         const isOnline = s.is_online;

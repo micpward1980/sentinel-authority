@@ -6,6 +6,7 @@ import Panel from '../components/Panel';
 
 function CertificatesPage() {
   const [certificates, setCertificates] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('active');
 
   useEffect(() => {
@@ -121,7 +122,7 @@ function CertificatesPage() {
         </table></div>
         {filteredCerts.length === 0 && (
           <div className="text-center py-12" style={{color: 'rgba(255,255,255,.50)'}}>
-            {certificates.length === 0 ? 'No certificates issued' : `No ${statusFilter === 'all' ? '' : statusFilter + ' '}certificates`}
+            {filteredCerts.length === 0 ? 'No certificates issued' : `No ${statusFilter === 'all' ? '' : statusFilter + ' '}certificates`}
           </div>
         )}
       </Panel>
