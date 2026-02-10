@@ -170,42 +170,21 @@ async def lifespan(app: FastAPI):
             logger.warning(f"Auto-anchor: {e}")
 
 
-    # Add session_type column to envelo_sessions
-    async with engine.begin() as conn_st:
-        try:
-            await conn_st.execute(raw_text("ALTER TABLE envelo_sessions ADD COLUMN session_type VARCHAR(20) DEFAULT 'production'"))
-        except Exception:
-            pass
-    # Add is_demo column
-    async with engine.begin() as conn_demo:
-        try:
-            await conn_demo.execute(raw_text("ALTER TABLE envelo_sessions ADD COLUMN is_demo BOOLEAN DEFAULT FALSE"))
-        except Exception:
-            pass
-    async with engine.begin() as conn_cert_demo:
-        try:
-            await conn_cert_demo.execute(raw_text("ALTER TABLE certificates ADD COLUMN is_demo BOOLEAN DEFAULT FALSE"))
-        except Exception:
-            pass
-
-    # Add org/system name columns
-    async with engine.begin() as conn_names:
-        try:
-            await conn_names.execute(raw_text("ALTER TABLE envelo_sessions ADD COLUMN organization_name VARCHAR(255)"))
-        except Exception:
-            pass
-    async with engine.begin() as conn_names2:
-        try:
-            await conn_names2.execute(raw_text("ALTER TABLE envelo_sessions ADD COLUMN system_name VARCHAR(255)"))
-        except Exception:
-            pass
-
-    # Mark old sessions as cat72_test (separate connection to avoid aborted txn)
-    async with engine.begin() as conn_st2:
-        try:
-            await conn_st2.execute(raw_text("UPDATE envelo_sessions SET session_type = 'cat72_test' WHERE session_type = 'production' AND id <= 18"))
-        except Exception as e:
-            print(f"session_type update note: {e}")
+    # Schema migrations (idempotent)
+    schema_migrations = [
+        "ALTER TABLE envelo_sessions ADD COLUMN session_type VARCHAR(20) DEFAULT 'production'",
+        "ALTER TABLE envelo_sessions ADD COLUMN is_demo BOOLEAN DEFAULT FALSE",
+        "ALTER TABLE envelo_sessions ADD COLUMN organization_name VARCHAR(255)",
+        "ALTER TABLE envelo_sessions ADD COLUMN system_name VARCHAR(255)",
+        "ALTER TABLE certificates ADD COLUMN is_demo BOOLEAN DEFAULT FALSE",
+    ]
+    for mig in schema_migrations:
+        async with engine.begin() as mig_conn:
+            try:
+                await mig_conn.execute(raw_text(mig))
+                logger.info(f"Migration OK: {mig[:60]}")
+            except Exception:
+                pass  # column already exists
 
     yield
     logger.info("Shutting down...")
