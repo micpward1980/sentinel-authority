@@ -471,7 +471,16 @@ async def stop_test(
     chain.append({"block": len(chain), "hash": final_hash, "data": final_block})
     test.evidence_chain = chain
     test.evidence_hash = final_hash
-    
+
+    # Update application state based on result
+    app_result = await db.execute(select(Application).where(Application.id == test.application_id))
+    application = app_result.scalar_one_or_none()
+    if application:
+        if test.result == "PASS":
+            application.state = CertificationState.CONFORMANT
+        else:
+            application.state = CertificationState.APPROVED  # Allow retest
+
     await db.commit()
     
     # Notify applicant of result
