@@ -26,7 +26,7 @@ function CAT72Console() {
 
   useEffect(() => {
     loadTests();
-    const dataInterval = setInterval(loadTests, 60000);
+    const dataInterval = setInterval(loadTests, 15000);
     const tickInterval = setInterval(() => setNow(Date.now()), 1000);
     return () => { clearInterval(dataInterval); clearInterval(tickInterval); };
   }, []);
