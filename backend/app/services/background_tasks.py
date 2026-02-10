@@ -476,7 +476,7 @@ async def demo_session_ticker():
                     blocked = actions - passed
                     s.pass_count = (s.pass_count or 0) + passed
                     s.block_count = (s.block_count or 0) + blocked
-                    s.last_heartbeat = __import__('datetime').datetime.utcnow()
+                    s.last_heartbeat_at = __import__('datetime').datetime.utcnow()
                     s.is_online = True
                 await db.commit()
         except Exception as e:
