@@ -299,16 +299,25 @@ function MonitoringPage() {
             <table style={{width: '100%', borderCollapse: 'collapse'}}>
               <thead>
                 <tr style={{background: 'transparent'}}>
-                  {(() => { const th = {padding: '12px 16px', textAlign: 'left', fontSize: '10px', fontFamily: "Consolas, 'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '1px', color: 'rgba(255,255,255,.50)'}; const thr = {...th, textAlign: 'right'}; return (<>
-                  <th style={th}>Status</th>
-                  <th style={th}>Organization</th>
-                  <th style={th}>System / Certificate</th>
-                  <th style={th}>Session</th>
-                  <th style={th}>Uptime</th>
-                  <th style={thr}>Actions</th>
-                  <th style={thr}>Pass Rate</th>
-                  <th style={th}>Last Activity</th>
-                  </>); })()}
+                  {(() => {
+                    const thBase = {padding: '12px 16px', textAlign: 'left', fontSize: '10px', fontFamily: "Consolas, 'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '1px', color: 'rgba(255,255,255,.50)'};
+                    const sortable = (label, field, align) => {
+                      const active = sortField === field;
+                      const style = {...thBase, textAlign: align || 'left', cursor: 'pointer', userSelect: 'none', color: active ? '#a896d6' : 'rgba(255,255,255,.50)', transition: 'color .15s'};
+                      const arrow = active ? (sortOrder === 'asc' ? ' \u25B2' : ' \u25BC') : '';
+                      return <th style={style} onClick={() => { if (active) { setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc'); } else { setSortField(field); setSortOrder('desc'); } setCurrentPage(1); }}>{label}{arrow}</th>;
+                    };
+                    return (<>
+                    <th style={thBase}>Status</th>
+                    <th style={thBase}>Organization</th>
+                    <th style={thBase}>System / Certificate</th>
+                    <th style={thBase}>Session</th>
+                    {sortable('Uptime', 'uptime')}
+                    {sortable('Actions', 'pass_count', 'right')}
+                    {sortable('Pass Rate', 'pass_count', 'right')}
+                    {sortable('Last Activity', 'last_activity')}
+                    </>);
+                  })()}
                 </tr>
               </thead>
               <tbody>
