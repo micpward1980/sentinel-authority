@@ -212,9 +212,10 @@ async def lifespan(app: FastAPI):
         logger.warning(f"Certificate expiry monitor failed to start: {e}")
 
     try:
-        from app.services.background_tasks import demo_session_ticker
+        from app.services.background_tasks import demo_session_ticker, auto_suspend_offline
         asyncio.create_task(demo_session_ticker())
-        logger.info("Demo session ticker started")
+        asyncio.create_task(auto_suspend_offline())
+        logger.info("Auto-suspend monitor started (checks every hour)")        logger.info("Demo session ticker started")
     except Exception as e:
         logger.warning(f"Demo ticker failed to start: {e}")
 
@@ -493,9 +494,10 @@ async def start_auto_evaluator():
         logger.warning(f"Certificate expiry monitor failed to start: {e}")
 
     try:
-        from app.services.background_tasks import demo_session_ticker
+        from app.services.background_tasks import demo_session_ticker, auto_suspend_offline
         asyncio.create_task(demo_session_ticker())
-        logger.info("Demo session ticker started (ticks every 15s)")
+        asyncio.create_task(auto_suspend_offline())
+        logger.info("Auto-suspend monitor started (checks every hour)")        logger.info("Demo session ticker started (ticks every 15s)")
     except Exception as e:
         logger.warning(f"Demo ticker failed to start: {e}")
     logger.info("Auto-evaluator background task started")

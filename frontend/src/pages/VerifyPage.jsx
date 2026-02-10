@@ -159,86 +159,16 @@ function VerifyPage() {
         </h1>
         <p style={{ fontFamily: mono, fontSize: '9px', letterSpacing: '2px', textTransform: 'uppercase', color: tt, textAlign: 'center', marginTop: '12px' }}>Sentinel Authority &bull; ODDC Registry</p>
 
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginTop: '32px' }}>
-          {['verify', 'search'].map(m => (
-            <button key={m} onClick={() => setMode(m)} className="btn"
-              style={mode === m ? { borderColor: 'rgba(157,140,207,.4)', color: purple } : {}}>
-              {m === 'verify' ? 'Verify Certificate' : 'Search Registry'}
-            </button>
-          ))}
-        </div>
-
         <div style={{ borderTop: '1px solid rgba(255,255,255,0.04)', margin: '32px 0' }} />
 
-        {mode === "verify" && (
-          <form onSubmit={handleVerify}>
-            <div style={{ fontFamily: mono, fontSize: '9px', letterSpacing: '2px', textTransform: 'uppercase', color: tt, marginBottom: '12px', textAlign: 'center' }}>Certificate Number</div>
-            <input type="text" value={certNumber} placeholder="ODDC-2026-00001"
-              onChange={(e) => { setCertNumber(e.target.value.toUpperCase()); setError(""); setResult(null); }}
-              style={{ width: '100%', background: 'transparent', border: 'none', borderBottom: '1px solid rgba(255,255,255,.06)', color: tp, fontFamily: mono, fontSize: '16px', textAlign: 'center', letterSpacing: '2px', padding: '14px 0', outline: 'none' }} />
-            <div style={{ marginTop: '24px' }}>
-              <button type="submit" disabled={loading || !certNumber.trim()} className="btn primary" style={{ width: '100%', justifyContent: 'center' }}>
-                {loading ? <><RefreshCw size={12} style={{ animation: 'spin 1s linear infinite' }} /> Verifying...</> : <><Search size={12} /> Verify Certificate</>}
-              </button>
-            </div>
-          </form>
+        {loading && (
+          <div style={{ textAlign: 'center', padding: '24px 0' }}>
+            <RefreshCw size={16} style={{ color: purple, animation: 'spin 1s linear infinite' }} />
+            <div style={{ fontFamily: mono, fontSize: '9px', letterSpacing: '2px', textTransform: 'uppercase', color: tt, marginTop: '12px' }}>Verifying certificate...</div>
+          </div>
         )}
 
-        {mode === "search" && (<>
-          {registryStats && (
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '32px', marginBottom: '32px' }}>
-              {[
-                { label: 'Active', value: registryStats.active_certificates, color: green },
-                { label: 'Orgs', value: registryStats.certified_organizations, color: purple },
-                { label: '30 Days', value: registryStats.issued_last_30_days, color: amber },
-              ].map(s => (
-                <div key={s.label} style={{ textAlign: 'center' }}>
-                  <div style={{ fontFamily: serif, fontSize: '24px', fontWeight: 200, color: s.color }}>{s.value}</div>
-                  <div style={{ fontFamily: mono, fontSize: '9px', letterSpacing: '2px', textTransform: 'uppercase', color: tt, marginTop: '4px' }}>{s.label}</div>
-                </div>
-              ))}
-            </div>
-          )}
-          <form onSubmit={handleSearch}>
-            <div style={{ fontFamily: mono, fontSize: '9px', letterSpacing: '2px', textTransform: 'uppercase', color: tt, marginBottom: '12px', textAlign: 'center' }}>Organization or System Name</div>
-            <input type="text" value={searchQuery} placeholder="Company name or system..."
-              onChange={(e) => { setSearchQuery(e.target.value); setError(""); }}
-              style={{ width: '100%', background: 'transparent', border: 'none', borderBottom: '1px solid rgba(255,255,255,.06)', color: tp, fontFamily: mono, fontSize: '16px', textAlign: 'center', letterSpacing: '2px', padding: '14px 0', outline: 'none' }} />
-            <div style={{ display: 'flex', justifyContent: 'center', marginTop: '16px' }}>
-              <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}
-                style={{ background: 'transparent', border: 'none', borderBottom: '1px solid rgba(255,255,255,.06)', color: tt, fontFamily: mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', padding: '8px 24px 8px 0', outline: 'none', appearance: 'none', cursor: 'pointer' }}>
-                <option value="conformant">Conformant</option>
-                <option value="expired">Expired</option>
-                <option value="suspended">Suspended</option>
-                <option value="revoked">Revoked</option>
-              </select>
-            </div>
-            <div style={{ marginTop: '24px' }}>
-              <button type="submit" disabled={loading} className="btn primary" style={{ width: '100%', justifyContent: 'center' }}>
-                {loading ? <><RefreshCw size={12} style={{ animation: 'spin 1s linear infinite' }} /> Searching...</> : <><Search size={12} /> Search Registry</>}
-              </button>
-            </div>
-          </form>
-          {searchResults.length > 0 && (
-            <div style={{ marginTop: '32px' }}>
-              <div style={{ fontFamily: mono, fontSize: '9px', letterSpacing: '2px', textTransform: 'uppercase', color: tt, marginBottom: '16px', textAlign: 'center' }}>{searchResults.length} certificate(s) found</div>
-              {searchResults.map((cert) => (
-                <div key={cert.certificate_number}
-                  onClick={() => { setCertNumber(cert.certificate_number); setMode("verify"); setTimeout(() => document.querySelector("form") && document.querySelector("form").requestSubmit(), 100); }}
-                  style={{ padding: '14px 0', borderBottom: '1px solid rgba(255,255,255,0.02)', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <div>
-                    <div style={{ color: tp, fontSize: '14px' }}>{cert.organization_name}</div>
-                    <div style={{ color: tt, fontSize: '12px', marginTop: '2px' }}>{cert.system_name}</div>
-                  </div>
-                  <div style={{ textAlign: 'right' }}>
-                    <div style={{ color: purple, fontFamily: mono, fontSize: '10px' }}>{cert.certificate_number}</div>
-                    <div style={{ color: green, fontFamily: mono, fontSize: '9px', letterSpacing: '1px', textTransform: 'uppercase', marginTop: '2px' }}>{cert.state}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </>)}
+        
 
         {error && (
           <div style={{ marginTop: '24px', padding: '16px 0', borderTop: '1px solid rgba(255,255,255,0.02)', textAlign: 'center' }}>

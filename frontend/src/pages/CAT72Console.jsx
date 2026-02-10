@@ -15,7 +15,30 @@ function CAT72Console() {
   const [catSearch, setCatSearch] = useState('');
   const toast = useToast();
   const [loading, setLoading] = useState({});
+  const [completedPage, setCompletedPage] = useState(1);
+  const [completedTotal, setCompletedTotal] = useState(0);
+  const [completedSearch, setCompletedSearch] = useState('');
+  const [completedResultFilter, setCompletedResultFilter] = useState('');
+  const [completedSort, setCompletedSort] = useState('created_at');
   const [now, setNow] = useState(Date.now());
+
+  const loadCompleted = () => {
+    const params = new URLSearchParams({ page: completedPage, per_page: 25, state: 'completed', sort: completedSort, order: 'desc' });
+    if (completedSearch) params.set('search', completedSearch);
+    if (completedResultFilter) params.set('result_filter', completedResultFilter);
+    api.get(`/api/cat72/tests?${params}`).then(res => {
+      const data = res.data;
+      if (data.tests) {
+        setTests(prev => {
+          const nonCompleted = prev.filter(t => t.state !== 'completed');
+          return [...nonCompleted, ...data.tests];
+        });
+        setCompletedTotal(data.pagination?.pages || 1);
+      }
+    }).catch(console.error);
+  };
+
+  useEffect(() => { loadCompleted(); }, [completedPage, completedSearch, completedResultFilter, completedSort]);
 
   const loadTests = () => {
     api.get('/api/cat72/tests?per_page=100').then(res => setTests(res.data.tests || res.data)).catch(console.error);
@@ -140,11 +163,16 @@ function CAT72Console() {
       )}
 
       {/* Scheduled Tests */}
-      {scheduledTests.length > 0 && (
         <Panel>
-          <div className="hud-label" style={{marginBottom: '16px'}}>Scheduled</div>
+          <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'16px'}}>
+            <div className="hud-label">Scheduled</div>
+            <input type="text" placeholder="Search..." value={catSearch} onChange={e => setCatSearch(e.target.value)} style={{background:'rgba(255,255,255,.04)',border:'1px solid rgba(255,255,255,.08)',color:'rgba(255,255,255,.90)',padding:'5px 10px',fontFamily:'Consolas, monospace',fontSize:'10px',width:'160px',outline:'none'}} />
+          </div>
+          {scheduledTests.filter(t => !catSearch || (t.organization_name||'').toLowerCase().includes(catSearch.toLowerCase()) || (t.system_name||'').toLowerCase().includes(catSearch.toLowerCase()) || (t.test_id||'').toLowerCase().includes(catSearch.toLowerCase())).length === 0 ? (
+            <div style={{padding:'20px',textAlign:'center',color:'rgba(255,255,255,.4)',fontFamily:"Consolas, monospace",fontSize:'11px'}}>No scheduled tests{catSearch ? ' matching search' : ''}</div>
+          ) : (
           <div className="space-y-3">
-            {scheduledTests.map(test => (
+            {scheduledTests.filter(t => !catSearch || (t.organization_name||'').toLowerCase().includes(catSearch.toLowerCase()) || (t.system_name||'').toLowerCase().includes(catSearch.toLowerCase()) || (t.test_id||'').toLowerCase().includes(catSearch.toLowerCase())).map(test => (
               <div key={test.id} style={{padding: '14px 16px', background: 'transparent', border: `1px solid ${'rgba(255,255,255,.07)'}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px'}}>
                 <div>
                   <div style={{fontWeight: 500, color: 'rgba(255,255,255,.94)', marginBottom: '2px'}}>{test.organization_name} — {test.system_name}</div>
@@ -156,14 +184,31 @@ function CAT72Console() {
               </div>
             ))}
           </div>
+          )}
         </Panel>
-      )}
 
       </>) : (<>
       {/* Completed Tests */}
-      {completedTests.length > 0 && (
         <Panel>
-          <div className="hud-label" style={{marginBottom: '16px'}}>Completed Tests</div>
+          <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'16px',flexWrap:'wrap',gap:'8px'}}>
+            <div className="hud-label">Completed Tests</div>
+            <div style={{display:'flex',gap:'8px',alignItems:'center'}}>
+              <input type="text" placeholder="Search..." value={completedSearch} onChange={e => { setCompletedSearch(e.target.value); setCompletedPage(1); }} style={{background:'rgba(255,255,255,.04)',border:'1px solid rgba(255,255,255,.08)',color:'rgba(255,255,255,.90)',padding:'5px 10px',fontFamily:'Consolas, monospace',fontSize:'10px',width:'160px',outline:'none'}} />
+              <select value={completedResultFilter} onChange={e => { setCompletedResultFilter(e.target.value); setCompletedPage(1); }} style={{background:'rgba(255,255,255,.04)',border:'1px solid rgba(255,255,255,.08)',color:'rgba(255,255,255,.90)',padding:'5px 8px',fontFamily:'Consolas, monospace',fontSize:'10px',outline:'none'}}>
+                <option value="">All Results</option>
+                <option value="PASS">PASS</option>
+                <option value="FAIL">FAIL</option>
+              </select>
+              <select value={completedSort} onChange={e => setCompletedSort(e.target.value)} style={{background:'rgba(255,255,255,.04)',border:'1px solid rgba(255,255,255,.08)',color:'rgba(255,255,255,.90)',padding:'5px 8px',fontFamily:'Consolas, monospace',fontSize:'10px',outline:'none'}}>
+                <option value="created_at">Newest</option>
+                <option value="convergence_score">Pass Rate</option>
+                <option value="elapsed_seconds">Duration</option>
+              </select>
+            </div>
+          </div>
+          {completedTests.length === 0 ? (
+            <div style={{padding:'20px',textAlign:'center',color:'rgba(255,255,255,.4)',fontFamily:"Consolas, monospace",fontSize:'11px'}}>No completed tests{completedSearch || completedResultFilter ? ' matching filters' : ''}</div>
+          ) : (
           <table className="w-full">
             <thead>
               <tr style={{borderBottom: '1px solid rgba(255,255,255,.07)'}}>
@@ -208,17 +253,15 @@ function CAT72Console() {
               })}
             </tbody>
           </table>
+          )}
+          {completedTotal > 1 && (
+            <div style={{display:'flex',justifyContent:'center',gap:'4px',marginTop:'12px'}}>
+              <button onClick={() => setCompletedPage(p => Math.max(1, p-1))} disabled={completedPage <= 1} style={{background:'transparent',border:'1px solid rgba(91,75,138,0.3)',color: completedPage <= 1 ? 'rgba(255,255,255,.25)' : 'rgba(255,255,255,.70)',padding:'4px 10px',fontFamily:'Consolas, monospace',fontSize:'10px',cursor: completedPage <= 1 ? 'default' : 'pointer'}}>Prev</button>
+              <span style={{fontFamily:'Consolas, monospace',fontSize:'10px',color:'rgba(255,255,255,.50)',padding:'4px 8px'}}>{completedPage} / {completedTotal}</span>
+              <button onClick={() => setCompletedPage(p => Math.min(completedTotal, p+1))} disabled={completedPage >= completedTotal} style={{background:'transparent',border:'1px solid rgba(91,75,138,0.3)',color: completedPage >= completedTotal ? 'rgba(255,255,255,.25)' : 'rgba(255,255,255,.70)',padding:'4px 10px',fontFamily:'Consolas, monospace',fontSize:'10px',cursor: completedPage >= completedTotal ? 'default' : 'pointer'}}>Next</button>
+            </div>
+          )}
         </Panel>
-      )}
-
-      {activeTab === 'scheduled' && scheduledTests.length === 0 && (
-        <Panel>
-          <div className="text-center py-12" style={{color: 'rgba(255,255,255,.50)'}}>
-            <p style={{marginBottom: '8px'}}>{user?.role === 'admin' ? 'No tests yet' : 'No active tests'}</p>
-            <p style={{fontSize: '13px'}}>{user?.role === 'admin' ? 'Approve an application and schedule a CAT-72 test to get started.' : 'When your application is approved and a CAT-72 test is scheduled, you can monitor its progress here in real time.'}</p>
-          </div>
-        </Panel>
-      )}
       </>)}
     </div>
   );

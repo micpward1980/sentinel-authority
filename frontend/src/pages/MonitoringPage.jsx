@@ -15,15 +15,13 @@ function MonitoringPage() {
   const [loading, setLoading] = useState(true);
   const [autoRefresh, setAutoRefresh] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [customerFilter, setCustomerFilter] = useState("");
-  const [onlineOnly, setOnlineOnly] = useState(false);
+  const [statusFilter, setStatusFilter] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [sortField, setSortField] = useState('last_activity');
   const [sortOrder, setSortOrder] = useState('desc');
   const perPage = 25;
-  const [hideEnded, setHideEnded] = useState(true);
   
   const { user } = useAuth();
   const toast = useToast();
@@ -73,13 +71,12 @@ function MonitoringPage() {
       const total = (s.pass_count || 0) + (s.block_count || 0);
       const passRate = total > 0 ? (s.pass_count / total * 100).toFixed(2) : '0.00';
       return {
-        status: s.is_online ? 'Online' : s.status === 'ended' ? 'Ended' : 'Offline',
+        status: s.is_online ? 'Online' : 'Offline',
         organization: s.organization_name || '',
         system_name: s.system_name || '',
         certificate: s.certificate_id || '',
         session_id: s.session_id || '',
         started_at: s.started_at || '',
-        ended_at: s.ended_at || '',
         uptime_hours: s.uptime_hours?.toFixed(2) || '0',
         pass_count: s.pass_count || 0,
         block_count: s.block_count || 0,
@@ -126,9 +123,8 @@ function MonitoringPage() {
         const q = searchTerm.toLowerCase();
         if (!(s.session_id || '').toLowerCase().includes(q) && !(s.certificate_id || '').toLowerCase().includes(q) && !(s.organization_name || '').toLowerCase().includes(q) && !(s.system_name || '').toLowerCase().includes(q)) return false;
       }
-    if (customerFilter && s.organization_name !== customerFilter) return false;
-    if (onlineOnly && !s.is_online) return false;
-    if (hideEnded && (s.status === 'ended' || s.status === 'completed' || s.status === 'disconnected')) return false;
+    if (statusFilter === 'online' && !s.is_online) return false;
+    if (statusFilter === 'offline' && s.is_online) return false;
     return true;
   });
 
@@ -210,66 +206,15 @@ function MonitoringPage() {
         </div>
       )}
 
-      {/* Summary Cards */}
+      {/* Alert Bar — only shows when there are issues */}
       {(() => {
-        const onlineCount = sessions.filter(s => s.is_online).length;
-        const offlineCount = sessions.filter(s => !s.is_online && s.status !== 'ended').length;
-        const totalFleet = onlineCount + offlineCount;
-        const healthPct = totalFleet > 0 ? (onlineCount / totalFleet * 100) : 0;
-        const cardStyle = {padding: '20px', borderBottom: '1px solid rgba(255,255,255,0.04)'};
-        const labelStyle = {fontSize: '10px', fontFamily: "Consolas, 'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '2px', color: 'rgba(255,255,255,.50)', marginBottom: '8px'};
-        const subStyle = {fontSize: '12px', color: 'rgba(255,255,255,.78)', marginTop: '4px'};
+        const offlineCount = sessions.filter(s => !s.is_online).length;
+        const lowConformance = sessions.filter(s => s.is_online && s.pass_count + s.block_count > 0 && (s.pass_count / (s.pass_count + s.block_count) * 100) < 95).length;
+        if (!offlineCount && !lowConformance) return null;
         return (
-          <div style={{marginBottom: '32px'}}>
-            {/* Fleet Health Bar */}
-            {totalFleet > 0 && (
-              <div style={{marginBottom: '20px', padding: '16px 20px', ...cardStyle}}>
-                <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '10px'}}>
-                  <div style={labelStyle}>Fleet Health</div>
-                  <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '13px', color: healthPct >= 90 ? '#5CD685' : healthPct >= 70 ? '#D6A05C' : '#D65C5C', fontWeight: 500}}>
-                    {healthPct.toFixed(0)}% Online
-                  </div>
-                </div>
-                <div style={{height: '8px', background: 'rgba(255,255,255,0.06)', overflow: 'hidden', display: 'flex'}}>
-                  {onlineCount > 0 && <div style={{width: (onlineCount / totalFleet * 100) + '%', background: '#5CD685', transition: 'width 0.5s'}} />}
-                  {offlineCount > 0 && <div style={{width: (offlineCount / totalFleet * 100) + '%', background: '#D65C5C', transition: 'width 0.5s'}} />}
-                </div>
-                <div style={{display: 'flex', gap: '16px', marginTop: '8px'}}>
-                  <span style={{fontSize: '11px', color: '#5CD685', display: 'flex', alignItems: 'center', gap: '4px'}}>
-                    <span style={{width: '8px', height: '8px', borderRadius: '50%', background: '#5CD685', display: 'inline-block'}} /> {onlineCount} online
-                  </span>
-                  <span style={{fontSize: '11px', color: '#D65C5C', display: 'flex', alignItems: 'center', gap: '4px'}}>
-                    <span style={{width: '8px', height: '8px', borderRadius: '50%', background: '#D65C5C', display: 'inline-block'}} /> {offlineCount} offline
-                  </span>
-
-                </div>
-              </div>
-            )}
-            
-            <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '16px'}}>
-              <div style={cardStyle}>
-                <div style={labelStyle}>{user?.role === 'admin' ? 'Active Sessions' : 'Active Systems'}</div>
-                <div style={{fontSize: '32px', fontWeight: 300, color: '#5CD685'}}>{summary.active || 0}</div>
-                <div style={subStyle}>{summary.offline || 0} offline</div>
-              </div>
-              <div style={cardStyle}>
-                <div style={labelStyle}>Total Actions</div>
-                <div style={{fontSize: '32px', fontWeight: 300, color: 'rgba(255,255,255,.94)'}}>{(summary.total_actions || 0).toLocaleString()}</div>
-                <div style={subStyle}>{summary.total_pass?.toLocaleString() || 0} passed, {summary.total_block?.toLocaleString() || 0} blocked</div>
-              </div>
-              <div style={cardStyle}>
-                <div style={labelStyle}>Pass Rate</div>
-                <div style={{fontSize: '32px', fontWeight: 300, color: summary.pass_rate >= 99 ? '#5CD685' : summary.pass_rate >= 95 ? '#D6A05C' : '#D65C5C'}}>{summary.pass_rate?.toFixed(1) || 0}%</div>
-                <div style={subStyle}>enforcement success</div>
-              </div>
-
-
-              {user?.role === 'admin' && <div style={cardStyle}>
-                <div style={labelStyle}>Organizations</div>
-                <div style={{fontSize: '32px', fontWeight: 300, color: '#a896d6'}}>{[...new Set(sessions.map(s => s.organization_name).filter(Boolean))].length}</div>
-                <div style={subStyle}>{[...new Set(sessions.map(s => s.system_name).filter(Boolean))].length} unique systems</div>
-              </div>}
-            </div>
+          <div style={{padding:'10px 16px',marginBottom:'16px',border:'1px solid rgba(214,160,92,0.2)',background:'rgba(214,160,92,0.04)',fontFamily:"Consolas, 'IBM Plex Mono', monospace",fontSize:'11px',color:'#D6A05C',display:'flex',gap:'16px',flexWrap:'wrap'}}>
+            {offlineCount > 0 && <span style={{cursor:'pointer',textDecoration:'underline'}} onClick={() => setStatusFilter('offline')}>⚠ {offlineCount} system{offlineCount > 1 ? 's' : ''} offline</span>}
+            {lowConformance > 0 && <span style={{cursor:'pointer',textDecoration:'underline'}} onClick={() => setStatusFilter('all')}>⚠ {lowConformance} system{lowConformance > 1 ? 's' : ''} below 95% conformance</span>}
           </div>
         );
       })()}
@@ -280,16 +225,11 @@ function MonitoringPage() {
           <div className="hud-label" style={{marginBottom: '16px'}}>{user?.role === 'admin' ? 'Interlock Sessions' : 'System Monitoring'}</div>
           <div style={{display: 'flex', gap: '12px', alignItems: 'center'}}>
             <input type="text" placeholder="Search session, system..." value={searchTerm} onChange={e => { setSearchTerm(e.target.value); setCurrentPage(1); }} style={{background:'rgba(255,255,255,.04)',border:'1px solid rgba(255,255,255,.08)',color:'rgba(255,255,255,.90)',padding:'6px 12px',fontFamily:"Consolas, monospace",fontSize:'11px',width:'200px',outline:'none'}} />
-            {user?.role === 'admin' && <select value={customerFilter} onChange={(e) => setCustomerFilter(e.target.value)} style={{background: '#2a2f3d', border: `1px solid ${'rgba(255,255,255,.07)'}`, padding: '6px 10px', color: 'rgba(255,255,255,.94)', fontSize: '12px'}}>
-              <option value="">All Customers</option>
-              {[...new Set(sessions.map(s => s.organization_name).filter(Boolean))].map(org => <option key={org} value={org}>{org}</option>)}
-            </select>}
-            <button onClick={() => setHideEnded(!hideEnded)} className="btn" style={{padding: '4px 10px', color: hideEnded ? 'var(--accent-green)' : 'var(--text-tertiary)', borderColor: hideEnded ? 'rgba(92,214,133,0.2)' : 'rgba(255,255,255,0.06)'}}>
-              Hide ended {hideEnded ? 'ON' : 'OFF'}
-            </button>
-            <button onClick={() => setOnlineOnly(!onlineOnly)} className="btn" style={{padding: '4px 10px', color: onlineOnly ? 'var(--accent-green)' : 'var(--text-tertiary)', borderColor: onlineOnly ? 'rgba(92,214,133,0.2)' : 'rgba(255,255,255,0.06)'}}>
-              Online only {onlineOnly ? 'ON' : 'OFF'}
-            </button>
+{['all','online','offline'].map(f => (
+              <button key={f} onClick={() => setStatusFilter(f)} className="btn" style={{padding: '4px 10px', color: statusFilter === f ? (f === 'offline' ? '#D65C5C' : f === 'online' ? '#5CD685' : 'rgba(255,255,255,.94)') : 'var(--text-tertiary)', borderColor: statusFilter === f ? (f === 'offline' ? 'rgba(214,92,92,0.3)' : f === 'online' ? 'rgba(92,214,133,0.2)' : 'rgba(255,255,255,0.15)') : 'rgba(255,255,255,0.06)', textTransform: 'capitalize', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px'}}>
+                {f}
+              </button>
+            ))}
 
           </div>
         </div>        
@@ -349,16 +289,17 @@ function MonitoringPage() {
                         <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
                           <div style={{
                             width: '10px', height: '10px', borderRadius: '50%',
-                            background: session.is_online ? '#5CD685' : session.status === 'ended' ? 'rgba(255,255,255,.50)' : '#D65C5C',
+                            background: session.is_online ? '#5CD685' : '#D65C5C',
                             boxShadow: session.is_online ? `0 0 8px ${'#5CD685'}` : 'none'
                           }} />
                           <span style={{
                             fontSize: '11px', fontFamily: "Consolas, 'IBM Plex Mono', monospace",
                             textTransform: 'uppercase', letterSpacing: '1px',
-                            color: session.is_online ? '#5CD685' : session.status === 'ended' ? 'rgba(255,255,255,.50)' : '#D65C5C'
+                            color: session.is_online ? '#5CD685' : '#D65C5C'
                           }}>
-                            {session.is_online ? 'Online' : session.status === 'ended' ? 'Ended' : 'Offline'}
+                            {session.is_online ? 'Online' : 'Offline'}
                           </span>
+                          {session.is_online && <span style={{fontSize:'13px',color:'#D66A6A',animation:'heartbeat 1.2s ease-in-out infinite'}}>♥</span>}
                         </div>
                       </td>
                       <td style={{padding: '14px 16px'}}>
@@ -407,20 +348,26 @@ function MonitoringPage() {
                               <p style={{margin: '4px 0 0', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', color: 'rgba(255,255,255,.50)'}}>Interlock v{selectedSession.agent_version || '1.0.0'} · Session {selectedSession.session_id}</p>
                             </div>
                             <div style={{display: 'flex', gap: '8px', alignItems: 'center'}}>
-                              {selectedSession.is_online && (
-                                <button onClick={async (e) => { e.stopPropagation(); if (!await confirm({title: 'End Session', message: 'Force-end this session?', danger: true})) return; try { await api.post('/api/envelo/sessions/' + selectedSession.session_id + '/end', { ended_at: new Date().toISOString(), final_stats: { pass_count: selectedSession.pass_count, block_count: selectedSession.block_count } }); setSelectedSession(null); fetchData(); } catch (e2) { toast.show('Failed: ' + e2.message, 'error'); } }} className="btn">Force End</button>
-                              )}
-                              <button onClick={(e) => { e.stopPropagation(); setSelectedSession(null); }} style={{background: 'none', border: 'none', color: 'rgba(255,255,255,.50)', cursor: 'pointer', fontSize: '18px', padding: '4px 8px'}}>×</button>
+                              <div style={{display:'flex',gap:'6px',alignItems:'center'}}>
+                                {user?.role === 'admin' && selectedSession.certificate_id && !selectedSession.is_online && (
+                                  <button onClick={async (e) => { e.stopPropagation(); if (!await confirm({title:'Suspend Certificate',message:`Suspend ${selectedSession.certificate_id} for ${selectedSession.organization_name}? System is offline.`,danger:true})) return; try { await api.patch(`/api/certificates/${selectedSession.certificate_id}/suspend`,null,{params:{reason:'System offline — suspended by admin'}}); toast.show('Certificate suspended','warning'); fetchData(); } catch(err) { toast.show('Failed: '+(err.response?.data?.detail||err.message),'error'); }}} className="btn" style={{padding:'3px 8px',fontSize:'9px',fontFamily:"Consolas,monospace",letterSpacing:'1px',textTransform:'uppercase',color:'#D6A05C',borderColor:'rgba(214,160,92,0.3)'}}>Suspend</button>
+                                )}
+                                {user?.role === 'admin' && selectedSession.certificate_id && (
+                                  <button onClick={async (e) => { e.stopPropagation(); if (!await confirm({title:'Revoke Certificate',message:`Permanently revoke ${selectedSession.certificate_id} for ${selectedSession.organization_name}? This cannot be undone.`,danger:true})) return; try { await api.patch(`/api/certificates/${selectedSession.certificate_id}/revoke`,null,{params:{reason:'Revoked by admin'}}); toast.show('Certificate revoked','error'); fetchData(); } catch(err) { toast.show('Failed: '+(err.response?.data?.detail||err.message),'error'); }}} className="btn" style={{padding:'3px 8px',fontSize:'9px',fontFamily:"Consolas,monospace",letterSpacing:'1px',textTransform:'uppercase',color:'#D65C5C',borderColor:'rgba(214,92,92,0.3)'}}>Revoke</button>
+                                )}
+                                <button onClick={(e) => { e.stopPropagation(); setSelectedSession(null); }} style={{background: 'none', border: 'none', color: 'rgba(255,255,255,.50)', cursor: 'pointer', fontSize: '18px', padding: '4px 8px'}}>×</button>
+                              </div>
                             </div>
                           </div>
 
                           <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '12px', marginBottom: '20px'}}>
+                            <div><div style={{fontSize: '10px', color: 'rgba(255,255,255,.50)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px'}}>Last Heartbeat</div><div style={{color: selectedSession.is_online ? '#5CD685' : '#D65C5C', fontSize: '12px', display:'flex', alignItems:'center', gap:'6px'}}>{selectedSession.is_online && <span style={{animation:'heartbeat 1.2s ease-in-out infinite',fontSize:'13px',color:'#D66A6A'}}>♥</span>}{selectedSession.last_heartbeat_at ? new Date(selectedSession.last_heartbeat_at).toLocaleString() : selectedSession.last_activity ? new Date(selectedSession.last_activity).toLocaleString() : '-'}</div></div>
                             <div><div style={{fontSize: '10px', color: 'rgba(255,255,255,.50)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px'}}>Started</div><div style={{color: 'rgba(255,255,255,.94)', fontSize: '12px'}}>{selectedSession.started_at ? new Date(selectedSession.started_at).toLocaleString() : '-'}</div></div>
                             <div><div style={{fontSize: '10px', color: 'rgba(255,255,255,.50)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px'}}>Uptime</div><div style={{color: 'rgba(255,255,255,.94)', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '16px'}}>{selectedSession.uptime_hours?.toFixed(1) || '0'}h</div></div>
                             <div><div style={{fontSize: '10px', color: 'rgba(255,255,255,.50)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px'}}>Passed</div><div style={{color: '#5CD685', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '16px'}}>{(selectedSession.pass_count || 0).toLocaleString()}</div></div>
                             <div><div style={{fontSize: '10px', color: 'rgba(255,255,255,.50)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px'}}>Blocked</div><div style={{color: '#D65C5C', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '16px'}}>{(selectedSession.block_count || 0).toLocaleString()}</div></div>
                             <div><div style={{fontSize: '10px', color: 'rgba(255,255,255,.50)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px'}}>Pass Rate</div>{(() => { const t2 = (selectedSession.pass_count || 0) + (selectedSession.block_count || 0); const r2 = t2 > 0 ? (selectedSession.pass_count / t2 * 100) : 0; return <div style={{color: r2 >= 99 ? '#5CD685' : r2 >= 95 ? '#D6A05C' : '#D65C5C', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '16px'}}>{r2.toFixed(1)}%</div>; })()}</div>
-                            <div><div style={{fontSize: '10px', color: 'rgba(255,255,255,.50)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px'}}>Certificate</div><div style={{color: '#a896d6', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px'}}>{selectedSession.certificate_id || '-'}</div></div>
+                            <div><div style={{fontSize: '10px', color: 'rgba(255,255,255,.50)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px'}}>Certificate</div><div style={{color: '#a896d6', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px'}}>{selectedSession.certificate_id ? <a href={'/verify?cert=' + selectedSession.certificate_id} style={{color:'#a896d6',textDecoration:'none'}}>{selectedSession.certificate_id}</a> : '-'}</div></div>
                           </div>
 
                           {(() => { const t3 = (selectedSession.pass_count || 0) + (selectedSession.block_count || 0); if (t3 === 0) return null; const pp = selectedSession.pass_count / t3 * 100; return (
@@ -479,6 +426,8 @@ function Pagination({ page, pages, onChange }) {
     </div>
   );
 }
+
+const MonHeartStyle = () => <style>{`@keyframes heartbeat { 0%,100% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.3); opacity: 1; } }`}</style>;
 
 export default MonitoringPage;
 

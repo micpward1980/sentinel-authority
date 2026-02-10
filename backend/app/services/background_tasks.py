@@ -446,12 +446,56 @@ async def _get_certificate_owner(db, cert):
         return None
 
 
+
+async def auto_suspend_offline():
+    """Auto-suspend certificates for systems offline > 24 hours."""
+    while True:
+        await asyncio.sleep(3600)  # Check every hour
+        try:
+            async with AsyncSessionLocal() as db:
+                now = datetime.utcnow()
+                threshold = now - timedelta(hours=24)
+                
+                # Find production sessions offline > 24h with a certificate
+                result = await db.execute(
+                    select(EnveloSession).where(
+                        EnveloSession.session_type == "production",
+                        EnveloSession.status == "active",
+                        EnveloSession.certificate_id.isnot(None),
+                        EnveloSession.last_heartbeat_at < threshold
+                    )
+                )
+                sessions = result.scalars().all()
+                
+                for s in sessions:
+                    # Look up the certificate
+                    cert_result = await db.execute(
+                        select(Certificate).where(
+                            Certificate.id == s.certificate_id,
+                            Certificate.state == "conformant"
+                        )
+                    )
+                    cert = cert_result.scalar_one_or_none()
+                    if cert:
+                        cert.state = "suspended"
+                        cert.history = (cert.history or []) + [{
+                            "action": "auto_suspended",
+                            "timestamp": now.isoformat(),
+                            "by": "system",
+                            "reason": f"ENVELO Interlock offline for 24+ hours (last heartbeat: {s.last_heartbeat_at.isoformat()})"
+                        }]
+                        logger.info(f"Auto-suspended certificate {cert.certificate_number} — offline since {s.last_heartbeat_at}")
+                
+                await db.commit()
+        except Exception as e:
+            logger.error(f"Auto-suspend error: {e}")
+
 async def demo_session_ticker():
     """Tick demo sessions every 15s to simulate live telemetry."""
     import random
     from sqlalchemy import select, text
     from app.core.database import AsyncSessionLocal
-    from app.models.models import EnveloSession
+    from app.models.models import EnveloSession, Certificate
 
     DEMO_IDS = [
         '88dd4e8c18cc46d6b71c0440a99b71cd',
