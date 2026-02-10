@@ -238,9 +238,7 @@ function MonitoringPage() {
                   <span style={{fontSize: '11px', color: '#D65C5C', display: 'flex', alignItems: 'center', gap: '4px'}}>
                     <span style={{width: '8px', height: '8px', borderRadius: '50%', background: '#D65C5C', display: 'inline-block'}} /> {offlineCount} offline
                   </span>
-                  <span style={{fontSize: '11px', color: 'rgba(255,255,255,.50)', display: 'flex', alignItems: 'center', gap: '4px'}}>
-                    <span style={{width: '8px', height: '8px', borderRadius: '50%', background: 'rgba(255,255,255,.50)', display: 'inline-block'}} /> {summary.ended || 0} ended
-                  </span>
+
                 </div>
               </div>
             )}
