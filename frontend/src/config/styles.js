@@ -3,7 +3,7 @@ export const styles = {
   purplePrimary:  '#5B4B8A',
   purpleBright:   '#a896d6',
   purpleGlow:     'rgba(157,140,207,.20)',
-  bgDeep:         '#2a2f3d',
+  bgDeep:         '#120c1e',
   bgPrimary:      '#2a2f3d',
   bgPanel:        'rgba(255,255,255,.03)',
   accentGreen:    '#5CD685',
