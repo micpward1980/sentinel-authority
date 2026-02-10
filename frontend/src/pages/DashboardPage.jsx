@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Wifi, FileText, Activity, Award, AlertTriangle, Plus, Shield, Download, RefreshCw, AlertCircle } from 'lucide-react';
+import { Wifi, FileText, Activity, Award, AlertTriangle, Plus, Download, RefreshCw, AlertCircle } from 'lucide-react';
+import BrandMark from '../components/BrandMark';
 import { api, API_BASE } from '../config/api';
 
 import { useAuth } from '../context/AuthContext';
@@ -111,7 +112,7 @@ function CustomerDashboard() {
         </div>
         {applications.length === 0 ? (
           <div className="hud-frame" style={{textAlign:'center',padding:'48px 20px'}}><i></i>
-            <Shield size={28} strokeWidth={1} style={{color:'var(--purple-bright)',opacity:0.4,marginBottom:'16px'}}/>
+            <BrandMark size={28} />
             <p style={{fontFamily:'var(--serif)',fontSize:'17px',color:'var(--text-secondary)',marginBottom:'8px'}}>Begin Your Certification</p>
             <p style={{fontSize:'12px',color:'var(--text-tertiary)',maxWidth:'360px',margin:'0 auto 20px',lineHeight:1.7}}>Submit your autonomous system for ODDC certification. Our CAT-72 test validates real-time boundary enforcement over 72 hours.</p>
             <Link to="/applications/new" className="btn primary"><Plus size={12}/> New Application</Link>
@@ -330,7 +331,7 @@ function Dashboard() {
       <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit, minmax(160px, 1fr))',gap:'0',marginBottom:'32px',borderTop:'none',borderBottom:'none'}}>
         <StatCard label="Applications" value={stats?.total_applications || 0} color="var(--purple-bright)" icon={<FileText size={16} strokeWidth={1.5}/>}/>
         <StatCard onClick={() => navigate("/cat72")} label="Active Tests" value={stats?.active_tests || 0} color="var(--accent-amber)" icon={<Activity size={16} strokeWidth={1.5}/>}/>
-        <StatCard label="Active Certs" value={stats?.certificates_active || 0} color="var(--accent-green)" icon={<Shield size={16} strokeWidth={1.5}/>}/>
+        <StatCard label="Active Certs" value={stats?.certificates_active || 0} color="var(--accent-green)" icon={<BrandMark size={16} />}/>
         <StatCard label="Online Interlocks" value={onlineAgents} color={onlineAgents>0?'var(--accent-green)':'var(--text-tertiary)'} icon={<Wifi size={16} strokeWidth={1.5}/>}/>
         <StatCard label="Certs Issued" value={stats?.certificates_issued || 0} color="var(--purple-bright)" icon={<Award size={16} strokeWidth={1.5}/>}/>
         <StatCard label="Needs Action" value={actionCount} color={actionCount>0?'var(--accent-amber)':'var(--text-tertiary)'} icon={<AlertCircle size={16} strokeWidth={1.5}/>}/>
