@@ -16,7 +16,7 @@ function MonitoringPage() {
   const [customerFilter, setCustomerFilter] = useState("");
   const [onlineOnly, setOnlineOnly] = useState(false);
   const [hideEnded, setHideEnded] = useState(true);
-  const [showTestSessions, setShowTestSessions] = useState(false);
+  
   const { user } = useAuth();
   const toast = useToast();
   const confirm = useConfirm();
@@ -112,7 +112,7 @@ function MonitoringPage() {
   const summary = overview?.summary || {};
   const sessions = overview?.sessions || [];
   const filteredSessions = sessions.filter(s => {
-    if (!showTestSessions && (s.session_type || 'production') === 'cat72_test') return false;
+    if ((s.session_type || 'production') !== 'production') return false;
     if (customerFilter && s.organization_name !== customerFilter) return false;
     if (onlineOnly && !s.is_online) return false;
     if (hideEnded && (s.status === 'ended' || s.status === 'completed' || s.status === 'disconnected')) return false;
@@ -280,9 +280,7 @@ function MonitoringPage() {
             <button onClick={() => setOnlineOnly(!onlineOnly)} className="btn" style={{padding: '4px 10px', color: onlineOnly ? 'var(--accent-green)' : 'var(--text-tertiary)', borderColor: onlineOnly ? 'rgba(92,214,133,0.2)' : 'rgba(255,255,255,0.06)'}}>
               Online only {onlineOnly ? 'ON' : 'OFF'}
             </button>
-            <button onClick={() => setShowTestSessions(!showTestSessions)} className="btn" style={{padding: '4px 10px', color: showTestSessions ? '#D6A35C' : 'var(--text-tertiary)', borderColor: showTestSessions ? 'rgba(214,163,92,0.2)' : 'rgba(255,255,255,0.06)'}}>
-              CAT-72 tests {showTestSessions ? 'ON' : 'OFF'}
-            </button>
+
           </div>
         </div>        
         {filteredSessions.length === 0 ? (

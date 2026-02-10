@@ -481,7 +481,7 @@ async def list_all_sessions(
         raise HTTPException(status_code=403, detail="Admin access required")
     
     result = await db.execute(
-        select(EnveloSession).order_by(EnveloSession.started_at.desc()).limit(100)
+        select(EnveloSession).where(EnveloSession.session_type != "deleted").order_by(EnveloSession.started_at.desc()).limit(100)
     )
     sessions = result.scalars().all()
     
