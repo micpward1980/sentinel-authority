@@ -255,20 +255,12 @@ function MonitoringPage() {
                 <div style={{fontSize: '32px', fontWeight: 300, color: summary.pass_rate >= 99 ? '#5CD685' : summary.pass_rate >= 95 ? '#D6A05C' : '#D65C5C'}}>{summary.pass_rate?.toFixed(1) || 0}%</div>
                 <div style={subStyle}>enforcement success</div>
               </div>
-              <div style={cardStyle}>
-                <div style={labelStyle}>Violations (24h)</div>
-                <div style={{fontSize: '32px', fontWeight: 300, color: (summary.total_block || 0) > 0 ? '#D65C5C' : '#5CD685'}}>{(summary.total_block || 0).toLocaleString()}</div>
-                <div style={subStyle}>{((summary.total_block || 0) / Math.max(summary.total_actions || 1, 1) * 100).toFixed(2)}% of actions</div>
-              </div>
+
+
               {user?.role === 'admin' && <div style={cardStyle}>
-                <div style={labelStyle}>Total Sessions</div>
-                <div style={{fontSize: '32px', fontWeight: 300, color: 'rgba(255,255,255,.94)'}}>{summary.total || 0}</div>
-                <div style={subStyle}>{summary.ended || 0} completed</div>
-              </div>}
-              {user?.role === 'admin' && <div style={cardStyle}>
-                <div style={labelStyle}>Unique Systems</div>
-                <div style={{fontSize: '32px', fontWeight: 300, color: '#a896d6'}}>{[...new Set(sessions.map(s => s.certificate_id).filter(Boolean))].length}</div>
-                <div style={subStyle}>{[...new Set(sessions.map(s => s.organization_name).filter(Boolean))].length} organizations</div>
+                <div style={labelStyle}>Organizations</div>
+                <div style={{fontSize: '32px', fontWeight: 300, color: '#a896d6'}}>{[...new Set(sessions.map(s => s.organization_name).filter(Boolean))].length}</div>
+                <div style={subStyle}>{[...new Set(sessions.map(s => s.system_name).filter(Boolean))].length} unique systems</div>
               </div>}
             </div>
           </div>
