@@ -17,7 +17,8 @@ import PendingPage from './pages/PendingPage';
 import ResourcesPage from './pages/ResourcesPage';
 import EnveloPage from './pages/EnveloPage';
 import MonitoringPage from './pages/MonitoringPage';
-import UserManagementPage from './pages/UserManagementPage';
+import UserManagementPage from "./pages/UserManagementPage";
+import LicenseesPage from "./pages/LicenseesPage";
 import ActivityPage from './pages/ActivityPage';
 import MyActivityPage from './pages/MyActivityPage';
 import SettingsPage from './pages/SettingsPage';
@@ -44,6 +45,7 @@ function App() {
           <Route path="/my-activity" element={<ProtectedRoute><Layout><MyActivityPage /></Layout></ProtectedRoute>} />
           <Route path="/settings" element={<ProtectedRoute><Layout><SettingsPage /></Layout></ProtectedRoute>} />
           <Route path="/api-docs" element={<ProtectedRoute roles={["admin"]}><Layout><ApiDocsPage /></Layout></ProtectedRoute>} />
+          <Route path="/licensees" element={<ProtectedRoute roles={["admin"]}><Layout><LicenseesPage /></Layout></ProtectedRoute>} />
           <Route path="/users" element={<ProtectedRoute roles={["admin"]}><Layout><UserManagementPage /></Layout></ProtectedRoute>} />
           <Route path="/" element={<Navigate to="/dashboard" />} />
         </Routes>

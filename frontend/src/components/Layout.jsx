@@ -45,6 +45,7 @@ function Layout({ children }) {
     { name: 'Resources', href: '/resources', icon: BookOpen, roles: ['admin', 'applicant'] },
     { name: 'ENVELO Interlock', href: '/envelo', icon: 'brand', roles: ['admin', 'applicant'], requiresCert: true },
     { name: 'Monitoring', href: '/monitoring', icon: BarChart2, roles: ['admin', 'applicant'] },
+    { name: 'Licensees', href: '/licensees', icon: Users, roles: ['admin'] },
     { name: 'User Management', href: '/users', icon: Users, roles: ['admin'] },
     { name: 'My Activity', href: '/my-activity', icon: Activity, roles: ['admin', 'applicant'] },
     { name: 'Activity Log', href: '/activity', icon: FileText, roles: ['admin'] },
