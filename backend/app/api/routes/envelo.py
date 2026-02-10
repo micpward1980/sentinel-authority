@@ -259,8 +259,13 @@ async def list_sessions(
                 "started_at": s.started_at.isoformat() if s.started_at else None,
                 "ended_at": s.ended_at.isoformat() if s.ended_at else None,
                 "last_telemetry_at": s.last_telemetry_at.isoformat() if s.last_telemetry_at else None,
+                "last_heartbeat_at": s.last_heartbeat_at.isoformat() if s.last_heartbeat_at else None,
                 "pass_count": s.pass_count or 0,
-                "block_count": s.block_count or 0
+                "block_count": s.block_count or 0,
+                "is_online": s.is_online if hasattr(s, "is_online") else False,
+                "organization_name": s.organization_name,
+                "system_name": s.system_name,
+                "session_type": s.session_type
             }
             for s in sessions
         ],
