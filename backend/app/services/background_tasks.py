@@ -482,3 +482,136 @@ async def demo_session_ticker():
         except Exception as e:
             print(f"Demo ticker error: {e}")
         await __import__('asyncio').sleep(15)
+
+
+async def cat72_auto_evaluator():
+    """Check running CAT-72 tests every 60s for auto-complete or auto-fail."""
+    import logging
+    from datetime import datetime, timedelta
+    from sqlalchemy import select
+    from app.core.database import AsyncSessionLocal
+    from app.models.models import CAT72Test, Application, Certificate, EnveloSession, CertificationState
+    import hashlib, uuid
+
+    logger = logging.getLogger("cat72_evaluator")
+    MIN_PASS_RATE = 95.0
+    MIN_ACTIONS = 100
+    TEST_DURATION_HOURS = 72
+
+    while True:
+        try:
+            async with AsyncSessionLocal() as db:
+                result = await db.execute(
+                    select(CAT72Test).where(CAT72Test.state == "running")
+                )
+                running_tests = result.scalars().all()
+
+                for test in running_tests:
+                    if not test.started_at:
+                        continue
+
+                    elapsed_hours = (datetime.utcnow() - test.started_at).total_seconds() / 3600
+
+                    # Get session data for this test
+                    sess_result = await db.execute(
+                        select(EnveloSession).where(
+                            EnveloSession.session_type == "cat72_test",
+                            EnveloSession.organization_name != None
+                        )
+                    )
+                    sessions = sess_result.scalars().all()
+
+                    # Match sessions to this test via application
+                    app_result = await db.execute(
+                        select(Application).where(Application.id == test.application_id)
+                    )
+                    application = app_result.scalar_one_or_none()
+                    if not application:
+                        continue
+
+                    test_sessions = [s for s in sessions if s.organization_name == application.organization_name and s.system_name == application.system_name]
+
+                    total_pass = sum(s.pass_count or 0 for s in test_sessions)
+                    total_block = sum(s.block_count or 0 for s in test_sessions)
+                    total_actions = total_pass + total_block
+                    pass_rate = (total_pass / total_actions * 100) if total_actions > 0 else 100.0
+
+                    # Update test metrics
+                    test.total_samples = total_actions
+                    test.conformant_samples = total_pass
+                    test.elapsed_seconds = int(elapsed_hours * 3600)
+                    test.convergence_score = round(pass_rate, 2)
+
+                    # AUTO-FAIL: below threshold after minimum sample
+                    if total_actions >= MIN_ACTIONS and pass_rate < MIN_PASS_RATE:
+                        logger.info(f"CAT-72 {test.test_id} AUTO-FAIL: {pass_rate:.1f}% < {MIN_PASS_RATE}% after {total_actions} actions")
+                        test.state = "completed"
+                        test.result = "FAIL"
+                        test.ended_at = datetime.utcnow()
+                        test.result_notes = f"Auto-failed: conformance {pass_rate:.1f}% below {MIN_PASS_RATE}% threshold after {total_actions} actions at {elapsed_hours:.1f}h"
+                        application.state = CertificationState.UNDER_REVIEW
+                        # End monitoring sessions
+                        for s in test_sessions:
+                            s.status = "ended"
+                            s.ended_at = datetime.utcnow()
+                        await db.commit()
+                        continue
+
+                    # AUTO-PASS: 72h elapsed and above threshold
+                    if elapsed_hours >= TEST_DURATION_HOURS and total_actions >= MIN_ACTIONS and pass_rate >= MIN_PASS_RATE:
+                        logger.info(f"CAT-72 {test.test_id} AUTO-PASS: {pass_rate:.1f}% after {elapsed_hours:.1f}h / {total_actions} actions")
+                        test.state = "completed"
+                        test.result = "PASS"
+                        test.ended_at = datetime.utcnow()
+                        test.result_notes = f"Auto-certified: {pass_rate:.1f}% conformance over {elapsed_hours:.1f}h with {total_actions} actions"
+
+                        # Generate evidence hash
+                        evidence = f"{test.test_id}:{total_pass}:{total_block}:{elapsed_hours}"
+                        test.evidence_hash = hashlib.sha256(evidence.encode()).hexdigest()
+
+                        # Issue certificate
+                        cert_number = f"ODDC-{datetime.utcnow().year}-{test.application_id:04d}"
+                        now = datetime.utcnow()
+                        signature = f"SA-SIG-{uuid.uuid4().hex[:8].upper()}"
+                        audit_ref = f"AUDIT-{test.id}-{now.strftime('%Y%m%d%H%M%S')}"
+
+                        certificate = Certificate(
+                            certificate_number=cert_number,
+                            application_id=test.application_id,
+                            organization_name=application.organization_name,
+                            system_name=application.system_name,
+                            system_version=application.system_version,
+                            odd_specification=application.odd_specification,
+                            envelope_definition=application.envelope_definition,
+                            state="conformant",
+                            issued_at=now,
+                            expires_at=now + timedelta(days=365),
+                            issued_by=test.operator_id or 1,
+                            test_id=test.id,
+                            convergence_score=pass_rate,
+                            evidence_hash=test.evidence_hash,
+                            signature=signature,
+                            audit_log_ref=audit_ref,
+                            verification_url=f"https://sentinelauthority.org/verify.html?cert={cert_number}",
+                            history=[{"action": "auto_issued", "timestamp": now.isoformat(), "by": "CAT-72 Auto-Evaluator"}]
+                        )
+                        db.add(certificate)
+
+                        # Update application state
+                        application.state = CertificationState.CONFORMANT
+
+                        # Convert test sessions to production monitoring
+                        for s in test_sessions:
+                            s.session_type = "production"
+
+                        await db.commit()
+                        logger.info(f"Certificate {cert_number} auto-issued for {application.system_name}")
+                        continue
+
+                    # Otherwise just save updated metrics
+                    await db.commit()
+
+        except Exception as e:
+            logger.warning(f"CAT-72 auto-evaluator error: {e}")
+
+        await __import__("asyncio").sleep(60)

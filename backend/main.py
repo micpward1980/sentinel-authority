@@ -218,6 +218,13 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.warning(f"Demo ticker failed to start: {e}")
 
+    try:
+        from app.services.background_tasks import cat72_auto_evaluator
+        asyncio.create_task(cat72_auto_evaluator())
+        logger.info("CAT-72 auto-evaluator started (checks every 60s)")
+    except Exception as e:
+        logger.warning(f"CAT-72 auto-evaluator failed to start: {e}")
+
     yield
     logger.info("Shutting down...")
 
