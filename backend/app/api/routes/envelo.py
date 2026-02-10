@@ -89,16 +89,6 @@ async def register_session(
     db.add(session)
     await db.commit()
 
-    # Check for high violations
-    await check_and_notify_violations(session, api_key, db)
-
-    return {
-        "status": "received",
-        "records_stored": len(data.records)
-    }
-    
-    print(f"[ENVELO] Session registered: {data.session_id} for cert {data.certificate_id}")
-    
     return {"status": "registered", "session_id": data.session_id}
 
 
@@ -128,7 +118,6 @@ async def receive_telemetry(
 
     
     # Store telemetry records
-    for record in data.records:
         telemetry = TelemetryRecord(
             session_id=session.id,
             timestamp=datetime.fromisoformat(record['timestamp'].replace('Z', '').replace('+00:00', '')),
@@ -178,10 +167,7 @@ async def receive_telemetry(
     # Check for high violations
     await check_and_notify_violations(session, api_key, db)
 
-    return {
-        "status": "received",
-        "records_stored": len(data.records)
-    }
+
     
 
 
@@ -202,17 +188,18 @@ async def end_session(
     if session:
         session.status = "ended"
         session.ended_at = datetime.fromisoformat(data.ended_at.replace('Z', '').replace('+00:00', ''))
-        session.pass_count = data.final_stats.get('pass_count', session.pass_count)
-        session.block_count = data.final_stats.get('block_count', session.block_count)
+        session.pass_count = data.final_stats.get('pass', data.final_stats.get('pass_count', session.pass_count or 0))
+        session.block_count = data.final_stats.get('block', data.final_stats.get('block_count', session.block_count or 0))
         await db.commit()
 
-    # Check for high violations
-    await check_and_notify_violations(session, api_key, db)
+        try:
+            await check_and_notify_violations(session, api_key, db)
+        except Exception:
+            pass
 
-    return {
-        "status": "received",
-        "records_stored": len(data.records)
-    }
+    return {"status": "ended", "session_id": session_id}
+
+
     
     return {"status": "ended", "session_id": session_id}
 
@@ -521,9 +508,15 @@ async def get_session_violations_admin(
     if current_user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Admin access required")
     
+    # Look up session by string UUID
+    sess_result = await db.execute(select(EnveloSession).where(EnveloSession.session_id == session_id))
+    sess = sess_result.scalar_one_or_none()
+    if not sess:
+        raise HTTPException(status_code=404, detail="Session not found")
+    
     result = await db.execute(
         select(Violation).where(
-            Violation.session_id == session_id
+            Violation.session_id == sess.id
         ).order_by(Violation.timestamp.desc())
     )
     violations = result.scalars().all()
@@ -544,7 +537,7 @@ async def get_session_violations_admin(
 
 @router.get("/admin/sessions/{session_id}/report")
 async def download_session_report(
-    session_id: int,
+    session_id: str,
     db: AsyncSession = Depends(get_db),
     current_user: dict = Depends(get_current_user)
 ):
@@ -600,7 +593,7 @@ async def download_session_report(
 
 @router.get("/my/sessions/{session_id}/telemetry")
 async def get_my_session_telemetry(
-    session_id: int,
+    session_id: str,
     limit: int = 1000,
     db: AsyncSession = Depends(get_db),
     current_user: dict = Depends(get_current_user)
@@ -647,7 +640,7 @@ async def get_my_session_telemetry(
 
 @router.get("/my/sessions/{session_id}/violations")
 async def get_my_session_violations(
-    session_id: int,
+    session_id: str,
     db: AsyncSession = Depends(get_db),
     current_user: dict = Depends(get_current_user)
 ):
@@ -666,9 +659,15 @@ async def get_my_session_violations(
     if not session or session.api_key_id not in my_keys:
         raise HTTPException(status_code=404, detail="Session not found")
     
+    # Look up session by string UUID
+    sess_result = await db.execute(select(EnveloSession).where(EnveloSession.session_id == session_id))
+    sess = sess_result.scalar_one_or_none()
+    if not sess:
+        raise HTTPException(status_code=404, detail="Session not found")
+    
     result = await db.execute(
         select(Violation).where(
-            Violation.session_id == session_id
+            Violation.session_id == sess.id
         ).order_by(Violation.timestamp.desc())
     )
     violations = result.scalars().all()
@@ -689,7 +688,7 @@ async def get_my_session_violations(
 
 @router.get("/my/sessions/{session_id}/report")
 async def download_my_session_report(
-    session_id: int,
+    session_id: str,
     db: AsyncSession = Depends(get_db),
     current_user: dict = Depends(get_current_user)
 ):
@@ -864,7 +863,7 @@ async def get_monitoring_overview(
 
 @router.get("/monitoring/session/{session_id}/timeline")
 async def get_session_timeline(
-    session_id: int,
+    session_id: str,
     hours: int = 24,
     db: AsyncSession = Depends(get_db),
     current_user: dict = Depends(get_current_user)
