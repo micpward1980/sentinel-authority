@@ -133,8 +133,6 @@ function ApplicationDetail() {
     { key: 'pending', label: 'Submitted', icon: '1' },
     { key: 'under_review', label: 'In Review', icon: '2' },
     { key: 'approved', label: 'Awaiting Deploy', icon: '3' },
-    { key: 'testing', label: 'CAT-72 Testing', icon: '4' },
-    { key: 'conformant', label: 'Conformant', icon: '✓' },
   ];
   const currentStageIdx = PIPELINE_STAGES.findIndex(s => s.key === app?.state);
   const isSuspended = app?.state === 'revoked' || app?.state === 'suspended';
@@ -199,14 +197,10 @@ function ApplicationDetail() {
               Approve Application
             </button>
           )}
-          {app.state === 'approved' && (
-            <button onClick={handleScheduleTest} disabled={scheduling} className="px-4 py-2 transition-all btn">
-              {scheduling ? 'Scheduling...' : 'Schedule CAT-72 Test'}
-            </button>
-          )}
+
           {['pending','under_review','approved','testing','conformant'].includes(app.state) && (
-            <button onClick={handleSuspend} className="px-4 py-2 transition-all btn">
-              Suspend
+            <button onClick={handleSuspend} className="px-4 py-2 transition-all btn" style={{color:'#D65C5C'}}>
+              Withdraw
             </button>
           )}
           {(app.state === 'suspended' || app.state === 'revoked') && (
@@ -328,11 +322,11 @@ function ApplicationDetail() {
               style={{background: 'transparent', border: `1px solid ${'rgba(255,255,255,.07)'}`, color: 'rgba(255,255,255,.94)', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px'}}
             >
               <option value="pending">Pending</option>
-              <option value="under_review">Under Review</option>
-              <option value="approved">Approved (Customer Installs Interlock)</option>
-              <option value="testing">Testing (CAT-72 Active)</option>
-              <option value="conformant">Conformant</option>
-              <option value="revoked">Revoked</option>
+              <option value="under_review">In Review</option>
+              <option value="approved">Awaiting Deploy</option>
+
+
+
             </select>
             )}
           </div>
