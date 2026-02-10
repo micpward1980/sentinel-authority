@@ -468,7 +468,8 @@ async def list_all_sessions(
                 "agent_version": s.agent_version,
                 "status": s.status,
                 "pass_count": s.pass_count,
-                "block_count": s.block_count
+                "block_count": s.block_count,
+                "session_type": getattr(s, 'session_type', 'production') or 'production'
             }
             for s in sessions
         ]
@@ -862,7 +863,8 @@ async def get_monitoring_overview(
             "last_activity": last_activity.isoformat() if last_activity else None,
             "pass_count": s.pass_count or 0,
             "block_count": s.block_count or 0,
-            "uptime_hours": round((now - s.started_at).total_seconds() / 3600, 1) if s.started_at else 0
+            "uptime_hours": round((now - s.started_at).total_seconds() / 3600, 1) if s.started_at else 0,
+            "session_type": getattr(s, "session_type", "production") or "production"
         })
     
     return {
