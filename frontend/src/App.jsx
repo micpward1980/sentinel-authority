@@ -39,7 +39,6 @@ function App() {
           <Route path="/certificates" element={<ProtectedRoute><Layout><CertificatesPage /></Layout></ProtectedRoute>} />
           <Route path="/pending" element={<PendingPage />} />
           <Route path="/resources" element={<ProtectedRoute><Layout><ResourcesPage /></Layout></ProtectedRoute>} />
-          <Route path="/envelo" element={<ProtectedRoute><Layout><EnveloPage /></Layout></ProtectedRoute>} />
           <Route path="/monitoring" element={<ProtectedRoute><Layout><MonitoringPage /></Layout></ProtectedRoute>} />
           <Route path="/activity" element={<ProtectedRoute roles={["admin"]}><Layout><ActivityPage /></Layout></ProtectedRoute>} />
           <Route path="/my-activity" element={<ProtectedRoute><Layout><MyActivityPage /></Layout></ProtectedRoute>} />
