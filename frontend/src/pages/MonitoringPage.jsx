@@ -30,7 +30,7 @@ function MonitoringPage() {
   const fetchData = async () => {
     try {
       const [overviewRes, alertsRes] = await Promise.all([
-        api.get(`/api/envelo/monitoring/overview?page=${currentPage}&per_page=${perPage}&search=${searchTerm}&sort=${sortField}&order=${sortOrder}&session_type=production`),
+        api.get(`/api/envelo/monitoring/overview?page=${currentPage}&per_page=${perPage}&sort=${sortField}&order=${sortOrder}&session_type=production`),
         api.get('/api/envelo/monitoring/alerts')
       ]);
       setOverview(overviewRes.data);
@@ -48,7 +48,7 @@ function MonitoringPage() {
       const interval = setInterval(fetchData, 10000); // Refresh every 10 seconds
       return () => clearInterval(interval);
     }
-  }, [autoRefresh, currentPage, searchTerm, sortField, sortOrder]);
+  }, [autoRefresh, currentPage, sortField, sortOrder]);
 
   const fetchTimeline = async (sessionId) => {
     try {
@@ -119,6 +119,10 @@ function MonitoringPage() {
   const sessions = overview?.sessions || [];
   const filteredSessions = sessions.filter(s => {
     if ((s.session_type || 'production') !== 'production') return false;
+      if (searchTerm) {
+        const q = searchTerm.toLowerCase();
+        if (!(s.session_id || '').toLowerCase().includes(q) && !(s.certificate_id || '').toLowerCase().includes(q) && !(s.organization_name || '').toLowerCase().includes(q) && !(s.system_name || '').toLowerCase().includes(q)) return false;
+      }
     if (customerFilter && s.organization_name !== customerFilter) return false;
     if (onlineOnly && !s.is_online) return false;
     if (hideEnded && (s.status === 'ended' || s.status === 'completed' || s.status === 'disconnected')) return false;
