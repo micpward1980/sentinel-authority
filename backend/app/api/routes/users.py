@@ -238,11 +238,14 @@ async def delete_user(
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     
-    # Delete related records first (order matters for FK constraints)
+    # Delete/nullify all FK references (order matters)
     await db.execute(text("DELETE FROM application_comments WHERE user_id = :uid"), {"uid": user_id})
-    await db.execute(text("UPDATE applications SET applicant_id = NULL WHERE applicant_id = :uid"), {"uid": user_id})
+    await db.execute(text("DELETE FROM api_keys WHERE user_id = :uid"), {"uid": user_id})
     await db.execute(text("DELETE FROM user_sessions WHERE user_id = :uid"), {"uid": user_id})
     await db.execute(text("DELETE FROM audit_logs WHERE user_id = :uid"), {"uid": user_id})
+    await db.execute(text("UPDATE applications SET applicant_id = NULL WHERE applicant_id = :uid"), {"uid": user_id})
+    await db.execute(text("UPDATE cat72_tests SET operator_id = NULL WHERE operator_id = :uid"), {"uid": user_id})
+    await db.execute(text("UPDATE certificates SET issued_by = NULL WHERE issued_by = :uid"), {"uid": user_id})
     await db.delete(user)
     await db.commit()
     
