@@ -382,8 +382,8 @@ tbody tr:hover { background: rgba(255,255,255,.015); }
 }
 
 .sa-main-content .sa-modal-panel {
-  background: #2a2f3d !important;
-  border: 1px solid rgba(255,255,255,.07) !important;
+  background: #120c1e !important;
+  border: 1px solid rgba(157,140,207,0.2) !important;
 }
 
 /* MODAL — opt back in for overlay + panel */
@@ -394,8 +394,8 @@ tbody tr:hover { background: rgba(255,255,255,.015); }
 }
 .sa-main-content .sa-modal-panel,
 .sa-modal-panel {
-  background: #2a2f3d !important;
-  border: 1px solid rgba(255,255,255,.07) !important;
+  background: #120c1e !important;
+  border: 1px solid rgba(157,140,207,0.2) !important;
   box-shadow: 0 24px 80px rgba(0,0,0,.5) !important;
 }
 
