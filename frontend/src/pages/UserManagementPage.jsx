@@ -12,6 +12,7 @@ function UserManagementPage() {
   const toast = useToast();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [roleFilter, setRoleFilter] = useState("");
   const [search, setSearch] = useState('');
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -32,11 +33,17 @@ function UserManagementPage() {
     setLoading(false);
   };
 
-  const filteredUsers = users.filter(u => 
-    u.email?.toLowerCase().includes(search.toLowerCase()) ||
-    u.full_name?.toLowerCase().includes(search.toLowerCase()) ||
-    u.company?.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredUsers = users.filter(u => {
+    if (roleFilter === 'admin' && u.role !== 'admin') return false;
+    if (roleFilter === 'applicant' && u.role !== 'applicant') return false;
+    if (roleFilter === 'pending' && u.role !== 'pending') return false;
+    if (roleFilter === 'inactive' && u.is_active !== false) return false;
+    if (search) {
+      const q = search.toLowerCase();
+      if (!(u.email || '').toLowerCase().includes(q) && !(u.full_name || '').toLowerCase().includes(q) && !(u.company || '').toLowerCase().includes(q)) return false;
+    }
+    return true;
+  });
 
   const stats = {
     total: users.length,
@@ -135,11 +142,11 @@ function UserManagementPage() {
         action={<button onClick={() => setShowInviteModal(true)} className="btn px-4 py-2 flex items-center gap-2" ><Plus className="w-4 h-4" /> Invite User</button>}
       />
       <div className="grid gap-4" style={{gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))"}}>
-        <StatCard label="Total Users" value={stats.total} color={'rgba(255,255,255,.94)'} />
-        <StatCard label="Admins" value={stats.admins} color={'#a896d6'} />
-        <StatCard label="Applicants" value={stats.applicants} color={'#5CD685'} />
-        <StatCard label="Pending" value={stats.pending} color={'#D6A05C' || '#f59e0b'} />
-        <StatCard label="Inactive" value={stats.inactive} color={'#D65C5C'} />
+        <StatCard onClick={() => setRoleFilter("")} label="Total Users" value={stats.total} color={roleFilter === "" ? "rgba(255,255,255,.94)" : "rgba(255,255,255,.35)"} />
+        <StatCard onClick={() => setRoleFilter(roleFilter === "admin" ? "" : "admin")} label="Admins" value={stats.admins} color={roleFilter === "admin" ? "#a896d6" : "rgba(255,255,255,.35)"} />
+        <StatCard onClick={() => setRoleFilter(roleFilter === "applicant" ? "" : "applicant")} label="Applicants" value={stats.applicants} color={roleFilter === "applicant" ? "#5CD685" : "rgba(255,255,255,.35)"} />
+        <StatCard onClick={() => setRoleFilter(roleFilter === "pending" ? "" : "pending")} label="Pending" value={stats.pending} color={roleFilter === "pending" ? "#D6A05C" : "rgba(255,255,255,.35)"} />
+        <StatCard onClick={() => setRoleFilter(roleFilter === "inactive" ? "" : "inactive")} label="Inactive" value={stats.inactive} color={roleFilter === "inactive" ? "#D65C5C" : "rgba(255,255,255,.35)"} />
       </div>
       <Panel>
         <div className="flex items-center gap-3">
