@@ -846,7 +846,45 @@ async def receive_heartbeat(
     for session in sessions:
         session.last_heartbeat_at = now
     
+        session.offline_reason = None
+
     await db.commit()
+
+    # Auto-start any scheduled CAT-72 test when interlock first connects
+    if sessions:
+        try:
+            from app.models.models import CAT72Test
+            from app.services.evidence import compute_hash
+            for session in sessions:
+                cat_result = await db.execute(
+                    select(CAT72Test).where(
+                        CAT72Test.state == "scheduled",
+                        CAT72Test.organization_name == session.organization_name,
+                        CAT72Test.system_name == session.system_name
+                    )
+                )
+                pending_test = cat_result.scalar_one_or_none()
+                if pending_test:
+                    pending_test.state = "running"
+                    pending_test.started_at = now
+                    genesis = {
+                        "type": "genesis",
+                        "test_id": pending_test.test_id,
+                        "started_at": now.isoformat(),
+                        "operator_id": 0,
+                        "auto_started": True,
+                        "trigger": "interlock_heartbeat",
+                        "envelope_definition": pending_test.envelope_definition,
+                    }
+                    genesis_hash = compute_hash(genesis)
+                    pending_test.evidence_chain = [{"block": 0, "hash": genesis_hash, "data": genesis}]
+                    pending_test.evidence_hash = genesis_hash
+                    await db.commit()
+                    import logging
+                    logging.getLogger("main").info(f"Auto-started CAT-72 test {pending_test.test_id} — interlock connected for {session.organization_name} / {session.system_name}")
+        except Exception as e:
+            import logging
+            logging.getLogger("main").warning(f"Auto-start CAT-72 check failed: {e}")
 
     # Check for high violations on most recent session
     if sessions:
