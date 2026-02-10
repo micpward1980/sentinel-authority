@@ -485,6 +485,7 @@ async def auto_suspend_offline():
                     cert = cert_result.scalar_one_or_none()
                     if cert:
                         cert.state = "suspended"
+                        s.offline_reason = "Auto-suspended - offline 24h+"
                         cert.history = (cert.history or []) + [{
                             "action": "auto_suspended",
                             "timestamp": now.isoformat(),

@@ -297,6 +297,7 @@ class EnveloSession(Base):
     agent_version = Column(String(20))
     status = Column(String(20), default="active")  # active, ended, disconnected
     last_telemetry_at = Column(DateTime, nullable=True)
+    offline_reason = Column(String, nullable=True)
     last_heartbeat_at = Column(DateTime, nullable=True)
     last_violation_alert_at = Column(DateTime, nullable=True)
     last_offline_alert_at = Column(DateTime, nullable=True)
