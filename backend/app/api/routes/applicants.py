@@ -127,6 +127,9 @@ async def list_applications(
             query = query.where(Application.state.in_(["suspended", "revoked"]))
         else:
             query = query.where(Application.state == state)
+    else:
+        # Default: only show intake pipeline — exclude graduated apps
+        query = query.where(Application.state.in_(["pending", "under_review", "approved"]))
     if search:
         like = f"%{search}%"
         query = query.where(or_(
