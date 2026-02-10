@@ -16,6 +16,7 @@ function MonitoringPage() {
   const [customerFilter, setCustomerFilter] = useState("");
   const [onlineOnly, setOnlineOnly] = useState(false);
   const [hideEnded, setHideEnded] = useState(true);
+  const [showTestSessions, setShowTestSessions] = useState(false);
   const { user } = useAuth();
   const toast = useToast();
   const confirm = useConfirm();
@@ -111,6 +112,7 @@ function MonitoringPage() {
   const summary = overview?.summary || {};
   const sessions = overview?.sessions || [];
   const filteredSessions = sessions.filter(s => {
+    if (!showTestSessions && (s.session_type || 'production') === 'cat72_test') return false;
     if (customerFilter && s.organization_name !== customerFilter) return false;
     if (onlineOnly && !s.is_online) return false;
     if (hideEnded && (s.status === 'ended' || s.status === 'completed' || s.status === 'disconnected')) return false;

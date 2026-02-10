@@ -24,6 +24,7 @@ class SessionCreate(BaseModel):
     session_id: str
     started_at: str
     agent_version: str
+    session_type: str = "production"  # production or cat72_test
     boundaries: List[dict] = []
 
 
@@ -83,6 +84,7 @@ async def register_session(
         api_key_id=api_key.id,
         started_at=datetime.fromisoformat(data.started_at.replace('Z', '').replace('+00:00', '')),
         agent_version=data.agent_version,
+        session_type=getattr(data, 'session_type', 'production'),
         status="active"
     )
     
