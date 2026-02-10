@@ -7,7 +7,7 @@ import asyncio
 from datetime import datetime, timedelta
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.core.database import async_session_maker
+from app.core.database import AsyncSessionLocal as async_session_maker
 from app.models.models import CAT72Test, Application, EnveloSession
 from app.services.cat72_evaluator import complete_test_and_issue_certificate
 import logging
