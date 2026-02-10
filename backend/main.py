@@ -430,22 +430,33 @@ async def start_auto_evaluator():
         logger.warning(f"Migration check: {e}")
 
     import asyncio
-    from app.services.auto_evaluator import run_auto_evaluator
-    asyncio.create_task(run_auto_evaluator())
 
-    # Start offline agent monitor
-    from app.services.background_tasks import check_offline_agents_task
-    from app.core.database import get_db
-    asyncio.create_task(check_offline_agents_task(get_db))
-    logger.info("Offline agent monitor started")
+    try:
+        from app.services.auto_evaluator import run_auto_evaluator
+        asyncio.create_task(run_auto_evaluator())
+        logger.info("Auto evaluator started")
+    except Exception as e:
+        logger.warning(f"Auto evaluator failed to start: {e}")
 
-    # Start certificate expiry monitor
-    from app.services.background_tasks import check_certificate_expiry_task
-    asyncio.create_task(check_certificate_expiry_task())
-    logger.info("Certificate expiry monitor started (checks every 6 hours)")
+    try:
+        from app.services.background_tasks import check_offline_agents_task
+        from app.core.database import get_db
+        asyncio.create_task(check_offline_agents_task(get_db))
+        logger.info("Offline agent monitor started")
+    except Exception as e:
+        logger.warning(f"Offline agent monitor failed to start: {e}")
 
-    # Start demo session ticker
-    from app.services.background_tasks import demo_session_ticker
-    asyncio.create_task(demo_session_ticker())
-    logger.info("Demo session ticker started (ticks every 15s)")
+    try:
+        from app.services.background_tasks import check_certificate_expiry_task
+        asyncio.create_task(check_certificate_expiry_task())
+        logger.info("Certificate expiry monitor started (checks every 6 hours)")
+    except Exception as e:
+        logger.warning(f"Certificate expiry monitor failed to start: {e}")
+
+    try:
+        from app.services.background_tasks import demo_session_ticker
+        asyncio.create_task(demo_session_ticker())
+        logger.info("Demo session ticker started (ticks every 15s)")
+    except Exception as e:
+        logger.warning(f"Demo ticker failed to start: {e}")
     logger.info("Auto-evaluator background task started")
