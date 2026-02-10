@@ -1079,7 +1079,7 @@ async def get_alerts(
     # Get sessions that should be monitored
     if current_user.get("role") == "admin":
         sessions_result = await db.execute(
-            select(EnveloSession).where(EnveloSession.status == "active")
+            select(EnveloSession).where(EnveloSession.status == "active", EnveloSession.session_type != "deleted", EnveloSession.is_demo != True)
         )
     else:
         keys_result = await db.execute(
@@ -1096,7 +1096,9 @@ async def get_alerts(
         sessions_result = await db.execute(
             select(EnveloSession).where(
                 EnveloSession.api_key_id.in_(key_ids),
-                EnveloSession.status == "active"
+                EnveloSession.status == "active",
+                EnveloSession.session_type != "deleted",
+                EnveloSession.is_demo != True
             )
         )
     
@@ -1112,7 +1114,7 @@ async def get_alerts(
                 "type": "offline",
                 "severity": "critical" if minutes_offline > 10 else "warning",
                 "session_id": s.session_id,
-                "message": f"Agent offline for {minutes_offline} minutes",
+                "message": f"Interlock offline for {minutes_offline} minutes",
                 "since": last_activity.isoformat()
             })
         
