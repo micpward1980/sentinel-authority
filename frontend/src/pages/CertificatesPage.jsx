@@ -14,9 +14,15 @@ function CertificatesPage() {
   }, []);
 
   const filteredCerts = certificates.filter(cert => {
-    if (statusFilter === 'all') return true;
-    if (statusFilter === 'active') return cert.state === 'conformant' || cert.state === 'active' || cert.state === 'issued';
-    return cert.state === statusFilter;
+    if (statusFilter !== 'all') {
+      if (statusFilter === 'active' && !(cert.state === 'conformant' || cert.state === 'active' || cert.state === 'issued')) return false;
+      else if (statusFilter !== 'active' && cert.state !== statusFilter) return false;
+    }
+    if (searchTerm) {
+      const q = searchTerm.toLowerCase();
+      if (!(cert.certificate_number || '').toLowerCase().includes(q) && !(cert.organization_name || '').toLowerCase().includes(q) && !(cert.system_name || '').toLowerCase().includes(q)) return false;
+    }
+    return true;
   });
 
   const counts = {
