@@ -114,7 +114,7 @@ function CAT72Console() {
       {/* Summary Stats */}
       <div style={{display:"flex",gap:"16px",marginBottom:"16px"}}>
         {['live','scheduled','completed'].map(tab => (
-          <button key={tab} onClick={() => setActiveTab(tab)} style={{background:activeTab===tab?"rgba(91,75,138,0.25)":"transparent",border:"1px solid rgba(91,75,138,0.3)",color:activeTab===tab?"rgba(255,255,255,.94)":"rgba(255,255,255,.50)",padding:"6px 16px",fontFamily:"Consolas, monospace",fontSize:"10px",textTransform:"uppercase",letterSpacing:"1px",cursor:"pointer"}}>{tab === 'live' ? 'Live CAT-72 Tests' : tab === 'scheduled' ? 'Scheduled Tests' : 'Completed Tests'}</button>
+          <button key={tab} onClick={() => setActiveTab(tab)} style={{background:activeTab===tab?"rgba(91,75,138,0.25)":"transparent",border:"1px solid rgba(91,75,138,0.3)",color:activeTab===tab?"rgba(255,255,255,.94)":"rgba(255,255,255,.50)",padding:"6px 16px",fontFamily:"Consolas, monospace",fontSize:"10px",textTransform:"uppercase",letterSpacing:"1px",cursor:"pointer"}}>{tab === 'live' ? 'Live CAT-72 Tests' : tab === 'scheduled' ? 'Pending Deployment' : 'Completed Tests'}</button>
         ))}
       </div>
 
@@ -189,27 +189,42 @@ function CAT72Console() {
             <thead>
               <tr style={{borderBottom: '1px solid rgba(255,255,255,.07)'}}>
                 <th className="px-4 py-3 text-left" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: 'rgba(255,255,255,.50)', fontWeight: 400}}>System</th>
+                <th className="px-4 py-3 text-left" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: 'rgba(255,255,255,.50)', fontWeight: 400}}>Deployment Status</th>
                 <th className="px-4 py-3 text-left" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: 'rgba(255,255,255,.50)', fontWeight: 400}}>Duration</th>
                 <th className="px-4 py-3 text-left" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: 'rgba(255,255,255,.50)', fontWeight: 400}}>Scheduled</th>
                 <th className="px-4 py-3 text-left" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: 'rgba(255,255,255,.50)', fontWeight: 400}}>Actions</th>
               </tr>
             </thead>
             <tbody>
-              {scheduledTests.filter(t => !catSearch || (t.organization_name||'').toLowerCase().includes(catSearch.toLowerCase()) || (t.system_name||'').toLowerCase().includes(catSearch.toLowerCase()) || (t.test_id||'').toLowerCase().includes(catSearch.toLowerCase())).map(test => (
+              {scheduledTests.filter(t => !catSearch || (t.organization_name||'').toLowerCase().includes(catSearch.toLowerCase()) || (t.system_name||'').toLowerCase().includes(catSearch.toLowerCase()) || (t.test_id||'').toLowerCase().includes(catSearch.toLowerCase())).map(test => {
+                const interlockConnected = liveSessions.some(s => (s.organization_name === test.organization_name && s.system_name === test.system_name) || s.test_id === test.test_id);
+                return (
                 <tr key={test.id} style={{borderBottom: '1px solid rgba(255,255,255,.07)'}}>
                   <td className="px-4 py-4">
                     <div style={{fontWeight: 500, color: 'rgba(255,255,255,.94)'}}>{test.organization_name} — {test.system_name}</div>
                     <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: 'rgba(255,255,255,.50)', marginTop: '2px'}}>{test.test_id}</div>
                   </td>
+                  <td className="px-4 py-4">
+                    {interlockConnected ? (
+                      <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: '#5CD685', textTransform: 'uppercase', letterSpacing: '1px'}}>● Interlock Connected</span>
+                    ) : (
+                      <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: '#D6A05C', textTransform: 'uppercase', letterSpacing: '1px'}}>○ Awaiting Customer Deployment</span>
+                    )}
+                  </td>
                   <td className="px-4 py-4" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px', color: 'rgba(255,255,255,.78)'}}>{test.duration_hours}h</td>
                   <td className="px-4 py-4" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', color: 'rgba(255,255,255,.60)'}}>{test.created_at ? new Date(test.created_at).toLocaleDateString() : '—'}</td>
                   <td className="px-4 py-4">
-                    {user?.role === 'admin' && <button onClick={() => handleStart(test.test_id)} disabled={loading[test.test_id]} className="px-3 py-1 btn">
-                      {loading[test.test_id] === 'starting' ? '...' : 'Begin 72h Window'}
-                    </button>}
+                    {user?.role === 'admin' && interlockConnected ? (
+                      <button onClick={() => handleStart(test.test_id)} disabled={loading[test.test_id]} className="px-3 py-1 btn">
+                        {loading[test.test_id] === 'starting' ? '...' : 'Begin 72h Window'}
+                      </button>
+                    ) : user?.role === 'admin' ? (
+                      <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,.30)', textTransform: 'uppercase', letterSpacing: '1px'}}>Pending deployment</span>
+                    ) : null}
                   </td>
                 </tr>
-              ))}
+                );
+              })}
             </tbody>
           </table>
           )}
