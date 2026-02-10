@@ -16,6 +16,8 @@ from app.models.models import (
 )
 import logging
 
+PLATFORM_BOOT_TIME = datetime.utcnow()
+
 logger = logging.getLogger(__name__)
 
 # Thresholds
@@ -452,8 +454,12 @@ async def auto_suspend_offline():
     while True:
         await asyncio.sleep(3600)  # Check every hour
         try:
+            now = datetime.utcnow()
+            # Grace period: skip if platform booted within last 2 hours
+            if (now - PLATFORM_BOOT_TIME).total_seconds() < 7200:
+                logger.info("Auto-suspend skipped — platform in grace period after restart")
+                continue
             async with AsyncSessionLocal() as db:
-                now = datetime.utcnow()
                 threshold = now - timedelta(hours=24)
                 
                 # Find production sessions offline > 24h with a certificate
@@ -531,6 +537,8 @@ async def demo_session_ticker():
 async def cat72_auto_evaluator():
     """Check running CAT-72 tests every 60s for auto-complete or auto-fail."""
     import logging
+
+PLATFORM_BOOT_TIME = datetime.utcnow()
     from datetime import datetime, timedelta
     from sqlalchemy import select
     from app.core.database import AsyncSessionLocal
