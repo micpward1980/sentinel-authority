@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Activity } from 'lucide-react';
 import { api } from '../config/api';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
@@ -13,30 +12,14 @@ function MyActivityPage() {
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(0);
-  const [actionFilter, setActionFilter] = useState('');
-  const [resourceFilter, setResourceFilter] = useState('');
   const [quickRange, setQuickRange] = useState('30');
-  const [dateFrom, setDateFrom] = useState('');
-  const [dateTo, setDateTo] = useState('');
-  const [actions, setActions] = useState([]);
-  const [resourceTypes, setResourceTypes] = useState([]);
   const PAGE_SIZE = 30;
 
-  useEffect(() => {
-    api.get('/api/audit/actions').then(r => setActions(r.data.actions || [])).catch(() => {});
-    api.get('/api/audit/resource-types').then(r => setResourceTypes(r.data.resource_types || [])).catch(() => {});
-  }, []);
-
-  const applyQuickRange = (range) => {
-    setQuickRange(range);
-    setPage(0);
-    if (range === 'all') { setDateFrom(''); setDateTo(''); }
-    else {
-      const d = new Date();
-      d.setDate(d.getDate() - parseInt(range));
-      setDateFrom(d.toISOString().split('T')[0]);
-      setDateTo('');
-    }
+  const getDateFrom = () => {
+    if (quickRange === 'all') return '';
+    const d = new Date();
+    d.setDate(d.getDate() - parseInt(quickRange));
+    return d.toISOString();
   };
 
   const fetchLogs = async () => {
@@ -45,14 +28,8 @@ function MyActivityPage() {
       const params = new URLSearchParams();
       params.set('limit', PAGE_SIZE);
       params.set('offset', page * PAGE_SIZE);
-      if (actionFilter) params.set('action', actionFilter);
-      if (resourceFilter) params.set('resource_type', resourceFilter);
-      if (dateFrom) params.set('date_from', new Date(dateFrom).toISOString());
-      if (dateTo) params.set('date_to', new Date(dateTo + 'T23:59:59').toISOString());
-      if (!dateFrom && quickRange !== 'all') {
-        const d = new Date(); d.setDate(d.getDate() - parseInt(quickRange || '30'));
-        params.set('date_from', d.toISOString());
-      }
+      const df = getDateFrom();
+      if (df) params.set('date_from', df);
       const res = await api.get(`/api/audit/my-logs?${params}`);
       setLogs(res.data.logs || []);
       setTotal(res.data.total || 0);
@@ -63,14 +40,8 @@ function MyActivityPage() {
   const exportCSV = async () => {
     try {
       const params = new URLSearchParams();
-      if (actionFilter) params.set('action', actionFilter);
-      if (resourceFilter) params.set('resource_type', resourceFilter);
-      if (dateFrom) params.set('date_from', new Date(dateFrom).toISOString());
-      if (dateTo) params.set('date_to', new Date(dateTo + 'T23:59:59').toISOString());
-      if (!dateFrom && quickRange !== 'all') {
-        const d = new Date(); d.setDate(d.getDate() - parseInt(quickRange || '30'));
-        params.set('date_from', d.toISOString());
-      }
+      const df = getDateFrom();
+      if (df) params.set('date_from', df);
       params.set('limit', 10000);
       params.set('offset', 0);
       const res = await api.get(`/api/audit/my-logs?${params}`);
@@ -90,7 +61,7 @@ function MyActivityPage() {
     } catch (err) { toast.show('Export failed', 'error'); }
   };
 
-  useEffect(() => { fetchLogs(); }, [actionFilter, resourceFilter, dateFrom, dateTo, page, quickRange]);
+  useEffect(() => { fetchLogs(); }, [page, quickRange]);
 
   const actionColor = (action) => {
     if (action?.includes('issued') || action?.includes('approved') || action?.includes('conformant')) return '#5CD685';
@@ -104,26 +75,18 @@ function MyActivityPage() {
   const thStyle = {padding: '12px 16px', textAlign: 'left', fontSize: '10px', fontFamily: mono, textTransform: 'uppercase', letterSpacing: '1px', color: 'rgba(255,255,255,.50)'};
 
   return (
-    <div className="space-y-6">
-      <SectionHeader label="Account" title="Activity History" />
+    <div className="space-y-6" style={{maxWidth: 'min(900px, 95vw)', margin: '0 auto'}}>
+      <SectionHeader label="Account" title="My Activity" />
 
       <Panel>
         <div style={{display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap'}}>
-          <select value={actionFilter} onChange={e => { setActionFilter(e.target.value); setPage(0); }} style={{background: '#2a2f3d', border: '1px solid rgba(255,255,255,.07)', padding: '8px 12px', color: 'rgba(255,255,255,.94)', fontSize: '12px', fontFamily: mono, minWidth: '180px'}}>
-            <option value="">All Actions</option>
-            {actions.map(a => <option key={a} value={a}>{a}</option>)}
-          </select>
-          <select value={resourceFilter} onChange={e => { setResourceFilter(e.target.value); setPage(0); }} style={{background: '#2a2f3d', border: '1px solid rgba(255,255,255,.07)', padding: '8px 12px', color: 'rgba(255,255,255,.94)', fontSize: '12px', fontFamily: mono, minWidth: '150px'}}>
-            <option value="">All Resources</option>
-            {resourceTypes.map(t => <option key={t} value={t}>{t}</option>)}
-          </select>
           {['7', '30', '90', 'all'].map(r => (
-            <button key={r} onClick={() => applyQuickRange(r)} style={{padding: '5px 10px', background: quickRange === r ? 'rgba(168,150,214,0.15)' : 'transparent', border: `1px solid ${quickRange === r ? 'rgba(168,150,214,0.4)' : 'rgba(255,255,255,.07)'}`, color: quickRange === r ? '#a896d6' : 'rgba(255,255,255,.50)', fontFamily: mono, fontSize: '10px', cursor: 'pointer', letterSpacing: '0.5px'}}>
+            <button key={r} onClick={() => { setQuickRange(r); setPage(0); }} style={{padding: '5px 10px', background: quickRange === r ? 'rgba(168,150,214,0.15)' : 'transparent', border: `1px solid ${quickRange === r ? 'rgba(168,150,214,0.4)' : 'rgba(255,255,255,.07)'}`, color: quickRange === r ? '#a896d6' : 'rgba(255,255,255,.50)', fontFamily: mono, fontSize: '10px', cursor: 'pointer', letterSpacing: '0.5px'}}>
               {r === 'all' ? 'All' : r + 'd'}
             </button>
           ))}
           <span style={{fontFamily: mono, fontSize: '11px', color: 'rgba(255,255,255,.50)'}}>{total.toLocaleString()} entries</span>
-          <button onClick={exportCSV} style={{padding: '6px 14px', background: 'rgba(157,140,207,0.12)', border: '1px solid rgba(157,140,207,0.3)', color: '#a896d6', fontFamily: mono, fontSize: '10px', cursor: 'pointer', letterSpacing: '1px', textTransform: 'uppercase'}}>Export CSV</button>
+          <button onClick={exportCSV} style={{marginLeft: 'auto', padding: '6px 14px', background: 'rgba(157,140,207,0.12)', border: '1px solid rgba(157,140,207,0.3)', color: '#a896d6', fontFamily: mono, fontSize: '10px', cursor: 'pointer', letterSpacing: '1px', textTransform: 'uppercase'}}>Export CSV</button>
         </div>
       </Panel>
 
