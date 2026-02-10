@@ -47,6 +47,19 @@
   background: transparent !important;
   background-image: none !important;
 }
+/* Modal exceptions — allow solid backgrounds */
+.sa-modal-overlay,
+.sa-modal-overlay > div,
+.sa-modal-overlay div,
+.sa-modal-panel,
+.sa-modal-panel div,
+div[style*="z-index: 99999"] > div,
+div[style*="z-index: 99999"] > div > div,
+div[style*="zIndex: 99999"] > div,
+div[style*="zIndex: 99999"] > div > div {
+  background: unset !important;
+  background-image: unset !important;
+}
 
 /* Kill ALL borders on container elements */
 .sa-main-content div,
