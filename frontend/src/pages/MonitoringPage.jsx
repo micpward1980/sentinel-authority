@@ -314,7 +314,7 @@ function MonitoringPage() {
                     <th style={thBase}>Session</th>
                     {sortable('Uptime', 'uptime')}
                     {sortable('Actions', 'pass_count', 'right')}
-                    {sortable('Pass Rate', 'pass_count', 'right')}
+                    {sortable('Pass Rate', 'block_count', 'right')}
                     {sortable('Last Activity', 'last_activity')}
                     </>);
                   })()}
