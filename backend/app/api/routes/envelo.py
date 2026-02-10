@@ -825,18 +825,77 @@ async def receive_heartbeat(
 @router.get("/monitoring/overview", summary="Monitoring dashboard overview")
 async def get_monitoring_overview(
     db: AsyncSession = Depends(get_db),
-    current_user: dict = Depends(get_current_user)
+    current_user: dict = Depends(get_current_user),
+    page: int = 1,
+    per_page: int = 25,
+    search: str = "",
+    sort: str = "last_activity",
+    order: str = "desc",
+    status: str = "",
+    session_type: str = "",
 ):
-    """Get monitoring overview for dashboard"""
+    """Get monitoring overview for dashboard with pagination and search"""
     
     from datetime import timedelta
+    from sqlalchemy import or_, case
     now = datetime.utcnow()
+    
+    # Base query - exclude deleted
+    base_q = select(EnveloSession).where(EnveloSession.session_type != "deleted")
+    
+    # Search filter
+    if search:
+        search_term = f"%{search}%"
+        base_q = base_q.where(or_(
+            EnveloSession.session_id.ilike(search_term),
+            EnveloSession.certificate_id.ilike(search_term),
+        ))
+    
+    # Session type filter
+    if session_type:
+        base_q = base_q.where(EnveloSession.session_type == session_type)
+    
+    # Status filter
+    if status == "online":
+        base_q = base_q.where(EnveloSession.status == "active").where(
+            EnveloSession.last_heartbeat_at > (now - timedelta(seconds=120))
+        )
+    elif status == "offline":
+        base_q = base_q.where(EnveloSession.status == "active")
+    elif status == "ended":
+        base_q = base_q.where(EnveloSession.status == "ended")
+    
+    # Sort
+    sort_map = {
+        "last_activity": EnveloSession.last_heartbeat_at,
+        "started_at": EnveloSession.started_at,
+        "pass_count": EnveloSession.pass_count,
+        "block_count": EnveloSession.block_count,
+        "uptime": EnveloSession.started_at,
+    }
+    sort_col = sort_map.get(sort, EnveloSession.last_heartbeat_at)
+    if sort_col is not None:
+        base_q = base_q.order_by(sort_col.desc() if order == "desc" else sort_col.asc())
+    else:
+        base_q = base_q.order_by(EnveloSession.started_at.desc())
     
     # Get all sessions for this user's certificates
     if current_user.get("role") == "admin":
-        sessions_result = await db.execute(
-            select(EnveloSession).order_by(EnveloSession.started_at.desc()).limit(100)
-        )
+        # Count total for pagination
+        from sqlalchemy import func as sqlfunc
+        count_q = select(sqlfunc.count(EnveloSession.id)).where(EnveloSession.session_type != "deleted")
+        if search:
+            count_q = count_q.where(or_(
+                EnveloSession.session_id.ilike(f"%{search}%"),
+                EnveloSession.certificate_id.ilike(f"%{search}%"),
+            ))
+        if session_type:
+            count_q = count_q.where(EnveloSession.session_type == session_type)
+        total_count = (await db.execute(count_q)).scalar() or 0
+        
+        # Paginate
+        offset = (page - 1) * per_page
+        sessions_result = await db.execute(base_q.limit(per_page).offset(offset))
     else:
         # Get user's API keys
         keys_result = await db.execute(
@@ -895,10 +954,17 @@ async def get_monitoring_overview(
             "session_type": getattr(s, "session_type", "production") or "production"
         })
     
+    total_for_pagination = total_count if current_user.get("role") == "admin" else len(session_data)
     return {
         "sessions": session_data,
+        "pagination": {
+            "page": page,
+            "per_page": per_page,
+            "total": total_for_pagination,
+            "pages": max(1, -(-total_for_pagination // per_page)),
+        },
         "summary": {
-            "total": len(sessions),
+            "total": total_for_pagination,
             "active": active_count,
             "offline": offline_count,
             "ended": len([s for s in sessions if s.status == "ended"]),

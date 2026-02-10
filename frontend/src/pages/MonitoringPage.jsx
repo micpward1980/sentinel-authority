@@ -15,6 +15,12 @@ function MonitoringPage() {
   const [refreshing, setRefreshing] = useState(false);
   const [customerFilter, setCustomerFilter] = useState("");
   const [onlineOnly, setOnlineOnly] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [sortField, setSortField] = useState('last_activity');
+  const [sortOrder, setSortOrder] = useState('desc');
+  const perPage = 25;
   const [hideEnded, setHideEnded] = useState(true);
   
   const { user } = useAuth();
@@ -24,7 +30,7 @@ function MonitoringPage() {
   const fetchData = async () => {
     try {
       const [overviewRes, alertsRes] = await Promise.all([
-        api.get('/api/envelo/monitoring/overview'),
+        api.get(`/api/envelo/monitoring/overview?page=${currentPage}&per_page=${perPage}&search=${searchTerm}&sort=${sortField}&order=${sortOrder}&session_type=production`),
         api.get('/api/envelo/monitoring/alerts')
       ]);
       setOverview(overviewRes.data);
@@ -42,7 +48,7 @@ function MonitoringPage() {
       const interval = setInterval(fetchData, 10000); // Refresh every 10 seconds
       return () => clearInterval(interval);
     }
-  }, [autoRefresh]);
+  }, [autoRefresh, currentPage, searchTerm, sortField, sortOrder]);
 
   const fetchTimeline = async (sessionId) => {
     try {
@@ -271,7 +277,8 @@ function MonitoringPage() {
           <div className="hud-label" style={{marginBottom: '16px'}}>{user?.role === 'admin' ? 'Agent Sessions' : 'System Monitoring'}</div>
           <div style={{display: 'flex', gap: '12px', alignItems: 'center'}}>
             {user?.role === 'admin' && <select value={customerFilter} onChange={(e) => setCustomerFilter(e.target.value)} style={{background: '#2a2f3d', border: `1px solid ${'rgba(255,255,255,.07)'}`, padding: '6px 10px', color: 'rgba(255,255,255,.94)', fontSize: '12px'}}>
-              <option value="">All Customers</option>
+              <option value=""><input type="text" placeholder="Search org, system, session..." value={searchTerm} onChange={e => { setSearchTerm(e.target.value); setCurrentPage(1); }} style={{background:'rgba(255,255,255,.04)',border:'1px solid rgba(255,255,255,.08)',color:'rgba(255,255,255,.90)',padding:'4px 10px',fontFamily:"Consolas, monospace",fontSize:'11px',width:'220px',outline:'none'}} />
+            All Customers</option>
               {[...new Set(sessions.map(s => s.organization_name).filter(Boolean))].map(org => <option key={org} value={org}>{org}</option>)}
             </select>}
             <button onClick={() => setHideEnded(!hideEnded)} className="btn" style={{padding: '4px 10px', color: hideEnded ? 'var(--accent-green)' : 'var(--text-tertiary)', borderColor: hideEnded ? 'rgba(92,214,133,0.2)' : 'rgba(255,255,255,0.06)'}}>
@@ -567,6 +574,17 @@ function MonitoringPage() {
 
 
 // User Management Page (Admin Only)
+
+function Pagination({ page, pages, onChange }) {
+  if (pages <= 1) return null;
+  return (
+    <div style={{display:'flex',justifyContent:'center',alignItems:'center',gap:'8px',padding:'16px 0'}}>
+      <button disabled={page<=1} onClick={() => onChange(page-1)} className="btn" style={{padding:'4px 12px',opacity:page<=1?.3:1}}>Prev</button>
+      <span style={{fontFamily:"Consolas, monospace",fontSize:'11px',color:'rgba(255,255,255,.60)'}}>Page {page} of {pages}</span>
+      <button disabled={page>=pages} onClick={() => onChange(page+1)} className="btn" style={{padding:'4px 12px',opacity:page>=pages?.3:1}}>Next</button>
+    </div>
+  );
+}
 
 export default MonitoringPage;
 
