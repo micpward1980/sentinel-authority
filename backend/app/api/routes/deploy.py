@@ -12,7 +12,8 @@ import yaml
 from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import PlainTextResponse
 from sqlalchemy import select
-from app.core.database import get_db as get_db_session
+from app.core.database import get_db
+from fastapi import Depends as _Depends
 from app.models.models import Application, Certificate, APIKey
 
 router = APIRouter()
@@ -470,36 +471,36 @@ echo ""
 async def deploy_script(
     case_id: str,
     key: str = Query(..., description="API key"),
+    db = _Depends(get_db),
 ):
     """One-command installer. curl -sSL '...?key=xxx' | bash"""
-    async with get_db_session() as db:
-        api_key_record = await _validate_key(db, key)
-        if not api_key_record:
-            raise HTTPException(status_code=401, detail="Invalid API key")
+    api_key_record = await _validate_key(db, key)
+    if not api_key_record:
+        raise HTTPException(status_code=401, detail="Invalid API key")
 
-        application, certificate = await _find_case(db, case_id)
-        if not application:
-            raise HTTPException(status_code=404, detail=f"Case '{case_id}' not found")
+    application, certificate = await _find_case(db, case_id)
+    if not application:
+        raise HTTPException(status_code=404, detail=f"Case '{case_id}' not found")
 
-        state_str = application.state.value if hasattr(application.state, 'value') else str(application.state)
-        if state_str not in ('approved', 'testing', 'conformant', 'active', 'certified', 'bounded', 'observe'):
-            raise HTTPException(status_code=403, detail=f"State is '{state_str}'. Must be approved.")
+    state_str = application.state.value if hasattr(application.state, 'value') else str(application.state)
+    if state_str not in ('approved', 'testing', 'conformant', 'active', 'certified', 'bounded', 'observe'):
+        raise HTTPException(status_code=403, detail=f"State is '{state_str}'. Must be approved.")
 
-        cert_num = certificate.certificate_number if certificate else application.application_number
-        sys_name = application.system_name or "Autonomous System"
+    cert_num = certificate.certificate_number if certificate else application.application_number
+    sys_name = application.system_name or "Autonomous System"
 
-        try:
-            envelo_yaml = _build_yaml(application, certificate, key)
-            agent_py = _build_agent(key, cert_num, sys_name)
-            script = _build_installer(envelo_yaml, agent_py, case_id, sys_name)
-        except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Build error: {str(e)}")
+    try:
+        envelo_yaml = _build_yaml(application, certificate, key)
+        agent_py = _build_agent(key, cert_num, sys_name)
+        script = _build_installer(envelo_yaml, agent_py, case_id, sys_name)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Build error: {str(e)}")
 
-        return PlainTextResponse(
-            content=script,
-            media_type="text/x-shellscript",
-            headers={"Content-Disposition": f"inline; filename=envelo-deploy-{case_id}.sh", "Cache-Control": "no-store"},
-        )
+    return PlainTextResponse(
+        content=script,
+        media_type="text/x-shellscript",
+        headers={"Content-Disposition": f"inline; filename=envelo-deploy-{case_id}.sh", "Cache-Control": "no-store"},
+    )
 
 
 @router.get("/deploy/{case_id}/config")
@@ -508,7 +509,6 @@ async def deploy_config_only(
     key: str = Query(..., description="API key"),
 ):
     """Just the envelo.yaml for customers who already have the agent."""
-    async with get_db_session() as db:
         api_key_record = await _validate_key(db, key)
         if not api_key_record:
             raise HTTPException(status_code=401, detail="Invalid API key")
