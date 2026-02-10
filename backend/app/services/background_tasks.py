@@ -18,6 +18,8 @@ import logging
 
 PLATFORM_BOOT_TIME = datetime.utcnow()
 
+PLATFORM_BOOT_TIME = datetime.utcnow()
+
 logger = logging.getLogger(__name__)
 
 # Thresholds
@@ -537,8 +539,6 @@ async def demo_session_ticker():
 async def cat72_auto_evaluator():
     """Check running CAT-72 tests every 60s for auto-complete or auto-fail."""
     import logging
-
-PLATFORM_BOOT_TIME = datetime.utcnow()
     from datetime import datetime, timedelta
     from sqlalchemy import select
     from app.core.database import AsyncSessionLocal
