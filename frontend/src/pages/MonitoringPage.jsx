@@ -46,11 +46,11 @@ function MonitoringPage() {
 
   useEffect(() => {
     fetchData();
-    if (autoRefresh && !selectedSession) {
+    if (autoRefresh) {
       const interval = setInterval(fetchData, 10000); // Refresh every 10 seconds
       return () => clearInterval(interval);
     }
-  }, [autoRefresh, currentPage, sortField, sortOrder, selectedSession]);
+  }, [autoRefresh, currentPage, sortField, sortOrder]);
 
   const fetchTimeline = async (sessionId) => {
     try {
