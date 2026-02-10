@@ -189,31 +189,73 @@ async def create_test(
 @router.get("/tests", summary="List CAT-72 tests")
 async def list_tests(
     db: AsyncSession = Depends(get_db),
-    user: dict = Depends(get_current_user)
+    user: dict = Depends(get_current_user),
+    page: int = 1,
+    per_page: int = 25,
+    state: str = None,
+    result_filter: str = None,
+    search: str = None,
+    sort: str = "created_at",
+    order: str = "desc",
 ):
-    """List all tests."""
-    result = await db.execute(select(CAT72Test, Application).join(Application, CAT72Test.application_id == Application.id).order_by(CAT72Test.created_at.desc()))
+    """List all tests with pagination and filtering."""
+    from sqlalchemy import func, or_
+    
+    query = select(CAT72Test, Application).join(Application, CAT72Test.application_id == Application.id)
+    count_query = select(func.count(CAT72Test.id)).select_from(CAT72Test).join(Application, CAT72Test.application_id == Application.id)
+    
+    if state:
+        query = query.where(CAT72Test.state == state)
+        count_query = count_query.where(CAT72Test.state == state)
+    if result_filter:
+        query = query.where(CAT72Test.result == result_filter)
+        count_query = count_query.where(CAT72Test.result == result_filter)
+    if search:
+        sq = f"%{search}%"
+        filt = or_(Application.organization_name.ilike(sq), Application.system_name.ilike(sq), CAT72Test.test_id.ilike(sq))
+        query = query.where(filt)
+        count_query = count_query.where(filt)
+    
+    sort_map = {"created_at": CAT72Test.created_at, "started_at": CAT72Test.started_at, "convergence_score": CAT72Test.convergence_score, "elapsed_seconds": CAT72Test.elapsed_seconds}
+    sort_col = sort_map.get(sort, CAT72Test.created_at)
+    query = query.order_by(sort_col.desc() if order == "desc" else sort_col.asc())
+    
+    total_result = await db.execute(count_query)
+    total = total_result.scalar() or 0
+    
+    query = query.offset((page - 1) * per_page).limit(per_page)
+    result = await db.execute(query)
     rows = result.all()
     
-    return [
-        {
-            "id": t.id,
-            "test_id": t.test_id,
-            "organization_name": a.organization_name,
-            "system_name": a.system_name,
-            "application_id": t.application_id,
-            "state": t.state,
-            "duration_hours": t.duration_hours,
-            "elapsed_seconds": t.elapsed_seconds,
-            "total_samples": t.total_samples,
-            "conformant_samples": t.conformant_samples,
-            "convergence_score": t.convergence_score,
-            "interlock_activations": t.interlock_activations,
-            "started_at": t.started_at.isoformat() if t.started_at else None,
-            "result": t.result,
+    return {
+        "tests": [
+            {
+                "id": t.id,
+                "test_id": t.test_id,
+                "organization_name": a.organization_name,
+                "system_name": a.system_name,
+                "application_id": t.application_id,
+                "state": t.state,
+                "duration_hours": t.duration_hours,
+                "elapsed_seconds": t.elapsed_seconds,
+                "total_samples": t.total_samples,
+                "conformant_samples": t.conformant_samples,
+                "convergence_score": t.convergence_score,
+                "interlock_activations": t.interlock_activations,
+                "started_at": t.started_at.isoformat() if t.started_at else None,
+                "ended_at": t.ended_at.isoformat() if t.ended_at else None,
+                "result": t.result,
+                "certificate_issued": t.result == "PASS",
+            }
+            for t, a in rows
+        ],
+        "pagination": {
+            "page": page,
+            "per_page": per_page,
+            "total": total,
+            "pages": max(1, -(-total // per_page)),
         }
-        for t, a in rows
-    ]
+    }
 
 
 @router.get("/tests/{test_id}", summary="Get test details")
