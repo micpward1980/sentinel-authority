@@ -314,7 +314,7 @@ function MonitoringPage() {
                     {sortable('Session', 'started_at')}
                     {sortable('Uptime', 'uptime')}
                     {sortable('Actions', 'pass_count', 'right')}
-                    {sortable('Pass Rate', 'block_count', 'right')}
+                    {sortable('Pass Rate', 'pass_rate', 'right')}
                     {sortable('Last Activity', 'last_activity')}
                     </>);
                   })()}

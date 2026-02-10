@@ -896,6 +896,12 @@ async def get_monitoring_overview(
         base_q = base_q.where(EnveloSession.status == "ended")
     
     # Sort
+    from sqlalchemy import case, cast, Float
+    pass_rate_expr = case(
+        (EnveloSession.pass_count + EnveloSession.block_count > 0,
+         cast(EnveloSession.pass_count, Float) / (EnveloSession.pass_count + EnveloSession.block_count)),
+        else_=1.0
+    )
     sort_map = {
         "last_activity": EnveloSession.last_heartbeat_at,
         "started_at": EnveloSession.started_at,
@@ -906,6 +912,7 @@ async def get_monitoring_overview(
         "system_name": EnveloSession.system_name,
         "session_id": EnveloSession.session_id,
         "status": EnveloSession.last_heartbeat_at,
+        "pass_rate": pass_rate_expr,
     }
     sort_col = sort_map.get(sort, EnveloSession.last_heartbeat_at)
     if sort_col is not None:
