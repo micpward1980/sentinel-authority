@@ -329,12 +329,12 @@ function Dashboard() {
 
       {/* ── Stats Grid ── */}
       <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit, minmax(160px, 1fr))',gap:'0',marginBottom:'32px',borderTop:'none',borderBottom:'none'}}>
-        <StatCard label="Applications" value={stats?.total_applications || 0} color="var(--purple-bright)" icon={<FileText size={16} strokeWidth={1.5}/>}/>
+        <StatCard onClick={() => navigate("/applications")} label="Applications" value={stats?.total_applications || 0} color="var(--purple-bright)" icon={<FileText size={16} strokeWidth={1.5}/>}/>
         <StatCard onClick={() => navigate("/cat72")} label="Active Tests" value={stats?.active_tests || 0} color="var(--accent-amber)" icon={<Activity size={16} strokeWidth={1.5}/>}/>
-        <StatCard label="Active Certs" value={stats?.certificates_active || 0} color="var(--accent-green)" icon={<BrandMark size={16} />}/>
-        <StatCard label="Online Interlocks" value={onlineAgents} color={onlineAgents>0?'var(--accent-green)':'var(--text-tertiary)'} icon={<Wifi size={16} strokeWidth={1.5}/>}/>
-        <StatCard label="Certs Issued" value={stats?.certificates_issued || 0} color="var(--purple-bright)" icon={<Award size={16} strokeWidth={1.5}/>}/>
-        <StatCard label="Needs Action" value={actionCount} color={actionCount>0?'var(--accent-amber)':'var(--text-tertiary)'} icon={<AlertCircle size={16} strokeWidth={1.5}/>}/>
+        <StatCard onClick={() => navigate("/certificates")} label="Active Certs" value={stats?.certificates_active || 0} color="var(--accent-green)" icon={<BrandMark size={16} />}/>
+        <StatCard onClick={() => navigate("/monitoring")} label="Online Interlocks" value={onlineAgents} color={onlineAgents>0?'var(--accent-green)':'var(--text-tertiary)'} icon={<Wifi size={16} strokeWidth={1.5}/>}/>
+        <StatCard onClick={() => navigate("/certificates")} label="Certs Issued" value={stats?.certificates_issued || 0} color="var(--purple-bright)" icon={<Award size={16} strokeWidth={1.5}/>}/>
+        <StatCard onClick={() => navigate("/applications")} label="Needs Action" value={actionCount} color={actionCount>0?'var(--accent-amber)':'var(--text-tertiary)'} icon={<AlertCircle size={16} strokeWidth={1.5}/>}/>
       </div>
 
       {/* ── Pipeline ── */}
