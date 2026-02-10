@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Activity, AlertTriangle, Download, RefreshCw } from 'lucide-react';
 import { api } from '../config/api';
 import { useToast } from '../context/ToastContext';
@@ -9,6 +9,8 @@ function MonitoringPage() {
   const [overview, setOverview] = useState(null);
   const [alerts, setAlerts] = useState([]);
   const [selectedSession, setSelectedSession] = useState(null);
+  const [expandedId, setExpandedId] = useState(null);
+  const detailRef = useRef(null);
   const [timeline, setTimeline] = useState([]);
   const [loading, setLoading] = useState(true);
   const [autoRefresh, setAutoRefresh] = useState(true);
@@ -324,12 +326,15 @@ function MonitoringPage() {
                 {filteredSessions.map((session) => {
                   const total = session.pass_count + session.block_count;
                   const passRate = total > 0 ? (session.pass_count / total * 100) : 0;
-                  const isSelected = selectedSession?.id === session.id;
+                  const isSelected = selectedSession?.id === session.id || expandedId === session.id;
                   
                   return (<>
                     <tr 
                       key={session.id}
-                      onClick={() => setSelectedSession(isSelected ? null : session)}
+                      onClick={() => {
+                        if (isSelected) { setExpandedId(null); setTimeout(() => setSelectedSession(null), 300); }
+                        else { setSelectedSession(session); requestAnimationFrame(() => setExpandedId(session.id)); }
+                      }}
                       style={{
                         borderBottom: `1px solid ${'rgba(255,255,255,.07)'}`,
                         cursor: 'pointer',
@@ -383,9 +388,17 @@ function MonitoringPage() {
                         {session.last_activity ? new Date(session.last_activity).toLocaleString() : '-'}
                       </td>
                     </tr>
-                    {isSelected && selectedSession && (
+                    {selectedSession?.id === session.id && (
                       <tr><td colSpan={8} style={{padding: 0, border: 'none'}}>
-                        <div style={{background: 'rgba(91,75,138,0.08)', borderBottom: '1px solid rgba(91,75,138,0.25)', padding: '20px'}}>
+                        <div ref={detailRef} style={{
+                          background: 'rgba(91,75,138,0.08)',
+                          borderBottom: '1px solid rgba(91,75,138,0.25)',
+                          maxHeight: expandedId === session.id ? '800px' : '0px',
+                          opacity: expandedId === session.id ? 1 : 0,
+                          overflow: 'hidden',
+                          transition: 'max-height 0.35s ease, opacity 0.25s ease',
+                          padding: expandedId === session.id ? '20px' : '0 20px'
+                        }}>
                           <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px', marginBottom: '20px'}}>
                             <div>
                               <h3 style={{margin: '0 0 4px 0', fontSize: '18px', fontWeight: 400, color: 'rgba(255,255,255,.94)'}}>{selectedSession.organization_name || 'Unknown Organization'}</h3>
