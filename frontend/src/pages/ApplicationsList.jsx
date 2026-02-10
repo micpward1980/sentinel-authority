@@ -52,24 +52,24 @@ function BulkImportModal({ isOpen, onClose, onImport, boundaryType }) {
   if (!isOpen) return null;
   return (
     <div style={{position:'fixed',top:0,left:0,right:0,bottom:0,background:'rgba(0,0,0,0.7)',zIndex:1000,display:'flex',alignItems:'center',justifyContent:'center',padding:'20px'}} onClick={onClose}>
-      <div style={{background:'#1a1a2e',border:'1px solid rgba(157,140,207,0.2)',padding:'32px',maxWidth:'min(700px, 95vw)',width:'100%',maxHeight:'80vh',overflowY:'auto'}} onClick={e => e.stopPropagation()}>
+      <div style={{background:'#120c1e',border:'1px solid rgba(157,140,207,0.2)',padding:'32px',maxWidth:'min(700px, 95vw)',width:'100%',maxHeight:'80vh',overflowY:'auto'}} onClick={e => e.stopPropagation()}>
         <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'20px'}}>
-          <h3 style={{fontFamily:"Georgia, 'Source Serif 4', serif",fontSize:'20px',fontWeight:200,margin:0}}>Bulk Import — {boundaryType}</h3>
-          <button onClick={onClose} style={{background:'none',border:'none',color:'#6a6a80',fontSize:'20px',cursor:'pointer'}}>×</button>
+          <h3 style={{fontFamily:"Consolas, 'IBM Plex Mono', monospace",fontSize:'11px',fontWeight:400,margin:0,letterSpacing:'2px',textTransform:'uppercase',color:'#a896d6'}}>Bulk Import — {boundaryType}</h3>
+          <button onClick={onClose} style={{background:'none',border:'none',color:'rgba(255,255,255,.50)',fontSize:'20px',cursor:'pointer'}}>×</button>
         </div>
         <div style={{display:'flex',gap:'8px',marginBottom:'16px'}}>
-          {['json','csv'].map(f => (<button key={f} onClick={() => {setFormat(f); setError(''); setPreview(null);}} style={{padding:'6px 16px',border:'1px solid '+(format===f?'#8b5cf6':'rgba(255,255,255,0.1)'),background:format===f?'rgba(139,92,246,0.15)':'transparent',color:format===f?'#8b5cf6':'#a0a0b0',fontFamily:"Consolas, 'IBM Plex Mono', monospace",fontSize:'11px',letterSpacing:'1px',textTransform:'uppercase',cursor:'pointer'}}>{f}</button>))}
-          <button onClick={() => setRaw(templates[boundaryType]?.[format] || '')} style={{marginLeft:'auto',padding:'6px 12px',border:'1px solid rgba(255,255,255,0.1)',background:'transparent',color:'#a0a0b0',fontSize:'11px',cursor:'pointer'}}>Load Example</button>
+          {['json','csv'].map(f => (<button key={f} onClick={() => {setFormat(f); setError(''); setPreview(null);}} style={{padding:'6px 16px',border:'1px solid '+(format===f?'#a896d6':'rgba(255,255,255,0.1)'),background:format===f?'rgba(91,75,138,0.25)':'transparent',color:format===f?'#a896d6':'rgba(255,255,255,.60)',fontFamily:"Consolas, 'IBM Plex Mono', monospace",fontSize:'11px',letterSpacing:'1px',textTransform:'uppercase',cursor:'pointer'}}>{f}</button>))}
+          <button onClick={() => setRaw(templates[boundaryType]?.[format] || '')} style={{marginLeft:'auto',padding:'6px 12px',border:'1px solid rgba(255,255,255,0.1)',background:'transparent',color:'rgba(255,255,255,.60)',fontSize:'11px',cursor:'pointer'}}>Load Example</button>
         </div>
-        <textarea value={raw} onChange={e => setRaw(e.target.value)} rows={10} placeholder={format === 'json' ? 'Paste JSON array of boundaries...' : 'Paste CSV with header row...'} style={{width:'100%',background: 'rgba(255,255,255,.05)',border:'1px solid rgba(255,255,255,0.1)',padding:'12px',color:'#e8e8f0',fontFamily:"Consolas, 'IBM Plex Mono', monospace",fontSize:'12px',lineHeight:'1.5',resize:'vertical',outline:'none'}} />
-        {error && <p style={{color:'#ef4444',fontSize:'12px',marginTop:'8px'}}>⚠ {error}</p>}
+        <textarea value={raw} onChange={e => setRaw(e.target.value)} rows={10} placeholder={format === 'json' ? 'Paste JSON array of boundaries...' : 'Paste CSV with header row...'} style={{width:'100%',background: 'rgba(255,255,255,.05)',border:'1px solid rgba(255,255,255,0.1)',padding:'12px',color:'rgba(255,255,255,.90)',fontFamily:"Consolas, 'IBM Plex Mono', monospace",fontSize:'12px',lineHeight:'1.5',resize:'vertical',outline:'none'}} />
+        {error && <p style={{color:'#D65C5C',fontSize:'12px',marginTop:'8px'}}>⚠ {error}</p>}
         <div style={{display:'flex',gap:'8px',marginTop:'16px'}}>
-          <button onClick={parseData} style={{padding:'8px 20px',border:'1px solid #8b5cf6',background:'transparent',color:'#8b5cf6',fontSize:'12px',cursor:'pointer'}}>Preview</button>
+          <button onClick={parseData} style={{padding:'8px 20px',border:'1px solid #a896d6',background:'transparent',color:'#a896d6',fontSize:'12px',cursor:'pointer'}}>Preview</button>
           {preview && <button onClick={() => { onImport(preview); onClose(); setRaw(''); setPreview(null); }} style={{padding:'8px 20px',border:'none',background: 'transparent',color: 'rgba(255,255,255,.94)',fontSize:'12px',cursor:'pointer',fontWeight:500}}>Import {preview.length} {preview.length === 1 ? 'boundary' : 'boundaries'}</button>}
         </div>
         {preview && (<div style={{marginTop:'16px',background:'transparent',padding:'12px',maxHeight:'200px',overflowY:'auto'}}>
-          <p style={{fontFamily:"Consolas, 'IBM Plex Mono', monospace",fontSize:'10px',color:'#6a6a80',marginBottom:'8px'}}>PREVIEW ({preview.length} rows)</p>
-          {preview.map((row, i) => (<div key={i} style={{fontSize:'11px',color:'#a0a0b0',padding:'4px 0',borderBottom:'1px solid rgba(255,255,255,0.05)'}}>{Object.entries(row).map(([k,v]) => `${k}: ${v}`).join(' · ')}</div>))}
+          <p style={{fontFamily:"Consolas, 'IBM Plex Mono', monospace",fontSize:'10px',color:'rgba(255,255,255,.50)',marginBottom:'8px'}}>PREVIEW ({preview.length} rows)</p>
+          {preview.map((row, i) => (<div key={i} style={{fontSize:'11px',color:'rgba(255,255,255,.60)',padding:'4px 0',borderBottom:'1px solid rgba(255,255,255,0.05)'}}>{Object.entries(row).map(([k,v]) => `${k}: ${v}`).join(' · ')}</div>))}
         </div>)}
       </div>
     </div>
@@ -147,9 +147,9 @@ function ApplicationsList() {
     { key: 'all', label: 'All' },
     { key: 'pending', label: 'Pending' },
     { key: 'under_review', label: 'Review' },
-    { key: 'approved', label: 'Approved' },
-    { key: 'testing', label: 'Testing' },
-    { key: 'conformant', label: 'Conformant' },
+    { key: 'approved', label: 'Awaiting Deploy' },
+    { key: 'testing', label: 'CAT-72 Active' },
+    { key: 'conformant', label: 'Certified' },
     { key: 'revoked', label: 'Suspended' },
   ];
 
@@ -167,7 +167,7 @@ function ApplicationsList() {
       <div className="flex justify-between items-start">
         <div>
           <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', color: '#a896d6', marginBottom: '8px'}}>{user?.role === 'admin' ? 'Conformance' : 'My Organization'}</p>
-          <h1 style={{fontFamily: "Georgia, 'Source Serif 4', serif", fontSize: 'clamp(24px, 5vw, 36px)', fontWeight: 200, margin: 0}}>{user?.role === 'admin' ? 'Applications' : 'Certification Status'}</h1>
+          <h1 style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: 'clamp(18px, 4vw, 24px)', fontWeight: 400, margin: 0, letterSpacing: '2px', textTransform: 'uppercase', color: 'rgba(255,255,255,.94)'}}>{user?.role === 'admin' ? 'Applications' : 'Certification Status'}</h1>
         </div>
         
       </div>
@@ -227,7 +227,7 @@ function ApplicationsList() {
                     color: stateColor(app.state),
                     border: `1px solid ${stateColor(app.state)}10`,
                     fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase'
-                  }}>{app.state?.replace('_', ' ')}</span>
+                  }}>{app.state === 'approved' ? 'Awaiting Deploy' : app.state === 'conformant' ? 'Certified' : app.state === 'testing' ? 'CAT-72 Active' : app.state === 'under_review' ? 'In Review' : app.state?.replace('_', ' ')}</span>
                 </td>
                 <td className="px-4 py-4" style={{color: 'rgba(255,255,255,.50)', fontSize: '14px'}}>{app.submitted_at ? new Date(app.submitted_at).toLocaleDateString() : "N/A"}</td>
                 {user?.role === 'admin' && (
@@ -240,13 +240,13 @@ function ApplicationsList() {
                       <button onClick={(e) => { e.stopPropagation(); handleQuickAdvance(app.id, 'approved', `Approve ${app.system_name}`); }} className="btn" style={{padding: '4px 10px', color: '#5CD685'}}>Approve</button>
                     )}
                     {app.state === 'approved' && (
-                      <Link to={`/applications/${app.id}`} className="px-2 py-1 no-underline btn">Schedule Test</Link>
+                      <Link to={`/applications/${app.id}`} className="px-2 py-1 no-underline btn">Schedule CAT-72</Link>
                     )}
                     {app.state === 'conformant' && (
                       <span style={{color: '#5CD685', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px'}}>✓ Certified</span>
                     )}
                     {app.state === 'testing' && (
-                      <Link to="/cat72" className="px-2 py-1 no-underline btn">View Test</Link>
+                      <Link to="/cat72" className="px-2 py-1 no-underline btn">View CAT-72</Link>
                     )}
                     {['pending','under_review','approved','testing','conformant'].includes(app.state) && (
                       <button onClick={(e) => { e.stopPropagation(); handleQuickAdvance(app.id, 'suspended', `Suspend ${app.system_name}`); }} className="btn" style={{padding: '4px 10px', color: '#D65C5C'}}>Suspend</button>
@@ -286,7 +286,7 @@ function ApplicationsList() {
         )}
 
         {filtered.length === 0 && (
-          <EmptyState icon={FileText} title="No Applications Found" description={applications.length === 0 ? "You haven't submitted any certification applications yet. Start your ODDC certification journey." : "No applications match your current filter."}  />
+          <EmptyState icon={FileText} title="No Applications Found" description={applications.length === 0 ? "No ODDC certification applications submitted yet." : "No applications match your current filter."}  />
         )}
       </Panel>
     </div>

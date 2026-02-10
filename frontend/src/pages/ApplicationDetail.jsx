@@ -131,8 +131,8 @@ function ApplicationDetail() {
   // Certification pipeline stages
   const PIPELINE_STAGES = [
     { key: 'pending', label: 'Submitted', icon: '1' },
-    { key: 'under_review', label: 'Under Review', icon: '2' },
-    { key: 'approved', label: 'Approved', icon: '3' },
+    { key: 'under_review', label: 'In Review', icon: '2' },
+    { key: 'approved', label: 'Awaiting Deploy', icon: '3' },
     { key: 'testing', label: 'CAT-72 Testing', icon: '4' },
     { key: 'conformant', label: 'Conformant', icon: '✓' },
   ];
@@ -276,7 +276,7 @@ function ApplicationDetail() {
       
       <div>
         <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', color: '#a896d6', marginBottom: '8px'}}>Application {app.application_number}</p>
-        <h1 style={{fontFamily: "Georgia, 'Source Serif 4', serif", fontSize: 'clamp(24px, 5vw, 36px)', fontWeight: 200, margin: 0}}>{app.system_name}</h1>
+        <h1 style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: 'clamp(24px, 5vw, 36px)', fontWeight: 200, margin: 0}}>{app.system_name}</h1>
         <p style={{color: 'rgba(255,255,255,.78)', marginTop: '8px'}}>{app.system_description}</p>
       </div>
 
