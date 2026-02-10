@@ -511,17 +511,17 @@ async def deploy_config_only(
     db = Depends(get_db),
 ):
     """Just the envelo.yaml for customers who already have the agent."""
-        api_key_record = await _validate_key(db, key)
-        if not api_key_record:
-            raise HTTPException(status_code=401, detail="Invalid API key")
+    api_key_record = await _validate_key(db, key)
+    if not api_key_record:
+        raise HTTPException(status_code=401, detail="Invalid API key")
 
-        application, certificate = await _find_case(db, case_id)
-        if not application:
-            raise HTTPException(status_code=404, detail=f"Case '{case_id}' not found")
+    application, certificate = await _find_case(db, case_id)
+    if not application:
+        raise HTTPException(status_code=404, detail=f"Case '{case_id}' not found")
 
-        envelo_yaml = _build_yaml(application, certificate, key)
-        return PlainTextResponse(
-            content=envelo_yaml,
-            media_type="text/yaml",
-            headers={"Content-Disposition": "attachment; filename=envelo.yaml", "Cache-Control": "no-store"},
-        )
+    envelo_yaml = _build_yaml(application, certificate, key)
+    return PlainTextResponse(
+        content=envelo_yaml,
+        media_type="text/yaml",
+        headers={"Content-Disposition": "attachment; filename=envelo.yaml", "Cache-Control": "no-store"},
+    )
