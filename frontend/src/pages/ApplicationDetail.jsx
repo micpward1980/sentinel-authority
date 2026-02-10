@@ -213,9 +213,7 @@ function ApplicationDetail() {
               Re-open
             </button>
           )}
-          <button onClick={handleDeleteApplication} className="px-4 py-2 transition-all btn">
-            Delete
-          </button>
+
         </div>
         )}
       </div>
@@ -293,7 +291,7 @@ function ApplicationDetail() {
               letterSpacing: '1px',
               textTransform: 'uppercase'
             }}>
-              {app.state}
+              {app.state === 'approved' ? 'Awaiting Deploy' : app.state === 'under_review' ? 'In Review' : app.state === 'conformant' ? 'Certified' : app.state?.replace('_', ' ')}
             </span>
             {user?.role === 'admin' && (
             <select 
@@ -344,24 +342,54 @@ function ApplicationDetail() {
         </Panel>
         <Panel>
           <div className="hud-label" style={{marginBottom: '16px'}}>Safety Boundaries & Operational Limits</div>
-          <p style={{color: 'rgba(255,255,255,.78)', lineHeight: 1.7, whiteSpace: 'pre-wrap'}}>{typeof app.envelope_definition === 'object' ? JSON.stringify(app.envelope_definition, null, 2) : (app.envelope_definition || 'Not specified')}</p>
+          {(() => {
+            const env = typeof app.envelope_definition === 'string' ? (() => { try { return JSON.parse(app.envelope_definition); } catch { return null; } })() : app.envelope_definition;
+            const bounds = env?.boundaries || [];
+            if (bounds.length === 0) return <p style={{color: 'rgba(255,255,255,.50)', fontSize: '13px', fontStyle: 'italic'}}>No boundaries defined</p>;
+            return (
+              <table style={{width: '100%', borderCollapse: 'collapse'}}>
+                <thead>
+                  <tr style={{borderBottom: '1px solid rgba(255,255,255,.07)'}}>
+                    {['Type','Constraint','Unit'].map(h => <th key={h} style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: 'rgba(255,255,255,.50)', fontWeight: 400, padding: '8px 12px', textAlign: 'left'}}>{h}</th>)}
+                  </tr>
+                </thead>
+                <tbody>
+                  {bounds.map((b, i) => {
+                    const constraint = b.max && b.min ? \`\${b.min} – \${b.max}\` : b.max ? \`≤ \${b.max}\` : b.min ? \`≥ \${b.min}\` : b.radius_m ? \`radius \${b.radius_m}m\` : b.corridors ? b.corridors.join(', ') : b.polygon || '—';
+                    return (
+                      <tr key={i} style={{borderBottom: '1px solid rgba(255,255,255,.04)'}}>
+                        <td style={{padding: '8px 12px', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', color: '#a896d6', textTransform: 'uppercase', letterSpacing: '0.5px'}}>{b.type}</td>
+                        <td style={{padding: '8px 12px', color: 'rgba(255,255,255,.78)', fontSize: '13px'}}>{constraint}</td>
+                        <td style={{padding: '8px 12px', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', color: 'rgba(255,255,255,.50)'}}>{b.unit || '—'}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            );
+          })()}
         </Panel>
       </div>
 
       {/* Boundary Editor - Admin Only */}
-      {user?.role === 'admin' && <BoundaryEditor
-        applicationId={app.id}
-        initialBoundaries={app.envelope_definition || {}}
-        onSave={async (boundaries) => {
-          try {
-            await api.patch(`/api/applicants/${app.id}`, { envelope_definition: boundaries });
-            toast.show('Boundaries saved', 'success');
-            setApp({...app, envelope_definition: boundaries});
-          } catch (e) {/* boundary save error */
-            toast.show('Failed to save: ' + e.message, 'error');
-          }
-        }}
-      />}
+      {user?.role === 'admin' && (() => {
+        const env = typeof app.envelope_definition === 'string' ? (() => { try { return JSON.parse(app.envelope_definition); } catch { return null; } })() : app.envelope_definition;
+        const hasBoundaries = env?.boundaries?.length > 0;
+        if (hasBoundaries) return null;
+        return <BoundaryEditor
+          applicationId={app.id}
+          initialBoundaries={app.envelope_definition || {}}
+          onSave={async (boundaries) => {
+            try {
+              await api.patch(`/api/applicants/${app.id}`, { envelope_definition: boundaries });
+              toast.show('Boundaries saved', 'success');
+              setApp({...app, envelope_definition: boundaries});
+            } catch (e) {
+              toast.show('Failed to save: ' + e.message, 'error');
+            }
+          }}
+        />;
+      })()}
 
       {/* State Change Timeline */}
       {history.length > 0 && (
@@ -420,7 +448,20 @@ function ApplicationDetail() {
 
       <Panel>
         <div className="hud-label" style={{marginBottom: '16px'}}>ODD Specification</div>
-        <p style={{color: 'rgba(255,255,255,.78)', lineHeight: 1.7, whiteSpace: 'pre-wrap'}}>{typeof app.odd_specification === 'object' ? (app.odd_specification?.description || JSON.stringify(app.odd_specification, null, 2)) : app.odd_specification}</p>
+        {(() => {
+          const odd = typeof app.odd_specification === 'string' ? (() => { try { return JSON.parse(app.odd_specification); } catch { return null; } })() : app.odd_specification;
+          if (!odd || Object.keys(odd).length === 0) return <p style={{color: 'rgba(255,255,255,.50)', fontSize: '13px', fontStyle: 'italic'}}>Not specified</p>;
+          return (
+            <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0'}}>
+              {Object.entries(odd).map(([k, v]) => (
+                <div key={k} style={{display: 'flex', justifyContent: 'space-between', padding: '8px 12px', borderBottom: '1px solid rgba(255,255,255,.04)'}}>
+                  <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: 'rgba(255,255,255,.50)', textTransform: 'uppercase', letterSpacing: '0.5px'}}>{k.replace(/_/g, ' ')}</span>
+                  <span style={{color: 'rgba(255,255,255,.78)', fontSize: '13px', textAlign: 'right'}}>{Array.isArray(v) ? v.join(', ') : typeof v === 'boolean' ? (v ? 'Yes' : 'No') : String(v)}</span>
+                </div>
+              ))}
+            </div>
+          );
+        })()}
       </Panel>
 
       {/* Comments Thread */}
