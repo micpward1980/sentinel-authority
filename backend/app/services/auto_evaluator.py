@@ -25,7 +25,7 @@ async def check_and_evaluate_tests():
         
         result = await db.execute(
             select(CAT72Test).where(
-                CAT72Test.status == 'running',
+                CAT72Test.state == 'running',
                 CAT72Test.started_at <= cutoff_time
             )
         )
