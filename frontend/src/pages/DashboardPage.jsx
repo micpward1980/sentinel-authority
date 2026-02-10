@@ -94,7 +94,7 @@ function CustomerDashboard() {
       </div>
 
       {/* ── Stat Cards ── */}
-      <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit, minmax(180px, 1fr))',gap:'0',marginBottom:'32px',borderTop:'none',borderBottom:'none'}}>
+      <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit, minmax(180px, 1fr))',gap:'12px',marginBottom:'32px'}}>
         <StatCard onClick={() => navigate("/applications")} label="Applications" value={applications.length} color="var(--purple-bright)" icon={<FileText size={16} strokeWidth={1.5}/>}
           sublabel={applications.filter(a=>a.state==='pending'||a.state==='under_review').length>0 ? `${applications.filter(a=>a.state==='pending'||a.state==='under_review').length} in review` : null} />
         <StatCard onClick={() => navigate("/certificates")} label="Certificates" value={certificates.length} color="var(--accent-green)" icon={<Award size={16} strokeWidth={1.5}/>}
@@ -328,7 +328,7 @@ function Dashboard() {
       </div>
 
       {/* ── Stats Grid ── */}
-      <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit, minmax(160px, 1fr))',gap:'0',marginBottom:'32px',borderTop:'none',borderBottom:'none'}}>
+      <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit, minmax(160px, 1fr))',gap:'12px',marginBottom:'32px'}}>
         <StatCard onClick={() => navigate("/applications")} label="Applications" value={stats?.total_applications || 0} color="var(--purple-bright)" icon={<FileText size={16} strokeWidth={1.5}/>}/>
         <StatCard onClick={() => navigate("/cat72")} label="Active Tests" value={stats?.active_tests || 0} color="var(--accent-amber)" icon={<Activity size={16} strokeWidth={1.5}/>}/>
         <StatCard onClick={() => navigate("/certificates")} label="Active Certs" value={stats?.certificates_active || 0} color="var(--accent-green)" icon={<BrandMark size={16} />}/>
@@ -352,12 +352,12 @@ function Dashboard() {
             {key:'suspended',label:'Suspended',color:'var(--accent-red)',count:pipeline.revoked},
           ].map(s => {
             const total = allApps.length || 1;
-            const pct = Math.max((s.count/total)*100, s.count>0?8:0);
-            return s.count>0 ? (
-              <div key={s.key} className="sa-fill" style={{width:`${pct}%`,minWidth:'48px',display:'flex',alignItems:'center',justifyContent:'center','--sa-bg':'rgba(255,255,255,0.02)','--sa-accent':s.color,borderLeftWidth:'2px'}} title={`${s.label}: ${s.count}`}>
-                <span style={{fontFamily:'var(--mono)',fontSize:'9px',letterSpacing:'1px',color:s.color,whiteSpace:'nowrap'}}>{s.count} {s.label}</span>
+            const pct = s.count > 0 ? Math.max((s.count/total)*100, 8) : 0;
+            return (
+              <div key={s.key} className="sa-fill" style={{width: s.count > 0 ? `${pct}%` : 'auto', minWidth:'48px', flex: s.count > 0 ? 'none' : 1, display:'flex', alignItems:'center', justifyContent:'center', '--sa-bg': s.count > 0 ? 'rgba(255,255,255,0.02)' : 'rgba(255,255,255,0.015)', '--sa-accent': s.count > 0 ? s.color : 'transparent', borderLeftWidth:'2px', opacity: s.count > 0 ? 1 : 0.4}} title={`${s.label}: ${s.count}`}>
+                <span style={{fontFamily:'var(--mono)',fontSize:'9px',letterSpacing:'1px',color: s.count > 0 ? s.color : 'var(--text-tertiary)',whiteSpace:'nowrap'}}>{s.count > 0 ? `${s.count} ` : ''}{s.label}</span>
               </div>
-            ) : null;
+            );
           })}
           {allApps.length===0 && <div style={{flex:1,display:'flex',alignItems:'center',justifyContent:'center',background:'rgba(255,255,255,0.02)'}}>
             <span style={{fontFamily:'var(--mono)',fontSize:'10px',color:'var(--text-tertiary)',letterSpacing:'1px'}}>No applications yet</span>

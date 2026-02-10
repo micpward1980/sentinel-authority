@@ -4,13 +4,14 @@ import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { useConfirm } from '../context/ConfirmContext';
 import Panel from '../components/Panel';
+import { Link } from 'react-router-dom';
 
 function CAT72Console() {
   const confirm = useConfirm();
   const { user } = useAuth();
   const [tests, setTests] = useState([]);
   const [liveSessions, setLiveSessions] = useState([]);
-  const [showLive, setShowLive] = useState(false);
+  const [showLive, setShowLive] = useState(true);
   const [catSearch, setCatSearch] = useState('');
   const toast = useToast();
   const [loading, setLoading] = useState({});
@@ -90,7 +91,7 @@ function CAT72Console() {
       {/* Summary Stats */}
       <div style={{display:"flex",gap:"16px",marginBottom:"16px"}}>
         <button onClick={() => setShowLive(false)} style={{background:!showLive?"rgba(91,75,138,0.25)":"transparent",border:"1px solid rgba(91,75,138,0.3)",color:!showLive?"rgba(255,255,255,.94)":"rgba(255,255,255,.50)",padding:"6px 16px",fontFamily:"Consolas, monospace",fontSize:"10px",textTransform:"uppercase",letterSpacing:"1px",cursor:"pointer"}}>Scheduled Tests</button>
-        <button onClick={() => setShowLive(true)} style={{background:showLive?"rgba(91,75,138,0.25)":"transparent",border:"1px solid rgba(91,75,138,0.3)",color:showLive?"rgba(255,255,255,.94)":"rgba(255,255,255,.50)",padding:"6px 16px",fontFamily:"Consolas, monospace",fontSize:"10px",textTransform:"uppercase",letterSpacing:"1px",cursor:"pointer"}}>Live Interlock Sessions</button>
+        <button onClick={() => setShowLive(true)} style={{background:showLive?"rgba(91,75,138,0.25)":"transparent",border:"1px solid rgba(91,75,138,0.3)",color:showLive?"rgba(255,255,255,.94)":"rgba(255,255,255,.50)",padding:"6px 16px",fontFamily:"Consolas, monospace",fontSize:"10px",textTransform:"uppercase",letterSpacing:"1px",cursor:"pointer"}}>Live CAT-72 Tests</button>
       </div>
 
       {showLive ? (
@@ -119,7 +120,7 @@ function CAT72Console() {
                   <div style={{display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '8px'}}>
                     <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: 'clamp(20px, 4vw, 28px)', fontWeight: 200, color: '#a896d6', letterSpacing: '2px'}}>{formatTime(test.elapsed_seconds)}</div>
                     <div style={{flex: 1}}>
-                      <div className="w-full h-3 overflow-hidden" style={{background: 'transparent'}}>
+                      <div className="w-full h-3 overflow-hidden" style={{background: 'rgba(91,75,138,0.15)'}}>
                         <div className="h-full transition-all" style={{width: `${pct}%`, background: pct >= 100 ? '#5CD685' : '#5B4B8A'}} />
                       </div>
                     </div>
@@ -214,7 +215,6 @@ function CAT72Console() {
   );
 }
 
-// Certificates
 
 function LiveSessionsPanel({ sessions, search }) {
   const filtered = sessions.filter(s => {
@@ -222,7 +222,7 @@ function LiveSessionsPanel({ sessions, search }) {
     const q = search.toLowerCase();
     return s.session_id.toLowerCase().includes(q) || (s.organization_name||"").toLowerCase().includes(q) || (s.system_name||"").toLowerCase().includes(q);
   });
-  if (!filtered.length) return <div style={{padding:'20px',textAlign:'center',color:'rgba(255,255,255,.4)',fontFamily:"Consolas, 'IBM Plex Mono', monospace",fontSize:'11px'}}>No active CAT-72 interlock sessions</div>;
+  if (!filtered.length) return <div style={{padding:'20px',textAlign:'center',color:'rgba(255,255,255,.4)',fontFamily:"Consolas, 'IBM Plex Mono', monospace",fontSize:'11px'}}>No active CAT-72 tests</div>;
   return (
     <div style={{display:'flex',flexDirection:'column',gap:'8px'}}>
       {filtered.map(s => {

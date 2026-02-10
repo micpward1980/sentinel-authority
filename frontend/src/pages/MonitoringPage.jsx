@@ -36,6 +36,7 @@ function MonitoringPage() {
         api.get('/api/envelo/monitoring/alerts')
       ]);
       setOverview(overviewRes.data);
+      if (overviewRes.data?.total_pages) setTotalPages(overviewRes.data.total_pages);
       setAlerts(alertsRes.data.alerts || []);
     } catch (err) {
       console.error('Failed to fetch monitoring data:', err);
@@ -229,7 +230,7 @@ function MonitoringPage() {
                     {healthPct.toFixed(0)}% Online
                   </div>
                 </div>
-                <div style={{height: '8px', background: 'transparent', overflow: 'hidden', display: 'flex'}}>
+                <div style={{height: '8px', background: 'rgba(255,255,255,0.06)', overflow: 'hidden', display: 'flex'}}>
                   {onlineCount > 0 && <div style={{width: (onlineCount / totalFleet * 100) + '%', background: '#5CD685', transition: 'width 0.5s'}} />}
                   {offlineCount > 0 && <div style={{width: (offlineCount / totalFleet * 100) + '%', background: '#D65C5C', transition: 'width 0.5s'}} />}
                 </div>
@@ -425,7 +426,7 @@ function MonitoringPage() {
                           {(() => { const t3 = (selectedSession.pass_count || 0) + (selectedSession.block_count || 0); if (t3 === 0) return null; const pp = selectedSession.pass_count / t3 * 100; return (
                             <div style={{marginBottom: '20px'}}>
                               <div style={{fontSize: '10px', color: 'rgba(255,255,255,.50)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '6px'}}>Enforcement Distribution</div>
-                              <div style={{height: '8px', background: 'transparent', overflow: 'hidden', display: 'flex'}}>
+                              <div style={{height: '8px', background: 'rgba(255,255,255,0.06)', overflow: 'hidden', display: 'flex'}}>
                                 <div style={{width: pp + '%', background: '#5CD685'}} />
                                 <div style={{width: (100 - pp) + '%', background: '#D65C5C'}} />
                               </div>
@@ -462,12 +463,11 @@ function MonitoringPage() {
         )}
       </div>
 
-    </div>
+      <Pagination page={currentPage} pages={totalPages} onChange={setCurrentPage} />    </div>
   );
 }
 
 
-// User Management Page (Admin Only)
 
 function Pagination({ page, pages, onChange }) {
   if (pages <= 1) return null;

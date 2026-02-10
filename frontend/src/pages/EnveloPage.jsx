@@ -525,7 +525,6 @@ function AgentSimulator({ apiKey }) {
   );
 }
 
-// API Key Manager Component
 
 
 function SessionReport({ session }) {
@@ -790,7 +789,6 @@ function APIKeyManager({ onKeyGenerated }) {
   );
 }
 
-// Boundary Configurator Component
 
 function BoundaryConfigurator({ certificateNumber, initialBoundaries, onSave }) {
   const toast = useToast();
@@ -1491,6 +1489,7 @@ function EnveloCustomerView() {
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
   const [showUninstall, setShowUninstall] = useState(false);
+  const confirm = useConfirm();
   const toast = useToast();
   const { user } = useAuth();
 
@@ -1660,7 +1659,7 @@ function EnveloCustomerView() {
           <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px'}}>
             <button
               onClick={async () => {
-                if (!confirm('Stop the ENVELO agent? It will shut down within 30 seconds.')) return;
+                if (!await confirm({title: 'Stop Agent', message: 'Stop the ENVELO agent? It will shut down within 30 seconds.', danger: true})) return;
                 try {
                   const keys = await api.get('/api/apikeys/');
                   for (const k of (keys.data || [])) {
@@ -1680,7 +1679,7 @@ function EnveloCustomerView() {
 
             <button
               onClick={async () => {
-                if (!confirm('Redeploy? This revokes your current key and generates a new deploy command.')) return;
+                if (!await confirm({title: 'Redeploy', message: 'This revokes your current key and generates a new deploy command.'})) return;
                 try {
                   const keys = await api.get('/api/apikeys/');
                   for (const k of (keys.data || [])) {
@@ -1700,7 +1699,7 @@ function EnveloCustomerView() {
 
             <button
               onClick={async () => {
-                if (!confirm('Uninstall ENVELO agent? This revokes all keys and shows cleanup instructions.')) return;
+                if (!await confirm({title: 'Uninstall', message: 'Uninstall ENVELO agent? This revokes all keys and shows cleanup instructions.', danger: true})) return;
                 try {
                   const keys = await api.get('/api/apikeys/');
                   for (const k of (keys.data || [])) {
@@ -1851,8 +1850,6 @@ function EnveloCustomerView() {
   );
 }
 
-// Main App
-// Monitoring Dashboard
 
 function EnveloPage() {
   const { user } = useAuth();
@@ -1863,8 +1860,6 @@ function EnveloPage() {
   return <EnveloCustomerView />;
 }
 
-// Admin View - System-wide monitoring and management
-// Admin View - Full management and monitoring
 
 export default EnveloPage;
 

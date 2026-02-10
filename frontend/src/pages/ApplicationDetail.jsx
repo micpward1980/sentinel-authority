@@ -52,14 +52,14 @@ function ApplicationDetail() {
   }, [id]);
 
   const handleScheduleTest = async () => {
-    if (!await confirm({title: 'Schedule Test', message: 'Schedule a CAT-72 test for this application? The test will need to be started manually.'})) return;
+    if (!await confirm({title: 'Schedule CAT-72 Test', message: 'Schedule a 72-hour Conformance Authorization Test? The applicant will be notified and can start when ready.'})) return;
     setScheduling(true);
     try {
       const res = await api.post('/api/cat72/tests', { application_id: parseInt(id) });
       setTestCreated(res.data);
-      toast.show(`CAT-72 Test created: ${res.data.test_id} — Go to CAT-72 Console to start.`, 'success');
+      toast.show(`CAT-72 Test ${res.data.test_id} scheduled — applicant will be notified to start.`, 'success');
     } catch (err) {
-      toast.show('Failed to create test: ' + (err.response?.data?.detail || err.message), 'error');
+      toast.show('Failed to launch test: ' + (err.response?.data?.detail || err.message), 'error');
     }
     setScheduling(false);
   };

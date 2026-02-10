@@ -138,7 +138,6 @@ function CertificatesPage() {
   );
 }
 
-// Licensees
 
 export default CertificatesPage;
 
