@@ -603,6 +603,7 @@ async def cat72_auto_evaluator():
                         # Convert test sessions to production monitoring
                         for s in test_sessions:
                             s.session_type = "production"
+                            s.certificate_id = cert_number
 
                         await db.commit()
                         logger.info(f"Certificate {cert_number} auto-issued for {application.system_name}")
