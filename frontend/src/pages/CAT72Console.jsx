@@ -9,12 +9,18 @@ function CAT72Console() {
   const confirm = useConfirm();
   const { user } = useAuth();
   const [tests, setTests] = useState([]);
+  const [liveSessions, setLiveSessions] = useState([]);
+  const [showLive, setShowLive] = useState(false);
   const toast = useToast();
   const [loading, setLoading] = useState({});
   const [now, setNow] = useState(Date.now());
 
   const loadTests = () => {
     api.get('/api/cat72/tests').then(res => setTests(res.data)).catch(console.error);
+    api.get('/api/envelo/monitoring/overview').then(res => {
+      const sessions = (res.data.sessions || []).filter(s => s.session_type === 'cat72_test');
+      setLiveSessions(sessions);
+    }).catch(console.error);
   };
 
   useEffect(() => {
@@ -204,7 +210,8 @@ function CAT72Console() {
         </Panel>
       )}
 
-      {tests.length === 0 && (
+      </>}
+          {showLive ? null : tests.length === 0 && (
         <Panel>
           <div className="text-center py-12" style={{color: 'rgba(255,255,255,.50)'}}>
             <p style={{marginBottom: '8px'}}>{user?.role === 'admin' ? 'No tests yet' : 'No active tests'}</p>
@@ -217,6 +224,34 @@ function CAT72Console() {
 }
 
 // Certificates
+
+function LiveSessionsPanel({ sessions }) {
+  if (!sessions.length) return <div style={{padding:'20px',textAlign:'center',color:'rgba(255,255,255,.4)',fontFamily:"Consolas, 'IBM Plex Mono', monospace",fontSize:'11px'}}>No active CAT-72 agent sessions</div>;
+  return (
+    <div style={{display:'flex',flexDirection:'column',gap:'8px'}}>
+      {sessions.map(s => {
+        const total = (s.pass_count || 0) + (s.block_count || 0);
+        const rate = total > 0 ? ((s.pass_count || 0) / total * 100).toFixed(1) : '0.0';
+        const isOnline = s.is_online;
+        return (
+          <div key={s.session_id} style={{padding:'12px 16px',background:'rgba(91,75,138,0.08)',border:'1px solid rgba(91,75,138,0.15)'}}>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+              <div>
+                <span style={{fontFamily:"Consolas, 'IBM Plex Mono', monospace",fontSize:'11px',color:isOnline?'#5CD685':'rgba(255,255,255,.50)'}}>● {isOnline ? 'ONLINE' : 'OFFLINE'}</span>
+                <span style={{fontFamily:"Consolas, 'IBM Plex Mono', monospace",fontSize:'11px',color:'rgba(255,255,255,.80)',marginLeft:'12px'}}>{s.session_id.slice(0,16)}...</span>
+              </div>
+              <div style={{display:'flex',gap:'16px'}}>
+                <span style={{fontFamily:"Consolas, 'IBM Plex Mono', monospace",fontSize:'10px',color:'rgba(255,255,255,.50)'}}>Actions: {total.toLocaleString()}</span>
+                <span style={{fontFamily:"Consolas, 'IBM Plex Mono', monospace",fontSize:'10px',color:parseFloat(rate)>=98?'#5CD685':'#D6A35C'}}>Pass: {rate}%</span>
+                <span style={{fontFamily:"Consolas, 'IBM Plex Mono', monospace",fontSize:'10px',color:'rgba(255,255,255,.50)'}}>Uptime: {s.uptime_hours || 0}h</span>
+              </div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
 
 export default CAT72Console;
 
