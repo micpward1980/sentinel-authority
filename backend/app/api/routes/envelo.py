@@ -902,6 +902,10 @@ async def get_monitoring_overview(
         "pass_count": EnveloSession.pass_count,
         "block_count": EnveloSession.block_count,
         "uptime": EnveloSession.started_at,
+        "organization_name": EnveloSession.organization_name,
+        "system_name": EnveloSession.system_name,
+        "session_id": EnveloSession.session_id,
+        "status": EnveloSession.last_heartbeat_at,
     }
     sort_col = sort_map.get(sort, EnveloSession.last_heartbeat_at)
     if sort_col is not None:

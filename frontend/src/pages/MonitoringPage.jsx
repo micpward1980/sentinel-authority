@@ -308,10 +308,10 @@ function MonitoringPage() {
                       return <th style={style} onClick={() => { if (active) { setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc'); } else { setSortField(field); setSortOrder('desc'); } setCurrentPage(1); }}>{label}{arrow}</th>;
                     };
                     return (<>
-                    <th style={thBase}>Status</th>
-                    <th style={thBase}>Organization</th>
-                    <th style={thBase}>System / Certificate</th>
-                    <th style={thBase}>Session</th>
+                    {sortable('Status', 'status')}
+                    {sortable('Organization', 'organization_name')}
+                    {sortable('System / Certificate', 'system_name')}
+                    {sortable('Session', 'started_at')}
                     {sortable('Uptime', 'uptime')}
                     {sortable('Actions', 'pass_count', 'right')}
                     {sortable('Pass Rate', 'block_count', 'right')}
