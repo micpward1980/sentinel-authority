@@ -131,6 +131,7 @@ async def receive_telemetry(
 
     
     # Store telemetry records
+    for record in data.records:
         telemetry = TelemetryRecord(
             session_id=session.id,
             timestamp=datetime.fromisoformat(record['timestamp'].replace('Z', '').replace('+00:00', '')),
