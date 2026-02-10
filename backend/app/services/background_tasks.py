@@ -18,7 +18,6 @@ import logging
 
 PLATFORM_BOOT_TIME = datetime.utcnow()
 
-PLATFORM_BOOT_TIME = datetime.utcnow()
 
 logger = logging.getLogger(__name__)
 
