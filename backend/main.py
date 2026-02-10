@@ -182,6 +182,11 @@ async def lifespan(app: FastAPI):
             await conn_demo.execute(raw_text("ALTER TABLE envelo_sessions ADD COLUMN is_demo BOOLEAN DEFAULT FALSE"))
         except Exception:
             pass
+    async with engine.begin() as conn_cert_demo:
+        try:
+            await conn_cert_demo.execute(raw_text("ALTER TABLE certificates ADD COLUMN is_demo BOOLEAN DEFAULT FALSE"))
+        except Exception:
+            pass
 
     # Add org/system name columns
     async with engine.begin() as conn_names:
