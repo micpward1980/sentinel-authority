@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { X, ArrowLeft } from 'lucide-react';
 import { api } from '../config/api';
@@ -153,31 +154,32 @@ function ApplicationDetail() {
 
   return (
     <div className="space-y-6">
-      {emailPreview && (
-        <div className="sa-modal-overlay" style={{position: 'fixed', inset: 0, zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.7)'}}>
-          <div className="sa-modal-panel" style={{maxWidth: 'min(650px, 95vw)', width: '95%', maxHeight: '80vh', overflow: 'hidden', display: 'flex', flexDirection: 'column'}}>
-            <div style={{padding: '20px 24px', borderBottom: '1px solid ' + 'rgba(255,255,255,.07)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px'}}>
+      {emailPreview && ReactDOM.createPortal(
+        <div style={{position: 'fixed', inset: 0, zIndex: 99999, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.7)'}}>
+          <div style={{background: '#120c1e', border: '1px solid rgba(157,140,207,0.2)', boxShadow: '0 24px 80px rgba(0,0,0,.5)', maxWidth: 'min(650px, 95vw)', width: '95%', maxHeight: '80vh', overflow: 'hidden', display: 'flex', flexDirection: 'column'}}>
+            <div style={{padding: '20px 24px', borderBottom: '1px solid rgba(255,255,255,.07)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', background: '#120c1e'}}>
               <div>
                 <h3 style={{margin: 0, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: '#a896d6'}}>Email Preview</h3>
                 <p style={{margin: '4px 0 0', fontSize: '12px', color: 'rgba(255,255,255,.50)'}}>This email will be sent to <strong style={{color: 'rgba(255,255,255,.94)'}}>{emailPreview.to}</strong></p>
               </div>
               <button onClick={() => setEmailPreview(null)} style={{background: 'none', border: 'none', color: 'rgba(255,255,255,.50)', cursor: 'pointer', fontSize: '20px', padding: '4px 8px'}}>X</button>
             </div>
-            <div style={{padding: '16px 24px', borderBottom: '1px solid ' + 'rgba(255,255,255,.07)', background: 'transparent'}}>
+            <div style={{padding: '16px 24px', borderBottom: '1px solid rgba(255,255,255,.07)', background: '#120c1e'}}>
               <div style={{fontSize: '11px', color: 'rgba(255,255,255,.50)', marginBottom: '2px'}}>Subject</div>
               <div style={{fontSize: '14px', color: 'rgba(255,255,255,.94)', fontWeight: 500}}>{emailPreview.subject}</div>
             </div>
             <div style={{flex: 1, overflow: 'auto', padding: '20px 24px'}}>
               <div style={{background: '#fff', overflow: 'hidden'}} dangerouslySetInnerHTML={{__html: emailPreview.html}} />
             </div>
-            <div style={{padding: '16px 24px', borderTop: '1px solid ' + 'rgba(255,255,255,.07)', display: 'flex', justifyContent: 'flex-end', gap: '10px'}}>
+            <div style={{padding: '16px 24px', borderTop: '1px solid rgba(255,255,255,.07)', display: 'flex', justifyContent: 'flex-end', gap: '10px', background: '#120c1e'}}>
               <button onClick={() => setEmailPreview(null)} style={{padding: '8px 20px', background: 'transparent', border: '1px solid ' + 'rgba(255,255,255,.07)', color: 'rgba(255,255,255,.78)', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>Cancel</button>
               <button onClick={confirmStateChange}  style={{padding: '8px 20px', background: emailPreview.newState === 'suspended' ? 'rgba(214,92,92,0.2)' : '#5B4B8A', border: '1px solid ' + (emailPreview.newState === 'suspended' ? 'rgba(214,92,92,0.4)' : '#a896d6'), color: emailPreview.newState === 'suspended' ? '#D65C5C' : '#fff', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>
                 {emailPreview.label} + Send Email
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
             <div className="flex items-center justify-between">
