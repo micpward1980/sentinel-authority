@@ -498,7 +498,8 @@ async def start_auto_evaluator():
         from app.services.background_tasks import demo_session_ticker, auto_suspend_offline
         asyncio.create_task(demo_session_ticker())
         asyncio.create_task(auto_suspend_offline())
-        logger.info("Auto-suspend monitor started (checks every hour)")        logger.info("Demo session ticker started (ticks every 15s)")
+        logger.info("Auto-suspend monitor started (checks every hour)")
+        logger.info("Demo session ticker started (ticks every 15s)")
     except Exception as e:
         logger.warning(f"Demo ticker failed to start: {e}")
     logger.info("Auto-evaluator background task started")
