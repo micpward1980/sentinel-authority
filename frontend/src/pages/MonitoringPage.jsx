@@ -54,7 +54,7 @@ function MonitoringPage() {
 
   useEffect(() => {
     if (selectedSession) {
-      fetchTimeline(selectedSession.id);
+      fetchTimeline(selectedSession.session_id);
     }
   }, [selectedSession]);
 
