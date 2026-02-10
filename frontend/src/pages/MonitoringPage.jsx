@@ -278,11 +278,10 @@ function MonitoringPage() {
               Hide ended {hideEnded ? 'ON' : 'OFF'}
             </button>
             <button onClick={() => setOnlineOnly(!onlineOnly)} className="btn" style={{padding: '4px 10px', color: onlineOnly ? 'var(--accent-green)' : 'var(--text-tertiary)', borderColor: onlineOnly ? 'rgba(92,214,133,0.2)' : 'rgba(255,255,255,0.06)'}}>
-              Online only</label>
-                <label style={{display:"flex",alignItems:"center",gap:"6px",cursor:"pointer"}}>
-                  <input type="checkbox" checked={showTestSessions} onChange={e => setShowTestSessions(e.target.checked)} style={{accentColor:"#5B4B8A"}} />
-                  <span style={{fontFamily:"Consolas, 'IBM Plex Mono', monospace",fontSize:"10px",color:"rgba(255,255,255,.70)",textTransform:"uppercase",letterSpacing:"1px"}}>Show CAT-72 tests</span>
-                </label {onlineOnly ? 'ON' : 'OFF'}
+              Online only {onlineOnly ? 'ON' : 'OFF'}
+            </button>
+            <button onClick={() => setShowTestSessions(!showTestSessions)} className="btn" style={{padding: '4px 10px', color: showTestSessions ? '#D6A35C' : 'var(--text-tertiary)', borderColor: showTestSessions ? 'rgba(214,163,92,0.2)' : 'rgba(255,255,255,0.06)'}}>
+              CAT-72 tests {showTestSessions ? 'ON' : 'OFF'}
             </button>
           </div>
         </div>        

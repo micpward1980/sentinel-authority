@@ -87,25 +87,14 @@ function CAT72Console() {
       </div>
 
       {/* Summary Stats */}
-      <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px'}}>
-        <div style={{padding: '16px', background: 'transparent', border: `1px solid ${'rgba(255,255,255,.07)'}`, textAlign: 'center'}}>
-          <div style={{fontFamily: "Georgia, 'Source Serif 4', serif", fontSize: 'clamp(18px, 4vw, 24px)', fontWeight: 200, color: '#D6A05C'}}>{runningTests.length}</div>
-          <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,.50)', textTransform: 'uppercase', letterSpacing: '1px', marginTop: '4px'}}>Running</div>
-        </div>
-        <div style={{padding: '16px', background: 'transparent', border: `1px solid ${'rgba(255,255,255,.07)'}`, textAlign: 'center'}}>
-          <div style={{fontFamily: "Georgia, 'Source Serif 4', serif", fontSize: 'clamp(18px, 4vw, 24px)', fontWeight: 200, color: '#a896d6'}}>{scheduledTests.length}</div>
-          <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,.50)', textTransform: 'uppercase', letterSpacing: '1px', marginTop: '4px'}}>Scheduled</div>
-        </div>
-        <div style={{padding: '16px', background: 'transparent', border: `1px solid ${'rgba(255,255,255,.07)'}`, textAlign: 'center'}}>
-          <div style={{fontFamily: "Georgia, 'Source Serif 4', serif", fontSize: 'clamp(18px, 4vw, 24px)', fontWeight: 200, color: '#5CD685'}}>{completedTests.filter(t => t.result === 'PASS').length}</div>
-          <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,.50)', textTransform: 'uppercase', letterSpacing: '1px', marginTop: '4px'}}>Passed</div>
-        </div>
-        <div style={{padding: '16px', background: 'transparent', border: `1px solid ${'rgba(255,255,255,.07)'}`, textAlign: 'center'}}>
-          <div style={{fontFamily: "Georgia, 'Source Serif 4', serif", fontSize: 'clamp(18px, 4vw, 24px)', fontWeight: 200, color: '#D65C5C'}}>{completedTests.filter(t => t.result === 'FAIL').length}</div>
-          <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', color: 'rgba(255,255,255,.50)', textTransform: 'uppercase', letterSpacing: '1px', marginTop: '4px'}}>Failed</div>
-        </div>
+      <div style={{display:"flex",gap:"16px",marginBottom:"16px"}}>
+        <button onClick={() => setShowLive(false)} style={{background:!showLive?"rgba(91,75,138,0.25)":"transparent",border:"1px solid rgba(91,75,138,0.3)",color:!showLive?"rgba(255,255,255,.94)":"rgba(255,255,255,.50)",padding:"6px 16px",fontFamily:"Consolas, monospace",fontSize:"10px",textTransform:"uppercase",letterSpacing:"1px",cursor:"pointer"}}>Scheduled Tests</button>
+        <button onClick={() => setShowLive(true)} style={{background:showLive?"rgba(91,75,138,0.25)":"transparent",border:"1px solid rgba(91,75,138,0.3)",color:showLive?"rgba(255,255,255,.94)":"rgba(255,255,255,.50)",padding:"6px 16px",fontFamily:"Consolas, monospace",fontSize:"10px",textTransform:"uppercase",letterSpacing:"1px",cursor:"pointer"}}>Live Agent Sessions</button>
       </div>
 
+      {showLive ? (
+        <LiveSessionsPanel sessions={liveSessions} />
+      ) : (<>
       {/* Running Tests — Card View */}
       {runningTests.length > 0 && (
         <div>
@@ -210,8 +199,9 @@ function CAT72Console() {
         </Panel>
       )}
 
-      </>}
-          {showLive ? null : tests.length === 0 && (
+      </>)}
+
+      {!showLive && tests.length === 0 && (
         <Panel>
           <div className="text-center py-12" style={{color: 'rgba(255,255,255,.50)'}}>
             <p style={{marginBottom: '8px'}}>{user?.role === 'admin' ? 'No tests yet' : 'No active tests'}</p>
