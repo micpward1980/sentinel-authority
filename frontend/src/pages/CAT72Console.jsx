@@ -220,7 +220,7 @@ function LiveSessionsPanel({ sessions, search }) {
   const filtered = sessions.filter(s => {
     if (!search) return true;
     const q = search.toLowerCase();
-    return s.session_id.toLowerCase().includes(q);
+    return s.session_id.toLowerCase().includes(q) || (s.organization_name||"").toLowerCase().includes(q) || (s.system_name||"").toLowerCase().includes(q);
   });
   if (!filtered.length) return <div style={{padding:'20px',textAlign:'center',color:'rgba(255,255,255,.4)',fontFamily:"Consolas, 'IBM Plex Mono', monospace",fontSize:'11px'}}>No active CAT-72 agent sessions</div>;
   return (
@@ -234,7 +234,8 @@ function LiveSessionsPanel({ sessions, search }) {
             <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
               <div>
                 <span style={{fontFamily:"Consolas, 'IBM Plex Mono', monospace",fontSize:'11px',color:isOnline?'#5CD685':'rgba(255,255,255,.50)'}}>● {isOnline ? 'ONLINE' : 'OFFLINE'}</span>
-                <span style={{fontFamily:"Consolas, 'IBM Plex Mono', monospace",fontSize:'11px',color:'rgba(255,255,255,.80)',marginLeft:'12px'}}>{s.session_id.slice(0,16)}...</span>
+                <span style={{fontFamily:"Consolas, 'IBM Plex Mono', monospace",fontSize:'11px',color:'rgba(255,255,255,.80)',marginLeft:'12px'}}>{s.organization_name || 'Unknown'} — {s.system_name || s.session_id.slice(0,16)}</span>
+                <span style={{fontFamily:"Consolas, 'IBM Plex Mono', monospace",fontSize:'9px',color:'rgba(255,255,255,.35)',marginLeft:'8px'}}>{s.session_id.slice(0,12)}...</span>
               </div>
               <div style={{display:'flex',gap:'16px'}}>
                 <span style={{fontFamily:"Consolas, 'IBM Plex Mono', monospace",fontSize:'10px',color:'rgba(255,255,255,.50)'}}>Actions: {total.toLocaleString()}</span>
