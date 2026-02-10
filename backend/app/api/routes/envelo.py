@@ -127,6 +127,7 @@ async def receive_telemetry(
         )
         db.add(session)
         await db.commit()
+        await db.refresh(session)
 
     
     # Store telemetry records
