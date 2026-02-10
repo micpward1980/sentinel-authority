@@ -298,6 +298,7 @@ function MonitoringPage() {
                             color: session.is_online ? '#5CD685' : '#D65C5C'
                           }}>
                             {session.is_online ? 'Online' : 'Offline'}
+                          {!session.is_online && <div style={{fontSize:'9px',color:'rgba(214,92,92,0.6)',marginTop:'2px'}}>{(() => { const lh = session.last_heartbeat_at || session.last_activity; const h = lh ? Math.round((Date.now() - new Date(lh).getTime()) / 3600000) : null; return h ? h + 'h ago' : 'no signal'; })()}</div>}
                           </span>
                           {session.is_online && <span style={{fontSize:'13px',color:'#D66A6A',animation:'heartbeat 1.2s ease-in-out infinite'}}>♥</span>}
                         </div>
@@ -349,7 +350,7 @@ function MonitoringPage() {
                             </div>
                             <div style={{display: 'flex', gap: '8px', alignItems: 'center'}}>
                               <div style={{display:'flex',gap:'6px',alignItems:'center'}}>
-                                {user?.role === 'admin' && selectedSession.certificate_id && selectedSession.is_online && (
+                                {user?.role === 'admin' && selectedSession.certificate_id && (
                                   <button onClick={async (e) => { e.stopPropagation(); if (!await confirm({title:'Reinstate Certificate',message:`Reinstate ${selectedSession.certificate_id} for ${selectedSession.organization_name}? System is back online.`})) return; try { await api.patch(`/api/certificates/${selectedSession.certificate_id}/reinstate`); toast.show('Certificate reinstated','success'); fetchData(); } catch(err) { toast.show('Failed: '+(err.response?.data?.detail||err.message),'error'); }}} className="btn" style={{padding:'3px 8px',fontSize:'9px',fontFamily:"Consolas,monospace",letterSpacing:'1px',textTransform:'uppercase',color:'#5CD685',borderColor:'rgba(92,214,133,0.3)'}}>Reinstate</button>
                                 )}
                                 {user?.role === 'admin' && selectedSession.certificate_id && !selectedSession.is_online && (
@@ -365,6 +366,12 @@ function MonitoringPage() {
 
                           <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '12px', marginBottom: '20px'}}>
                             <div><div style={{fontSize: '10px', color: 'rgba(255,255,255,.50)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px'}}>Last Heartbeat</div><div style={{color: selectedSession.is_online ? '#5CD685' : '#D65C5C', fontSize: '12px', display:'flex', alignItems:'center', gap:'6px'}}>{selectedSession.is_online && <span style={{animation:'heartbeat 1.2s ease-in-out infinite',fontSize:'13px',color:'#D66A6A'}}>♥</span>}{selectedSession.last_heartbeat_at ? new Date(selectedSession.last_heartbeat_at).toLocaleString() : selectedSession.last_activity ? new Date(selectedSession.last_activity).toLocaleString() : '-'}</div></div>
+                            {!selectedSession.is_online && (() => {
+                              const lastHb = selectedSession.last_heartbeat_at || selectedSession.last_activity;
+                              const hoursAgo = lastHb ? Math.round((Date.now() - new Date(lastHb).getTime()) / 3600000) : null;
+                              const reason = hoursAgo > 72 ? 'Connection lost — no heartbeat for ' + hoursAgo + 'h' : hoursAgo > 24 ? 'Agent unresponsive — offline ' + hoursAgo + 'h (auto-suspend eligible)' : hoursAgo ? 'Heartbeat stopped ' + hoursAgo + 'h ago' : 'No heartbeat received';
+                              return <div style={{gridColumn:'1 / -1', padding:'8px 12px', background:'rgba(214,92,92,0.06)', border:'1px solid rgba(214,92,92,0.15)', marginBottom:'4px'}}><div style={{fontSize:'9px',color:'#D65C5C',fontFamily:"Consolas,monospace",textTransform:'uppercase',letterSpacing:'1px',marginBottom:'4px'}}>⚠ Offline Reason</div><div style={{fontSize:'12px',color:'rgba(255,255,255,.80)'}}>{reason}</div></div>;
+                            })()}
                             <div><div style={{fontSize: '10px', color: 'rgba(255,255,255,.50)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px'}}>Started</div><div style={{color: 'rgba(255,255,255,.94)', fontSize: '12px'}}>{selectedSession.started_at ? new Date(selectedSession.started_at).toLocaleString() : '-'}</div></div>
                             <div><div style={{fontSize: '10px', color: 'rgba(255,255,255,.50)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px'}}>Uptime</div><div style={{color: 'rgba(255,255,255,.94)', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '16px'}}>{selectedSession.uptime_hours?.toFixed(1) || '0'}h</div></div>
                             <div><div style={{fontSize: '10px', color: 'rgba(255,255,255,.50)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px'}}>Passed</div><div style={{color: '#5CD685', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '16px'}}>{(selectedSession.pass_count || 0).toLocaleString()}</div></div>
