@@ -148,9 +148,6 @@ function ApplicationsList() {
     { key: 'pending', label: 'Pending' },
     { key: 'under_review', label: 'Review' },
     { key: 'approved', label: 'Awaiting Deploy' },
-    { key: 'testing', label: 'CAT-72 Active' },
-    { key: 'conformant', label: 'Certified' },
-    { key: 'revoked', label: 'Suspended' },
   ];
 
   const filtered = applications;
@@ -242,17 +239,10 @@ function ApplicationsList() {
                     {app.state === 'approved' && (
                       <Link to={`/applications/${app.id}`} className="px-2 py-1 no-underline btn">Schedule CAT-72</Link>
                     )}
-                    {app.state === 'conformant' && (
-                      <span style={{color: '#5CD685', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px'}}>✓ Certified</span>
-                    )}
-                    {app.state === 'testing' && (
-                      <Link to="/cat72" className="px-2 py-1 no-underline btn">View CAT-72</Link>
-                    )}
-                    {['pending','under_review','approved','testing','conformant'].includes(app.state) && (
-                      <button onClick={(e) => { e.stopPropagation(); handleQuickAdvance(app.id, 'suspended', `Suspend ${app.system_name}`); }} className="btn" style={{padding: '4px 10px', color: '#D65C5C'}}>Suspend</button>
-                    )}
-                    {(app.state === 'suspended' || app.state === 'revoked') && (
-                      <button onClick={(e) => { e.stopPropagation(); handleQuickAdvance(app.id, 'pending', `Reinstate ${app.system_name} to pending`); }} className="btn" style={{padding: '4px 10px', color: '#5CD685'}}>Reinstate</button>
+
+
+                    {['pending','under_review','approved'].includes(app.state) && (
+                      <button onClick={(e) => { e.stopPropagation(); handleQuickAdvance(app.id, 'suspended', `Suspend ${app.system_name}`); }} className="btn" style={{padding: '4px 10px', color: '#D65C5C'}}>Withdraw</button>
                     )}
                   </div>
                 </td>
@@ -275,8 +265,7 @@ function ApplicationsList() {
             <div style={{display: 'flex', gap: '8px', alignItems: 'center'}}>
               <button onClick={() => handleBulkAction('approve', 'approved')} disabled={bulkLoading} className="btn" style={{padding: '6px 14px', color: 'var(--accent-green)'}}>Approve</button>
               <button onClick={() => handleBulkAction('review', 'under_review')} disabled={bulkLoading} className="btn" style={{padding: '6px 14px', color: '#D6A05C'}}>Review</button>
-              <button onClick={() => handleBulkAction('suspend', 'suspended')} disabled={bulkLoading} className="btn" style={{padding: '6px 14px', color: '#D65C5C'}}>Suspend</button>
-              <button onClick={() => handleBulkAction('reinstate', 'pending')} disabled={bulkLoading} className="btn" style={{padding: '6px 14px', color: 'var(--accent-green)'}}>Reinstate</button>
+              <button onClick={() => handleBulkAction('withdraw', 'suspended')} disabled={bulkLoading} className="btn" style={{padding: '6px 14px', color: '#D65C5C'}}>Withdraw</button>
               <div style={{width: '1px', height: '20px', background: 'rgba(255,255,255,.07)', margin: '0 4px'}} />
               <button onClick={() => handleBulkAction('delete')} disabled={bulkLoading} className="btn" style={{padding: '6px 14px', color: '#D65C5C'}}>Delete</button>
               <button onClick={selectNone} className="btn">Cancel</button>
