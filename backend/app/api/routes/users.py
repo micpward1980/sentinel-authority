@@ -238,8 +238,11 @@ async def delete_user(
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     
-    # Delete related sessions first
+    # Delete related records first (order matters for FK constraints)
+    await db.execute(text("DELETE FROM application_comments WHERE user_id = :uid"), {"uid": user_id})
+    await db.execute(text("UPDATE applications SET applicant_id = NULL WHERE applicant_id = :uid"), {"uid": user_id})
     await db.execute(text("DELETE FROM user_sessions WHERE user_id = :uid"), {"uid": user_id})
+    await db.execute(text("DELETE FROM audit_logs WHERE user_id = :uid"), {"uid": user_id})
     await db.delete(user)
     await db.commit()
     
