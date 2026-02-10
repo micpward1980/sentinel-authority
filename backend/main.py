@@ -174,15 +174,14 @@ async def lifespan(app: FastAPI):
     async with engine.begin() as conn_st:
         try:
             await conn_st.execute(raw_text("ALTER TABLE envelo_sessions ADD COLUMN session_type VARCHAR(20) DEFAULT 'production'"))
-            await conn_st.commit()
         except Exception:
             pass
+    # Mark old sessions as cat72_test (separate connection to avoid aborted txn)
+    async with engine.begin() as conn_st2:
         try:
-            # Mark old stress-test sessions as cat72_test (sessions without a real certificate)
-            await conn_st.execute(raw_text("UPDATE envelo_sessions SET session_type = 'cat72_test' WHERE session_type = 'production' AND id <= 18"))
-            await conn_st.commit()
-        except Exception:
-            pass
+            await conn_st2.execute(raw_text("UPDATE envelo_sessions SET session_type = 'cat72_test' WHERE session_type = 'production' AND id <= 18"))
+        except Exception as e:
+            print(f"session_type update note: {e}")
 
     yield
     logger.info("Shutting down...")
