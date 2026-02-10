@@ -154,8 +154,8 @@ function ApplicationDetail() {
   return (
     <div className="space-y-6">
       {emailPreview && (
-        <div className="sa-modal-overlay" style={{position: 'fixed', inset: 0, zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-          <div style={{background: '#2a2f3d', border: '1px solid ' + 'rgba(255,255,255,.07)', maxWidth: 'min(650px, 95vw)', width: '95%', maxHeight: '80vh', overflow: 'hidden', display: 'flex', flexDirection: 'column'}}>
+        <div className="sa-modal-overlay" style={{position: 'fixed', inset: 0, zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.7)'}}>
+          <div style={{background: '#120c1e', border: '1px solid rgba(157,140,207,0.2)', maxWidth: 'min(650px, 95vw)', width: '95%', maxHeight: '80vh', overflow: 'hidden', display: 'flex', flexDirection: 'column'}}>
             <div style={{padding: '20px 24px', borderBottom: '1px solid ' + 'rgba(255,255,255,.07)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px'}}>
               <div>
                 <h3 style={{margin: 0, fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: '#a896d6'}}>Email Preview</h3>
