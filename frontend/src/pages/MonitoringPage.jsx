@@ -220,7 +220,7 @@ function MonitoringPage() {
       })()}
 
       {/* Sessions Table */}
-      <div style={{background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', overflow: 'hidden'}}>
+      <div style={{background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', overflow: 'auto'}}>
         <div style={{padding: '16px 20px', borderBottom: `1px solid ${'rgba(255,255,255,.07)'}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px'}}>
           <div className="hud-label" style={{marginBottom: '16px'}}>{user?.role === 'admin' ? 'Interlock Sessions' : 'System Monitoring'}</div>
           <div style={{display: 'flex', gap: '12px', alignItems: 'center'}}>
@@ -239,7 +239,17 @@ function MonitoringPage() {
           </div>
         ) : (
           <div className='table-scroll' style={{overflowX: 'auto', WebkitOverflowScrolling: 'touch'}}>
-            <table style={{width: '100%', borderCollapse: 'collapse'}}>
+            <table style={{width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed', minWidth: '1000px'}}>
+              <colgroup>
+                <col style={{width:'100px'}} />
+                <col style={{width:'160px'}} />
+                <col style={{width:'180px'}} />
+                <col style={{width:'120px'}} />
+                <col style={{width:'80px'}} />
+                <col style={{width:'90px'}} />
+                <col style={{width:'90px'}} />
+                <col style={{width:'140px'}} />
+              </colgroup>
               <thead>
                 <tr style={{background: 'transparent'}}>
                   {(() => {
@@ -298,8 +308,7 @@ function MonitoringPage() {
                             color: session.is_online ? '#5CD685' : '#D65C5C'
                           }}>
                             {session.is_online ? 'Online' : 'Offline'}
-                          {!session.is_online && <div style={{fontSize:'9px',color:'rgba(214,92,92,0.6)',marginTop:'2px'}}>{session.offline_reason || (() => { const lh = session.last_heartbeat_at || session.last_activity; const h = lh ? Math.round((Date.now() - new Date(lh).getTime()) / 3600000) : null; return h ? h + 'h ago' : 'no signal'; })()}</div>}
-                          {!session.is_online && <div style={{fontSize:'9px',color:'rgba(214,92,92,0.6)',marginTop:'2px'}}>{(() => { const lh = session.last_heartbeat_at || session.last_activity; const h = lh ? Math.round((Date.now() - new Date(lh).getTime()) / 3600000) : null; return h ? h + 'h ago' : 'no signal'; })()}</div>}
+                          {!session.is_online && <div style={{fontSize:'9px',color:'rgba(214,92,92,0.6)',marginTop:'2px',textTransform:'none',letterSpacing:'0'}}>{session.offline_reason || (() => { const lh = session.last_heartbeat_at || session.last_activity; const h = lh ? Math.round((Date.now() - new Date(lh).getTime()) / 3600000) : null; return h ? h + 'h ago' : 'no signal'; })()}</div>}
                           </span>
                           {session.is_online && <span style={{fontSize:'13px',color:'#D66A6A',animation:'heartbeat 1.2s ease-in-out infinite'}}>♥</span>}
                         </div>

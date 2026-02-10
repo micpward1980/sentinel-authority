@@ -121,48 +121,61 @@ function CAT72Console() {
       {activeTab === 'live' ? (
         <><input type="text" placeholder="Search sessions..." value={catSearch} onChange={e => setCatSearch(e.target.value)} style={{background:"rgba(255,255,255,.04)",border:"1px solid rgba(255,255,255,.08)",color:"rgba(255,255,255,.90)",padding:"6px 12px",fontFamily:"Consolas, monospace",fontSize:"11px",width:"200px",outline:"none",marginBottom:"12px"}} /><LiveSessionsPanel sessions={liveSessions} search={catSearch} /></>
       ) : activeTab === 'scheduled' ? (<>
-      {/* Running Tests — Card View */}
+      {/* Running Tests — Table */}
       {runningTests.length > 0 && (
-        <div>
-          <h2 style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: '#D6A05C', marginBottom: '12px'}}>● Live Tests</h2>
-          <div className="space-y-4">
-            {runningTests.map(test => {
-              const totalSec = test.duration_hours * 3600;
-              const pct = Math.min(100, Math.round((test.elapsed_seconds / totalSec) * 100));
-              const remaining = Math.max(0, totalSec - test.elapsed_seconds);
-              return (
-                <Panel key={test.id}>
-                  <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px', marginBottom: '16px'}}>
-                    <div>
-                      <div style={{fontWeight: 500, fontSize: '16px', color: 'rgba(255,255,255,.94)', marginBottom: '4px'}}>{test.organization_name} — {test.system_name}</div>
-                      <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', color: 'rgba(255,255,255,.50)'}}>Test ID: {test.test_id} · Duration: {test.duration_hours}h</div>
+        <div style={{marginBottom:'24px'}}>
+          <div className="hud-label" style={{marginBottom:'12px'}}>● Running</div>
+          <Panel>
+          <table className="w-full">
+            <thead>
+              <tr style={{borderBottom: '1px solid rgba(255,255,255,.07)'}}>
+                <th className="px-4 py-3 text-left" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: 'rgba(255,255,255,.50)', fontWeight: 400}}>System</th>
+                <th className="px-4 py-3 text-left" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: 'rgba(255,255,255,.50)', fontWeight: 400}}>Progress</th>
+                <th className="px-4 py-3 text-left" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: 'rgba(255,255,255,.50)', fontWeight: 400}}>Elapsed</th>
+                <th className="px-4 py-3 text-left" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: 'rgba(255,255,255,.50)', fontWeight: 400}}>Remaining</th>
+                <th className="px-4 py-3 text-left" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: 'rgba(255,255,255,.50)', fontWeight: 400}}>Telemetry</th>
+                <th className="px-4 py-3 text-left" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: 'rgba(255,255,255,.50)', fontWeight: 400}}>Violations</th>
+                <th className="px-4 py-3 text-left" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: 'rgba(255,255,255,.50)', fontWeight: 400}}>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {runningTests.map(test => {
+                const totalSec = test.duration_hours * 3600;
+                const pct = Math.min(100, Math.round((test.elapsed_seconds / totalSec) * 100));
+                const remaining = Math.max(0, totalSec - test.elapsed_seconds);
+                return (
+                <tr key={test.id} style={{borderBottom: '1px solid rgba(255,255,255,.07)'}}>
+                  <td className="px-4 py-4">
+                    <div style={{fontWeight: 500, color: 'rgba(255,255,255,.94)'}}>{test.organization_name} — {test.system_name}</div>
+                    <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: 'rgba(255,255,255,.50)', marginTop: '2px'}}>{test.test_id}</div>
+                  </td>
+                  <td className="px-4 py-4" style={{minWidth:'120px'}}>
+                    <div style={{display:'flex',alignItems:'center',gap:'8px'}}>
+                      <div style={{flex:1,height:'6px',background:'rgba(91,75,138,0.15)',overflow:'hidden'}}>
+                        <div style={{width: pct+'%', height:'100%', background: pct >= 100 ? '#5CD685' : '#5B4B8A', transition:'width 0.5s'}} />
+                      </div>
+                      <span style={{fontFamily:"Consolas,monospace",fontSize:'11px',color: pct >= 100 ? '#5CD685' : 'rgba(255,255,255,.78)',minWidth:'32px'}}>{pct}%</span>
                     </div>
-                    {user?.role === 'admin' && <button onClick={() => handleStop(test.test_id)} disabled={loading[test.test_id]} className="px-4 py-2 btn">
+                  </td>
+                  <td className="px-4 py-4" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px', color: '#a896d6'}}>{formatTime(test.elapsed_seconds)}</td>
+                  <td className="px-4 py-4" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px', color: 'rgba(255,255,255,.60)'}}>{formatTime(remaining)}</td>
+                  <td className="px-4 py-4" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px', color: 'rgba(255,255,255,.60)'}}>{test.telemetry_count || 0}</td>
+                  <td className="px-4 py-4" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px', color: test.violations_count > 0 ? '#D65C5C' : 'rgba(255,255,255,.50)'}}>{test.violations_count || 0}</td>
+                  <td className="px-4 py-4">
+                    {user?.role === 'admin' && <button onClick={() => handleStop(test.test_id)} disabled={loading[test.test_id]} className="px-3 py-1 btn">
                       {loading[test.test_id] === 'stopping' ? '...' : 'Stop & Evaluate'}
                     </button>}
-                  </div>
-                  <div style={{display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '8px'}}>
-                    <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: 'clamp(20px, 4vw, 28px)', fontWeight: 200, color: '#a896d6', letterSpacing: '2px'}}>{formatTime(test.elapsed_seconds)}</div>
-                    <div style={{flex: 1}}>
-                      <div className="w-full h-3 overflow-hidden" style={{background: 'rgba(91,75,138,0.15)'}}>
-                        <div className="h-full transition-all" style={{width: `${pct}%`, background: pct >= 100 ? '#5CD685' : '#5B4B8A'}} />
-                      </div>
-                    </div>
-                    <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '14px', color: pct >= 100 ? '#5CD685' : 'rgba(255,255,255,.78)', fontWeight: 500}}>{pct}%</span>
-                  </div>
-                  <div style={{display: 'flex', gap: '24px'}}>
-                    <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: 'rgba(255,255,255,.50)'}}>Remaining: {formatTime(remaining)}</span>
-                    <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: 'rgba(255,255,255,.50)'}}>Telemetry: {test.telemetry_count || 0} events</span>
-                    <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: test.violations_count > 0 ? '#D65C5C' : 'rgba(255,255,255,.50)'}}>Violations: {test.violations_count || 0}</span>
-                  </div>
-                </Panel>
-              );
-            })}
-          </div>
+                  </td>
+                </tr>
+                );
+              })}
+            </tbody>
+          </table>
+          </Panel>
         </div>
       )}
 
-      {/* Scheduled Tests */}
+      {/* Scheduled Tests — Table */}
         <Panel>
           <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'16px'}}>
             <div className="hud-label">Scheduled</div>
@@ -171,19 +184,33 @@ function CAT72Console() {
           {scheduledTests.filter(t => !catSearch || (t.organization_name||'').toLowerCase().includes(catSearch.toLowerCase()) || (t.system_name||'').toLowerCase().includes(catSearch.toLowerCase()) || (t.test_id||'').toLowerCase().includes(catSearch.toLowerCase())).length === 0 ? (
             <div style={{padding:'20px',textAlign:'center',color:'rgba(255,255,255,.4)',fontFamily:"Consolas, monospace",fontSize:'11px'}}>No scheduled tests{catSearch ? ' matching search' : ''}</div>
           ) : (
-          <div className="space-y-3">
-            {scheduledTests.filter(t => !catSearch || (t.organization_name||'').toLowerCase().includes(catSearch.toLowerCase()) || (t.system_name||'').toLowerCase().includes(catSearch.toLowerCase()) || (t.test_id||'').toLowerCase().includes(catSearch.toLowerCase())).map(test => (
-              <div key={test.id} style={{padding: '14px 16px', background: 'transparent', border: `1px solid ${'rgba(255,255,255,.07)'}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px'}}>
-                <div>
-                  <div style={{fontWeight: 500, color: 'rgba(255,255,255,.94)', marginBottom: '2px'}}>{test.organization_name} — {test.system_name}</div>
-                  <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', color: 'rgba(255,255,255,.50)'}}>{test.test_id} · {test.duration_hours}h test</div>
-                </div>
-                {user?.role === 'admin' && <button onClick={() => handleStart(test.test_id)} disabled={loading[test.test_id]} className="px-4 py-2 btn">
-                  {loading[test.test_id] === 'starting' ? '...' : 'Start Test'}
-                </button>}
-              </div>
-            ))}
-          </div>
+          <table className="w-full">
+            <thead>
+              <tr style={{borderBottom: '1px solid rgba(255,255,255,.07)'}}>
+                <th className="px-4 py-3 text-left" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: 'rgba(255,255,255,.50)', fontWeight: 400}}>System</th>
+                <th className="px-4 py-3 text-left" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: 'rgba(255,255,255,.50)', fontWeight: 400}}>Duration</th>
+                <th className="px-4 py-3 text-left" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: 'rgba(255,255,255,.50)', fontWeight: 400}}>Scheduled</th>
+                <th className="px-4 py-3 text-left" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: 'rgba(255,255,255,.50)', fontWeight: 400}}>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {scheduledTests.filter(t => !catSearch || (t.organization_name||'').toLowerCase().includes(catSearch.toLowerCase()) || (t.system_name||'').toLowerCase().includes(catSearch.toLowerCase()) || (t.test_id||'').toLowerCase().includes(catSearch.toLowerCase())).map(test => (
+                <tr key={test.id} style={{borderBottom: '1px solid rgba(255,255,255,.07)'}}>
+                  <td className="px-4 py-4">
+                    <div style={{fontWeight: 500, color: 'rgba(255,255,255,.94)'}}>{test.organization_name} — {test.system_name}</div>
+                    <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: 'rgba(255,255,255,.50)', marginTop: '2px'}}>{test.test_id}</div>
+                  </td>
+                  <td className="px-4 py-4" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px', color: 'rgba(255,255,255,.78)'}}>{test.duration_hours}h</td>
+                  <td className="px-4 py-4" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', color: 'rgba(255,255,255,.60)'}}>{test.created_at ? new Date(test.created_at).toLocaleDateString() : '—'}</td>
+                  <td className="px-4 py-4">
+                    {user?.role === 'admin' && <button onClick={() => handleStart(test.test_id)} disabled={loading[test.test_id]} className="px-3 py-1 btn">
+                      {loading[test.test_id] === 'starting' ? '...' : 'Start Test'}
+                    </button>}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
           )}
         </Panel>
 
@@ -280,9 +307,22 @@ function LiveSessionsPanel({ sessions, search }) {
   const dim = 'rgba(255,255,255,.50)';
   const green = '#5CD685';
   const amber = '#D6A35C';
+  const thStyle = {fontFamily: mono, fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: dim, fontWeight: 400};
   return (
-    <div style={{display:'flex',flexDirection:'column',gap:'8px'}}>
+    <Panel>
       <HeartbeatStyle />
+      <table className="w-full">
+        <thead>
+          <tr style={{borderBottom: '1px solid rgba(255,255,255,.07)'}}>
+            <th className="px-4 py-3 text-left" style={thStyle}>Status</th>
+            <th className="px-4 py-3 text-left" style={thStyle}>System</th>
+            <th className="px-4 py-3 text-left" style={thStyle}>Progress</th>
+            <th className="px-4 py-3 text-left" style={thStyle}>Actions</th>
+            <th className="px-4 py-3 text-left" style={thStyle}>Pass Rate</th>
+            <th className="px-4 py-3 text-left" style={thStyle}>Uptime</th>
+          </tr>
+        </thead>
+        <tbody>
       {filtered.map(s => {
         const total = (s.pass_count || 0) + (s.block_count || 0);
         const rate = total > 0 ? ((s.pass_count || 0) / total * 100).toFixed(1) : '0.0';
@@ -292,22 +332,32 @@ function LiveSessionsPanel({ sessions, search }) {
         const uptimeHrs = parseFloat(s.uptime_hours || 0);
         const pct72 = Math.min((uptimeHrs / 72) * 100, 100).toFixed(1);
         const remaining = Math.max(72 - uptimeHrs, 0).toFixed(1);
-        return (
-          <div key={s.session_id} onClick={() => setExpanded(isExpanded ? null : s.session_id)} style={{padding:'12px 16px',background: isExpanded ? 'rgba(91,75,138,0.12)' : 'rgba(91,75,138,0.08)',border:'1px solid rgba(91,75,138,0.15)',cursor:'pointer',transition:'background 0.15s'}}>
-            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
-              <div>
-                <span style={{fontFamily:mono,fontSize:'11px',color:isOnline?green:dim}}>● {isOnline ? 'ONLINE' : 'OFFLINE'}</span>
-                <span style={{fontFamily:mono,fontSize:'11px',color:'rgba(255,255,255,.80)',marginLeft:'12px'}}>{s.organization_name || 'Unknown'} — {s.system_name || s.session_id.slice(0,16)}</span>
-                <span style={{fontFamily:mono,fontSize:'9px',color:'rgba(255,255,255,.25)',marginLeft:'8px'}}>{isExpanded ? '▾' : '▸'}</span>
+        return (<React.Fragment key={s.session_id}>
+          <tr onClick={() => setExpanded(isExpanded ? null : s.session_id)} style={{borderBottom: '1px solid rgba(255,255,255,.07)', cursor:'pointer', background: isExpanded ? 'rgba(91,75,138,0.12)' : 'transparent'}} onMouseEnter={e => { if (!isExpanded) e.currentTarget.style.background='rgba(255,255,255,0.03)'; }} onMouseLeave={e => { if (!isExpanded) e.currentTarget.style.background='transparent'; }}>
+            <td className="px-4 py-4">
+              <div style={{display:'flex',alignItems:'center',gap:'6px'}}>
+                <span style={{fontFamily:mono,fontSize:'11px',color:isOnline?green:'#D65C5C',textTransform:'uppercase',letterSpacing:'1px'}}>{isOnline ? 'Online' : 'Offline'}</span>
+                {isOnline && <span style={{animation:'heartbeat 1.2s ease-in-out infinite',fontSize:'13px',color:'#D66A6A'}}>♥</span>}
               </div>
-              <div style={{display:'flex',gap:'16px'}}>
-                <span style={{fontFamily:mono,fontSize:'10px',color:dim}}>Actions: {total.toLocaleString()}</span>
-                <span style={{fontFamily:mono,fontSize:'10px',color:parseFloat(rate)>=98?green:amber}}>Pass: {rate}%</span>
-                <span style={{fontFamily:mono,fontSize:'10px',color:dim}}>Uptime: {uptimeHrs.toFixed(1)}h</span>
+            </td>
+            <td className="px-4 py-4">
+              <div style={{fontWeight:500,color:'rgba(255,255,255,.94)'}}>{s.organization_name || 'Unknown'} — {s.system_name || s.session_id.slice(0,16)}</div>
+              <div style={{fontFamily:mono,fontSize:'10px',color:dim,marginTop:'2px'}}>{s.session_id.slice(0,12)}...</div>
+            </td>
+            <td className="px-4 py-4" style={{minWidth:'120px'}}>
+              <div style={{display:'flex',alignItems:'center',gap:'8px'}}>
+                <div style={{flex:1,height:'6px',background:'rgba(91,75,138,0.15)',overflow:'hidden'}}>
+                  <div style={{width:pct72+'%',height:'100%',background:parseFloat(pct72)>=100?green:'#5B4B8A',transition:'width 0.5s'}} />
+                </div>
+                <span style={{fontFamily:mono,fontSize:'11px',color:parseFloat(pct72)>=100?green:'rgba(255,255,255,.78)',minWidth:'36px'}}>{pct72}%</span>
               </div>
-            </div>
-            {isExpanded && (
-              <div style={{marginTop:'12px',paddingTop:'12px',borderTop:'1px solid rgba(91,75,138,0.15)'}}>
+            </td>
+            <td className="px-4 py-4" style={{fontFamily:mono,fontSize:'12px',color:'rgba(255,255,255,.78)'}}>{total.toLocaleString()}</td>
+            <td className="px-4 py-4" style={{fontFamily:mono,fontSize:'12px',color:parseFloat(rate)>=98?green:amber}}>{rate}%</td>
+            <td className="px-4 py-4" style={{fontFamily:mono,fontSize:'12px',color:'rgba(255,255,255,.78)'}}>{uptimeHrs.toFixed(1)}h</td>
+          </tr>
+          {isExpanded && <tr><td colSpan={6} style={{padding:0,border:'none'}}>
+              <div style={{padding:'12px 16px',background:'rgba(91,75,138,0.08)',borderBottom:'1px solid rgba(91,75,138,0.15)'}}>
                 <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:'16px',marginBottom:'12px'}}>
                   <div>
                     <div style={{fontFamily:mono,fontSize:'9px',color:dim,letterSpacing:'1px',textTransform:'uppercase',marginBottom:'4px'}}>Session ID</div>
@@ -350,11 +400,12 @@ function LiveSessionsPanel({ sessions, search }) {
                   </div>
                 </div>
               </div>
-            )}
-          </div>
-        );
+          </td></tr>}
+          </React.Fragment>);
       })}
-    </div>
+        </tbody>
+      </table>
+    </Panel>
   );
 }
 
