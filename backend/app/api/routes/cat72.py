@@ -479,7 +479,7 @@ async def stop_test(
         if test.result == "PASS":
             application.state = CertificationState.CONFORMANT
         else:
-            application.state = CertificationState.APPROVED  # Allow retest
+            application.state = CertificationState.UNDER_REVIEW  # Requires re-review before retest
 
     await db.commit()
     
