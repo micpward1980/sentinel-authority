@@ -566,14 +566,14 @@ async def download_session_report(
         raise HTTPException(status_code=403, detail="Admin access required")
     
     # Get session
-    result = await db.execute(select(EnveloSession).where(EnveloSession.id == session_id))
+    result = await db.execute(select(EnveloSession).where(EnveloSession.session_id == session_id))
     session = result.scalar_one_or_none()
     if not session:
         raise HTTPException(status_code=404, detail="Session not found")
     
     # Get violations
     result = await db.execute(
-        select(Violation).where(Violation.session_id == session_id).order_by(Violation.timestamp)
+        select(Violation).where(Violation.session_id == session.id).order_by(Violation.timestamp)
     )
     violations = result.scalars().all()
     
