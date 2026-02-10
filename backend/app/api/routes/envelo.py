@@ -178,7 +178,10 @@ async def receive_telemetry(
     await db.commit()
 
     # Check for high violations
-    await check_and_notify_violations(session, api_key, db)
+    try:
+        await check_and_notify_violations(session, api_key, db)
+    except Exception:
+        pass
 
 
     
