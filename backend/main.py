@@ -215,7 +215,8 @@ async def lifespan(app: FastAPI):
         from app.services.background_tasks import demo_session_ticker, auto_suspend_offline
         asyncio.create_task(demo_session_ticker())
         asyncio.create_task(auto_suspend_offline())
-        logger.info("Auto-suspend monitor started (checks every hour)")        logger.info("Demo session ticker started")
+        logger.info("Auto-suspend monitor started (checks every hour)")
+        logger.info("Demo session ticker started")
     except Exception as e:
         logger.warning(f"Demo ticker failed to start: {e}")
 
