@@ -858,7 +858,7 @@ async def get_monitoring_overview(
     # Status filter
     if status == "online":
         base_q = base_q.where(EnveloSession.status == "active").where(
-            EnveloSession.last_heartbeat_at > (now - timedelta(seconds=120))
+            EnveloSession.last_heartbeat_at > (now.replace(tzinfo=None) - timedelta(seconds=120))
         )
     elif status == "offline":
         base_q = base_q.where(EnveloSession.status == "active")
