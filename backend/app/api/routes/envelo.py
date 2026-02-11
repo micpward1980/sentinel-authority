@@ -825,6 +825,119 @@ async def download_my_session_report(
     )
 
 
+
+
+class SpecReport(BaseModel):
+    """Specs discovered by the ENVELO Interlock from the autonomous system."""
+    odd_specification: Optional[Dict[str, Any]] = None
+    boundaries: Optional[List[dict]] = None
+    system_version: Optional[str] = None
+    manufacturer: Optional[str] = None
+    capabilities: Optional[Dict[str, Any]] = None
+
+
+@router.post("/report-specs", summary="Interlock reports discovered system specs")
+async def report_specs(
+    data: SpecReport,
+    db: AsyncSession = Depends(get_db),
+    api_key: APIKey = Depends(get_api_key_from_header)
+):
+    """
+    Called by the ENVELO Interlock after connecting to an autonomous system.
+    The Interlock discovers the system's ODD, boundaries, version, and capabilities
+    and reports them back to Sentinel Authority.
+    
+    This updates:
+    1. The Application record with discovered specs
+    2. Any CAT-72 test in scheduled/spec_review state with the real envelope
+    """
+    from app.models.models import Application, CAT72Test
+    
+    # Find the application linked to this API key
+    app_result = await db.execute(
+        select(Application).where(
+            Application.applicant_id == api_key.user_id,
+            Application.state.in_(["approved", "bounded", "testing"])
+        ).order_by(Application.created_at.desc())
+    )
+    application = app_result.scalars().first()
+    
+    if not application:
+        raise HTTPException(status_code=404, detail="No active application found for this API key")
+    
+    updated_fields = []
+    
+    # Update application with discovered specs
+    if data.odd_specification:
+        application.odd_specification = data.odd_specification
+        updated_fields.append("odd_specification")
+    
+    if data.boundaries:
+        env = application.envelope_definition or {}
+        if isinstance(env, str):
+            try:
+                env = json.loads(env)
+            except:
+                env = {}
+        env["boundaries"] = data.boundaries
+        application.envelope_definition = env
+        updated_fields.append("boundaries")
+    
+    if data.system_version:
+        application.system_version = data.system_version
+        updated_fields.append("system_version")
+    
+    if data.manufacturer:
+        application.manufacturer = data.manufacturer
+        updated_fields.append("manufacturer")
+    
+    # Update any CAT-72 test in scheduled or spec_review state
+    test_result = await db.execute(
+        select(CAT72Test).where(
+            CAT72Test.application_id == application.id,
+            CAT72Test.state.in_(["scheduled", "spec_review"])
+        )
+    )
+    tests = test_result.scalars().all()
+    
+    for test in tests:
+        if data.boundaries:
+            env = test.envelope_definition or {}
+            if isinstance(env, str):
+                try:
+                    env = json.loads(env)
+                except:
+                    env = {}
+            env["boundaries"] = data.boundaries
+            test.envelope_definition = env
+        
+        if data.odd_specification:
+            env = test.envelope_definition or {}
+            if isinstance(env, str):
+                try:
+                    env = json.loads(env)
+                except:
+                    env = {}
+            env["odd_specification"] = data.odd_specification
+            test.envelope_definition = env
+    
+    await db.commit()
+    
+    import logging
+    logging.getLogger("main").info(
+        f"Interlock reported specs for {application.organization_name}/{application.system_name}: {updated_fields}"
+    )
+    
+    return {
+        "status": "ok",
+        "application_id": application.id,
+        "application_number": application.application_number,
+        "updated_fields": updated_fields,
+        "tests_updated": len(tests),
+        "message": "Specs received and applied to application and pending tests"
+    }
+
+
 @router.post("/heartbeat", summary="Agent heartbeat ping")
 async def receive_heartbeat(
     db: AsyncSession = Depends(get_db),
