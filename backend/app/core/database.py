@@ -36,6 +36,10 @@ async def init_db():
                 ["alembic", "stamp", "head"],
                 cwd=alembic_dir, capture_output=True, text=True, timeout=30
             )
+        try:
+            await conn.execute(text("ALTER TABLE applications ADD COLUMN IF NOT EXISTS review_checklist JSONB"))
+        except Exception:
+            pass
         logger.info("Database migrations complete")
     except Exception as e:
         logger.warning(f"Migration skipped: {e}")

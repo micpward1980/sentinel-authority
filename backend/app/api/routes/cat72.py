@@ -50,18 +50,33 @@ def compute_hash(data: dict, prev_hash: str = "") -> str:
 
 
 def check_envelope(state_vector: Dict[str, float], envelope: Dict[str, Any]) -> tuple:
-    """Check if state vector is within envelope boundaries."""
-    boundaries = envelope.get("boundaries", {})
+    """Check if state vector is within envelope boundaries.
+    Handles both array format [{type,min,max,unit},...] and dict format {var:{min,max}}."""
+    raw = envelope.get("boundaries", {})
+    if isinstance(raw, list):
+        boundaries = {}
+        for b in raw:
+            btype = b.get("type", "").lower().replace(" ", "_")
+            if btype:
+                boundaries[btype] = {
+                    "min": float(b["min"]) if b.get("min") is not None else float("-inf"),
+                    "max": float(b["max"]) if b.get("max") is not None else float("inf"),
+                }
+    elif isinstance(raw, dict):
+        boundaries = raw
+    else:
+        boundaries = {}
+    
     min_distance = float("inf")
     in_envelope = True
     violations = []
     
     for var, value in state_vector.items():
-        if var in boundaries:
-            bounds = boundaries[var]
-            min_val = bounds.get("min", float("-inf"))
-            max_val = bounds.get("max", float("inf"))
-            
+        key = var.lower().replace(" ", "_")
+        bounds = boundaries.get(var) or boundaries.get(key)
+        if bounds:
+            min_val = float(bounds.get("min", float("-inf")))
+            max_val = float(bounds.get("max", float("inf")))
             if value < min_val:
                 in_envelope = False
                 violations.append({"var": var, "value": value, "bound": "min", "threshold": min_val})
@@ -71,9 +86,7 @@ def check_envelope(state_vector: Dict[str, float], envelope: Dict[str, Any]) -> 
                 violations.append({"var": var, "value": value, "bound": "max", "threshold": max_val})
                 distance = value - max_val
             else:
-                # Distance to nearest boundary
                 distance = min(value - min_val, max_val - value)
-            
             min_distance = min(min_distance, distance)
     
     return in_envelope, min_distance if min_distance != float("inf") else 0, violations
@@ -246,6 +259,7 @@ async def list_tests(
                 "ended_at": t.ended_at.isoformat() if t.ended_at else None,
                 "result": t.result,
                 "certificate_issued": t.result == "PASS",
+                "envelope_definition": t.envelope_definition,
             }
             for t, a in rows
         ],
@@ -370,8 +384,8 @@ async def confirm_specs_and_start(
     test.started_at = datetime.utcnow()
     
     # Initialize evidence chain with genesis block
-    genesis = {
-        "type": "genesis",
+    confirm_block = {
+        "type": "specs_confirmed",
         "test_id": test.test_id,
         "started_at": test.started_at.isoformat(),
         "operator_id": int(user["sub"]),
@@ -379,9 +393,12 @@ async def confirm_specs_and_start(
         "envelope_definition": test.envelope_definition,
         "specs_confirmed": True,
     }
-    genesis_hash = compute_hash(genesis)
-    test.evidence_chain = [{"block": 0, "hash": genesis_hash, "data": genesis}]
-    test.evidence_hash = genesis_hash
+    prev_hash = test.evidence_hash or ""
+    confirm_hash = compute_hash(confirm_block, prev_hash)
+    chain = test.evidence_chain or []
+    chain.append({"block": len(chain), "hash": confirm_hash, "data": confirm_block})
+    test.evidence_chain = chain
+    test.evidence_hash = confirm_hash
     
     await db.commit()
     
@@ -416,8 +433,9 @@ async def ingest_telemetry(
     test_id: str,
     data: TelemetryInput,
     db: AsyncSession = Depends(get_db),
+    user: dict = Depends(get_current_user),
 ):
-    """Ingest telemetry data point."""
+    """Ingest telemetry data point. Requires authentication."""
     result = await db.execute(select(CAT72Test).where(CAT72Test.test_id == test_id))
     test = result.scalar_one_or_none()
     

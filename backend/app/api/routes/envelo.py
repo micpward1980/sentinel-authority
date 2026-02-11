@@ -853,20 +853,19 @@ async def receive_heartbeat(
     # Auto-start any scheduled CAT-72 test when interlock first connects
     if sessions:
         try:
-            from app.models.models import CAT72Test
+            from app.models.models import CAT72Test, Application
             from app.services.evidence import compute_hash
             for session in sessions:
                 cat_result = await db.execute(
-                    select(CAT72Test).where(
+                    select(CAT72Test).join(Application, CAT72Test.application_id == Application.id).where(
                         CAT72Test.state == "scheduled",
-                        CAT72Test.organization_name == session.organization_name,
-                        CAT72Test.system_name == session.system_name
+                        Application.organization_name == session.organization_name,
+                        Application.system_name == session.system_name
                     )
                 )
                 pending_test = cat_result.scalar_one_or_none()
                 if pending_test:
                     pending_test.state = "spec_review"
-                    pending_test.started_at = now
                     genesis = {
                         "type": "genesis",
                         "test_id": pending_test.test_id,

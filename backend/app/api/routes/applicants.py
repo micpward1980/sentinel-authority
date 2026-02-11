@@ -211,6 +211,30 @@ async def get_application(
     }
 
 
+
+
+@router.patch("/{application_id}", summary="Update application fields")
+async def update_application_fields(
+    application_id: int,
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+    user: dict = Depends(require_role(["admin", "operator"]))
+):
+    """Update application fields (admin only)."""
+    result = await db.execute(select(Application).where(Application.id == application_id))
+    app = result.scalar_one_or_none()
+    if not app:
+        raise HTTPException(status_code=404, detail="Application not found")
+    
+    data = await request.json()
+    allowed = ["review_checklist", "envelope_definition", "odd_specification", "notes", "facility_location"]
+    for key in allowed:
+        if key in data:
+            setattr(app, key, data[key])
+    
+    await db.commit()
+    return {"message": "Updated", "id": application_id}
+
 @router.patch("/{application_id}/state", summary="Update application state")
 async def update_application_state(
     application_id: int,
@@ -230,13 +254,14 @@ async def update_application_state(
     # Valid state transitions
     VALID_TRANSITIONS = {
         "pending": ["under_review", "suspended"],
-        "under_review": ["approved", "pending", "suspended"],
+        "under_review": ["approved", "pending", "suspended", "rejected"],
         "approved": ["bounded", "testing", "under_review", "suspended"],
         "bounded": ["testing", "approved", "suspended"],
         "testing": ["conformant", "approved", "suspended"],
         "conformant": ["suspended", "expired"],
         "suspended": ["pending", "under_review", "approved"],
         "expired": ["pending"],
+        "rejected": ["pending", "under_review"],
     }
     
     current = app.state
