@@ -140,6 +140,17 @@ function ApplicationDetail() {
     }
   };
 
+  const handleQuickState = async (newState, label) => {
+    if (!await confirm({title: 'Change State', message: label + '?'})) return;
+    try {
+      await api.patch(`/api/applications/${id}/state?new_state=${newState}`);
+      await refreshApp();
+      toast.show('State updated', 'success');
+    } catch (err) {
+      toast.show('Failed: ' + (err.response?.data?.detail || err.message), 'error');
+    }
+  };
+
   // Certification pipeline stages
   const PIPELINE_STAGES = [
     { key: 'pending', label: 'Submitted', icon: '1' },
@@ -199,34 +210,37 @@ function ApplicationDetail() {
           Back to Applications
         </Link>
         {user?.role === 'admin' && (
-        <div style={{display: 'flex', gap: '12px'}}>
+        <div style={{display: 'flex', gap: '8px', alignItems: 'center'}}>
+          {app.state === 'under_review' && (
+            <button onClick={() => handleQuickState('pending', 'Move back to Pending')} className="px-3 py-2 transition-all btn" style={{fontSize: '11px'}}>
+              &#8592; Pending
+            </button>
+          )}
+          {app.state === 'approved' && (
+            <button onClick={() => handleQuickState('under_review', 'Move back to Review')} className="px-3 py-2 transition-all btn" style={{fontSize: '11px'}}>
+              &#8592; Review
+            </button>
+          )}
           {app.state === 'pending' && (
-            <button onClick={handleAdvanceToReview} className="px-4 py-2 transition-all btn">
-              Begin Review
+            <button onClick={handleAdvanceToReview} className="px-3 py-2 transition-all btn" style={{fontSize: '11px', color: '#a896d6'}}>
+              Begin Review &#8594;
             </button>
           )}
           {(app.state === 'pending' || app.state === 'under_review') && (
-            <button onClick={handleApprove} className="px-4 py-2 transition-all btn">
-              Approve Application
+            <button onClick={handleApprove} className="px-3 py-2 transition-all btn" style={{fontSize: '11px', color: '#5CD685'}}>
+              Approve &#8594;
             </button>
           )}
-
-          {['pending','under_review','approved','testing','conformant'].includes(app.state) && (
-            <button onClick={handleSuspend} className="px-4 py-2 transition-all btn" style={{color:'#D65C5C'}}>
+          {['pending','under_review','approved'].includes(app.state) && (
+            <button onClick={handleSuspend} className="px-3 py-2 transition-all btn" style={{fontSize: '11px', color: '#D65C5C'}}>
               Withdraw
             </button>
           )}
           {(app.state === 'suspended' || app.state === 'revoked') && (
-            <button onClick={handleReinstate} className="px-4 py-2 transition-all btn">
+            <button onClick={handleReinstate} className="px-3 py-2 transition-all btn" style={{fontSize: '11px', color: '#5CD685'}}>
               Reinstate
             </button>
           )}
-          {app.state === 'expired' && (
-            <button onClick={handleReinstate} className="px-4 py-2 transition-all btn">
-              Re-open
-            </button>
-          )}
-
         </div>
         )}
       </div>
