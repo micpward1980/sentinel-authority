@@ -171,8 +171,7 @@ async def create_test(
     
     db.add(test)
     
-    # Update application state
-    application.state = CertificationState.BOUNDED
+    # Application stays approved until test completes
     
     await db.commit()
     await db.refresh(test)
@@ -602,7 +601,7 @@ async def stop_test(
         if test.result == "PASS":
             application.state = CertificationState.CONFORMANT
         else:
-            application.state = CertificationState.UNDER_REVIEW  # Requires re-review before retest
+            application.state = "failed"  # Distinct state — requires retest, not re-intake
 
     await db.commit()
     

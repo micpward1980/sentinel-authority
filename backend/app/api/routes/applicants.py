@@ -262,6 +262,7 @@ async def update_application_state(
         "suspended": ["pending", "under_review", "approved"],
         "expired": ["pending"],
         "rejected": ["pending", "under_review"],
+        "failed": ["approved", "under_review"],
     }
     
     current = app.state
