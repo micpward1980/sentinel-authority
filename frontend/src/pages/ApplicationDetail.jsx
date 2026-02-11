@@ -29,10 +29,10 @@ function ApplicationDetail() {
 
   // Review checklist state (persisted in app.review_checklist or local)
   const [checklist, setChecklist] = useState({
-    odd_defined: false,
-    boundaries_complete: false,
-    sys_documented: false,
-    safety_adequate: false,
+    org_verified: false,
+    system_in_scope: false,
+    contact_valid: false,
+    application_complete: false,
   });
   const [rejectReason, setRejectReason] = useState('');
   const [showReject, setShowReject] = useState(false);
@@ -319,13 +319,13 @@ function ApplicationDetail() {
       {app.state === 'under_review' && user?.role === 'admin' && (
         <Panel>
           <div className="hud-label" style={{ marginBottom: '16px' }}>Review Checklist</div>
-          <p style={{ color: C.textDim, fontSize: '12px', marginBottom: '16px' }}>Complete all items before approving. Check each area as you verify it.</p>
+          <p style={{ color: C.textDim, fontSize: '12px', marginBottom: '16px' }}>Verify the applicant before provisioning Interlock access. Technical specs are pulled automatically after install.</p>
           <div style={{ display: 'grid', gap: '0' }}>
             {[
-              { key: 'odd_defined', label: 'ODD Specification', desc: 'Operating domain is clearly defined with environment, speed, weight, and route constraints' },
-              { key: 'boundaries_complete', label: 'Safety Boundaries', desc: 'All critical safety limits defined — speed, geofence, weight, visibility, time windows' },
-              { key: 'sys_documented', label: 'System Documentation', desc: 'Manufacturer, version, SAE level, and operational capabilities documented' },
-              { key: 'safety_adequate', label: 'Safety Assessment', desc: 'Boundary limits are reasonable for the stated ODD and system capabilities' },
+              { key: 'org_verified', label: 'Organization Verified', desc: 'Applicant is a legitimate entity with verifiable corporate identity' },
+              { key: 'system_in_scope', label: 'System In Scope', desc: 'Autonomous system type falls within ODDC certification scope' },
+              { key: 'contact_valid', label: 'Contact Information', desc: 'Primary contact is reachable and authorized to represent the organization' },
+              { key: 'application_complete', label: 'Application Complete', desc: 'All required fields submitted — system name, description, and org details' },
             ].map((item) => (
               <div key={item.key} onClick={() => toggleCheck(item.key)} style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', padding: '14px 12px', borderBottom: '1px solid rgba(255,255,255,.04)', cursor: 'pointer', userSelect: 'none' }}>
                 <div style={{ width: '20px', height: '20px', borderRadius: '3px', border: '2px solid ' + (checklist[item.key] ? C.green : 'rgba(255,255,255,.15)'), background: checklist[item.key] ? 'rgba(92,214,133,0.15)' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '2px', transition: 'all 0.2s' }}>
