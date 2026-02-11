@@ -129,6 +129,17 @@ function ApplicationDetail() {
     }
   };
 
+  const handleQuickState = async (newState, label) => {
+    if (!await confirm({title: 'Change State', message: label + '?'})) return;
+    try {
+      await api.patch(`/api/applications/${id}/state?new_state=${newState}`);
+      await refreshApp();
+      toast.show('State updated', 'success');
+    } catch (err) {
+      toast.show('Failed: ' + (err.response?.data?.detail || err.message), 'error');
+    }
+  };
+
   // Certification pipeline stages
   const PIPELINE_STAGES = [
     { key: 'pending', label: 'Submitted', icon: '1' },
