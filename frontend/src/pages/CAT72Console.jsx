@@ -79,6 +79,19 @@ function CAT72Console() {
     setLoading(prev => ({...prev, [testId]: null}));
   };
 
+  const handleConfirmSpecs = async (testId) => {
+    if (!await confirm({title: 'Confirm Specs & Start CAT-72', message: 'You have reviewed the auto-pulled specifications. Confirm they are accurate and start the 72-hour conformance window?'})) return;
+    setLoading(prev => ({...prev, [testId]: 'confirming'}));
+    try {
+      await api.post('/api/cat72/tests/' + testId + '/confirm-specs');
+      toast.show('Specs confirmed — 72-hour CAT-72 window started', 'success');
+      loadTests();
+    } catch (err) {
+      toast.show('Failed: ' + (err.response?.data?.detail || err.message), 'error');
+    }
+    setLoading(prev => ({...prev, [testId]: null}));
+  };
+
   const handleIssueCertificate = async (testId) => {
     if (!await confirm({title: 'Issue Certificate', message: 'Issue ODDC certificate for this passed test?'})) return;
     setLoading(prev => ({...prev, [testId]: 'issuing'}));
@@ -101,6 +114,7 @@ function CAT72Console() {
 
   const runningTests = tests.filter(t => t.state === 'running');
   const scheduledTests = tests.filter(t => t.state === 'scheduled');
+  const specReviewTests = tests.filter(t => t.state === 'spec_review');
   const completedTests = tests.filter(t => t.state === 'completed');
 
   return (
@@ -113,12 +127,74 @@ function CAT72Console() {
 
       {/* Summary Stats */}
       <div style={{display:"flex",gap:"16px",marginBottom:"16px"}}>
-        {['live','scheduled','completed'].map(tab => (
-          <button key={tab} onClick={() => setActiveTab(tab)} style={{background:activeTab===tab?"rgba(91,75,138,0.25)":"transparent",border:"1px solid rgba(91,75,138,0.3)",color:activeTab===tab?"rgba(255,255,255,.94)":"rgba(255,255,255,.50)",padding:"6px 16px",fontFamily:"Consolas, monospace",fontSize:"10px",textTransform:"uppercase",letterSpacing:"1px",cursor:"pointer"}}>{tab === 'live' ? 'Live CAT-72 Tests' : tab === 'scheduled' ? 'Pending Deployment' : 'Completed Tests'}</button>
-        ))}
+        {['live','spec_review','scheduled','completed'].map(tab => {
+          const label = tab === 'live' ? 'Live Tests' : tab === 'spec_review' ? 'Spec Review' : tab === 'scheduled' ? 'Awaiting Deploy' : 'Completed';
+          const count = tab === 'spec_review' ? specReviewTests.length : tab === 'scheduled' ? scheduledTests.length : null;
+          return (
+          <button key={tab} onClick={() => setActiveTab(tab)} style={{background:activeTab===tab?"rgba(91,75,138,0.25)":"transparent",border:"1px solid rgba(91,75,138,0.3)",color:activeTab===tab?"rgba(255,255,255,.94)":"rgba(255,255,255,.50)",padding:"6px 16px",fontFamily:"Consolas, monospace",fontSize:"10px",textTransform:"uppercase",letterSpacing:"1px",cursor:"pointer",position:'relative'}}>
+            {label}
+            {count > 0 && <span style={{marginLeft:'6px',background: tab === 'spec_review' ? 'rgba(214,160,92,0.3)' : 'rgba(91,75,138,0.4)',color: tab === 'spec_review' ? '#D6A05C' : 'rgba(255,255,255,.78)',padding:'1px 6px',fontFamily:'Consolas, monospace',fontSize:'9px',borderRadius:'2px'}}>{count}</span>}
+          </button>);
+        })}
       </div>
 
-      {activeTab === 'live' ? (<>
+      {activeTab === 'spec_review' ? (<>
+        {/* Spec Review — Interlock connected, specs pulled, awaiting admin confirmation */}
+        {specReviewTests.length === 0 ? (
+          <Panel><div style={{padding:'20px',textAlign:'center',color:'rgba(255,255,255,.4)',fontFamily:"Consolas, monospace",fontSize:'11px'}}>No tests awaiting spec confirmation</div></Panel>
+        ) : specReviewTests.map(test => {
+          const env = typeof test.envelope_definition === 'string' ? (() => { try { return JSON.parse(test.envelope_definition); } catch { return null; } })() : test.envelope_definition;
+          const bounds = env?.boundaries || [];
+          return (
+          <Panel key={test.id}>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:'16px',flexWrap:'wrap',gap:'12px'}}>
+              <div>
+                <div style={{fontWeight:500,color:'rgba(255,255,255,.94)',fontSize:'16px'}}>{test.organization_name} — {test.system_name}</div>
+                <div style={{fontFamily:"Consolas, monospace",fontSize:'10px',color:'rgba(255,255,255,.50)',marginTop:'4px'}}>{test.test_id}</div>
+              </div>
+              <span style={{fontFamily:"Consolas, monospace",fontSize:'10px',color:'#D6A05C',textTransform:'uppercase',letterSpacing:'1px',padding:'4px 10px',border:'1px solid rgba(214,160,92,.3)'}}>Awaiting Spec Confirmation</span>
+            </div>
+            <p style={{color:'rgba(255,255,255,.60)',fontSize:'12px',marginBottom:'16px'}}>The ENVELO Interlock has connected and pulled the system specifications below. Review them with the customer, then confirm to start the 72-hour CAT-72 window.</p>
+            
+            {bounds.length > 0 && (<>
+              <div style={{fontFamily:"Consolas, monospace",fontSize:'9px',letterSpacing:'1.5px',textTransform:'uppercase',color:'#a896d6',marginBottom:'8px'}}>Auto-Pulled Safety Boundaries</div>
+              <table style={{width:'100%',borderCollapse:'collapse',marginBottom:'16px'}}>
+                <thead>
+                  <tr style={{borderBottom:'1px solid rgba(255,255,255,.07)'}}>
+                    {['Type','Constraint','Unit'].map(h => <th key={h} style={{fontFamily:"Consolas, monospace",fontSize:'9px',letterSpacing:'1.5px',textTransform:'uppercase',color:'rgba(255,255,255,.50)',fontWeight:400,padding:'8px 12px',textAlign:'left'}}>{h}</th>)}
+                  </tr>
+                </thead>
+                <tbody>
+                  {bounds.map((b,i) => {
+                    const constraint = b.max && b.min ? (b.min+' - '+b.max) : b.max ? ('<= '+b.max) : b.min ? ('>= '+b.min) : b.corridors ? b.corridors.join(', ') : '-';
+                    return (<tr key={i} style={{borderBottom:'1px solid rgba(255,255,255,.04)'}}>
+                      <td style={{padding:'8px 12px',fontFamily:"Consolas, monospace",fontSize:'11px',color:'#a896d6',textTransform:'uppercase'}}>{b.type}</td>
+                      <td style={{padding:'8px 12px',color:'rgba(255,255,255,.78)',fontSize:'13px'}}>{constraint}</td>
+                      <td style={{padding:'8px 12px',fontFamily:"Consolas, monospace",fontSize:'11px',color:'rgba(255,255,255,.50)'}}>{b.unit||'-'}</td>
+                    </tr>);
+                  })}
+                </tbody>
+              </table>
+            </>)}
+            
+            {env && !bounds.length && (<>
+              <div style={{fontFamily:"Consolas, monospace",fontSize:'9px',letterSpacing:'1.5px',textTransform:'uppercase',color:'#a896d6',marginBottom:'8px'}}>Auto-Pulled Envelope Definition</div>
+              <pre style={{color:'rgba(255,255,255,.60)',fontSize:'11px',fontFamily:"Consolas, monospace",padding:'12px',border:'1px solid rgba(255,255,255,.07)',overflow:'auto',maxHeight:'200px',margin:'0 0 16px'}}>{JSON.stringify(env, null, 2)}</pre>
+            </>)}
+
+            {user?.role === 'admin' && (
+              <div style={{display:'flex',gap:'8px',paddingTop:'12px',borderTop:'1px solid rgba(255,255,255,.07)'}}>
+                <button onClick={() => handleConfirmSpecs(test.test_id)} disabled={loading[test.test_id]} className="px-4 py-2 btn" style={{color:'#5CD685',borderColor:'rgba(92,214,133,.3)',fontFamily:"Consolas, monospace",fontSize:'10px',letterSpacing:'1px',textTransform:'uppercase'}}>
+                  {loading[test.test_id] === 'confirming' ? 'Starting...' : 'Confirm Specs & Start CAT-72'}
+                </button>
+                <button onClick={() => handleStop(test.test_id)} disabled={loading[test.test_id]} className="px-4 py-2 btn" style={{color:'#D65C5C',borderColor:'rgba(214,92,92,.3)',fontFamily:"Consolas, monospace",fontSize:'10px',letterSpacing:'1px',textTransform:'uppercase'}}>
+                  Reject Specs
+                </button>
+              </div>
+            )}
+          </Panel>);
+        })}
+      </>) : activeTab === 'live' ? (<>
         <input type="text" placeholder="Search sessions..." value={catSearch} onChange={e => setCatSearch(e.target.value)} style={{background:"rgba(255,255,255,.04)",border:"1px solid rgba(255,255,255,.08)",color:"rgba(255,255,255,.90)",padding:"6px 12px",fontFamily:"Consolas, monospace",fontSize:"11px",width:"200px",outline:"none",marginBottom:"12px"}} />
         <LiveSessionsPanel sessions={liveSessions} search={catSearch} onStop={handleStop} loading={loading} user={user} />
       </>) : activeTab === 'scheduled' ? (<>

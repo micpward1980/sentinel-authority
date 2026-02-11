@@ -348,6 +348,69 @@ async def start_test(
     }
 
 
+
+
+@router.post("/tests/{test_id}/confirm-specs", summary="Confirm specs and start CAT-72")
+async def confirm_specs_and_start(
+    test_id: str,
+    db: AsyncSession = Depends(get_db),
+    user: dict = Depends(require_role(["admin", "operator"]))
+):
+    """Admin confirms auto-pulled specs are correct, starts the 72-hour window."""
+    result = await db.execute(select(CAT72Test).where(CAT72Test.test_id == test_id))
+    test = result.scalar_one_or_none()
+    
+    if not test:
+        raise HTTPException(status_code=404, detail="Test not found")
+    
+    if test.state != "spec_review":
+        raise HTTPException(status_code=400, detail=f"Test must be in SPEC_REVIEW to confirm, currently {test.state}")
+    
+    test.state = "running"
+    test.started_at = datetime.utcnow()
+    
+    # Initialize evidence chain with genesis block
+    genesis = {
+        "type": "genesis",
+        "test_id": test.test_id,
+        "started_at": test.started_at.isoformat(),
+        "operator_id": int(user["sub"]),
+        "confirmed_by": user.get("email"),
+        "envelope_definition": test.envelope_definition,
+        "specs_confirmed": True,
+    }
+    genesis_hash = compute_hash(genesis)
+    test.evidence_chain = [{"block": 0, "hash": genesis_hash, "data": genesis}]
+    test.evidence_hash = genesis_hash
+    
+    await db.commit()
+    
+    await write_audit_log(db, action="specs_confirmed", resource_type="cat72_test", resource_id=test.id,
+        user_id=int(user["sub"]), user_email=user.get("email"),
+        details={"test_id": test.test_id, "confirmed_by": user.get("email")})
+    
+    # Notify applicant
+    try:
+        app_result = await db.execute(select(Application).where(Application.id == test.application_id))
+        application = app_result.scalar_one_or_none()
+        if application:
+            from app.models.models import User
+            owner_result = await db.execute(select(User).where(User.id == application.applicant_id))
+            owner = owner_result.scalar_one_or_none()
+            if owner and owner.email:
+                await send_test_started(owner.email, application.system_name, test.test_id)
+    except Exception as e:
+        print(f"Email error (specs confirmed): {e}")
+    
+    return {
+        "test_id": test.test_id,
+        "state": test.state,
+        "started_at": test.started_at.isoformat(),
+        "genesis_hash": genesis_hash,
+        "message": "Specs confirmed - 72-hour CAT-72 window started"
+    }
+
+
 @router.post("/tests/{test_id}/telemetry", summary="Submit test telemetry data")
 async def ingest_telemetry(
     test_id: str,
