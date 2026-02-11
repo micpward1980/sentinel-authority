@@ -357,7 +357,7 @@ function ApplicationDetail() {
                 </thead>
                 <tbody>
                   {bounds.map((b, i) => {
-                    const constraint = b.max && b.min ? \`\${b.min} – \${b.max}\` : b.max ? \`≤ \${b.max}\` : b.min ? \`≥ \${b.min}\` : b.radius_m ? \`radius \${b.radius_m}m\` : b.corridors ? b.corridors.join(', ') : b.polygon || '—';
+                    const constraint = b.max && b.min ? `${b.min} - ${b.max}` : b.max ? `<= ${b.max}` : b.min ? `>= ${b.min}` : b.radius_m ? `radius ${b.radius_m}m` : b.corridors ? b.corridors.join(", ") : b.polygon || "-";
                     return (
                       <tr key={i} style={{borderBottom: '1px solid rgba(255,255,255,.04)'}}>
                         <td style={{padding: '8px 12px', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', color: '#a896d6', textTransform: 'uppercase', letterSpacing: '0.5px'}}>{b.type}</td>
