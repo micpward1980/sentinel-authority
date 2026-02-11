@@ -648,7 +648,7 @@ async def cat72_auto_evaluator():
                             system_name=application.system_name,
                             system_version=application.system_version,
                             odd_specification=application.odd_specification,
-                            envelope_definition=application.envelope_definition,
+                            envelope_definition=test.envelope_definition or application.envelope_definition,
                             state="conformant",
                             issued_at=now,
                             expires_at=now + timedelta(days=365),

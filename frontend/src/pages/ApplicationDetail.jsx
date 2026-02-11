@@ -178,7 +178,7 @@ function ApplicationDetail() {
     { key: 'approved', label: 'Awaiting Deploy', icon: '3' },
   ];
   const currentStageIdx = PIPELINE_STAGES.findIndex(s => s.key === app?.state);
-  const isSuspended = app?.state === 'revoked' || app?.state === 'suspended' || app?.state === 'rejected';
+  const isSuspended = app?.state === 'revoked' || app?.state === 'suspended' || app?.state === 'rejected' || app?.state === 'failed';
 
   const nextStepText = () => {
     switch (app?.state) {
@@ -188,13 +188,14 @@ function ApplicationDetail() {
       case 'testing': return 'CAT-72 in progress. ENVELO Interlock reporting telemetry.';
       case 'conformant': return 'ODDC Conformance achieved. Certificate issued.';
       case 'rejected': return 'Application rejected. See comments for details.';
+      case 'failed': return 'CAT-72 test failed. Re-approve to schedule another attempt.';
       case 'revoked': case 'suspended': return 'Application withdrawn. Contact info@sentinelauthority.org.';
       default: return '';
     }
   };
 
   const stateLabel = (s) => {
-    const map = { approved: 'Awaiting Deploy', under_review: 'In Review', conformant: 'Certified', pending: 'Pending', rejected: 'Rejected', suspended: 'Withdrawn', revoked: 'Revoked' };
+    const map = { approved: 'Awaiting Deploy', under_review: 'In Review', conformant: 'Certified', pending: 'Pending', rejected: 'Rejected', suspended: 'Withdrawn', revoked: 'Revoked', failed: 'Failed' };
     return map[s] || (s || '').replace(/_/g, ' ');
   };
 
@@ -272,7 +273,7 @@ function ApplicationDetail() {
           </div>
           {isSuspended && (
             <div style={{ padding: '12px 16px', border: '1px solid ' + C.border, marginBottom: '12px' }}>
-              <span style={{ color: C.red, fontFamily: MONO, fontSize: '11px' }}>&#9888; {app.state === 'rejected' ? 'REJECTED' : 'WITHDRAWN'} — See comments for details.</span>
+              <span style={{ color: C.red, fontFamily: MONO, fontSize: '11px' }}>&#9888; {app.state === 'rejected' ? 'REJECTED' : app.state === 'failed' ? 'FAILED' : 'WITHDRAWN'} — See comments for details.</span>
             </div>
           )}
           <div style={{ padding: '12px 16px', border: '1px solid ' + C.border }}>
@@ -307,7 +308,7 @@ function ApplicationDetail() {
         </Panel>
         <Panel>
           <div className="hud-label" style={{ marginBottom: '16px' }}>Status</div>
-          <span style={{ fontFamily: MONO, fontSize: '12px', letterSpacing: '1px', textTransform: 'uppercase', color: app.state === 'approved' ? C.green : app.state === 'rejected' ? C.red : app.state === 'suspended' ? C.red : C.amber }}>{stateLabel(app.state)}</span>
+          <span style={{ fontFamily: MONO, fontSize: '12px', letterSpacing: '1px', textTransform: 'uppercase', color: app.state === 'approved' ? C.green : app.state === 'rejected' ? C.red : app.state === 'failed' ? C.red : app.state === 'suspended' ? C.red : C.amber }}>{stateLabel(app.state)}</span>
           <p style={{ color: C.text, marginTop: '12px' }}><strong>Submitted:</strong> {app.submitted_at ? new Date(app.submitted_at).toLocaleString() : 'N/A'}</p>
         </Panel>
       </div>

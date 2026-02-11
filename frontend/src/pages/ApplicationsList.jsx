@@ -148,13 +148,15 @@ function ApplicationsList() {
     { key: 'pending', label: 'Pending' },
     { key: 'under_review', label: 'Review' },
     { key: 'approved', label: 'Awaiting Deploy' },
+    { key: 'failed', label: 'Failed' },
+    { key: 'rejected', label: 'Rejected' },
   ];
 
   const filtered = applications;
 
   const stateColor = (state) => {
     if (state === 'conformant') return '#5CD685';
-    if (state === 'revoked' || state === 'suspended') return '#D65C5C';
+    if (state === 'revoked' || state === 'suspended' || state === 'failed' || state === 'rejected') return '#D65C5C';
     if (state === 'testing' || state === 'approved') return '#a896d6';
     return '#D6A05C';
   };
