@@ -601,8 +601,22 @@ async def cat72_auto_evaluator():
                         test.result = "FAIL"
                         test.ended_at = datetime.utcnow()
                         test.result_notes = f"Auto-failed: conformance {pass_rate:.1f}% below {MIN_PASS_RATE}% threshold after {total_actions} actions at {elapsed_hours:.1f}h"
-                        application.state = CertificationState.UNDER_REVIEW
+                        application.state = "failed"
                         # End monitoring sessions
+                        for s in test_sessions:
+                            s.status = "ended"
+                            s.ended_at = datetime.utcnow()
+                        await db.commit()
+                        continue
+
+                    # AUTO-TIMEOUT: 72h elapsed but not enough actions
+                    if elapsed_hours >= TEST_DURATION_HOURS and total_actions < MIN_ACTIONS:
+                        logger.info(f"CAT-72 {test.test_id} AUTO-TIMEOUT: only {total_actions} actions after {elapsed_hours:.1f}h (need {MIN_ACTIONS})")
+                        test.state = "completed"
+                        test.result = "FAIL"
+                        test.ended_at = datetime.utcnow()
+                        test.result_notes = f"Auto-failed: insufficient data — only {total_actions} actions in {elapsed_hours:.1f}h (minimum {MIN_ACTIONS} required)"
+                        application.state = "failed"
                         for s in test_sessions:
                             s.status = "ended"
                             s.ended_at = datetime.utcnow()
