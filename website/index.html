@@ -3116,13 +3116,6 @@
         var _d=Math.sqrt((agents[i].x-cx)*(agents[i].x-cx)+(agents[i].y-cy)*(agents[i].y-cy));
         if(_d>radius*0.7){var _s=radius*0.5/_d;agents[i].x=cx+(agents[i].x-cx)*_s;agents[i].y=cy+(agents[i].y-cy)*_s;agents[i].vx*=0.2;agents[i].vy*=0.2;}
       }
-      } else {
-        initAgents();
-        for (var w = 0; w < 300; w++) updateAgents(16);
-        enveloEvents = [];
-        boundaryPulses = [];
-        for (var i=0; i<agents.length; i++) { agents[i].tier=0; agents[i].haltTimer=0; agents[i].mrcTimer=0; }
-      }
     }, 150);
   });
 
