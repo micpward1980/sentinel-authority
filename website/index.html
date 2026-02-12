@@ -2697,31 +2697,21 @@
       <!-- Disclaimer at bottom -->
 
       
-      <script>
-
   <script>
-  // Pause all canvas animations when tab is hidden
   (function() {
     var _rafs = [];
     var _origRAF = window.requestAnimationFrame;
     var _paused = false;
-    
-    document.addEventListener('visibilitychange', function() {
+    document.addEventListener("visibilitychange", function() {
       _paused = document.hidden;
-      if (!_paused) {
-        // Resume all pending callbacks
-        _rafs.forEach(function(fn) { _origRAF.call(window, fn); });
-        _rafs = [];
-      }
+      if (!_paused) { _rafs.forEach(function(fn) { _origRAF.call(window, fn); }); _rafs = []; }
     });
-    
     window.requestAnimationFrame = function(fn) {
       if (_paused) { _rafs.push(fn); return -1; }
       return _origRAF.call(window, fn);
     };
   })();
-  </script>
-
+  </script>      <script>
         (function() {
   var c = document.getElementById('hero-canvas');
   if (!c) return;
