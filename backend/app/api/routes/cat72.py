@@ -636,7 +636,7 @@ async def stop_test(
         print(f"Email error (test result): {e}")
     
     # Auto-issue certificate on pass
-    if test.result == "pass" and test.state == "completed":
+    if test.result == "PASS" and test.state == "completed":
         try:
             from app.models.models import Certificate, Application
             from datetime import timedelta
