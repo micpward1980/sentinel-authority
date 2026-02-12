@@ -1,1 +1,0 @@
-import{j as e}from"./index-Wp5BDwYI.js";import"./icons-DL0PQMVt.js";function i({children:r,className:s="",style:t={},...a}){return e.jsx("div",{className:`panel ${s}`,style:t,...a,children:r})}export{i as P};

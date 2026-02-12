@@ -317,6 +317,76 @@ function ApplicationDetail() {
         </Panel>
       </div>
 
+
+      {/* ══════════════════════════════════════════════
+          DEPLOY PANEL — shows after approval
+          ══════════════════════════════════════════════ */}
+      {['approved', 'testing', 'conformant'].includes(app.state) && (
+        <Panel>
+          <div className="hud-label" style={{ marginBottom: '16px' }}>Deploy Interlock</div>
+          <p style={{ color: C.text, fontSize: '13px', marginBottom: '20px' }}>
+            {app.state === 'approved' ? 'Your application is approved. Deploy the Interlock to begin your CAT-72 certification test.' :
+             app.state === 'testing' ? 'CAT-72 is running. Your Interlock is connected and reporting telemetry.' :
+             'Certified. Your Interlock is actively enforcing boundaries.'}
+          </p>
+
+          {/* Step 1 */}
+          <div style={{ marginBottom: '20px' }}>
+            <div style={{ fontFamily: MONO, fontSize: '9px', letterSpacing: '2px', textTransform: 'uppercase', color: C.purple, marginBottom: '8px' }}>Step 1 — Install</div>
+            <div style={{ background: 'rgba(0,0,0,.3)', border: '1px solid ' + C.border, padding: '12px 16px', fontFamily: MONO, fontSize: '13px', color: C.green, position: 'relative' }}>
+              <span style={{ position: 'absolute', top: -1, left: -1, width: 8, height: 8, borderTop: '1px solid rgba(157,140,207,0.3)', borderLeft: '1px solid rgba(157,140,207,0.3)' }} />
+              <span style={{ position: 'absolute', top: -1, right: -1, width: 8, height: 8, borderTop: '1px solid rgba(157,140,207,0.3)', borderRight: '1px solid rgba(157,140,207,0.3)' }} />
+              <span style={{ position: 'absolute', bottom: -1, left: -1, width: 8, height: 8, borderBottom: '1px solid rgba(157,140,207,0.3)', borderLeft: '1px solid rgba(157,140,207,0.3)' }} />
+              <span style={{ position: 'absolute', bottom: -1, right: -1, width: 8, height: 8, borderBottom: '1px solid rgba(157,140,207,0.3)', borderRight: '1px solid rgba(157,140,207,0.3)' }} />
+              pip install envelo
+            </div>
+          </div>
+
+          {/* Step 2 */}
+          <div style={{ marginBottom: '20px' }}>
+            <div style={{ fontFamily: MONO, fontSize: '9px', letterSpacing: '2px', textTransform: 'uppercase', color: C.purple, marginBottom: '8px' }}>Step 2 — Start</div>
+            <div style={{ background: 'rgba(0,0,0,.3)', border: '1px solid ' + C.border, padding: '12px 16px', fontFamily: MONO, fontSize: '13px', color: C.green, position: 'relative' }}>
+              <span style={{ position: 'absolute', top: -1, left: -1, width: 8, height: 8, borderTop: '1px solid rgba(157,140,207,0.3)', borderLeft: '1px solid rgba(157,140,207,0.3)' }} />
+              <span style={{ position: 'absolute', top: -1, right: -1, width: 8, height: 8, borderTop: '1px solid rgba(157,140,207,0.3)', borderRight: '1px solid rgba(157,140,207,0.3)' }} />
+              <span style={{ position: 'absolute', bottom: -1, left: -1, width: 8, height: 8, borderBottom: '1px solid rgba(157,140,207,0.3)', borderLeft: '1px solid rgba(157,140,207,0.3)' }} />
+              <span style={{ position: 'absolute', bottom: -1, right: -1, width: 8, height: 8, borderBottom: '1px solid rgba(157,140,207,0.3)', borderRight: '1px solid rgba(157,140,207,0.3)' }} />
+              <div>export ENVELO_API_KEY=<span style={{ color: C.amber }}>[your key from approval email]</span></div>
+              <div style={{ marginTop: '4px' }}>envelo start</div>
+            </div>
+            <p style={{ color: C.textDim, fontSize: '11px', marginTop: '8px' }}>Your API key was sent to <strong style={{ color: C.text }}>{app.contact_email}</strong> on approval. Check your inbox.</p>
+          </div>
+
+          {/* Step 3 */}
+          <div style={{ marginBottom: '20px' }}>
+            <div style={{ fontFamily: MONO, fontSize: '9px', letterSpacing: '2px', textTransform: 'uppercase', color: C.purple, marginBottom: '8px' }}>Step 3 — Integrate</div>
+            <div style={{ background: 'rgba(0,0,0,.3)', border: '1px solid ' + C.border, padding: '12px 16px', fontFamily: MONO, fontSize: '13px', color: C.text, position: 'relative' }}>
+              <span style={{ position: 'absolute', top: -1, left: -1, width: 8, height: 8, borderTop: '1px solid rgba(157,140,207,0.3)', borderLeft: '1px solid rgba(157,140,207,0.3)' }} />
+              <span style={{ position: 'absolute', top: -1, right: -1, width: 8, height: 8, borderTop: '1px solid rgba(157,140,207,0.3)', borderRight: '1px solid rgba(157,140,207,0.3)' }} />
+              <span style={{ position: 'absolute', bottom: -1, left: -1, width: 8, height: 8, borderBottom: '1px solid rgba(157,140,207,0.3)', borderLeft: '1px solid rgba(157,140,207,0.3)' }} />
+              <span style={{ position: 'absolute', bottom: -1, right: -1, width: 8, height: 8, borderBottom: '1px solid rgba(157,140,207,0.3)', borderRight: '1px solid rgba(157,140,207,0.3)' }} />
+              <div style={{ color: C.textDim, fontSize: '11px', marginBottom: '8px' }}># Before any action, check boundaries</div>
+              <div style={{ color: C.green }}>{"curl -X POST http://localhost:9090/enforce \\"}</div>
+              <div style={{ color: C.green, paddingLeft: '20px' }}>{"  -d '{ \"speed\": 50, \"lat\": 30.5 }'"}</div>
+              <div style={{ color: C.textDim, fontSize: '11px', marginTop: '12px', marginBottom: '8px' }}># Python integration</div>
+              <div style={{ color: C.amber }}>@agent.enforce</div>
+              <div style={{ color: C.text }}>{'def move(speed, position):'}</div>
+              <div style={{ color: C.text, paddingLeft: '20px' }}>{'robot.actuate(speed, position)'}</div>
+            </div>
+          </div>
+
+          {/* What happens next */}
+          <div style={{ padding: '12px 16px', border: '1px solid ' + C.border, background: 'rgba(157,140,207,0.03)' }}>
+            <div style={{ fontFamily: MONO, fontSize: '9px', letterSpacing: '2px', textTransform: 'uppercase', color: C.purple, marginBottom: '8px' }}>What happens automatically</div>
+            <div style={{ display: 'grid', gap: '6px', fontSize: '12px', color: C.text }}>
+              <div>&#10003; Interlock connects and downloads your boundaries</div>
+              <div>&#10003; CAT-72 test starts on first heartbeat (72-hour timer)</div>
+              <div>&#10003; Telemetry flows in real-time to this dashboard</div>
+              <div>&#10003; Certificate auto-issues when CAT-72 passes</div>
+            </div>
+          </div>
+        </Panel>
+      )}
+
       {/* ══════════════════════════════════════════════
           REVIEW PANEL — only visible during under_review
           ══════════════════════════════════════════════ */}
