@@ -3128,7 +3128,7 @@
     drawLegend();
 
     ctx.restore();
-    if (!animRunning) { animRunning = true; requestAnimationFrame(animate); }
+    requestAnimationFrame(animate);
   }
 
   var resizeTimer = null;
@@ -3177,7 +3177,7 @@
           agents[i].vy *= 0.3;
         }
       }
-      if (!animRunning) { animRunning = true; requestAnimationFrame(animate); }
+      requestAnimationFrame(animate);
     }, 200);
   }
   if (document.readyState === 'complete') {
@@ -3647,11 +3647,11 @@
           ctx.fillText('AUDIT \u00B7 '+stats.total+' CHECKED \u00B7 '+stats.exec+' PASSED \u00B7 '+stats.block+' BLOCKED',
             W/2,L.mob?H-10:H-8);
 
-          if (!animRunning) { animRunning = true; requestAnimationFrame(animate); }
+          requestAnimationFrame(animate);
         }
 
         resize();window.addEventListener('resize',resize);
-        if (!animRunning) { animRunning = true; requestAnimationFrame(animate); }
+        requestAnimationFrame(animate);
       })();
       </script>
 
@@ -4161,11 +4161,11 @@
           ctx.fillText(stats.out+' TELEMETRY SENT \u00B7 '+stats.rejected+' INBOUND REJECTED',
             W/2,L.mob?H-30:H-28);
 
-          if (!animRunning) { animRunning = true; requestAnimationFrame(animate); }
+          requestAnimationFrame(animate);
         }
 
         resize();window.addEventListener('resize',resize);
-        if (!animRunning) { animRunning = true; requestAnimationFrame(animate); }
+        requestAnimationFrame(animate);
       })();
       </script>
 
@@ -5064,7 +5064,7 @@
           drawFail(now);
           drawLegend();
 
-          if (!animRunning) { animRunning = true; requestAnimationFrame(animate); }
+          requestAnimationFrame(animate);
         }
 
         window.addEventListener('resize',resize);
@@ -5097,7 +5097,7 @@
           })(pi);
         }
 
-        if (!animRunning) { animRunning = true; requestAnimationFrame(animate); }
+        requestAnimationFrame(animate);
       })();
       </script>
 
@@ -5361,11 +5361,11 @@
           for(var i=0;i<steps.length;i++) drawNode(stops[i].x,stops[i].y,steps[i],time);
           drawDot(stops,time);
           drawPulses();
-          if (!animRunning) { animRunning = true; requestAnimationFrame(animate); }
+          requestAnimationFrame(animate);
         }
 
         resize();window.addEventListener('resize',resize);
-        if (!animRunning) { animRunning = true; requestAnimationFrame(animate); }
+        requestAnimationFrame(animate);
       })();
       </script>
       </div>
