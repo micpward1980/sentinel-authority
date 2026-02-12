@@ -505,11 +505,7 @@ function ApplicationDetail() {
         <div style={{ marginBottom: comments.length > 0 ? '20px' : '0' }}>
           <textarea value={newComment} onChange={(e) => setNewComment(e.target.value)} rows={3} placeholder="Add a comment or note..." className="w-full px-4 py-3 outline-none resize-none" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid ' + C.border, color: 'rgba(255,255,255,.94)', fontSize: '13px', fontFamily: 'inherit' }} onFocus={(e) => e.target.style.borderColor = C.purple} onBlur={(e) => e.target.style.borderColor = C.border} />
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginTop: '8px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              {user?.role === 'admin' && (
 
-              )}
-            </div>
             <button onClick={handlePostComment} disabled={postingComment || !newComment.trim()} className="px-4 py-2 btn">{postingComment ? 'Posting...' : 'Post Comment'}</button>
           </div>
         </div>
