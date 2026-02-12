@@ -597,6 +597,34 @@ async def send_application_approved(to: str, system_name: str, app_number: str):
     """
     await send_email(to, f"Approved: {system_name} — {app_number}", html)
 
+async def send_application_rejected(to: str, system_name: str, app_number: str, reason: str = ""):
+    if not await should_send_email(to, "application_updates"):
+        return False
+    """Notify applicant their application has been rejected"""
+    reason_block = f'<p style="color: #ccc; line-height: 1.6; margin: 16px 0; padding: 16px; border-left: 2px solid rgba(214,92,92,0.4); background: rgba(214,92,92,0.05);">{reason}</p>' if reason else ''
+    html = f"""
+    <div style="font-family: -apple-system, Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #0a0a0f; color: #e0e0e0;">
+        <div style="padding: 32px; border-bottom: 1px solid rgba(157,140,207,0.2);">
+            <div style="font-family: monospace; font-size: 10px; letter-spacing: 4px; text-transform: uppercase; color: rgba(157,140,207,0.7);">Sentinel Authority</div>
+        </div>
+        <div style="padding: 32px;">
+            <h2 style="color: #d65c5c; font-weight: 400; margin: 0 0 16px;">Application Not Approved</h2>
+            <p style="color: #ccc; line-height: 1.6; margin: 0 0 20px;">
+                Your ODDC certification application for <strong style="color: #fff;">{system_name}</strong> ({app_number}) was not approved at this time.
+            </p>
+            {reason_block}
+            <p style="color: #ccc; line-height: 1.6; margin: 0 0 24px;">
+                If you believe this was in error or have additional information, please contact us.
+            </p>
+            <div style="border-top: 1px solid rgba(255,255,255,0.06); padding-top: 20px; margin-top: 32px;">
+                <p style="font-size: 12px; color: #666; margin: 0;">Sentinel Authority — info@sentinelauthority.org</p>
+            </div>
+        </div>
+    </div>
+    """
+    await send_email(to, f"Application Update: {system_name} — {app_number}", html)
+
+
 
 async def send_application_under_review(to: str, system_name: str, app_number: str):
     if not await should_send_email(to, "application_updates"):

@@ -13,7 +13,7 @@ from app.models.models import Application, AuditLog, ApplicationComment, Certifi
 from app.services.audit_service import write_audit_log
 from app.services.email_service import (
     notify_admin_new_application, send_application_received,
-    send_application_approved, send_application_under_review,
+    send_application_approved, send_application_rejected, send_application_under_review,
     send_test_scheduled, send_email, ADMIN_EMAIL
 )
 
@@ -253,16 +253,14 @@ async def update_application_state(
     
     # Valid state transitions
     VALID_TRANSITIONS = {
-        "pending": ["under_review", "suspended"],
-        "under_review": ["approved", "pending", "suspended", "rejected"],
-        "approved": ["bounded", "testing", "under_review", "suspended"],
-        "bounded": ["testing", "approved", "suspended"],
-        "testing": ["conformant", "approved", "suspended"],
+        "pending": ["approved", "rejected", "suspended"],
+        "approved": ["testing", "suspended"],
+        "testing": ["conformant", "suspended"],
         "conformant": ["suspended", "expired"],
-        "suspended": ["pending", "under_review", "approved"],
+        "suspended": ["pending", "approved"],
         "expired": ["pending"],
-        "rejected": ["pending", "under_review"],
-        "failed": ["approved", "under_review"],
+        "rejected": ["pending"],
+        "failed": ["approved"],
     }
     
     current = app.state
@@ -371,8 +369,8 @@ async def update_application_state(
                             applicant_email, system_name,
                             app_number, api_key_raw, "Pending"
                         )
-                elif new_state == "under_review":
-                    await send_application_under_review(applicant_email, system_name, app_number)
+                elif new_state == "rejected":
+                    await send_application_rejected(applicant_email, system_name, app_number)
                 elif new_state == "suspended":
                     await send_email(
                         applicant_email,
