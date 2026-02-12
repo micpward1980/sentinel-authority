@@ -2692,9 +2692,11 @@
   var RED = [214,92,92];
   var AMBER = [214,160,92];
 
+  function isMob() { return W < 600 || (window.innerHeight < 500 && window.innerWidth > window.innerHeight); }
+
   var cx, cy, radius;
   var agents = [];
-  var AGENT_COUNT = window.innerWidth < 768 ? 14 : 28;
+  var AGENT_COUNT = (window.innerWidth < 768 || window.innerHeight < 500) ? 14 : 28;
   var telemetry = [];
   var lastTel = 0;
   var boundaryPulses = [];
@@ -2729,7 +2731,7 @@
   function resize() {
     var r = c.parentElement.getBoundingClientRect();
     W = r.width;
-    H = W < 550 ? W * 0.80 : W * 0.42;
+    H = W < 550 ? W * 0.80 : (window.innerHeight < 500 && window.innerWidth > window.innerHeight) ? Math.min(W * 0.42, window.innerHeight * 0.55) : W * 0.42;
     c.width = W * dpr;
     c.height = H * dpr;
     c.style.height = H + 'px';
@@ -2899,7 +2901,7 @@
 
   // ── LEGEND ──
   function drawLegend() {
-    var lx = 12, ly = H - Math.min(20, H*0.05); if (W < 600) return;
+    var lx = 12, ly = H - Math.min(20, H*0.05); if (isMob()) return;
     ctx.font = '600 8px "IBM Plex Mono"';
     ctx.textAlign = 'left';
     var items = [
@@ -3006,18 +3008,18 @@
   }
 
   function spawnTelemetry(now) {
-    if (W < 600 && telemetry.length >= 4) return;
-    var telDelay = W < 600 ? 900 : 280;
+    if (isMob() && telemetry.length >= 4) return;
+    var telDelay = isMob() ? 900 : 280;
     if (now-lastTel>telDelay) {
       lastTel=now;
       var label = dataLabels[Math.floor(Math.random()*dataLabels.length)];
       var side = Math.random()>0.5?1:-1;
-      var spawnDist = W < 600 ? radius+10+Math.random()*15 : radius+35+Math.random()*60;
+      var spawnDist = isMob() ? radius+10+Math.random()*15 : radius+35+Math.random()*60;
       var spawnX = cx+side*spawnDist;
       // Clamp to viewport
-      spawnX = Math.max(10, Math.min(W-10, spawnX));
+      spawnX = Math.max(isMob()?30:10, Math.min(W-(isMob()?30:10), spawnX));
       telemetry.push({
-        text: W < 480 ? label.split(':')[0] : label,
+        text: isMob() ? label.split(':')[0] : label,
         x: spawnX,
         y: Math.max(cy-radius*0.4, Math.min(cy+radius*0.3, cy-radius*0.4+Math.random()*radius*0.7)),
         tx: cx+(Math.random()-0.5)*radius*0.5,
@@ -3030,7 +3032,7 @@
   function drawTelemetry() {
     for (var i=telemetry.length-1;i>=0;i--) {
       var t=telemetry[i];
-      t.prog+=W<600?0.005:0.007;
+      t.prog+=isMob()?0.005:0.007;
       if(t.prog>1) t.alpha-=0.025;
       if(t.alpha<=0){telemetry.splice(i,1);continue;}
 
@@ -3056,7 +3058,7 @@
   }
 
   function drawHash(now) {
-    if (W < 480) return; // Skip hash on small phones - overlaps content
+    if (isMob()) return; // Skip hash on mobile/landscape - overlaps content
     var x = W-16;
     var startY = cy-radius*0.3;
     var chars='0123456789abcdef';
@@ -4485,6 +4487,8 @@
         var AMBER = [214,160,92];
         var RED = [214,92,92];
         var PHASE_COLORS = [GREEN, AMBER, PURPLE];
+
+        function isMob() { return W < 600 || (window.innerHeight < 500 && window.innerWidth > window.innerHeight); }
         var PHASE_NAMES = ['CONTINUOUS DEMO', 'STRESS TESTING', 'FAIL-CLOSED PROOF'];
 
         var simTime = 0;
@@ -4519,7 +4523,7 @@
           telemetry = [];
           var r = c.parentElement.getBoundingClientRect();
           W = r.width;
-          H = W < 550 ? W * 0.80 : W * 0.42;
+          H = W < 550 ? W * 0.80 : (window.innerHeight < 500 && window.innerWidth > window.innerHeight) ? Math.min(W * 0.42, window.innerHeight * 0.55) : W * 0.42;
           // Landscape: cap canvas height
           if (window.innerHeight < 500 && window.innerWidth > window.innerHeight) {
             H = Math.min(H, window.innerHeight * 0.55);
@@ -4658,7 +4662,7 @@
 
         // ── LEGEND ──
         function drawLegend() {
-          var lx = 12, ly = H - Math.min(20, H*0.05); if (W < 600) return;
+          var lx = 12, ly = H - Math.min(20, H*0.05); if (isMob()) return;
           ctx.font = '600 8px "IBM Plex Mono"';
           ctx.textAlign = 'left';
           var items = [
@@ -4821,15 +4825,15 @@
 
         function spawnTelemetry(now) {
           if (halted) return;
-          if (W < 600 && telemetry.length >= 4) return;
-          var interval = W < 600 ? (phase===1 ? 400 : 700) : (phase===1 ? 140 : 280);
+          if (isMob() && telemetry.length >= 4) return;
+          var interval = isMob() ? (phase===1 ? 400 : 700) : (phase===1 ? 140 : 280);
           if (now-lastTel>interval) {
             lastTel=now;
             var label = dataLabels[Math.floor(Math.random()*dataLabels.length)];
             var side = Math.random()>0.5?1:-1;
             telemetry.push({
               text:label,
-              x: cx+side*(radius+(W<600?10:35)+Math.random()*(W<600?20:60)),
+              x: cx+side*(radius+(isMob()?10:35)+Math.random()*(isMob()?20:60)),
               y: Math.max(cy-radius*0.4, Math.min(cy+radius*0.3, cy-radius*0.4+Math.random()*radius*0.7)),
               tx: cx+(Math.random()-0.5)*radius*0.5,
               ty: cy+(Math.random()-0.5)*radius*0.5,
@@ -4841,7 +4845,7 @@
         function drawTelemetry() {
           for (var i=telemetry.length-1;i>=0;i--) {
             var t=telemetry[i];
-            t.prog+=W<600?0.005:0.007;
+            t.prog+=isMob()?0.005:0.007;
             if(t.prog>1) t.alpha-=0.025;
             if(t.alpha<=0){telemetry.splice(i,1);continue;}
 
