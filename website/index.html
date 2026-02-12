@@ -3231,7 +3231,7 @@
           H = W < 550 ? 560 : 340;
     // Landscape: cap canvas height
     if (window.innerHeight < 500 && window.innerWidth > window.innerHeight) {
-      H = Math.min(H, window.innerHeight * 0.70);
+      H = Math.min(H, window.innerHeight * 0.80);
     }
           c.width = W * dpr;
           c.height = H * dpr;
@@ -3240,7 +3240,7 @@
         }
 
         function layout() {
-          var mob = W < 550 || (window.innerHeight < 500 && window.innerWidth > window.innerHeight);
+          var mob = W < 550;
           if (mob) {
             var cx = W/2;
             var sc = H/420; // scale factor — 420 is the original mobile H
@@ -3791,13 +3791,13 @@
         function resize(){
           var r=c.parentElement.getBoundingClientRect();W=r.width;
           H=W<550?560:340;
-          if(window.innerHeight<500&&window.innerWidth>window.innerHeight){H=Math.min(H,window.innerHeight*0.70);}
+          if(window.innerHeight<500&&window.innerWidth>window.innerHeight){H=Math.min(H,window.innerHeight*0.80);}
           c.width=W*dpr;c.height=H*dpr;
           c.style.height=H+'px';ctx.setTransform(dpr,0,0,dpr,0,0);
         }
 
         function layout(){
-          var mob=W<550||(window.innerHeight<500&&window.innerWidth>window.innerHeight);
+          var mob=W<550;
           if(mob){var cx=W/2;var sc=H/460;var rsc=Math.min(sc,1);return{model:{x:cx,y:H*0.12,r:44*rsc},envelo:{x:cx,y:H*0.40,r:62*rsc},sentinel:{x:cx,y:H*0.70,r:44*rsc},mob:true};}
           var cy=H/2-8,m=W*0.08,s=(W-m*2)/3;
           return{model:{x:m+s*0.5,y:cy,r:48},envelo:{x:m+s*1.5,y:cy,r:66},sentinel:{x:m+s*2.5,y:cy,r:48},mob:false};
@@ -5153,14 +5153,14 @@
         function resize(){
           var r=c.parentElement.getBoundingClientRect();
           W=r.width;H=W<550?560:200;
-          if(window.innerHeight<500&&window.innerWidth>window.innerHeight){H=Math.min(H,window.innerHeight*0.45);}
+          if(window.innerHeight<500&&window.innerWidth>window.innerHeight){H=Math.min(H,window.innerHeight*0.55);}
           c.width=W*dpr;c.height=H*dpr;
           c.style.height=H+'px';
           ctx.setTransform(dpr,0,0,dpr,0,0);
         }
 
         function getStops(){
-          var mob=W<550||(window.innerHeight<500&&window.innerWidth>window.innerHeight),s=[];
+          var mob=W<550,s=[];
           if(!mob){var m=W*0.08,span=W-m*2;
             for(var i=0;i<steps.length;i++)s.push({x:m+span*(i/(steps.length-1)),y:H/2});
           }else{var mt=H*0.06,mb=H*0.06,span=H-mt-mb;
