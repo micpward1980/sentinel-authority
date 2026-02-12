@@ -39,12 +39,16 @@ class ApplicationCreate(BaseModel):
 async def generate_application_number(db: AsyncSession) -> str:
     year = datetime.utcnow().year
     result = await db.execute(
-        select(func.count(Application.id)).where(
+        select(func.max(Application.application_number)).where(
             Application.application_number.like(f"APP-{year}-%")
         )
     )
-    count = (result.scalar() or 0) + 1
-    return f"APP-{year}-{count:05d}"
+    max_num = result.scalar()
+    if max_num:
+        seq = int(max_num.split("-")[-1]) + 1
+    else:
+        seq = 1
+    return f"APP-{year}-{seq:05d}"
 
 
 @router.post("/", summary="Submit new application")
