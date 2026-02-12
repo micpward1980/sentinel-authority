@@ -31,6 +31,7 @@ from .boundaries import (
     Boundary, NumericBoundary, GeoBoundary, TimeBoundary, 
     RateBoundary, StateBoundary, boundary_from_dict
 )
+from .discovery import DiscoveryEngine
 from .exceptions import (
     EnveloViolation, EnveloConnectionError, EnveloConfigError,
     EnveloNotStartedError, EnveloFailsafeError, EnveloTamperError
@@ -160,6 +161,10 @@ class EnveloAgent:
         
         # Fetch boundaries from server
         if not self._fetch_boundaries():
+            # No server boundaries — enter auto-discovery mode
+            self.logger.info("[ENVELO] No boundaries from server — entering auto-discovery mode")
+            self._discovery_mode = True
+            self._discovery.start()
             if self.config.fail_closed:
                 self.logger.error("Cannot fetch boundaries and fail_closed=True. Cannot start.")
                 return False
@@ -224,6 +229,18 @@ class EnveloAgent:
     # =========================================================================
     
     def check(self, **params) -> bool:
+        # Feed parameters to discovery engine if in discovery mode
+        if self._discovery_mode:
+            self._discovery.observe(**params)
+            if self._discovery.state == DiscoveryEngine.ENFORCING:
+                # Discovery complete — boundaries are now loaded
+                self._discovery_mode = False
+                self.logger.info("[ENVELO] Discovery complete — enforcement active")
+            else:
+                # Still discovering — allow all actions
+                self._queue_telemetry("check", params, "ALLOW_DISCOVERY")
+                return True
+
         """
         Check if parameters are within boundaries.
         
@@ -325,6 +342,19 @@ class EnveloAgent:
         def decorator(fn):
             @functools.wraps(fn)
             def wrapper(*args, **kwargs):
+                # Feed discovery engine
+                if self._discovery_mode:
+                    mapped = {}
+                    sig_params = list(fn.__code__.co_varnames[:fn.__code__.co_argcount])
+                    for i, arg in enumerate(args):
+                        if i < len(sig_params):
+                            mapped[sig_params[i]] = arg
+                    mapped.update(kwargs)
+                    self._discovery.observe(**mapped)
+                    if self._discovery.state == DiscoveryEngine.ENFORCING:
+                        self._discovery_mode = False
+                    else:
+                        return fn(*args, **kwargs)  # Allow during discovery
                 # Build parameter dict from function arguments
                 import inspect
                 sig = inspect.signature(fn)
@@ -765,6 +795,43 @@ class EnveloAgent:
         }
     
     @property
+    def _on_discovery_complete(self, boundaries, envelope_definition):
+        """Called when auto-discovery finishes generating boundaries."""
+        self.logger.info(f"[ENVELO] Auto-discovered {len(boundaries)} boundaries")
+
+        # Load discovered boundaries into enforcement engine
+        for b in boundaries:
+            self._boundaries[b.parameter] = b
+            self.logger.info(f"  → {b.name}: {b.parameter}")
+
+        # Upload envelope to Sentinel Authority
+        try:
+            resp = requests.post(
+                f"{self.config.api_endpoint}/api/envelo/boundaries/discovered",
+                headers={"Authorization": f"Bearer {self.config.api_key}"},
+                json={
+                    "session_id": self._session_id,
+                    "envelope_definition": envelope_definition,
+                },
+                timeout=10,
+            )
+            if resp.ok:
+                self.logger.info("[ENVELO] Envelope uploaded to Sentinel Authority")
+            else:
+                self.logger.warning(f"[ENVELO] Envelope upload failed: {resp.status_code}")
+        except Exception as e:
+            self.logger.warning(f"[ENVELO] Envelope upload error: {e}")
+            # Still enforce locally even if upload fails
+
+        self.logger.info("[ENVELO] ═══════════════════════════════════════════")
+        self.logger.info("[ENVELO] AUTO-DISCOVERY COMPLETE — ENFORCEMENT ACTIVE")
+        self.logger.info(f"[ENVELO] {len(boundaries)} boundaries now enforced")
+        self.logger.info("[ENVELO] ═══════════════════════════════════════════")
+
+    def get_discovery_stats(self):
+        """Return current auto-discovery statistics."""
+        return self._discovery.get_discovery_stats()
+
     def is_running(self) -> bool:
         """Check if agent is running"""
         return self._started and self._running
