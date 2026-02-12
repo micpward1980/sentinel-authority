@@ -2899,7 +2899,7 @@
 
   // ── LEGEND ──
   function drawLegend() {
-    var lx = 12, ly = H - Math.min(20, H*0.05);
+    var lx = 12, ly = H - Math.min(20, H*0.05); if (W < 600) return;
     ctx.font = '600 8px "IBM Plex Mono"';
     ctx.textAlign = 'left';
     var items = [
@@ -4658,7 +4658,7 @@
 
         // ── LEGEND ──
         function drawLegend() {
-          var lx = 12, ly = H - Math.min(20, H*0.05);
+          var lx = 12, ly = H - Math.min(20, H*0.05); if (W < 600) return;
           ctx.font = '600 8px "IBM Plex Mono"';
           ctx.textAlign = 'left';
           var items = [
