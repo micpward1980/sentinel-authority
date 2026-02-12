@@ -2748,7 +2748,7 @@
   function resize() {
     var r = c.parentElement.getBoundingClientRect();
     W = r.width;
-    H = W < 550 ? W * 0.80 : (window.innerHeight < 500 && window.innerWidth > window.innerHeight) ? Math.min(W * 0.42, window.innerHeight * 0.55) : W * 0.42;
+    H = W < 550 ? W * 0.80 : (window.innerHeight < 500 && window.innerWidth > window.innerHeight) ? Math.min(W * 0.42, window.innerHeight * 0.75) : W * 0.42;
     c.width = W * dpr;
     c.height = H * dpr;
     c.style.height = H + 'px';
