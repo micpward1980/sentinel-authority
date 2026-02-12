@@ -1284,8 +1284,8 @@ function EnveloAdminView() {
               <Panel glow>
                 <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px'}}>
                   <div>
-                    <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '4px', textTransform: 'uppercase', color: '#a896d6', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '12px'}}><span style={{width:'24px',height:'1px',background:'#a896d6'}}></span>Boundary Review — Read Only</p>
-                    <h2 style={{fontFamily: "Georgia, 'Source Serif 4', serif", fontSize: 'clamp(24px, 4vw, 32px)', fontWeight: 200, letterSpacing: '-0.02em', margin: '0 0 4px 0'}}>{reviewingCert.system_name}</h2>
+                    <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: '#a896d6', marginBottom: '8px'}}>Boundary Review — Read Only</p>
+                    <h2 style={{fontSize: 'clamp(18px, 4vw, 24px)', fontWeight: 200, margin: '0 0 4px 0'}}>{reviewingCert.system_name}</h2>
                     <p style={{color: 'rgba(255,255,255,.78)'}}>{reviewingCert.organization_name} • {reviewingCert.certificate_number}</p>
                   </div>
                   <button onClick={() => setReviewingCert(null)} style={{padding: '8px 16px', background: 'transparent', border: `1px solid ${'rgba(255,255,255,.07)'}`, color: 'rgba(255,255,255,.50)', cursor: 'pointer', fontSize: '11px'}}>← Back</button>

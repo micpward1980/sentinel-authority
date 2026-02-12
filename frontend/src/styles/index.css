@@ -50,9 +50,9 @@
 /* Modal exceptions — explicit solid backgrounds override transparent */
 .sa-modal-panel,
 .sa-main-content .sa-modal-panel {
-  background: #120c1e !important;
-  border: 1px solid rgba(157,140,207,0.2) !important;
-  box-shadow: 0 24px 80px rgba(0,0,0,.5) !important;
+  background: rgba(12,10,18,0.97) !important;
+  border: 1px solid rgba(255,255,255,.06) !important;
+  box-shadow: none !important;
 }
 .sa-modal-panel div,
 .sa-main-content .sa-modal-panel div {
@@ -103,7 +103,7 @@
 
 /* .btn class ONLY — ghost border with bracket corners */
 .sa-main-content .btn {
-  border: 1px solid rgba(255,255,255,.08) !important;
+  border: 1px solid rgba(255,255,255,.06) !important;
   background: transparent !important;
 }
 .sa-main-content .btn:hover {

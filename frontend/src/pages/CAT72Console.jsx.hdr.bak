@@ -120,8 +120,8 @@ function CAT72Console() {
   return (
     <div className="space-y-6">
       <div>
-        <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '4px', textTransform: 'uppercase', color: '#a896d6', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '12px'}}><span style={{width:'24px',height:'1px',background:'#a896d6'}}></span>Testing</p>
-        <h1 style={{fontFamily: "Georgia, 'Source Serif 4', serif", fontSize: 'clamp(24px, 4vw, 32px)', fontWeight: 200, letterSpacing: '-0.02em', margin: 0}}>CAT-72 Console</h1>
+        <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', color: '#a896d6', marginBottom: '8px'}}>Testing</p>
+        <h1 style={{fontFamily: "Georgia, 'Source Serif 4', serif", fontSize: 'clamp(24px, 5vw, 36px)', fontWeight: 200, margin: 0}}>CAT-72 Console</h1>
         <p style={{color: 'rgba(255,255,255,.78)', marginTop: '8px'}}>{user?.role === 'admin' ? '72-hour Conformance Authorization Tests · Auto-refreshes every 15s' : 'Monitor your 72-hour conformance test in real time'}</p>
       </div>
 
@@ -133,7 +133,7 @@ function CAT72Console() {
           return (
           <button key={tab} onClick={() => setActiveTab(tab)} style={{background:activeTab===tab?"rgba(91,75,138,0.25)":"transparent",border:"1px solid rgba(91,75,138,0.3)",color:activeTab===tab?"rgba(255,255,255,.94)":"rgba(255,255,255,.50)",padding:"6px 16px",fontFamily:"Consolas, monospace",fontSize:"10px",textTransform:"uppercase",letterSpacing:"1px",cursor:"pointer",position:'relative'}}>
             {label}
-            {count > 0 && <span style={{marginLeft:'6px',background: tab === 'spec_review' ? 'rgba(214,160,92,0.3)' : 'rgba(91,75,138,0.4)',color: tab === 'spec_review' ? '#D6A05C' : 'rgba(255,255,255,.78)',padding:'1px 6px',fontFamily:'Consolas, monospace',fontSize:'9px',borderRadius:'0'}}>{count}</span>}
+            {count > 0 && <span style={{marginLeft:'6px',background: tab === 'spec_review' ? 'rgba(214,160,92,0.3)' : 'rgba(91,75,138,0.4)',color: tab === 'spec_review' ? '#D6A05C' : 'rgba(255,255,255,.78)',padding:'1px 6px',fontFamily:'Consolas, monospace',fontSize:'9px',borderRadius:'2px'}}>{count}</span>}
           </button>);
         })}
       </div>

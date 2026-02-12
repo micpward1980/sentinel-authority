@@ -75,8 +75,9 @@ function MyActivityPage() {
   const thStyle = {padding: '12px 16px', textAlign: 'left', fontSize: '10px', fontFamily: mono, textTransform: 'uppercase', letterSpacing: '1px', color: 'rgba(255,255,255,.50)'};
 
   return (
-    <div className="space-y-6" style={{maxWidth: 'min(900px, 95vw)', margin: '0 auto'}}>
+    <>
       <SectionHeader label="Account" title="My Activity" />
+      <div className="space-y-6" style={{maxWidth: 'min(900px, 95vw)', margin: '0 auto'}}>
 
       <Panel>
         <div style={{display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap'}}>
@@ -137,6 +138,7 @@ function MyActivityPage() {
         )}
       </Panel>
     </div>
+    </>
   );
 }
 

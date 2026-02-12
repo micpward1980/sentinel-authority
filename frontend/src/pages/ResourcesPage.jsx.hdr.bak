@@ -31,16 +31,16 @@ function ResourcesPage() {
   };
 
   return (
-    <div style={{ maxWidth: '900px' }}>
+    <div style={{ padding: '32px', maxWidth: '900px', margin: '0 auto' }}>
       <div style={{ marginBottom: '32px' }}>
         <p style={{
-          fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px',
-          letterSpacing: '4px', textTransform: 'uppercase',
+          fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px',
+          letterSpacing: '2px', textTransform: 'uppercase',
           color: '#a896d6', marginBottom: '8px'
         }}>RESOURCES</p>
         <h1 style={{
-          fontFamily: "Georgia, 'Source Serif 4', serif", fontSize: 'clamp(24px, 4vw, 32px)',
-          fontWeight: 200, letterSpacing: '-0.02em', color: 'rgba(255,255,255,.94)', margin: 0
+          fontFamily: "Georgia, 'Source Serif 4', serif", fontSize: 'clamp(20px, 4vw, 28px)',
+          fontWeight: 200, color: 'rgba(255,255,255,.94)', margin: 0
         }}>Documents & Guides</h1>
         <p style={{ color: 'rgba(255,255,255,.50)', marginTop: '8px', fontSize: '14px' }}>
           Reference materials for the ODDC certification process.
@@ -80,7 +80,7 @@ function ResourcesPage() {
                   {doc.description}
                 </div>
                 <div style={{
-                  fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px',
+                  fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px',
                   color: 'rgba(255,255,255,.50)', marginTop: '6px',
                   letterSpacing: '1px', textTransform: 'uppercase'
                 }}>

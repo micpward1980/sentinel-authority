@@ -154,7 +154,7 @@ function VerifyPage() {
           </div>
         </div>
 
-        <h1 style={{ fontFamily: serif, fontSize: 'clamp(24px, 4vw, 32px)', fontWeight: 200, letterSpacing: '-0.02em', lineHeight: 1.1, margin: '0 0 8px', color: tp, textAlign: 'center' }}>
+        <h1 style={{ fontFamily: serif, fontSize: 'clamp(28px, 4vw, 44px)', fontWeight: 200, letterSpacing: '-0.03em', lineHeight: 1.1, margin: '0 0 8px', color: tp, textAlign: 'center' }}>
           Certificate <span style={{ color: purple, fontStyle: 'italic' }}>Verification</span>
         </h1>
         <p style={{ fontFamily: mono, fontSize: '9px', letterSpacing: '2px', textTransform: 'uppercase', color: tt, textAlign: 'center', marginTop: '12px' }}>Sentinel Authority &bull; ODDC Registry</p>

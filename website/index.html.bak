@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
     <meta name="description" content="Sentinel Authority - Independent conformance determination for autonomous systems. ODDC attestation with ENVELO enforcement.">
-  <title>Sentinel Authority — Conformance Certification for Autonomous Systems</title>
+  <title>Sentinel Authority — ODDC Conformance</title>
 
   <meta
     name="description"
@@ -12,14 +12,14 @@
   />
 
   <!-- Open Graph / LinkedIn / Slack -->
-  <meta property="og:title" content="Sentinel Authority — Conformance Certification for Autonomous Systems" />
-  <meta property="og:description" content="Formal attestation that autonomous systems operate within their declared Operational Design Domains. Proof. Not promises." />
+  <meta property="og:title" content="Sentinel Authority — ODDC Conformance" />
+  <meta property="og:description" content="ODD Conformance Determination for autonomous systems. A voluntary conformance and evidence framework." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://sentinelauthority.org/" />
   <meta property="og:image" content="https://sentinelauthority.org/og.png" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Sentinel Authority — Conformance Certification for Autonomous Systems" />
-  <meta name="twitter:description" content="Formal attestation that autonomous systems operate within declared Operational Design Domains. Proof. Not promises." />
+  <meta name="twitter:title" content="Sentinel Authority — ODDC Conformance" />
+  <meta name="twitter:description" content="ODD Conformance Determination for autonomous systems." />
 
   <!-- Canonical URL -->
   <link rel="canonical" href="https://sentinelauthority.org/" />
@@ -2575,11 +2575,11 @@
 
       <nav class="nav-links" aria-label="Main navigation" aria-label="Section navigation">
         <a href="#envelo" data-section="envelo">ENVELO</a>
-        <a href="#value" data-section="value">WHY CERTIFY</a>
-        <a href="#buyers" data-section="buyers">BUYERS</a>
+        <a href="#security" data-section="security">SECURITY</a>
         <a href="#criteria" data-section="criteria">CRITERIA</a>
         <a href="#cat72" data-section="cat72">CAT-72</a>
         <a href="#process" data-section="process">PROCESS</a>
+        <a href="#artifacts" data-section="artifacts">ARTIFACTS</a>
         <a href="#verify" data-section="verify">VERIFY</a>
         <a href="#contact" data-section="contact">CONTACT</a>
         <a href="https://app.sentinelauthority.org">SIGN IN</a>
@@ -2602,11 +2602,11 @@
   <div class="drawer-overlay" aria-hidden="true"></div>
   <div id="nav-drawer" class="nav-drawer" role="navigation" aria-label="Mobile navigation">
     <a href="#envelo" data-section="envelo">ENVELO</a>
-    <a href="#value" data-section="value">WHY CERTIFY</a>
-    <a href="#buyers" data-section="buyers">BUYERS</a>
+    <a href="#security" data-section="security">SECURITY</a>
     <a href="#criteria" data-section="criteria">CRITERIA</a>
     <a href="#cat72" data-section="cat72">CAT-72</a>
     <a href="#process" data-section="process">PROCESS</a>
+    <a href="#artifacts" data-section="artifacts">ARTIFACTS</a>
     <a href="#verify" data-section="verify">VERIFY</a>
     <a href="#contact" data-section="contact">CONTACT</a>
     <a href="https://app.sentinelauthority.org" class="nav-signin">SIGN IN</a>
@@ -2624,36 +2624,28 @@
       <!-- Hero Content below canvas -->
       <div id="hero-text" class="hero-content-bottom" style="position:relative;z-index:10;text-align:center;padding:0 16px 0;margin-top:-64px;display:flex;flex-direction:column;align-items:center;">
         
-        <p style="font-family:var(--mono);font-size:9px;letter-spacing:3px;text-transform:uppercase;color:rgba(157,140,207,0.5);margin:0 0 12px;">Independent Certification Body</p>
-
-        <h1 style="font-family: var(--serif); font-size: clamp(28px, 5vw, 50px); font-weight: 200; line-height: 1.1; margin-bottom: 6px; letter-spacing: -0.02em; color: #fff; max-width: 700px;">
-          Conformance Certification<br><span style="color: rgba(255,255,255,0.6);">for Autonomous Systems</span>
+        <h1 style="font-family: var(--serif); font-size: clamp(28px, 5vw, 50px); font-weight: 200; line-height: 1.1; margin-bottom: 4px; letter-spacing: -0.02em; color: #fff; max-width: 700px;">
+          Operational Design Domain<br><span class="accent" style="color: #c4b8e8; font-style: italic;">Conformance</span>
         </h1>
         
-        <p style="font-size: clamp(12px, 1.5vw, 14px); color:rgba(255,255,255,0.4); max-width: 540px; margin: 0 auto 14px; line-height: 1.6; font-family: var(--mono); letter-spacing: 0.3px;">
-          Formal attestation that autonomous systems operate within their declared Operational Design Domains &mdash; enforced at runtime, verified independently, recorded immutably.
-        </p>
-        <p style="font-family: var(--serif); font-size: clamp(14px, 1.8vw, 17px); font-weight: 400; font-style: italic; color: rgba(196,184,232,0.7); margin: 0 0 16px; letter-spacing: 0.5px;">
-          Proof. Not promises.
+        <p style="font-size: clamp(13px, 1.8vw, 16px); color:rgba(255,255,255,0.78); max-width: 500px; margin: 0 auto 10px; line-height: 1.4;">
+          Autonomy, enforced.
         </p>
         
         <!-- CTA Buttons -->
         <div style="display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; align-items: center;">
           <a href="https://app.sentinelauthority.org" style="font-family:var(--mono);font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:rgba(157,140,207,.9);text-decoration:none;display:inline-flex;align-items:center;gap:10px;transition:color .2s;">
-            Request Certification
+            Get Started
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
           </a>
-          <a href="#verify" style="font-family:var(--mono);font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,0.35);text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:color .2s;">
-            Verify a Certificate
+          <a href="#envelo" style="font-family:var(--mono);font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,0.35);text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:color .2s;">
+            How It Works
           </a>
         </div>
-
+        <p class="hero-disclaimer" style="font-family: var(--mono); font-size: 9px; color: rgba(255,255,255,0.2); letter-spacing: 0.3px; margin: 6px 0 0; max-width: 500px; line-height: 1.5;">
+          Independent conformance determination. Not a regulator. ODDC does not attest to safety or regulatory compliance.
+        </p>
       </div>
-      </div>
-
-      <!-- Industry Strip -->
-      <div class="reveal" style="text-align:center;padding:var(--space-2) var(--space-2) 0;">
-        <span style="font-family:var(--mono);font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,0.2);">Healthcare AI &nbsp;·&nbsp; Clinical Decision Systems &nbsp;·&nbsp; Autonomous Vehicles &nbsp;·&nbsp; Robotics &nbsp;·&nbsp; Enterprise AI &nbsp;·&nbsp; Industrial Automation &nbsp;·&nbsp; Logistics &nbsp;·&nbsp; Energy</span>
       </div>
       
       <!-- Disclaimer at bottom -->
@@ -3634,87 +3626,6 @@
         <span style="font-family:var(--mono);font-size:11px;letter-spacing:1px;color:rgba(255,255,255,0.35);">Deployed by Sentinel as a <span style="color:rgba(92,214,133,0.8);">runtime interlock</span> on your infrastructure — outbound-only, non-bypassable</span>
       </div>
     </section>
-
-    <!-- ═══ WHY CERTIFY ═══ -->
-    <section id="value" class="section">
-      <div class="section-head reveal">
-        <div>
-          <span class="section-label">THE BUSINESS CASE</span>
-          <h2 class="section-title">Why It Matters</h2>
-          <p class="section-lead">
-            ODDC certification solves the governance proof problem that stalls enterprise AI procurement.
-          </p>
-        </div>
-      </div>
-
-      <div class="reveal" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:var(--space-2);margin-top:var(--space-2);">
-        <div class="hud-frame"><i></i>
-          <div style="display:flex;align-items:flex-start;gap:12px;">
-            <span class="hud-num">01</span><span class="hud-dot" style="margin-top:6px;"></span>
-            <div>
-              <div class="hud-title">Accelerate Procurement</div>
-              <div class="hud-desc">Enterprise buyers need governance evidence before they sign. ODDC certification provides independent, auditable proof that your system operates within declared boundaries — compressing legal review from months to weeks.</div>
-            </div>
-          </div>
-        </div>
-        <div class="hud-frame"><i></i>
-          <div style="display:flex;align-items:flex-start;gap:12px;">
-            <span class="hud-num">02</span><span class="hud-dot" style="margin-top:6px;"></span>
-            <div>
-              <div class="hud-title">Competitive Differentiation</div>
-              <div class="hud-desc">When an RFP requires governance documentation, certified vendors pass risk assessments that uncertified competitors cannot. A verifiable differentiator backed by runtime enforcement evidence and a public registry entry.</div>
-            </div>
-          </div>
-        </div>
-        <div class="hud-frame"><i></i>
-          <div style="display:flex;align-items:flex-start;gap:12px;">
-            <span class="hud-num">03</span><span class="hud-dot" style="margin-top:6px;"></span>
-            <div>
-              <div class="hud-title">Defensible Governance</div>
-              <div class="hud-desc">Board-level accountability requires more than policy documents. ODDC provides auditable evidence that deployed systems have verified, enforceable operational controls — satisfying compliance committees and audit requirements.</div>
-            </div>
-          </div>
-        </div>
-        <div class="hud-frame"><i></i>
-          <div style="display:flex;align-items:flex-start;gap:12px;">
-            <span class="hud-num">04</span><span class="hud-dot" style="margin-top:6px;"></span>
-            <div>
-              <div class="hud-title">Insurance &amp; Liability</div>
-              <div class="hud-desc">ODDC certification provides structured conformance evidence that insurers can reference when evaluating autonomous system risk — moving conversations from theoretical frameworks to verified enforcement data.</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ═══ FOR ENTERPRISE BUYERS ═══ -->
-    <section id="buyers" class="section">
-      <div class="section-head reveal">
-        <div>
-          <span class="section-label">FOR ENTERPRISE PROCUREMENT</span>
-          <h2 class="section-title">Require Verifiable Boundaries</h2>
-          <p class="section-lead">
-            Evaluating AI vendors? Stop accepting governance promises. Start requiring enforcement proof.
-          </p>
-        </div>
-      </div>
-
-      <div class="reveal" style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-3);margin-top:var(--space-2);">
-        <div class="hud-frame"><i></i>
-          <div class="hud-title" style="margin-bottom:12px;color:rgba(214,92,92,0.8);">The Problem</div>
-          <div class="hud-desc" style="line-height:1.8;">Your organization is deploying autonomous systems or purchasing AI platforms that make operational decisions. Your legal, compliance, and risk teams need assurance that these systems will not operate outside their designed parameters. Vendor self-assessments and governance policy documents describe intentions, not enforcement.</div>
-        </div>
-        <div class="hud-frame"><i></i>
-          <div class="hud-title" style="margin-bottom:12px;color:rgba(92,214,133,0.8);">The Standard</div>
-          <div class="hud-desc" style="line-height:1.8;">ODDC certification is an independent determination that an autonomous system has verifiable, enforceable runtime boundary controls. When you require ODDC certification from your AI vendors, you are requiring proof — not promises. Certified systems are listed in the public Sentinel registry and subject to continuous conformance monitoring.</div>
-        </div>
-      </div>
-      <div class="reveal" style="text-align:center;margin-top:var(--space-2);">
-        <a href="mailto:conformance@sentinelauthority.org?subject=ODDC%20Procurement%20Requirements" style="display:inline-block;border:1px solid rgba(157,140,207,.3);background:transparent;color:rgba(157,140,207,0.9);padding:14px 40px;font-family:var(--mono);font-size:10px;letter-spacing:2.5px;text-transform:uppercase;text-decoration:none;cursor:pointer;transition:all .2s;">Require ODDC From Your Vendors &#x2192;</a>
-        <p style="font-family:var(--mono);font-size:9px;color:rgba(255,255,255,0.2);margin-top:10px;letter-spacing:0.5px;">Contact us to incorporate ODDC certification into your procurement evaluation criteria.</p>
-      </div>
-    </section>
-
     <section id="security" class="section">
       <div class="section-head reveal">
         <div>
@@ -5074,7 +4985,7 @@
           <span class="section-label">CONFORMANCE PROCESS</span>
           <h2 class="section-title">Your Path to Attestation</h2>
           <p class="section-lead">
-            From application to certified status in 2&#x2013;4 weeks. Published to the Sentinel registry, independently verifiable, backed by continuous monitoring.
+            From application to conformance in 2-4 weeks.
           </p>
         </div>
       </div>
@@ -5419,7 +5330,7 @@
           <span class="section-label">PUBLIC REGISTRY</span>
           <h2 class="section-title">Verify</h2>
           <p class="section-lead">
-            See who&#x2019;s certified. Verify any ODDC certification instantly. When your competitors are listed and you&#x2019;re not, procurement committees notice.
+            Instant verification. Real-time status. Zero trust required.
           </p>
         </div>
       </div>
@@ -5494,7 +5405,7 @@
           <div>
             <div class="hud-label" style="margin-bottom:4px;">CONFORMANCE ASSESSMENT</div>
             <a href="mailto:conformance@sentinelauthority.org" style="font-family:var(--mono);font-size:14px;color:var(--purple-bright);letter-spacing:0.5px;text-decoration:none;">conformance@sentinelauthority.org</a>
-            <div class="hud-desc" style="margin-top:4px;">Start your ODDC certification. Founding Cohort pricing available for qualified applicants.</div>
+            <div class="hud-desc" style="margin-top:4px;">Start assessment, pricing questions, or enterprise solutions.</div>
           </div>
         </div>
 

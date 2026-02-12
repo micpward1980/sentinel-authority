@@ -20,7 +20,7 @@ const styles = {
 
 const Panel = ({ children, style = {} }) => (
   <div style={{
-    background: `linear-gradient(135deg, ${styles.bgSecondary} 0%, ${styles.bgTertiary} 100%)`,
+    background: 'transparent',
     border: `1px solid ${styles.border}`,
     padding: '24px',
     ...style

@@ -64,7 +64,7 @@ def _build_yaml(app, cert, api_key: str) -> str:
 
     config = {
         "sentinel_authority": {
-            "api_endpoint": "https://sentinel-authority-production.up.railway.app",
+            "api_endpoint": "https://api.sentinelauthority.org",
             "api_key": api_key,
             "certificate": getattr(cert, 'certificate_number', None) or app.application_number,
             "system_name": app.system_name or "Autonomous System",
@@ -134,12 +134,12 @@ if CONFIG_PATH.exists():
     with open(CONFIG_PATH) as _f:
         _cfg = yaml.safe_load(_f)
     _sa = _cfg.get("sentinel_authority", {{}})
-    API_ENDPOINT = _sa.get("api_endpoint", "https://sentinel-authority-production.up.railway.app")
+    API_ENDPOINT = _sa.get("api_endpoint", "https://api.sentinelauthority.org")
     API_KEY = _sa.get("api_key", "{api_key}")
     CERTIFICATE = _sa.get("certificate", "{certificate}")
     SYSTEM_NAME = _sa.get("system_name", "{system_name}")
 else:
-    API_ENDPOINT = "https://sentinel-authority-production.up.railway.app"
+    API_ENDPOINT = "https://api.sentinelauthority.org"
     API_KEY = "{api_key}"
     CERTIFICATE = "{certificate}"
     SYSTEM_NAME = "{system_name}"
@@ -185,7 +185,7 @@ class EnveloAgent:
         self._threads = []
 
     def start(self):
-        log.info("Starting ENVELO Agent v2.0.0")
+        log.info("Starting ENVELO Interlock v2.1.0")
         log.info(f"  System:      {{SYSTEM_NAME}}")
         log.info(f"  Certificate: {{CERTIFICATE}}")
 
@@ -207,7 +207,22 @@ class EnveloAgent:
                     self.boundaries[b.get("parameter", b["name"])] = Boundary(**b)
                 log.info(f"  Boundaries:  {{len(self.boundaries)}} synced from server")
         except Exception as e:
-            log.warning(f"  Server sync: {{e}}")
+            log.warning(f"  Boundaries:  fetch failed ({{e}}), using local")
+
+        # Report discovered specs back to Sentinel Authority
+        try:
+            boundary_list = [
+                {{"type": b.parameter, "min": b.min_value, "max": b.max_value, "unit": b.unit}}
+                for b in self.boundaries.values()
+            ]
+            self.client.post("/api/envelo/report-specs", json={{
+                "boundaries": boundary_list,
+                "system_version": _cfg.get("sentinel_authority", {{}}).get("system_version") if CONFIG_PATH.exists() else None,
+                "manufacturer": _cfg.get("sentinel_authority", {{}}).get("manufacturer") if CONFIG_PATH.exists() else None,
+            }})
+            log.info(f"  Specs:       {{len(boundary_list)}} boundaries reported to platform")
+        except Exception as e:
+            log.warning(f"  Specs report: {{e}}")
 
         try:
             self.client.post("/api/envelo/sessions", json={{
@@ -227,7 +242,7 @@ class EnveloAgent:
         return self
 
     def shutdown(self):
-        log.info("Shutting down...")
+        log.info("ENVELO Interlock shutting down...")
         self.running = False
         self._flush_telemetry()
         try:
@@ -335,7 +350,7 @@ signal.signal(signal.SIGTERM, _sig)
 if __name__ == "__main__":
     agent.start()
     print()
-    print("ENVELO Agent running. Ctrl+C to stop.")
+    print("ENVELO Interlock running. Ctrl+C to stop.")
     print("Dashboard: https://app.sentinelauthority.org/envelo")
     print()
     try:
@@ -360,7 +375,7 @@ echo ""
 echo "${{P}}${{B}}"
 echo "  ╔═══════════════════════════════════════════════════════════╗"
 echo "  ║    ◉  S E N T I N E L   A U T H O R I T Y                ║"
-echo "  ║    ENVELO Deploy                                          ║"
+echo "  ║    ENVELO Interlock Deploy                                          ║"
 echo "  ╚═══════════════════════════════════════════════════════════╝"
 echo "${{X}}"
 echo ""
@@ -383,12 +398,12 @@ cat > "$D/envelo.yaml" << \'YAMLEOF\'
 cat > "$D/envelo_agent.py" << \'AGENTEOF\'
 {safe_agent}AGENTEOF
 chmod +x "$D/envelo_agent.py"
-echo "  ${{G}}✓${{X}} Agent installed"
+echo "  ${{G}}✓${{X}} Interlock installed"
 
 python3 -m pip install httpx pyyaml -q --break-system-packages 2>/dev/null || python3 -m pip install httpx pyyaml -q 2>/dev/null
 echo "  ${{G}}✓${{X}} Dependencies ready"
 
-# Stop existing
+# Stop existing interlock
 [ -f "$D/envelo.pid" ] && kill $(cat "$D/envelo.pid") 2>/dev/null && echo "  ${{Y}}↻${{X}} Stopped previous agent"
 rm -f "$D/envelo.pid"
 
@@ -403,12 +418,12 @@ try:
 except Exception as e: print(f\'  \\033[93m⚠\\033[0m {{e}} (will retry)\')
 "
 
-# Start agent
+# Start interlock
 nohup python3 "$D/envelo_agent.py" > "$D/envelo.log" 2>&1 &
 echo "$!" > "$D/envelo.pid"
 sleep 2
 if kill -0 $(cat "$D/envelo.pid") 2>/dev/null; then
-    echo "  ${{G}}✓${{X}} Agent running (PID $(cat $D/envelo.pid))"
+    echo "  ${{G}}✓${{X}} Interlock running (PID $(cat $D/envelo.pid))"
 else
     echo "  ${{R}}✗${{X}} Failed. See $D/envelo.log"; exit 1
 fi
@@ -418,7 +433,7 @@ if [[ "$OSTYPE" == "linux-gnu"* ]] && command -v systemctl &>/dev/null; then
     mkdir -p "$HOME/.config/systemd/user"
     cat > "$HOME/.config/systemd/user/envelo.service" << SVCEOF
 [Unit]
-Description=ENVELO Agent
+Description=ENVELO Interlock
 After=network-online.target
 [Service]
 Type=simple
@@ -457,7 +472,7 @@ else
 fi
 
 echo ""
-echo "  ${{G}}${{B}}✓ ENVELO Active${{X}}"
+echo "  ${{G}}${{B}}✓ ENVELO Interlock Active${{X}}"
 echo ""
 echo "  Dashboard: https://app.sentinelauthority.org/envelo"
 echo "  Logs:      $D/envelo.log"

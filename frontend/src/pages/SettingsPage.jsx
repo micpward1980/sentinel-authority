@@ -114,8 +114,9 @@ function SettingsPage() {
   );
 
   return (
-    <div style={{maxWidth: 'min(700px, 95vw)', margin: '0 auto'}}>
+    <>
       <SectionHeader label="Account" title="Settings" />
+      <div style={{maxWidth: 'min(700px, 95vw)', margin: '0 auto'}}>
 
       {/* ── Account Information ── */}
       <div style={{paddingTop: '32px'}}>
@@ -269,6 +270,7 @@ function SettingsPage() {
         </div>
       </div>
     </div>
+    </>
   );
 }
 

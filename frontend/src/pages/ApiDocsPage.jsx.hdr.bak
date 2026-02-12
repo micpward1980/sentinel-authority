@@ -29,7 +29,7 @@ export default function ApiDocsPage() {
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
         <div style={{ maxWidth: 'min(420px, 90vw)', width: '100%' }}>
           <div style={{ fontFamily: mono, fontSize: '9px', letterSpacing: '2px', textTransform: 'uppercase', color: tt, marginBottom: '16px' }}>Documentation</div>
-          <h2 style={{ fontFamily: serif, fontSize: 'clamp(24px, 4vw, 32px)', fontWeight: 200, letterSpacing: '-0.02em', lineHeight: 1.1, color: tp, margin: '0 0 12px' }}>
+          <h2 style={{ fontFamily: serif, fontSize: 'clamp(28px, 4vw, 44px)', fontWeight: 200, letterSpacing: '-0.03em', lineHeight: 1.1, color: tp, margin: '0 0 12px' }}>
             API <span style={{ color: purple, fontStyle: 'italic' }}>Reference</span>
           </h2>
           <p style={{ color: 'rgba(255,255,255,.78)', fontWeight: 200, lineHeight: 1.75, fontSize: '15px', margin: '0 0 40px' }}>Enter the documentation password to access the full API reference.</p>
