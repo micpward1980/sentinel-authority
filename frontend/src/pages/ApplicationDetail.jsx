@@ -173,17 +173,18 @@ function ApplicationDetail() {
 
   // --- Pipeline ---
   const PIPELINE_STAGES = [
-    { key: 'pending', label: 'Submitted', icon: '1' },
-    { key: 'under_review', label: 'In Review', icon: '2' },
-    { key: 'approved', label: 'Awaiting Deploy', icon: '3' },
+    { key: 'pending', label: 'Pending', icon: '1' },
+    { key: 'approved', label: 'Approved', icon: '2' },
+    { key: 'testing', label: 'CAT-72', icon: '3' },
+    { key: 'conformant', label: 'Certified', icon: '4' },
   ];
   const currentStageIdx = PIPELINE_STAGES.findIndex(s => s.key === app?.state);
   const isSuspended = app?.state === 'revoked' || app?.state === 'suspended' || app?.state === 'rejected' || app?.state === 'failed';
 
   const nextStepText = () => {
     switch (app?.state) {
-      case 'pending': return 'Application queued for review by the Sentinel Authority team.';
-      case 'under_review': return 'Under review. Approval triggers automatic Interlock credentials and CAT-72 scheduling.';
+      case 'pending': return 'New application. Review the organization and system, then approve or reject.';
+
       case 'approved': return 'Approved. Interlock credentials sent. CAT-72 auto-starts when Interlock connects.';
       case 'testing': return 'CAT-72 running. Certificate auto-issues on pass.';
       case 'conformant': return 'ODDC Conformance achieved. Certificate issued.';
@@ -195,7 +196,7 @@ function ApplicationDetail() {
   };
 
   const stateLabel = (s) => {
-    const map = { approved: 'Awaiting Deploy', under_review: 'In Review', conformant: 'Certified', pending: 'Pending', rejected: 'Rejected', suspended: 'Withdrawn', revoked: 'Revoked', failed: 'Failed' };
+    const map = { approved: 'Approved', conformant: 'Certified', pending: 'Pending', testing: 'CAT-72 Running', rejected: 'Rejected', suspended: 'Withdrawn', revoked: 'Revoked', failed: 'Failed' };
     return map[s] || (s || '').replace(/_/g, ' ');
   };
 
@@ -245,12 +246,10 @@ function ApplicationDetail() {
         </Link>
         {user?.role === 'admin' && (
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-            {/* One primary action per state */}
-            {app.state === 'pending' && <button onClick={handleBeginReview} className="px-4 py-2 btn" style={{ fontSize: '11px', color: C.purple, borderColor: 'rgba(157,140,207,0.3)' }}>Begin Review &#8594;</button>}
-            {app.state === 'under_review' && allChecked && <button onClick={handleApprove} className="px-4 py-2 btn" style={{ fontSize: '11px', color: C.green, borderColor: 'rgba(92,214,133,0.3)' }}>Approve &#8594;</button>}
+            {app.state === 'pending' && <button onClick={handleApprove} className="px-4 py-2 btn" style={{ fontSize: '11px', color: C.green, borderColor: 'rgba(92,214,133,0.3)' }}>Approve &#8594;</button>}
+            {app.state === 'pending' && <button onClick={() => setShowReject(!showReject)} className="px-3 py-2 btn" style={{ fontSize: '11px', color: C.red }}>Reject</button>}
             {(app.state === 'suspended' || app.state === 'revoked' || app.state === 'rejected') && <button onClick={handleReinstate} className="px-4 py-2 btn" style={{ fontSize: '11px', color: C.green, borderColor: 'rgba(92,214,133,0.3)' }}>Reinstate</button>}
-            {/* Secondary actions — subtle */}
-            {['pending', 'under_review', 'approved'].includes(app.state) && <button onClick={handleSuspend} className="px-3 py-2 btn" style={{ fontSize: '10px', color: C.textDim, opacity: 0.5 }}>Withdraw</button>}
+            {['pending', 'approved'].includes(app.state) && <button onClick={handleSuspend} className="px-3 py-2 btn" style={{ fontSize: '10px', color: C.textDim, opacity: 0.5 }}>Withdraw</button>}
           </div>
         )}
       </div>
@@ -387,59 +386,15 @@ function ApplicationDetail() {
         </Panel>
       )}
 
-      {/* ══════════════════════════════════════════════
-          REVIEW PANEL — only visible during under_review
-          ══════════════════════════════════════════════ */}
-      {app.state === 'under_review' && user?.role === 'admin' && (
+      {/* ── Reject Inline (shows when reject clicked) ── */}
+      {showReject && app.state === 'pending' && (
         <Panel>
-          <div className="hud-label" style={{ marginBottom: '16px' }}>Review Checklist</div>
-          <p style={{ color: C.textDim, fontSize: '12px', marginBottom: '16px' }}>Verify the applicant before provisioning Interlock access. Technical specs are pulled automatically after install.</p>
-          <div style={{ display: 'grid', gap: '0' }}>
-            {[
-              { key: 'org_verified', label: 'Organization Verified', desc: 'Applicant is a legitimate entity with verifiable corporate identity' },
-              { key: 'system_in_scope', label: 'System In Scope', desc: 'Autonomous system type falls within ODDC certification scope' },
-              { key: 'contact_valid', label: 'Contact Information', desc: 'Primary contact is reachable and authorized to represent the organization' },
-              { key: 'application_complete', label: 'Application Complete', desc: 'All required fields submitted — system name, description, and org details' },
-            ].map((item) => (
-              <div key={item.key} onClick={() => toggleCheck(item.key)} style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', padding: '14px 12px', borderBottom: '1px solid rgba(255,255,255,.04)', cursor: 'pointer', userSelect: 'none' }}>
-                <div style={{ width: '20px', height: '20px', borderRadius: '3px', border: '2px solid ' + (checklist[item.key] ? C.green : 'rgba(255,255,255,.15)'), background: checklist[item.key] ? 'rgba(92,214,133,0.15)' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '2px', transition: 'all 0.2s' }}>
-                  {checklist[item.key] && <span style={{ color: C.green, fontSize: '14px', lineHeight: 1 }}>{'\u2713'}</span>}
-                </div>
-                <div>
-                  <div style={{ fontFamily: MONO, fontSize: '12px', color: checklist[item.key] ? C.green : 'rgba(255,255,255,.94)', letterSpacing: '0.5px', marginBottom: '4px' }}>{item.label}</div>
-                  <div style={{ fontSize: '12px', color: C.textDim, lineHeight: 1.4 }}>{item.desc}</div>
-                </div>
-              </div>
-            ))}
+          <div style={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', color: '#d65c5c', marginBottom: '8px' }}>Reject Application</div>
+          <textarea value={rejectReason} onChange={(e) => setRejectReason(e.target.value)} rows={3} placeholder="Reason for rejection..." style={{ width: '100%', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', color: 'rgba(255,255,255,.94)', fontSize: '13px', padding: '12px', fontFamily: 'inherit', resize: 'none', outline: 'none' }} />
+          <div style={{ display: 'flex', gap: '8px', marginTop: '8px', justifyContent: 'flex-end' }}>
+            <button onClick={() => { setShowReject(false); setRejectReason(''); }} className="px-3 py-2 btn" style={{ fontSize: '11px' }}>Cancel</button>
+            <button onClick={handleReject} className="px-3 py-2 btn" style={{ fontSize: '11px', color: '#d65c5c', borderColor: 'rgba(214,92,92,.3)' }}>Reject</button>
           </div>
-          <div style={{ display: 'flex', gap: '8px', marginTop: '16px', flexWrap: 'wrap' }}>
-            <button onClick={() => setShowRequestInfo(!showRequestInfo)} className="px-4 py-2 btn" style={{ color: C.amber }}>Request More Info</button>
-            <button onClick={() => setShowReject(!showReject)} className="px-4 py-2 btn" style={{ color: C.red }}>Reject</button>
-          </div>
-
-          {/* Request Info Inline */}
-          {showRequestInfo && (
-            <div style={{ marginTop: '16px', padding: '16px', border: '1px solid rgba(214,160,92,.2)' }}>
-              <div style={{ fontFamily: MONO, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', color: C.amber, marginBottom: '8px' }}>Request Additional Information</div>
-              <textarea value={requestInfoMsg} onChange={(e) => setRequestInfoMsg(e.target.value)} rows={3} placeholder="Describe what information is missing or unclear..." style={{ width: '100%', background: 'rgba(255,255,255,0.03)', border: '1px solid ' + C.border, color: 'rgba(255,255,255,.94)', fontSize: '13px', padding: '12px', fontFamily: 'inherit', resize: 'none', outline: 'none' }} />
-              <div style={{ display: 'flex', gap: '8px', marginTop: '8px', justifyContent: 'flex-end' }}>
-                <button onClick={() => { setShowRequestInfo(false); setRequestInfoMsg(''); }} className="px-3 py-2 btn" style={{ fontSize: '11px' }}>Cancel</button>
-                <button onClick={handleRequestInfo} className="px-3 py-2 btn" style={{ fontSize: '11px', color: C.amber, borderColor: 'rgba(214,160,92,.3)' }}>Send Request</button>
-              </div>
-            </div>
-          )}
-
-          {/* Reject Inline */}
-          {showReject && (
-            <div style={{ marginTop: '16px', padding: '16px', border: '1px solid rgba(214,92,92,.2)' }}>
-              <div style={{ fontFamily: MONO, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', color: C.red, marginBottom: '8px' }}>Reject Application</div>
-              <textarea value={rejectReason} onChange={(e) => setRejectReason(e.target.value)} rows={3} placeholder="Explain why this application is being rejected..." style={{ width: '100%', background: 'rgba(255,255,255,0.03)', border: '1px solid ' + C.border, color: 'rgba(255,255,255,.94)', fontSize: '13px', padding: '12px', fontFamily: 'inherit', resize: 'none', outline: 'none' }} />
-              <div style={{ display: 'flex', gap: '8px', marginTop: '8px', justifyContent: 'flex-end' }}>
-                <button onClick={() => { setShowReject(false); setRejectReason(''); }} className="px-3 py-2 btn" style={{ fontSize: '11px' }}>Cancel</button>
-                <button onClick={handleReject} className="px-3 py-2 btn" style={{ fontSize: '11px', color: C.red, borderColor: 'rgba(214,92,92,.3)' }}>Reject Application</button>
-              </div>
-            </div>
-          )}
         </Panel>
       )}
 

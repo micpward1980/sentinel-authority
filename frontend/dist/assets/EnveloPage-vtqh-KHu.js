@@ -1,4 +1,4 @@
-import{a as H,j as e,b as q,u as X,d as p,A as Y}from"./index-CxeiBu31.js";import{r as i,h as J,m as K,D as Q}from"./icons-DL0PQMVt.js";import{P as h}from"./Panel-BZa8pYMj.js";import{S as G}from"./SectionHeader-Rll6jrHG.js";import"./vendor-DYB3FAiG.js";function Z({apiEndpoint:a,apiKey:y,certificateNumber:g,systemName:b,organizationName:w}){const c=new Date().toISOString();return`#!/usr/bin/env python3
+import{a as H,j as e,b as q,u as X,d as p,A as Y}from"./index-uTJ6pxJc.js";import{r as i,h as J,m as K,D as Q}from"./icons-DL0PQMVt.js";import{P as h}from"./Panel-B27QNSqs.js";import{S as G}from"./SectionHeader-dp1BBLW_.js";import"./vendor-DYB3FAiG.js";function Z({apiEndpoint:a,apiKey:y,certificateNumber:g,systemName:b,organizationName:w}){const c=new Date().toISOString();return`#!/usr/bin/env python3
 """
 ENVELO Interlock - Sentinel Authority
 Enforced Non-Violable Execution-Limit Override
