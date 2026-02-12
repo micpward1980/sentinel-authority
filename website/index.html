@@ -3104,21 +3104,18 @@
     // Debounce resize to avoid thrashing during URL bar animation
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(function() {
-      var oldCx = cx, oldCy = cy, oldR = radius;
       radiusLocked = false;
       resize();
-      // Reposition existing agents proportionally — don't recreate
-      if (oldR > 0 && agents.length > 0) {
-        var sx = cx / oldCx, sy = cy / oldCy, sr = radius / oldR;
-        for (var i = 0; i < agents.length; i++) {
-          agents[i].x = cx + (agents[i].x - oldCx) * sr;
-          agents[i].y = cy + (agents[i].y - oldCy) * sr;
-          agents[i].softMax = agents[i].isOutlier ? radius * 0.88 : radius * 0.65;
-        }
-        for (var w = 0; w < 60; w++) updateAgents(16);
-        enveloEvents = [];
-        boundaryPulses = [];
-        for (var i=0; i<agents.length; i++) { agents[i].tier=0; agents[i].haltTimer=0; agents[i].mrcTimer=0; }
+      // On resize/rotate: fully reinitialize — proportional scaling breaks on big aspect changes
+      initAgents();
+      for (var w = 0; w < 300; w++) updateAgents(16);
+      enveloEvents = [];
+      boundaryPulses = [];
+      telemetry = [];
+      for (var i=0; i<agents.length; i++) { agents[i].tier=0; agents[i].haltTimer=0; agents[i].mrcTimer=0;
+        var _d=Math.sqrt((agents[i].x-cx)*(agents[i].x-cx)+(agents[i].y-cy)*(agents[i].y-cy));
+        if(_d>radius*0.7){var _s=radius*0.5/_d;agents[i].x=cx+(agents[i].x-cx)*_s;agents[i].y=cy+(agents[i].y-cy)*_s;agents[i].vx*=0.2;agents[i].vy*=0.2;}
+      }
       } else {
         initAgents();
         for (var w = 0; w < 300; w++) updateAgents(16);
