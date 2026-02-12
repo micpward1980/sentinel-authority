@@ -22,7 +22,7 @@ function ApplicationDetail() {
   const [history, setHistory] = useState([]);
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
-  const [isInternal, setIsInternal] = useState(false);
+  
   const [postingComment, setPostingComment] = useState(false);
   const [emailPreview, setEmailPreview] = useState(null);
   const [testCreated, setTestCreated] = useState(null);
@@ -142,10 +142,9 @@ function ApplicationDetail() {
     if (!newComment.trim()) return;
     setPostingComment(true);
     try {
-      const res = await api.post('/api/applications/' + id + '/comments', { content: newComment, is_internal: isInternal });
+      const res = await api.post('/api/applications/' + id + '/comments', { content: newComment, is_internal: false });
       setComments(prev => [res.data, ...prev]);
       setNewComment('');
-      setIsInternal(false);
       toast.show('Comment added', 'success');
     } catch (err) { toast.show('Failed: ' + (err.response?.data?.detail || err.message), 'error'); }
     setPostingComment(false);
@@ -508,7 +507,7 @@ function ApplicationDetail() {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginTop: '8px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               {user?.role === 'admin' && (
-                <button onClick={() => setIsInternal(!isInternal)} className="btn" style={{ padding: '4px 10px', color: isInternal ? C.green : C.textDim, borderColor: isInternal ? 'rgba(92,214,133,0.2)' : 'rgba(255,255,255,0.06)' }}>Internal {isInternal ? 'ON' : 'OFF'}</button>
+
               )}
             </div>
             <button onClick={handlePostComment} disabled={postingComment || !newComment.trim()} className="px-4 py-2 btn">{postingComment ? 'Posting...' : 'Post Comment'}</button>
@@ -522,7 +521,7 @@ function ApplicationDetail() {
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <span style={{ fontFamily: MONO, fontSize: '12px', color: c.user_role === 'admin' ? C.purple : C.text, fontWeight: 500 }}>{c.user_email}</span>
                     {c.user_role === 'admin' && <span style={{ fontFamily: MONO, fontSize: '9px', padding: '2px 6px', color: C.purple, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Admin</span>}
-                    {c.is_internal && <span style={{ fontFamily: MONO, fontSize: '9px', padding: '2px 6px', color: C.amber, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Internal</span>}
+
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <span style={{ fontFamily: MONO, fontSize: '10px', color: C.textDim }}>{c.created_at ? new Date(c.created_at).toLocaleString() : ''}</span>
