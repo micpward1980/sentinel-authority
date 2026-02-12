@@ -560,3 +560,144 @@ tbody tr:hover { background: rgba(255,255,255,.015); }
     margin-bottom: 4px !important;
   }
 }
+
+
+/* ══════════════════════════════════════════════════
+   SILK — Premium Polish Layer
+   ══════════════════════════════════════════════════ */
+
+/* Smooth scroll everywhere */
+html { scroll-behavior: smooth; }
+
+/* Global transition baseline */
+* { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+
+/* Page entry animation */
+.sa-main-content {
+  animation: sa-pageIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes sa-pageIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Stat cards — hover lift + glow */
+.stat-card {
+  transition: background 0.3s ease, box-shadow 0.3s ease !important;
+  cursor: pointer;
+}
+.stat-card:hover {
+  background: rgba(255,255,255,0.02) !important;
+  box-shadow: 0 0 40px rgba(157,140,207,0.04) !important;
+}
+
+/* HUD frame — subtle hover glow on brackets */
+.hud-frame {
+  transition: border-color 0.3s ease;
+}
+.hud-frame:hover::before,
+.hud-frame:hover::after,
+.hud-frame:hover > i::before,
+.hud-frame:hover > i::after {
+  border-color: rgba(157,140,207,0.15) !important;
+}
+
+/* HUD rows — smooth hover */
+.hud-row {
+  transition: background 0.2s ease, padding-left 0.2s ease;
+}
+.hud-row:hover {
+  background: rgba(255,255,255,0.015);
+  padding-left: 4px;
+}
+
+/* Buttons — smooth all states */
+.btn {
+  transition: color 0.25s cubic-bezier(0.16,1,0.3,1),
+              border-color 0.25s cubic-bezier(0.16,1,0.3,1),
+              box-shadow 0.3s ease !important;
+}
+.btn:hover {
+  box-shadow: 0 0 20px rgba(157,140,207,0.06) !important;
+}
+
+/* Links — smooth color */
+.hud-link {
+  transition: color 0.25s ease, letter-spacing 0.3s ease !important;
+}
+.hud-link:hover {
+  letter-spacing: 2.5px !important;
+}
+
+/* Table rows — silk hover */
+tbody tr {
+  transition: background 0.2s ease !important;
+}
+tbody tr:hover {
+  background: rgba(157,140,207,0.03) !important;
+}
+
+/* Panel — subtle entry stagger */
+.panel {
+  animation: sa-panelIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes sa-panelIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Notification bell pulse when unread */
+@keyframes sa-bellPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+/* Badge — subtle breathe */
+.badge {
+  transition: border-color 0.3s ease, background 0.3s ease !important;
+}
+
+/* Progress fills — smooth width changes */
+.sa-fill {
+  transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+/* Sidebar nav — silk transitions */
+aside nav a {
+  transition: color 0.2s ease, background 0.2s ease, border-color 0.2s ease, padding-left 0.2s ease !important;
+}
+aside nav a:hover {
+  padding-left: 20px !important;
+}
+
+/* Header — glass refine */
+header {
+  transition: background 0.3s ease !important;
+}
+
+/* Scrollbar — thinner, more premium */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-thumb { background: rgba(157,140,207,0.2); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(157,140,207,0.4); }
+
+/* Focus states — subtle purple ring */
+input:focus, select:focus, textarea:focus {
+  box-shadow: 0 1px 0 0 rgba(157,140,207,0.3) !important;
+}
+
+/* Stat card stagger animation */
+.sa-stat-grid .stat-card:nth-child(1) { animation-delay: 0.05s; }
+.sa-stat-grid .stat-card:nth-child(2) { animation-delay: 0.1s; }
+.sa-stat-grid .stat-card:nth-child(3) { animation-delay: 0.15s; }
+.sa-stat-grid .stat-card:nth-child(4) { animation-delay: 0.2s; }
+.sa-stat-grid .stat-card:nth-child(5) { animation-delay: 0.25s; }
+.sa-stat-grid .stat-card {
+  animation: sa-cardIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes sa-cardIn {
+  from { opacity: 0; transform: translateY(10px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Selection — brand purple */
+::selection { background: rgba(91,75,138,0.4); color: #fff; }
