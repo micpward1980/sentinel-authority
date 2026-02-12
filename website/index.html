@@ -895,6 +895,9 @@
       .hero-content-bottom .hero-disclaimer {
         display: none !important;
       }
+      .hero-content-bottom {
+        margin-top: -16px !important;
+      }
       .hero-content-bottom .hero-actions {
         gap: 8px !important;
       }
@@ -904,6 +907,11 @@
       h1{ font-weight: normal; line-height: 1.0; }
 
     @media (max-height: 500px) and (orientation: landscape) {
+      .hero {
+        min-height: auto !important;
+        padding-top: 8px !important;
+        padding-bottom: 8px !important;
+      }
       /* All sections: tighter padding in landscape */
       .section, section {
         padding-top: 24px !important;
@@ -1477,8 +1485,9 @@
     @media (max-width: 768px) {
       /* Hero */
       .hero {
-        min-height: 100vh;
-        min-height: 100dvh;
+        min-height: auto;
+        padding-top: 16px;
+        padding-bottom: 24px;
       }
       .hero-content-bottom {
         
@@ -2640,7 +2649,7 @@
     <!-- HERO -->
     <section class="hero">
       <!-- Full-viewport canvas -->
-      <div style="position:relative;display:flex;flex-direction:column;align-items:center;margin:0 auto;max-width:880px;padding-top:0;"><div style="width:100%;"><canvas id="hero-canvas" style="width:100%;height:calc(min(880px, 100vw) * 0.50);display:block;opacity:0;transition:opacity 0.35s ease;"></canvas></div>
+      <div style="position:relative;display:flex;flex-direction:column;align-items:center;margin:0 auto;max-width:880px;padding-top:8px;"><div style="width:100%;"><canvas id="hero-canvas" style="width:100%;height:calc(min(880px, 100vw) * 0.50);display:block;opacity:0;transition:opacity 0.35s ease;"></canvas></div>
       <!-- Hero Content below canvas -->
       <div id="hero-text" class="hero-content-bottom" style="position:relative;z-index:10;text-align:center;padding:0 16px 0;margin-top:-32px;display:flex;flex-direction:column;align-items:center;">
         
