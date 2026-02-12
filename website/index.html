@@ -2745,9 +2745,22 @@
   var radiusLocked = false;
   var lockedRadius = 0, lockedCx = 0, lockedCy = 0;
 
+  var heroLockedH = 0, heroLockedW = 0;
   function resize() {
     var r = c.parentElement.getBoundingClientRect();
-    W = r.width;
+    var newW = r.width;
+    // Only recalculate height on real width change (rotation), not iOS URL bar
+    if (Math.abs(newW - heroLockedW) < 20 && heroLockedH > 0) {
+      W = newW;
+      // Just update canvas width, keep H locked
+      c.width = W * dpr;
+      c.height = heroLockedH * dpr;
+      c.style.height = heroLockedH + 'px';
+      ctx.setTransform(dpr,0,0,dpr,0,0);
+      H = heroLockedH;
+      return;
+    }
+    W = newW;
     H = W < 550 ? W * 0.80 : (window.innerHeight < 500 && window.innerWidth > window.innerHeight) ? Math.min(W * 0.42, window.innerHeight * 0.75) : W * 0.42;
     c.width = W * dpr;
     c.height = H * dpr;
