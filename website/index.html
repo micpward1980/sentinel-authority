@@ -902,6 +902,30 @@
 
     @media (max-width: 600px){
       h1{ font-weight: normal; line-height: 1.0; }
+
+    @media (max-height: 500px) and (orientation: landscape) {
+      /* All sections: tighter padding in landscape */
+      .section, section {
+        padding-top: 24px !important;
+        padding-bottom: 24px !important;
+      }
+      /* Section titles smaller */
+      .section-title {
+        font-size: 22px !important;
+        margin-bottom: 12px !important;
+      }
+      /* HUD frames: tighter */
+      .hud-frame {
+        padding: 12px !important;
+      }
+      .hud-row {
+        padding: 6px 0 !important;
+      }
+      .hud-desc {
+        font-size: 10px !important;
+      }
+    }
+
     }
     
     /* ============================================
@@ -3205,6 +3229,10 @@
           var r = c.parentElement.getBoundingClientRect();
           W = r.width;
           H = W < 550 ? 420 : 340;
+    // Landscape: cap canvas height
+    if (window.innerHeight < 500 && window.innerWidth > window.innerHeight) {
+      H = Math.min(H, window.innerHeight * 0.55);
+    }
           c.width = W * dpr;
           c.height = H * dpr;
           c.style.height = H + 'px';
@@ -3212,7 +3240,7 @@
         }
 
         function layout() {
-          var mob = W < 550;
+          var mob = W < 550 || (window.innerHeight < 500 && window.innerWidth > window.innerHeight);
           if (mob) {
             var cx = W/2;
             return { model:{x:cx,y:50,r:38}, envelo:{x:cx,y:155,r:55}, gate:{x:cx,y:252,r:30},
@@ -3760,12 +3788,14 @@
 
         function resize(){
           var r=c.parentElement.getBoundingClientRect();W=r.width;
-          H=W<550?420:340;c.width=W*dpr;c.height=H*dpr;
+          H=W<550?420:340;
+          if(window.innerHeight<500&&window.innerWidth>window.innerHeight){H=Math.min(H,window.innerHeight*0.55);}
+          c.width=W*dpr;c.height=H*dpr;
           c.style.height=H+'px';ctx.setTransform(dpr,0,0,dpr,0,0);
         }
 
         function layout(){
-          var mob=W<550;
+          var mob=W<550||(window.innerHeight<500&&window.innerWidth>window.innerHeight);
           if(mob){var cx=W/2;return{model:{x:cx,y:52,r:44},envelo:{x:cx,y:172,r:62},sentinel:{x:cx,y:305,r:44},mob:true};}
           var cy=H/2-8,m=W*0.08,s=(W-m*2)/3;
           return{model:{x:m+s*0.5,y:cy,r:48},envelo:{x:m+s*1.5,y:cy,r:66},sentinel:{x:m+s*2.5,y:cy,r:48},mob:false};
@@ -4485,6 +4515,10 @@
           var r = c.parentElement.getBoundingClientRect();
           W = r.width;
           H = W < 550 ? W * 0.80 : W * 0.42;
+          // Landscape: cap canvas height
+          if (window.innerHeight < 500 && window.innerWidth > window.innerHeight) {
+            H = Math.min(H, window.innerHeight * 0.55);
+          }
           c.width = W * dpr;
           c.height = H * dpr;
           c.style.height = H + 'px';
@@ -5117,13 +5151,14 @@
         function resize(){
           var r=c.parentElement.getBoundingClientRect();
           W=r.width;H=W<550?440:200;
+          if(window.innerHeight<500&&window.innerWidth>window.innerHeight){H=Math.min(H,window.innerHeight*0.45);}
           c.width=W*dpr;c.height=H*dpr;
           c.style.height=H+'px';
           ctx.setTransform(dpr,0,0,dpr,0,0);
         }
 
         function getStops(){
-          var mob=W<550,s=[];
+          var mob=W<550||(window.innerHeight<500&&window.innerWidth>window.innerHeight),s=[];
           if(!mob){var m=W*0.08,span=W-m*2;
             for(var i=0;i<steps.length;i++)s.push({x:m+span*(i/(steps.length-1)),y:H/2});
           }else{var mt=45,mb=45,span=H-mt-mb;
