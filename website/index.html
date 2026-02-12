@@ -3113,7 +3113,6 @@
     if(!lastTime) lastTime=now;
     if (!fadeTriggered) { c.style.opacity = '1'; fadeTriggered = true; }
     var dt=Math.min(now-lastTime, 20); lastTime=now;
-    if (dt < 1) { requestAnimationFrame(animate); return; }
     ctx.clearRect(0,0,W,H);
 
     updateAgents(dt);
