@@ -570,34 +570,32 @@ async def send_application_approved(to: str, system_name: str, app_number: str):
         return False
     """Notify applicant their application has been approved"""
     html = f"""
-    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <div style="background: #5B4B8A; padding: 20px; text-align: center;">
-            <h1 style="color: white; margin: 0;">SENTINEL AUTHORITY</h1>
+    <div style="font-family: -apple-system, Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #0a0a0f; color: #e0e0e0;">
+        <div style="padding: 32px; border-bottom: 1px solid rgba(157,140,207,0.2);">
+            <div style="font-family: monospace; font-size: 10px; letter-spacing: 4px; text-transform: uppercase; color: rgba(157,140,207,0.7);">Sentinel Authority</div>
         </div>
-        <div style="padding: 30px; background: #f9f9f9;">
-            <h2 style="color: #2e7d32;">✓ Application Approved</h2>
-            <p>Your ODDC certification application has been approved.</p>
-            <p><strong>System:</strong> {system_name}<br>
-            <strong>Application:</strong> {app_number}</p>
-            <h3 style="color: #5B4B8A;">Next Steps</h3>
-            <ol>
-                <li>Deploy the ENVELO Agent from your <a href="https://app.sentinelauthority.org/envelo" style="color: #5B4B8A;">dashboard</a></li>
-                <li>Your CAT-72 conformance test will be scheduled</li>
-                <li>The test runs for 72 continuous hours</li>
-            </ol>
-            <div style="text-align: center; margin: 30px 0;">
-                <a href="https://app.sentinelauthority.org/envelo"
-                   style="background: #5B4B8A; color: white; padding: 12px 30px;
-                          text-decoration: none; border-radius: 6px; font-weight: bold;">
-                    Deploy ENVELO Agent
+        <div style="padding: 32px;">
+            <h2 style="color: #5cd685; font-weight: 400; margin: 0 0 16px;">Application Approved</h2>
+            <p style="color: #ccc; line-height: 1.6; margin: 0 0 20px;">
+                Your ODDC certification application for <strong style="color: #fff;">{system_name}</strong> ({app_number}) has been approved.
+            </p>
+            <p style="color: #ccc; line-height: 1.6; margin: 0 0 24px;">
+                Your dashboard has deployment instructions and your API credentials. Deploy the Interlock and your CAT-72 certification test begins automatically.
+            </p>
+            <div style="text-align: center; margin: 32px 0;">
+                <a href="https://app.sentinelauthority.org"
+                   style="display: inline-block; border: 1px solid rgba(157,140,207,0.3); color: rgba(157,140,207,0.9); padding: 14px 32px;
+                          text-decoration: none; font-family: monospace; font-size: 11px; letter-spacing: 2px; text-transform: uppercase;">
+                    Open Dashboard
                 </a>
             </div>
-            <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
-            <p style="font-size: 12px; color: #666;">Questions? Contact us at info@sentinelauthority.org</p>
+            <div style="border-top: 1px solid rgba(255,255,255,0.06); padding-top: 20px; margin-top: 32px;">
+                <p style="font-size: 12px; color: #666; margin: 0;">Sentinel Authority — info@sentinelauthority.org</p>
+            </div>
         </div>
     </div>
     """
-    await send_email(to, f"Application Approved - {system_name}", html)
+    await send_email(to, f"Approved: {system_name} — {app_number}", html)
 
 
 async def send_application_under_review(to: str, system_name: str, app_number: str):
