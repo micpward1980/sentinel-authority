@@ -635,6 +635,82 @@ async def stop_test(
     except Exception as e:
         print(f"Email error (test result): {e}")
     
+    # Auto-issue certificate on pass
+    if test.result == "pass" and test.state == "completed":
+        try:
+            from app.models.models import Certificate, Application
+            from datetime import timedelta
+            import hashlib as _hl
+            
+            app_result = await db.execute(
+                select(Application).where(Application.id == test.application_id)
+            )
+            application = app_result.scalar_one_or_none()
+            
+            if application:
+                # Check no certificate already exists
+                existing_cert = await db.execute(
+                    select(Certificate).where(Certificate.application_id == application.id)
+                )
+                if not existing_cert.scalar_one_or_none():
+                    now = datetime.utcnow()
+                    year = now.year
+                    cert_count_r = await db.execute(
+                        select(func.count(Certificate.id)).where(
+                            Certificate.certificate_number.like(f"ODDC-{year}-%")
+                        )
+                    )
+                    cert_count = (cert_count_r.scalar() or 0) + 1
+                    cert_number = f"ODDC-{year}-{cert_count:05d}"
+                    
+                    sig_content = f"{cert_number}:{application.organization_name}:{application.system_name}:{now.isoformat()}:{test.evidence_hash}"
+                    signature = _hl.sha256(sig_content.encode()).hexdigest()
+                    
+                    certificate = Certificate(
+                        certificate_number=cert_number,
+                        application_id=application.id,
+                        organization_name=application.organization_name,
+                        system_name=application.system_name,
+                        system_version=application.system_version,
+                        odd_specification=application.odd_specification,
+                        envelope_definition=test.envelope_definition or application.envelope_definition,
+                        state="conformant",
+                        issued_at=now,
+                        expires_at=now + timedelta(days=365),
+                        issued_by=int(user["sub"]),
+                        test_id=test.id,
+                        convergence_score=test.convergence_score,
+                        evidence_hash=test.evidence_hash,
+                        signature=signature,
+                        verification_url=f"https://sentinelauthority.org/verify.html?cert={cert_number}",
+                        history=[{"action": "auto_issued", "timestamp": now.isoformat(), "by": "system", "trigger": "cat72_pass"}],
+                    )
+                    db.add(certificate)
+                    
+                    # Update application state
+                    application.state = "conformant"
+                    
+                    await db.commit()
+                    print(f"AUTO-ISSUED certificate {cert_number} for {application.system_name}")
+                    
+                    # Notify applicant
+                    try:
+                        from app.services.email_service import send_email
+                        if application.contact_email:
+                            await send_email(
+                                application.contact_email,
+                                f"ODDC Certificate Issued — {cert_number}",
+                                f"Your system '{application.system_name}' has passed CAT-72 verification.\n\n"
+                                f"Certificate: {cert_number}\n"
+                                f"Convergence: {test.convergence_score:.4f}\n"
+                                f"Verify: https://sentinelauthority.org/verify.html?cert={cert_number}\n\n"
+                                f"Your certificate is now live in the public registry."
+                            )
+                    except Exception as email_err:
+                        print(f"Certificate email failed: {email_err}")
+        except Exception as cert_err:
+            print(f"Auto-certificate failed: {cert_err}")
+
     return {
         "test_id": test.test_id,
         "state": test.state,

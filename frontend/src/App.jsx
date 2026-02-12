@@ -28,6 +28,7 @@ const LicenseesPage = lazy(() => import('./pages/LicenseesPage'));
 const ActivityPage = lazy(() => import('./pages/ActivityPage'));
 const MyActivityPage = lazy(() => import('./pages/MyActivityPage'));
 const SettingsPage = lazy(() => import('./pages/SettingsPage'));
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 const ApiDocsPage = lazy(() => import('./pages/ApiDocsPage'));
 
 function LazyLoad({ children }) {
@@ -58,6 +59,7 @@ function App() {
           <Route path="/licensees" element={<ProtectedRoute roles={["admin"]}><Layout><LazyLoad><LicenseesPage /></LazyLoad></Layout></ProtectedRoute>} />
           <Route path="/users" element={<ProtectedRoute roles={["admin"]}><Layout><LazyLoad><UserManagementPage /></LazyLoad></Layout></ProtectedRoute>} />
           <Route path="/" element={<Navigate to="/dashboard" />} />
+          <Route path="*" element={<LazyLoad><NotFoundPage /></LazyLoad>} />
         </Routes>
       </AuthProvider>
     </ConfirmProvider></BrowserRouter></ToastProvider></ErrorBoundary>

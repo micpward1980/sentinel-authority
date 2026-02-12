@@ -3,12 +3,14 @@ import { api } from '../config/api';
 import Panel from '../components/Panel';
 
 function LicenseesPage() {
+  const [loading, setLoading] = useState(true);
   const [licensees, setLicensees] = useState([]);
 
   useEffect(() => {
-    api.get('/api/licensees/').then(res => setLicensees(res.data)).catch(console.error);
+    api.get('/api/licensees/').then(res => setLicensees(res.data)).catch(console.error).finally(() => setLoading(false));
   }, []);
 
+  if (loading) return <div style={{padding:"40px 0",textAlign:"center"}}><div style={{fontFamily:"Consolas,monospace",fontSize:11,color:"rgba(255,255,255,.3)"}}>Loading licensees...</div></div>;
   return (
     <div className="space-y-6">
       <div>

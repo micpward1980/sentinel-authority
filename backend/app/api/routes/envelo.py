@@ -978,14 +978,15 @@ async def receive_heartbeat(
                 )
                 pending_test = cat_result.scalar_one_or_none()
                 if pending_test:
-                    pending_test.state = "spec_review"
+                    pending_test.state = "running"
+                    pending_test.started_at = now
                     genesis = {
                         "type": "genesis",
                         "test_id": pending_test.test_id,
                         "started_at": now.isoformat(),
                         "operator_id": 0,
                         "auto_started": True,
-                        "awaiting_spec_confirmation": True,
+                        
                         "trigger": "interlock_heartbeat",
                         "envelope_definition": pending_test.envelope_definition,
                     }
@@ -994,7 +995,7 @@ async def receive_heartbeat(
                     pending_test.evidence_hash = genesis_hash
                     await db.commit()
                     import logging
-                    logging.getLogger("main").info(f"CAT-72 test {pending_test.test_id} moved to spec_review — interlock connected for {session.organization_name} / {session.system_name}")
+                    logging.getLogger("main").info(f"CAT-72 test {pending_test.test_id} AUTO-STARTED — interlock connected for {session.organization_name} / {session.system_name}")
         except Exception as e:
             import logging
             logging.getLogger("main").warning(f"Auto-start CAT-72 check failed: {e}")

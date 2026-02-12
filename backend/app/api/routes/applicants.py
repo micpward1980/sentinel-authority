@@ -309,6 +309,26 @@ async def update_application_state(
                 )
                 db.add(new_key)
         
+
+        # Auto-create CAT-72 test on approval
+        if new_state == "approved":
+            try:
+                from app.models.models import CAT72Test
+                import secrets as _secrets
+                test_id = f"CAT-{datetime.utcnow().year}-{_secrets.token_hex(4).upper()}"
+                cat_test = CAT72Test(
+                    test_id=test_id,
+                    application_id=app.id,
+                    duration_hours=72,
+                    envelope_definition=app.envelope_definition,
+                    state="scheduled",
+                    operator_id=int(user["sub"]) if user.get("sub") else None,
+                )
+                db.add(cat_test)
+                print(f"Auto-created CAT-72 test {test_id} for {app.application_number}")
+            except Exception as e:
+                print(f"Auto-create CAT-72 failed: {e}")
+
         # Write audit log
         await write_audit_log(
             db=db,

@@ -5,14 +5,16 @@ import { api, API_BASE } from '../config/api';
 import Panel from '../components/Panel';
 
 function CertificatesPage() {
+  const [loading, setLoading] = useState(true);
   const [certificates, setCertificates] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('active');
 
   useEffect(() => {
-    api.get('/api/certificates/').then(res => setCertificates(res.data)).catch(console.error);
+    api.get('/api/certificates/').then(res => setCertificates(res.data)).catch(console.error).finally(() => setLoading(false));
   }, []);
 
+  if (loading) return <div style={{padding:"40px 0",textAlign:"center"}}><div style={{fontFamily:"Consolas,monospace",fontSize:11,color:"rgba(255,255,255,.3)",animation:"sa-shimmer 1.5s ease infinite"}}>Loading certificates...</div></div>;
   const filteredCerts = certificates.filter(cert => {
     if (statusFilter !== 'all') {
       if (statusFilter === 'active' && !(cert.state === 'conformant' || cert.state === 'active' || cert.state === 'issued')) return false;
