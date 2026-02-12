@@ -4489,7 +4489,7 @@
         var phase = 0;
         var cx, cy, radius;
         var agents = [];
-        var AGENT_COUNT = 28;
+        var AGENT_COUNT = (window.innerWidth < 600 || window.innerHeight < 500) ? 16 : 28;
         var telemetry = [];
         var lastTel = 0;
         var boundaryPulses = [];
@@ -4519,10 +4519,10 @@
           stressMarkers = [];
           var r = c.parentElement.getBoundingClientRect();
           W = r.width;
-          H = W < 550 ? W * 0.80 : (window.innerHeight < 500 && window.innerWidth > window.innerHeight) ? Math.min(W * 0.42, window.innerHeight * 0.55) : W * 0.42;
+          H = W < 550 ? W * 0.80 : W * 0.42;
           // Landscape: cap canvas height
           if (window.innerHeight < 500 && window.innerWidth > window.innerHeight) {
-            H = Math.min(H, window.innerHeight * 0.55);
+            H = Math.min(H, window.innerHeight * 0.75);
           }
           c.width = W * dpr;
           c.height = H * dpr;
@@ -4855,7 +4855,7 @@
             ctx.lineWidth=0.5; ctx.stroke();
 
             if(t.alpha>0.3){
-              ctx.font='300 8px "IBM Plex Mono"';
+              ctx.font='300 '+Math.round(Math.max(6,radius*0.07))+'px "IBM Plex Mono"';
               ctx.fillStyle=rgb(GREEN,t.alpha*0.35);
               ctx.textAlign=t.side>0?'left':'right';
               ctx.fillText(t.text,t.x,t.y);
@@ -4895,9 +4895,9 @@
             var s=stressMarkers[i];
             s.alpha-=0.006;
             if(s.alpha<=0){stressMarkers.splice(i,1);continue;}
-            var sx=cx+Math.cos(s.angle)*(radius+30);
-            var sy=cy+Math.sin(s.angle)*(radius+30);
-            ctx.font='400 7px "IBM Plex Mono"';
+            var sx=cx+Math.cos(s.angle)*(radius*1.2);
+            var sy=cy+Math.sin(s.angle)*(radius*1.2);
+            ctx.font='400 '+Math.round(radius*0.06)+'px "IBM Plex Mono"';
             ctx.fillStyle=rgb(AMBER,s.alpha*0.7);
             ctx.textAlign='center';
             ctx.fillText('STRESS',sx,sy);
@@ -4910,28 +4910,29 @@
           var mins = Math.floor((simTime-hours)*60);
           var ts = String(hours).padStart(2,'0')+':'+String(mins).padStart(2,'0');
 
-          ctx.font='200 '+Math.round(Math.min(radius*0.42, H*0.15))+'px "Source Serif 4"';
+          ctx.font='200 '+Math.round(radius*0.35)+'px "Source Serif 4"';
           ctx.textAlign='center'; ctx.textBaseline='middle';
           var tg=ctx.createLinearGradient(cx,cy-20,cx,cy+20);
           tg.addColorStop(0,'rgba(255,255,255,0.88)');
           tg.addColorStop(1,rgb(pc,0.75));
           ctx.fillStyle=tg;
-          ctx.fillText(ts,cx,cy-6);
+          ctx.fillText(ts,cx,cy-radius*0.08);
 
           ctx.font='300 13px "IBM Plex Mono"';
           ctx.fillStyle='rgba(255,255,255,0.48)';
-          ctx.fillText('/ 72:00',cx,cy+Math.min(22,H*0.07));
+          ctx.fillText('/ 72:00',cx,cy+radius*0.20);
 
           ctx.font='400 9px "IBM Plex Mono"';
           ctx.fillStyle=rgb(pc,0.55);
-          ctx.fillText(PHASE_NAMES[phase],cx,cy+Math.min(44,H*0.13));
+          ctx.fillText(PHASE_NAMES[phase],cx,cy+radius*0.38);
 
-          ctx.font='300 8px "IBM Plex Mono"';
+          ctx.font='300 '+Math.round(radius*0.07)+'px "IBM Plex Mono"';
           ctx.fillStyle='rgba(255,255,255,0.48)';
-          ctx.fillText('EVIDENCE BLOCKS: '+blockCount,cx,Math.min(cy+60,H*0.85));
+          ctx.fillText('EVIDENCE BLOCKS: '+blockCount,cx,cy+radius*0.55);
         }
 
         function drawHash(now) {
+          if (isMob()) return;
           var x = W-16;
           var startY = cy-radius*0.3;
           var chars='0123456789abcdef';
@@ -4956,14 +4957,15 @@
           ctx.fillStyle=rgb(RED,pa*haltAlpha);
           ctx.fillRect(0,0,W,H);
 
-          ctx.font='500 14px "IBM Plex Mono"';
+          var hf=Math.round(Math.max(9,radius*0.13));
+          ctx.font='500 '+hf+'px "IBM Plex Mono"';
           ctx.fillStyle=rgb(RED,0.7*haltAlpha);
           ctx.textAlign='center';
-          ctx.fillText('\u25A3  SYSTEM HALTED \u2014 BOUNDARY EXCEEDANCE',cx,Math.min(cy+radius+45,H-25));
+          ctx.fillText('\u25A3  SYSTEM HALTED',cx,Math.min(cy+radius*1.3,H-20));
 
-          ctx.font='300 9px "IBM Plex Mono"';
+          ctx.font='300 '+Math.round(hf*0.65)+'px "IBM Plex Mono"';
           ctx.fillStyle=rgb(RED,0.4*haltAlpha);
-          ctx.fillText('ENVELO FAIL-CLOSED ENFORCEMENT ACTIVE',cx,Math.min(cy+radius+62,H-10));
+          ctx.fillText('ENVELO FAIL-CLOSED ENFORCEMENT',cx,Math.min(cy+radius*1.3+hf+4,H-8));
         }
 
         function syncCards() {
