@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
     <meta name="description" content="Sentinel Authority - Independent conformance determination for autonomous systems. ODDC attestation with ENVELO enforcement.">
-  <title>Sentinel Authority — ODDC Conformance</title>
+  <title>Sentinel Authority — Conformance Certification for Autonomous Systems</title>
 
   <meta
     name="description"
@@ -12,14 +12,14 @@
   />
 
   <!-- Open Graph / LinkedIn / Slack -->
-  <meta property="og:title" content="Sentinel Authority — ODDC Conformance" />
-  <meta property="og:description" content="ODD Conformance Determination for autonomous systems. A voluntary conformance and evidence framework." />
+  <meta property="og:title" content="Sentinel Authority — Conformance Certification for Autonomous Systems" />
+  <meta property="og:description" content="Formal attestation that autonomous systems operate within their declared Operational Design Domains. Proof. Not promises." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://sentinelauthority.org/" />
   <meta property="og:image" content="https://sentinelauthority.org/og.png" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Sentinel Authority — ODDC Conformance" />
-  <meta name="twitter:description" content="ODD Conformance Determination for autonomous systems." />
+  <meta name="twitter:title" content="Sentinel Authority — Conformance Certification for Autonomous Systems" />
+  <meta name="twitter:description" content="Formal attestation that autonomous systems operate within declared Operational Design Domains. Proof. Not promises." />
 
   <!-- Canonical URL -->
   <link rel="canonical" href="https://sentinelauthority.org/" />
@@ -895,6 +895,12 @@
       .hero-content-bottom .hero-disclaimer {
         display: none !important;
       }
+      .hero-content-bottom {
+        margin-top: -16px !important;
+      }
+      .hero-content-bottom {
+        margin-top: -16px !important;
+      }
       .hero-content-bottom .hero-actions {
         gap: 8px !important;
       }
@@ -902,6 +908,40 @@
 
     @media (max-width: 600px){
       h1{ font-weight: normal; line-height: 1.0; }
+
+    @media (max-height: 500px) and (orientation: landscape) {
+      .hero {
+        min-height: auto !important;
+        padding-top: 0px !important;
+        padding-bottom: 8px !important;
+      }
+      .hero {
+        min-height: auto !important;
+        padding-top: 0px !important;
+        padding-bottom: 8px !important;
+      }
+      /* All sections: tighter padding in landscape */
+      .section, section {
+        padding-top: 24px !important;
+        padding-bottom: 24px !important;
+      }
+      /* Section titles smaller */
+      .section-title {
+        font-size: 22px !important;
+        margin-bottom: 12px !important;
+      }
+      /* HUD frames: tighter */
+      .hud-frame {
+        padding: 12px !important;
+      }
+      .hud-row {
+        padding: 6px 0 !important;
+      }
+      .hud-desc {
+        font-size: 10px !important;
+      }
+    }
+
     }
     
     /* ============================================
@@ -1453,8 +1493,9 @@
     @media (max-width: 768px) {
       /* Hero */
       .hero {
-        min-height: 100vh;
-        min-height: 100dvh;
+        min-height: auto;
+        padding-top: 16px;
+        padding-bottom: 24px;
       }
       .hero-content-bottom {
         
@@ -2258,8 +2299,8 @@
     @media (max-width: 768px) {
       .hero-section,
       [class*="hero"] {
-        padding-top: 100px !important;
-        padding-bottom: 60px !important;
+        padding-top: 16px !important;
+        padding-bottom: 16px !important;
         min-height: auto !important;
       }
       
@@ -2573,18 +2614,16 @@
         <div class="brand-name">Sentinel Authority</div>
       </a>
 
-      <nav class="nav-links" aria-label="Main navigation" aria-label="Section navigation">
-        <a href="#envelo" data-section="envelo">ENVELO</a>
+    <nav class="nav-links" aria-label="Main navigation">
+        <a href="#envelo" data-section="envelo">STANDARD</a>
+        <a href="#buyers" data-section="buyers">ENTERPRISE</a>
         <a href="#security" data-section="security">SECURITY</a>
-        <a href="#criteria" data-section="criteria">CRITERIA</a>
-        <a href="#cat72" data-section="cat72">CAT-72</a>
+        <a href="#criteria" data-section="criteria">CERTIFICATION</a>
         <a href="#process" data-section="process">PROCESS</a>
-        <a href="#artifacts" data-section="artifacts">ARTIFACTS</a>
-        <a href="#verify" data-section="verify">VERIFY</a>
+        <a href="#verify" data-section="verify">REGISTRY</a>
         <a href="#contact" data-section="contact">CONTACT</a>
         <a href="https://app.sentinelauthority.org">SIGN IN</a>
-          </nav>
-      <a href="draft.html" class="nav-badge" title="v1.0 — Effective January 2026" aria-describedby="draft-note">
+    </nav>      <a href="draft.html" class="nav-badge" title="v1.0 — Effective January 2026" aria-describedby="draft-note">
         <span>v1.0</span>
       </a>
       <span id="draft-note" class="sr-only">
@@ -2601,17 +2640,15 @@
   
   <div class="drawer-overlay" aria-hidden="true"></div>
   <div id="nav-drawer" class="nav-drawer" role="navigation" aria-label="Mobile navigation">
-    <a href="#envelo" data-section="envelo">ENVELO</a>
+    <a href="#envelo" data-section="envelo">STANDARD</a>
+    <a href="#buyers" data-section="buyers">ENTERPRISE</a>
     <a href="#security" data-section="security">SECURITY</a>
-    <a href="#criteria" data-section="criteria">CRITERIA</a>
-    <a href="#cat72" data-section="cat72">CAT-72</a>
+    <a href="#criteria" data-section="criteria">CERTIFICATION</a>
     <a href="#process" data-section="process">PROCESS</a>
-    <a href="#artifacts" data-section="artifacts">ARTIFACTS</a>
-    <a href="#verify" data-section="verify">VERIFY</a>
+    <a href="#verify" data-section="verify">REGISTRY</a>
     <a href="#contact" data-section="contact">CONTACT</a>
     <a href="https://app.sentinelauthority.org" class="nav-signin">SIGN IN</a>
-  </div>
-  <!-- Copy toast -->
+  </div>  <!-- Copy toast -->
   <div class="copy-toast" role="status" aria-live="polite">Hash copied to clipboard</div>
 
   <main id="main" role="main">
@@ -2620,32 +2657,40 @@
     <!-- HERO -->
     <section class="hero">
       <!-- Full-viewport canvas -->
-      <div style="position:relative;display:flex;flex-direction:column;align-items:center;margin:0 auto;max-width:880px;padding-top:0;"><div style="width:100%;"><canvas id="hero-canvas" style="width:100%;height:calc(min(880px, 100vw) * 0.6);display:block;opacity:0;transition:opacity 0.35s ease;"></canvas></div>
+      <div style="position:relative;display:flex;flex-direction:column;align-items:center;margin:0 auto;max-width:880px;padding-top:8px;"><div style="width:100%;"><canvas id="hero-canvas" style="width:100%;height:calc(min(880px, 100vw) * 0.50);display:block;opacity:0;transition:opacity 0.35s ease;"></canvas></div>
       <!-- Hero Content below canvas -->
-      <div id="hero-text" class="hero-content-bottom" style="position:relative;z-index:10;text-align:center;padding:0 16px 0;margin-top:-64px;display:flex;flex-direction:column;align-items:center;">
+      <div id="hero-text" class="hero-content-bottom" style="position:relative;z-index:10;text-align:center;padding:0 16px 0;margin-top:-32px;display:flex;flex-direction:column;align-items:center;">
         
-        <h1 style="font-family: var(--serif); font-size: clamp(28px, 5vw, 50px); font-weight: 200; line-height: 1.1; margin-bottom: 4px; letter-spacing: -0.02em; color: #fff; max-width: 700px;">
-          Operational Design Domain<br><span class="accent" style="color: #c4b8e8; font-style: italic;">Conformance</span>
+        <p style="font-family:var(--mono);font-size:9px;letter-spacing:3px;text-transform:uppercase;color:rgba(157,140,207,0.5);margin:0 0 8px;">Independent Certification Body</p>
+
+        <h1 style="font-family: var(--serif); font-size: clamp(26px, 4.5vw, 46px); font-weight: 200; line-height: 1.1; margin-bottom: 6px; letter-spacing: -0.02em; color: #fff; max-width: 700px;">
+          Conformance Certification<br><span style="color: rgba(157,140,207,0.7);">for Autonomous Systems</span>
         </h1>
         
-        <p style="font-size: clamp(13px, 1.8vw, 16px); color:rgba(255,255,255,0.78); max-width: 500px; margin: 0 auto 10px; line-height: 1.4;">
-          Autonomy, enforced.
+        <p style="font-size: clamp(12px, 1.5vw, 14px); color:rgba(255,255,255,0.4); max-width: 540px; margin: 0 auto 14px; line-height: 1.6; font-family: var(--mono); letter-spacing: 0.3px;">
+          Formal attestation that autonomous systems operate within their declared Operational Design Domains &mdash; enforced at runtime, verified independently, recorded immutably.
+        </p>
+        <p style="font-family: var(--serif); font-size: clamp(14px, 1.8vw, 17px); font-weight: 400; font-style: italic; color: rgba(196,184,232,0.7); margin: 0 0 16px; letter-spacing: 0.5px;">
+          Proof. Not promises.
         </p>
         
         <!-- CTA Buttons -->
         <div style="display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; align-items: center;">
           <a href="https://app.sentinelauthority.org" style="font-family:var(--mono);font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:rgba(157,140,207,.9);text-decoration:none;display:inline-flex;align-items:center;gap:10px;transition:color .2s;">
-            Get Started
+            Request Certification
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
           </a>
-          <a href="#envelo" style="font-family:var(--mono);font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,0.35);text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:color .2s;">
-            How It Works
+          <a href="#verify" style="font-family:var(--mono);font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,0.35);text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:color .2s;">
+            Verify a Certificate
           </a>
         </div>
-        <p class="hero-disclaimer" style="font-family: var(--mono); font-size: 9px; color: rgba(255,255,255,0.2); letter-spacing: 0.3px; margin: 6px 0 0; max-width: 500px; line-height: 1.5;">
-          Independent conformance determination. Not a regulator. ODDC does not attest to safety or regulatory compliance.
-        </p>
+
       </div>
+      </div>
+
+      <!-- Industry Strip -->
+      <div class="reveal" style="text-align:center;padding:var(--space-2) var(--space-2) 0;">
+        <span style="font-family:var(--mono);font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,0.2);">Healthcare AI &nbsp;·&nbsp; Clinical Decision Systems &nbsp;·&nbsp; Autonomous Vehicles &nbsp;·&nbsp; Robotics &nbsp;·&nbsp; Enterprise AI &nbsp;·&nbsp; Industrial Automation &nbsp;·&nbsp; Logistics &nbsp;·&nbsp; Energy</span>
       </div>
       
       <!-- Disclaimer at bottom -->
@@ -2664,9 +2709,11 @@
   var RED = [214,92,92];
   var AMBER = [214,160,92];
 
+  function isMob() { return W < 600 || (window.innerHeight < 500 && window.innerWidth > window.innerHeight); }
+
   var cx, cy, radius;
   var agents = [];
-  var AGENT_COUNT = window.innerWidth < 768 ? 14 : 28;
+  var AGENT_COUNT = (window.innerWidth < 768 || window.innerHeight < 500) ? 14 : 28;
   var telemetry = [];
   var lastTel = 0;
   var boundaryPulses = [];
@@ -2698,14 +2745,28 @@
   var radiusLocked = false;
   var lockedRadius = 0, lockedCx = 0, lockedCy = 0;
 
+  var heroLockedH = 0, heroLockedW = 0;
   function resize() {
     var r = c.parentElement.getBoundingClientRect();
-    W = r.width;
-    H = W < 550 ? W * 1.05 : W * 0.6;
+    var newW = r.width;
+    // Only recalculate height on real width change (rotation), not iOS URL bar
+    if (Math.abs(newW - heroLockedW) < 20 && heroLockedH > 0) {
+      W = newW;
+      // Just update canvas width, keep H locked
+      c.width = W * dpr;
+      c.height = heroLockedH * dpr;
+      c.style.height = heroLockedH + 'px';
+      ctx.setTransform(dpr,0,0,dpr,0,0);
+      H = heroLockedH;
+      return;
+    }
+    W = newW;
+    H = W < 550 ? W * 0.80 : (window.innerHeight < 500 && window.innerWidth > window.innerHeight) ? Math.min(W * 0.42, window.innerHeight * 0.75) : W * 0.42;
     c.width = W * dpr;
     c.height = H * dpr;
     c.style.height = H + 'px';
     ctx.setTransform(dpr,0,0,dpr,0,0);
+    heroLockedH = H; heroLockedW = W;
 
     // Only recalculate layout on actual window resize, not scroll
     if (!radiusLocked || Math.abs(W - (c._lastW||0)) > 20 || Math.abs(H - (c._lastH||0)) > 20) {
@@ -2776,8 +2837,8 @@
         var dx2 = a.x-cx, dy2 = a.y-cy, dist2 = Math.sqrt(dx2*dx2+dy2*dy2)||1;
         a.vx -= (dx2/dist2)*0.02*dt;
         a.vy -= (dy2/dist2)*0.02*dt;
-        a.x += a.vx*dt*0.06;
-        a.y += a.vy*dt*0.06;
+        a.x += a.vx*dt*(isMob()?0.03:0.06);
+        a.y += a.vy*dt*(isMob()?0.03:0.06);
         a.mrcTimer -= dt;
 
         dx2 = a.x-cx; dy2 = a.y-cy; dist2 = Math.sqrt(dx2*dx2+dy2*dy2);
@@ -2839,7 +2900,7 @@
         boundaryPulses.push({angle:ang2, alpha:0.4, spread:0});
       }
 
-      a.vx *= 0.997; a.vy *= 0.997;
+      a.vx *= isMob() ? 0.990 : 0.997; a.vy *= isMob() ? 0.990 : 0.997;
     }
   }
 
@@ -2871,7 +2932,7 @@
 
   // ── LEGEND ──
   function drawLegend() {
-    var lx = 12, ly = H - 138;
+    var lx = 12, ly = H - 110; if (isMob()) return;
     ctx.font = '600 8px "IBM Plex Mono"';
     ctx.textAlign = 'left';
     var items = [
@@ -2978,19 +3039,20 @@
   }
 
   function spawnTelemetry(now) {
-    var telDelay = W < 600 ? 500 : 280;
+    if (isMob() && telemetry.length >= 4) return;
+    var telDelay = isMob() ? 900 : 280;
     if (now-lastTel>telDelay) {
       lastTel=now;
       var label = dataLabels[Math.floor(Math.random()*dataLabels.length)];
       var side = Math.random()>0.5?1:-1;
-      var spawnDist = W < 600 ? radius+15+Math.random()*25 : radius+35+Math.random()*60;
+      var spawnDist = isMob() ? radius+10+Math.random()*15 : radius+35+Math.random()*60;
       var spawnX = cx+side*spawnDist;
       // Clamp to viewport
-      spawnX = Math.max(10, Math.min(W-10, spawnX));
+      spawnX = Math.max(isMob()?30:10, Math.min(W-(isMob()?30:10), spawnX));
       telemetry.push({
-        text: W < 480 ? label.split(':')[0] : label,
+        text: isMob() ? label.split(':')[0] : label,
         x: spawnX,
-        y: cy-radius*0.5+Math.random()*radius,
+        y: Math.max(cy-radius*0.4, Math.min(cy+radius*0.3, cy-radius*0.4+Math.random()*radius*0.7)),
         tx: cx+(Math.random()-0.5)*radius*0.5,
         ty: cy+(Math.random()-0.5)*radius*0.5,
         alpha:1, prog:0, side:side
@@ -3001,7 +3063,7 @@
   function drawTelemetry() {
     for (var i=telemetry.length-1;i>=0;i--) {
       var t=telemetry[i];
-      t.prog+=0.007;
+      t.prog+=isMob()?0.005:0.007;
       if(t.prog>1) t.alpha-=0.025;
       if(t.alpha<=0){telemetry.splice(i,1);continue;}
 
@@ -3027,7 +3089,7 @@
   }
 
   function drawHash(now) {
-    if (W < 480) return; // Skip hash on small phones - overlaps content
+    if (isMob()) return; // Skip hash on mobile/landscape - overlaps content
     var x = W-16;
     var startY = cy-radius*0.3;
     var chars='0123456789abcdef';
@@ -3073,27 +3135,17 @@
     // Debounce resize to avoid thrashing during URL bar animation
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(function() {
-      var oldCx = cx, oldCy = cy, oldR = radius;
       radiusLocked = false;
       resize();
-      // Reposition existing agents proportionally — don't recreate
-      if (oldR > 0 && agents.length > 0) {
-        var sx = cx / oldCx, sy = cy / oldCy, sr = radius / oldR;
-        for (var i = 0; i < agents.length; i++) {
-          agents[i].x = cx + (agents[i].x - oldCx) * sr;
-          agents[i].y = cy + (agents[i].y - oldCy) * sr;
-          agents[i].softMax = agents[i].isOutlier ? radius * 0.88 : radius * 0.65;
-        }
-        for (var w = 0; w < 60; w++) updateAgents(16);
-        enveloEvents = [];
-        boundaryPulses = [];
-        for (var i=0; i<agents.length; i++) { agents[i].tier=0; agents[i].haltTimer=0; agents[i].mrcTimer=0; }
-      } else {
-        initAgents();
-        for (var w = 0; w < 300; w++) updateAgents(16);
-        enveloEvents = [];
-        boundaryPulses = [];
-        for (var i=0; i<agents.length; i++) { agents[i].tier=0; agents[i].haltTimer=0; agents[i].mrcTimer=0; }
+      // On resize/rotate: fully reinitialize — proportional scaling breaks on big aspect changes
+      initAgents();
+      for (var w = 0; w < 300; w++) updateAgents(16);
+      enveloEvents = [];
+      boundaryPulses = [];
+      telemetry = [];
+      for (var i=0; i<agents.length; i++) { agents[i].tier=0; agents[i].haltTimer=0; agents[i].mrcTimer=0;
+        var _d=Math.sqrt((agents[i].x-cx)*(agents[i].x-cx)+(agents[i].y-cy)*(agents[i].y-cy));
+        if(_d>radius*0.7){var _s=radius*0.5/_d;agents[i].x=cx+(agents[i].x-cx)*_s;agents[i].y=cy+(agents[i].y-cy)*_s;agents[i].vx*=0.2;agents[i].vy*=0.2;}
       }
     }, 150);
   });
@@ -3198,9 +3250,17 @@
         ];
 
         function resize() {
+          telemetry = [];
+          catEnveloEvents = [];
+          boundaryPulses = [];
+          stressMarkers = [];
           var r = c.parentElement.getBoundingClientRect();
           W = r.width;
-          H = W < 550 ? 420 : 340;
+          H = W < 550 ? 560 : 340;
+    // Landscape: cap canvas height
+    if (window.innerHeight < 500 && window.innerWidth > window.innerHeight) {
+      H = Math.min(H, window.innerHeight * 0.80);
+    }
           c.width = W * dpr;
           c.height = H * dpr;
           c.style.height = H + 'px';
@@ -3211,8 +3271,10 @@
           var mob = W < 550;
           if (mob) {
             var cx = W/2;
-            return { model:{x:cx,y:50,r:38}, envelo:{x:cx,y:155,r:55}, gate:{x:cx,y:252,r:30},
-              exec:{x:cx-80,y:340,w:90,h:30}, mrc:{x:cx,y:340,w:90,h:30}, halt:{x:cx+80,y:340,w:90,h:30}, mob:true };
+            var sc = H/420; // scale factor — 420 is the original mobile H
+            var rsc = Math.min(sc, 1); // don't upscale radii beyond original
+            return { model:{x:cx,y:H*0.12,r:38*rsc}, envelo:{x:cx,y:H*0.37,r:55*rsc}, gate:{x:cx,y:H*0.60,r:30*rsc},
+              exec:{x:cx-80*rsc,y:H*0.82,w:90*rsc,h:30*rsc}, mrc:{x:cx,y:H*0.82,w:90*rsc,h:30*rsc}, halt:{x:cx+80*rsc,y:H*0.82,w:90*rsc,h:30*rsc}, mob:true };
           }
           var cy=H/2-4, m=W*0.06, s=(W-m*2)/5;
           return { model:{x:m+s*0.5,y:cy,r:46}, envelo:{x:m+s*1.85,y:cy,r:64}, gate:{x:m+s*3.1,y:cy,r:34},
@@ -3626,6 +3688,87 @@
         <span style="font-family:var(--mono);font-size:11px;letter-spacing:1px;color:rgba(255,255,255,0.35);">Deployed by Sentinel as a <span style="color:rgba(92,214,133,0.8);">runtime interlock</span> on your infrastructure — outbound-only, non-bypassable</span>
       </div>
     </section>
+
+    <!-- ═══ WHY CERTIFY ═══ -->
+    <section id="value" class="section">
+      <div class="section-head reveal">
+        <div>
+          <span class="section-label">THE BUSINESS CASE</span>
+          <h2 class="section-title">Why It Matters</h2>
+          <p class="section-lead">
+            ODDC certification solves the governance proof problem that stalls enterprise AI procurement.
+          </p>
+        </div>
+      </div>
+
+      <div class="reveal" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:var(--space-2);margin-top:var(--space-2);">
+        <div class="hud-frame"><i></i>
+          <div style="display:flex;align-items:flex-start;gap:12px;">
+            <span class="hud-num">01</span><span class="hud-dot" style="margin-top:6px;"></span>
+            <div>
+              <div class="hud-title">Accelerate Procurement</div>
+              <div class="hud-desc">Enterprise buyers need governance evidence before they sign. ODDC certification provides independent, auditable proof that your system operates within declared boundaries — compressing legal review from months to weeks.</div>
+            </div>
+          </div>
+        </div>
+        <div class="hud-frame"><i></i>
+          <div style="display:flex;align-items:flex-start;gap:12px;">
+            <span class="hud-num">02</span><span class="hud-dot" style="margin-top:6px;"></span>
+            <div>
+              <div class="hud-title">Competitive Differentiation</div>
+              <div class="hud-desc">When an RFP requires governance documentation, certified vendors pass risk assessments that uncertified competitors cannot. A verifiable differentiator backed by runtime enforcement evidence and a public registry entry.</div>
+            </div>
+          </div>
+        </div>
+        <div class="hud-frame"><i></i>
+          <div style="display:flex;align-items:flex-start;gap:12px;">
+            <span class="hud-num">03</span><span class="hud-dot" style="margin-top:6px;"></span>
+            <div>
+              <div class="hud-title">Defensible Governance</div>
+              <div class="hud-desc">Board-level accountability requires more than policy documents. ODDC provides auditable evidence that deployed systems have verified, enforceable operational controls — satisfying compliance committees and audit requirements.</div>
+            </div>
+          </div>
+        </div>
+        <div class="hud-frame"><i></i>
+          <div style="display:flex;align-items:flex-start;gap:12px;">
+            <span class="hud-num">04</span><span class="hud-dot" style="margin-top:6px;"></span>
+            <div>
+              <div class="hud-title">Insurance &amp; Liability</div>
+              <div class="hud-desc">ODDC certification provides structured conformance evidence that insurers can reference when evaluating autonomous system risk — moving conversations from theoretical frameworks to verified enforcement data.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ FOR ENTERPRISE BUYERS ═══ -->
+    <section id="buyers" class="section">
+      <div class="section-head reveal">
+        <div>
+          <span class="section-label">FOR ENTERPRISE PROCUREMENT</span>
+          <h2 class="section-title">Require Verifiable Boundaries</h2>
+          <p class="section-lead">
+            Evaluating AI vendors? Stop accepting governance promises. Start requiring enforcement proof.
+          </p>
+        </div>
+      </div>
+
+      <div class="reveal" style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-3);margin-top:var(--space-2);">
+        <div class="hud-frame"><i></i>
+          <div class="hud-title" style="margin-bottom:12px;color:rgba(214,92,92,0.8);">The Problem</div>
+          <div class="hud-desc" style="line-height:1.8;">Your organization is deploying autonomous systems or purchasing AI platforms that make operational decisions. Your legal, compliance, and risk teams need assurance that these systems will not operate outside their designed parameters. Vendor self-assessments and governance policy documents describe intentions, not enforcement.</div>
+        </div>
+        <div class="hud-frame"><i></i>
+          <div class="hud-title" style="margin-bottom:12px;color:rgba(92,214,133,0.8);">The Standard</div>
+          <div class="hud-desc" style="line-height:1.8;">ODDC certification is an independent determination that an autonomous system has verifiable, enforceable runtime boundary controls. When you require ODDC certification from your AI vendors, you are requiring proof — not promises. Certified systems are listed in the public Sentinel registry and subject to continuous conformance monitoring.</div>
+        </div>
+      </div>
+      <div class="reveal" style="text-align:center;margin-top:var(--space-2);">
+        <a href="mailto:conformance@sentinelauthority.org?subject=ODDC%20Procurement%20Requirements" style="display:inline-block;border:1px solid rgba(157,140,207,.3);background:transparent;color:rgba(157,140,207,0.9);padding:14px 40px;font-family:var(--mono);font-size:10px;letter-spacing:2.5px;text-transform:uppercase;text-decoration:none;cursor:pointer;transition:all .2s;">Require ODDC From Your Vendors &#x2192;</a>
+        <p style="font-family:var(--mono);font-size:9px;color:rgba(255,255,255,0.2);margin-top:10px;letter-spacing:0.5px;">Contact us to incorporate ODDC certification into your procurement evaluation criteria.</p>
+      </div>
+    </section>
+
     <section id="security" class="section">
       <div class="section-head reveal">
         <div>
@@ -3675,13 +3818,15 @@
 
         function resize(){
           var r=c.parentElement.getBoundingClientRect();W=r.width;
-          H=W<550?420:340;c.width=W*dpr;c.height=H*dpr;
+          H=W<550?560:340;
+          if(window.innerHeight<500&&window.innerWidth>window.innerHeight){H=Math.min(H,window.innerHeight*0.80);}
+          c.width=W*dpr;c.height=H*dpr;
           c.style.height=H+'px';ctx.setTransform(dpr,0,0,dpr,0,0);
         }
 
         function layout(){
           var mob=W<550;
-          if(mob){var cx=W/2;return{model:{x:cx,y:52,r:44},envelo:{x:cx,y:172,r:62},sentinel:{x:cx,y:305,r:44},mob:true};}
+          if(mob){var cx=W/2;var sc=H/460;var rsc=Math.min(sc,1);return{model:{x:cx,y:H*0.12,r:44*rsc},envelo:{x:cx,y:H*0.40,r:62*rsc},sentinel:{x:cx,y:H*0.70,r:44*rsc},mob:true};}
           var cy=H/2-8,m=W*0.08,s=(W-m*2)/3;
           return{model:{x:m+s*0.5,y:cy,r:48},envelo:{x:m+s*1.5,y:cy,r:66},sentinel:{x:m+s*2.5,y:cy,r:48},mob:false};
         }
@@ -3708,7 +3853,7 @@
 
         // ── PERIPHERAL ──
         function drawPeripheral(time,L){
-          if(L.mob)return;
+          if(L.mob||H<250)return;
           ctx.font='400 7.5px "IBM Plex Mono", monospace';
 
           // Top left
@@ -4199,7 +4344,7 @@
       /* Add more vertical spacing between major sections */
       #verify, #contact {
         padding-top: 60px !important;
-        padding-bottom: 60px !important;
+        padding-bottom: 16px !important;
       }
       
       /* Card sections - more padding */
@@ -4366,6 +4511,8 @@
         var AMBER = [214,160,92];
         var RED = [214,92,92];
         var PHASE_COLORS = [GREEN, AMBER, PURPLE];
+
+        function isMob() { return W < 600 || (window.innerHeight < 500 && window.innerWidth > window.innerHeight); }
         var PHASE_NAMES = ['CONTINUOUS DEMO', 'STRESS TESTING', 'FAIL-CLOSED PROOF'];
 
         var simTime = 0;
@@ -4373,7 +4520,7 @@
         var phase = 0;
         var cx, cy, radius;
         var agents = [];
-        var AGENT_COUNT = 28;
+        var AGENT_COUNT = (window.innerWidth < 600 || window.innerHeight < 500) ? 16 : 28;
         var telemetry = [];
         var lastTel = 0;
         var boundaryPulses = [];
@@ -4397,9 +4544,17 @@
         function rgb(c,a){ return 'rgba('+c[0]+','+c[1]+','+c[2]+','+a+')'; }
 
         function resize() {
+          telemetry = [];
+          catEnveloEvents = [];
+          boundaryPulses = [];
+          stressMarkers = [];
           var r = c.parentElement.getBoundingClientRect();
           W = r.width;
-          H = W < 550 ? W * 1.05 : W * 0.6;
+          H = W < 550 ? W * 0.80 : W * 0.42;
+          // Landscape: cap canvas height
+          if (window.innerHeight < 500 && window.innerWidth > window.innerHeight) {
+            H = Math.min(H, window.innerHeight * 0.75);
+          }
           c.width = W * dpr;
           c.height = H * dpr;
           c.style.height = H + 'px';
@@ -4407,6 +4562,7 @@
           cx = W * 0.5;
           cy = H * 0.48;
           radius = Math.min(W, H) * 0.34;
+          initAgents();
         }
 
         function initAgents() {
@@ -4460,8 +4616,8 @@
               var dx2=a.x-cx,dy2=a.y-cy,dist2=Math.sqrt(dx2*dx2+dy2*dy2)||1;
               a.vx -= (dx2/dist2)*0.02*dt;
               a.vy -= (dy2/dist2)*0.02*dt;
-              a.x += a.vx*dt*0.06;
-              a.y += a.vy*dt*0.06;
+              a.x += a.vx*dt*(isMob()?0.03:0.06);
+              a.y += a.vy*dt*(isMob()?0.03:0.06);
               a.mrcTimer -= dt;
               dx2=a.x-cx;dy2=a.y-cy;dist2=Math.sqrt(dx2*dx2+dy2*dy2);
               if (dist2<oddR*0.9) { a.tier=0; a.mrcTimer=0; }
@@ -4479,8 +4635,8 @@
 
             a.vx += (Math.cos(a.phase)*0.025 - a.vx*0.005)*dt*0.1;
             a.vy += (Math.sin(a.phase*1.3)*0.025 - a.vy*0.005)*dt*0.1;
-            a.x += a.vx*sm*dt*0.06;
-            a.y += a.vy*sm*dt*0.06;
+            a.x += a.vx*sm*dt*(isMob()?0.03:0.06);
+            a.y += a.vy*sm*dt*(isMob()?0.03:0.06);
 
             var dx=a.x-cx,dy=a.y-cy,dist=Math.sqrt(dx*dx+dy*dy)||1;
             var nx=dx/dist,ny=dy/dist;
@@ -4534,7 +4690,7 @@
 
         // ── LEGEND ──
         function drawLegend() {
-          var lx = 12, ly = H - 138;
+          var lx = 12, ly = H - 110; if (isMob()) return;
           ctx.font = '600 8px "IBM Plex Mono"';
           ctx.textAlign = 'left';
           var items = [
@@ -4697,15 +4853,16 @@
 
         function spawnTelemetry(now) {
           if (halted) return;
-          var interval = phase===1 ? 140 : 280;
+          if (isMob() && telemetry.length >= 4) return;
+          var interval = isMob() ? (phase===1 ? 400 : 700) : (phase===1 ? 140 : 280);
           if (now-lastTel>interval) {
             lastTel=now;
             var label = dataLabels[Math.floor(Math.random()*dataLabels.length)];
             var side = Math.random()>0.5?1:-1;
             telemetry.push({
               text:label,
-              x: cx+side*(radius+35+Math.random()*60),
-              y: cy-radius*0.5+Math.random()*radius,
+              x: cx+side*(radius+(isMob()?10:35)+Math.random()*(isMob()?20:60)),
+              y: Math.max(cy-radius*0.4, Math.min(cy+radius*0.3, cy-radius*0.4+Math.random()*radius*0.7)),
               tx: cx+(Math.random()-0.5)*radius*0.5,
               ty: cy+(Math.random()-0.5)*radius*0.5,
               alpha:1, prog:0, side:side
@@ -4716,7 +4873,7 @@
         function drawTelemetry() {
           for (var i=telemetry.length-1;i>=0;i--) {
             var t=telemetry[i];
-            t.prog+=0.007;
+            t.prog+=isMob()?0.005:0.007;
             if(t.prog>1) t.alpha-=0.025;
             if(t.alpha<=0){telemetry.splice(i,1);continue;}
 
@@ -4729,7 +4886,7 @@
             ctx.lineWidth=0.5; ctx.stroke();
 
             if(t.alpha>0.3){
-              ctx.font='300 8px "IBM Plex Mono"';
+              ctx.font='300 '+Math.round(Math.max(6,radius*0.07))+'px "IBM Plex Mono"';
               ctx.fillStyle=rgb(GREEN,t.alpha*0.35);
               ctx.textAlign=t.side>0?'left':'right';
               ctx.fillText(t.text,t.x,t.y);
@@ -4769,9 +4926,9 @@
             var s=stressMarkers[i];
             s.alpha-=0.006;
             if(s.alpha<=0){stressMarkers.splice(i,1);continue;}
-            var sx=cx+Math.cos(s.angle)*(radius+30);
-            var sy=cy+Math.sin(s.angle)*(radius+30);
-            ctx.font='400 7px "IBM Plex Mono"';
+            var sx=cx+Math.cos(s.angle)*(radius*1.2);
+            var sy=cy+Math.sin(s.angle)*(radius*1.2);
+            ctx.font='400 '+Math.round(radius*0.06)+'px "IBM Plex Mono"';
             ctx.fillStyle=rgb(AMBER,s.alpha*0.7);
             ctx.textAlign='center';
             ctx.fillText('STRESS',sx,sy);
@@ -4784,28 +4941,29 @@
           var mins = Math.floor((simTime-hours)*60);
           var ts = String(hours).padStart(2,'0')+':'+String(mins).padStart(2,'0');
 
-          ctx.font='200 '+Math.round(radius*0.42)+'px "Source Serif 4"';
+          ctx.font='200 '+Math.round(radius*0.35)+'px "Source Serif 4"';
           ctx.textAlign='center'; ctx.textBaseline='middle';
           var tg=ctx.createLinearGradient(cx,cy-20,cx,cy+20);
           tg.addColorStop(0,'rgba(255,255,255,0.88)');
           tg.addColorStop(1,rgb(pc,0.75));
           ctx.fillStyle=tg;
-          ctx.fillText(ts,cx,cy-6);
+          ctx.fillText(ts,cx,cy-radius*0.08);
 
           ctx.font='300 13px "IBM Plex Mono"';
           ctx.fillStyle='rgba(255,255,255,0.48)';
-          ctx.fillText('/ 72:00',cx,cy+22);
+          ctx.fillText('/ 72:00',cx,cy+radius*0.20);
 
           ctx.font='400 9px "IBM Plex Mono"';
           ctx.fillStyle=rgb(pc,0.55);
-          ctx.fillText(PHASE_NAMES[phase],cx,cy+44);
+          ctx.fillText(PHASE_NAMES[phase],cx,cy+radius*0.38);
 
-          ctx.font='300 8px "IBM Plex Mono"';
+          ctx.font='300 '+Math.round(radius*0.07)+'px "IBM Plex Mono"';
           ctx.fillStyle='rgba(255,255,255,0.48)';
-          ctx.fillText('EVIDENCE BLOCKS: '+blockCount,cx,cy+60);
+          ctx.fillText('EVIDENCE BLOCKS: '+blockCount,cx,cy+radius*0.55);
         }
 
         function drawHash(now) {
+          if (isMob()) return;
           var x = W-16;
           var startY = cy-radius*0.3;
           var chars='0123456789abcdef';
@@ -4830,14 +4988,15 @@
           ctx.fillStyle=rgb(RED,pa*haltAlpha);
           ctx.fillRect(0,0,W,H);
 
-          ctx.font='500 14px "IBM Plex Mono"';
+          var hf=Math.round(Math.max(9,radius*0.13));
+          ctx.font='500 '+hf+'px "IBM Plex Mono"';
           ctx.fillStyle=rgb(RED,0.7*haltAlpha);
           ctx.textAlign='center';
-          ctx.fillText('\u25A3  SYSTEM HALTED \u2014 BOUNDARY EXCEEDANCE',cx,cy+radius+45);
+          ctx.fillText('\u25A3  SYSTEM HALTED',cx,Math.min(cy+radius*1.3,H-20));
 
-          ctx.font='300 9px "IBM Plex Mono"';
+          ctx.font='300 '+Math.round(hf*0.65)+'px "IBM Plex Mono"';
           ctx.fillStyle=rgb(RED,0.4*haltAlpha);
-          ctx.fillText('ENVELO FAIL-CLOSED ENFORCEMENT ACTIVE',cx,cy+radius+62);
+          ctx.fillText('ENVELO FAIL-CLOSED ENFORCEMENT',cx,Math.min(cy+radius*1.3+hf+4,H-8));
         }
 
         function syncCards() {
@@ -4975,7 +5134,7 @@
             <div><div class="hud-title">Feedback Cycle</div><div class="hud-desc">Each audit narrows the gap between declared and actual behavior.</div></div>
           </div>
         </div>
-        <p style="text-align:center;font-family:var(--mono);font-size:11px;color:rgba(255,255,255,0.35);margin-top:16px;letter-spacing:1px;">Enforcement and improvement are the same operation.</p>
+        <p style="text-align:center;font-family:var(--mono);font-size:11px;color:rgba(255,255,255,0.35);margin-top:-32px;letter-spacing:1px;">Enforcement and improvement are the same operation.</p>
       </div>
     </section>
 
@@ -4985,7 +5144,7 @@
           <span class="section-label">CONFORMANCE PROCESS</span>
           <h2 class="section-title">Your Path to Attestation</h2>
           <p class="section-lead">
-            From application to conformance in 2-4 weeks.
+            From application to certified status in 2&#x2013;4 weeks. Published to the Sentinel registry, independently verifiable, backed by continuous monitoring.
           </p>
         </div>
       </div>
@@ -5031,7 +5190,8 @@
 
         function resize(){
           var r=c.parentElement.getBoundingClientRect();
-          W=r.width;H=W<550?440:200;
+          W=r.width;H=W<550?560:200;
+          if(window.innerHeight<500&&window.innerWidth>window.innerHeight){H=Math.min(H,window.innerHeight*0.55);}
           c.width=W*dpr;c.height=H*dpr;
           c.style.height=H+'px';
           ctx.setTransform(dpr,0,0,dpr,0,0);
@@ -5041,7 +5201,7 @@
           var mob=W<550,s=[];
           if(!mob){var m=W*0.08,span=W-m*2;
             for(var i=0;i<steps.length;i++)s.push({x:m+span*(i/(steps.length-1)),y:H/2});
-          }else{var mt=45,mb=45,span=H-mt-mb;
+          }else{var mt=H*0.06,mb=H*0.06,span=H-mt-mb;
             for(var i=0;i<steps.length;i++)s.push({x:50,y:mt+span*(i/(steps.length-1))});
           }return s;
         }
@@ -5330,7 +5490,7 @@
           <span class="section-label">PUBLIC REGISTRY</span>
           <h2 class="section-title">Verify</h2>
           <p class="section-lead">
-            Instant verification. Real-time status. Zero trust required.
+            See who&#x2019;s certified. Verify any ODDC certification instantly. When your competitors are listed and you&#x2019;re not, procurement committees notice.
           </p>
         </div>
       </div>
@@ -5405,7 +5565,7 @@
           <div>
             <div class="hud-label" style="margin-bottom:4px;">CONFORMANCE ASSESSMENT</div>
             <a href="mailto:conformance@sentinelauthority.org" style="font-family:var(--mono);font-size:14px;color:var(--purple-bright);letter-spacing:0.5px;text-decoration:none;">conformance@sentinelauthority.org</a>
-            <div class="hud-desc" style="margin-top:4px;">Start assessment, pricing questions, or enterprise solutions.</div>
+            <div class="hud-desc" style="margin-top:4px;">Start your ODDC certification. Founding Cohort pricing available for qualified applicants.</div>
           </div>
         </div>
 

@@ -3107,11 +3107,13 @@
   }
 
   var lastTime=0;
+  var animRunning = false;
   var fadeTriggered = false;
   function animate(now) {
     if(!lastTime) lastTime=now;
     if (!fadeTriggered) { c.style.opacity = '1'; fadeTriggered = true; }
-    var dt=Math.min(now-lastTime, 32); lastTime=now;
+    var dt=Math.min(now-lastTime, 20); lastTime=now;
+    if (dt < 1) { requestAnimationFrame(animate); return; }
     ctx.clearRect(0,0,W,H);
 
     updateAgents(dt);
@@ -3127,27 +3129,27 @@
     drawLegend();
 
     ctx.restore();
-    requestAnimationFrame(animate);
+    if (!animRunning) { animRunning = true; requestAnimationFrame(animate); }
   }
 
   var resizeTimer = null;
   window.addEventListener('resize', function(){
-    // Debounce resize to avoid thrashing during URL bar animation
+    if (!heroReady) return; // Don't resize during startup
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(function() {
       radiusLocked = false;
       resize();
-      // On resize/rotate: fully reinitialize — proportional scaling breaks on big aspect changes
       initAgents();
-      for (var w = 0; w < 300; w++) updateAgents(16);
+      for (var w = 0; w < 500; w++) updateAgents(16);
       enveloEvents = [];
       boundaryPulses = [];
       telemetry = [];
+      lastTel = performance.now(); // Grace period before new telemetry
       for (var i=0; i<agents.length; i++) { agents[i].tier=0; agents[i].haltTimer=0; agents[i].mrcTimer=0;
         var _d=Math.sqrt((agents[i].x-cx)*(agents[i].x-cx)+(agents[i].y-cy)*(agents[i].y-cy));
         if(_d>radius*0.7){var _s=radius*0.5/_d;agents[i].x=cx+(agents[i].x-cx)*_s;agents[i].y=cy+(agents[i].y-cy)*_s;agents[i].vx*=0.2;agents[i].vy*=0.2;}
       }
-    }, 150);
+    }, 250);
   });
 
   function startHero() {
@@ -3176,7 +3178,7 @@
           agents[i].vy *= 0.3;
         }
       }
-      requestAnimationFrame(animate);
+      if (!animRunning) { animRunning = true; requestAnimationFrame(animate); }
     }, 200);
   }
   if (document.readyState === 'complete') {
@@ -3555,6 +3557,7 @@
         }
 
         var lastTime=0;
+  var animRunning = false;
         function animate(ts) {
           if(!lastTime) lastTime=ts;
           var dt=Math.min(ts-lastTime,32);lastTime=ts;frameCount++;
@@ -3645,11 +3648,11 @@
           ctx.fillText('AUDIT \u00B7 '+stats.total+' CHECKED \u00B7 '+stats.exec+' PASSED \u00B7 '+stats.block+' BLOCKED',
             W/2,L.mob?H-10:H-8);
 
-          requestAnimationFrame(animate);
+          if (!animRunning) { animRunning = true; requestAnimationFrame(animate); }
         }
 
         resize();window.addEventListener('resize',resize);
-        requestAnimationFrame(animate);
+        if (!animRunning) { animRunning = true; requestAnimationFrame(animate); }
       })();
       </script>
 
@@ -4059,6 +4062,7 @@
           nextInDelay=3500+Math.random()*4000;lastInSpawn=ts;}
 
         var lastTime=0;
+  var animRunning = false;
         function animate(ts){
           if(!lastTime)lastTime=ts;var dt=Math.min(ts-lastTime,32);lastTime=ts;frameCount++;
           resize();var L=layout();var conns=getConns(L);var time=ts/1000;
@@ -4158,11 +4162,11 @@
           ctx.fillText(stats.out+' TELEMETRY SENT \u00B7 '+stats.rejected+' INBOUND REJECTED',
             W/2,L.mob?H-30:H-28);
 
-          requestAnimationFrame(animate);
+          if (!animRunning) { animRunning = true; requestAnimationFrame(animate); }
         }
 
         resize();window.addEventListener('resize',resize);
-        requestAnimationFrame(animate);
+        if (!animRunning) { animRunning = true; requestAnimationFrame(animate); }
       })();
       </script>
 
@@ -5020,6 +5024,7 @@
         }
 
         var lastTime=0;
+  var animRunning = false;
         function animate(now) {
           if(!lastTime) lastTime=now;
           var dt=Math.min(now-lastTime, 32); lastTime=now;
@@ -5060,7 +5065,7 @@
           drawFail(now);
           drawLegend();
 
-          requestAnimationFrame(animate);
+          if (!animRunning) { animRunning = true; requestAnimationFrame(animate); }
         }
 
         window.addEventListener('resize',resize);
@@ -5093,7 +5098,7 @@
           })(pi);
         }
 
-        requestAnimationFrame(animate);
+        if (!animRunning) { animRunning = true; requestAnimationFrame(animate); }
       })();
       </script>
 
@@ -5340,6 +5345,7 @@
         }
 
         var lastTime=0;
+  var animRunning = false;
         function animate(ts){
           if(!lastTime)lastTime=ts;lastTime=ts;
           var time=ts/1000;
@@ -5356,11 +5362,11 @@
           for(var i=0;i<steps.length;i++) drawNode(stops[i].x,stops[i].y,steps[i],time);
           drawDot(stops,time);
           drawPulses();
-          requestAnimationFrame(animate);
+          if (!animRunning) { animRunning = true; requestAnimationFrame(animate); }
         }
 
         resize();window.addEventListener('resize',resize);
-        requestAnimationFrame(animate);
+        if (!animRunning) { animRunning = true; requestAnimationFrame(animate); }
       })();
       </script>
       </div>

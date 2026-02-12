@@ -427,3 +427,136 @@ tbody tr:hover { background: rgba(255,255,255,.015); }
   border: 2px solid #9d8ccf !important;
   border-radius: 6px !important;
 }
+
+/* ══════════════════════════════════════════════════
+   MOBILE RESPONSIVE — Dashboard
+   ══════════════════════════════════════════════════ */
+
+/* ── Tablets ── */
+@media (max-width: 768px) {
+  .sa-main-content {
+    padding: 16px 10px !important;
+  }
+  .sa-stat-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+  }
+  .sa-dashboard {
+    padding: 0 4px !important;
+  }
+  table {
+    display: block !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+  .hud-frame {
+    padding: 12px 10px !important;
+  }
+  .sa-action-btns {
+    flex-wrap: wrap !important;
+  }
+}
+
+/* ── Phones ── */
+@media (max-width: 480px) {
+  .sa-main-content {
+    padding: 12px 6px !important;
+  }
+  .sa-stat-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 6px !important;
+  }
+  .stat-card {
+    padding: 12px 10px !important;
+  }
+  .sa-stat-value {
+    font-size: 22px !important;
+  }
+  .sa-dashboard h1 {
+    font-size: 22px !important;
+  }
+  .hud-frame {
+    padding: 10px 8px !important;
+  }
+  .hud-row {
+    padding: 8px 0 !important;
+    flex-wrap: wrap !important;
+  }
+  .hud-title {
+    font-size: 13px !important;
+  }
+  .hud-label {
+    font-size: 8px !important;
+    letter-spacing: 1.5px !important;
+  }
+  .btn {
+    padding: 7px 12px !important;
+    font-size: 8px !important;
+    letter-spacing: 1.5px !important;
+  }
+  .sa-action-btns {
+    width: 100% !important;
+    flex-wrap: wrap !important;
+    margin-top: 6px !important;
+  }
+  .sa-fill {
+    min-width: 28px !important;
+  }
+  .sa-fill span {
+    font-size: 7px !important;
+    letter-spacing: 0.5px !important;
+  }
+  thead th {
+    font-size: 8px !important;
+    padding: 6px !important;
+    letter-spacing: 1px !important;
+  }
+  tbody td {
+    font-size: 11px !important;
+    padding: 8px 6px !important;
+  }
+
+  /* Sidebar overlay */
+  aside {
+    width: 220px !important;
+  }
+
+  /* Notification panel */
+  div[style*="width: min(320px"] {
+    width: 88vw !important;
+  }
+}
+
+/* ── Small phones (iPhone SE etc) ── */
+@media (max-width: 375px) {
+  .sa-stat-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .sa-stat-value {
+    font-size: 20px !important;
+  }
+  .sa-dashboard h1 {
+    font-size: 20px !important;
+  }
+}
+
+/* ── Landscape phones ── */
+@media (max-height: 500px) and (orientation: landscape) {
+  .sa-main-content {
+    padding: 10px 16px !important;
+  }
+  .sa-stat-grid {
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)) !important;
+    gap: 6px !important;
+  }
+  .stat-card {
+    padding: 8px 8px !important;
+  }
+  .sa-stat-value {
+    font-size: 20px !important;
+  }
+  .sa-dashboard h1 {
+    font-size: 20px !important;
+    margin-bottom: 4px !important;
+  }
+}

@@ -76,7 +76,7 @@ function CustomerDashboard() {
   const totalSessions = monitoring?.summary?.total || 0;
 
   return (
-    <div style={{maxWidth:'1000px',margin:'0 auto'}}>
+    <div className='sa-dashboard' style={{maxWidth:'1000px',margin:'0 auto'}}>
 
       {/* ── Section Header ── */}
       <div style={{marginBottom:'32px'}}>
@@ -94,7 +94,7 @@ function CustomerDashboard() {
       </div>
 
       {/* ── Stat Cards ── */}
-      <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit, minmax(180px, 1fr))',gap:'12px',marginBottom:'32px'}}>
+      <div className='sa-stat-grid' style={{display:'grid',gridTemplateColumns:'repeat(auto-fit, minmax(140px, 1fr))',gap:'12px',marginBottom:'32px'}}>
         <StatCard onClick={() => navigate("/applications")} label="Applications" value={applications.length} color="var(--purple-bright)" icon={<FileText size={16} strokeWidth={1.5}/>}
           sublabel={applications.filter(a=>a.state==='pending'||a.state==='under_review').length>0 ? `${applications.filter(a=>a.state==='pending'||a.state==='under_review').length} in review` : null} />
         <StatCard onClick={() => navigate("/certificates")} label="Certificates" value={certificates.length} color="var(--accent-green)" icon={<Award size={16} strokeWidth={1.5}/>}
@@ -304,7 +304,7 @@ function Dashboard() {
   const actionCount = needsAction.length + expiringCount;
 
   return (
-    <div style={{maxWidth:'1200px',margin:'0 auto'}}>
+    <div className='sa-dashboard' style={{maxWidth:'1200px',margin:'0 auto'}}>
 
       {/* ── Header ── */}
       <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',flexWrap:'wrap',gap:'16px',marginBottom:'32px'}}>
@@ -326,7 +326,7 @@ function Dashboard() {
       </div>
 
       {/* ── Stats Grid ── */}
-      <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit, minmax(160px, 1fr))',gap:'12px',marginBottom:'32px'}}>
+      <div className='sa-stat-grid' style={{display:'grid',gridTemplateColumns:'repeat(auto-fit, minmax(140px, 1fr))',gap:'12px',marginBottom:'32px'}}>
         <StatCard onClick={() => navigate("/applications")} label="In Pipeline" value={allApps.length} color="var(--purple-bright)" icon={<FileText size={16} strokeWidth={1.5}/>}/>
         <StatCard onClick={() => navigate("/cat72")} label="Active Tests" value={stats?.active_tests || 0} color="var(--accent-amber)" icon={<Activity size={16} strokeWidth={1.5}/>}/>
         <StatCard onClick={() => navigate("/certificates")} label="Active Certs" value={stats?.certificates_active || 0} color="var(--accent-green)" icon={<BrandMark size={16} />}/>
@@ -349,7 +349,7 @@ function Dashboard() {
             const total = allApps.length || 1;
             const pct = s.count > 0 ? Math.max((s.count/total)*100, 8) : 0;
             return (
-              <div key={s.key} className="sa-fill" style={{width: s.count > 0 ? `${pct}%` : 'auto', minWidth:'48px', flex: s.count > 0 ? 'none' : 1, display:'flex', alignItems:'center', justifyContent:'center', '--sa-bg': s.count > 0 ? 'rgba(255,255,255,0.02)' : 'rgba(255,255,255,0.015)', '--sa-accent': s.count > 0 ? s.color : 'transparent', borderLeftWidth:'2px', opacity: s.count > 0 ? 1 : 0.4}} title={`${s.label}: ${s.count}`}>
+              <div key={s.key} className="sa-fill" style={{width: s.count > 0 ? `${pct}%` : 'auto', minWidth:'32px', flex: s.count > 0 ? 'none' : 1, display:'flex', alignItems:'center', justifyContent:'center', '--sa-bg': s.count > 0 ? 'rgba(255,255,255,0.02)' : 'rgba(255,255,255,0.015)', '--sa-accent': s.count > 0 ? s.color : 'transparent', borderLeftWidth:'2px', opacity: s.count > 0 ? 1 : 0.4}} title={`${s.label}: ${s.count}`}>
                 <span style={{fontFamily:'var(--mono)',fontSize:'9px',letterSpacing:'1px',color: s.count > 0 ? s.color : 'var(--text-tertiary)',whiteSpace:'nowrap'}}>{s.count > 0 ? `${s.count} ` : ''}{s.label}</span>
               </div>
             );
@@ -377,7 +377,7 @@ function Dashboard() {
                     <div style={{fontSize:'10px',color:'var(--text-tertiary)',fontFamily:'var(--mono)',letterSpacing:'0.5px'}}>{app.organization_name} · {app.state?.replace(/_/g,' ')}</div>
                   </div>
                 </div>
-                <div style={{display:'flex',gap:'6px',flexShrink:0}}>
+                <div className='sa-action-btns' style={{display:'flex',gap:'6px',flexShrink:0}}>
                   {app.state === 'pending' && (
                     <button onClick={() => handleQuickAdvance(app.id, 'under_review', `Begin review for ${app.system_name}`)} className="btn" style={{padding:'5px 10px',fontSize:'8px',letterSpacing:'1px'}}>Review</button>
                   )}
