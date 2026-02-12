@@ -2620,13 +2620,13 @@
     <!-- HERO -->
     <section class="hero">
       <!-- Full-viewport canvas -->
-      <div style="position:relative;display:flex;flex-direction:column;align-items:center;margin:0 auto;max-width:880px;padding-top:0;"><div style="width:100%;"><canvas id="hero-canvas" style="width:100%;height:calc(min(880px, 100vw) * 0.6);display:block;opacity:0;transition:opacity 0.35s ease;"></canvas></div>
+      <div style="position:relative;display:flex;flex-direction:column;align-items:center;margin:0 auto;max-width:880px;padding-top:0;"><div style="width:100%;"><canvas id="hero-canvas" style="width:100%;height:calc(min(880px, 100vw) * 0.50);display:block;opacity:0;transition:opacity 0.35s ease;"></canvas></div>
       <!-- Hero Content below canvas -->
-      <div id="hero-text" class="hero-content-bottom" style="position:relative;z-index:10;text-align:center;padding:0 16px 0;margin-top:-64px;display:flex;flex-direction:column;align-items:center;">
+      <div id="hero-text" class="hero-content-bottom" style="position:relative;z-index:10;text-align:center;padding:0 16px 0;margin-top:-80px;display:flex;flex-direction:column;align-items:center;">
         
-        <p style="font-family:var(--mono);font-size:9px;letter-spacing:3px;text-transform:uppercase;color:rgba(157,140,207,0.5);margin:0 0 12px;">Independent Certification Body</p>
+        <p style="font-family:var(--mono);font-size:9px;letter-spacing:3px;text-transform:uppercase;color:rgba(157,140,207,0.5);margin:0 0 8px;">Independent Certification Body</p>
 
-        <h1 style="font-family: var(--serif); font-size: clamp(28px, 5vw, 50px); font-weight: 200; line-height: 1.1; margin-bottom: 6px; letter-spacing: -0.02em; color: #fff; max-width: 700px;">
+        <h1 style="font-family: var(--serif); font-size: clamp(26px, 4.5vw, 46px); font-weight: 200; line-height: 1.1; margin-bottom: 6px; letter-spacing: -0.02em; color: #fff; max-width: 700px;">
           Conformance Certification<br><span style="color: rgba(255,255,255,0.6);">for Autonomous Systems</span>
         </h1>
         
@@ -2709,7 +2709,7 @@
   function resize() {
     var r = c.parentElement.getBoundingClientRect();
     W = r.width;
-    H = W < 550 ? W * 1.05 : W * 0.6;
+    H = W < 550 ? W * 0.80 : W * 0.42;
     c.width = W * dpr;
     c.height = H * dpr;
     c.style.height = H + 'px';
@@ -4488,7 +4488,7 @@
         function resize() {
           var r = c.parentElement.getBoundingClientRect();
           W = r.width;
-          H = W < 550 ? W * 1.05 : W * 0.6;
+          H = W < 550 ? W * 0.80 : W * 0.42;
           c.width = W * dpr;
           c.height = H * dpr;
           c.style.height = H + 'px';
