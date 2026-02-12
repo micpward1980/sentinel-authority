@@ -967,7 +967,7 @@ async def receive_heartbeat(
     if sessions:
         try:
             from app.models.models import CAT72Test, Application
-            from app.services.evidence import compute_hash
+            from app.api.routes.cat72 import compute_hash
             for session in sessions:
                 cat_result = await db.execute(
                     select(CAT72Test).join(Application, CAT72Test.application_id == Application.id).where(
