@@ -29,9 +29,10 @@ function Layout({ children }) {
   useEffect(() => {
     if (!user) return;
     const iv = setInterval(() => {
+      if (document.hidden) return;
       if (!localStorage.getItem('token')) return;
       api.get('/api/users/notifications').then(r => { setNotifs(r.data.notifications || []); setUnreadCount(r.data.unread_count || 0); }).catch(() => {});
-    }, 60000);
+    }, 300000);
     return () => clearInterval(iv);
   }, [user]);
 

@@ -8,76 +8,6 @@ import { useToast } from '../context/ToastContext';
 import Panel from '../components/Panel';
 import EmptyState from '../components/EmptyState';
 
-function BulkImportModal({ isOpen, onClose, onImport, boundaryType }) {
-  const [raw, setRaw] = React.useState('');
-  const [format, setFormat] = React.useState('json');
-  const [error, setError] = React.useState('');
-  const [preview, setPreview] = React.useState(null);
-
-  const templates = {
-    numeric: { json: '[{"name":"Speed Limit","parameter":"speed","min_value":0,"max_value":100,"unit":"km/h","tolerance":5}]', csv: 'name,parameter,min_value,max_value,hard_limit,unit,tolerance\nSpeed Limit,speed,0,100,120,km/h,5' },
-    geo: { json: '[{"name":"Operating Zone","boundary_type":"circle","lat":30.123,"lon":-97.456,"radius_meters":500}]', csv: 'name,boundary_type,lat,lon,radius_meters,altitude_max\nOperating Zone,circle,30.123,-97.456,500,120' },
-    time: { json: '[{"name":"Business Hours","start_hour":6,"end_hour":22,"timezone":"America/Chicago","days":[0,1,2,3,4]}]', csv: 'name,start_hour,end_hour,timezone,days\nBusiness Hours,6,22,America/Chicago,0;1;2;3;4' },
-    state: { json: '[{"name":"Mode Check","parameter":"mode","allowed_values":"autonomous,semi-auto","forbidden_values":"manual_override"}]', csv: 'name,parameter,allowed_values,forbidden_values\nMode Check,mode,"autonomous,semi-auto",manual_override' }
-  };
-
-  const parseData = () => {
-    setError(''); setPreview(null);
-    try {
-      let rows = [];
-      if (format === 'json') {
-        const parsed = JSON.parse(raw);
-        rows = Array.isArray(parsed) ? parsed : [parsed];
-      } else {
-        const lines = raw.trim().split('\n');
-        if (lines.length < 2) throw new Error('CSV needs header + data rows');
-        const headers = lines[0].split(',').map(h => h.trim());
-        rows = lines.slice(1).map(line => {
-          const vals = line.match(/(".*?"|[^,]+)/g) || [];
-          const obj = {};
-          headers.forEach((h, i) => {
-            let v = (vals[i] || '').replace(/^"|"$/g, '').trim();
-            if (h === 'days') { obj[h] = v.split(';').map(Number); }
-            else if (['min_value','max_value','hard_limit','tolerance','lat','lon','radius_meters','altitude_min','altitude_max','start_hour','end_hour'].includes(h)) { obj[h] = v === '' ? '' : v; }
-            else { obj[h] = v; }
-          });
-          return obj;
-        });
-      }
-      if (rows.length === 0) throw new Error('No data found');
-      setPreview(rows);
-    } catch (e) { setError(e.message); }
-  };
-
-  if (!isOpen) return null;
-  return (
-    <div style={{position:'fixed',top:0,left:0,right:0,bottom:0,background:'rgba(0,0,0,.75)',backdropFilter:'blur(4px)',WebkitBackdropFilter:'blur(4px)',zIndex:1000,display:'flex',alignItems:'center',justifyContent:'center',padding:'20px'}} onClick={onClose}>
-      <div style={{background:'rgba(18,12,30,0.95)',border:'1px solid rgba(157,140,207,0.12)',padding:'32px',position:'relative',maxWidth:'min(700px, 95vw)',width:'100%',maxHeight:'80vh',overflowY:'auto'}} onClick={e => e.stopPropagation()}>
-        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'20px'}}>
-          <h3 style={{fontFamily:"Consolas, 'IBM Plex Mono', monospace",fontSize:'11px',fontWeight:400,margin:0,letterSpacing:'2px',textTransform:'uppercase',color:'#a896d6'}}>Bulk Import — {boundaryType}</h3>
-          <button onClick={onClose} style={{background:'none',border:'none',color:'rgba(255,255,255,.50)',fontSize:'20px',cursor:'pointer'}}>×</button>
-        </div>
-        <div style={{display:'flex',gap:'8px',marginBottom:'16px'}}>
-          {['json','csv'].map(f => (<button key={f} onClick={() => {setFormat(f); setError(''); setPreview(null);}} style={{padding:'6px 16px',border:'1px solid '+(format===f?'#a896d6':'rgba(255,255,255,0.1)'),background:format===f?'rgba(91,75,138,0.25)':'transparent',color:format===f?'#a896d6':'rgba(255,255,255,.60)',fontFamily:"Consolas, 'IBM Plex Mono', monospace",fontSize:'11px',letterSpacing:'1px',textTransform:'uppercase',cursor:'pointer'}}>{f}</button>))}
-          <button onClick={() => setRaw(templates[boundaryType]?.[format] || '')} style={{marginLeft:'auto',padding:'6px 12px',border:'1px solid rgba(255,255,255,0.1)',background:'transparent',color:'rgba(255,255,255,.60)',fontSize:'11px',cursor:'pointer'}}>Load Example</button>
-        </div>
-        <textarea value={raw} onChange={e => setRaw(e.target.value)} rows={10} placeholder={format === 'json' ? 'Paste JSON array of boundaries...' : 'Paste CSV with header row...'} style={{width:'100%',background: 'rgba(255,255,255,.05)',border:'1px solid rgba(255,255,255,0.1)',padding:'12px',color:'rgba(255,255,255,.90)',fontFamily:"Consolas, 'IBM Plex Mono', monospace",fontSize:'12px',lineHeight:'1.5',resize:'vertical',outline:'none'}} />
-        {error && <p style={{color:'#D65C5C',fontSize:'12px',marginTop:'8px'}}>⚠ {error}</p>}
-        <div style={{display:'flex',gap:'8px',marginTop:'16px'}}>
-          <button onClick={parseData} style={{padding:'8px 20px',border:'1px solid #a896d6',background:'transparent',color:'#a896d6',fontSize:'12px',cursor:'pointer'}}>Preview</button>
-          {preview && <button onClick={() => { onImport(preview); onClose(); setRaw(''); setPreview(null); }} style={{padding:'8px 20px',border:'none',background: 'transparent',color: 'rgba(255,255,255,.94)',fontSize:'12px',cursor:'pointer',fontWeight:500}}>Import {preview.length} {preview.length === 1 ? 'boundary' : 'boundaries'}</button>}
-        </div>
-        {preview && (<div style={{marginTop:'16px',background:'transparent',padding:'12px',maxHeight:'200px',overflowY:'auto'}}>
-          <p style={{fontFamily:"Consolas, 'IBM Plex Mono', monospace",fontSize:'10px',color:'rgba(255,255,255,.50)',marginBottom:'8px'}}>PREVIEW ({preview.length} rows)</p>
-          {preview.map((row, i) => (<div key={i} style={{fontSize:'11px',color:'rgba(255,255,255,.60)',padding:'4px 0',borderBottom:'1px solid rgba(255,255,255,0.05)'}}>{Object.entries(row).map(([k,v]) => `${k}: ${v}`).join(' · ')}</div>))}
-        </div>)}
-      </div>
-    </div>
-  );
-}
-
-// New Application Form — Multi-step wizard with structured boundary config
-
 function ApplicationsList() {
   const toast = useToast();
   const { user } = useAuth();
@@ -286,6 +216,5 @@ function ApplicationsList() {
 
 
 
-export { BulkImportModal };
 export default ApplicationsList;
 
