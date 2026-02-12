@@ -19,7 +19,7 @@ from app.services.email_service import (
 from app.services.audit_service import write_audit_log
 from app.models.models import (
     CAT72Test, Application, Telemetry, InterlockEvent, 
-    TestState, CertificationState, UserRole
+    TestState, CertificationState, UserRole, Certificate, User
 )
 
 router = APIRouter()
@@ -447,13 +447,115 @@ async def ingest_telemetry(
     timestamp = (data.timestamp.replace(tzinfo=None) if data.timestamp else datetime.utcnow())
     elapsed = int((timestamp.replace(tzinfo=None) - test.started_at).total_seconds()) if test.started_at else 0
     
-    # Check if test duration exceeded
+    # Check if test duration exceeded — auto-complete with full PASS/FAIL logic
     max_seconds = test.duration_hours * 3600
     if elapsed >= max_seconds:
         test.state = "completed"
         test.ended_at = timestamp
+        
+        # Compute final metrics (same as stop_test)
+        telemetry_result = await db.execute(
+            select(Telemetry).where(Telemetry.test_id == test.id).order_by(Telemetry.timestamp)
+        )
+        telemetry_samples = telemetry_result.scalars().all()
+        metrics = compute_metrics(telemetry_samples, test)
+        test.convergence_score = metrics["convergence_score"]
+        test.drift_rate = metrics["drift_rate"]
+        test.stability_index = metrics["stability_index"]
+        
+        if (test.convergence_score >= settings.CAT72_CONVERGENCE_THRESHOLD and
+            test.drift_rate <= settings.CAT72_DRIFT_THRESHOLD and
+            test.stability_index >= settings.CAT72_STABILITY_THRESHOLD):
+            test.result = "PASS"
+        else:
+            test.result = "FAIL"
+        
+        # Final evidence block
+        final_block = {
+            "type": "final",
+            "test_id": test.test_id,
+            "ended_at": test.ended_at.isoformat(),
+            "total_samples": test.total_samples,
+            "conformant_samples": test.conformant_samples,
+            "convergence_score": test.convergence_score,
+            "drift_rate": test.drift_rate,
+            "stability_index": test.stability_index,
+            "result": test.result,
+        }
+        final_hash = compute_hash(final_block, test.evidence_hash or "")
+        chain = test.evidence_chain or []
+        chain.append({"block": len(chain), "hash": final_hash, "data": final_block})
+        test.evidence_chain = chain
+        test.evidence_hash = final_hash
+        
+        # Update application state
+        app_result = await db.execute(select(Application).where(Application.id == test.application_id))
+        application = app_result.scalar_one_or_none()
+        if application:
+            if test.result == "PASS":
+                application.state = CertificationState.CONFORMANT
+            else:
+                application.state = "failed"
+        
         await db.commit()
-        raise HTTPException(status_code=400, detail="Test duration exceeded")
+        
+        # Auto-issue certificate on pass
+        if test.result == "PASS":
+            try:
+                from datetime import timedelta
+                import hashlib as _hl
+                if application and not (await db.execute(select(Certificate).where(Certificate.application_id == application.id))).scalar_one_or_none():
+                    now_cert = datetime.utcnow()
+                    year = now_cert.year
+                    cert_count_r = await db.execute(select(func.count(Certificate.id)).where(Certificate.certificate_number.like(f"ODDC-{year}-%")))
+                    cert_count = (cert_count_r.scalar() or 0) + 1
+                    cert_number = f"ODDC-{year}-{cert_count:05d}"
+                    sig_content = f"{cert_number}:{application.organization_name}:{application.system_name}:{now_cert.isoformat()}:{test.evidence_hash}"
+                    signature = _hl.sha256(sig_content.encode()).hexdigest()
+                    certificate = Certificate(
+                        certificate_number=cert_number, application_id=application.id,
+                        organization_name=application.organization_name, system_name=application.system_name,
+                        system_version=application.system_version, odd_specification=application.odd_specification,
+                        envelope_definition=test.envelope_definition or application.envelope_definition,
+                        state="conformant", issued_at=now_cert, expires_at=now_cert + timedelta(days=365),
+                        issued_by=0, test_id=test.id, convergence_score=test.convergence_score,
+                        evidence_hash=test.evidence_hash, signature=signature,
+                        verification_url=f"https://sentinelauthority.org/verify.html?cert={cert_number}",
+                        history=[{"action": "auto_issued", "timestamp": now_cert.isoformat(), "by": "system", "trigger": "cat72_auto_complete"}],
+                    )
+                    db.add(certificate)
+                    await db.commit()
+                    import logging
+                    logging.getLogger("main").info(f"AUTO-ISSUED certificate {cert_number} for {application.system_name}")
+                    
+                    # Send certificate email
+                    try:
+                        owner_r = await db.execute(select(User).where(User.id == application.applicant_id))
+                        owner = owner_r.scalar_one_or_none()
+                        if owner and owner.email:
+                            await send_certificate_issued(owner.email, application.system_name, test.test_id, cert_number)
+                    except Exception as e:
+                        logging.getLogger("main").warning(f"Certificate email failed: {e}")
+            except Exception as e:
+                import logging
+                logging.getLogger("main").error(f"Auto-certificate failed: {e}")
+        
+        # Send fail email if needed
+        if test.result == "FAIL" and application:
+            try:
+                owner_r = await db.execute(select(User).where(User.id == application.applicant_id))
+                owner = owner_r.scalar_one_or_none()
+                if owner and owner.email:
+                    reason = []
+                    if test.convergence_score < 0.95: reason.append(f"Convergence {test.convergence_score:.1%} < 95%")
+                    if test.drift_rate and test.drift_rate > 0.005: reason.append(f"Drift {test.drift_rate:.4f} > 0.005")
+                    if test.stability_index and test.stability_index < 0.90: reason.append(f"Stability {test.stability_index:.1%} < 90%")
+                    await send_test_failed(owner.email, application.system_name, "; ".join(reason) or "Did not meet thresholds", (test.convergence_score or 0) * 100)
+            except Exception as e:
+                import logging
+                logging.getLogger("main").warning(f"Fail email error: {e}")
+        
+        return {"completed": True, "result": test.result, "convergence_score": test.convergence_score}
     
     # Check envelope
     in_envelope, distance, violations = check_envelope(data.state_vector, test.envelope_definition or {})
