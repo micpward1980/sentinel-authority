@@ -2998,7 +2998,7 @@
       telemetry.push({
         text: W < 480 ? label.split(':')[0] : label,
         x: spawnX,
-        y: cy-radius*0.5+Math.random()*radius,
+        y: Math.max(cy-radius*0.4, Math.min(cy+radius*0.3, cy-radius*0.4+Math.random()*radius*0.7)),
         tx: cx+(Math.random()-0.5)*radius*0.5,
         ty: cy+(Math.random()-0.5)*radius*0.5,
         alpha:1, prog:0, side:side
@@ -4794,7 +4794,7 @@
             telemetry.push({
               text:label,
               x: cx+side*(radius+35+Math.random()*60),
-              y: cy-radius*0.5+Math.random()*radius,
+              y: Math.max(cy-radius*0.4, Math.min(cy+radius*0.3, cy-radius*0.4+Math.random()*radius*0.7)),
               tx: cx+(Math.random()-0.5)*radius*0.5,
               ty: cy+(Math.random()-0.5)*radius*0.5,
               alpha:1, prog:0, side:side
