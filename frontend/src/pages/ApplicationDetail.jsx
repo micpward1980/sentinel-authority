@@ -183,9 +183,9 @@ function ApplicationDetail() {
   const nextStepText = () => {
     switch (app?.state) {
       case 'pending': return 'Application queued for review by the Sentinel Authority team.';
-      case 'under_review': return 'Evaluating ODD specification and safety boundary definitions.';
-      case 'approved': return 'Approved. Customer must install ENVELO Interlock to begin CAT-72.';
-      case 'testing': return 'CAT-72 in progress. ENVELO Interlock reporting telemetry.';
+      case 'under_review': return 'Under review. Approval triggers automatic Interlock credentials and CAT-72 scheduling.';
+      case 'approved': return 'Approved. Interlock credentials sent. CAT-72 auto-starts when Interlock connects.';
+      case 'testing': return 'CAT-72 running. Certificate auto-issues on pass.';
       case 'conformant': return 'ODDC Conformance achieved. Certificate issued.';
       case 'rejected': return 'Application rejected. See comments for details.';
       case 'failed': return 'CAT-72 test failed. Re-approve to schedule another attempt.';

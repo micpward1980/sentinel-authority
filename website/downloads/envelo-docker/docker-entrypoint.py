@@ -1,63 +1,76 @@
 #!/usr/bin/env python3
 """
-ENVELO Agent Docker Entrypoint
-Sentinel Authority
+ENVELO Interlock — Docker Entrypoint
+Sentinel Authority © 2025-2026
 """
 
 import os
 import sys
-import time
 import signal
+import time
 
-sys.path.insert(0, '/app')
+sys.path.insert(0, "/app")
 
-from envelo import EnveloAgent, EnveloConfig
+from envelo import EnveloAgent, EnveloConfig, __version__
+
 
 def main():
-    cert_id = os.environ.get('ENVELO_CERTIFICATE_ID')
-    api_key = os.environ.get('ENVELO_API_KEY')
-    endpoint = os.environ.get('ENVELO_API_ENDPOINT', 'https://api.sentinelauthority.org')
+    api_key = os.environ.get("ENVELO_API_KEY")
+    cert = os.environ.get("ENVELO_CERTIFICATE", "")
+    endpoint = os.environ.get(
+        "ENVELO_ENDPOINT",
+        "https://sentinel-authority-production.up.railway.app",
+    )
 
-    if not cert_id or not api_key:
-        print("ERROR: ENVELO_CERTIFICATE_ID and ENVELO_API_KEY environment variables required")
-        print("")
+    if not api_key:
+        print("ERROR: ENVELO_API_KEY environment variable required")
+        print()
         print("Usage:")
-        print("  docker run -e ENVELO_CERTIFICATE_ID=ODDC-2026-XXXXX -e ENVELO_API_KEY=your-key sentinelauthority/envelo")
+        print("  docker run \\")
+        print("    -e ENVELO_API_KEY=sa_live_xxx \\")
+        print("    -e ENVELO_CERTIFICATE=ODDC-2026-00001 \\")
+        print("    sentinelauthority/envelo")
         sys.exit(1)
 
-    print("╔═══════════════════════════════════════════════════════════╗")
-    print("║           ENVELO Agent v1.0 - Docker                      ║")
-    print("║           Sentinel Authority                              ║")
-    print("╚═══════════════════════════════════════════════════════════╝")
-    print("")
-    print(f"Certificate: {cert_id}")
-    print(f"Endpoint:    {endpoint}")
-    print("")
+    print("=" * 60)
+    print(f"  ENVELO Interlock v{__version__} — Docker")
+    print("  Sentinel Authority")
+    print("=" * 60)
+    print(f"  Certificate: {cert or '(pre-certification)'}")
+    print(f"  Endpoint:    {endpoint}")
+    print()
 
     config = EnveloConfig(
-        certificate_id=cert_id,
         api_key=api_key,
-        api_endpoint=endpoint
+        certificate_number=cert,
+        api_endpoint=endpoint,
     )
 
     agent = EnveloAgent(config)
-    print("✓ Agent initialized and connected")
-    print("")
-    print("Agent is running. Mount your application and import:")
-    print("  from envelo import EnveloAgent, EnveloConfig, NumericBoundary")
-    print("")
 
-    # Keep running
-    def shutdown(sig, frame):
-        print("\nShutting down...")
-        agent.shutdown()
-        sys.exit(0)
+    if not agent.start():
+        print("FATAL: Agent failed to start")
+        sys.exit(1)
 
-    signal.signal(signal.SIGINT, shutdown)
-    signal.signal(signal.SIGTERM, shutdown)
+    print()
+    print("Interlock running. Mount your application and import:")
+    print("  from envelo import EnveloAgent")
+    print()
 
-    while True:
-        time.sleep(1)
+    # Block until signal
+    shutdown = threading.Event()
 
-if __name__ == '__main__':
+    def handle_signal(sig, frame):
+        print(f"\nSignal {sig} — shutting down...")
+        shutdown.set()
+
+    signal.signal(signal.SIGINT, handle_signal)
+    signal.signal(signal.SIGTERM, handle_signal)
+
+    shutdown.wait()
+    agent.stop()
+
+
+if __name__ == "__main__":
+    import threading
     main()

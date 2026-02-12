@@ -4,7 +4,7 @@ build-backend = "setuptools.backends._legacy:_Backend"
 
 [project]
 name = "envelo"
-version = "2.0.0"
+version = "3.0.0"
 description = "ENVELO — Enforced Non-Violable Execution-Limit Override Interlock"
 requires-python = ">=3.9"
 dependencies = ["httpx>=0.24.0"]

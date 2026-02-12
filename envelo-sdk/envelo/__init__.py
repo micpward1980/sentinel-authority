@@ -1,6 +1,6 @@
 """
 ENVELO - Enforced Non-Violable Execution-Limit Override
-Sentinel Authority Runtime Enforcement SDK v2.0.0
+Sentinel Authority Runtime Enforcement SDK v3.0.0
 
 Usage:
     from envelo import EnveloAgent
@@ -33,7 +33,7 @@ from .exceptions import (
 )
 from .config import EnveloConfig
 
-__version__ = "2.0.0"
+__version__ = "3.0.0"
 __all__ = [
     "EnveloAgent",
     "EnveloConfig",
