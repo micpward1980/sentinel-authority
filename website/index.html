@@ -2766,6 +2766,7 @@
     c.height = H * dpr;
     c.style.height = H + 'px';
     ctx.setTransform(dpr,0,0,dpr,0,0);
+    heroLockedH = H; heroLockedW = W;
 
     // Only recalculate layout on actual window resize, not scroll
     if (!radiusLocked || Math.abs(W - (c._lastW||0)) > 20 || Math.abs(H - (c._lastH||0)) > 20) {
