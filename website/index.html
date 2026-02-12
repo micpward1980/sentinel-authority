@@ -3228,10 +3228,10 @@
         function resize() {
           var r = c.parentElement.getBoundingClientRect();
           W = r.width;
-          H = W < 550 ? 420 : 340;
+          H = W < 550 ? 460 : 340;
     // Landscape: cap canvas height
     if (window.innerHeight < 500 && window.innerWidth > window.innerHeight) {
-      H = Math.min(H, window.innerHeight * 0.55);
+      H = Math.min(H, window.innerHeight * 0.70);
     }
           c.width = W * dpr;
           c.height = H * dpr;
@@ -3243,8 +3243,10 @@
           var mob = W < 550 || (window.innerHeight < 500 && window.innerWidth > window.innerHeight);
           if (mob) {
             var cx = W/2;
-            return { model:{x:cx,y:50,r:38}, envelo:{x:cx,y:155,r:55}, gate:{x:cx,y:252,r:30},
-              exec:{x:cx-80,y:340,w:90,h:30}, mrc:{x:cx,y:340,w:90,h:30}, halt:{x:cx+80,y:340,w:90,h:30}, mob:true };
+            var sc = H/420; // scale factor — 420 is the original mobile H
+            var rsc = Math.min(sc, 1); // don't upscale radii beyond original
+            return { model:{x:cx,y:H*0.12,r:38*rsc}, envelo:{x:cx,y:H*0.37,r:55*rsc}, gate:{x:cx,y:H*0.60,r:30*rsc},
+              exec:{x:cx-80*rsc,y:H*0.82,w:90*rsc,h:30*rsc}, mrc:{x:cx,y:H*0.82,w:90*rsc,h:30*rsc}, halt:{x:cx+80*rsc,y:H*0.82,w:90*rsc,h:30*rsc}, mob:true };
           }
           var cy=H/2-4, m=W*0.06, s=(W-m*2)/5;
           return { model:{x:m+s*0.5,y:cy,r:46}, envelo:{x:m+s*1.85,y:cy,r:64}, gate:{x:m+s*3.1,y:cy,r:34},
@@ -3788,15 +3790,15 @@
 
         function resize(){
           var r=c.parentElement.getBoundingClientRect();W=r.width;
-          H=W<550?420:340;
-          if(window.innerHeight<500&&window.innerWidth>window.innerHeight){H=Math.min(H,window.innerHeight*0.55);}
+          H=W<550?460:340;
+          if(window.innerHeight<500&&window.innerWidth>window.innerHeight){H=Math.min(H,window.innerHeight*0.70);}
           c.width=W*dpr;c.height=H*dpr;
           c.style.height=H+'px';ctx.setTransform(dpr,0,0,dpr,0,0);
         }
 
         function layout(){
           var mob=W<550||(window.innerHeight<500&&window.innerWidth>window.innerHeight);
-          if(mob){var cx=W/2;return{model:{x:cx,y:52,r:44},envelo:{x:cx,y:172,r:62},sentinel:{x:cx,y:305,r:44},mob:true};}
+          if(mob){var cx=W/2;var sc=H/460;var rsc=Math.min(sc,1);return{model:{x:cx,y:H*0.12,r:44*rsc},envelo:{x:cx,y:H*0.40,r:62*rsc},sentinel:{x:cx,y:H*0.70,r:44*rsc},mob:true};}
           var cy=H/2-8,m=W*0.08,s=(W-m*2)/3;
           return{model:{x:m+s*0.5,y:cy,r:48},envelo:{x:m+s*1.5,y:cy,r:66},sentinel:{x:m+s*2.5,y:cy,r:48},mob:false};
         }
@@ -3823,7 +3825,7 @@
 
         // ── PERIPHERAL ──
         function drawPeripheral(time,L){
-          if(L.mob)return;
+          if(L.mob||H<250)return;
           ctx.font='400 7.5px "IBM Plex Mono", monospace';
 
           // Top left
@@ -4903,7 +4905,7 @@
           var mins = Math.floor((simTime-hours)*60);
           var ts = String(hours).padStart(2,'0')+':'+String(mins).padStart(2,'0');
 
-          ctx.font='200 '+Math.round(radius*0.42)+'px "Source Serif 4"';
+          ctx.font='200 '+Math.round(Math.min(radius*0.42, H*0.15))+'px "Source Serif 4"';
           ctx.textAlign='center'; ctx.textBaseline='middle';
           var tg=ctx.createLinearGradient(cx,cy-20,cx,cy+20);
           tg.addColorStop(0,'rgba(255,255,255,0.88)');
@@ -4913,15 +4915,15 @@
 
           ctx.font='300 13px "IBM Plex Mono"';
           ctx.fillStyle='rgba(255,255,255,0.48)';
-          ctx.fillText('/ 72:00',cx,cy+22);
+          ctx.fillText('/ 72:00',cx,cy+Math.min(22,H*0.07));
 
           ctx.font='400 9px "IBM Plex Mono"';
           ctx.fillStyle=rgb(pc,0.55);
-          ctx.fillText(PHASE_NAMES[phase],cx,cy+44);
+          ctx.fillText(PHASE_NAMES[phase],cx,cy+Math.min(44,H*0.13));
 
           ctx.font='300 8px "IBM Plex Mono"';
           ctx.fillStyle='rgba(255,255,255,0.48)';
-          ctx.fillText('EVIDENCE BLOCKS: '+blockCount,cx,cy+60);
+          ctx.fillText('EVIDENCE BLOCKS: '+blockCount,cx,Math.min(cy+60,H*0.85));
         }
 
         function drawHash(now) {
@@ -4952,11 +4954,11 @@
           ctx.font='500 14px "IBM Plex Mono"';
           ctx.fillStyle=rgb(RED,0.7*haltAlpha);
           ctx.textAlign='center';
-          ctx.fillText('\u25A3  SYSTEM HALTED \u2014 BOUNDARY EXCEEDANCE',cx,cy+radius+45);
+          ctx.fillText('\u25A3  SYSTEM HALTED \u2014 BOUNDARY EXCEEDANCE',cx,Math.min(cy+radius+45,H-25));
 
           ctx.font='300 9px "IBM Plex Mono"';
           ctx.fillStyle=rgb(RED,0.4*haltAlpha);
-          ctx.fillText('ENVELO FAIL-CLOSED ENFORCEMENT ACTIVE',cx,cy+radius+62);
+          ctx.fillText('ENVELO FAIL-CLOSED ENFORCEMENT ACTIVE',cx,Math.min(cy+radius+62,H-10));
         }
 
         function syncCards() {
@@ -5150,7 +5152,7 @@
 
         function resize(){
           var r=c.parentElement.getBoundingClientRect();
-          W=r.width;H=W<550?440:200;
+          W=r.width;H=W<550?480:200;
           if(window.innerHeight<500&&window.innerWidth>window.innerHeight){H=Math.min(H,window.innerHeight*0.45);}
           c.width=W*dpr;c.height=H*dpr;
           c.style.height=H+'px';
@@ -5161,7 +5163,7 @@
           var mob=W<550||(window.innerHeight<500&&window.innerWidth>window.innerHeight),s=[];
           if(!mob){var m=W*0.08,span=W-m*2;
             for(var i=0;i<steps.length;i++)s.push({x:m+span*(i/(steps.length-1)),y:H/2});
-          }else{var mt=45,mb=45,span=H-mt-mb;
+          }else{var mt=H*0.08,mb=H*0.08,span=H-mt-mb;
             for(var i=0;i<steps.length;i++)s.push({x:50,y:mt+span*(i/(steps.length-1))});
           }return s;
         }
