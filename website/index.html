@@ -3228,7 +3228,7 @@
         function resize() {
           var r = c.parentElement.getBoundingClientRect();
           W = r.width;
-          H = W < 550 ? 460 : 340;
+          H = W < 550 ? 560 : 340;
     // Landscape: cap canvas height
     if (window.innerHeight < 500 && window.innerWidth > window.innerHeight) {
       H = Math.min(H, window.innerHeight * 0.70);
@@ -3790,7 +3790,7 @@
 
         function resize(){
           var r=c.parentElement.getBoundingClientRect();W=r.width;
-          H=W<550?460:340;
+          H=W<550?560:340;
           if(window.innerHeight<500&&window.innerWidth>window.innerHeight){H=Math.min(H,window.innerHeight*0.70);}
           c.width=W*dpr;c.height=H*dpr;
           c.style.height=H+'px';ctx.setTransform(dpr,0,0,dpr,0,0);
@@ -5152,7 +5152,7 @@
 
         function resize(){
           var r=c.parentElement.getBoundingClientRect();
-          W=r.width;H=W<550?480:200;
+          W=r.width;H=W<550?560:200;
           if(window.innerHeight<500&&window.innerWidth>window.innerHeight){H=Math.min(H,window.innerHeight*0.45);}
           c.width=W*dpr;c.height=H*dpr;
           c.style.height=H+'px';
@@ -5163,7 +5163,7 @@
           var mob=W<550||(window.innerHeight<500&&window.innerWidth>window.innerHeight),s=[];
           if(!mob){var m=W*0.08,span=W-m*2;
             for(var i=0;i<steps.length;i++)s.push({x:m+span*(i/(steps.length-1)),y:H/2});
-          }else{var mt=H*0.08,mb=H*0.08,span=H-mt-mb;
+          }else{var mt=H*0.06,mb=H*0.06,span=H-mt-mb;
             for(var i=0;i<steps.length;i++)s.push({x:50,y:mt+span*(i/(steps.length-1))});
           }return s;
         }
