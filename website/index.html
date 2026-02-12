@@ -2,6 +2,7 @@
 <html lang="en" style="scroll-behavior:smooth;">
 <head>
   <meta charset="UTF-8" />
+  <meta name="theme-color" content="#2a2f3d">
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <title>Sentinel Authority — Conformance Certification for Autonomous Systems</title>
 
@@ -15,7 +16,7 @@
   <meta property="og:description" content="Formal attestation that autonomous systems operate within their declared Operational Design Domains. Proof. Not promises." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://sentinelauthority.org/" />
-  <meta property="og:image" content="https://sentinelauthority.org/og.png" />
+  <meta property="og:image" content="https://sentinelauthority.org/og.webp" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Sentinel Authority — Conformance Certification for Autonomous Systems" />
   <meta name="twitter:description" content="Formal attestation that autonomous systems operate within declared Operational Design Domains. Proof. Not promises." />
@@ -26,6 +27,7 @@
   <!-- Favicon (purple diamond) -->
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect x='6' y='6' width='20' height='20' rx='5' fill='%235B4B8A' stroke='%239d8ccf' stroke-width='2'/><circle cx='16' cy='16' r='4' fill='%239d8ccf'/></svg>" />
 
+  <link rel="preload" href="https://fonts.gstatic.com/s/ibmplexmono/v19/-F63fjptAgt5VM-kVkqdyU8n1iIq131nj-otFQ.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <!-- Performance: Preload critical fonts -->
@@ -2696,6 +2698,30 @@
 
       
       <script>
+
+  <script>
+  // Pause all canvas animations when tab is hidden
+  (function() {
+    var _rafs = [];
+    var _origRAF = window.requestAnimationFrame;
+    var _paused = false;
+    
+    document.addEventListener('visibilitychange', function() {
+      _paused = document.hidden;
+      if (!_paused) {
+        // Resume all pending callbacks
+        _rafs.forEach(function(fn) { _origRAF.call(window, fn); });
+        _rafs = [];
+      }
+    });
+    
+    window.requestAnimationFrame = function(fn) {
+      if (_paused) { _rafs.push(fn); return -1; }
+      return _origRAF.call(window, fn);
+    };
+  })();
+  </script>
+
         (function() {
   var c = document.getElementById('hero-canvas');
   if (!c) return;

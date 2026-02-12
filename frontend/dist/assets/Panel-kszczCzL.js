@@ -1,0 +1,1 @@
+import{j as e}from"./index-BYnaB1hk.js";import"./icons-DePecJlF.js";function i({children:r,className:s="",style:t={},...a}){return e.jsx("div",{className:`panel ${s}`,style:t,...a,children:r})}export{i as P};
