@@ -3006,12 +3006,13 @@
   }
 
   function spawnTelemetry(now) {
-    var telDelay = W < 600 ? 500 : 280;
+    if (W < 600 && telemetry.length >= 4) return;
+    var telDelay = W < 600 ? 900 : 280;
     if (now-lastTel>telDelay) {
       lastTel=now;
       var label = dataLabels[Math.floor(Math.random()*dataLabels.length)];
       var side = Math.random()>0.5?1:-1;
-      var spawnDist = W < 600 ? radius+15+Math.random()*25 : radius+35+Math.random()*60;
+      var spawnDist = W < 600 ? radius+10+Math.random()*15 : radius+35+Math.random()*60;
       var spawnX = cx+side*spawnDist;
       // Clamp to viewport
       spawnX = Math.max(10, Math.min(W-10, spawnX));
@@ -3029,7 +3030,7 @@
   function drawTelemetry() {
     for (var i=telemetry.length-1;i>=0;i--) {
       var t=telemetry[i];
-      t.prog+=0.007;
+      t.prog+=W<600?0.005:0.007;
       if(t.prog>1) t.alpha-=0.025;
       if(t.alpha<=0){telemetry.splice(i,1);continue;}
 
@@ -3226,6 +3227,7 @@
         ];
 
         function resize() {
+          telemetry = [];
           var r = c.parentElement.getBoundingClientRect();
           W = r.width;
           H = W < 550 ? 560 : 340;
@@ -4514,6 +4516,7 @@
         function rgb(c,a){ return 'rgba('+c[0]+','+c[1]+','+c[2]+','+a+')'; }
 
         function resize() {
+          telemetry = [];
           var r = c.parentElement.getBoundingClientRect();
           W = r.width;
           H = W < 550 ? W * 0.80 : W * 0.42;
@@ -4818,14 +4821,15 @@
 
         function spawnTelemetry(now) {
           if (halted) return;
-          var interval = phase===1 ? 140 : 280;
+          if (W < 600 && telemetry.length >= 4) return;
+          var interval = W < 600 ? (phase===1 ? 400 : 700) : (phase===1 ? 140 : 280);
           if (now-lastTel>interval) {
             lastTel=now;
             var label = dataLabels[Math.floor(Math.random()*dataLabels.length)];
             var side = Math.random()>0.5?1:-1;
             telemetry.push({
               text:label,
-              x: cx+side*(radius+35+Math.random()*60),
+              x: cx+side*(radius+(W<600?10:35)+Math.random()*(W<600?20:60)),
               y: Math.max(cy-radius*0.4, Math.min(cy+radius*0.3, cy-radius*0.4+Math.random()*radius*0.7)),
               tx: cx+(Math.random()-0.5)*radius*0.5,
               ty: cy+(Math.random()-0.5)*radius*0.5,
@@ -4837,7 +4841,7 @@
         function drawTelemetry() {
           for (var i=telemetry.length-1;i>=0;i--) {
             var t=telemetry[i];
-            t.prog+=0.007;
+            t.prog+=W<600?0.005:0.007;
             if(t.prog>1) t.alpha-=0.025;
             if(t.alpha<=0){telemetry.splice(i,1);continue;}
 
