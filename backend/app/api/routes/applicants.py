@@ -239,6 +239,7 @@ async def update_application_fields(
 async def update_application_state(
     application_id: int,
     new_state: str,
+    reason: str = "",
     db: AsyncSession = Depends(get_db),
     user: dict = Depends(get_current_user)
 ):
@@ -328,6 +329,18 @@ async def update_application_state(
                 print(f"Auto-create CAT-72 failed: {e}")
 
         # Write audit log
+        # Auto-post rejection reason as comment
+        if new_state == "rejected" and reason:
+            comment = ApplicationComment(
+                application_id=app.id,
+                user_id=user.get("sub"),
+                user_email=user.get("email", "admin"),
+                user_role=user.get("role", "admin"),
+                content=f"REJECTED: {reason}",
+                is_internal=False,
+            )
+            db.add(comment)
+
         await write_audit_log(
             db=db,
             action="state_changed",
@@ -370,7 +383,7 @@ async def update_application_state(
                             app_number, api_key_raw, "Pending"
                         )
                 elif new_state == "rejected":
-                    await send_application_rejected(applicant_email, system_name, app_number)
+                    await send_application_rejected(applicant_email, system_name, app_number, reason)
                 elif new_state == "suspended":
                     await send_email(
                         applicant_email,
@@ -716,6 +729,7 @@ async def bulk_delete_applications(
 async def preview_state_change_email(
     application_id: int,
     new_state: str,
+    reason: str = "",
     db: AsyncSession = Depends(get_db),
     user: dict = Depends(require_role(["admin"])),
 ):

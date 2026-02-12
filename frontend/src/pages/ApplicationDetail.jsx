@@ -117,8 +117,7 @@ function ApplicationDetail() {
     if (!rejectReason.trim()) { toast.show('Please provide a reason', 'error'); return; }
     if (!await confirm({ title: 'Reject Application', message: 'Reject this application? This will notify the applicant with your reason.', danger: true, confirmLabel: 'Reject' })) return;
     try {
-      await api.patch('/api/applications/' + id + '/state?new_state=rejected');
-      await api.post('/api/applications/' + id + '/comments', { content: 'REJECTED: ' + rejectReason, is_internal: false });
+      await api.patch('/api/applications/' + id + '/state?new_state=rejected&reason=' + encodeURIComponent(rejectReason));
       setShowReject(false);
       setRejectReason('');
       await refreshApp();
