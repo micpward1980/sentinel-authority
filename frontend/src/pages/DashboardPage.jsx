@@ -9,7 +9,6 @@ import { useToast } from '../context/ToastContext';
 import { useConfirm } from '../context/ConfirmContext';
 import Panel from '../components/Panel';
 import StatCard from '../components/StatCard';
-import EmptyState from '../components/EmptyState';
 
 /* ═══════════════════════════════════════
    CUSTOMER DASHBOARD
