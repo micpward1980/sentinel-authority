@@ -701,3 +701,55 @@ input:focus, select:focus, textarea:focus {
 
 /* Selection — brand purple */
 ::selection { background: rgba(91,75,138,0.4); color: #fff; }
+
+/* ══════════════════════════════════════════════════
+   A11Y — Accessibility Layer
+   ══════════════════════════════════════════════════ */
+
+/* Focus visible — keyboard users get purple ring */
+*:focus-visible {
+  outline: 2px solid rgba(157,140,207,0.5) !important;
+  outline-offset: 2px !important;
+}
+
+/* Remove outline for mouse clicks */
+*:focus:not(:focus-visible) {
+  outline: none !important;
+}
+
+/* Skip link (add to Layout) */
+.sa-skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--purple-primary);
+  color: #fff;
+  padding: 8px 16px;
+  z-index: 10000;
+  font-family: var(--mono);
+  font-size: 11px;
+  transition: top 0.2s ease;
+}
+.sa-skip-link:focus {
+  top: 0;
+}
+
+/* High contrast mode support */
+@media (forced-colors: active) {
+  .btn { border: 1px solid ButtonText !important; }
+  .badge { border: 1px solid ButtonText !important; }
+  .hud-frame::before, .hud-frame::after,
+  .hud-frame > i::before, .hud-frame > i::after {
+    border-color: ButtonText !important;
+  }
+}
+
+/* Reduced motion — kill animations */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
