@@ -245,12 +245,12 @@ function ApplicationDetail() {
         </Link>
         {user?.role === 'admin' && (
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-            {app.state === 'under_review' && <button onClick={() => handleQuickState('pending', 'Move back to Pending')} className="px-3 py-2 btn" style={{ fontSize: '11px' }}>&#8592; Pending</button>}
-            {app.state === 'approved' && <button onClick={() => handleQuickState('under_review', 'Move back to Review')} className="px-3 py-2 btn" style={{ fontSize: '11px' }}>&#8592; Review</button>}
-            {app.state === 'pending' && <button onClick={handleBeginReview} className="px-3 py-2 btn" style={{ fontSize: '11px', color: C.purple }}>Begin Review &#8594;</button>}
-            {app.state === 'under_review' && allChecked && <button onClick={handleApprove} className="px-3 py-2 btn" style={{ fontSize: '11px', color: C.green }}>Approve &#8594;</button>}
-            {['pending', 'under_review', 'approved'].includes(app.state) && <button onClick={handleSuspend} className="px-3 py-2 btn" style={{ fontSize: '11px', color: C.red }}>Withdraw</button>}
-            {(app.state === 'suspended' || app.state === 'revoked' || app.state === 'rejected') && <button onClick={handleReinstate} className="px-3 py-2 btn" style={{ fontSize: '11px', color: C.green }}>Reinstate</button>}
+            {/* One primary action per state */}
+            {app.state === 'pending' && <button onClick={handleBeginReview} className="px-4 py-2 btn" style={{ fontSize: '11px', color: C.purple, borderColor: 'rgba(157,140,207,0.3)' }}>Begin Review &#8594;</button>}
+            {app.state === 'under_review' && allChecked && <button onClick={handleApprove} className="px-4 py-2 btn" style={{ fontSize: '11px', color: C.green, borderColor: 'rgba(92,214,133,0.3)' }}>Approve &#8594;</button>}
+            {(app.state === 'suspended' || app.state === 'revoked' || app.state === 'rejected') && <button onClick={handleReinstate} className="px-4 py-2 btn" style={{ fontSize: '11px', color: C.green, borderColor: 'rgba(92,214,133,0.3)' }}>Reinstate</button>}
+            {/* Secondary actions — subtle */}
+            {['pending', 'under_review', 'approved'].includes(app.state) && <button onClick={handleSuspend} className="px-3 py-2 btn" style={{ fontSize: '10px', color: C.textDim, opacity: 0.5 }}>Withdraw</button>}
           </div>
         )}
       </div>
@@ -413,9 +413,6 @@ function ApplicationDetail() {
             ))}
           </div>
           <div style={{ display: 'flex', gap: '8px', marginTop: '16px', flexWrap: 'wrap' }}>
-            {allChecked && (
-              <button onClick={handleApprove} className="px-4 py-2 btn" style={{ color: C.green, borderColor: 'rgba(92,214,133,.3)' }}>Approve Application &#8594;</button>
-            )}
             <button onClick={() => setShowRequestInfo(!showRequestInfo)} className="px-4 py-2 btn" style={{ color: C.amber }}>Request More Info</button>
             <button onClick={() => setShowReject(!showReject)} className="px-4 py-2 btn" style={{ color: C.red }}>Reject</button>
           </div>
