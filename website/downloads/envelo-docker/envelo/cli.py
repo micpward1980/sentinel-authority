@@ -1,12 +1,20 @@
 #!/usr/bin/env python3
 """
 ENVELO Interlock CLI
+
 Usage:
-    envelo start [-d]     Start enforcement
-    envelo status         Health check
-    envelo stop           Stop daemon
-    envelo boundaries     Show active boundaries
-    envelo version        Show version
+    envelo start [-d] [--port 9090] [--host 0.0.0.0]
+    envelo status
+    envelo stop
+    envelo boundaries
+    envelo version
+
+REST API (any language):
+    POST /check       {"speed": 50, "position": {"lat": 30.5, "lon": -97.7}}
+    POST /enforce     Same, but returns 403 on violation
+    GET  /status      Agent stats
+    GET  /boundaries  Active boundary list
+    GET  /health      Liveness probe
 """
 
 import os
@@ -20,6 +28,7 @@ from pathlib import Path
 from . import __version__
 from .agent import EnveloAgent
 from .config import EnveloConfig
+from .server import run_server
 
 
 PID_FILE = Path.home() / ".envelo" / "envelo.pid"
@@ -48,12 +57,35 @@ def cmd_start(daemon=False):
     config = _load_config()
     agent = EnveloAgent(config)
 
+    # Parse port
+    port = 9090
+    for i, a in enumerate(sys.argv):
+        if a in ("--port", "-p") and i + 1 < len(sys.argv):
+            port = int(sys.argv[i + 1])
+
+    # Parse bind address
+    host = "127.0.0.1"
+    for i, a in enumerate(sys.argv):
+        if a == "--host" and i + 1 < len(sys.argv):
+            host = sys.argv[i + 1]
+
     if not agent.start():
         print("  FATAL: Agent failed to start")
         sys.exit(1)
 
+    # Start REST server
+    server = run_server(agent, host=host, port=port)
+
     print(f"  Enforcement active.")
     print(f"  Boundaries: {len(agent.list_boundaries())}")
+    print(f"  REST API:   http://{host}:{port}")
+    print()
+    print(f"  Any language can now call:")
+    print(f"    POST http://{host}:{port}/check     {{\"speed\": 50}}")
+    print(f"    POST http://{host}:{port}/enforce   {{\"speed\": 50}}")
+    print(f"    GET  http://{host}:{port}/status")
+    print(f"    GET  http://{host}:{port}/boundaries")
+    print(f"    GET  http://{host}:{port}/health")
     print()
 
     if daemon:
@@ -73,6 +105,7 @@ def cmd_start(daemon=False):
     signal.signal(signal.SIGTERM, handle_sig)
 
     shutdown.wait()
+    server.stop()
     agent.stop()
 
     if PID_FILE.exists():
