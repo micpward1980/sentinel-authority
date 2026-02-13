@@ -2561,8 +2561,8 @@
 <main id="main" role="main">
 <div class="section" style="border-top:none;padding-top:calc(var(--nav-height) + 48px);">
       <div class="section-label">SECURITY ARCHITECTURE</div>
-      <h1 class="section-title" style="font-family:var(--serif);">Zero Trust by <span class="accent">Design</span></h1>
-      <p class="section-lead">ENVELO was built so Sentinel Authority never needs access to your systems, data, or network. Every security property is structural, not contractual.</p>
+      <h1 class="section-title" style="font-family:var(--serif);">Zero Trust by Design</h1>
+      <p class="section-lead">The ENVELO Interlock was built so Sentinel Authority never needs access to your systems, data, or network. Every security property is structural, not contractual.</p>
     </div>
 
     <div style="max-width:700px;margin:0 auto;padding:0 var(--space-2);">
@@ -2570,10 +2570,10 @@
     <div class="section">
       <div class="hud-frame hud-frame-green"><i></i>
         <div class="hud-label" style="margin-bottom:var(--space-2);">CORE GUARANTEE</div>
-        <div class="hud-title" style="margin-bottom:var(--space-2);">What ENVELO cannot do — by architecture, not policy</div>
+        <div class="hud-title" style="margin-bottom:var(--space-2);">What the ENVELO Interlock cannot do — by architecture, not policy</div>
         <div class="hud-row" style="display:flex;align-items:center;gap:10px;"><span class="hud-dot hud-dot-red"></span><span class="hud-desc" style="color:rgba(214,92,92,0.9);">NO INBOUND PORTS</span></div>
         <div class="hud-row" style="display:flex;align-items:center;gap:10px;"><span class="hud-dot hud-dot-red"></span><span class="hud-desc" style="color:rgba(214,92,92,0.9);">NO REMOTE ACCESS</span></div>
-        <div class="hud-row" style="display:flex;align-items:center;gap:10px;"><span class="hud-dot hud-dot-red"></span><span class="hud-desc" style="color:rgba(214,92,92,0.9);">NO DATA COLLECTION</span></div>
+        <div class="hud-row" style="display:flex;align-items:center;gap:10px;"><span class="hud-dot hud-dot-red"></span><span class="hud-desc" style="color:rgba(214,92,92,0.9);">NO SYSTEM DATA ACCESS</span></div>
         <div class="hud-row" style="display:flex;align-items:center;gap:10px;"><span class="hud-dot hud-dot-red"></span><span class="hud-desc" style="color:rgba(214,92,92,0.9);">NO CLOUD COMMANDS</span></div>
         <p style="color:var(--text-tertiary);font-size:12px;line-height:1.6;margin-top:16px;">The interlock opens zero listening ports. Sentinel Authority has no mechanism to connect to, access, or control your infrastructure. Communication is strictly one-way: telemetry out, nothing in.</p>
       </div>
@@ -2584,11 +2584,11 @@
         <div class="faq-group-label">ATTACK SURFACE</div>
         <div class="faq-item">
           <div class="faq-q">Can Sentinel Authority access our systems remotely?</div>
-          <div class="faq-a">No. ENVELO opens zero inbound ports and accepts zero inbound connections. There is no SSH, no API endpoint, no reverse tunnel. The architecture makes remote access structurally impossible — not just policy-prohibited.</div>
+          <div class="faq-a">No. The ENVELO Interlock opens zero inbound ports and accepts zero inbound connections. There is no SSH, no API endpoint, no reverse tunnel. The architecture makes remote access structurally impossible — not just policy-prohibited.</div>
         </div>
         <div class="faq-item">
           <div class="faq-q">What happens if the connection to Sentinel drops?</div>
-          <div class="faq-a">The interlock enters fail-closed mode: all autonomous actions are blocked until connectivity is restored. This is the safe state. No data is lost — telemetry is queued locally with cryptographic ordering and transmitted when the connection resumes.</div>
+          <div class="faq-a">The interlock continues enforcing boundaries locally — connectivity to Sentinel is not required for enforcement. Telemetry is queued locally with cryptographic ordering and transmitted when the connection resumes. If connectivity is not restored within the configured threshold, conformance status transitions to PAUSED pending reconnection.</div>
         </div>
         <div class="faq-item">
           <div class="faq-q">Could a compromised Sentinel server send malicious commands?</div>
@@ -2601,12 +2601,12 @@
       <div class="hud-frame"><i></i>
         <div class="faq-group-label">DATA PRIVACY</div>
         <div class="faq-item">
-          <div class="faq-q">What data does ENVELO transmit?</div>
-          <div class="faq-a">Only ODD parameter values: speed, position, heading, obstacle distance, weather classification — the operational telemetry defined in your boundary specification. No PHI, no PII, no business data, no logs, no screenshots, no video.</div>
+          <div class="faq-q">What data does the ENVELO Interlock transmit?</div>
+          <div class="faq-a">Only boundary conformance data — whether the system is operating within its discovered operational envelope. The Interlock transmits enforcement actions, boundary check results, and violation events. No PHI, no PII, no model weights, no decision logic, no business data, no logs, no screenshots, no video.</div>
         </div>
         <div class="faq-item">
-          <div class="faq-q">Is ENVELO compatible with HIPAA / SOC 2 / ISO 27001?</div>
-          <div class="faq-a">Yes. Because ENVELO transmits no PHI or PII, it operates outside the scope of HIPAA covered data. For SOC 2 and ISO 27001 environments, the interlock's outbound-only architecture, certificate pinning, and cryptographic audit trail satisfy access control and logging requirements. BAA available on request.</div>
+          <div class="faq-q">Is the ENVELO Interlock compatible with HIPAA / SOC 2 / ISO 27001?</div>
+          <div class="faq-a">Yes. Because the ENVELO Interlock transmits no PHI or PII, it operates outside the scope of HIPAA covered data. For SOC 2 and ISO 27001 environments, the interlock's outbound-only architecture, certificate pinning, and cryptographic audit trail satisfy access control and logging requirements. BAA available on request.</div>
         </div>
       </div>
     </div>
@@ -2615,7 +2615,7 @@
       <div class="hud-frame"><i></i>
         <div class="faq-group-label">NETWORK</div>
         <div class="faq-item">
-          <div class="faq-q">What network access does ENVELO require?</div>
+          <div class="faq-q">What network access does the ENVELO Interlock require?</div>
           <div class="faq-a">Outbound HTTPS only (port 443) to api.sentinelauthority.org. No inbound ports, no UDP, no custom protocols. Compatible with corporate proxies and firewalls — allowlist a single domain.</div>
         </div>
         <div class="faq-item">
@@ -2630,7 +2630,7 @@
         <div class="faq-group-label">AUDITABILITY</div>
         <div class="faq-item">
           <div class="faq-q">How can we verify what the interlock is sending?</div>
-          <div class="faq-a">Run <span style="font-family:var(--mono);font-size:12px;color:var(--accent-green);">envelo export</span> to generate an auditor-ready bundle containing every boundary, every telemetry schema, and every enforcement rule. Run <span style="font-family:var(--mono);font-size:12px;color:var(--accent-green);">envelo events</span> for the full violation and enforcement log.</div>
+          <div class="faq-a">Operators can export telemetry data, violation records, and full CAT-72 enforcement reports directly from the applicant dashboard. Every session includes downloadable CSVs and PDF reports — giving auditors complete visibility into what the Interlock monitors, enforces, and transmits.</div>
         </div>
         <div class="faq-item">
           <div class="faq-q">Is the telemetry tamper-proof?</div>

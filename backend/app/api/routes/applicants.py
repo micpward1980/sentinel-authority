@@ -39,15 +39,17 @@ class ApplicationCreate(BaseModel):
 async def generate_application_number(db: AsyncSession) -> str:
     year = datetime.utcnow().year
     result = await db.execute(
-        select(func.max(Application.application_number)).where(
+        select(Application.application_number).where(
             Application.application_number.like(f"APP-{year}-%")
-        )
+        ).order_by(Application.application_number.desc())
     )
-    max_num = result.scalar()
-    if max_num:
-        seq = int(max_num.split("-")[-1]) + 1
-    else:
-        seq = 1
+    all_nums = [r[0] for r in result.fetchall()]
+    seq = 1
+    for num in all_nums:
+        suffix = num.split("-")[-1]
+        if suffix.isdigit():
+            seq = int(suffix) + 1
+            break
     return f"APP-{year}-{seq:05d}"
 
 

@@ -87,7 +87,7 @@ function Layout({ children }) {
         <div style={{ height: '56px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px', borderBottom: '1px solid rgba(255,255,255,.06)', flexShrink: 0 }}>
           <Link to="/dashboard" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
             <BrandMark size={22} />
-            <span style={{ fontFamily: styles.mono, fontSize: '9px', letterSpacing: '2.5px', textTransform: 'uppercase', color: 'rgba(255,255,255,.82)' }}>Sentinel Authority</span>
+            <span style={{ fontFamily: styles.mono, fontSize: '9px', letterSpacing: '2.5px', textTransform: 'uppercase', color: 'rgba(255,255,255,.94)' }}>Sentinel Authority</span>
           </Link>
           {isMobile && <button onClick={() => setSidebarOpen(false)} style={{ color: 'var(--text-tertiary)', background: 'none', border: 'none', cursor: 'pointer', padding: '4px' }}><X size={16} /></button>}
         </div>
@@ -100,15 +100,15 @@ function Layout({ children }) {
                 style={{
                   display: 'flex', alignItems: 'center', gap: '10px', padding: '9px 16px',
                   fontFamily: styles.mono, fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase',
-                  color: active ? styles.textPrimary : 'rgba(255,255,255,.35)',
+                  color: active ? styles.textPrimary : 'rgba(255,255,255,.65)',
                   borderLeft: active ? `2px solid ${styles.purpleBright}` : '2px solid transparent',
                   background: active ? 'rgba(157,140,207,.06)' : 'transparent',
                   transition: 'color .2s, background .15s', textDecoration: 'none',
                 }}
-                onMouseEnter={e => { if (!active) { e.currentTarget.style.color = 'rgba(255,255,255,.65)'; e.currentTarget.style.background = 'rgba(255,255,255,.02)'; }}}
-                onMouseLeave={e => { if (!active) { e.currentTarget.style.color = 'rgba(255,255,255,.35)'; e.currentTarget.style.background = 'transparent'; }}}
+                onMouseEnter={e => { if (!active) { e.currentTarget.style.color = 'rgba(255,255,255,.90)'; e.currentTarget.style.background = 'rgba(255,255,255,.02)'; }}}
+                onMouseLeave={e => { if (!active) { e.currentTarget.style.color = 'rgba(255,255,255,.65)'; e.currentTarget.style.background = 'transparent'; }}}
               >
-                {item.icon === 'brand' ? <BrandMark size={13} /> : <item.icon size={13} style={{ opacity: active ? .85 : .4 }} />}
+                {item.icon === 'brand' ? <BrandMark size={13} /> : <item.icon size={13} style={{ opacity: active ? .95 : .65 }} />}
                 {item.name}
               </Link>
             );
@@ -122,10 +122,10 @@ function Layout({ children }) {
             </div>
             <div>
               <div style={{ fontSize: '12px', color: styles.textPrimary, lineHeight: 1.2 }}>{user?.full_name}</div>
-              <div style={{ fontFamily: styles.mono, fontSize: '8px', letterSpacing: '1.5px', textTransform: 'uppercase', color: 'rgba(255,255,255,.3)' }}>{user?.role}</div>
+              <div style={{ fontFamily: styles.mono, fontSize: '8px', letterSpacing: '1.5px', textTransform: 'uppercase', color: 'rgba(255,255,255,.45)' }}>{user?.role}</div>
             </div>
           </div>
-          <button onClick={logout} style={{ display: 'flex', alignItems: 'center', gap: '6px', fontFamily: styles.mono, fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: 'rgba(255,255,255,.3)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+          <button onClick={logout} style={{ display: 'flex', alignItems: 'center', gap: '6px', fontFamily: styles.mono, fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: 'rgba(255,255,255,.45)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
             onMouseEnter={e => e.currentTarget.style.color = styles.textPrimary}
             onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,.3)'}
           ><LogOut size={11} /> Sign Out</button>
@@ -142,14 +142,14 @@ function Layout({ children }) {
         }}>
           {isMobile && <button onClick={() => setSidebarOpen(true)} style={{ color: 'var(--text-tertiary)', background: 'none', border: 'none', cursor: 'pointer', padding: '4px' }}><Menu size={18} /></button>}
           <div style={{ flex: 1 }} />
-          <a href="https://sentinelauthority.org" target="_blank" rel="noopener noreferrer"
-            style={{ display: 'flex', alignItems: 'center', gap: '5px', color: 'rgba(255,255,255,.35)', fontFamily: styles.mono, fontSize: '8px', letterSpacing: '1.5px', textTransform: 'uppercase', textDecoration: 'none', transition: 'color .2s' }}
+          <a href="https://sentinelauthority.org"
+            style={{ display: 'flex', alignItems: 'center', gap: '5px', color: 'rgba(255,255,255,.50)', fontFamily: styles.mono, fontSize: '8px', letterSpacing: '1.5px', textTransform: 'uppercase', textDecoration: 'none', transition: 'color .2s' }}
             onMouseEnter={e => e.currentTarget.style.color = styles.textPrimary}
-            onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,.35)'}
+            onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,.65)'}
           ><ExternalLink size={11} /> Main Site</a>
 
           <div style={{ position: 'relative' }}>
-            <button onClick={() => setNotifOpen(!notifOpen)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', color: notifOpen ? styles.purpleBright : 'rgba(255,255,255,.4)', transition: 'color .2s' }}>
+            <button onClick={() => setNotifOpen(!notifOpen)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', color: notifOpen ? styles.purpleBright : 'rgba(255,255,255,.55)', transition: 'color .2s' }}>
               <Bell size={15} strokeWidth={1.5} />
               {unreadCount > 0 && <span style={{ position: 'absolute', top: '-1px', right: '-1px', minWidth: '13px', height: '13px', borderRadius: '50%', background: '#D65C5C', color: '#fff', fontSize: '7px', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: styles.mono, padding: '0 2px' }}>{unreadCount > 9 ? '9+' : unreadCount}</span>}
             </button>
@@ -157,11 +157,11 @@ function Layout({ children }) {
               <div onClick={() => setNotifOpen(false)} style={{ position: 'fixed', inset: 0, zIndex: 90 }} />
               <div style={{ position: 'absolute', right: 0, top: '40px', width: 'min(320px, 88vw)', maxHeight: '65vh', overflowY: 'auto', background: 'rgba(42,47,61,.96)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255,255,255,.07)', zIndex: 100 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 14px', borderBottom: '1px solid rgba(255,255,255,.06)' }}>
-                  <span style={{ fontFamily: styles.mono, fontSize: '9px', letterSpacing: '2px', textTransform: 'uppercase', color: 'rgba(255,255,255,.35)' }}>Notifications</span>
+                  <span style={{ fontFamily: styles.mono, fontSize: '9px', letterSpacing: '2px', textTransform: 'uppercase', color: 'rgba(255,255,255,.50)' }}>Notifications</span>
                   {unreadCount > 0 && <button onClick={markAllRead} style={{ background: 'none', border: 'none', color: styles.purpleBright, fontFamily: styles.mono, fontSize: '9px', letterSpacing: '1px', cursor: 'pointer', padding: 0 }}>Mark all read</button>}
                 </div>
                 {notifs.length === 0 ? (
-                  <div style={{ padding: '28px 14px', textAlign: 'center', color: 'rgba(255,255,255,.3)', fontSize: '11px', fontFamily: styles.mono }}>No recent activity</div>
+                  <div style={{ padding: '28px 14px', textAlign: 'center', color: 'rgba(255,255,255,.45)', fontSize: '11px', fontFamily: styles.mono }}>No recent activity</div>
                 ) : notifs.map((n, i) => {
                   const tc = { success: styles.accentGreen, warning: '#D6A05C', info: styles.purpleBright, error: '#D65C5C' }[n.type] || styles.purpleBright;
                   return (
@@ -172,7 +172,7 @@ function Layout({ children }) {
                         <span style={{ display: 'inline-block', width: '4px', height: '4px', borderRadius: '50%', background: tc, marginTop: '6px', flexShrink: 0 }} />
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <p style={{ margin: 0, fontSize: '12px', color: !n.read ? styles.textPrimary : styles.textSecondary, lineHeight: 1.4 }}>{n.message}</p>
-                          <span style={{ fontFamily: styles.mono, fontSize: '8px', color: 'rgba(255,255,255,.3)', marginTop: '3px', display: 'block' }}>
+                          <span style={{ fontFamily: styles.mono, fontSize: '8px', color: 'rgba(255,255,255,.45)', marginTop: '3px', display: 'block' }}>
                             {n.timestamp ? new Date(n.timestamp).toLocaleString() : ''}{n.user_email ? ' · ' + n.user_email : ''}
                           </span>
                         </div>

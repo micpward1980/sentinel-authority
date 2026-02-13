@@ -5,7 +5,7 @@ export default function EmptyState({ icon: Icon, title, message, description, ac
   return (
     <div style={{ textAlign: 'center', padding: '48px 20px', fontFamily: 'var(--mono)' }}>
       {Icon && (
-        <div style={{ marginBottom: '16px', opacity: 0.4, display: 'flex', justifyContent: 'center' }}>
+        <div style={{ marginBottom: '16px', opacity: 0.6, display: 'flex', justifyContent: 'center' }}>
           {React.isValidElement(Icon) ? Icon : <Icon size={28} strokeWidth={1.5} />}
         </div>
       )}

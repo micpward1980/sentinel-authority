@@ -102,7 +102,7 @@ def generate_certificate_pdf(
     # Main certification statement
     story.append(Paragraph(
         "This certifies that the autonomous system identified below has successfully completed "
-        "CAT-72 conformance testing and demonstrated continuous compliance with its declared "
+        "CAT-72 conformance testing and demonstrated sustained operation within its "
         "Operational Design Domain boundaries through ENVELO runtime enforcement.",
         body_style
     ))
@@ -135,7 +135,7 @@ def generate_certificate_pdf(
     
     # QR Code for verification
     qr = qrcode.QRCode(version=1, box_size=10, border=2)
-    qr.add_data(f"https://sentinelauthority.org/verify?cert={certificate_number}")
+    qr.add_data(f"https://app.sentinelauthority.org/verify?cert={certificate_number}")
     qr.make(fit=True)
     qr_img = qr.make_image(fill_color="#5B4B8A", back_color="white")
     

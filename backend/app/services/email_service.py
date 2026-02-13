@@ -681,3 +681,78 @@ async def send_certificate_expiry_warning(to: str, system_name: str, cert_number
     """
     await send_email(to, f"{urgency} Certificate Expiring - {cert_number}", html)
     await send_email(ADMIN_EMAIL, f"Certificate Expiring: {cert_number} ({days_remaining} days)", html)
+
+
+async def send_learning_started(to: str, system_name: str, test_id: str):
+    """Notify that learning mode has begun."""
+    if not await should_send_email(to, "test_notifications"):
+        return
+    html = f"""
+    <div style="font-family: 'Helvetica Neue', sans-serif; max-width: 600px; margin: 0 auto; background: #0a0a0f; color: #e0e0e0; padding: 40px; border: 1px solid rgba(157,140,207,0.2);">
+      <div style="text-align: center; margin-bottom: 32px;">
+        <span style="font-size: 11px; letter-spacing: 3px; color: rgba(157,140,207,0.6); text-transform: uppercase;">Sentinel Authority</span>
+      </div>
+      <h2 style="color: #9d8ccf; font-weight: 300; margin-bottom: 16px;">Learning Mode Active</h2>
+      <p style="color: #b0b0b0; line-height: 1.7;">
+        <strong>{system_name}</strong> (Test {test_id}) has entered learning mode.
+      </p>
+      <p style="color: #b0b0b0; line-height: 1.7;">
+        The ENVELO Interlock is now observing normal operation and profiling telemetry data. No boundaries are enforced during this phase.
+      </p>
+      <div style="background: rgba(157,140,207,0.08); border: 1px solid rgba(157,140,207,0.15); border-radius: 8px; padding: 16px; margin: 24px 0;">
+        <p style="color: #9d8ccf; font-size: 13px; margin: 0;"><strong>Next step:</strong> Once sufficient samples are collected, review the auto-discovered boundaries and finalize to begin 72-hour enforcement.</p>
+      </div>
+    </div>"""
+    await send_email(to, f"Learning Mode Active — {system_name}", html)
+
+
+async def send_learning_complete(to: str, system_name: str, test_id: str, boundary_count: int, sample_count: int):
+    """Notify that learning is complete and enforcement has begun."""
+    if not await should_send_email(to, "test_notifications"):
+        return
+    html = f"""
+    <div style="font-family: 'Helvetica Neue', sans-serif; max-width: 600px; margin: 0 auto; background: #0a0a0f; color: #e0e0e0; padding: 40px; border: 1px solid rgba(157,140,207,0.2);">
+      <div style="text-align: center; margin-bottom: 32px;">
+        <span style="font-size: 11px; letter-spacing: 3px; color: rgba(157,140,207,0.6); text-transform: uppercase;">Sentinel Authority</span>
+      </div>
+      <h2 style="color: #5cd685; font-weight: 300; margin-bottom: 16px;">Learning Complete — Enforcement Active</h2>
+      <p style="color: #b0b0b0; line-height: 1.7;">
+        <strong>{system_name}</strong> (Test {test_id}) has completed the learning phase.
+      </p>
+      <div style="background: rgba(92,214,133,0.08); border: 1px solid rgba(92,214,133,0.15); border-radius: 8px; padding: 16px; margin: 24px 0;">
+        <p style="color: #5cd685; font-size: 14px; margin: 0 0 8px;"><strong>{boundary_count} boundaries</strong> auto-generated from <strong>{sample_count} samples</strong></p>
+        <p style="color: #b0b0b0; font-size: 13px; margin: 0;">The 72-hour CAT-72 enforcement window is now active. All telemetry will be evaluated against the discovered operational envelope.</p>
+      </div>
+    </div>"""
+    await send_email(to, f"Enforcement Active — {system_name} ({boundary_count} boundaries)", html)
+
+
+async def send_first_interlock(to: str, system_name: str, test_id: str, violations: list):
+    """Notify on first interlock activation for a test."""
+    if not await should_send_email(to, "test_notifications"):
+        return
+    violation_html = ""
+    for v in (violations or [])[:5]:
+        var = v.get("var", "unknown")
+        val = v.get("value", "?")
+        bound = v.get("bound", "?")
+        threshold = v.get("threshold", "?")
+        violation_html += f'<tr><td style="padding:6px 12px;border-bottom:1px solid rgba(255,255,255,0.05);color:#e0e0e0;">{var}</td><td style="padding:6px 12px;border-bottom:1px solid rgba(255,255,255,0.05);color:#d65c5c;">{val}</td><td style="padding:6px 12px;border-bottom:1px solid rgba(255,255,255,0.05);color:#b0b0b0;">{bound}: {threshold}</td></tr>'
+    html = f"""
+    <div style="font-family: 'Helvetica Neue', sans-serif; max-width: 600px; margin: 0 auto; background: #0a0a0f; color: #e0e0e0; padding: 40px; border: 1px solid rgba(214,92,92,0.3);">
+      <div style="text-align: center; margin-bottom: 32px;">
+        <span style="font-size: 11px; letter-spacing: 3px; color: rgba(214,92,92,0.6); text-transform: uppercase;">Sentinel Authority — Alert</span>
+      </div>
+      <h2 style="color: #d65c5c; font-weight: 300; margin-bottom: 16px;">⬡ First Interlock Activation</h2>
+      <p style="color: #b0b0b0; line-height: 1.7;">
+        <strong>{system_name}</strong> (Test {test_id}) has triggered its first ENVELO Interlock activation.
+      </p>
+      <table style="width:100%;border-collapse:collapse;margin:24px 0;font-size:13px;">
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.1);"><th style="padding:8px 12px;text-align:left;color:#9d8ccf;">Variable</th><th style="padding:8px 12px;text-align:left;color:#9d8ccf;">Value</th><th style="padding:8px 12px;text-align:left;color:#9d8ccf;">Limit</th></tr>
+        {violation_html}
+      </table>
+      <p style="color: #b0b0b0; font-size: 13px; line-height: 1.7;">
+        This notification is sent once per test. Subsequent interlocks are recorded in the evidence chain but do not generate additional emails.
+      </p>
+    </div>"""
+    await send_email(to, f"⬡ Interlock Activated — {system_name}", html)

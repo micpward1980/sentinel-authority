@@ -63,6 +63,29 @@ def require_role(allowed_roles: list):
     return checker
 
 
+def get_user_org_id(user: dict) -> int:
+    """Extract organization_id from JWT payload. Returns None for admins or unset."""
+    return user.get("organization_id")
+
+
+def org_filter(user: dict, model_class):
+    """Return a SQLAlchemy filter clause for org isolation.
+    Admins see everything. Regular users see only their org's data.
+    Returns None if no filter needed (admin or no org)."""
+    if user.get("role") == "admin":
+        return None
+    org_id = user.get("organization_id")
+    if org_id is None:
+        # No org — filter to only their own user_id submissions
+        if hasattr(model_class, 'applicant_id'):
+            from sqlalchemy import and_
+            return model_class.applicant_id == int(user.get("sub", 0))
+        return None
+    if hasattr(model_class, 'organization_id'):
+        return model_class.organization_id == org_id
+    return None
+
+
 def require_admin():
     """Dependency that requires admin role."""
     return require_role(["admin"])

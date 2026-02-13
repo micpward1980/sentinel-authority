@@ -437,7 +437,7 @@ def generate_cat72_report(
     try:
         import qrcode
         qr = qrcode.QRCode(version=1, box_size=8, border=2)
-        qr.add_data("https://sentinelauthority.org/verify?test={}".format(test_id))
+        qr.add_data("https://app.sentinelauthority.org/verify?test={}".format(test_id))
         qr.make(fit=True)
         qr_img = qr.make_image(fill_color="#5B4B8A", back_color="white")
         qr_buf = io.BytesIO()
@@ -481,7 +481,7 @@ def generate_cat72_report(
             datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC"), test_id),
         s_footer))
     story.append(Paragraph(
-        "ODDC attests conformance within declared ODD. Does not attest safety, regulatory compliance, or fitness for purpose.",
+        "ODDC attests conformance within the system's Operational Design Domain. Does not attest safety, regulatory compliance, or fitness for purpose.",
         s_footer))
     story.append(Paragraph(
         "Independent conformance determination. Not a regulator. Not legal advice.",

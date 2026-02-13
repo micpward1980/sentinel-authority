@@ -44,7 +44,7 @@ class ErrorBoundary extends React.Component {
             <p style={{
               fontFamily: "Consolas, monospace",
               fontSize: 12,
-              color: 'rgba(255,255,255,0.4)',
+              color: 'rgba(255,255,255,0.6)',
               lineHeight: 1.6,
               marginBottom: 24
             }}>

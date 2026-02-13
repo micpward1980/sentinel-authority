@@ -110,8 +110,8 @@ def generate_certificate_pdf(cert_data: dict) -> bytes:
 
     statement = (
         "This certifies that the autonomous system identified below has successfully completed "
-        "CAT-72 continuous conformance evaluation and demonstrated sustained compliance with its "
-        "declared Operational Design Domain through ENVELO runtime enforcement."
+        "CAT-72 continuous conformance evaluation and demonstrated sustained operation within its "
+        "Operational Design Domain through ENVELO Interlock runtime enforcement."
     )
     text_obj = c.beginText(margin + 40, y)
     text_obj.setFont('Helvetica', 10)

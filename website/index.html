@@ -8,18 +8,18 @@
 
   <meta
     name="description"
-    content="Sentinel Authority publishes ODDC (ODD Conformance Determination): a voluntary conformance and evidence framework attesting that evidence supports operation within a declared ODD, with ENVELO-compliant enforcement present and auditable."
+    content="Sentinel Authority publishes ODDC (ODD Conformance Determination): a voluntary conformance and evidence framework attesting that evidence supports operation within a defined ODD, with ENVELO-compliant enforcement present and auditable."
   />
 
   <!-- Open Graph / LinkedIn / Slack -->
   <meta property="og:title" content="Sentinel Authority — Conformance Certification for Autonomous Systems" />
-  <meta property="og:description" content="Formal attestation that autonomous systems operate within their declared Operational Design Domains. Proof. Not promises." />
+  <meta property="og:description" content="Formal attestation that autonomous systems operate within their Operational Design Domain. Proof. Not promises." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://sentinelauthority.org/" />
   <meta property="og:image" content="https://sentinelauthority.org/og.webp" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Sentinel Authority — Conformance Certification for Autonomous Systems" />
-  <meta name="twitter:description" content="Formal attestation that autonomous systems operate within declared Operational Design Domains. Proof. Not promises." />
+  <meta name="twitter:description" content="Formal attestation that autonomous systems operate within defined Operational Design Domains. Proof. Not promises." />
 
   <!-- Canonical URL -->
   <link rel="canonical" href="https://sentinelauthority.org/" />
@@ -190,7 +190,7 @@
         linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
         linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
       background-size: var(--space-12) var(--space-12);
-      opacity:.2;
+      opacity:0;
       mask-image: radial-gradient(ellipse at center, rgba(0,0,0,.9) 20%, transparent 70%);
       -webkit-mask-image: radial-gradient(ellipse at center, rgba(0,0,0,.9) 20%, transparent 70%);
     }
@@ -275,7 +275,7 @@
       letter-spacing: 3px;
       text-transform: uppercase;
       color: #dbdbdb;
-      color: rgba(255,255,255,.86);
+      color: rgba(255,255,255,.94);
       white-space: nowrap;
     }
 
@@ -290,7 +290,7 @@
       font-family: var(--mono);
       font-size: 9px;
       letter-spacing: 1.5px;
-      color: var(--text-tertiary);
+      color: var(--text-secondary);
       padding: 8px 4px;
       position: relative;
       transition: color .25s ease;
@@ -837,7 +837,7 @@
     .sa-vignette {
       position: fixed; inset: 0;
       pointer-events: none; z-index: 99989;
-      background: radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.15) 80%, rgba(0,0,0,0.35) 100%);
+      background: none;
     }
     .sa-particles {
       position: fixed; inset: 0;
@@ -909,6 +909,7 @@
 
     @media (max-width: 600px){
       h1{ font-weight: normal; line-height: 1.0; }
+    }
 
     @media (max-height: 500px) and (orientation: landscape) {
       .hero {
@@ -941,8 +942,6 @@
       .hud-desc {
         font-size: 10px !important;
       }
-    }
-
     }
     
     /* ============================================
@@ -1326,7 +1325,7 @@
       padding: 18px;
       font-family: var(--mono);
       font-size: 12px;
-      color: rgba(255,255,255,.86);
+      color: rgba(255,255,255,.94);
     }
     .kv{
       display:grid;
@@ -1438,7 +1437,7 @@
       font-size: 10px;
       letter-spacing: 3px;
       text-transform: uppercase;
-      color: rgba(255,255,255,.86);
+      color: rgba(255,255,255,.94);
     }
     .state-desc{
       color: var(--text-secondary);
@@ -2596,7 +2595,11 @@
     @media (hover: none) and (pointer: coarse) {
       .mobile-only { display: flex !important; }
     }
+    
+    
     </style>
+  <link rel="stylesheet" href="mobile.css">
+
 </head>
 
 <body>
@@ -2620,12 +2623,13 @@
         <a href="#buyers" data-section="buyers">ENTERPRISE</a>
         <a href="#security" data-section="security">SECURITY</a>
         <a href="#criteria" data-section="criteria">CERTIFICATION</a>
-        <a href="#process" data-section="process">PROCESS</a>
+        <a href="#artifacts" data-section="artifacts">ARTIFACTS</a>
         <a href="#verify" data-section="verify">REGISTRY</a>
+        <a href="research.html">RESEARCH</a>
         <a href="#contact" data-section="contact">CONTACT</a>
         <a href="https://app.sentinelauthority.org">SIGN IN</a>
     </nav>      <a href="draft.html" class="nav-badge" title="v1.0 — Effective January 2026" aria-describedby="draft-note">
-        <span>v1.0</span>
+        <span>v1.0</span></a> <a href="https://innovationfactory.ca" target="_blank" style="display:flex;align-items:center;margin-left:12px;opacity:0.6;transition:opacity .2s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.6"><img src="if-logo.png" alt="Innovation Factory" style="height:32px;filter:brightness(1.5) grayscale(0.3);">
       </a>
       <span id="draft-note" class="sr-only">
         Specification v1.0 — Effective January 2026
@@ -2645,8 +2649,9 @@
     <a href="#buyers" data-section="buyers">ENTERPRISE</a>
     <a href="#security" data-section="security">SECURITY</a>
     <a href="#criteria" data-section="criteria">CERTIFICATION</a>
-    <a href="#process" data-section="process">PROCESS</a>
+    <a href="#artifacts" data-section="artifacts">ARTIFACTS</a>
     <a href="#verify" data-section="verify">REGISTRY</a>
+        <a href="research.html">RESEARCH</a>
     <a href="#contact" data-section="contact">CONTACT</a>
     <a href="https://app.sentinelauthority.org" class="nav-signin">SIGN IN</a>
   </div>  <!-- Copy toast -->
@@ -2658,7 +2663,7 @@
     <!-- HERO -->
     <section class="hero">
       <!-- Full-viewport canvas -->
-      <div style="position:relative;display:flex;flex-direction:column;align-items:center;margin:0 auto;max-width:880px;padding-top:8px;"><div style="width:100%;"><canvas id="hero-canvas" style="width:100%;height:calc(min(880px, 100vw) * 0.42);min-height:300px;display:block;opacity:0;transition:opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1);"></canvas></div>
+      <div style="position:relative;display:flex;flex-direction:column;align-items:center;margin:0 auto;max-width:880px;padding-top:8px;"><div style="width:100%;"><canvas id="hero-canvas" style="width:100%;height:calc(min(880px, 100vw) * 0.42);display:block;opacity:0;transition:opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1);"></canvas></div>
       <!-- Hero Content below canvas -->
       <div id="hero-text" class="hero-content-bottom" style="position:relative;z-index:10;text-align:center;padding:0 16px 0;margin-top:-32px;display:flex;flex-direction:column;align-items:center;">
         
@@ -2669,7 +2674,7 @@
         </h1>
         
         <p style="font-size: clamp(12px, 1.5vw, 14px); color:rgba(255,255,255,0.4); max-width: 540px; margin: 0 auto 14px; line-height: 1.6; font-family: var(--mono); letter-spacing: 0.3px;">
-          Formal attestation that autonomous systems operate within their declared Operational Design Domains &mdash; enforced at runtime, verified independently, recorded immutably.
+          Formal attestation that autonomous systems operate within their Operational Design Domain &mdash; enforced at runtime, verified independently, recorded immutably.
         </p>
         <p style="font-family: var(--serif); font-size: clamp(14px, 1.8vw, 17px); font-weight: 400; font-style: italic; color: rgba(196,184,232,0.7); margin: 0 0 16px; letter-spacing: 0.5px;">
           Proof. Not promises.
@@ -2691,7 +2696,7 @@
 
       <!-- Industry Strip -->
       <div class="reveal" style="text-align:center;padding:var(--space-2) var(--space-2) 0;">
-        <span style="font-family:var(--mono);font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,0.2);">Healthcare AI &nbsp;·&nbsp; Clinical Decision Systems &nbsp;·&nbsp; Autonomous Vehicles &nbsp;·&nbsp; Robotics &nbsp;·&nbsp; Enterprise AI &nbsp;·&nbsp; Industrial Automation &nbsp;·&nbsp; Logistics &nbsp;·&nbsp; Energy</span>
+        <span style="font-family:var(--mono);font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,0.2);">Healthcare AI &nbsp;·&nbsp; Autonomous Vehicles &nbsp;·&nbsp; Aviation &nbsp;·&nbsp; Defense &nbsp;·&nbsp; Robotics &nbsp;·&nbsp; Energy &nbsp;·&nbsp; Oil &amp; Gas &nbsp;·&nbsp; Industrial Automation &nbsp;·&nbsp; Logistics &nbsp;·&nbsp; Enterprise AI</span>
       </div>
       
       <!-- Disclaimer at bottom -->
@@ -2765,7 +2770,7 @@
     var r = c.parentElement.getBoundingClientRect();
     var newW = r.width;
     // Only recalculate height on real width change (rotation), not iOS URL bar
-    if (Math.abs(newW - heroLockedW) < 20 && heroLockedH > 0) {
+    if (Math.abs(newW - heroLockedW) < 3 && heroLockedH > 0) {
       W = newW;
       // Just update canvas width, keep H locked
       c.width = W * dpr;
@@ -2782,6 +2787,8 @@
     c.style.height = H + 'px';
     ctx.setTransform(dpr,0,0,dpr,0,0);
     heroLockedH = H; heroLockedW = W;
+    c._saResize = function(){ heroLockedW = 0; heroLockedH = 0; radiusLocked = false; resize(); };
+    c._saResize = function(){ heroLockedW = 0; heroLockedH = 0; radiusLocked = false; resize(); };
 
     // Only recalculate layout on actual window resize, not scroll
     if (!radiusLocked || Math.abs(W - (c._lastW||0)) > 20 || Math.abs(H - (c._lastH||0)) > 20) {
@@ -2959,7 +2966,7 @@
       var ix = lx + i * 72;
       ctx.beginPath(); ctx.arc(ix, ly, 3, 0, Math.PI * 2);
       ctx.fillStyle = rgb(items[i].col, 0.7); ctx.fill();
-      ctx.fillStyle = rgb(items[i].col, 0.45);
+      ctx.fillStyle = rgb(items[i].col, 0.65);
       ctx.fillText(items[i].label, ix + 8, ly + 3);
     }
   }
@@ -2990,12 +2997,12 @@
     ctx.textAlign='center';
     ctx.fillStyle=rgb(PURPLE,0.8);
     ctx.fillText('ENVELO',cx,cy-enveloR-22);
-    ctx.font='300 7px "IBM Plex Mono"';
-    ctx.fillStyle=rgb(PURPLE,0.35);
-    ctx.fillText('ENFORCEMENT LAYER',cx,cy-enveloR-11);
+    ctx.font='400 7px "IBM Plex Mono"';
+    ctx.fillStyle=rgb(PURPLE,0.55);
+    ctx.fillText('INTERLOCK',cx,cy-enveloR-11);
 
     ctx.font='400 8px "IBM Plex Mono"';
-    ctx.fillStyle=rgb(GREEN,0.5);
+    ctx.fillStyle=rgb(GREEN,0.7);
     ctx.fillText('ODD BOUNDARY',cx,cy-heroOddRadius-8);
   }
 
@@ -3092,7 +3099,7 @@
 
       if(t.alpha>0.3){
         ctx.font='400 8px "IBM Plex Mono"';
-        ctx.fillStyle=rgb(GREEN,t.alpha*0.55);
+        ctx.fillStyle=rgb(GREEN,t.alpha*0.75);
         ctx.textAlign=t.side>0?'left':'right';
         ctx.fillText(t.text,t.x,t.y);
       }
@@ -3114,7 +3121,7 @@
       var hash='';
       var seed=Math.floor(now*0.0008)+i*7;
       for(var j=0;j<14;j++) hash+=chars[(seed*(j+1)*31+j*17)%16];
-      ctx.fillStyle=rgb(PURPLE,0.55-i*0.025);
+      ctx.fillStyle=rgb(PURPLE,0.75-i*0.025);
       ctx.fillText(hash,x,startY+i*12);
     }
     ctx.fillStyle=rgb(PURPLE,0.8);
@@ -3209,8 +3216,8 @@
     <section id="envelo" class="section">
       <div class="section-head reveal">
         <div>
-          <span class="section-label">THE ENFORCEMENT LAYER</span>
-          <h2 class="section-title">ENVELO</h2>
+          <span class="section-label">THE ENVELO INTERLOCK</span>
+          <h2 class="section-title">ENVELO Interlock</h2>
           <p class="section-lead">
             Enforced Non-Violable Execution-Limit Override — three-tier enforcement from self-correction to hard halt.
           </p>
@@ -3282,6 +3289,7 @@
           c.style.height = H + 'px';
           ctx.setTransform(dpr,0,0,dpr,0,0);
         }
+        c._saResize = resize;
 
         function layout() {
           var mob = W < 550;
@@ -3329,11 +3337,11 @@
           ctx.fillStyle=rgb(DIM,0.88);
           ctx.fillText('T+ '+(h<10?'0':'')+h+':'+(m<10?'0':'')+m+':'+(s<10?'0':'')+s, 8, 14);
           ctx.fillStyle=rgb(DIM,0.88);
-          ctx.fillText('ENVELO ENFORCEMENT LAYER', 8, 24);
+          ctx.fillText('ENVELO INTERLOCK', 8, 24);
 
           // Top right
           ctx.textAlign='right';
-          ctx.fillStyle=rgb(DIM,0.72);
+          ctx.fillStyle=rgb(DIM,0.85);
           ctx.fillText('SID:'+sessionId.toUpperCase(), W-8, 14);
           ctx.fillStyle=rgb(DIM,0.78);
           ctx.fillText('FRM:'+String(frameCount).padStart(6,'0'), W-8, 24);
@@ -3351,7 +3359,7 @@
             ['QUEUE',   Math.floor(3+Math.sin(time)*2)+'']
           ];
           for(var i=0;i<params.length;i++){
-            ctx.fillStyle=rgb(DIM,0.4);
+            ctx.fillStyle=rgb(DIM,0.75);
             ctx.fillText(params[i][0], 8, 42+i*11);
             ctx.fillStyle=rgb(DIM,0.78);
             ctx.fillText(params[i][1], 52, 42+i*11);
@@ -3360,16 +3368,16 @@
           // Right column - hash chain
           ctx.textAlign='right';
           var hx=W-8, hy=42;
-          ctx.fillStyle=rgb(PURPLE,0.28);
+          ctx.fillStyle=rgb(PURPLE,0.65);
           ctx.fillText('HASH CHAIN \u25B8', hx, hy);
           var seed=Math.floor(time*0.8);
           for(var i=0;i<7;i++){
-            ctx.fillStyle=rgb(PURPLE,0.4-i*0.035);
+            ctx.fillStyle=rgb(PURPLE,0.75-i*0.035);
             ctx.fillText(rndHex(16,seed+i*7),hx,hy+10+i*9);
           }
 
           // Bottom
-          ctx.textAlign='left';ctx.fillStyle=rgb(DIM,0.52);
+          ctx.textAlign='left';ctx.fillStyle=rgb(DIM,0.85);
           var d=new Date();
           ctx.fillText('UTC '+d.toISOString().substr(11,12),8,H-6);
           ctx.textAlign='right';ctx.fillStyle=rgb(DIM,0.78);
@@ -3393,8 +3401,8 @@
 
           if(label){
             var mx=(p.ax+p.bx)/2,my=(p.ay+p.by)/2-8;
-            ctx.font='500 6px "IBM Plex Mono", monospace';
-            ctx.textAlign='center';ctx.fillStyle=rgb(col,0.55);
+            ctx.font='500 7px "IBM Plex Mono", monospace';
+            ctx.textAlign='center';ctx.fillStyle=rgb(col,0.75);
             ctx.fillText(label,mx,my);
           }
         }
@@ -3546,7 +3554,7 @@
           ctx.beginPath();ctx.arc(0,r*0.42,1,0,Math.PI*2);ctx.fillStyle=gc;ctx.fill();
           ctx.restore();
 
-          ctx.font='300 5px "IBM Plex Mono", monospace';ctx.textAlign='center';
+          ctx.font='400 7px "IBM Plex Mono", monospace';ctx.textAlign='center';
           var state=Math.abs(gateAngle)<0.05?'IDLE':(gateAngle>0?'PASS':'DENY');
           ctx.fillStyle=Math.abs(gateAngle)<0.05?'rgba(255,255,255,0.12)':
             (gateAngle>0?rgb(GREEN,0.25):rgb(RED,0.25));
@@ -3599,7 +3607,7 @@
           drawRectNode(L.halt.x,L.halt.y,L.halt.w,L.halt.h,RED,'HALT');
 
           // Counters near endpoints
-          ctx.font='300 5.5px "IBM Plex Mono", monospace';
+          ctx.font='400 7px "IBM Plex Mono", monospace';
           if(stats.exec>0){ctx.textAlign='left';ctx.fillStyle=rgb(GREEN,0.2);
             ctx.fillText(stats.exec+'',L.exec.x+L.exec.w/2+4,L.exec.y+2);}
           if(stats.mrc>0){ctx.textAlign='left';ctx.fillStyle=rgb(AMBER,0.2);
@@ -3676,7 +3684,7 @@
           The runtime layer that makes boundaries <span style="color: rgba(92,214,133,0.9);">unbreakable</span>
         </p>
         <p style="font-size: 15px; color: var(--text-secondary); max-width: 600px; margin: 0 auto; line-height: 1.6;">
-          Every autonomous action is validated against declared limits at runtime. Approach triggers self-correction. Breach forces Minimum Risk Condition. Wall contact halts execution.
+          Every autonomous action is validated against operational limits at runtime — Approach triggers self-correction. Breach forces Minimum Risk Condition. Wall contact halts execution.
         </p>
       </div>
 
@@ -3689,7 +3697,7 @@
           </div>
           <div class="hud-row" style="display:flex;align-items:flex-start;">
             <span class="hud-num">02</span><span class="hud-dot" style="margin-top:6px;"></span>
-            <div><div class="hud-title">Tiered Enforcement</div><div class="hud-desc">Approach triggers self-correction. ODD breach forces Minimum Risk Condition. Wall contact halts execution. Three tiers, zero escape.</div></div>
+            <div><div class="hud-title">Tiered Enforcement</div><div class="hud-desc">Three enforcement tiers with zero escape paths. Each response level is architecturally mandatory — not policy-configurable.</div></div>
           </div>
           <div class="hud-row" style="display:flex;align-items:flex-start;">
             <span class="hud-num">03</span><span class="hud-dot" style="margin-top:6px;"></span>
@@ -3702,7 +3710,7 @@
         </div>
       </div>
       <div class="reveal" style="text-align:center;margin-bottom:var(--space-2);">
-        <span style="font-family:var(--mono);font-size:11px;letter-spacing:1px;color:rgba(255,255,255,0.35);">Deployed by Sentinel as a <span style="color:rgba(92,214,133,0.8);">runtime interlock</span> on your infrastructure — outbound-only, non-bypassable</span>
+        <span style="font-family:var(--mono);font-size:11px;letter-spacing:1px;color:rgba(255,255,255,0.35);">Deployed on your infrastructure as a <span style="color:rgba(92,214,133,0.8);">runtime interlock</span> — outbound-only, non-bypassable</span>
       </div>
     </section>
 
@@ -3724,7 +3732,7 @@
             <span class="hud-num">01</span><span class="hud-dot" style="margin-top:6px;"></span>
             <div>
               <div class="hud-title">Accelerate Procurement</div>
-              <div class="hud-desc">Enterprise buyers need governance evidence before they sign. ODDC certification provides independent, auditable proof that your system operates within declared boundaries — compressing legal review from months to weeks.</div>
+              <div class="hud-desc">Independent, auditable proof that your system operates within defined boundaries — compressing legal review from months to weeks.</div>
             </div>
           </div>
         </div>
@@ -3733,7 +3741,7 @@
             <span class="hud-num">02</span><span class="hud-dot" style="margin-top:6px;"></span>
             <div>
               <div class="hud-title">Competitive Differentiation</div>
-              <div class="hud-desc">When an RFP requires governance documentation, certified vendors pass risk assessments that uncertified competitors cannot. A verifiable differentiator backed by runtime enforcement evidence and a public registry entry.</div>
+              <div class="hud-desc">Certified vendors pass risk assessments that uncertified competitors cannot. A verifiable differentiator backed by runtime enforcement evidence and a public registry entry.</div>
             </div>
           </div>
         </div>
@@ -3742,7 +3750,7 @@
             <span class="hud-num">03</span><span class="hud-dot" style="margin-top:6px;"></span>
             <div>
               <div class="hud-title">Defensible Governance</div>
-              <div class="hud-desc">Board-level accountability requires more than policy documents. ODDC provides auditable evidence that deployed systems have verified, enforceable operational controls — satisfying compliance committees and audit requirements.</div>
+              <div class="hud-desc">Auditable evidence that deployed systems have verified, enforceable operational controls — satisfying compliance committees and audit requirements.</div>
             </div>
           </div>
         </div>
@@ -3751,7 +3759,7 @@
             <span class="hud-num">04</span><span class="hud-dot" style="margin-top:6px;"></span>
             <div>
               <div class="hud-title">Insurance &amp; Liability</div>
-              <div class="hud-desc">ODDC certification provides structured conformance evidence that insurers can reference when evaluating autonomous system risk — moving conversations from theoretical frameworks to verified enforcement data.</div>
+              <div class="hud-desc">Structured conformance evidence that insurers can reference when evaluating autonomous system risk — moving conversations from theoretical frameworks to verified enforcement data.</div>
             </div>
           </div>
         </div>
@@ -3773,7 +3781,7 @@
       <div class="reveal" style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-3);margin-top:var(--space-2);">
         <div class="hud-frame"><i></i>
           <div class="hud-title" style="margin-bottom:12px;color:rgba(214,92,92,0.8);">The Problem</div>
-          <div class="hud-desc" style="line-height:1.8;">Your organization is deploying autonomous systems or purchasing AI platforms that make operational decisions. Your legal, compliance, and risk teams need assurance that these systems will not operate outside their designed parameters. Vendor self-assessments and governance policy documents describe intentions, not enforcement.</div>
+          <div class="hud-desc" style="line-height:1.8;">Your organization is purchasing AI platforms that make operational decisions. Your risk teams need assurance these systems won't exceed designed parameters. Vendor self-assessments describe intentions, not enforcement.</div>
         </div>
         <div class="hud-frame"><i></i>
           <div class="hud-title" style="margin-bottom:12px;color:rgba(92,214,133,0.8);">The Standard</div>
@@ -3783,6 +3791,34 @@
       <div class="reveal" style="text-align:center;margin-top:var(--space-2);">
         <a href="mailto:conformance@sentinelauthority.org?subject=ODDC%20Procurement%20Requirements" style="display:inline-block;border:1px solid rgba(157,140,207,.3);background:transparent;color:rgba(157,140,207,0.9);padding:14px 40px;font-family:var(--mono);font-size:10px;letter-spacing:2.5px;text-transform:uppercase;text-decoration:none;cursor:pointer;transition:all .2s;">Require ODDC From Your Vendors &#x2192;</a>
         <p style="font-family:var(--mono);font-size:9px;color:rgba(255,255,255,0.2);margin-top:10px;letter-spacing:0.5px;">Contact us to incorporate ODDC certification into your procurement evaluation criteria.</p>
+      </div>
+    </section>
+
+    <!-- ═══ FOR REGULATORS & GOVERNMENT ═══ -->
+    <section id="regulators" class="section">
+      <div class="section-head reveal">
+        <div>
+          <span class="section-label">FOR REGULATORS &amp; GOVERNMENT</span>
+          <h2 class="section-title">Require Enforceable Boundaries — Not Voluntary Frameworks</h2>
+          <p class="section-lead">
+            Approving autonomous systems based on self-assessment? Require independent enforcement proof instead.
+          </p>
+        </div>
+      </div>
+
+      <div class="reveal" style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-3);margin-top:var(--space-2);">
+        <div class="hud-frame"><i></i>
+          <div class="hud-title" style="margin-bottom:12px;color:rgba(214,92,92,0.8);">The Problem</div>
+          <div class="hud-desc" style="line-height:1.8;">Your jurisdiction is approving autonomous systems based on manufacturer self-assessment and voluntary safety frameworks. You have no independent mechanism to verify that deployed systems actually operate within their designed parameters — and no enforcement layer if they don't.</div>
+        </div>
+        <div class="hud-frame"><i></i>
+          <div class="hud-title" style="margin-bottom:12px;color:rgba(92,214,133,0.8);">The Standard</div>
+          <div class="hud-desc" style="line-height:1.8;">ODDC certification gives regulators an independent, auditable tool for autonomous system governance. Require it, and compliant manufacturers gain a clear path to approval. Don't require it, and non-compliant systems remain indistinguishable from compliant ones. ODDC cuts both ways — it protects manufacturers who invest in safety and exposes those who don't.</div>
+        </div>
+      </div>
+      <div class="reveal" style="text-align:center;margin-top:var(--space-2);">
+        <a href="mailto:info@sentinelauthority.org?subject=ODDC%20Regulatory%20Integration" style="display:inline-block;border:1px solid rgba(157,140,207,.3);background:transparent;color:rgba(157,140,207,0.9);padding:14px 40px;font-family:var(--mono);font-size:10px;letter-spacing:2.5px;text-transform:uppercase;text-decoration:none;cursor:pointer;transition:all .2s;">Explore Regulatory Integration &#x2192;</a>
+        <p style="font-family:var(--mono);font-size:9px;color:rgba(255,255,255,0.2);margin-top:10px;letter-spacing:0.5px;">Contact us to discuss how ODDC certification integrates with your existing approval and oversight frameworks.</p>
       </div>
     </section>
 
@@ -3840,6 +3876,7 @@
           c.width=W*dpr;c.height=H*dpr;
           c.style.height=H+'px';ctx.setTransform(dpr,0,0,dpr,0,0);
         }
+        c._saResize = resize;
 
         function layout(){
           var mob=W<550;
@@ -3878,10 +3915,10 @@
           var el=Math.floor(time),h=Math.floor(el/3600)%100,m=Math.floor((el%3600)/60),s=el%60;
           ctx.fillStyle=rgb(DIM,0.88);
           ctx.fillText('T+ '+(h<10?'0':'')+h+':'+(m<10?'0':'')+m+':'+(s<10?'0':'')+s,8,14);
-          ctx.fillStyle=rgb(DIM,0.88);ctx.fillText('SECURITY ENFORCEMENT LAYER',8,24);
+          ctx.fillStyle=rgb(DIM,0.88);ctx.fillText('ENVELO INTERLOCK',8,24);
 
           // Top right
-          ctx.textAlign='right';ctx.fillStyle=rgb(DIM,0.72);
+          ctx.textAlign='right';ctx.fillStyle=rgb(DIM,0.85);
           ctx.fillText('SID:'+sessionId.toUpperCase(),W-8,14);
           ctx.fillStyle=rgb(DIM,0.78);
           ctx.fillText('FRM:'+String(frameCount).padStart(6,'0'),W-8,24);
@@ -3894,7 +3931,7 @@
             ['FIREWALL','ACTIVE'],['IDS','NOMINAL']
           ];
           for(var i=0;i<sec.length;i++){
-            ctx.fillStyle=rgb(DIM,0.4);ctx.fillText(sec[i][0],8,42+i*11);
+            ctx.fillStyle=rgb(DIM,0.75);ctx.fillText(sec[i][0],8,42+i*11);
             ctx.fillStyle=i===1?rgb(RED,0.15):rgb(DIM,0.15);
             ctx.fillText(sec[i][1],62,42+i*11);
           }
@@ -3904,12 +3941,12 @@
           ctx.fillStyle=rgb(PURPLE,0.8);ctx.fillText('EVIDENCE CHAIN \u25B8',hx,hy);
           var seed=Math.floor(time*0.8);
           for(var i=0;i<7;i++){
-            ctx.fillStyle=rgb(PURPLE,0.4-i*0.035);
+            ctx.fillStyle=rgb(PURPLE,0.75-i*0.035);
             ctx.fillText(rndHex(16,seed+i*7),hx,hy+10+i*9);
           }
 
           // Bottom
-          ctx.textAlign='left';ctx.fillStyle=rgb(DIM,0.52);
+          ctx.textAlign='left';ctx.fillStyle=rgb(DIM,0.85);
           var d=new Date();ctx.fillText('UTC '+d.toISOString().substr(11,12),8,H-6);
           ctx.textAlign='right';ctx.fillStyle=rgb(DIM,0.78);
           ctx.fillText('SEC-MONITOR v4.2.1 \u00B7 THREAT:LOW',W-8,H-6);
@@ -3928,8 +3965,8 @@
           ctx.lineTo(p.bx-4*Math.cos(ang+0.3),p.by-4*Math.sin(ang+0.3));
           ctx.closePath();ctx.fillStyle=rgb(col,alpha*1.6);ctx.fill();
           if(label){var mx=(p.ax+p.bx)/2,my=(p.ay+p.by)/2-8;
-            ctx.font='500 6px "IBM Plex Mono", monospace';ctx.textAlign='center';
-            ctx.fillStyle=rgb(col,0.55);ctx.fillText(label,mx,my);}
+            ctx.font='500 7px "IBM Plex Mono", monospace';ctx.textAlign='center';
+            ctx.fillStyle=rgb(col,0.75);ctx.fillText(label,mx,my);}
         }
 
         // ── STREAMS ──
@@ -3991,7 +4028,7 @@
             var sx=ox+cc*(s+g),sy=oy+rr*(s+g);ctx.beginPath();ctx.rect(sx,sy,s,s);
             ctx.strokeStyle=rgb(GREEN,0.7);ctx.lineWidth=0.9;ctx.stroke();
             ctx.fillStyle=rgb(GREEN,0.04+0.02*Math.sin(time*2.2+rr*1.5+cc*0.9));ctx.fill();}
-          ctx.font='300 7px "IBM Plex Mono", monospace';ctx.textAlign='center';
+          ctx.font='400 7px "IBM Plex Mono", monospace';ctx.textAlign='center';
           // sub-label removed for clarity
 
           // Status dot only
@@ -4028,7 +4065,7 @@
             ctx.beginPath();ctx.arc(x,y,sr.r,sr.angle-0.5,sr.angle+0.5);
             ctx.strokeStyle=rgb(RED,sr.alpha);ctx.lineWidth=1.2;ctx.stroke();}
 
-          ctx.font='300 7px "IBM Plex Mono", monospace';ctx.textAlign='center';
+          ctx.font='400 7px "IBM Plex Mono", monospace';ctx.textAlign='center';
           // sub-label removed for clarity
 
           // Readouts removed — clean node presentation
@@ -4048,12 +4085,12 @@
           ctx.beginPath();ctx.arc(x,y-3,1.2,0,Math.PI*2);
           ctx.fillStyle=rgb(PURPLE,0.1+0.07*Math.sin(time*3));ctx.fill();
 
-          ctx.font='300 7px "IBM Plex Mono", monospace';ctx.textAlign='center';
-          ctx.fillStyle='rgba(255,255,255,0.58)';ctx.fillText('Authority Registry',x,y+r+28);
+          ctx.font='400 7px "IBM Plex Mono", monospace';ctx.textAlign='center';
+          ctx.fillStyle='rgba(255,255,255,0.78)';ctx.fillText('Authority Registry',x,y+r+28);
 
           // Record counter only
-          ctx.font='300 7px "IBM Plex Mono", monospace';ctx.textAlign='center';
-          ctx.fillStyle=rgb(PURPLE,0.4);
+          ctx.font='400 7px "IBM Plex Mono", monospace';ctx.textAlign='center';
+          ctx.fillStyle=rgb(PURPLE,0.75);
           ctx.fillText('REC:'+(stats.out+stats.rejected),x,y+8);
         }
 
@@ -4199,6 +4236,9 @@
             <span class="hud-num">03</span><span class="hud-dot hud-dot-amber" style="margin-top:6px;"></span>
             <div><div class="hud-title">TLS 1.3 + Pinning</div><div class="hud-desc">All communications encrypted with certificate pinning. Data encrypted at rest.</div></div>
           </div>
+          <div class="hud-row" style="display:flex;align-items:flex-start;">
+            <span class="hud-num">04</span><span class="hud-dot" style="margin-top:6px;"></span>
+            <div><div class="hud-title">Your ODD Stays Yours</div><div class="hud-desc">We never touch your source code, model weights, or decision logic. The Interlock transmits only operational telemetry — what your system does, not how it thinks.</div></div>          </div>
         </div>
       </div>
 
@@ -4247,20 +4287,20 @@
           <div style="text-align:center;padding:16px 12px;flex:1;min-width:120px;">
             <div style="font-family:var(--mono);font-size:9px;letter-spacing:2px;color:rgba(157,140,207,0.5);margin-bottom:4px;">01</div>
             <div style="font-family:var(--mono);font-size:11px;letter-spacing:2px;color:rgba(157,140,207,0.85);margin-bottom:6px;">ODD</div>
-            <div style="font-size:12px;color:rgba(255,255,255,0.78);margin-bottom:4px;">Formally Specified</div>
-            <div style="font-size:10px;color:rgba(255,255,255,0.35);">Quantitative boundaries</div>
+            <div style="font-size:12px;color:rgba(255,255,255,0.78);margin-bottom:4px;">Established</div>
+            <div style="font-size:10px;color:rgba(255,255,255,0.35);">Auto-discovered or operator-defined</div>
           </div>
           <div style="width:1px;background:rgba(255,255,255,0.04);align-self:stretch;"></div>
           <div style="text-align:center;padding:16px 12px;flex:1;min-width:120px;">
             <div style="font-family:var(--mono);font-size:9px;letter-spacing:2px;color:rgba(157,140,207,0.5);margin-bottom:4px;">02</div>
             <div style="font-family:var(--mono);font-size:11px;letter-spacing:2px;color:rgba(157,140,207,0.85);margin-bottom:6px;">STABLE</div>
-            <div style="font-size:12px;color:rgba(255,255,255,0.78);margin-bottom:4px;">Proven Behavior</div>
-            <div style="font-size:10px;color:rgba(255,255,255,0.35);">72h within bounds</div>
+            <div style="font-size:12px;color:rgba(255,255,255,0.78);margin-bottom:4px;">Enforcement Verified</div>
+            <div style="font-size:10px;color:rgba(255,255,255,0.35);">72h enforced operation</div>
           </div>
           <div style="width:1px;background:rgba(255,255,255,0.04);align-self:stretch;"></div>
           <div style="text-align:center;padding:16px 12px;flex:1;min-width:120px;border-bottom:1px solid rgba(92,214,133,0.2);">
             <div style="font-family:var(--mono);font-size:9px;letter-spacing:2px;color:rgba(92,214,133,0.5);margin-bottom:4px;">03</div>
-            <div style="font-family:var(--mono);font-size:11px;letter-spacing:2px;color:rgba(92,214,133,0.9);margin-bottom:6px;">ENVELO</div>
+            <div style="font-family:var(--mono);font-size:11px;letter-spacing:2px;color:rgba(92,214,133,0.9);margin-bottom:6px;">ENVELO INTERLOCK</div>
             <div style="font-size:12px;color:rgba(255,255,255,0.78);margin-bottom:4px;">Enforcement Active</div>
             <div style="font-size:10px;color:rgba(255,255,255,0.35);">Non-bypassable runtime</div>
           </div>
@@ -4435,7 +4475,7 @@
       <div class="reveal" style="max-width:700px;margin:0 auto var(--space-3);">
         <div class="hud-label" style="text-align:center;margin-bottom:16px;">CONFORMANCE STATES</div>
         <div style="display:flex;justify-content:center;align-items:center;gap:12px;flex-wrap:wrap;">
-          <span style="font-family:var(--mono);font-size:10px;letter-spacing:1px;color:rgba(255,255,255,0.35);">● OBSERVE</span>
+          <span style="font-family:var(--mono);font-size:10px;letter-spacing:1px;color:rgba(255,255,255,0.35);">● LEARNING</span>
           <span style="font-family:var(--mono);font-size:9px;color:rgba(255,255,255,0.15);">→</span>
           <span style="font-family:var(--mono);font-size:10px;letter-spacing:1px;color:rgba(214,160,92,0.8);">● BOUNDED</span>
           <span style="font-family:var(--mono);font-size:9px;color:rgba(255,255,255,0.15);">→</span>
@@ -4449,8 +4489,8 @@
         <div>
           <div class="hud-label" style="color:rgba(92,214,133,0.6);margin-bottom:12px;">✓ ODDC ATTESTS</div>
           <div style="font-size:12px;color:rgba(255,255,255,0.78);line-height:2;">
-            ODD formally specified with boundaries<br>
-            Stable operation within declared ODD<br>
+            ODD defined with quantitative boundaries<br>
+            Stable operation within defined ODD<br>
             ENVELO enforcement architecturally present<br>
             CAT-72 verification completed<br>
             Tamper-evident audit records available
@@ -4483,7 +4523,7 @@
           <span class="section-label">CONFORMANCE PROCEDURE</span>
           <h2 class="section-title">CAT-72</h2>
           <p class="section-lead">
-            72 hours of continuous operation within declared boundaries. The diagnostic baseline for autonomous system conformance.
+            72 hours of continuous operation within defined boundaries. The Interlock auto-discovers your operational envelope, then enforces it.
           </p>
         </div>
       </div>
@@ -4501,12 +4541,12 @@
           <div id="cat72-pc0" class="hud-row" style="cursor:pointer;display:flex;align-items:flex-start;gap:12px;transition:opacity 0.4s var(--ease);">
             <div style="width:5px;height:5px;border-radius:50%;background:var(--accent-green);box-shadow:0 0 10px var(--accent-green);transition:all 0.4s var(--ease);flex-shrink:0;margin-top:6px;" id="cat72-dot0"></div>
             <span class="hud-num" style="margin-top:2px;">01</span>
-            <div><div class="hud-title">Continuous Demo</div><div class="hud-desc">72-hr sustained operation. Systems self-correct near ODD boundary. ENVELO monitors without intervention.</div></div>
+            <div><div class="hud-title">Continuous Demo</div><div class="hud-desc">72-hr sustained operation. The Interlock learns operational boundaries from live telemetry, then enforces them.</div></div>
           </div>
           <div id="cat72-pc1" class="hud-row" style="cursor:pointer;display:flex;align-items:flex-start;gap:12px;opacity:0.6;transition:opacity 0.4s var(--ease);">
             <div style="width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,0.1);transition:all 0.4s var(--ease);flex-shrink:0;margin-top:6px;" id="cat72-dot1"></div>
             <span class="hud-num" style="margin-top:2px;">02</span>
-            <div><div class="hud-title">Stress Testing</div><div class="hud-desc">Edge conditions force ODD breaches. ENVELO intervenes — decelerating operations to Minimum Risk Condition before the wall.</div></div>
+            <div><div class="hud-title">Stress Testing</div><div class="hud-desc">Stress testing across discovered or specified limits. ENVELO decelerates to Minimum Risk Condition before the wall.</div></div>
           </div>
           <div id="cat72-pc2" class="hud-row" style="cursor:pointer;display:flex;align-items:flex-start;gap:12px;opacity:0.6;transition:opacity 0.4s var(--ease);">
             <div style="width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,0.1);transition:all 0.4s var(--ease);flex-shrink:0;margin-top:6px;" id="cat72-dot2"></div>
@@ -4582,6 +4622,7 @@
           radius = Math.min(W, H) * 0.34;
           initAgents();
         }
+        c._saResize = resize;
 
         function initAgents() {
           agents = [];
@@ -4720,7 +4761,7 @@
             var ix = lx + i * 72;
             ctx.beginPath(); ctx.arc(ix, ly, 3, 0, Math.PI * 2);
             ctx.fillStyle = rgb(items[i].col, 0.7); ctx.fill();
-            ctx.fillStyle = rgb(items[i].col, 0.45);
+            ctx.fillStyle = rgb(items[i].col, 0.65);
             ctx.fillText(items[i].label, ix + 8, ly + 3);
           }
         }
@@ -4805,12 +4846,12 @@
           ctx.textAlign='center';
           ctx.fillStyle=rgb(PURPLE,0.8);
           ctx.fillText('ENVELO',cx,cy-enveloR-38);
-          ctx.font='300 7px "IBM Plex Mono"';
-          ctx.fillStyle=rgb(PURPLE,0.35);
-          ctx.fillText('ENFORCEMENT LAYER',cx,cy-enveloR-27);
+          ctx.font='400 7px "IBM Plex Mono"';
+          ctx.fillStyle=rgb(PURPLE,0.55);
+          ctx.fillText('INTERLOCK',cx,cy-enveloR-27);
 
           ctx.font='400 8px "IBM Plex Mono"';
-          ctx.fillStyle=rgb(GREEN,0.5);
+          ctx.fillStyle=rgb(GREEN,0.7);
           ctx.fillText('ODD BOUNDARY',cx,cy-oddRadius-10);
         }
 
@@ -4905,13 +4946,13 @@
 
             if(t.alpha>0.3){
               ctx.font='300 '+Math.round(Math.max(6,radius*0.07))+'px "IBM Plex Mono"';
-              ctx.fillStyle=rgb(GREEN,t.alpha*0.35);
+              ctx.fillStyle=rgb(GREEN,t.alpha*0.55);
               ctx.textAlign=t.side>0?'left':'right';
               ctx.fillText(t.text,t.x,t.y);
             }
 
             ctx.beginPath(); ctx.arc(px,py,1.5,0,Math.PI*2);
-            ctx.fillStyle=rgb(GREEN,t.alpha*0.5);
+            ctx.fillStyle=rgb(GREEN,t.alpha*0.7);
             ctx.fill();
           }
         }
@@ -4968,15 +5009,15 @@
           ctx.fillText(ts,cx,cy-radius*0.08);
 
           ctx.font='300 13px "IBM Plex Mono"';
-          ctx.fillStyle='rgba(255,255,255,0.48)';
+          ctx.fillStyle='rgba(255,255,255,0.85)';
           ctx.fillText('/ 72:00',cx,cy+radius*0.20);
 
           ctx.font='400 9px "IBM Plex Mono"';
-          ctx.fillStyle=rgb(pc,0.55);
+          ctx.fillStyle=rgb(pc,0.75);
           ctx.fillText(PHASE_NAMES[phase],cx,cy+radius*0.38);
 
           ctx.font='300 '+Math.round(radius*0.07)+'px "IBM Plex Mono"';
-          ctx.fillStyle='rgba(255,255,255,0.48)';
+          ctx.fillStyle='rgba(255,255,255,0.85)';
           ctx.fillText('EVIDENCE BLOCKS: '+blockCount,cx,cy+radius*0.55);
         }
 
@@ -4985,14 +5026,14 @@
           var x = W-16;
           var startY = cy-radius*0.3;
           var chars='0123456789abcdef';
-          ctx.font='300 7px "IBM Plex Mono"';
+          ctx.font='400 7px "IBM Plex Mono"';
           ctx.textAlign='right';
           if(halted) return;
           for(var i=0;i<7;i++){
             var hash='';
             var seed=Math.floor(now*0.0008)+i*7;
             for(var j=0;j<14;j++) hash+=chars[(seed*(j+1)*31+j*17)%16];
-            ctx.fillStyle=rgb(PURPLE,0.35-i*0.025);
+            ctx.fillStyle=rgb(PURPLE,0.70-i*0.025);
             ctx.fillText(hash,x,startY+i*12);
           }
           ctx.fillStyle=rgb(PURPLE,0.8);
@@ -5013,7 +5054,7 @@
           ctx.fillText('\u25A3  SYSTEM HALTED',cx,Math.min(cy+radius*1.3,H-20));
 
           ctx.font='300 '+Math.round(hf*0.65)+'px "IBM Plex Mono"';
-          ctx.fillStyle=rgb(RED,0.4*haltAlpha);
+          ctx.fillStyle=rgb(RED,0.75*haltAlpha);
           ctx.fillText('ENVELO FAIL-CLOSED ENFORCEMENT',cx,Math.min(cy+radius*1.3+hf+4,H-8));
         }
 
@@ -5129,7 +5170,7 @@
           <span class="section-label">BEYOND COMPLIANCE</span>
           <h2 class="section-title">Enforcement Produces Intelligence</h2>
           <p class="section-lead">
-            Every conformance cycle maps where a model operates within its declared boundaries — and where it doesn't.
+            Every conformance cycle maps where a model operates within its defined boundaries — and where it doesn't.
           </p>
         </div>
       </div>
@@ -5138,7 +5179,7 @@
         <div class="hud-frame hud-scanline"><i></i>
           <div class="hud-row" style="display:flex;align-items:flex-start;">
             <span class="hud-num" style="min-width:56px;">MAP</span><span style="width:6px;height:6px;border-radius:50%;background:rgba(157,140,207,0.5);flex-shrink:0;margin-top:6px;"></span><div style="width:8px;flex-shrink:0;"></div>
-            <div><div class="hud-title">Violation Mapping</div><div class="hud-desc">Surfaces the precise conditions where a model exceeds its declared domain.</div></div>
+            <div><div class="hud-title">Violation Mapping</div><div class="hud-desc">Surfaces the precise conditions where a model exceeds its defined domain.</div></div>
           </div>
           <div class="hud-row" style="display:flex;align-items:flex-start;">
             <span class="hud-num" style="min-width:56px;">TREND</span><span style="width:6px;height:6px;border-radius:50%;background:rgba(157,140,207,0.5);flex-shrink:0;margin-top:6px;"></span><div style="width:8px;flex-shrink:0;"></div>
@@ -5150,7 +5191,7 @@
           </div>
           <div class="hud-row" style="display:flex;align-items:flex-start;">
             <span class="hud-num" style="min-width:56px;">LOOP</span><span style="width:6px;height:6px;border-radius:50%;background:rgba(157,140,207,0.5);flex-shrink:0;margin-top:6px;"></span><div style="width:8px;flex-shrink:0;"></div>
-            <div><div class="hud-title">Feedback Cycle</div><div class="hud-desc">Each audit narrows the gap between declared and actual behavior.</div></div>
+            <div><div class="hud-title">Feedback Cycle</div><div class="hud-desc">Each audit narrows the gap between defined and actual behavior.</div></div>
           </div>
         </div>
         <p style="text-align:center;font-family:var(--mono);font-size:11px;color:rgba(255,255,255,0.35);margin-top:-32px;letter-spacing:1px;">Enforcement and improvement are the same operation.</p>
@@ -5163,7 +5204,7 @@
           <span class="section-label">CONFORMANCE PROCESS</span>
           <h2 class="section-title">Your Path to Attestation</h2>
           <p class="section-lead">
-            From application to certified in days, not weeks. Apply, deploy, and the Interlock handles the rest — automated boundary discovery, CAT-72 verification, and certificate issuance.
+            No proprietary data required. The Interlock observes your system in normal operation, auto-discovers operational boundaries, then enforces them for 72 hours. Your IP stays yours — we certify the process, not the parameters.
           </p>
         </div>
       </div>
@@ -5215,6 +5256,7 @@
           c.style.height=H+'px';
           ctx.setTransform(dpr,0,0,dpr,0,0);
         }
+        c._saResize = resize;
 
         function getStops(){
           var mob=W<550,s=[];
@@ -5443,31 +5485,30 @@
       <div class="reveal" style="max-width:700px;margin:0 auto var(--space-3);">
         <div class="hud-frame hud-scanline"><i></i>
           <div class="hud-label" style="margin-bottom:12px;">DOCUMENTS</div>
-          <div class="hud-row" style="display:flex;align-items:center;cursor:pointer;" onclick="openDownloadModal('docs/ODDC_Overview_v1.0.pdf','ODDC Overview v1.0')">
+          <div class="hud-row" style="display:flex;align-items:center;cursor:pointer;" onclick="openDownloadModal('docs/ODDC_Overview_v3.0.pdf','ODDC Overview v3.0')">
             <span class="hud-dot"></span>
             <span class="hud-title" style="flex:1;">ODDC Overview</span>
-            <span style="font-family:var(--mono);font-size:9px;color:rgba(255,255,255,0.35);margin-right:12px;">v1.0</span>
+            <span style="font-family:var(--mono);font-size:9px;color:rgba(255,255,255,0.35);margin-right:12px;">v3.0</span>
             <span style="font-family:var(--mono);font-size:9px;color:rgba(157,140,207,0.5);">PDF ↓</span>
           </div>
-          <div class="hud-row" style="display:flex;align-items:center;cursor:pointer;" onclick="openDownloadModal('docs/ENVELO_Requirements_v1.0.pdf','ENVELO Requirements v1.0')">
+          <div class="hud-row" style="display:flex;align-items:center;cursor:pointer;" onclick="openDownloadModal('docs/ENVELO_Requirements_v3.0.pdf','ENVELO Requirements v3.0')">
             <span class="hud-dot hud-dot-green"></span>
             <span class="hud-title" style="flex:1;">ENVELO Requirements</span>
-            <span style="font-family:var(--mono);font-size:9px;color:rgba(255,255,255,0.35);margin-right:12px;">v1.0</span>
+            <span style="font-family:var(--mono);font-size:9px;color:rgba(255,255,255,0.35);margin-right:12px;">v3.0</span>
             <span style="font-family:var(--mono);font-size:9px;color:rgba(92,214,133,0.5);">PDF ↓</span>
           </div>
-          <div class="hud-row" style="display:flex;align-items:center;cursor:pointer;" onclick="openDownloadModal('docs/CAT-72_Procedure_v1.0.pdf','CAT-72 Procedure v1.0')">
+          <div class="hud-row" style="display:flex;align-items:center;cursor:pointer;" onclick="openDownloadModal('docs/CAT-72_Procedure_v3.0.pdf','CAT-72 Procedure v3.0')">
             <span class="hud-dot"></span>
             <span class="hud-title" style="flex:1;">CAT-72 Procedure</span>
-            <span style="font-family:var(--mono);font-size:9px;color:rgba(255,255,255,0.35);margin-right:12px;">v1.0</span>
+            <span style="font-family:var(--mono);font-size:9px;color:rgba(255,255,255,0.35);margin-right:12px;">v3.0</span>
             <span style="font-family:var(--mono);font-size:9px;color:rgba(157,140,207,0.5);">PDF ↓</span>
           </div>
-          <div class="hud-row" style="display:flex;align-items:center;cursor:pointer;" onclick="openDownloadModal('docs/ODDC_Critical_QA_v1.0.pdf','Critical Q&A v1.0')">
+          <div class="hud-row" style="display:flex;align-items:center;cursor:pointer;" onclick="openDownloadModal('docs/ODDC_Critical_QA_v3.0.pdf','Critical Q&A v3.0')">
             <span class="hud-dot hud-dot-amber"></span>
             <span class="hud-title" style="flex:1;">Critical Q&A</span>
-            <span style="font-family:var(--mono);font-size:9px;color:rgba(255,255,255,0.35);margin-right:12px;">v1.0</span>
+            <span style="font-family:var(--mono);font-size:9px;color:rgba(255,255,255,0.35);margin-right:12px;">v3.0</span>
             <span style="font-family:var(--mono);font-size:9px;color:rgba(214,160,92,0.5);">PDF ↓</span>
-          </div>
-        </div>
+          </div>        </div>
       </div>
 
       <!-- ENVELO Interlock — HUD -->
@@ -5623,9 +5664,10 @@
             <a href="#process">Process</a>
           </div>
           <div class="foot-col">
-            <div class="foot-col-title">RESOURCES</div>
+            <div class="foot-col-title">ARTIFACTS</div>
             <a href="#artifacts">Artifacts</a>
             <a href="scenarios.html">Scenarios</a>
+            <a href="research.html">Research</a>
             <a href="#verify" data-section="verify">Verify</a>
             
           </div>
@@ -6485,5 +6527,10 @@
       });
     })();
     </script>
+
+  
+
+
+  <script src="mobile-canvas.js"></script>
 </body>
 </html>

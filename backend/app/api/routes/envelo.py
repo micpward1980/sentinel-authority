@@ -7,7 +7,8 @@ import json
 from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException, Header
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func
+from sqlalchemy import select
+from sqlalchemy.orm.attributes import flag_modified
 from pydantic import BaseModel
 from typing import Optional, Dict, Any, List
 
@@ -873,7 +874,7 @@ async def report_specs(
         updated_fields.append("odd_specification")
     
     if data.boundaries:
-        env = application.envelope_definition or {}
+        env = dict(application.envelope_definition or {})
         if isinstance(env, str):
             try:
                 env = json.loads(env)
@@ -881,6 +882,7 @@ async def report_specs(
                 env = {}
         env["boundaries"] = data.boundaries
         application.envelope_definition = env
+        flag_modified(application, "envelope_definition")
         updated_fields.append("boundaries")
     
     if data.system_version:
@@ -902,7 +904,7 @@ async def report_specs(
     
     for test in tests:
         if data.boundaries:
-            env = test.envelope_definition or {}
+            env = dict(test.envelope_definition or {})
             if isinstance(env, str):
                 try:
                     env = json.loads(env)
@@ -910,9 +912,10 @@ async def report_specs(
                     env = {}
             env["boundaries"] = data.boundaries
             test.envelope_definition = env
+            flag_modified(test, "envelope_definition")
         
         if data.odd_specification:
-            env = test.envelope_definition or {}
+            env = dict(test.envelope_definition or {})
             if isinstance(env, str):
                 try:
                     env = json.loads(env)
@@ -920,6 +923,7 @@ async def report_specs(
                     env = {}
             env["odd_specification"] = data.odd_specification
             test.envelope_definition = env
+            flag_modified(test, "envelope_definition")
     
     await db.commit()
     

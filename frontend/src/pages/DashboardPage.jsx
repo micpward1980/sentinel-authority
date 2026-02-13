@@ -458,28 +458,24 @@ function Dashboard() {
             <span className="hud-label">Recent Certificates</span>
             <Link to="/certificates" className="hud-link" style={{fontSize:'10px'}}>View All →</Link>
           </div>
-          <Panel>
-            <div style={{overflowX:'auto'}}>
-              <table>
-                <thead>
-                  <tr>
-                    {['Certificate','System','Status','Issued','Expires'].map(h => <th key={h}>{h}</th>)}
-                  </tr>
-                </thead>
-                <tbody>
-                  {recentCerts.slice(0,5).map(c => (
-                    <tr key={c.id}>
-                      <td><Link to={`/verify?cert=${c.certificate_number}`} style={{color:'var(--purple-bright)',fontFamily:'var(--mono)',fontSize:'12px',letterSpacing:'0.5px'}}>{c.certificate_number}</Link></td>
-                      <td><span style={{color:'var(--text-primary)',fontSize:'13px'}}>{c.system_name}</span> <span style={{color:'var(--text-tertiary)',fontSize:'11px'}}>{c.organization_name}</span></td>
-                      <td><span style={{fontFamily:'var(--mono)',fontSize:'9px',letterSpacing:'1.5px',textTransform:'uppercase',color:c.state==='conformant'?'var(--accent-green)':'var(--accent-red)'}}>{c.state}</span></td>
-                      <td style={{color:'var(--text-tertiary)',fontSize:'12px'}}>{c.issued_at ? new Date(c.issued_at).toLocaleDateString() : '—'}</td>
-                      <td style={{fontFamily:'var(--mono)',fontSize:'11px',color:c.expires_at && new Date(c.expires_at)<new Date(Date.now()+30*24*60*60*1000) ? 'var(--accent-amber)':'var(--text-tertiary)'}}>{c.expires_at ? new Date(c.expires_at).toLocaleDateString() : '—'}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </Panel>
+          <div className="hud-frame"><i></i>
+            {recentCerts.slice(0,5).map((c,idx) => (
+              <div key={c.id} className="hud-row" style={{display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:'8px'}}>
+                <div style={{display:'flex',alignItems:'center',gap:'12px',minWidth:0,flex:1}}>
+                  <span className="hud-num">{String(idx+1).padStart(2,'0')}</span>
+                  <span className="hud-dot" style={{background:c.state==='conformant'?'var(--accent-green)':'var(--accent-red)',marginRight:0}}></span>
+                  <div style={{minWidth:0}}>
+                    <Link to={`/verify?cert=${c.certificate_number}`} style={{textDecoration:'none',color:'var(--purple-bright)',fontFamily:'var(--mono)',fontSize:'12px',letterSpacing:'0.5px'}}>{c.certificate_number}</Link>
+                    <div style={{fontSize:'11px',color:'var(--text-tertiary)',marginTop:'2px'}}>{c.system_name} · {c.organization_name}</div>
+                  </div>
+                </div>
+                <div style={{display:'flex',alignItems:'center',gap:'16px',flexShrink:0}}>
+                  <span style={{fontFamily:'var(--mono)',fontSize:'9px',letterSpacing:'1.5px',textTransform:'uppercase',color:c.state==='conformant'?'var(--accent-green)':'var(--accent-red)'}}>{c.state}</span>
+                  <span style={{fontFamily:'var(--mono)',fontSize:'10px',color:c.expires_at && new Date(c.expires_at)<new Date(Date.now()+30*24*60*60*1000)?'var(--accent-amber)':'var(--text-tertiary)'}}>{c.expires_at ? new Date(c.expires_at).toLocaleDateString() : '—'}</span>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       )}
 
@@ -489,29 +485,30 @@ function Dashboard() {
           <span className="hud-label">Pending Applications</span>
           <Link to="/applications" className="hud-link" style={{fontSize:'10px'}}>View All →</Link>
         </div>
-        <Panel>
-          <div style={{overflowX:'auto'}}>
-            <table>
-              <thead>
-                <tr>
-                  {['System','Organization','State','Submitted'].map(h => <th key={h}>{h}</th>)}
-                </tr>
-              </thead>
-              <tbody>
-                {allApps.slice(0,6).map(app => (
-                  <tr key={app.id} style={{cursor:'pointer'}} onClick={() => navigate(`/applications/${app.id}`)}>
-                    <td><Link to={`/applications/${app.id}`} style={{color:'var(--purple-bright)'}}>{app.system_name}</Link></td>
-                    <td>{app.organization_name}</td>
-                    <td><span style={{fontFamily:'var(--mono)',fontSize:'9px',letterSpacing:'1.5px',textTransform:'uppercase',
-                      color:app.state==='conformant'?'var(--accent-green)':app.state==='revoked'?'var(--accent-red)':app.state==='testing'||app.state==='approved'?'var(--purple-bright)':'var(--accent-amber)'
-                    }}>{app.state === 'approved' ? 'awaiting deploy' : app.state === 'under_review' ? 'in review' : app.state}</span></td>
-                    <td style={{color:'var(--text-tertiary)',fontSize:'13px'}}>{app.submitted_at ? new Date(app.submitted_at).toLocaleDateString() : '—'}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </Panel>
+        <div className="hud-frame"><i></i>
+          {allApps.slice(0,6).map((app,idx) => {
+            const sc = app.state==='conformant'?'var(--accent-green)':app.state==='revoked'?'var(--accent-red)':app.state==='testing'||app.state==='approved'?'var(--purple-bright)':'var(--accent-amber)';
+            const sl = app.state === 'approved' ? 'awaiting deploy' : app.state === 'under_review' ? 'in review' : app.state;
+            return (
+              <Link key={app.id} to={`/applications/${app.id}`} style={{textDecoration:'none',display:'block'}}>
+                <div className="hud-row" style={{display:'flex',justifyContent:'space-between',alignItems:'center',cursor:'pointer',flexWrap:'wrap',gap:'8px'}}>
+                  <div style={{display:'flex',alignItems:'center',gap:'12px',minWidth:0,flex:1}}>
+                    <span className="hud-num">{String(idx+1).padStart(2,'0')}</span>
+                    <span className="hud-dot" style={{background:sc,marginRight:0}}></span>
+                    <div style={{minWidth:0}}>
+                      <div className="hud-title">{app.system_name}</div>
+                      <div style={{fontSize:'10px',color:'var(--text-tertiary)',fontFamily:'var(--mono)',letterSpacing:'0.5px',marginTop:'2px'}}>{app.organization_name}</div>
+                    </div>
+                  </div>
+                  <div style={{display:'flex',alignItems:'center',gap:'16px',flexShrink:0}}>
+                    <span style={{fontFamily:'var(--mono)',fontSize:'9px',letterSpacing:'1.5px',textTransform:'uppercase',color:sc}}>{sl}</span>
+                    <span style={{fontFamily:'var(--mono)',fontSize:'10px',color:'var(--text-tertiary)'}}>{app.submitted_at ? new Date(app.submitted_at).toLocaleDateString() : '—'}</span>
+                  </div>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
       </div>
     </div>
   );

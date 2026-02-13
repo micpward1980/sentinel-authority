@@ -38,6 +38,7 @@ async def _create_session_token(user, request, db):
     return create_access_token({
         "sub": str(user.id), "email": user.email,
         "role": user.role, "organization": user.organization,
+        "organization_id": user.organization_id,
         "sid": sid,
     })
 
