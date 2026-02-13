@@ -2,7 +2,7 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-ARG CACHEBUST=1
+ARG CACHEBUST=1770995632
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
