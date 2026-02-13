@@ -14,3 +14,4 @@ CMD uvicorn main:app --host 0.0.0.0 --port $PORT
 
 # Force rebuild: bust cache
 RUN echo "rebuild-$(date)"
+# v4.0 deploy Fri Feb 13 09:04:11 CST 2026

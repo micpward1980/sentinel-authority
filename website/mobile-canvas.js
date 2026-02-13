@@ -1,65 +1,99 @@
 /*
- * Sentinel Authority — Canvas Resize & Orientation Handler
- * Ensures all 5 canvases properly resize on rotation and window resize.
+ * ═══════════════════════════════════════════════════
+ * Sentinel Authority — Canvas Orientation & Resize
+ * ═══════════════════════════════════════════════════
+ * Handles all 5 animated canvases during:
+ *   - Device rotation (portrait ↔ landscape)
+ *   - Window resize (desktop browser)
+ *   - iOS visual viewport changes
+ *
+ * Each canvas exposes _saResize() on its element.
+ * This script calls those on orientation/resize events.
  */
 (function() {
   'use strict';
 
-  var CANVAS_IDS = ['hero-canvas','envelo-canvas','security-canvas','cat72-canvas','process-canvas'];
-  var debounceTimer = null;
-  var lastWidth = window.innerWidth;
-  var lastHeight = window.innerHeight;
+  var IDS = [
+    'hero-canvas',
+    'envelo-canvas',
+    'security-canvas',
+    'cat72-canvas',
+    'process-canvas'
+  ];
 
-  function triggerAllResize() {
-    CANVAS_IDS.forEach(function(id) {
-      var canvas = document.getElementById(id);
-      if (canvas && canvas._saResize) {
-        try { canvas._saResize(); } catch(e) {}
+  var timer = null;
+  var prevW = window.innerWidth;
+  var prevH = window.innerHeight;
+
+  function resizeAll() {
+    IDS.forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el && typeof el._saResize === 'function') {
+        try { el._saResize(); } catch(e) { /* silent */ }
       }
     });
   }
 
-  function debouncedResize(delay) {
-    clearTimeout(debounceTimer);
-    debounceTimer = setTimeout(triggerAllResize, delay);
+  function scheduleResize(delay) {
+    clearTimeout(timer);
+    timer = setTimeout(resizeAll, delay);
   }
 
-  // Orientation change — needs multiple fires because iOS is unreliable
+  // ── Orientation Change ──
+  // iOS is unreliable — fire multiple times
   window.addEventListener('orientationchange', function() {
-    // Reset hero lock so it recalculates from scratch
-    var heroCanvas = document.getElementById('hero-canvas');
-    if (heroCanvas && heroCanvas._saResize) {
-      // The _saResize function resets locks before calling resize
-    }
-    debouncedResize(100);
-    debouncedResize(300);
-    setTimeout(triggerAllResize, 600);
-    setTimeout(triggerAllResize, 1000);
+    scheduleResize(80);
+    setTimeout(resizeAll, 300);
+    setTimeout(resizeAll, 600);
+    setTimeout(resizeAll, 1200);
   });
 
-  // Window resize — only trigger on actual dimension changes
-  // Ignore iOS URL bar show/hide (small height changes, same width)
+  // ── Window Resize ──
+  // Filter out iOS URL bar changes (small height delta, same width)
   window.addEventListener('resize', function() {
     var w = window.innerWidth;
     var h = window.innerHeight;
-    var widthChanged = Math.abs(w - lastWidth) > 10;
-    var heightChanged = Math.abs(h - lastHeight) > 80;
-    
-    if (widthChanged || heightChanged) {
-      lastWidth = w;
-      lastHeight = h;
-      debouncedResize(150);
+    var dw = Math.abs(w - prevW);
+    var dh = Math.abs(h - prevH);
+
+    // Width changed: real resize or rotation
+    if (dw > 15) {
+      prevW = w;
+      prevH = h;
+      scheduleResize(100);
+      return;
+    }
+
+    // Height changed significantly without width change: might be URL bar
+    // Only resize if height change is dramatic (>150px = probably rotation or keyboard)
+    if (dh > 150) {
+      prevW = w;
+      prevH = h;
+      scheduleResize(200);
     }
   });
 
-  // Visual viewport resize (handles iOS keyboard, URL bar properly)
+  // ── Visual Viewport (iOS Safari) ──
   if (window.visualViewport) {
+    var vpW = window.visualViewport.width;
     window.visualViewport.addEventListener('resize', function() {
       var w = window.visualViewport.width;
-      if (Math.abs(w - lastWidth) > 10) {
-        lastWidth = w;
-        debouncedResize(200);
+      if (Math.abs(w - vpW) > 15) {
+        vpW = w;
+        scheduleResize(150);
       }
     });
   }
+
+  // ── Page Visibility ──
+  // Recalc when tab becomes visible (dimensions may have changed)
+  document.addEventListener('visibilitychange', function() {
+    if (!document.hidden) {
+      var w = window.innerWidth;
+      if (Math.abs(w - prevW) > 15) {
+        prevW = w;
+        scheduleResize(200);
+      }
+    }
+  });
 })();
