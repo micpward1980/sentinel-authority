@@ -715,7 +715,7 @@
     }
     @keyframes corner-breathe-green {
       0%, 100% { border-color: rgba(92,214,133,0.08); }
-      50% { border-color: rgba(92,214,133,0.25); }
+      50% { border-color: rgba(92,214,133,0.4); }
     }
 
     .hud-frame {
@@ -2012,6 +2012,190 @@
     /* Show QR scanner button only on touch/mobile devices */
     
     
+    
+    /* ── MOBILE DIAGRAM STYLES ── */
+    .m-diagram { display: none; }
+
+    @keyframes md-pulse { 0%,100%{opacity:.35} 50%{opacity:1} }
+    @keyframes md-drift { 0%{transform:translate(0,0)} 25%{transform:translate(1.5px,-1px)} 50%{transform:translate(0,1.5px)} 75%{transform:translate(-1.5px,-.5px)} 100%{transform:translate(0,0)} }
+    @keyframes md-breathe { 0%,100%{opacity:.12;transform:translate(-50%,-50%) scale(1)} 50%{opacity:.22;transform:translate(-50%,-50%) scale(1.02)} }
+    
+
+    /* Shared */
+    .md-head {
+      display:flex; align-items:center; gap:6px;
+      padding:0 0 10px; margin-bottom:10px;
+      border-bottom:1px solid var(--border-subtle);
+    }
+    .md-dot { width:4px; height:4px; border-radius:50%; flex-shrink:0; animation:md-pulse 2.8s ease infinite; }
+    .md-dot-g { background:rgba(92,214,133,0.9); box-shadow:0 0 6px rgba(92,214,133,0.25); }
+    .md-dot-p { background:rgba(157,140,207,0.9); box-shadow:0 0 6px rgba(157,140,207,0.4); }
+    .md-tag { font-family:var(--mono); font-size:8px; letter-spacing:2.5px; color:var(--text-secondary); flex:1; }
+    .md-sid { font-family:var(--mono); font-size:7px; letter-spacing:1px; color:rgba(255,255,255,0.2); }
+    .md-foot {
+      text-align:center; padding:8px 0 0; margin-top:10px;
+      border-top:1px solid var(--border-subtle);
+      font-family:var(--mono); font-size:7px; letter-spacing:2px; color:rgba(255,255,255,0.25);
+    }
+
+
+    /* ═══ 1. HERO FLOW ═══ */
+    .mdh-flow { display:flex; align-items:flex-start; justify-content:center; gap:0; padding:4px 0 8px; }
+    .mdh-node { text-align:center; position:relative; }
+    .mdh-orb { position:relative; width:50px; height:50px; margin:0 auto 6px; }
+    .mdh-orb-lg { width:60px; height:60px; }
+    .mdh-circle { position:absolute; inset:0; border-radius:50%; border:1px solid; }
+    .mdh-g .mdh-circle { border-color:rgba(92,214,133,0.25); }
+    .mdh-p .mdh-circle { border-color:rgba(157,140,207,0.25); }
+    .mdh-w .mdh-circle { border-color:var(--border-glass); }
+    .mdh-glow { position:absolute; inset:6px; border-radius:50%; }
+    .mdh-g .mdh-glow { background:radial-gradient(circle,rgba(92,214,133,0.15) 0%,transparent 70%); }
+    .mdh-p .mdh-glow { background:radial-gradient(circle,rgba(157,140,207,0.18) 0%,transparent 70%); }
+    .mdh-w .mdh-glow { background:radial-gradient(circle,rgba(255,255,255,0.02) 0%,transparent 70%); }
+    .mdh-core { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:4px; height:4px; border-radius:50%; }
+    .mdh-g .mdh-core { background:rgba(92,214,133,0.8); box-shadow:0 0 8px rgba(92,214,133,0.15); }
+    .mdh-p .mdh-core { background:rgba(157,140,207,0.8); box-shadow:0 0 8px rgba(157,140,207,0.15); }
+    .mdh-w .mdh-core { background:rgba(255,255,255,0.35); }
+    .mdh-ring { position:absolute; inset:-7px; border-radius:50%; border:1px solid rgba(157,140,207,0.08); animation:md-breathe 4s ease infinite; }
+    .mdh-name { font-family:var(--mono); font-size:8px; letter-spacing:2px; display:block; }
+    .mdh-g .mdh-name { color:rgba(92,214,133,0.95); }
+    .mdh-p .mdh-name { color:rgba(157,140,207,0.95); }
+    .mdh-w .mdh-name { color:var(--text-secondary); }
+    .mdh-sub { font-family:var(--mono); font-size:6.5px; letter-spacing:1px; color:rgba(157,140,207,0.6); display:block; margin-top:1px; }
+    .mdh-conn { display:flex; align-items:center; gap:2px; padding:0 3px; height:50px; }
+    .mdh-conn i { display:block; width:4px; height:1px; background:rgba(157,140,207,0.2); font-style:normal; }
+    .mdh-conn i:nth-child(2) { width:6px; background:rgba(157,140,207,0.15); }
+    .mdh-conn i:nth-child(3) { width:0; height:0; border-top:2.5px solid transparent; border-bottom:2.5px solid transparent; border-left:4px solid rgba(157,140,207,0.25); background:none; }
+    .mdh-vrow { display:flex; justify-content:center; gap:6px; padding-top:6px; }
+    .mdh-v { display:flex; align-items:center; gap:5px; font-family:var(--mono); font-size:7px; letter-spacing:1.5px; padding:5px 10px; border:1px solid; border-radius:2px; }
+    .mdh-vd { width:4px; height:4px; border-radius:50%; }
+    .mdh-vg { border-color:rgba(92,214,133,0.25); color:rgba(92,214,133,0.85); }
+    .mdh-vg .mdh-vd { background:rgba(92,214,133,0.8); box-shadow:0 0 4px rgba(92,214,133,0.2); }
+    .mdh-va { border-color:rgba(214,160,92,0.25); color:rgba(214,160,92,0.85); }
+    .mdh-va .mdh-vd { background:rgba(214,160,92,0.8); box-shadow:0 0 4px rgba(214,160,92,0.2); }
+    .mdh-vr { border-color:rgba(214,92,92,0.25); color:rgba(214,92,92,0.85); }
+    .mdh-vr .mdh-vd { background:rgba(214,92,92,0.8); box-shadow:0 0 4px rgba(214,92,92,0.2); }
+
+    /* ═══ 2. ENVELO TIERS ═══ */
+    .mde-pipe { display:flex; align-items:center; justify-content:center; padding:2px 0 10px; gap:0; }
+    .mde-s { text-align:center; padding:0 5px; }
+    .mde-s-core { background:var(--bg-panel); border:1px solid var(--border-glass); border-radius:6px; padding:6px 8px; }
+    .mde-ic { font-size:16px; margin-bottom:3px; }
+    .mde-ic-g { color:rgba(92,214,133,0.8); }
+    .mde-ic-p { color:rgba(157,140,207,0.8); }
+    .mde-ic-d { color:rgba(255,255,255,0.45); }
+    .mde-nm { font-family:var(--mono); font-size:8px; letter-spacing:1.5px; color:var(--text-secondary); display:block; font-weight:500; }
+    .mde-ds { font-family:var(--mono); font-size:7px; color:var(--text-tertiary); display:block; margin-top:1px; }
+    .mde-ar { width:14px; display:flex; align-items:center; justify-content:center; }
+    .mde-ar i { width:0; height:0; border-top:2.5px solid transparent; border-bottom:2.5px solid transparent; border-left:4px solid rgba(255,255,255,0.2); font-style:normal; }
+    .mde-tiers { display:flex; flex-direction:column; gap:3px; }
+    .mde-t { display:flex; overflow:hidden; border-radius:2px; }
+    .mde-tb { width:3px; flex-shrink:0; }
+    .mde-t-g .mde-tb { background:rgba(92,214,133,0.7); }
+    .mde-t-a .mde-tb { background:rgba(214,160,92,0.7); }
+    .mde-t-r .mde-tb { background:rgba(214,92,92,0.7); }
+    .mde-tc { flex:1; padding:7px 10px; background:var(--bg-panel); font-family:var(--mono); font-size:8px; color:var(--text-tertiary); line-height:1.5; }
+    .mde-tl { font-weight:600; letter-spacing:1.5px; margin-right:6px; }
+    .mde-t-g .mde-tl { color:rgba(92,214,133,0.9); }
+    .mde-t-a .mde-tl { color:rgba(214,160,92,0.9); }
+    .mde-t-r .mde-tl { color:rgba(214,92,92,0.9); }
+
+    /* ═══ 3. SECURITY ═══ */
+    .mds-flow { display:flex; flex-direction:column; align-items:center; gap:0; padding:4px 0 8px; }
+    .mds-n { text-align:center; }
+    .mds-c { width:42px; height:42px; border-radius:50%; border:1px solid; margin:0 auto 4px; display:flex; align-items:center; justify-content:center; }
+    .mds-c-g { border-color:rgba(92,214,133,0.35); }
+    .mds-c-p { border-color:rgba(157,140,207,0.35); box-shadow:0 0 12px rgba(157,140,207,0.05); }
+    .mds-c-d { border-color:var(--border-glass); }
+    .mds-cd { width:5px; height:5px; border-radius:50%; }
+    .mds-c-g .mds-cd { background:rgba(92,214,133,0.45); }
+    .mds-c-d .mds-cd { background:rgba(255,255,255,0.1); }
+    .mds-sh { color:rgba(157,140,207,0.6); font-size:12px; }
+    .mds-n span { font-family:var(--mono); font-size:8px; letter-spacing:1.5px; color:var(--text-tertiary); display:block; }
+    .mds-cn { display:flex; flex-direction:column; align-items:center; padding:2px 0; }
+    .mds-cl { width:1px; height:8px; background:var(--border-glass); }
+    .mds-ct { font-family:var(--mono); font-size:6px; letter-spacing:1.5px; color:rgba(255,255,255,0.3); padding:1px 0; }
+    .mds-grids { display:flex; flex-direction:column; gap:3px; margin-top:6px; }
+    .mds-row { display:grid; grid-template-columns:1fr 1fr; gap:3px; }
+    .mds-d,.mds-a { font-family:var(--mono); font-size:7px; letter-spacing:0.8px; padding:4px 8px; border-radius:2px; display:flex; align-items:center; gap:4px; }
+    .mds-d { color:rgba(214,92,92,0.75); border:1px solid rgba(214,92,92,0.15); background:rgba(214,92,92,0.015); }
+    .mds-a { color:rgba(92,214,133,0.75); border:1px solid rgba(92,214,133,0.15); background:rgba(92,214,133,0.015); }
+    .mds-d span,.mds-a span { font-size:8px; }
+
+    /* ═══ 4. CAT-72 ═══ */
+    .mdc-vis { position:relative; width:200px; height:200px; margin:6px auto 12px; }
+    .mdc-ring { position:absolute; border-radius:50%; top:50%; left:50%; transform:translate(-50%,-50%); }
+    .mdc-r-wall { width:200px; height:200px; border:2px solid rgba(214,92,92,0.4); box-shadow:0 0 18px rgba(214,92,92,0.03), inset 0 0 18px rgba(214,92,92,0.015); }
+    .mdc-r-mrc { width:160px; height:160px; border:1px solid rgba(214,92,92,0.25); }
+    .mdc-r-warn { width:120px; height:120px; border:1px dashed rgba(214,160,92,0.3); }
+    .mdc-r-odd { width:80px; height:80px; border:1px solid rgba(92,214,133,0.3); background:rgba(92,214,133,0.03); display:flex; flex-direction:column; align-items:center; justify-content:center; }
+    .mdc-rl { position:absolute; top:-7px; left:50%; transform:translateX(-50%); font-family:var(--mono); font-size:6px; letter-spacing:1.2px; padding:0 5px; background:var(--bg-deep); white-space:nowrap; }
+    .mdc-r-wall>.mdc-rl { color:rgba(214,92,92,0.7); }
+    .mdc-r-mrc>.mdc-rl { color:rgba(214,92,92,0.55); }
+    .mdc-r-warn>.mdc-rl { color:rgba(214,160,92,0.6); }
+    .mdc-oddl { font-family:var(--mono); font-size:8px; letter-spacing:2px; color:rgba(92,214,133,0.8); }
+    .mdc-dots { position:relative; width:44px; height:36px; margin-top:2px; }
+    .mdc-d { position:absolute; width:3px; height:3px; border-radius:50%; background:rgba(92,214,133,0.7); box-shadow:0 0 4px rgba(92,214,133,0.12); animation:md-drift 5s ease-in-out infinite; }
+    .mdc-d:nth-child(1){top:6px;left:6px;animation-delay:0s}
+    .mdc-d:nth-child(2){top:14px;left:22px;animation-delay:.6s}
+    .mdc-d:nth-child(3){top:4px;left:30px;animation-delay:1.2s}
+    .mdc-d:nth-child(4){top:22px;left:14px;animation-delay:1.8s}
+    .mdc-d:nth-child(5){top:10px;left:18px;animation-delay:.3s}
+    .mdc-d:nth-child(6){top:20px;left:28px;animation-delay:.9s}
+    .mdc-d:nth-child(7){top:16px;left:8px;animation-delay:2.1s}
+    .mdc-d:nth-child(8){top:26px;left:34px;animation-delay:1.5s;background:rgba(214,160,92,0.35)}
+    .mdc-legend { display:flex; justify-content:center; gap:14px; font-family:var(--mono); font-size:7px; color:var(--text-tertiary); }
+    .mdc-legend>div { display:flex; align-items:center; gap:4px; }
+    .mdc-ld { width:4px; height:4px; border-radius:50%; }
+    .mdc-ld-g { background:rgba(92,214,133,0.7); box-shadow:0 0 4px rgba(92,214,133,0.15); }
+    .mdc-ld-a { background:rgba(214,160,92,0.7); box-shadow:0 0 4px rgba(214,160,92,0.15); }
+    .mdc-ld-r { background:rgba(214,92,92,0.7); box-shadow:0 0 4px rgba(214,92,92,0.15); }
+
+    /* ═══ 5. PROCESS ═══ */
+    .mdp-steps { padding:4px 0; }
+    .mdp-step { display:flex; align-items:flex-start; gap:12px; position:relative; }
+    .mdp-track { position:relative; display:flex; flex-direction:column; align-items:center; flex-shrink:0; width:28px; }
+    .mdp-dot { width:28px; height:28px; border-radius:50%; border:1px solid; display:flex; align-items:center; justify-content:center; font-family:var(--mono); font-size:9px; letter-spacing:1px; z-index:2; position:relative; }
+    .mdp-dot-p { border-color:rgba(157,140,207,0.4); color:rgba(157,140,207,0.95); background:rgba(157,140,207,0.03); }
+    .mdp-dot-t { border-color:var(--border-glass); color:var(--text-tertiary); background:rgba(255,255,255,0.01); }
+    .mdp-dot-g { border-color:rgba(92,214,133,0.4); color:rgba(92,214,133,0.95); background:rgba(92,214,133,0.03); }
+    .mdp-line { width:1px; flex:1; min-height:8px; }
+    .mdp-line-p { background:rgba(157,140,207,0.2); }
+    .mdp-line-t { background:var(--border-subtle); }
+    .mdp-info { padding:4px 0 18px; }
+    .mdp-info strong { font-family:var(--mono); font-size:9px; font-weight:500; letter-spacing:2px; color:var(--text-secondary); display:block; margin-bottom:1px; }
+    .mdp-info span { font-family:var(--mono); font-size:8px; color:var(--text-tertiary); }
+
+    /* ═══ LANDSCAPE ═══ */
+    @media (max-height:500px) and (orientation:landscape) {
+      .md-head { padding:0 0 6px; margin-bottom:6px; }
+      .md-foot { padding:4px 0 0; margin-top:6px; }
+      .mdh-orb { width:34px; height:34px; }
+      .mdh-orb-lg { width:42px; height:42px; }
+      .mdh-conn { height:34px; }
+      .mdh-ring { inset:-5px; }
+      .mdh-name { font-size:7px; }
+      .mdh-vrow { gap:4px; }
+      .mdh-v { padding:3px 7px; font-size:6px; }
+      .mde-pipe { padding:0 0 6px; }
+      .mde-ic { font-size:14px; }
+      .mde-tc { padding:5px 8px; font-size:7px; }
+      .mds-flow { flex-direction:row; gap:8px; padding:2px 0 6px; }
+      .mds-c { width:34px; height:34px; }
+      .mds-cn { flex-direction:row; padding:0 4px; }
+      .mds-cl { width:8px; height:1px; }
+      .mdc-vis { width:140px; height:140px; margin:4px auto 8px; }
+      .mdc-r-wall { width:140px; height:140px; }
+      .mdc-r-mrc { width:112px; height:112px; }
+      .mdc-r-warn { width:84px; height:84px; }
+      .mdc-r-odd { width:56px; height:56px; }
+      .mdc-oddl { font-size:7px; }
+      .mdc-dots { width:30px; height:24px; }
+      .mdp-info { padding:2px 0 10px; }
+      .mdp-dot { width:22px; height:22px; font-size:8px; }
+    }
+    /* ── END MOBILE DIAGRAM STYLES ── */
+
     </style>
   <link rel="stylesheet" href="mobile.css">
 </head>
@@ -2077,7 +2261,43 @@
     <!-- HERO -->
     <section class="hero">
       <!-- Full-viewport canvas -->
-      <div style="position:relative;display:flex;flex-direction:column;align-items:center;margin:0 auto;max-width:880px;padding-top:8px;"><div style="width:100%;"><canvas id="hero-canvas" style="width:100%;height:calc(min(880px, 100vw) * 0.42);display:block;opacity:0;transition:opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1);"></canvas></div>
+      <div style="position:relative;display:flex;flex-direction:column;align-items:center;margin:0 auto;max-width:880px;padding-top:8px;"><div style="width:100%;"><canvas id="hero-canvas" style="width:100%;height:calc(min(880px, 100vw) * 0.42);display:block;opacity:0;transition:opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1);"></canvas>
+      <!-- Mobile Static: Hero Flow v3 -->
+      <div class="m-diagram" aria-label="ENVELO enforcement flow">
+        <div class="hud-frame hud-scanline" style="position:relative;overflow:hidden"><i></i>
+          
+          <div class="md-head">
+            <div class="md-dot md-dot-g"></div>
+            <span class="md-tag">ENVELO INTERLOCK · ENFORCEMENT FLOW</span>
+            <span class="md-sid">v4.2.1</span>
+          </div>
+          <div class="mdh-flow">
+            <div class="mdh-node mdh-g">
+              <div class="mdh-orb"><div class="mdh-circle"></div><div class="mdh-glow"></div><div class="mdh-core"></div></div>
+              <span class="mdh-name">MODEL</span>
+            </div>
+            <div class="mdh-conn"><i></i><i></i><i></i></div>
+            <div class="mdh-node mdh-p">
+              <div class="mdh-orb mdh-orb-lg"><div class="mdh-ring"></div><div class="mdh-circle"></div><div class="mdh-glow"></div><div class="mdh-core"></div></div>
+              <span class="mdh-name">ENVELO</span>
+              <span class="mdh-sub">INTERLOCK</span>
+            </div>
+            <div class="mdh-conn"><i></i><i></i><i></i></div>
+            <div class="mdh-node mdh-w">
+              <div class="mdh-orb"><div class="mdh-circle"></div><div class="mdh-glow"></div><div class="mdh-core"></div></div>
+              <span class="mdh-name">GATE</span>
+            </div>
+          </div>
+          <div class="mdh-vrow">
+            <div class="mdh-v mdh-vg"><div class="mdh-vd"></div>EXECUTE</div>
+            <div class="mdh-v mdh-va"><div class="mdh-vd"></div>MRC</div>
+            <div class="mdh-v mdh-vr"><div class="mdh-vd"></div>HALT</div>
+          </div>
+          <div class="md-foot">AUDIT · REAL-TIME · CRYPTOGRAPHIC</div>
+        </div>
+      </div>
+
+      </div>
       <!-- Hero Content below canvas -->
       <div id="hero-text" class="hero-content-bottom" style="position:relative;z-index:10;text-align:center;padding:0 16px 0;margin-top:-32px;display:flex;flex-direction:column;align-items:center;">
         
@@ -2647,7 +2867,32 @@
       <div class="reveal" style="display: flex; justify-content: center; margin: 0 auto var(--space-4); max-width: 880px;">
         <div style="width: 100%;">
           <canvas id="envelo-canvas" style="width: 100%; display: block;"></canvas>
+      <!-- Mobile Static: ENVELO v3 -->
+      <div class="m-diagram" aria-label="ENVELO three-tier enforcement">
+        <div class="hud-frame hud-scanline" style="position:relative;overflow:hidden"><i></i>
+          
+          <div class="md-head">
+            <div class="md-dot md-dot-p"></div>
+            <span class="md-tag">ENVELO INTERLOCK</span>
+            <span class="md-sid">RUNTIME</span>
+          </div>
+          <div class="mde-pipe">
+            <div class="mde-s"><div class="mde-ic mde-ic-g">&#x2B21;</div><span class="mde-nm">MODEL</span><span class="mde-ds">Action request</span></div>
+            <div class="mde-ar"><i></i></div>
+            <div class="mde-s mde-s-core"><div class="mde-ic mde-ic-p">&#x25C8;</div><span class="mde-nm">VALIDATE</span><span class="mde-ds">Boundary check</span></div>
+            <div class="mde-ar"><i></i></div>
+            <div class="mde-s"><div class="mde-ic mde-ic-d">&#x25C7;</div><span class="mde-nm">VERDICT</span><span class="mde-ds">Enforce decision</span></div>
+          </div>
+          <div class="mde-tiers">
+            <div class="mde-t mde-t-g"><div class="mde-tb"></div><div class="mde-tc"><span class="mde-tl">APPROACH</span>Self-correction near ODD boundary</div></div>
+            <div class="mde-t mde-t-a"><div class="mde-tb"></div><div class="mde-tc"><span class="mde-tl">BREACH</span>Minimum Risk Condition activated</div></div>
+            <div class="mde-t mde-t-r"><div class="mde-tb"></div><div class="mde-tc"><span class="mde-tl">WALL</span>Hard halt &#8212; execution terminated</div></div>
+          </div>
+          <div class="md-foot">NON-BYPASSABLE · TAMPER-EVIDENT</div>
         </div>
+      </div>
+
+              </div>
       </div>
       <script>
       (function() {
@@ -3256,7 +3501,32 @@
       <div class="reveal" style="display: flex; justify-content: center; margin-bottom: 40px;">
         <div style="width: 100%; max-width: 880px;">
           <canvas id="security-canvas" style="width: 100%; display: block;"></canvas>
+      <!-- Mobile Static: Security v3 -->
+      <div class="m-diagram" aria-label="Zero trust security architecture">
+        <div class="hud-frame hud-scanline" style="position:relative;overflow:hidden"><i></i>
+          
+          <div class="md-head">
+            <div class="md-dot md-dot-g"></div>
+            <span class="md-tag">SECURITY · ZERO TRUST</span>
+            <span class="md-sid">TLS 1.3</span>
+          </div>
+          <div class="mds-flow">
+            <div class="mds-n"><div class="mds-c mds-c-g"><div class="mds-cd"></div></div><span>YOUR SYSTEM</span></div>
+            <div class="mds-cn"><div class="mds-cl"></div><div class="mds-ct">OUTBOUND ONLY</div><div class="mds-cl"></div></div>
+            <div class="mds-n"><div class="mds-c mds-c-p"><div class="mds-sh">&#x25C6;</div></div><span>INTERLOCK</span></div>
+            <div class="mds-cn"><div class="mds-cl"></div><div class="mds-ct">HTTPS / TLS 1.3</div><div class="mds-cl"></div></div>
+            <div class="mds-n"><div class="mds-c mds-c-d"><div class="mds-cd"></div></div><span>REGISTRY</span></div>
+          </div>
+          <div class="mds-grids">
+            <div class="mds-row"><div class="mds-d"><span>&#x2715;</span> NO COMMANDS</div><div class="mds-d"><span>&#x2715;</span> NO EXECUTION</div></div>
+            <div class="mds-row"><div class="mds-d"><span>&#x2715;</span> NO ACCESS</div><div class="mds-d"><span>&#x2715;</span> NO CONTROL</div></div>
+            <div class="mds-row"><div class="mds-a"><span>&#x2713;</span> NO PHI/PII</div><div class="mds-a"><span>&#x2713;</span> OFFLINE OK</div></div>
+            <div class="mds-row"><div class="mds-a"><span>&#x2713;</span> AUDITABLE</div><div class="mds-a"><span>&#x2713;</span> HIPAA/BAA</div></div>
+          </div>
         </div>
+      </div>
+
+              </div>
       </div>
       <script>
       (function() {
@@ -3830,7 +4100,32 @@
       <div class="reveal" style="display: flex; justify-content: center; margin: 0 auto var(--space-4); max-width: 880px;">
         <div style="width: 100%;">
           <canvas id="cat72-canvas" style="width: 100%; display: block;"></canvas>
+      <!-- Mobile Static: CAT-72 v3 -->
+      <div class="m-diagram" aria-label="CAT-72 boundary enforcement">
+        <div class="hud-frame hud-scanline" style="position:relative;overflow:hidden"><i></i>
+          
+          <div class="md-head">
+            <div class="md-dot md-dot-p"></div>
+            <span class="md-tag">CAT-72 · BOUNDARY ENFORCEMENT</span>
+          </div>
+          <div class="mdc-vis">
+            <div class="mdc-ring mdc-r-wall"><span class="mdc-rl">ENVELO WALL</span></div>
+            <div class="mdc-ring mdc-r-mrc"><span class="mdc-rl">MRC BOUNDARY</span></div>
+            <div class="mdc-ring mdc-r-warn"><span class="mdc-rl">SELF-CORRECT</span></div>
+            <div class="mdc-ring mdc-r-odd">
+              <div class="mdc-oddl">ODD</div>
+              <div class="mdc-dots"><i class="mdc-d"></i><i class="mdc-d"></i><i class="mdc-d"></i><i class="mdc-d"></i><i class="mdc-d"></i><i class="mdc-d"></i><i class="mdc-d"></i><i class="mdc-d"></i></div>
+            </div>
+          </div>
+          <div class="mdc-legend">
+            <div><span class="mdc-ld mdc-ld-g"></span> Within ODD</div>
+            <div><span class="mdc-ld mdc-ld-a"></span> Near boundary</div>
+            <div><span class="mdc-ld mdc-ld-r"></span> Enforcement</div>
+          </div>
         </div>
+      </div>
+
+              </div>
       </div>
 
       <!-- Phase Cards — HUD -->
@@ -4512,7 +4807,27 @@
       <!-- Animated Timeline -->
       <div style="position:relative; margin-bottom: var(--space-4);">
         <canvas id="process-canvas" style="width:100%;display:block;"></canvas>
-      <script>
+      <!-- Mobile Static: Process v3 -->
+      <div class="m-diagram" aria-label="Certification process">
+        <div class="hud-frame hud-scanline" style="position:relative;overflow:hidden"><i></i>
+          
+          <div class="md-head">
+            <div class="md-dot md-dot-g"></div>
+            <span class="md-tag">CONFORMANCE PATH</span>
+            <span class="md-sid">5 GATES</span>
+          </div>
+          <div class="mdp-steps">
+            <div class="mdp-step"><div class="mdp-track"><div class="mdp-dot mdp-dot-p">01</div><div class="mdp-line mdp-line-p"></div></div><div class="mdp-info"><strong>APPLY</strong><span>Submit ODD declaration</span></div></div>
+            <div class="mdp-step"><div class="mdp-track"><div class="mdp-dot mdp-dot-p">02</div><div class="mdp-line mdp-line-p"></div></div><div class="mdp-info"><strong>DEPLOY</strong><span>ENVELO Interlock installed</span></div></div>
+            <div class="mdp-step"><div class="mdp-track"><div class="mdp-dot mdp-dot-t">03</div><div class="mdp-line mdp-line-t"></div></div><div class="mdp-info"><strong>OBSERVE</strong><span>Auto-discover operational boundaries</span></div></div>
+            <div class="mdp-step"><div class="mdp-track"><div class="mdp-dot mdp-dot-t">04</div><div class="mdp-line mdp-line-t"></div></div><div class="mdp-info"><strong>CAT-72</strong><span>72-hour continuous enforcement test</span></div></div>
+            <div class="mdp-step"><div class="mdp-track"><div class="mdp-dot mdp-dot-g">05</div></div><div class="mdp-info"><strong>CERTIFY</strong><span>Conformance record issued to registry</span></div></div>
+          </div>
+          <div class="md-foot">YOUR IP STAYS YOURS · WE CERTIFY THE PROCESS</div>
+        </div>
+      </div>
+
+            <script>
       (function(){
         var c=document.getElementById('process-canvas');
         if(!c)return;
@@ -4724,7 +5039,6 @@
       })();
       </script>
       </div>
-
       <!-- Fee Schedule -->
       <div class="reveal" style="margin-top: var(--space-4); max-width: 600px; margin-left: auto; margin-right: auto;">
         <div style="text-align: center; margin-bottom: var(--space-2);">

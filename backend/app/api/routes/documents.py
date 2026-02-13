@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, RedirectResponse
 from pathlib import Path
 from app.core.security import get_current_user
 
@@ -44,6 +44,9 @@ async def list_documents(current_user: dict = Depends(get_current_user)):
 
 @router.get("/{doc_id}/download", summary="Download document")
 async def download_document(doc_id: str, current_user: dict = Depends(get_current_user)):
+    # Serve cert guide from website (bypass Docker cache)
+    if doc_id == "oddc-certification-guide":
+        return RedirectResponse("https://www.sentinelauthority.org/docs/ODDC_Certification_Guide_v4.0.pdf")
     doc = AVAILABLE_DOCS.get(doc_id)
     if not doc:
         raise HTTPException(status_code=404, detail="Document not found")

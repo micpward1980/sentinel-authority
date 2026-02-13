@@ -559,3 +559,14 @@ body { overflow-x: hidden; -webkit-text-size-adjust: 100%; }
   .hud-frame { border: 1px solid #ccc !important; background: white !important; }
   body { background: white !important; color: black !important; }
 }
+
+
+/* ═══════════════════════════════════════════════════
+   CANVAS / DIAGRAM TOGGLE
+   ═══════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  #hero-canvas, #envelo-canvas, #security-canvas, #cat72-canvas, #process-canvas {
+    display: none !important;
+  }
+  .m-diagram { display: block !important; }
+}
