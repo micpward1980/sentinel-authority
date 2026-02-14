@@ -1,5 +1,5 @@
-from app.services.audit_service import write_audit_log
 """Certificate Registry routes."""
+from app.services.audit_service import write_audit_log
 from app.services.email_service import notify_certificate_issued
 from datetime import datetime, timedelta
 from fastapi import APIRouter, Depends, HTTPException
@@ -234,19 +234,3 @@ async def revoke_certificate(certificate_number: str, reason: str, db: AsyncSess
     cert.history = (cert.history or []) + [{"action": "revoked", "timestamp": datetime.utcnow().isoformat(), "by": user["email"], "reason": reason}]
     await db.commit()
     return {"message": "Certificate revoked", "state": cert.state}
-
-@router.patch("/{certificate_number}/reinstate", summary="Reinstate suspended certificate")
-async def reinstate_certificate(certificate_number: str, db: AsyncSession = Depends(get_db), user: dict = Depends(require_role(["admin"]))):
-    result = await db.execute(select(Certificate).where(Certificate.certificate_number == certificate_number))
-    cert = result.scalar_one_or_none()
-    if not cert: raise HTTPException(status_code=404, detail="Certificate not found")
-    if cert.state != "suspended": raise HTTPException(status_code=400, detail="Only suspended certificates can be reinstated")
-    cert.state = "conformant"
-    # Clear offline reason
-    from app.models.models import EnveloSession
-    sr = await db.execute(select(EnveloSession).where(EnveloSession.certificate_id == certificate_number))
-    for ss in sr.scalars().all():
-        ss.offline_reason = None
-    cert.history = (cert.history or []) + [{"action": "reinstated", "timestamp": datetime.utcnow().isoformat(), "by": user["email"]}]
-    await db.commit()
-    return {"message": "Certificate reinstated", "state": cert.state}

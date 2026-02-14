@@ -2012,12 +2012,12 @@ async def list_tests(
     from sqlalchemy import func, or_
     
     query = select(CAT72Test, Application).join(Application, CAT72Test.application_id == Application.id)
+    count_query = select(func.count(CAT72Test.id)).select_from(CAT72Test).join(Application, CAT72Test.application_id == Application.id)
     # ── ORG ISOLATION: non-admin users only see their org's tests ──
     _org_f = org_filter(user, Application)
     if _org_f is not None:
         query = query.where(_org_f)
         count_query = count_query.where(_org_f)
-    count_query = select(func.count(CAT72Test.id)).select_from(CAT72Test).join(Application, CAT72Test.application_id == Application.id)
     
     if state:
         query = query.where(CAT72Test.state == state)

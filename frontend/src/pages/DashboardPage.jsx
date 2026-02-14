@@ -1,24 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Wifi, FileText, Activity, Award, AlertTriangle, Plus, Download, RefreshCw, AlertCircle } from 'lucide-react';
-import BrandMark from '../components/BrandMark';
+import { Wifi, FileText, Activity, Award, AlertTriangle, Plus, Shield, Download, RefreshCw, AlertCircle, Clock } from 'lucide-react';
 import { api, API_BASE } from '../config/api';
-
+import { styles } from '../config/styles';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { useConfirm } from '../context/ConfirmContext';
 import Panel from '../components/Panel';
 import StatCard from '../components/StatCard';
+import EmptyState from '../components/EmptyState';
 
-/* ═══════════════════════════════════════
-   CUSTOMER DASHBOARD
-   ═══════════════════════════════════════ */
 function CustomerDashboard() {
   const confirm = useConfirm();
   const { user } = useAuth();
   const toast = useToast();
   const navigate = useNavigate();
   const [applications, setApplications] = useState([]);
+  const [appTotal, setAppTotal] = useState(0);
+  const [stateCounts, setStateCounts] = useState({});
   const [certificates, setCertificates] = useState([]);
   const [loading, setLoading] = useState(true);
   const [monitoring, setMonitoring] = useState(null);
@@ -46,13 +45,9 @@ function CustomerDashboard() {
     { key: 'testing', label: 'Testing' },
     { key: 'conformant', label: 'Conformant' },
   ];
+
   const stageIdx = (state) => STAGES.findIndex(s => s.key === state);
-  const stateColor = (state) => {
-    if (state === 'conformant') return 'var(--accent-green)';
-    if (state === 'revoked' || state === 'suspended') return 'var(--accent-red)';
-    if (state === 'testing' || state === 'approved') return 'var(--purple-bright)';
-    return 'var(--accent-amber)';
-  };
+
   const nextAction = (state) => {
     switch(state) {
       case 'pending': return 'Awaiting review';
@@ -65,77 +60,92 @@ function CustomerDashboard() {
     }
   };
 
-  if (loading) return <div className="hud-label" style={{padding:'60px',textAlign:'center'}}>Loading…</div>;
+  const stateColor = (state) => {
+    if (state === 'conformant') return styles.accentGreen;
+    if (state === 'revoked' || state === 'suspended') return styles.accentRed;
+    if (state === 'testing' || state === 'approved') return styles.purpleBright;
+    return styles.accentAmber;
+  };
 
-  const sessions = monitoring?.sessions || [];
-  const online = sessions.filter(s => {
-    const la = s.last_heartbeat_at || s.last_telemetry_at || s.last_activity || s.started_at;
-    return s.status === 'active' && la && (Date.now() - new Date(la).getTime()) < 120000;
-  }).length;
-  const totalSessions = monitoring?.summary?.total || 0;
+  if (loading) return <div style={{color: styles.textTertiary, padding: 'clamp(16px, 4vw, 40px)', textAlign: 'center'}}>Loading...</div>;
 
   return (
-    <div className='sa-dashboard' style={{maxWidth:'1000px',margin:'0 auto'}}>
+    <div className="space-y-6" style={{maxWidth: "1000px", margin: "0 auto"}}>
+      {/* Header */}
+      <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px'}}>
+        <div>
+          <p style={{fontFamily: styles.mono, fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', color: styles.purpleBright, marginBottom: '8px'}}>ODDC Certification</p>
+          <h1 style={{fontFamily: "Georgia, 'Source Serif 4', serif", fontSize: 'clamp(24px, 5vw, 36px)', fontWeight: 200, margin: 0}}>Welcome{user?.full_name ? `, ${user.full_name.split(' ')[0]}` : ''}</h1>
+          <p style={{color: styles.textSecondary, marginTop: '8px'}}>{user?.organization ? user.organization + ' · ' : ''}Track your certification progress and manage your systems.</p>
+        </div>
 
-      {/* ── Section Header ── */}
-      <div style={{marginBottom:'32px'}}>
-        <span className="hud-label" style={{color:'var(--purple-bright)',letterSpacing:'4px',display:'flex',alignItems:'center',gap:'12px',marginBottom:'10px'}}>
-          <span style={{width:'24px',height:'1px',background:'var(--purple-bright)'}}></span>
-          ODDC CERTIFICATION
-        </span>
-        <h1 style={{fontFamily:'var(--serif)',fontSize:'clamp(24px,4vw,32px)',fontWeight:200,margin:'0 0 6px',letterSpacing:'-0.02em'}}>
-          Welcome{user?.full_name ? `, ${user.full_name.split(' ')[0]}` : ''}
-        </h1>
-        <p style={{color:'var(--text-tertiary)',fontFamily:'var(--mono)',fontSize:'11px',letterSpacing:'1px'}}>
-          {new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})}
-          {user?.organization_name ? ` · ${user.organization_name}` : ''}
-        </p>
       </div>
 
-      {/* ── Stat Cards ── */}
-      <div className='sa-stat-grid' style={{display:'grid',gridTemplateColumns:'repeat(auto-fit, minmax(140px, 1fr))',gap:'12px',marginBottom:'32px'}}>
-        <StatCard onClick={() => navigate("/applications")} label="Applications" value={applications.length} color="var(--purple-bright)" icon={<FileText size={16} strokeWidth={1.5}/>}
-          sublabel={applications.filter(a=>a.state==='pending'||a.state==='under_review').length>0 ? `${applications.filter(a=>a.state==='pending'||a.state==='under_review').length} in review` : null} />
-        <StatCard onClick={() => navigate("/certificates")} label="Certificates" value={certificates.length} color="var(--accent-green)" icon={<Award size={16} strokeWidth={1.5}/>}
-          sublabel={certificates.filter(c=>c.state==='conformant').length>0 ? `${certificates.filter(c=>c.state==='conformant').length} active` : null} />
-        <StatCard onClick={() => navigate("/cat72")} label="Active Tests" value={applications.filter(a=>a.state==='testing').length} color="var(--accent-amber)" icon={<Activity size={16} strokeWidth={1.5}/>} />
-        <StatCard onClick={() => navigate('/monitoring')} label="Live Status" value={totalSessions>0 ? online : '—'} color={totalSessions>0 ? (online>0?'var(--accent-green)':'var(--accent-amber)') : 'var(--text-tertiary)'} icon={<Wifi size={16} strokeWidth={1.5}/>}
-          sublabel={totalSessions>0 ? (online>0?`${online} of ${totalSessions} online`:'All offline') : null} />
+      {/* Quick Stats */}
+      <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px'}}>
+        <StatCard onClick={() => navigate("/applications")} label="Applications" value={applications.length} color={styles.purpleBright} icon={<FileText fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{color: styles.purpleBright}} />} subtitle={applications.filter(a => a.state === 'pending' || a.state === 'under_review').length > 0 ? `${applications.filter(a => a.state === 'pending' || a.state === 'under_review').length} in review` : null} />
+        <StatCard onClick={() => navigate("/certificates")} label="Certificates" value={certificates.length} color={styles.accentGreen} icon={<Award fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{color: styles.accentGreen}} />} subtitle={certificates.filter(c => c.state === 'conformant').length > 0 ? `${certificates.filter(c => c.state === 'conformant').length} active` : null} />
+        <StatCard onClick={() => navigate("/cat72")} label="Active Tests" value={applications.filter(a => a.state === 'testing').length} color={styles.accentAmber} icon={<Activity fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{color: styles.accentAmber}} />} />
+        {(() => {
+          const sessions = monitoring?.sessions || [];
+          const online = sessions.filter(s => {
+            const la = s.last_heartbeat_at || s.last_telemetry_at || s.last_activity || s.started_at;
+            return s.status === 'active' && la && (Date.now() - new Date(la).getTime()) < 120000;
+          }).length;
+          const total = monitoring?.summary?.total || 0;
+          const hasAgents = total > 0;
+          const statusColor = hasAgents ? (online > 0 ? styles.accentGreen : styles.accentAmber) : styles.textTertiary;
+          const statusText = hasAgents ? (online > 0 ? `${online} of ${total} online` : 'All systems offline') : 'No active systems';
+          return <StatCard onClick={() => navigate('/monitoring')} label="Live Status" value={hasAgents ? online : '—'} color={statusColor} icon={<Wifi fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{color: statusColor}} />} subtitle={statusText} />;
+        })()}
       </div>
 
-      {/* ── Applications ── */}
-      <div style={{marginBottom:'32px'}}>
-        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'16px'}}>
-          <span className="hud-label">Your Applications</span>
-          {applications.length>0 && <Link to="/applications" className="hud-link" style={{fontSize:'10px'}}>View All →</Link>}
+      {/* Applications with Progress */}
+      <Panel>
+        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '16px'}}>
+          <h2 style={{fontFamily: styles.mono, fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, margin: 0}}>Your Applications</h2>
+          {applications.length > 0 && (
+            <Link to="/applications" style={{fontFamily: styles.mono, fontSize: '10px', color: styles.purpleBright, textDecoration: 'none', letterSpacing: '1px'}}>View All →</Link>
+          )}
         </div>
         {applications.length === 0 ? (
-          <div className="hud-frame" style={{textAlign:'center',padding:'48px 20px'}}><i></i>
-            <BrandMark size={28} />
-            <p style={{fontFamily:'var(--serif)',fontSize:'17px',color:'var(--text-secondary)',marginBottom:'8px'}}>Begin Your Certification</p>
-            <p style={{fontSize:'12px',color:'var(--text-tertiary)',maxWidth:'360px',margin:'0 auto 20px',lineHeight:1.7}}>Submit your autonomous system for ODDC certification. Our CAT-72 test validates real-time boundary enforcement over 72 hours.</p>
-            <Link to="/applications/new" className="btn primary"><Plus size={12}/> New Application</Link>
+          <div style={{textAlign: 'center', padding: '56px 20px'}}>
+            <div style={{width: '72px', height: '72px', background: 'transparent', border: '1px solid rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px'}}>
+              <Shield fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} size={32} style={{color: styles.purpleBright, opacity: 0.7}} />
+            </div>
+            <p style={{color: styles.textPrimary, fontSize: '17px', fontWeight: 500, marginBottom: '8px', fontFamily: "Georgia, 'Source Serif 4', serif"}}>Begin Your Certification</p>
+            <p style={{color: styles.textTertiary, fontSize: '13px', marginBottom: '28px', maxWidth: '360px', margin: '0 auto 28px', lineHeight: '1.6'}}>Submit your autonomous system for ODDC certification. Our CAT-72 test validates real-time boundary enforcement over 72 hours.</p>
+            <Link to="/applications/new" className="inline-flex items-center gap-2 px-6 py-3 no-underline" style={{background: styles.purplePrimary, border: 'none', color: '#fff', fontFamily: styles.mono, fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase' }}>
+              <Plus className="w-4 h-4" />
+              New Application
+            </Link>
           </div>
         ) : (
-          <div className="hud-frame"><i></i>
-            {applications.map((app, idx) => {
-              const si = stageIdx(app.state);
+          <div className="space-y-4">
+            {applications.map(app => {
+              const idx = stageIdx(app.state);
               return (
-                <Link key={app.id} to={`/applications/${app.id}`} style={{textDecoration:'none',display:'block'}}>
-                  <div className="hud-row" style={{display:'flex',alignItems:'center',gap:'12px',cursor:'pointer',paddingTop:'14px',paddingBottom:'14px'}}>
-                    <span className="hud-num" style={{minWidth:'20px'}}>{String(idx+1).padStart(2,'0')}</span>
-                    <span className="hud-dot" style={{background:stateColor(app.state),marginRight:0}}></span>
-                    <div style={{flex:1,minWidth:0}}>
-                      <div className="hud-title">{app.system_name}</div>
-                      <div style={{fontFamily:'var(--mono)',fontSize:'10px',letterSpacing:'1px',color:'var(--text-tertiary)',marginTop:'2px'}}>
-                        {app.application_number} · {nextAction(app.state)}
+                <Link key={app.id} to={`/applications/${app.id}`} style={{textDecoration: 'none', display: 'block'}}>
+                  <div style={{padding: '20px', background: 'transparent', border: `1px solid ${styles.borderGlass}`, cursor: 'pointer', transition: 'border-color 0.2s'}} onMouseEnter={e => e.currentTarget.style.borderColor = styles.purpleBright} onMouseLeave={e => e.currentTarget.style.borderColor = styles.borderGlass}>
+                    {/* Top row: name + badge */}
+                    <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '16px'}}>
+                      <div>
+                        <div style={{fontWeight: 500, color: styles.textPrimary, fontSize: '15px', marginBottom: '4px'}}>{app.system_name}</div>
+                        <div style={{fontSize: '11px', color: styles.textTertiary, fontFamily: styles.mono}}>{app.application_number} · {app.system_type?.replace(/_/g, ' ')}</div>
+                      </div>
+                      <div style={{display: 'flex', alignItems: 'center', gap: '12px'}}>
+                        <span style={{fontSize: '12px', color: styles.textTertiary}}>{nextAction(app.state)}</span>
+                        <span style={{padding: '4px 12px', fontSize: '10px', fontFamily: styles.mono, textTransform: 'uppercase', letterSpacing: '1px',
+                          background: `${stateColor(app.state)}06`,
+                          color: stateColor(app.state),
+                          border: `1px solid ${stateColor(app.state)}10`
+                        }}>{app.state}</span>
                       </div>
                     </div>
-                    <span style={{fontFamily:'var(--mono)',fontSize:'9px',letterSpacing:'2px',textTransform:'uppercase',color:stateColor(app.state)}}>{app.state?.replace(/_/g,' ')}</span>
-                    {/* Mini progress */}
-                    <div style={{display:'flex',gap:'2px',width:'60px'}}>
-                      {STAGES.map((s,i) => (
-                        <div key={s.key} className="sa-fill" style={{flex:1,height:'3px','--sa-bg':i<=si ? stateColor(app.state) : 'rgba(255,255,255,0.04)'}}/>
+                    {/* Mini progress bar */}
+                    <div style={{display: 'flex', gap: '3px', height: '4px'}}>
+                      {STAGES.map((s, i) => (
+                        <div key={s.key} style={{flex: 1, background: i <= idx ? stateColor(app.state) : 'rgba(0,0,0,0.025)'}} />
                       ))}
                     </div>
                   </div>
@@ -144,105 +154,128 @@ function CustomerDashboard() {
             })}
           </div>
         )}
-      </div>
+      </Panel>
 
-      {/* ── Certificates ── */}
-      {certificates.length > 0 && (
-        <div style={{marginBottom:'32px'}}>
-          <span className="hud-label" style={{marginBottom:'16px',display:'block'}}>Your Certificates</span>
-          <div className="hud-frame"><i></i>
-            {certificates.map((cert,idx) => (
-              <div key={cert.id} className="hud-row" style={{display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:'12px'}}>
+      {/* Certificates */}
+      
+        {certificates.length === 0 && (
+          <EmptyState icon={Award} title="No Certificates Yet" description="Certificates are issued after your system passes the 72-hour CAT-72 conformance test. Submit an application to begin."  />
+        )}
+        {certificates.length > 0 && (
+        <Panel>
+          <h2 style={{fontFamily: styles.mono, fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Your Certificates</h2>
+          <div className="space-y-3">
+            {certificates.map(cert => (
+              <div key={cert.id} style={{padding: '16px', background: 'transparent', border: '1px solid rgba(0,0,0,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px'}}>
                 <div>
-                  <div style={{fontFamily:'var(--mono)',fontSize:'13px',color:'var(--accent-green)',letterSpacing:'1px'}}>{cert.certificate_number}</div>
-                  <div style={{fontSize:'11px',color:'var(--text-tertiary)',marginTop:'2px'}}>
-                    Issued: {cert.issued_at ? new Date(cert.issued_at).toLocaleDateString() : '—'}
-                    {cert.expires_at ? ` · Expires: ${new Date(cert.expires_at).toLocaleDateString()}` : ''}
-                  </div>
+                  <div style={{fontWeight: 500, color: styles.accentGreen, marginBottom: '4px', fontFamily: styles.mono, fontSize: '14px'}}>{cert.certificate_number}</div>
+                  <div style={{fontSize: '12px', color: styles.textTertiary}}>Issued: {new Date(cert.issued_at).toLocaleDateString()}{cert.expires_at ? ` · Expires: ${new Date(cert.expires_at).toLocaleDateString()}` : ''}</div>
                 </div>
-                <a href={`${API_BASE}/api/certificates/${cert.certificate_number}/pdf`} target="_blank" className="btn" style={{padding:'6px 14px',fontSize:'9px'}}>
-                  <Download size={11}/> PDF
-                </a>
+                <div style={{display: 'flex', gap: '8px'}}>
+                  <a href={`${API_BASE}/api/certificates/${cert.certificate_number}/pdf`}
+                     target="_blank"
+                     style={{padding: '8px 16px', background: styles.purplePrimary, color: '#fff', fontSize: '11px', fontFamily: styles.mono, textDecoration: 'none'}}>
+                    Download PDF
+                  </a>
+                </div>
               </div>
             ))}
           </div>
-        </div>
+        </Panel>
       )}
 
-      {certificates.length === 0 && (
-        <div style={{marginBottom:'32px'}}>
-          <span className="hud-label" style={{marginBottom:'16px',display:'block'}}>Certificates</span>
-          <div style={{textAlign:'center',padding:'32px 20px',borderTop:'none'}}>
-            <p style={{fontSize:'12px',color:'var(--text-tertiary)',fontFamily:'var(--mono)',letterSpacing:'0.5px'}}>
-              Certificates are issued after your system passes the 72-hour CAT-72 conformance test.
-            </p>
-          </div>
-        </div>
-      )}
 
-      {/* ── Recent Activity ── */}
-      <div>
-        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'16px'}}>
-          <span className="hud-label">Recent Activity</span>
-          <Link to="/my-activity" className="hud-link" style={{fontSize:'10px'}}>View All →</Link>
+
+      {/* Recent Activity */}
+      <Panel>
+        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '16px'}}>
+          <h2 style={{fontFamily: styles.mono, fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, margin: 0}}>Recent Activity</h2>
+          <Link to="/my-activity" style={{fontFamily: styles.mono, fontSize: '10px', color: styles.purpleBright, textDecoration: 'none', letterSpacing: '1px'}}>View All →</Link>
         </div>
         {recentActivity.length === 0 ? (
-          <p style={{color:'var(--text-tertiary)',fontSize:'12px',fontFamily:'var(--mono)',textAlign:'center',padding:'20px 0'}}>No activity yet</p>
+          <p style={{color: styles.textTertiary, fontSize: '13px', textAlign: 'center', padding: '20px 0'}}>No activity yet</p>
         ) : (
-          <div className="hud-frame"><i></i>
-            {recentActivity.map((log,i) => {
-              const labels = {
-                user_login:'Signed in', user_registered:'Account created', login_failed:'Failed login',
-                application_submitted:'Application submitted', application_state_changed:'Status updated',
-                application_deleted:'Application deleted', test_created:'CAT-72 test scheduled',
-                test_started:'CAT-72 test started', test_completed:'CAT-72 test completed',
-                certificate_issued:'Certificate issued', certificate_suspended:'Certificate suspended',
-                certificate_revoked:'Certificate revoked', certificate_reinstated:'Certificate reinstated',
-                api_key_created:'API key created', api_key_revoked:'API key revoked',
-                password_changed:'Password changed', profile_updated:'Profile updated',
-                '2fa_enabled':'2FA enabled', '2fa_disabled':'2FA disabled'
+          <div style={{display: 'flex', flexDirection: 'column', gap: '1px'}}>
+            {recentActivity.map((log, i) => {
+              const actionLabels = {
+                user_login: 'Signed in',
+                user_registered: 'Account created',
+                login_failed: 'Failed login attempt',
+                application_submitted: 'Application submitted',
+                application_state_changed: 'Application status updated',
+                application_deleted: 'Application deleted',
+                test_created: 'CAT-72 test scheduled',
+                test_started: 'CAT-72 test started',
+                test_completed: 'CAT-72 test completed',
+                certificate_issued: 'Certificate issued',
+                certificate_suspended: 'Certificate suspended',
+                certificate_revoked: 'Certificate revoked',
+                certificate_reinstated: 'Certificate reinstated',
+                api_key_created: 'API key created',
+                api_key_revoked: 'API key revoked',
+                password_changed: 'Password changed',
+                profile_updated: 'Profile updated',
+                '2fa_enabled': 'Two-factor authentication enabled',
+                '2fa_disabled': 'Two-factor authentication disabled'
               };
-              const dotColors = {
-                certificate_issued:'var(--accent-green)', test_completed:'var(--accent-green)',
-                certificate_revoked:'var(--accent-red)', login_failed:'var(--accent-red)', certificate_suspended:'var(--accent-amber)',
-                application_submitted:'var(--purple-bright)', test_created:'var(--purple-bright)'
+              const actionColors = {
+                user_login: styles.textTertiary,
+                login_failed: styles.accentRed,
+                application_submitted: styles.purpleBright,
+                application_state_changed: styles.accentAmber,
+                test_created: styles.purpleBright,
+                test_started: styles.accentAmber,
+                test_completed: styles.accentGreen,
+                certificate_issued: styles.accentGreen,
+                certificate_suspended: styles.accentAmber,
+                certificate_revoked: styles.accentRed,
+                api_key_created: styles.purpleBright,
+                api_key_revoked: styles.accentRed
               };
-              const label = labels[log.action] || log.action?.replace(/_/g,' ');
-              const dotColor = dotColors[log.action] || 'rgba(157,140,207,0.5)';
-              const detail = log.details?.system_name || log.details?.application_number || '';
+              const label = actionLabels[log.action] || log.action.replace(/_/g, ' ');
+              const color = actionColors[log.action] || styles.textSecondary;
+              const detail = log.details?.system_name || log.details?.application_number || log.details?.test_id || log.details?.certificate_number || log.details?.key_name || '';
               const timeAgo = (ts) => {
-                const d = Date.now() - new Date(ts).getTime();
-                const m = Math.floor(d/60000);
-                if (m<1) return 'just now';
-                if (m<60) return m+'m ago';
-                const h = Math.floor(m/60);
-                if (h<24) return h+'h ago';
-                return Math.floor(h/24)+'d ago';
+                const diff = Date.now() - new Date(ts).getTime();
+                const mins = Math.floor(diff / 60000);
+                if (mins < 1) return 'just now';
+                if (mins < 60) return mins + 'm ago';
+                const hrs = Math.floor(mins / 60);
+                if (hrs < 24) return hrs + 'h ago';
+                const days = Math.floor(hrs / 24);
+                return days + 'd ago';
               };
               return (
-                <div key={log.id||i} className="hud-row" style={{display:'flex',alignItems:'center',gap:'10px'}}>
-                  <span className="hud-dot" style={{background:dotColor,marginRight:0}}></span>
-                  <div style={{flex:1,minWidth:0}}>
-                    <span style={{fontSize:'12px',color:'var(--text-secondary)'}}>{label}</span>
-                    {detail && <span style={{fontSize:'11px',color:'var(--text-tertiary)',marginLeft:'8px'}}>{detail}</span>}
+                <div key={log.id || i} style={{display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 0', borderBottom: i < recentActivity.length - 1 ? '1px solid rgba(0,0,0,0.05)' : 'none'}}>
+                  <div style={{width: '6px', height: '6px', borderRadius: '50%', background: color, flexShrink: 0}} />
+                  <div style={{flex: 1, minWidth: 0}}>
+                    <span style={{fontSize: '13px', color: styles.textPrimary}}>{label}</span>
+                    {detail && <span style={{fontSize: '12px', color: styles.textTertiary, marginLeft: '8px'}}>{detail}</span>}
                   </div>
-                  <span style={{fontFamily:'var(--mono)',fontSize:'9px',color:'var(--text-tertiary)',letterSpacing:'0.5px',flexShrink:0}}>
-                    {log.timestamp ? timeAgo(log.timestamp) : ''}
-                  </span>
+                  <span style={{fontSize: '11px', color: styles.textTertiary, fontFamily: styles.mono, flexShrink: 0}}>{timeAgo(log.timestamp)}</span>
                 </div>
               );
             })}
           </div>
         )}
-      </div>
+      </Panel>
+
     </div>
   );
 }
 
 
-/* ═══════════════════════════════════════
-   ADMIN DASHBOARD
-   ═══════════════════════════════════════ */
+// Role-based dashboard routing
+
+function RoleBasedDashboard() {
+  const { user } = useAuth();
+  if (user?.role === 'admin') {
+    return <Dashboard />;
+  }
+  return <CustomerDashboard />;
+}
+
+
 function Dashboard() {
   const { user } = useAuth();
   const toast = useToast();
@@ -259,7 +292,7 @@ function Dashboard() {
   const loadData = (manual) => {
     if (manual) setRefreshing(true);
     api.get('/api/dashboard/stats').then(res => setStats(res.data)).catch(console.error);
-    // Recent apps now pulled from allApps (intake pipeline only)
+    api.get('/api/dashboard/recent-applications').then(res => setRecentApps(res.data)).catch(console.error);
     api.get('/api/dashboard/active-tests').then(res => setActiveTests(res.data)).catch(console.error);
     api.get('/api/applications/').then(res => setAllApps(res.data.applications || res.data || [])).catch(console.error);
     api.get('/api/dashboard/recent-certificates').then(res => setRecentCerts(res.data)).catch(console.error);
@@ -273,175 +306,189 @@ function Dashboard() {
     return () => clearInterval(interval);
   }, []);
 
+  // Pipeline breakdown
   const pipeline = {
     pending: allApps.filter(a => a.state === 'pending').length,
     under_review: allApps.filter(a => a.state === 'under_review').length,
     approved: allApps.filter(a => a.state === 'approved').length,
-
+    testing: allApps.filter(a => a.state === 'testing').length,
+    conformant: allApps.filter(a => a.state === 'conformant').length,
+    revoked: allApps.filter(a => a.state === 'revoked' || a.state === 'suspended').length
   };
+
   const needsAction = allApps.filter(a => a.state === 'pending' || a.state === 'under_review');
 
   const handleQuickAdvance = async (appId, newState, label) => {
     if (!await confirm({title: 'Confirm', message: label + '?'})) return;
     try {
       await api.patch(`/api/applications/${appId}/state?new_state=${newState}`);
+      // Auto-provision API key when approving
       if (newState === 'approved') {
         try {
-          await api.post('/api/apikeys/admin/provision', null, { params: { application_id: appId, send_email: true } });
-          toast.show('Approved — API key provisioned', 'success');
-        } catch { toast.show('Approved', 'success'); }
+          await api.post('/api/apikeys/admin/provision', null, {
+            params: { application_id: appId, send_email: true }
+          });
+          toast.show('Approved — API key provisioned and emailed to applicant', 'success');
+        } catch (provErr) {
+          // Non-fatal: key may already exist or endpoint may not support it yet
+          toast.show('Approved — applicant can generate key from their dashboard', 'success');
+        }
       }
       loadData();
-    } catch (err) { toast.show('Failed: ' + (err.response?.data?.detail || err.message), 'error'); }
+    } catch (err) {
+      toast.show('Failed: ' + (err.response?.data?.detail || err.message), 'error');
+    }
   };
 
-  const onlineAgents = monitoring?.sessions?.filter(s => {
-    const la = s.last_heartbeat_at || s.last_telemetry_at || s.started_at;
-    return s.status === 'active' && la && (Date.now() - new Date(la).getTime()) < 120000;
-  }).length || monitoring?.summary?.active || 0;
-  const expiringCount = recentCerts.filter(c => c.expires_at && c.state === 'conformant' && new Date(c.expires_at) < new Date(Date.now() + 30*24*60*60*1000)).length;
-  const actionCount = needsAction.length + expiringCount;
-
   return (
-    <div className='sa-dashboard' style={{maxWidth:'1200px',margin:'0 auto'}}>
-
-      {/* ── Header ── */}
-      <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',flexWrap:'wrap',gap:'16px',marginBottom:'32px'}}>
+    <div className="space-y-6" style={{maxWidth: "1200px", margin: "0 auto"}}>
+      <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px', marginBottom: '28px'}}>
         <div>
-          <span className="hud-label" style={{color:'var(--purple-bright)',letterSpacing:'4px',display:'flex',alignItems:'center',gap:'12px',marginBottom:'10px'}}>
-            <span style={{width:'24px',height:'1px',background:'var(--purple-bright)'}}></span>
-            ADMINISTRATION
-          </span>
-          <h1 style={{fontFamily:'var(--serif)',fontSize:'clamp(24px,4vw,32px)',fontWeight:200,margin:'0 0 6px',letterSpacing:'-0.02em'}}>
-            Welcome{user?.full_name ? `, ${user.full_name.split(' ')[0]}` : ''}
-          </h1>
-          <p style={{color:'var(--text-tertiary)',fontFamily:'var(--mono)',fontSize:'11px',letterSpacing:'1px'}}>
-            {new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})}
+          <p style={{fontFamily: styles.mono, fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', color: styles.purpleBright, marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '12px'}}>
+            <span style={{width: '24px', height: '1px', background: styles.purpleBright}}></span>
+            Administration
           </p>
+          <h1 style={{fontFamily: "Georgia, 'Source Serif 4', serif", fontSize: 'clamp(24px, 5vw, 36px)', fontWeight: 200, margin: 0}}>Welcome{user?.full_name ? `, ${user.full_name.split(' ')[0]}` : ''}</h1>
+          <p style={{color: styles.textTertiary, marginTop: '6px', fontSize: '13px', fontFamily: styles.mono}}>{new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</p>
         </div>
-        <button onClick={() => loadData(true)} className="btn" style={{padding:'8px 16px'}}>
-          <RefreshCw size={12} style={refreshing ? {animation:'spin 0.8s linear infinite'} : {}}/> {refreshing ? 'Refreshing…' : 'Refresh'}
-        </button>
+        <div style={{display: 'flex', gap: '10px'}}>
+          <button onClick={() => loadData(true)} style={{background: 'transparent', border: `1px solid ${styles.borderGlass}`, padding: '10px 16px', color: styles.textSecondary, cursor: 'pointer', fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '8px'}}><RefreshCw fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} size={14} style={refreshing ? {animation: "spin 0.8s linear infinite"} : {}} /> {refreshing ? "Refreshing..." : "Refresh"}</button>
+        </div>
       </div>
 
-      {/* ── Stats Grid ── */}
-      <div className='sa-stat-grid' style={{display:'grid',gridTemplateColumns:'repeat(auto-fit, minmax(140px, 1fr))',gap:'12px',marginBottom:'32px'}}>
-        <StatCard onClick={() => navigate("/applications")} label="In Pipeline" value={allApps.length} color="var(--purple-bright)" icon={<FileText size={16} strokeWidth={1.5}/>}/>
-        <StatCard onClick={() => navigate("/cat72")} label="Active Tests" value={stats?.active_tests || 0} color="var(--accent-amber)" icon={<Activity size={16} strokeWidth={1.5}/>}/>
-        <StatCard onClick={() => navigate("/certificates")} label="Active Certs" value={stats?.certificates_active || 0} color="var(--accent-green)" icon={<BrandMark size={16} />}/>
-        <StatCard onClick={() => navigate("/monitoring")} label="Online Interlocks" value={onlineAgents} color={onlineAgents>0?'var(--accent-green)':'var(--text-tertiary)'} icon={<Wifi size={16} strokeWidth={1.5}/>}/>
-        <StatCard onClick={() => navigate("/certificates")} label="Certs Issued" value={stats?.certificates_issued || 0} color="var(--purple-bright)" icon={<Award size={16} strokeWidth={1.5}/>}/>
-      </div>
+      {/* Stats Row */}
+      {(() => {
+        const onlineAgents = monitoring?.sessions?.filter(s => {
+          const la = s.last_heartbeat_at || s.last_telemetry_at || s.started_at;
+          return s.status === 'active' && la && (Date.now() - new Date(la).getTime()) < 120000;
+        }).length || monitoring?.summary?.active || 0;
+        const expiringCount = recentCerts.filter(c => c.expires_at && c.state === 'conformant' && new Date(c.expires_at) < new Date(Date.now() + 30*24*60*60*1000)).length;
+        const actionCount = needsAction.length + expiringCount;
+        return (
+          <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px'}}>
+            <StatCard label="Total Applications" value={stats?.total_applications || 0} color={styles.purpleBright} icon={<FileText fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{color: styles.purpleBright}} />} />
+            <StatCard onClick={() => navigate("/cat72")} label="Active Tests" value={stats?.active_tests || 0} color={styles.accentAmber} icon={<Activity fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{color: styles.accentAmber}} />} />
+            <StatCard label="Active Certificates" value={stats?.certificates_active || 0} color={styles.accentGreen} icon={<Shield fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{color: styles.accentGreen}} />} />
+            <StatCard label="Online Interlocks" value={onlineAgents} color={onlineAgents > 0 ? styles.accentGreen : styles.textTertiary} icon={<Wifi fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{color: onlineAgents > 0 ? styles.accentGreen : styles.textTertiary}} />} />
+            <StatCard label="Certificates Issued" value={stats?.certificates_issued || 0} color={styles.purpleBright} icon={<Award fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{color: styles.purpleBright}} />} />
+            <StatCard label="Needs Action" value={actionCount} color={actionCount > 0 ? styles.accentAmber : styles.textTertiary} icon={<AlertCircle fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{color: actionCount > 0 ? styles.accentAmber : styles.textTertiary}} />} />
+          </div>
+        );
+      })()}
 
-      {/* ── Pipeline ── */}
-      <div style={{marginBottom:'32px'}}>
-        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'12px'}}>
-          <span className="hud-label">Application Pipeline</span>
-          <span style={{fontFamily:'var(--mono)',fontSize:'10px',color:'var(--text-tertiary)',letterSpacing:'1px'}}>{allApps.length} total</span>
+      {/* Pipeline Breakdown */}
+      <Panel>
+        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '16px'}}>
+          <h2 style={{fontFamily: styles.mono, fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, margin: 0}}>Certification Pipeline</h2>
+          <span style={{fontFamily: styles.mono, fontSize: '11px', color: styles.textTertiary}}>{allApps.length} total</span>
         </div>
-        <div style={{display:'flex',gap:'2px',height:'28px',overflow:'hidden'}}>
+        <div style={{display: 'flex', gap: '4px', height: '32px', overflow: 'hidden'}}>
           {[
-            {key:'pending',label:'Pending',color:'var(--accent-amber)',count:pipeline.pending},
-            {key:'review',label:'Review',color:'var(--accent-amber)',count:pipeline.under_review},
-            {key:'approved',label:'Awaiting Deploy',color:'var(--purple-bright)',count:pipeline.approved},
-          ].map(s => {
+            { key: 'pending', label: 'Pending', color: styles.accentAmber, count: pipeline.pending },
+            { key: 'under_review', label: 'Review', color: styles.accentAmber, count: pipeline.under_review },
+            { key: 'approved', label: 'Approved', color: styles.purpleBright, count: pipeline.approved },
+            { key: 'testing', label: 'Testing', color: styles.purpleBright, count: pipeline.testing },
+            { key: 'conformant', label: 'Conformant', color: styles.accentGreen, count: pipeline.conformant },
+            { key: 'revoked', label: 'Suspended', color: styles.accentRed, count: pipeline.revoked },
+          ].map(stage => {
             const total = allApps.length || 1;
-            const pct = s.count > 0 ? Math.max((s.count/total)*100, 8) : 0;
-            return (
-              <div key={s.key} className="sa-fill" style={{width: s.count > 0 ? `${pct}%` : 'auto', minWidth:'32px', flex: s.count > 0 ? 'none' : 1, display:'flex', alignItems:'center', justifyContent:'center', '--sa-bg': s.count > 0 ? 'rgba(255,255,255,0.02)' : 'rgba(255,255,255,0.015)', '--sa-accent': s.count > 0 ? s.color : 'transparent', borderLeftWidth:'2px', opacity: s.count > 0 ? 1 : 0.4}} title={`${s.label}: ${s.count}`}>
-                <span style={{fontFamily:'var(--mono)',fontSize:'9px',letterSpacing:'1px',color: s.count > 0 ? s.color : 'var(--text-tertiary)',whiteSpace:'nowrap'}}>{s.count > 0 ? `${s.count} ` : ''}{s.label}</span>
+            const pct = Math.max((stage.count / total) * 100, stage.count > 0 ? 8 : 0);
+            return stage.count > 0 ? (
+              <div key={stage.key} style={{width: `${pct}%`, background: `${stage.color}08`, display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: '48px', position: 'relative', borderLeft: `2px solid ${stage.color}`}} title={`${stage.label}: ${stage.count}`}>
+                <span style={{fontFamily: styles.mono, fontSize: '10px', color: stage.color, whiteSpace: 'nowrap'}}>{stage.count} {stage.label}</span>
               </div>
-            );
+            ) : null;
           })}
-          {allApps.length===0 && <div style={{flex:1,display:'flex',alignItems:'center',justifyContent:'center',background:'rgba(255,255,255,0.02)'}}>
-            <span style={{fontFamily:'var(--mono)',fontSize:'10px',color:'var(--text-tertiary)',letterSpacing:'1px'}}>No applications yet</span>
+          {allApps.length === 0 && <div style={{flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'transparent', padding: 'clamp(20px, 4vw, 40px) clamp(12px, 3vw, 20px)', textAlign: 'center'}}>
+            <div style={{width: '48px', height: '48px', background: 'transparent', border: '1px solid rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px'}}><FileText fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} size={22} style={{color: styles.purpleBright, opacity: 0.6}} /></div>
+            <p style={{color: styles.textSecondary, fontSize: '14px', fontWeight: 500, margin: '0 0 6px 0'}}>No applications yet</p>
+            <p style={{color: styles.textTertiary, fontSize: '12px', margin: '0 0 16px 0', maxWidth: '260px'}}>Submit your first ODDC certification application to get started.</p>
+
           </div>}
         </div>
-      </div>
+      </Panel>
 
-      {/* ── Review Queue ── */}
+      {/* Review Queue */}
       {needsAction.length > 0 && (
-        <div style={{marginBottom:'32px'}}>
-          <span className="hud-label" style={{color:'var(--accent-amber)',marginBottom:'12px',display:'block'}}>
-            ⚡ REVIEW QUEUE ({needsAction.length})
-          </span>
-          <div className="hud-frame"><i></i>
-            {needsAction.slice(0,5).map((app,idx) => (
-              <div key={app.id} className="hud-row" style={{display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:'12px'}}>
-                <div style={{display:'flex',alignItems:'center',gap:'12px',minWidth:0,flex:1}}>
-                  <span className="hud-num">{String(idx+1).padStart(2,'0')}</span>
-                  <span className="hud-dot" style={{background:app.state==='pending'?'var(--accent-amber)':'var(--purple-bright)',marginRight:0}}></span>
-                  <div style={{minWidth:0}}>
-                    <Link to={`/applications/${app.id}`} className="hud-title" style={{textDecoration:'none',color:'var(--text-primary)'}}>{app.system_name}</Link>
-                    <div style={{fontSize:'10px',color:'var(--text-tertiary)',fontFamily:'var(--mono)',letterSpacing:'0.5px'}}>{app.organization_name} · {app.state?.replace(/_/g,' ')}</div>
-                  </div>
+        <Panel>
+          <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '16px'}}>
+            <h2 style={{fontFamily: styles.mono, fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.accentAmber, margin: 0}}>⚡ Review Queue ({needsAction.length})</h2>
+            <Link to="/applications" style={{fontFamily: styles.mono, fontSize: '10px', color: styles.purpleBright, textDecoration: 'none'}}>View All →</Link>
+          </div>
+          <div className="space-y-3">
+            {needsAction.slice(0, 5).map(app => (
+              <div key={app.id} style={{padding: '14px 16px', background: 'transparent', border: `1px solid ${styles.borderGlass}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px'}}>
+                <div style={{display: 'flex', alignItems: 'center', gap: '16px'}}>
+                  <Link to={`/applications/${app.id}`} style={{color: styles.purpleBright, textDecoration: 'none', fontWeight: 500, fontSize: '14px'}}>{app.system_name}</Link>
+                  <span style={{color: styles.textTertiary, fontSize: '12px'}}>{app.organization_name}</span>
+                  <span className="px-2 py-1" style={{background: 'transparent', color: styles.accentAmber, fontFamily: styles.mono, fontSize: '9px', letterSpacing: '1px', textTransform: 'uppercase'}}>{app.state?.replace('_', ' ')}</span>
                 </div>
-                <div className='sa-action-btns' style={{display:'flex',gap:'6px',flexShrink:0}}>
+                <div style={{display: 'flex', gap: '8px'}}>
                   {app.state === 'pending' && (
-                    <button onClick={() => handleQuickAdvance(app.id, 'under_review', `Begin review for ${app.system_name}`)} className="btn" style={{padding:'5px 10px',fontSize:'8px',letterSpacing:'1px'}}>Review</button>
+                    <button onClick={() => handleQuickAdvance(app.id, 'under_review', `Begin review for ${app.system_name}`)} className="px-3 py-1" style={{background: 'transparent', border: '1px solid rgba(0,0,0,0.05)', color: styles.accentAmber, fontFamily: styles.mono, fontSize: '9px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>Begin Review</button>
                   )}
-                  <button onClick={() => handleQuickAdvance(app.id, 'approved', `Approve ${app.system_name}`)} className="btn" style={{padding:'5px 10px',fontSize:'8px',letterSpacing:'1px',color:'var(--accent-green)',borderColor:'rgba(92,214,133,0.2)'}}>Approve</button>
-                  <button onClick={() => handleQuickAdvance(app.id, 'suspended', `Withdraw ${app.system_name}`)} className="btn" style={{padding:'5px 10px',fontSize:'8px',letterSpacing:'1px',color:'var(--accent-red)',borderColor:'rgba(214,92,92,0.2)'}}>Withdraw</button>
-                  <Link to={`/applications/${app.id}`} className="btn" style={{padding:'5px 10px',fontSize:'8px',letterSpacing:'1px'}}>View</Link>
+                  <button onClick={() => handleQuickAdvance(app.id, 'approved', `Approve ${app.system_name}`)} className="px-3 py-1" style={{background: 'transparent', border: '1px solid rgba(0,0,0,0.05)', color: styles.accentGreen, fontFamily: styles.mono, fontSize: '9px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>Approve</button>
+                  <button onClick={() => handleQuickAdvance(app.id, 'suspended', `Suspend ${app.system_name}`)} className="px-3 py-1" style={{background: 'transparent', border: '1px solid rgba(0,0,0,0.05)', color: styles.accentRed, fontFamily: styles.mono, fontSize: '9px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>Suspend</button>
+                  <Link to={`/applications/${app.id}`} className="px-3 py-1 no-underline" style={{background: 'transparent', border: `1px solid ${styles.borderGlass}`, color: styles.purpleBright, fontFamily: styles.mono, fontSize: '9px', letterSpacing: '1px', textTransform: 'uppercase'}}>View</Link>
                 </div>
               </div>
             ))}
           </div>
-        </div>
+        </Panel>
       )}
 
-      {/* ── Active Tests ── */}
+      {/* Active Tests */}
       {activeTests.length > 0 && (
-        <div style={{marginBottom:'32px'}}>
-          <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'12px'}}>
-            <span className="hud-label">Active CAT-72 Tests</span>
-            <Link to="/cat72" className="hud-link" style={{fontSize:'10px'}}>Console →</Link>
+        <Panel>
+          <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '16px'}}>
+            <h2 style={{fontFamily: styles.mono, fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, margin: 0}}>Active CAT-72 Tests</h2>
+            <Link to="/cat72" style={{fontFamily: styles.mono, fontSize: '10px', color: styles.purpleBright, textDecoration: 'none'}}>Console →</Link>
           </div>
-          <div className="hud-frame"><i></i>
-            {activeTests.map((test,idx) => {
+          <div className="space-y-3">
+            {activeTests.map((test) => {
               const pct = Math.round((test.elapsed_seconds / (test.duration_hours * 3600)) * 100);
               const hoursLeft = Math.max(0, ((test.duration_hours * 3600) - test.elapsed_seconds) / 3600).toFixed(1);
               return (
-                <div key={test.id} className="hud-row">
-                  <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'8px'}}>
-                    <span style={{fontFamily:'var(--mono)',fontSize:'11px',letterSpacing:'1px',color:'var(--purple-bright)'}}>{test.organization_name} — {test.system_name}</span>
-                    <div style={{display:'flex',gap:'16px'}}>
-                      <span style={{fontFamily:'var(--mono)',fontSize:'10px',color:'var(--text-tertiary)'}}>{hoursLeft}h remaining</span>
-                      <span style={{fontFamily:'var(--mono)',fontSize:'10px',color:'var(--accent-amber)'}}>{pct}%</span>
+                <div key={test.id} className="p-4" style={{background: 'transparent', border: `1px solid ${styles.borderGlass}`}}>
+                  <div className="flex justify-between items-center mb-2">
+                    <span style={{fontFamily: styles.mono, fontSize: '12px', color: styles.purpleBright}}>{test.organization_name} — {test.system_name}</span>
+                    <div style={{display: 'flex', alignItems: 'center', gap: '12px'}}>
+                      <span style={{fontFamily: styles.mono, fontSize: '11px', color: styles.textTertiary}}>{hoursLeft}h remaining</span>
+                      <span style={{fontFamily: styles.mono, fontSize: '11px', color: styles.accentAmber}}>{pct}%</span>
                     </div>
                   </div>
-                  <div className="sa-fill" style={{height:'3px','--sa-bg':'rgba(255,255,255,0.04)',overflow:'hidden'}}>
-                    <div className="sa-fill" style={{height:'100%',width:`${pct}%`,'--sa-bg':pct>=100?'var(--accent-green)':'var(--purple-bright)',transition:'width 0.4s ease'}}/>
+                  <div className="w-full h-2 overflow-hidden" style={{background: 'transparent'}}>
+                    <div className="h-full transition-all" style={{width: `${pct}%`, background: pct >= 100 ? styles.accentGreen : styles.purpleBright}} />
                   </div>
                 </div>
               );
             })}
           </div>
-        </div>
+        </Panel>
       )}
 
-      {/* ── Expiring Certs Warning ── */}
+      {/* Expiring Certificates Warning */}
       {(() => {
         const expiring = recentCerts.filter(c => c.expires_at && c.state === 'conformant' && new Date(c.expires_at) < new Date(Date.now() + 30*24*60*60*1000));
         if (expiring.length === 0) return null;
         return (
-          <div style={{marginBottom:'32px'}}>
-            <div className="hud-frame hud-frame-amber"><i></i>
-              <div style={{display:'flex',alignItems:'center',gap:'8px',marginBottom:'12px'}}>
-                <AlertTriangle size={14} style={{color:'var(--accent-amber)'}}/>
-                <span className="hud-label" style={{color:'var(--accent-amber)'}}>{expiring.length} Certificate{expiring.length>1?'s':''} Expiring Within 30 Days</span>
-              </div>
+          <div style={{background: 'transparent', border: '1px solid rgba(0,0,0,0.05)', padding: '16px'}}>
+            <div style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px'}}>
+              <AlertTriangle fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} size={16} style={{color: styles.accentAmber}} />
+              <span style={{fontFamily: styles.mono, fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', color: styles.accentAmber, fontWeight: 500}}>{expiring.length} Certificate{expiring.length > 1 ? 's' : ''} Expiring Within 30 Days</span>
+            </div>
+            <div style={{display: 'flex', flexDirection: 'column', gap: '8px'}}>
               {expiring.map(c => {
                 const daysLeft = Math.ceil((new Date(c.expires_at) - Date.now()) / (1000*60*60*24));
                 return (
-                  <div key={c.id} className="hud-row" style={{display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:'8px'}}>
+                  <div key={c.id} style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', background: 'transparent', padding: '10px 14px'}}>
                     <div>
-                      <span style={{color:'var(--text-primary)',fontSize:'13px'}}>{c.system_name}</span>
-                      <span style={{color:'var(--text-tertiary)',fontSize:'11px',marginLeft:'10px'}}>{c.organization_name}</span>
+                      <span style={{color: styles.textPrimary, fontWeight: 500, fontSize: '13px'}}>{c.system_name}</span>
+                      <span style={{color: styles.textTertiary, fontSize: '12px', marginLeft: '12px'}}>{c.organization_name}</span>
                     </div>
-                    <div style={{display:'flex',alignItems:'center',gap:'12px'}}>
-                      <span style={{fontFamily:'var(--mono)',fontSize:'10px',color:daysLeft<=7?'var(--accent-red)':'var(--accent-amber)'}}>{daysLeft}d remaining</span>
-                      <Link to={`/verify?cert=${c.certificate_number}`} className="hud-link" style={{fontSize:'10px'}}>{c.certificate_number}</Link>
+                    <div style={{display: 'flex', alignItems: 'center', gap: '12px'}}>
+                      <span style={{fontFamily: styles.mono, fontSize: '11px', color: daysLeft <= 7 ? styles.accentRed : styles.accentAmber, fontWeight: 500}}>{daysLeft}d remaining</span>
+                      <Link to={`/verify?cert=${c.certificate_number}`} style={{fontFamily: styles.mono, fontSize: '10px', color: styles.purpleBright, textDecoration: 'none'}}>{c.certificate_number}</Link>
                     </div>
                   </div>
                 );
@@ -451,76 +498,79 @@ function Dashboard() {
         );
       })()}
 
-      {/* ── Recent Certificates ── */}
+      {/* Recent Certificates */}
       {recentCerts.length > 0 && (
-        <div style={{marginBottom:'32px'}}>
-          <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'12px'}}>
-            <span className="hud-label">Recent Certificates</span>
-            <Link to="/certificates" className="hud-link" style={{fontSize:'10px'}}>View All →</Link>
+        <Panel>
+          <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '16px'}}>
+            <h2 style={{fontFamily: styles.mono, fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, margin: 0}}>Recent Certificates</h2>
+            <Link to="/certificates" style={{fontFamily: styles.mono, fontSize: '10px', color: styles.purpleBright, textDecoration: 'none'}}>View All →</Link>
           </div>
-          <div className="hud-frame"><i></i>
-            {recentCerts.slice(0,5).map((c,idx) => (
-              <div key={c.id} className="hud-row" style={{display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:'8px'}}>
-                <div style={{display:'flex',alignItems:'center',gap:'12px',minWidth:0,flex:1}}>
-                  <span className="hud-num">{String(idx+1).padStart(2,'0')}</span>
-                  <span className="hud-dot" style={{background:c.state==='conformant'?'var(--accent-green)':'var(--accent-red)',marginRight:0}}></span>
-                  <div style={{minWidth:0}}>
-                    <Link to={`/verify?cert=${c.certificate_number}`} style={{textDecoration:'none',color:'var(--purple-bright)',fontFamily:'var(--mono)',fontSize:'12px',letterSpacing:'0.5px'}}>{c.certificate_number}</Link>
-                    <div style={{fontSize:'11px',color:'var(--text-tertiary)',marginTop:'2px'}}>{c.system_name} · {c.organization_name}</div>
-                  </div>
-                </div>
-                <div style={{display:'flex',alignItems:'center',gap:'16px',flexShrink:0}}>
-                  <span style={{fontFamily:'var(--mono)',fontSize:'9px',letterSpacing:'1.5px',textTransform:'uppercase',color:c.state==='conformant'?'var(--accent-green)':'var(--accent-red)'}}>{c.state}</span>
-                  <span style={{fontFamily:'var(--mono)',fontSize:'10px',color:c.expires_at && new Date(c.expires_at)<new Date(Date.now()+30*24*60*60*1000)?'var(--accent-amber)':'var(--text-tertiary)'}}>{c.expires_at ? new Date(c.expires_at).toLocaleDateString() : '—'}</span>
-                </div>
-              </div>
-            ))}
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr style={{borderBottom: `1px solid ${styles.borderGlass}`}}>
+                  {['Certificate', 'System', 'Status', 'Issued', 'Expires'].map(h => (
+                    <th key={h} className="px-4 py-3 text-left" style={{fontFamily: styles.mono, fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {recentCerts.slice(0, 5).map(c => (
+                  <tr key={c.id} style={{borderBottom: `1px solid ${styles.borderGlass}`}}>
+                    <td className="px-4 py-3"><Link to={`/verify?cert=${c.certificate_number}`} style={{color: styles.purpleBright, textDecoration: 'none', fontFamily: styles.mono, fontSize: '12px'}}>{c.certificate_number}</Link></td>
+                    <td className="px-4 py-3"><span style={{color: styles.textPrimary, fontSize: '13px'}}>{c.system_name}</span><span style={{color: styles.textTertiary, fontSize: '11px', marginLeft: '8px'}}>{c.organization_name}</span></td>
+                    <td className="px-4 py-3"><span style={{fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', padding: '2px 8px', background: c.state === 'conformant' ? 'rgba(22,135,62,0.06)' : 'rgba(180,52,52,0.06)', color: c.state === 'conformant' ? styles.accentGreen : styles.accentRed}}>{c.state}</span></td>
+                    <td className="px-4 py-3" style={{color: styles.textTertiary, fontSize: '13px'}}>{c.issued_at ? new Date(c.issued_at).toLocaleDateString() : '-'}</td>
+                    <td className="px-4 py-3" style={{fontFamily: styles.mono, fontSize: '12px', color: c.expires_at && new Date(c.expires_at) < new Date(Date.now() + 30*24*60*60*1000) ? styles.accentAmber : styles.textTertiary}}>{c.expires_at ? new Date(c.expires_at).toLocaleDateString() : '-'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-        </div>
+        </Panel>
       )}
 
-      {/* ── Recent Applications ── */}
-      <div>
-        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'12px'}}>
-          <span className="hud-label">Pending Applications</span>
-          <Link to="/applications" className="hud-link" style={{fontSize:'10px'}}>View All →</Link>
+      {/* Recent Applications */}
+      <Panel>
+        <div className="flex justify-between items-center mb-4">
+          <h2 style={{fontFamily: styles.mono, fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, margin: 0}}>Recent Applications</h2>
+          <Link to="/applications" style={{fontFamily: styles.mono, fontSize: '10px', color: styles.purpleBright, textDecoration: 'none'}}>View All →</Link>
         </div>
-        <div className="hud-frame"><i></i>
-          {allApps.slice(0,6).map((app,idx) => {
-            const sc = app.state==='conformant'?'var(--accent-green)':app.state==='revoked'?'var(--accent-red)':app.state==='testing'||app.state==='approved'?'var(--purple-bright)':'var(--accent-amber)';
-            const sl = app.state === 'approved' ? 'awaiting deploy' : app.state === 'under_review' ? 'in review' : app.state;
-            return (
-              <Link key={app.id} to={`/applications/${app.id}`} style={{textDecoration:'none',display:'block'}}>
-                <div className="hud-row" style={{display:'flex',justifyContent:'space-between',alignItems:'center',cursor:'pointer',flexWrap:'wrap',gap:'8px'}}>
-                  <div style={{display:'flex',alignItems:'center',gap:'12px',minWidth:0,flex:1}}>
-                    <span className="hud-num">{String(idx+1).padStart(2,'0')}</span>
-                    <span className="hud-dot" style={{background:sc,marginRight:0}}></span>
-                    <div style={{minWidth:0}}>
-                      <div className="hud-title">{app.system_name}</div>
-                      <div style={{fontSize:'10px',color:'var(--text-tertiary)',fontFamily:'var(--mono)',letterSpacing:'0.5px',marginTop:'2px'}}>{app.organization_name}</div>
-                    </div>
-                  </div>
-                  <div style={{display:'flex',alignItems:'center',gap:'16px',flexShrink:0}}>
-                    <span style={{fontFamily:'var(--mono)',fontSize:'9px',letterSpacing:'1.5px',textTransform:'uppercase',color:sc}}>{sl}</span>
-                    <span style={{fontFamily:'var(--mono)',fontSize:'10px',color:'var(--text-tertiary)'}}>{app.submitted_at ? new Date(app.submitted_at).toLocaleDateString() : '—'}</span>
-                  </div>
-                </div>
-              </Link>
-            );
-          })}
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr style={{borderBottom: `1px solid ${styles.borderGlass}`}}>
+                <th className="px-4 py-3 text-left" style={{fontFamily: styles.mono, fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>System</th>
+                <th className="px-4 py-3 text-left" style={{fontFamily: styles.mono, fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>Organization</th>
+                <th className="px-4 py-3 text-left" style={{fontFamily: styles.mono, fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>State</th>
+                <th className="px-4 py-3 text-left" style={{fontFamily: styles.mono, fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>Submitted</th>
+              </tr>
+            </thead>
+            <tbody>
+              {recentApps.map((app) => (
+                <tr key={app.id} className="transition-colors cursor-pointer" style={{borderBottom: `1px solid ${styles.borderGlass}`}} onClick={() => window.location.hash = `#/applications/${app.id}`}>
+                  <td className="px-4 py-3"><Link to={`/applications/${app.id}`} style={{color: styles.purpleBright, textDecoration: 'none'}}>{app.system_name}</Link></td>
+                  <td className="px-4 py-3" style={{color: styles.textSecondary}}>{app.organization_name}</td>
+                  <td className="px-4 py-3">
+                    <span className="px-2 py-1 text-xs" style={{
+                      background: app.state === 'conformant' ? 'rgba(22,135,62,0.06)' : app.state === 'observe' ? 'rgba(74,61,117,0.04)' : app.state === 'revoked' ? 'rgba(180,52,52,0.06)' : 'rgba(158,110,18,0.06)',
+                      color: app.state === 'conformant' ? styles.accentGreen : app.state === 'observe' ? styles.purpleBright : app.state === 'revoked' ? styles.accentRed : styles.accentAmber,
+                      fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase'
+                    }}>{app.state}</span>
+                  </td>
+                  <td className="px-4 py-3" style={{color: styles.textTertiary, fontSize: '14px'}}>{app.submitted_at ? new Date(app.submitted_at).toLocaleDateString() : "N/A"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
-      </div>
+      </Panel>
     </div>
   );
 }
 
-
-/* ═══════════════════════════════════════ */
-function RoleBasedDashboard() {
-  const { user } = useAuth();
-  if (user?.role === 'admin') return <Dashboard />;
-  return <CustomerDashboard />;
-}
+// Applications List
 
 export { CustomerDashboard, RoleBasedDashboard };
 export default Dashboard;
+

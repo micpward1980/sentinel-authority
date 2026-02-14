@@ -410,7 +410,7 @@ body { overflow-x: hidden; -webkit-text-size-adjust: 100%; }
    LANDSCAPE — ALL PHONES
    Height ≤500px means phone in landscape
    ═══════════════════════════════════════════════════ */
-@media (max-height: 500px) and (orientation: landscape) {
+@media (pointer: coarse) and (orientation: landscape) {
 
   /* ── Nav ── */
   .site-header { height: 44px; padding: 0 12px; }
@@ -560,13 +560,175 @@ body { overflow-x: hidden; -webkit-text-size-adjust: 100%; }
   body { background: white !important; color: black !important; }
 }
 
-
 /* ═══════════════════════════════════════════════════
    CANVAS / DIAGRAM TOGGLE
    ═══════════════════════════════════════════════════ */
-@media (max-width: 768px) {
+@media (max-width: 768px), (pointer: coarse) and (orientation: landscape), (pointer: coarse) and (orientation: landscape) {
   #hero-canvas, #envelo-canvas, #security-canvas, #cat72-canvas, #process-canvas {
     display: none !important;
   }
   .m-diagram { display: block !important; }
 }
+
+/* ═══════════════════════════════════════════════════
+   MOBILE DIAGRAM LAYOUT FIXES
+   ═══════════════════════════════════════════════════ */
+
+/* Portrait */
+@media (max-width: 768px) {
+  /* Hero: kill negative margin that overlaps diagram */
+  .hero-content-bottom {
+    margin-top: 0 !important;
+  }
+
+  /* Center diagrams with padding */
+  .m-diagram {
+    padding: 12px 8px;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  /* Canvas parent wrappers — collapse height when canvas hidden */
+  #hero-canvas, #envelo-canvas, #security-canvas, #cat72-canvas, #process-canvas {
+    height: 0 !important;
+    overflow: hidden !important;
+  }
+}
+
+
+  
+  /* Five Gates — stack vertically on phone */
+  .five-gates-grid {
+    flex-direction: column !important;
+    gap: 0 !important;
+  }
+  .five-gates-grid > div[style*="width:1px"] {
+    display: none !important;
+  }
+  .five-gates-grid > div[style*="min-width:120px"] {
+    min-width: 0 !important;
+    flex: none !important;
+    width: 100% !important;
+    padding: 10px 0 !important;
+    border-bottom: 1px solid rgba(255,255,255,0.03) !important;
+  }
+
+/* Negative margins causing overlap */
+  [style*="margin-top:-32px"],
+  [style*="margin-top: -32px"] {
+    margin-top: 0 !important;
+  }
+
+  /* five-gates grid — single column on small screens */
+  .five-gates-grid {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+  .five-gates-grid > div {
+    max-width: 100% !important;
+    grid-column: span 1 !important;
+  }
+
+/* Landscape */
+@media (pointer: coarse) and (orientation: landscape) {
+  .hero-content-bottom {
+    margin-top: 0 !important;
+  }
+
+  .m-diagram {
+    padding: 8px 16px;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  /* Smaller orbs in landscape */
+  .m-diagram .h-orb {
+    width: 46px !important;
+    height: 46px !important;
+  }
+  .m-diagram .h-orb-xl {
+    width: 56px !important;
+    height: 56px !important;
+  }
+  .m-diagram .h-conn {
+    width: 24px !important;
+    margin-bottom: 22px !important;
+  }
+  .m-diagram .h-v {
+    padding: 5px 10px !important;
+    font-size: 7px !important;
+  }
+  .m-diagram .h-name {
+    font-size: 8px !important;
+  }
+  .m-diagram .d-label {
+    margin-bottom: 10px !important;
+  }
+  .m-diagram .d-foot {
+    margin-top: 12px !important;
+    padding-top: 6px !important;
+  }
+
+  /* CAT-72 smaller */
+  .m-diagram .c-wall {
+    width: 170px !important;
+    height: 170px !important;
+  }
+  .m-diagram .c-mrc {
+    width: 136px !important;
+    height: 136px !important;
+  }
+  .m-diagram .c-warn {
+    width: 102px !important;
+    height: 102px !important;
+  }
+  .m-diagram .c-odd {
+    width: 68px !important;
+    height: 68px !important;
+  }
+  .m-diagram .c-odd-text {
+    font-size: 8px !important;
+  }
+
+  /* Process compact */
+  .m-diagram .p-step {
+    min-height: 40px !important;
+  }
+  .m-diagram .p-marker {
+    width: 26px !important;
+    height: 26px !important;
+    font-size: 8px !important;
+  }
+  .m-diagram .p-title {
+    font-size: 9px !important;
+  }
+  .m-diagram .p-desc {
+    font-size: 7.5px !important;
+  }
+  .m-diagram .p-info {
+    padding: 4px 0 12px !important;
+  }
+
+  /* ENVELO compact */
+  .m-diagram .e-icon svg {
+    width: 18px !important;
+    height: 18px !important;
+  }
+  .m-diagram .e-nm {
+    font-size: 8px !important;
+  }
+  .m-diagram .e-ds {
+    font-size: 7px !important;
+  }
+  .m-diagram .e-body {
+    padding: 6px 10px !important;
+    font-size: 7.5px !important;
+  }
+
+  /* Canvas zero height in landscape too */
+  #hero-canvas, #envelo-canvas, #security-canvas, #cat72-canvas, #process-canvas {
+    height: 0 !important;
+    overflow: hidden !important;
+  }
+}
+

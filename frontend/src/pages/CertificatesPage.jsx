@@ -2,29 +2,21 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Download } from 'lucide-react';
 import { api, API_BASE } from '../config/api';
+import { styles } from '../config/styles';
 import Panel from '../components/Panel';
 
 function CertificatesPage() {
-  const [loading, setLoading] = useState(true);
   const [certificates, setCertificates] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('active');
 
   useEffect(() => {
-    api.get('/api/certificates/').then(res => setCertificates(res.data)).catch(console.error).finally(() => setLoading(false));
+    api.get('/api/certificates/').then(res => setCertificates(res.data)).catch(console.error);
   }, []);
 
-  if (loading) return <div style={{padding:"40px 0",textAlign:"center"}}><div style={{fontFamily:"Consolas,monospace",fontSize:11,color:"rgba(255,255,255,.3)",animation:"sa-shimmer 1.5s ease infinite"}}>Loading certificates...</div></div>;
   const filteredCerts = certificates.filter(cert => {
-    if (statusFilter !== 'all') {
-      if (statusFilter === 'active' && !(cert.state === 'conformant' || cert.state === 'active' || cert.state === 'issued')) return false;
-      else if (statusFilter !== 'active' && cert.state !== statusFilter) return false;
-    }
-    if (searchTerm) {
-      const q = searchTerm.toLowerCase();
-      if (!(cert.certificate_number || '').toLowerCase().includes(q) && !(cert.organization_name || '').toLowerCase().includes(q) && !(cert.system_name || '').toLowerCase().includes(q)) return false;
-    }
-    return true;
+    if (statusFilter === 'all') return true;
+    if (statusFilter === 'active') return cert.state === 'conformant' || cert.state === 'active' || cert.state === 'issued';
+    return cert.state === statusFilter;
   });
 
   const counts = {
@@ -44,13 +36,13 @@ function CertificatesPage() {
   return (
     <div className="space-y-6">
       <div>
-        <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '4px', textTransform: 'uppercase', color: '#a896d6', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '12px'}}><span style={{width:'24px',height:'1px',background:'#a896d6'}}></span>Records</p>
-        <h1 style={{fontFamily: "Georgia, 'Source Serif 4', serif", fontSize: 'clamp(24px, 4vw, 32px)', fontWeight: 200, letterSpacing: '-0.02em', margin: 0}}>Certificates</h1>
-        <p style={{color: 'rgba(255,255,255,.78)', marginTop: '8px'}}>Issued ODDC conformance determinations</p>
+        <p style={{fontFamily: styles.mono, fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', color: styles.purpleBright, marginBottom: '8px'}}>Records</p>
+        <h1 style={{fontFamily: "Georgia, 'Source Serif 4', serif", fontSize: 'clamp(24px, 5vw, 36px)', fontWeight: 200, margin: 0}}>Certificates</h1>
+        <p style={{color: styles.textSecondary, marginTop: '8px'}}>Issued ODDC conformance determinations</p>
       </div>
 
       {/* Filter Tabs */}
-      <div style={{display: 'flex', gap: '4px', background: 'rgba(255,255,255,0.03)', padding: '4px', border: `1px solid ${'rgba(255,255,255,.07)'}`}}>
+      <div style={{display: 'flex', gap: '4px', background: 'transparent', padding: '4px', border: `1px solid ${styles.borderGlass}`}}>
         {filterTabs.map(tab => (
           <button
             key={tab.key}
@@ -60,13 +52,13 @@ function CertificatesPage() {
               padding: '8px 16px',
               border: 'none',
               cursor: 'pointer',
-              fontFamily: "Consolas, 'IBM Plex Mono', monospace",
+              fontFamily: styles.mono,
               fontSize: '10px',
               letterSpacing: '1.5px',
               textTransform: 'uppercase',
               transition: 'all 0.2s',
-              background: statusFilter === tab.key ? '#5B4B8A' : 'transparent',
-              color: statusFilter === tab.key ? '#fff' : 'rgba(255,255,255,.50)'
+              background: statusFilter === tab.key ? styles.purplePrimary : 'transparent',
+              color: statusFilter === tab.key ? '#fff' : styles.textTertiary
             }}
           >
             {tab.label} {counts[tab.key] > 0 ? `(${counts[tab.key]})` : ''}
@@ -74,31 +66,29 @@ function CertificatesPage() {
         ))}
       </div>
 
-      <input type="text" placeholder="Search cert, org, system..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} style={{background:"rgba(255,255,255,.04)",border:"1px solid rgba(255,255,255,.08)",color:"rgba(255,255,255,.90)",padding:"6px 12px",fontFamily:"Consolas, monospace",fontSize:"11px",width:"200px",outline:"none",marginBottom:"-8px"}} />
-
       <Panel>
         <div style={{overflowX: "auto", WebkitOverflowScrolling: "touch"}}><table className="w-full" style={{minWidth: "600px"}}>
           <thead>
-            <tr style={{borderBottom: `1px solid ${'rgba(255,255,255,.07)'}`}}>
-              <th className="px-4 py-3 text-left" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: 'rgba(255,255,255,.50)', fontWeight: 400}}>Certificate #</th>
-              <th className="px-4 py-3 text-left" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: 'rgba(255,255,255,.50)', fontWeight: 400}}>System</th>
-              <th className="px-4 py-3 text-left" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: 'rgba(255,255,255,.50)', fontWeight: 400}}>Organization</th>
-              <th className="px-4 py-3 text-left" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: 'rgba(255,255,255,.50)', fontWeight: 400}}>Status</th>
-              <th className="px-4 py-3 text-left" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: 'rgba(255,255,255,.50)', fontWeight: 400}}>Expires</th>
-              <th className="px-4 py-3 text-left" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: 'rgba(255,255,255,.50)', fontWeight: 400}}>Actions</th>
+            <tr style={{borderBottom: `1px solid ${styles.borderGlass}`}}>
+              <th className="px-4 py-3 text-left" style={{fontFamily: styles.mono, fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>Certificate #</th>
+              <th className="px-4 py-3 text-left" style={{fontFamily: styles.mono, fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>System</th>
+              <th className="px-4 py-3 text-left" style={{fontFamily: styles.mono, fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>Organization</th>
+              <th className="px-4 py-3 text-left" style={{fontFamily: styles.mono, fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>Status</th>
+              <th className="px-4 py-3 text-left" style={{fontFamily: styles.mono, fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>Expires</th>
+              <th className="px-4 py-3 text-left" style={{fontFamily: styles.mono, fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>Actions</th>
             </tr>
           </thead>
           <tbody>
             {filteredCerts.map((cert) => (
-              <tr key={cert.id} style={{borderBottom: `1px solid ${'rgba(255,255,255,.07)'}`}}>
-                <td className="px-4 py-4" style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px', color: '#a896d6'}}>{cert.certificate_number}</td>
-                <td className="px-4 py-4" style={{color: 'rgba(255,255,255,.94)'}}>{cert.system_name}</td>
-                <td className="px-4 py-4" style={{color: 'rgba(255,255,255,.78)'}}>{cert.organization_name}</td>
+              <tr key={cert.id} style={{borderBottom: `1px solid ${styles.borderGlass}`}}>
+                <td className="px-4 py-4" style={{fontFamily: styles.mono, fontSize: '12px', color: styles.purpleBright}}>{cert.certificate_number}</td>
+                <td className="px-4 py-4" style={{color: styles.textPrimary}}>{cert.system_name}</td>
+                <td className="px-4 py-4" style={{color: styles.textSecondary}}>{cert.organization_name}</td>
                 <td className="px-4 py-4">
                   <span className="px-2 py-1" style={{
-                    background: cert.state === 'conformant' ? 'rgba(92,214,133,0.04)' : cert.state === 'suspended' ? 'rgba(214,160,92,0.04)' : 'rgba(214,92,92,0.04)',
-                    color: cert.state === 'conformant' ? '#5CD685' : cert.state === 'suspended' ? '#D6A05C' : '#D65C5C',
-                    fontFamily: "Consolas, 'IBM Plex Mono', monospace",
+                    background: cert.state === 'conformant' ? 'rgba(22,135,62,0.06)' : cert.state === 'suspended' ? 'rgba(158,110,18,0.06)' : 'rgba(180,52,52,0.06)',
+                    color: cert.state === 'conformant' ? styles.accentGreen : cert.state === 'suspended' ? styles.accentAmber : styles.accentRed,
+                    fontFamily: styles.mono,
                     fontSize: '10px',
                     letterSpacing: '1px',
                     textTransform: 'uppercase'
@@ -106,7 +96,7 @@ function CertificatesPage() {
                     {cert.state}
                   </span>
                 </td>
-                <td className="px-4 py-4" style={{color: 'rgba(255,255,255,.50)', fontSize: '14px'}}>{cert.expires_at ? new Date(cert.expires_at).toLocaleDateString() : '-'}</td>
+                <td className="px-4 py-4" style={{color: styles.textTertiary, fontSize: '14px'}}>{cert.expires_at ? new Date(cert.expires_at).toLocaleDateString() : '-'}</td>
                 <td className="px-4 py-4">
                   <div style={{display: 'flex', gap: '8px', alignItems: 'center'}}>
                     {cert.state !== 'revoked' && cert.state !== 'suspended' ? (
@@ -114,16 +104,17 @@ function CertificatesPage() {
                         href={`${API_BASE}/api/certificates/${cert.certificate_number}/pdf`} 
                         target="_blank" 
                         rel="noopener noreferrer" 
-                        className="px-3 py-1 transition-colors no-underline btn"
+                        className="px-3 py-1 transition-colors no-underline"
+                        style={{background: styles.purplePrimary, border: `1px solid ${styles.purpleBright}`, color: '#fff', fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase'}}
                       >
                         Download PDF
                       </a>
                     ) : (
-                      <span style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: 'rgba(255,255,255,.50)', letterSpacing: '1px', textTransform: 'uppercase'}}>
+                      <span style={{fontFamily: styles.mono, fontSize: '10px', color: styles.textTertiary, letterSpacing: '1px', textTransform: 'uppercase'}}>
                         {cert.state === 'revoked' ? 'Revoked' : 'Suspended'}
                       </span>
                     )}
-                    <Link to={`/verify?cert=${cert.certificate_number}`} className="px-2 py-1 no-underline btn">Verify</Link>
+                    <Link to={`/verify?cert=${cert.certificate_number}`} className="px-2 py-1 no-underline" style={{background: 'transparent', border: `1px solid ${styles.borderGlass}`, color: styles.textSecondary, fontFamily: styles.mono, fontSize: '9px', letterSpacing: '0.5px', textTransform: 'uppercase'}}>Verify</Link>
                   </div>
                 </td>
               </tr>
@@ -131,8 +122,8 @@ function CertificatesPage() {
           </tbody>
         </table></div>
         {filteredCerts.length === 0 && (
-          <div className="text-center py-12" style={{color: 'rgba(255,255,255,.50)'}}>
-            {filteredCerts.length === 0 ? 'No certificates issued' : `No ${statusFilter === 'all' ? '' : statusFilter + ' '}certificates`}
+          <div className="text-center py-12" style={{color: styles.textTertiary}}>
+            {certificates.length === 0 ? 'No certificates issued' : `No ${statusFilter === 'all' ? '' : statusFilter + ' '}certificates`}
           </div>
         )}
       </Panel>
@@ -140,6 +131,7 @@ function CertificatesPage() {
   );
 }
 
+// Licensees
 
 export default CertificatesPage;
 

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Download, BookOpen } from 'lucide-react';
 import { api } from '../config/api';
+import { styles } from '../config/styles';
 import { useAuth } from '../context/AuthContext';
 
 function ResourcesPage() {
@@ -31,30 +32,30 @@ function ResourcesPage() {
   };
 
   return (
-    <div style={{ maxWidth: '900px' }}>
+    <div style={{ padding: '32px', maxWidth: '900px', margin: '0 auto' }}>
       <div style={{ marginBottom: '32px' }}>
         <p style={{
-          fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px',
-          letterSpacing: '4px', textTransform: 'uppercase',
-          color: '#a896d6', marginBottom: '8px'
+          fontFamily: styles.mono, fontSize: '10px',
+          letterSpacing: '2px', textTransform: 'uppercase',
+          color: styles.purpleBright, marginBottom: '8px'
         }}>RESOURCES</p>
         <h1 style={{
-          fontFamily: "Georgia, 'Source Serif 4', serif", fontSize: 'clamp(24px, 4vw, 32px)',
-          fontWeight: 200, letterSpacing: '-0.02em', color: 'rgba(255,255,255,.94)', margin: 0
+          fontFamily: "Georgia, 'Source Serif 4', serif", fontSize: 'clamp(20px, 4vw, 28px)',
+          fontWeight: 200, color: styles.textPrimary, margin: 0
         }}>Documents & Guides</h1>
-        <p style={{ color: 'rgba(255,255,255,.50)', marginTop: '8px', fontSize: '14px' }}>
+        <p style={{ color: styles.textTertiary, marginTop: '8px', fontSize: '14px' }}>
           Reference materials for the ODDC certification process.
         </p>
       </div>
 
       {loading ? (
-        <div style={{ color: 'rgba(255,255,255,.50)', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '12px' }}>
+        <div style={{ color: styles.textTertiary, fontFamily: styles.mono, fontSize: '12px' }}>
           Loading documents...
         </div>
       ) : documents.length === 0 ? (
         <div style={{
-          padding: 'clamp(16px, 4vw, 40px)', textAlign: 'center', border: '1px solid ' + 'rgba(255,255,255,.07)', background: '#2a2f3d',
-          color: 'rgba(255,255,255,.50)'
+          padding: 'clamp(16px, 4vw, 40px)', textAlign: 'center', border: '1px solid ' + styles.borderGlass, background: 'transparent',
+          color: styles.textTertiary
         }}>
           No documents available.
         </div>
@@ -62,26 +63,26 @@ function ResourcesPage() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           {documents.map(doc => (
             <div key={doc.id} style={{
-              padding: '24px', border: '1px solid ' + 'rgba(255,255,255,.07)', background: '#2a2f3d',
+              padding: '24px', border: '1px solid ' + styles.borderGlass, background: 'transparent',
               display: 'flex', alignItems: 'center', gap: '20px'
             }}>
               <div style={{
-                width: '48px', height: '48px', background: '#5B4B8A' + '22',
-                border: '1px solid ' + '#5B4B8A' + '44',
+                width: '48px', height: '48px', background: styles.purplePrimary + '22',
+                border: '1px solid ' + styles.purplePrimary + '44',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
               }}>
-                <BookOpen fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} style={{ width: '22px', height: '22px', color: '#a896d6' }} />
+                <BookOpen fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} style={{ width: '22px', height: '22px', color: styles.purpleBright }} />
               </div>
               <div style={{ flex: 1 }}>
-                <div style={{ fontWeight: 600, color: 'rgba(255,255,255,.94)', fontSize: '15px', marginBottom: '4px' }}>
+                <div style={{ fontWeight: 600, color: styles.textPrimary, fontSize: '15px', marginBottom: '4px' }}>
                   {doc.title}
                 </div>
-                <div style={{ color: 'rgba(255,255,255,.50)', fontSize: '13px', lineHeight: '1.4' }}>
+                <div style={{ color: styles.textTertiary, fontSize: '13px', lineHeight: '1.4' }}>
                   {doc.description}
                 </div>
                 <div style={{
-                  fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px',
-                  color: 'rgba(255,255,255,.50)', marginTop: '6px',
+                  fontFamily: styles.mono, fontSize: '10px',
+                  color: styles.textTertiary, marginTop: '6px',
                   letterSpacing: '1px', textTransform: 'uppercase'
                 }}>
                   {'PDF • v' + doc.version}
@@ -90,9 +91,9 @@ function ResourcesPage() {
               <button
                 onClick={() => handleDownload(doc.id, doc.title)}
                 style={{
-                  padding: '10px 20px', background: '#5B4B8A',
-                  border: '1px solid ' + '#a896d6',
-                  color: 'rgba(255,255,255,.94)', fontFamily: "Consolas, 'IBM Plex Mono', monospace",
+                  padding: '10px 20px', background: styles.purplePrimary,
+                  border: '1px solid ' + styles.purpleBright,
+                  color: styles.textPrimary, fontFamily: styles.mono,
                   fontSize: '11px', letterSpacing: '1px',
                   textTransform: 'uppercase', cursor: 'pointer', flexShrink: 0
                 }}
@@ -106,9 +107,9 @@ function ResourcesPage() {
 
       {user && user.role === 'admin' && (
         <div style={{
-          marginTop: '40px', padding: '20px', border: '1px dashed ' + 'rgba(255,255,255,.07)',
-          color: 'rgba(255,255,255,.50)', fontSize: '12px',
-          fontFamily: "Consolas, 'IBM Plex Mono', monospace"
+          marginTop: '40px', padding: '20px', border: '1px dashed ' + styles.borderGlass,
+          color: styles.textTertiary, fontSize: '12px',
+          fontFamily: styles.mono
         }}>
           ADMIN: To add documents, place PDFs in backend/static/documents/ and register them in documents.py
         </div>

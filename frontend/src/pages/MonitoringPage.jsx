@@ -1,28 +1,23 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Activity, AlertTriangle, Download, RefreshCw } from 'lucide-react';
 import { api } from '../config/api';
 import { useToast } from '../context/ToastContext';
 import { useConfirm } from '../context/ConfirmContext';
+import { styles } from '../config/styles';
 import { useAuth } from '../context/AuthContext';
+import Panel from '../components/Panel';
 
 function MonitoringPage() {
   const [overview, setOverview] = useState(null);
   const [alerts, setAlerts] = useState([]);
   const [selectedSession, setSelectedSession] = useState(null);
-  const [expandedId, setExpandedId] = useState(null);
-  const detailRef = useRef(null);
   const [timeline, setTimeline] = useState([]);
   const [loading, setLoading] = useState(true);
   const [autoRefresh, setAutoRefresh] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [statusFilter, setStatusFilter] = useState('all');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [sortField, setSortField] = useState('last_activity');
-  const [sortOrder, setSortOrder] = useState('desc');
-  const perPage = 25;
-  
+  const [customerFilter, setCustomerFilter] = useState("");
+  const [onlineOnly, setOnlineOnly] = useState(false);
+  const [hideEnded, setHideEnded] = useState(true);
   const { user } = useAuth();
   const toast = useToast();
   const confirm = useConfirm();
@@ -30,11 +25,10 @@ function MonitoringPage() {
   const fetchData = async () => {
     try {
       const [overviewRes, alertsRes] = await Promise.all([
-        api.get(`/api/envelo/monitoring/overview?page=${currentPage}&per_page=${perPage}&sort=${sortField}&order=${sortOrder}&session_type=production`),
+        api.get('/api/envelo/monitoring/overview'),
         api.get('/api/envelo/monitoring/alerts')
       ]);
       setOverview(overviewRes.data);
-      if (overviewRes.data?.total_pages) setTotalPages(overviewRes.data.total_pages);
       setAlerts(alertsRes.data.alerts || []);
     } catch (err) {
       console.error('Failed to fetch monitoring data:', err);
@@ -49,7 +43,7 @@ function MonitoringPage() {
       const interval = setInterval(fetchData, 10000); // Refresh every 10 seconds
       return () => clearInterval(interval);
     }
-  }, [autoRefresh, currentPage, sortField, sortOrder]);
+  }, [autoRefresh]);
 
   const fetchTimeline = async (sessionId) => {
     try {
@@ -62,7 +56,7 @@ function MonitoringPage() {
 
   useEffect(() => {
     if (selectedSession) {
-      fetchTimeline(selectedSession.session_id);
+      fetchTimeline(selectedSession.id);
     }
   }, [selectedSession]);
 
@@ -71,12 +65,13 @@ function MonitoringPage() {
       const total = (s.pass_count || 0) + (s.block_count || 0);
       const passRate = total > 0 ? (s.pass_count / total * 100).toFixed(2) : '0.00';
       return {
-        status: s.is_online ? 'Online' : 'Offline',
+        status: s.is_online ? 'Online' : s.status === 'ended' ? 'Ended' : 'Offline',
         organization: s.organization_name || '',
         system_name: s.system_name || '',
         certificate: s.certificate_id || '',
         session_id: s.session_id || '',
         started_at: s.started_at || '',
+        ended_at: s.ended_at || '',
         uptime_hours: s.uptime_hours?.toFixed(2) || '0',
         pass_count: s.pass_count || 0,
         block_count: s.block_count || 0,
@@ -109,9 +104,8 @@ function MonitoringPage() {
   if (loading) {
     return (
       <div style={{padding: 'clamp(16px, 4vw, 40px)', textAlign: 'center'}}>
-      <MonHeartStyle />
-        <RefreshCw size={24} style={{animation: 'spin 1s linear infinite', color: '#a896d6'}} />
-        <p style={{marginTop: '16px', color: 'rgba(255,255,255,.78)'}}>Loading monitoring data...</p>
+        <RefreshCw size={24} style={{animation: 'spin 1s linear infinite', color: styles.purpleBright}} />
+        <p style={{marginTop: '16px', color: styles.textSecondary}}>Loading monitoring data...</p>
       </div>
     );
   }
@@ -119,13 +113,9 @@ function MonitoringPage() {
   const summary = overview?.summary || {};
   const sessions = overview?.sessions || [];
   const filteredSessions = sessions.filter(s => {
-    if ((s.session_type || 'production') !== 'production') return false;
-      if (searchTerm) {
-        const q = searchTerm.toLowerCase();
-        if (!(s.session_id || '').toLowerCase().includes(q) && !(s.certificate_id || '').toLowerCase().includes(q) && !(s.organization_name || '').toLowerCase().includes(q) && !(s.system_name || '').toLowerCase().includes(q)) return false;
-      }
-    if (statusFilter === 'online' && !s.is_online) return false;
-    if (statusFilter === 'offline' && s.is_online) return false;
+    if (customerFilter && s.organization_name !== customerFilter) return false;
+    if (onlineOnly && !s.is_online) return false;
+    if (hideEnded && (s.status === 'ended' || s.status === 'completed' || s.status === 'disconnected')) return false;
     return true;
   });
 
@@ -133,31 +123,41 @@ function MonitoringPage() {
     <div style={{maxWidth: '1400px', margin: '0 auto'}}>
       <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '24px'}}>
         <div>
-          <p style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '9px', letterSpacing: '4px', textTransform: 'uppercase', color: '#a896d6', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '12px'}}><span style={{width:'24px',height:'1px',background:'#a896d6'}}></span>Monitoring</p>
-          <h1 style={{fontFamily: "Georgia, 'Source Serif 4', serif", fontSize: 'clamp(24px, 4vw, 32px)', fontWeight: 200, letterSpacing: '-0.02em', margin: 0}}>
-            Fleet Monitoring
+          <h1 className="sa-page-title" style={{fontFamily: "Georgia, 'Source Serif 4', serif", fontSize: 'clamp(20px, 4vw, 28px)', fontWeight: 300, margin: 0}}>
+            System Monitoring
           </h1>
-          <p style={{color: 'rgba(255,255,255,.78)', marginTop: '4px', fontSize: '14px'}}>
-            {user?.role === 'admin' ? 'Real-time ENVELO Interlock status and telemetry' : 'Track your certified systems\' compliance status'}
+          <p style={{color: styles.textSecondary, marginTop: '4px', fontSize: '14px'}}>
+            {user?.role === 'admin' ? 'Real-time ENVELO agent status and telemetry' : 'Track your certified systems\' compliance status'}
           </p>
         </div>
         <div style={{display: 'flex', gap: '12px', alignItems: 'center'}}>
-          <button 
-            onClick={() => setAutoRefresh(!autoRefresh)}
-            className="btn"
-            style={{padding: '6px 12px', color: autoRefresh ? 'var(--accent-green)' : 'var(--text-tertiary)', borderColor: autoRefresh ? 'rgba(92,214,133,0.2)' : 'rgba(255,255,255,0.06)'}}
-          >
-            Auto-refresh {autoRefresh ? 'ON' : 'OFF'}
-          </button>
+          <label style={{display: 'flex', alignItems: 'center', gap: '8px', color: styles.textSecondary, fontSize: '13px', cursor: 'pointer'}}>
+            <input 
+              type="checkbox" 
+              checked={autoRefresh} 
+              onChange={(e) => setAutoRefresh(e.target.checked)}
+              style={{accentColor: styles.purpleBright}}
+            />
+            Auto-refresh
+          </label>
           <button 
             onClick={async () => { setRefreshing(true); await fetchData(); setTimeout(() => setRefreshing(false), 600); }}
-            className="btn"
+            style={{
+              background: styles.bgPanel, border: `1px solid ${styles.borderGlass}`,
+              padding: '8px 16px', color: styles.textPrimary,
+              cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px'
+            }}
           >
             <RefreshCw size={14} style={refreshing ? {animation: "spin 1s linear infinite"} : {}} /> {refreshing ? "Refreshing..." : "Refresh"}
           </button>
           {user?.role === 'admin' && <button 
             onClick={exportSessionsCSV}
-            className="btn"
+            style={{
+              background: styles.bgPanel, border: `1px solid ${styles.borderGlass}`,
+              padding: '8px 16px', color: styles.textPrimary,
+              cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px',
+              fontFamily: styles.mono, fontSize: '11px', letterSpacing: '0.5px'
+            }}
           >
             <Download size={14} /> Export CSV
           </button>}
@@ -168,38 +168,32 @@ function MonitoringPage() {
       {alerts.length > 0 && (
         <div style={{
           background: 'rgba(214, 92, 92, 0.1)',
-          border: '1px solid rgba(255,255,255,.10)',
+          border: '1px solid rgba(0,0,0,.09)',
           padding: '16px',
           marginBottom: '24px'
         }}>
           <div style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px'}}>
-            <AlertTriangle fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} size={18} style={{color: '#D65C5C'}} />
-            <span style={{fontWeight: 500, color: '#D65C5C'}}>{alerts.length} Active Alert{alerts.length > 1 ? 's' : ''}</span>
+            <AlertTriangle fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} size={18} style={{color: styles.accentRed}} />
+            <span style={{fontWeight: 500, color: styles.accentRed}}>{alerts.length} Active Alert{alerts.length > 1 ? 's' : ''}</span>
           </div>
           <div style={{display: 'flex', flexDirection: 'column', gap: '8px'}}>
             {alerts.map((alert, i) => (
-              <div key={i} onClick={() => {
-                const s = sessions.find(s => s.session_id === alert.session_id);
-                if (s) setSelectedSession(s);
-              }} style={{
+              <div key={i} style={{
                 display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px',
-                background: 'transparent', padding: '10px 14px', cursor: 'pointer',
-                transition: 'background .15s'
-              }}
-              onMouseEnter={e => e.currentTarget.style.background = 'rgba(214,92,92,0.08)'}
-              onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+                background: 'transparent', padding: '10px 14px'
+              }}>
                 <div>
                   <span style={{
-                    fontSize: '10px', fontFamily: "Consolas, 'IBM Plex Mono', monospace",
+                    fontSize: '10px', fontFamily: styles.mono,
                     textTransform: 'uppercase', letterSpacing: '1px',
-                    color: alert.severity === 'critical' ? '#D65C5C' : '#D6A05C',
+                    color: alert.severity === 'critical' ? styles.accentRed : styles.accentAmber,
                     marginRight: '12px'
                   }}>
                     {alert.severity}
                   </span>
-                  <span style={{color: 'rgba(255,255,255,.94)'}}>{alert.message}</span>
+                  <span style={{color: styles.textPrimary}}>{alert.message}</span>
                 </div>
-                <span style={{color: 'rgba(255,255,255,.50)', fontSize: '12px', fontFamily: "Consolas, 'IBM Plex Mono', monospace"}}>
+                <span style={{color: styles.textTertiary, fontSize: '12px', fontFamily: styles.mono}}>
                   {alert.session_id?.slice(0, 8)}...
                 </span>
               </div>
@@ -208,224 +202,184 @@ function MonitoringPage() {
         </div>
       )}
 
-      {/* Alert Bar — only shows when there are issues */}
+      {/* Summary Cards */}
       {(() => {
-        const offlineCount = sessions.filter(s => !s.is_online).length;
-        const lowConformance = sessions.filter(s => s.is_online && s.pass_count + s.block_count > 0 && (s.pass_count / (s.pass_count + s.block_count) * 100) < 95).length;
-        if (!offlineCount && !lowConformance) return null;
+        const onlineCount = sessions.filter(s => s.is_online).length;
+        const offlineCount = sessions.filter(s => !s.is_online && s.status !== 'ended').length;
+        const totalFleet = onlineCount + offlineCount;
+        const healthPct = totalFleet > 0 ? (onlineCount / totalFleet * 100) : 0;
+        const cardStyle = {background: 'transparent', border: '1px solid rgba(0,0,0,0.05)', padding: '20px'};
+        const labelStyle = {fontSize: '10px', fontFamily: styles.mono, textTransform: 'uppercase', letterSpacing: '2px', color: styles.textTertiary, marginBottom: '8px'};
+        const subStyle = {fontSize: '12px', color: styles.textSecondary, marginTop: '4px'};
         return (
-          <div style={{padding:'10px 16px',marginBottom:'16px',border:'1px solid rgba(214,160,92,0.2)',background:'rgba(214,160,92,0.04)',fontFamily:"Consolas, 'IBM Plex Mono', monospace",fontSize:'11px',color:'#D6A05C',display:'flex',gap:'16px',flexWrap:'wrap'}}>
-            {offlineCount > 0 && <span style={{cursor:'pointer',textDecoration:'underline'}} onClick={() => setStatusFilter('offline')}>⚠ {offlineCount} system{offlineCount > 1 ? 's' : ''} offline</span>}
-            {lowConformance > 0 && <span style={{cursor:'pointer',textDecoration:'underline'}} onClick={() => setStatusFilter('all')}>⚠ {lowConformance} system{lowConformance > 1 ? 's' : ''} below 95% conformance</span>}
+          <div style={{marginBottom: '32px'}}>
+            {/* Fleet Health Bar */}
+            {totalFleet > 0 && (
+              <div style={{marginBottom: '20px', padding: '16px 20px', ...cardStyle}}>
+                <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '10px'}}>
+                  <div style={labelStyle}>Fleet Health</div>
+                  <div style={{fontFamily: styles.mono, fontSize: '13px', color: healthPct >= 90 ? styles.accentGreen : healthPct >= 70 ? styles.accentAmber : styles.accentRed, fontWeight: 500}}>
+                    {healthPct.toFixed(0)}% Online
+                  </div>
+                </div>
+                <div style={{height: '8px', background: 'transparent', overflow: 'hidden', display: 'flex'}}>
+                  {onlineCount > 0 && <div style={{width: (onlineCount / totalFleet * 100) + '%', background: styles.accentGreen, transition: 'width 0.5s'}} />}
+                  {offlineCount > 0 && <div style={{width: (offlineCount / totalFleet * 100) + '%', background: styles.accentRed, transition: 'width 0.5s'}} />}
+                </div>
+                <div style={{display: 'flex', gap: '16px', marginTop: '8px'}}>
+                  <span style={{fontSize: '11px', color: styles.accentGreen, display: 'flex', alignItems: 'center', gap: '4px'}}>
+                    <span style={{width: '8px', height: '8px', borderRadius: '50%', background: styles.accentGreen, display: 'inline-block'}} /> {onlineCount} online
+                  </span>
+                  <span style={{fontSize: '11px', color: styles.accentRed, display: 'flex', alignItems: 'center', gap: '4px'}}>
+                    <span style={{width: '8px', height: '8px', borderRadius: '50%', background: styles.accentRed, display: 'inline-block'}} /> {offlineCount} offline
+                  </span>
+                  <span style={{fontSize: '11px', color: styles.textTertiary, display: 'flex', alignItems: 'center', gap: '4px'}}>
+                    <span style={{width: '8px', height: '8px', borderRadius: '50%', background: styles.textTertiary, display: 'inline-block'}} /> {summary.ended || 0} ended
+                  </span>
+                </div>
+              </div>
+            )}
+            
+            <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '16px'}}>
+              <div style={cardStyle}>
+                <div style={labelStyle}>{user?.role === 'admin' ? 'Active Sessions' : 'Active Systems'}</div>
+                <div style={{fontSize: '32px', fontWeight: 300, color: styles.accentGreen}}>{summary.active || 0}</div>
+                <div style={subStyle}>{summary.offline || 0} offline</div>
+              </div>
+              <div style={cardStyle}>
+                <div style={labelStyle}>Total Actions</div>
+                <div style={{fontSize: '32px', fontWeight: 300, color: styles.textPrimary}}>{(summary.total_actions || 0).toLocaleString()}</div>
+                <div style={subStyle}>{summary.total_pass?.toLocaleString() || 0} passed, {summary.total_block?.toLocaleString() || 0} blocked</div>
+              </div>
+              <div style={cardStyle}>
+                <div style={labelStyle}>Pass Rate</div>
+                <div style={{fontSize: '32px', fontWeight: 300, color: summary.pass_rate >= 99 ? styles.accentGreen : summary.pass_rate >= 95 ? styles.accentAmber : styles.accentRed}}>{summary.pass_rate?.toFixed(1) || 0}%</div>
+                <div style={subStyle}>enforcement success</div>
+              </div>
+              <div style={cardStyle}>
+                <div style={labelStyle}>Violations (24h)</div>
+                <div style={{fontSize: '32px', fontWeight: 300, color: (summary.total_block || 0) > 0 ? styles.accentRed : styles.accentGreen}}>{(summary.total_block || 0).toLocaleString()}</div>
+                <div style={subStyle}>{((summary.total_block || 0) / Math.max(summary.total_actions || 1, 1) * 100).toFixed(2)}% of actions</div>
+              </div>
+              {user?.role === 'admin' && <div style={cardStyle}>
+                <div style={labelStyle}>Total Sessions</div>
+                <div style={{fontSize: '32px', fontWeight: 300, color: styles.textPrimary}}>{summary.total || 0}</div>
+                <div style={subStyle}>{summary.ended || 0} completed</div>
+              </div>}
+              {user?.role === 'admin' && <div style={cardStyle}>
+                <div style={labelStyle}>Unique Systems</div>
+                <div style={{fontSize: '32px', fontWeight: 300, color: styles.purpleBright}}>{[...new Set(sessions.map(s => s.certificate_id).filter(Boolean))].length}</div>
+                <div style={subStyle}>{[...new Set(sessions.map(s => s.organization_name).filter(Boolean))].length} organizations</div>
+              </div>}
+            </div>
           </div>
         );
       })()}
 
       {/* Sessions Table */}
-      <div style={{background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', overflow: 'auto'}}>
-        <div style={{padding: '16px 20px', borderBottom: `1px solid ${'rgba(255,255,255,.07)'}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px'}}>
-          <div className="hud-label" style={{marginBottom: '16px'}}>{user?.role === 'admin' ? 'Interlock Sessions' : 'System Monitoring'}</div>
+      <div style={{background: 'transparent', border: '1px solid rgba(0,0,0,0.05)', overflow: 'hidden'}}>
+        <div style={{padding: '16px 20px', borderBottom: `1px solid ${styles.borderGlass}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px'}}>
+          <h2 style={{margin: 0, fontSize: '14px', fontFamily: styles.mono, textTransform: 'uppercase', letterSpacing: '2px', color: styles.textTertiary}}>{user?.role === 'admin' ? 'Agent Sessions' : 'System Monitoring'}</h2>
           <div style={{display: 'flex', gap: '12px', alignItems: 'center'}}>
-            <input type="text" placeholder="Search session, system..." value={searchTerm} onChange={e => { setSearchTerm(e.target.value); setCurrentPage(1); }} style={{background:'rgba(255,255,255,.04)',border:'1px solid rgba(255,255,255,.08)',color:'rgba(255,255,255,.90)',padding:'6px 12px',fontFamily:"Consolas, monospace",fontSize:'11px',width:'200px',outline:'none'}} />
-{['all','online','offline'].map(f => (
-              <button key={f} onClick={() => setStatusFilter(f)} className="btn" style={{padding: '4px 10px', color: statusFilter === f ? (f === 'offline' ? '#D65C5C' : f === 'online' ? '#5CD685' : 'rgba(255,255,255,.94)') : 'var(--text-tertiary)', borderColor: statusFilter === f ? (f === 'offline' ? 'rgba(214,92,92,0.3)' : f === 'online' ? 'rgba(92,214,133,0.2)' : 'rgba(255,255,255,0.15)') : 'rgba(255,255,255,0.06)', textTransform: 'capitalize', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', letterSpacing: '1px'}}>
-                {f}
-              </button>
-            ))}
-
+            {user?.role === 'admin' && <select value={customerFilter} onChange={(e) => setCustomerFilter(e.target.value)} style={{background: 'rgba(0,0,0,0.04)', border: `1px solid ${styles.borderGlass}`, padding: '6px 10px', color: styles.textPrimary, fontSize: '12px'}}>
+              <option value="">All Customers</option>
+              {[...new Set(sessions.map(s => s.organization_name).filter(Boolean))].map(org => <option key={org} value={org}>{org}</option>)}
+            </select>}
+            <label style={{display: 'flex', alignItems: 'center', gap: '6px', color: styles.textSecondary, fontSize: '12px', cursor: 'pointer'}}>
+              <input type="checkbox" checked={hideEnded} onChange={(e) => setHideEnded(e.target.checked)} style={{accentColor: styles.purpleBright}} />
+              Hide ended
+            </label>
+            <label style={{display: 'flex', alignItems: 'center', gap: '6px', color: styles.textSecondary, fontSize: '12px', cursor: 'pointer'}}>
+              <input type="checkbox" checked={onlineOnly} onChange={(e) => setOnlineOnly(e.target.checked)} style={{accentColor: styles.purpleBright}} />
+              Online only
+            </label>
           </div>
         </div>        
         {filteredSessions.length === 0 ? (
-          <div style={{padding: 'clamp(16px, 4vw, 40px)', textAlign: 'center', color: 'rgba(255,255,255,.78)'}}>
-            {user?.role === 'admin' ? 'No ENVELO sessions found. Deploy an Interlock to begin monitoring.' : 'No active systems. Once your system is ODDC certified and running the ENVELO Interlock, real-time monitoring data will appear here.'}
+          <div style={{padding: 'clamp(16px, 4vw, 40px)', textAlign: 'center', color: styles.textSecondary}}>
+            {user?.role === 'admin' ? 'No ENVELO sessions found. Deploy an agent to begin monitoring.' : 'No active systems. Once your system is ODDC certified and running the ENVELO agent, real-time monitoring data will appear here.'}
           </div>
         ) : (
           <div className='table-scroll' style={{overflowX: 'auto', WebkitOverflowScrolling: 'touch'}}>
-            <table style={{width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed', minWidth: '1000px'}}>
-              <colgroup>
-                <col style={{width:'100px'}} />
-                <col style={{width:'160px'}} />
-                <col style={{width:'180px'}} />
-                <col style={{width:'120px'}} />
-                <col style={{width:'80px'}} />
-                <col style={{width:'90px'}} />
-                <col style={{width:'90px'}} />
-                <col style={{width:'140px'}} />
-              </colgroup>
+            <table style={{width: '100%', borderCollapse: 'collapse'}}>
               <thead>
                 <tr style={{background: 'transparent'}}>
-                  {(() => {
-                    const thBase = {padding: '12px 16px', textAlign: 'left', fontSize: '10px', fontFamily: "Consolas, 'IBM Plex Mono', monospace", textTransform: 'uppercase', letterSpacing: '1px', color: 'rgba(255,255,255,.50)'};
-                    const sortable = (label, field, align) => {
-                      const active = sortField === field;
-                      const style = {...thBase, textAlign: align || 'left', cursor: 'pointer', userSelect: 'none', color: active ? '#a896d6' : 'rgba(255,255,255,.50)', transition: 'color .15s'};
-                      const arrow = active ? (sortOrder === 'asc' ? ' \u25B2' : ' \u25BC') : '';
-                      return <th style={style} onClick={() => { if (active) { setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc'); } else { setSortField(field); setSortOrder('desc'); } setCurrentPage(1); }}>{label}{arrow}</th>;
-                    };
-                    return (<>
-                    {sortable('Status', 'status')}
-                    {sortable('Organization', 'organization_name')}
-                    {sortable('System / Certificate', 'system_name')}
-                    {sortable('Session', 'started_at')}
-                    {sortable('Uptime', 'uptime')}
-                    {sortable('Actions', 'pass_count', 'right')}
-                    {sortable('Pass Rate', 'pass_rate', 'right')}
-                    {sortable('Last Activity', 'last_activity')}
-                    </>);
-                  })()}
+                  {(() => { const th = {padding: '12px 16px', textAlign: 'left', fontSize: '10px', fontFamily: styles.mono, textTransform: 'uppercase', letterSpacing: '1px', color: styles.textTertiary}; const thr = {...th, textAlign: 'right'}; return (<>
+                  <th style={th}>Status</th>
+                  <th style={th}>Organization</th>
+                  <th style={th}>System / Certificate</th>
+                  <th style={th}>Session</th>
+                  <th style={th}>Uptime</th>
+                  <th style={thr}>Actions</th>
+                  <th style={thr}>Pass Rate</th>
+                  <th style={th}>Last Activity</th>
+                  </>); })()}
                 </tr>
               </thead>
               <tbody>
                 {filteredSessions.map((session) => {
                   const total = session.pass_count + session.block_count;
                   const passRate = total > 0 ? (session.pass_count / total * 100) : 0;
-                  const isSelected = selectedSession?.id === session.id || expandedId === session.id;
+                  const isSelected = selectedSession?.id === session.id;
                   
-                  return (<>
+                  return (
                     <tr 
                       key={session.id}
-                      onClick={() => {
-                        if (isSelected) { const scrollY = window.scrollY; setExpandedId(null); setTimeout(() => { setSelectedSession(null); requestAnimationFrame(() => window.scrollTo(0, scrollY)); }, 300); }
-                        else { setSelectedSession(session); requestAnimationFrame(() => setExpandedId(session.id)); }
-                      }}
+                      onClick={() => setSelectedSession(isSelected ? null : session)}
                       style={{
-                        borderBottom: `1px solid ${'rgba(255,255,255,.07)'}`,
+                        borderBottom: `1px solid ${styles.borderGlass}`,
                         cursor: 'pointer',
                         background: isSelected ? 'rgba(91, 75, 138, 0.15)' : 'transparent',
                         transition: 'background 0.15s'
                       }}
-                      onMouseEnter={(e) => { if (!isSelected) e.currentTarget.style.background = 'rgba(255,255,255,0.03)'; }}
+                      onMouseEnter={(e) => { if (!isSelected) e.currentTarget.style.background = 'transparent'; }}
                       onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.background = 'transparent'; }}
                     >
                       <td style={{padding: '14px 16px'}}>
                         <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
                           <div style={{
                             width: '10px', height: '10px', borderRadius: '50%',
-                            background: session.is_online ? '#5CD685' : '#D65C5C',
-                            boxShadow: 'none'
+                            background: session.is_online ? styles.accentGreen : session.status === 'ended' ? styles.textTertiary : styles.accentRed,
+                            boxShadow: session.is_online ? `0 0 8px ${styles.accentGreen}` : 'none'
                           }} />
                           <span style={{
-                            fontSize: '11px', fontFamily: "Consolas, 'IBM Plex Mono', monospace",
+                            fontSize: '11px', fontFamily: styles.mono,
                             textTransform: 'uppercase', letterSpacing: '1px',
-                            color: session.is_online ? '#5CD685' : '#D65C5C'
+                            color: session.is_online ? styles.accentGreen : session.status === 'ended' ? styles.textTertiary : styles.accentRed
                           }}>
-                            {session.is_online ? 'Online' : 'Offline'}
-                          {!session.is_online && <div style={{fontSize:'9px',color:'rgba(214,92,92,0.6)',marginTop:'2px',textTransform:'none',letterSpacing:'0'}}>{session.offline_reason || (() => { const lh = session.last_heartbeat_at || session.last_activity; const h = lh ? Math.round((Date.now() - new Date(lh).getTime()) / 3600000) : null; return h ? h + 'h ago' : 'no signal'; })()}</div>}
+                            {session.is_online ? 'Online' : session.status === 'ended' ? 'Ended' : 'Offline'}
                           </span>
-                          {session.is_online && <span style={{fontSize:'13px',color:'#D66A6A',animation:'heartbeat 1.2s ease-in-out infinite'}}>♥</span>}
                         </div>
                       </td>
                       <td style={{padding: '14px 16px'}}>
-                        <div style={{fontSize: '13px', color: 'rgba(255,255,255,.94)', fontWeight: 500}}>{session.organization_name || 'Unknown'}</div>
+                        <div style={{fontSize: '13px', color: styles.textPrimary, fontWeight: 500}}>{session.organization_name || 'Unknown'}</div>
                       </td>
                       <td style={{padding: '14px 16px'}}>
-                        <div style={{fontSize: '13px', color: 'rgba(255,255,255,.94)'}}>{session.system_name || '-'}</div>
-                        <div style={{fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '10px', color: 'rgba(255,255,255,.50)', marginTop: '2px'}}>{session.certificate_id || '-'}</div>
+                        <div style={{fontSize: '13px', color: styles.textPrimary}}>{session.system_name || '-'}</div>
+                        <div style={{fontFamily: styles.mono, fontSize: '10px', color: styles.textTertiary, marginTop: '2px'}}>{session.certificate_id || '-'}</div>
                       </td>
-                      <td style={{padding: '14px 16px', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', color: 'rgba(255,255,255,.50)'}}>
+                      <td style={{padding: '14px 16px', fontFamily: styles.mono, fontSize: '11px', color: styles.textTertiary}}>
                         {session.session_id?.slice(0, 12)}...
                       </td>
-                      <td style={{padding: '14px 16px', color: 'rgba(255,255,255,.78)', fontSize: '13px'}}>
+                      <td style={{padding: '14px 16px', color: styles.textSecondary, fontSize: '13px'}}>
                         {session.uptime_hours?.toFixed(1)}h
                       </td>
-                      <td style={{padding: '14px 16px', textAlign: 'right', color: 'rgba(255,255,255,.94)', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '13px'}}>
+                      <td style={{padding: '14px 16px', textAlign: 'right', color: styles.textPrimary, fontFamily: styles.mono, fontSize: '13px'}}>
                         {total.toLocaleString()}
                       </td>
                       <td style={{padding: '14px 16px', textAlign: 'right'}}>
                         <span style={{
-                          color: passRate >= 99 ? '#5CD685' : passRate >= 95 ? '#D6A05C' : '#D65C5C',
-                          fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '13px'
+                          color: passRate >= 99 ? styles.accentGreen : passRate >= 95 ? styles.accentAmber : styles.accentRed,
+                          fontFamily: styles.mono, fontSize: '13px'
                         }}>
                           {passRate.toFixed(1)}%
                         </span>
                       </td>
-                      <td style={{padding: '14px 16px', color: 'rgba(255,255,255,.50)', fontSize: '12px'}}>
+                      <td style={{padding: '14px 16px', color: styles.textTertiary, fontSize: '12px'}}>
                         {session.last_activity ? new Date(session.last_activity).toLocaleString() : '-'}
                       </td>
                     </tr>
-                    {selectedSession?.id === session.id && (
-                      <tr><td colSpan={8} style={{padding: 0, border: 'none'}}>
-                        <div ref={detailRef} style={{
-                          background: 'rgba(91,75,138,0.08)',
-                          borderBottom: '1px solid rgba(91,75,138,0.25)',
-                          maxHeight: expandedId === session.id ? '800px' : '0px',
-                          opacity: expandedId === session.id ? 1 : 0,
-                          overflow: 'hidden',
-                          transition: 'max-height 0.35s ease, opacity 0.25s ease',
-                          padding: expandedId === session.id ? '20px' : '0 20px'
-                        }}>
-                          <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px', marginBottom: '20px'}}>
-                            <div>
-                              <h3 style={{margin: '0 0 4px 0', fontSize: '18px', fontWeight: 400, color: 'rgba(255,255,255,.94)'}}>{selectedSession.organization_name || 'Unknown Organization'}</h3>
-                              <p style={{margin: 0, fontSize: '13px', color: 'rgba(255,255,255,.78)'}}>{selectedSession.system_name || 'Unknown System'} · {selectedSession.certificate_id || 'No certificate'}</p>
-                              <p style={{margin: '4px 0 0', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px', color: 'rgba(255,255,255,.50)'}}>Interlock v{selectedSession.agent_version || '1.0.0'} · Session {selectedSession.session_id}</p>
-                            </div>
-                            <div style={{display: 'flex', gap: '8px', alignItems: 'center'}}>
-                              <div style={{display:'flex',gap:'6px',alignItems:'center'}}>
-                                {user?.role === 'admin' && selectedSession.certificate_id && (
-                                  <button onClick={async (e) => { e.stopPropagation(); if (!await confirm({title:'Reinstate Certificate',message:`Reinstate ${selectedSession.certificate_id} for ${selectedSession.organization_name}? System is back online.`})) return; try { await api.patch(`/api/certificates/${selectedSession.certificate_id}/reinstate`); toast.show('Certificate reinstated','success'); fetchData(); } catch(err) { toast.show('Failed: '+(err.response?.data?.detail||err.message),'error'); }}} className="btn" style={{padding:'3px 8px',fontSize:'9px',fontFamily:"Consolas,monospace",letterSpacing:'1px',textTransform:'uppercase',color:'#5CD685',borderColor:'rgba(92,214,133,0.3)'}}>Reinstate</button>
-                                )}
-                                {user?.role === 'admin' && selectedSession.certificate_id && (
-                                  <button onClick={async (e) => { e.stopPropagation(); if (!await confirm({title:'Suspend Certificate',message:`Suspend ${selectedSession.certificate_id} for ${selectedSession.organization_name}? System is offline.`,danger:true})) return; try { await api.patch(`/api/certificates/${selectedSession.certificate_id}/suspend`,null,{params:{reason:'System offline — suspended by admin'}}); toast.show('Certificate suspended','warning'); fetchData(); } catch(err) { toast.show('Failed: '+(err.response?.data?.detail||err.message),'error'); }}} className="btn" style={{padding:'3px 8px',fontSize:'9px',fontFamily:"Consolas,monospace",letterSpacing:'1px',textTransform:'uppercase',color:'#D6A05C',borderColor:'rgba(214,160,92,0.3)'}}>Suspend</button>
-                                )}
-                                {user?.role === 'admin' && selectedSession.certificate_id && (
-                                  <button onClick={async (e) => { e.stopPropagation(); if (!await confirm({title:'Revoke Certificate',message:`Permanently revoke ${selectedSession.certificate_id} for ${selectedSession.organization_name}? This cannot be undone.`,danger:true})) return; try { await api.patch(`/api/certificates/${selectedSession.certificate_id}/revoke`,null,{params:{reason:'Revoked by admin'}}); toast.show('Certificate revoked','error'); fetchData(); } catch(err) { toast.show('Failed: '+(err.response?.data?.detail||err.message),'error'); }}} className="btn" style={{padding:'3px 8px',fontSize:'9px',fontFamily:"Consolas,monospace",letterSpacing:'1px',textTransform:'uppercase',color:'#D65C5C',borderColor:'rgba(214,92,92,0.3)'}}>Revoke</button>
-                                )}
-                                <button onClick={(e) => { e.stopPropagation(); setSelectedSession(null); }} style={{background: 'none', border: 'none', color: 'rgba(255,255,255,.50)', cursor: 'pointer', fontSize: '18px', padding: '4px 8px'}}>×</button>
-                              </div>
-                            </div>
-                          </div>
-
-                          <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '12px', marginBottom: '20px'}}>
-                            <div><div style={{fontSize: '10px', color: 'rgba(255,255,255,.50)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px'}}>Last Heartbeat</div><div style={{color: selectedSession.is_online ? '#5CD685' : '#D65C5C', fontSize: '12px', display:'flex', alignItems:'center', gap:'6px'}}>{selectedSession.is_online && <span style={{animation:'heartbeat 1.2s ease-in-out infinite',fontSize:'13px',color:'#D66A6A'}}>♥</span>}{selectedSession.last_heartbeat_at ? new Date(selectedSession.last_heartbeat_at).toLocaleString() : selectedSession.last_activity ? new Date(selectedSession.last_activity).toLocaleString() : '-'}</div></div>
-                            {!selectedSession.is_online && (() => {
-                              const lastHb = selectedSession.last_heartbeat_at || selectedSession.last_activity;
-                              const hoursAgo = lastHb ? Math.round((Date.now() - new Date(lastHb).getTime()) / 3600000) : null;
-                              const reason = hoursAgo > 72 ? 'Connection lost — no heartbeat for ' + hoursAgo + 'h' : hoursAgo > 24 ? 'Interlock unresponsive — offline ' + hoursAgo + 'h (auto-suspend eligible)' : hoursAgo ? 'Heartbeat stopped ' + hoursAgo + 'h ago' : 'No heartbeat received';
-                              return <div style={{gridColumn:'1 / -1', padding:'8px 12px', background:'rgba(214,92,92,0.06)', border:'1px solid rgba(214,92,92,0.15)', marginBottom:'4px'}}><div style={{fontSize:'9px',color:'#D65C5C',fontFamily:"Consolas,monospace",textTransform:'uppercase',letterSpacing:'1px',marginBottom:'4px'}}>⚠ Offline Reason</div><div style={{fontSize:'12px',color:'rgba(255,255,255,.80)'}}>{reason}</div></div>;
-                            })()}
-                            {!selectedSession.is_online && <div style={{gridColumn:'1 / -1', padding:'8px 12px', background:'rgba(214,92,92,0.06)', border:'1px solid rgba(214,92,92,0.15)', marginBottom:'4px'}}><div style={{fontSize:'9px',color:'#D65C5C',fontFamily:"Consolas,monospace",textTransform:'uppercase',letterSpacing:'1px',marginBottom:'4px'}}>Offline Reason</div><div style={{fontSize:'12px',color:'rgba(255,255,255,.80)'}}>{selectedSession.offline_reason || (() => { const lh = selectedSession.last_heartbeat_at || selectedSession.last_activity; const h = lh ? Math.round((Date.now() - new Date(lh).getTime()) / 3600000) : null; return h > 72 ? 'Connection lost - no heartbeat for ' + h + 'h' : h > 24 ? 'Interlock unresponsive - offline ' + h + 'h' : h ? 'Heartbeat stopped ' + h + 'h ago' : 'No heartbeat received'; })()}</div></div>}
-                            <div><div style={{fontSize: '10px', color: 'rgba(255,255,255,.50)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px'}}>Started</div><div style={{color: 'rgba(255,255,255,.94)', fontSize: '12px'}}>{selectedSession.started_at ? new Date(selectedSession.started_at).toLocaleString() : '-'}</div></div>
-                            <div><div style={{fontSize: '10px', color: 'rgba(255,255,255,.50)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px'}}>Uptime</div><div style={{color: 'rgba(255,255,255,.94)', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '16px'}}>{selectedSession.uptime_hours?.toFixed(1) || '0'}h</div></div>
-                            <div><div style={{fontSize: '10px', color: 'rgba(255,255,255,.50)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px'}}>Passed</div><div style={{color: '#5CD685', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '16px'}}>{(selectedSession.pass_count || 0).toLocaleString()}</div></div>
-                            <div><div style={{fontSize: '10px', color: 'rgba(255,255,255,.50)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px'}}>Blocked</div><div style={{color: '#D65C5C', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '16px'}}>{(selectedSession.block_count || 0).toLocaleString()}</div></div>
-                            <div><div style={{fontSize: '10px', color: 'rgba(255,255,255,.50)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px'}}>Pass Rate</div>{(() => { const t2 = (selectedSession.pass_count || 0) + (selectedSession.block_count || 0); const r2 = t2 > 0 ? (selectedSession.pass_count / t2 * 100) : 0; return <div style={{color: r2 >= 99 ? '#5CD685' : r2 >= 95 ? '#D6A05C' : '#D65C5C', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '16px'}}>{r2.toFixed(1)}%</div>; })()}</div>
-                            <div><div style={{fontSize: '10px', color: 'rgba(255,255,255,.50)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px'}}>Certificate</div><div style={{color: '#a896d6', fontFamily: "Consolas, 'IBM Plex Mono', monospace", fontSize: '11px'}}>{selectedSession.certificate_id ? <a href={'/verify?cert=' + selectedSession.certificate_id} style={{color:'#a896d6',textDecoration:'none'}}>{selectedSession.certificate_id}</a> : '-'}</div></div>
-                          </div>
-
-                          {(() => { const t3 = (selectedSession.pass_count || 0) + (selectedSession.block_count || 0); if (t3 === 0) return null; const pp = selectedSession.pass_count / t3 * 100; return (
-                            <div style={{marginBottom: '20px'}}>
-                              <div style={{fontSize: '10px', color: 'rgba(255,255,255,.50)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '6px'}}>Enforcement Distribution</div>
-                              <div style={{height: '8px', background: 'rgba(255,255,255,0.06)', overflow: 'hidden', display: 'flex'}}>
-                                <div style={{width: pp + '%', background: '#5CD685'}} />
-                                <div style={{width: (100 - pp) + '%', background: '#D65C5C'}} />
-                              </div>
-                              <div style={{display: 'flex', justifyContent: 'space-between', marginTop: '4px', fontSize: '10px'}}>
-                                <span style={{color: '#5CD685'}}>Pass: {pp.toFixed(1)}%</span>
-                                <span style={{color: '#D65C5C'}}>Block: {(100 - pp).toFixed(1)}%</span>
-                              </div>
-                            </div>
-                          ); })()}
-
-                          <div style={{display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '20px'}}>
-                            <button onClick={async (e) => { e.stopPropagation(); try { const isAdmin = user?.role === 'admin'; const base = isAdmin ? '/api/envelo/admin/sessions/' : '/api/envelo/my/sessions/'; const res = await api.get(base + selectedSession.session_id + '/telemetry'); const records = res.data.records || []; if (records.length === 0) { toast.show('No telemetry data yet', 'info'); return; } const headers = ['timestamp','action_id','action_type','result','execution_time_ms']; const csv = [headers.join(','), ...records.map(r => headers.map(h => JSON.stringify(r[h] ?? '')).join(','))].join('\n'); const blob = new Blob([csv], {type: 'text/csv'}); const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = 'telemetry-' + selectedSession.session_id + '.csv'; link.click(); } catch (e2) { toast.show('Failed to download telemetry', 'error'); } }} className="btn" style={{fontSize: '11px', padding: '6px 12px'}}>↓ Telemetry CSV</button>
-                            <button onClick={async (e) => { e.stopPropagation(); try { const isAdmin = user?.role === 'admin'; const base = isAdmin ? '/api/envelo/admin/sessions/' : '/api/envelo/my/sessions/'; const res = await api.get(base + selectedSession.session_id + '/violations'); const violations = res.data.violations || []; if (violations.length === 0) { toast.show('No violations recorded', 'info'); return; } const headers = ['timestamp','boundary_name','violation_message']; const csv = [headers.join(','), ...violations.map(v => headers.map(h => JSON.stringify(v[h] ?? '')).join(','))].join('\n'); const blob = new Blob([csv], {type: 'text/csv'}); const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = 'violations-' + selectedSession.session_id + '.csv'; link.click(); } catch (e2) { toast.show('Failed to download violations', 'error'); } }} className="btn" style={{fontSize: '11px', padding: '6px 12px'}}>↓ Violations CSV</button>
-                            <button onClick={async (e) => { e.stopPropagation(); try { const isAdmin = user?.role === 'admin'; const base = isAdmin ? '/api/envelo/admin/sessions/' : '/api/envelo/my/sessions/'; const res = await api.get(base + selectedSession.session_id + '/report', { responseType: 'blob' }); const blob = new Blob([res.data], {type: 'application/pdf'}); const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = 'CAT72-Report-' + selectedSession.session_id + '.pdf'; link.click(); } catch (e2) { toast.show('Failed to download report', 'error'); } }} className="btn" style={{fontSize: '11px', padding: '6px 12px'}}>↓ CAT-72 Report PDF</button>
-                          </div>
-
-                          {timeline.length > 0 && (
-                            <div>
-                              <div style={{fontSize: '10px', color: 'rgba(255,255,255,.50)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px'}}>24-Hour Activity</div>
-                              <div style={{display: 'flex', gap: '2px', height: '40px', alignItems: 'flex-end'}}>
-                                {timeline.map((point, i) => { const maxTotal = Math.max(...timeline.map(t => t.total), 1); const height = (point.total / maxTotal) * 100; const passRatio = point.total > 0 ? point.pass / point.total : 1; return (<div key={i} style={{flex: 1, height: Math.max(height, 2) + '%', background: passRatio >= 0.99 ? '#5CD685' : passRatio >= 0.95 ? '#D6A05C' : '#D65C5C', opacity: 0.8}} title={new Date(point.hour).toLocaleTimeString() + ': ' + point.total + ' actions'} />); })}
-                              </div>
-                              <div style={{display: 'flex', justifyContent: 'space-between', marginTop: '4px', fontSize: '10px', color: 'rgba(255,255,255,.50)'}}><span>24h ago</span><span>Now</span></div>
-                            </div>
-                          )}
-                        </div>
-                      </td></tr>
-                    )}
-                  </>);
+                  );
                 })}
               </tbody>
             </table>
@@ -433,24 +387,200 @@ function MonitoringPage() {
         )}
       </div>
 
-      <Pagination page={currentPage} pages={totalPages} onChange={setCurrentPage} />    </div>
-  );
-}
+      {/* Session Detail Panel */}
+      {selectedSession && (
+        <div style={{
+          marginTop: '24px',
+          background: styles.bgPanel,
+          border: `1px solid ${styles.borderGlass}`,
+          overflow: 'hidden'
+        }}>
+          <div style={{padding: '16px 20px', borderBottom: `1px solid ${styles.borderGlass}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px'}}>
+            <h2 style={{margin: 0, fontSize: '14px', fontFamily: styles.mono, textTransform: 'uppercase', letterSpacing: '2px', color: styles.textTertiary}}>
+              Session Detail: {selectedSession.session_id}
+            </h2>
+            <button 
+              onClick={() => setSelectedSession(null)}
+              style={{background: 'none', border: 'none', color: styles.textTertiary, cursor: 'pointer', fontSize: '18px'}}
+            >
+              ×
+            </button>
+          </div>
+          
+          <div style={{padding: '20px'}}>
+            {/* Session Info Header */}
+            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px', marginBottom: '24px'}}>
+              <div>
+                <h3 style={{margin: '0 0 4px 0', fontSize: '18px', fontWeight: 400, color: styles.textPrimary}}>{selectedSession.organization_name || 'Unknown Organization'}</h3>
+                <p style={{margin: 0, fontSize: '13px', color: styles.textSecondary}}>{selectedSession.system_name || 'Unknown System'} · {selectedSession.certificate_id || 'No certificate'}</p>
+                <p style={{margin: '4px 0 0', fontFamily: styles.mono, fontSize: '11px', color: styles.textTertiary}}>Agent v{selectedSession.agent_version || '1.0.0'} · Session {selectedSession.session_id}</p>
+              </div>
+              {selectedSession.is_online && (
+                <button
+                  onClick={async () => {
+                    if (!await confirm({title: 'End Session', message: 'Force-end this session?', danger: true})) return;
+                    try {
+                      await api.post('/api/envelo/sessions/' + selectedSession.session_id + '/end', { ended_at: new Date().toISOString(), final_stats: { pass_count: selectedSession.pass_count, block_count: selectedSession.block_count } });
+                      setSelectedSession(null);
+                      fetchData();
+                    } catch (e) { toast.show('Failed: ' + e.message, 'error'); }
+                  }}
+                  style={{padding: '8px 16px', background: 'transparent', border: '1px solid rgba(0,0,0,0.05)', color: styles.accentRed, cursor: 'pointer', fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase'}}
+                >
+                  Force End Session
+                </button>
+              )}
+            </div>
+            
+            {/* Stats Grid */}
+            <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '16px', marginBottom: '24px'}}>
+              <div style={{background: 'transparent', padding: '14px'}}>
+                <div style={{fontSize: '10px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '6px'}}>Started</div>
+                <div style={{color: styles.textPrimary, fontSize: '13px'}}>{selectedSession.started_at ? new Date(selectedSession.started_at).toLocaleString() : '-'}</div>
+              </div>
+              <div style={{background: 'transparent', padding: '14px'}}>
+                <div style={{fontSize: '10px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '6px'}}>Uptime</div>
+                <div style={{color: styles.textPrimary, fontFamily: styles.mono, fontSize: '18px'}}>{selectedSession.uptime_hours?.toFixed(1) || '0'}h</div>
+              </div>
+              <div style={{background: 'transparent', padding: '14px'}}>
+                <div style={{fontSize: '10px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '6px'}}>Passed</div>
+                <div style={{color: styles.accentGreen, fontFamily: styles.mono, fontSize: '18px'}}>{(selectedSession.pass_count || 0).toLocaleString()}</div>
+              </div>
+              <div style={{background: 'transparent', padding: '14px'}}>
+                <div style={{fontSize: '10px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '6px'}}>Blocked</div>
+                <div style={{color: styles.accentRed, fontFamily: styles.mono, fontSize: '18px'}}>{(selectedSession.block_count || 0).toLocaleString()}</div>
+              </div>
+              <div style={{background: 'transparent', padding: '14px'}}>
+                <div style={{fontSize: '10px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '6px'}}>Pass Rate</div>
+                {(() => { const t = (selectedSession.pass_count || 0) + (selectedSession.block_count || 0); const r = t > 0 ? (selectedSession.pass_count / t * 100) : 0; return (
+                  <div style={{color: r >= 99 ? styles.accentGreen : r >= 95 ? styles.accentAmber : styles.accentRed, fontFamily: styles.mono, fontSize: '18px'}}>{r.toFixed(1)}%</div>
+                ); })()}
+              </div>
+              <div style={{background: 'transparent', padding: '14px'}}>
+                <div style={{fontSize: '10px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '6px'}}>Certificate</div>
+                <div style={{color: styles.purpleBright, fontFamily: styles.mono, fontSize: '12px'}}>{selectedSession.certificate_id || '-'}</div>
+              </div>
+            </div>
+            
+            {/* Pass/Block Ratio Bar */}
+            {(() => { const t = (selectedSession.pass_count || 0) + (selectedSession.block_count || 0); if (t === 0) return null; const pp = selectedSession.pass_count / t * 100; return (
+              <div style={{marginBottom: '24px'}}>
+                <div style={{fontSize: '10px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px'}}>Enforcement Distribution</div>
+                <div style={{height: '12px', background: 'transparent', overflow: 'hidden', display: 'flex'}}>
+                  <div style={{width: pp + '%', background: 'linear-gradient(90deg, ' + styles.accentGreen + ', #4BC87A)', transition: 'width 0.5s'}} />
+                  <div style={{width: (100 - pp) + '%', background: styles.accentRed, transition: 'width 0.5s'}} />
+                </div>
+                <div style={{display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px', marginTop: '4px', fontSize: '11px'}}>
+                  <span style={{color: styles.accentGreen}}>Pass: {pp.toFixed(1)}%</span>
+                  <span style={{color: styles.accentRed}}>Block: {(100 - pp).toFixed(1)}%</span>
+                </div>
+              </div>
+            ); })()}
 
 
-
-function Pagination({ page, pages, onChange }) {
-  if (pages <= 1) return null;
-  return (
-    <div style={{display:'flex',justifyContent:'center',alignItems:'center',gap:'8px',padding:'16px 0'}}>
-      <button disabled={page<=1} onClick={() => onChange(page-1)} className="btn" style={{padding:'4px 12px',opacity:page<=1?.3:1}}>Prev</button>
-      <span style={{fontFamily:"Consolas, monospace",fontSize:'11px',color:'rgba(255,255,255,.60)'}}>Page {page} of {pages}</span>
-      <button disabled={page>=pages} onClick={() => onChange(page+1)} className="btn" style={{padding:'4px 12px',opacity:page>=pages?.3:1}}>Next</button>
+            {/* Session Data Downloads */}
+            <div style={{display: 'flex', gap: '8px', marginBottom: '24px', flexWrap: 'wrap'}}>
+              <button
+                onClick={async () => {
+                  try {
+                    const isAdmin = user?.role === 'admin';
+                    const base = isAdmin ? '/api/envelo/admin/sessions/' : '/api/envelo/my/sessions/';
+                    const res = await api.get(base + selectedSession.id + '/telemetry');
+                    const records = res.data.records || [];
+                    if (records.length === 0) { toast.show('No telemetry data yet', 'info'); return; }
+                    const headers = ['timestamp','action_id','action_type','result','execution_time_ms'];
+                    const csv = [headers.join(','), ...records.map(r => headers.map(h => JSON.stringify(r[h] ?? '')).join(','))].join('\n');
+                    const blob = new Blob([csv], {type: 'text/csv'});
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.download = `telemetry-${selectedSession.session_id}.csv`;
+                    link.click();
+                  } catch (e) { toast.show('Failed to download telemetry', 'error'); }
+                }}
+                style={{padding: '8px 16px', background: 'transparent', border: '1px solid rgba(0,0,0,0.05)', color: styles.purpleBright, cursor: 'pointer', fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px'}}
+              >
+                ↓ Telemetry CSV
+              </button>
+              <button
+                onClick={async () => {
+                  try {
+                    const isAdmin = user?.role === 'admin';
+                    const base = isAdmin ? '/api/envelo/admin/sessions/' : '/api/envelo/my/sessions/';
+                    const res = await api.get(base + selectedSession.id + '/violations');
+                    const violations = res.data.violations || [];
+                    if (violations.length === 0) { toast.show('No violations recorded', 'info'); return; }
+                    const headers = ['timestamp','boundary_name','violation_message'];
+                    const csv = [headers.join(','), ...violations.map(v => headers.map(h => JSON.stringify(v[h] ?? '')).join(','))].join('\n');
+                    const blob = new Blob([csv], {type: 'text/csv'});
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.download = `violations-${selectedSession.session_id}.csv`;
+                    link.click();
+                  } catch (e) { toast.show('Failed to download violations', 'error'); }
+                }}
+                style={{padding: '8px 16px', background: 'transparent', border: '1px solid rgba(0,0,0,0.05)', color: styles.accentRed, cursor: 'pointer', fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px'}}
+              >
+                ↓ Violations CSV
+              </button>
+              <button
+                onClick={async () => {
+                  try {
+                    const isAdmin = user?.role === 'admin';
+                    const base = isAdmin ? '/api/envelo/admin/sessions/' : '/api/envelo/my/sessions/';
+                    const res = await api.get(base + selectedSession.id + '/report', { responseType: 'blob' });
+                    const blob = new Blob([res.data], {type: 'application/pdf'});
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.download = `CAT72-Report-${selectedSession.session_id}.pdf`;
+                    link.click();
+                  } catch (e) { toast.show('Failed to download report', 'error'); }
+                }}
+                style={{padding: '8px 16px', background: 'transparent', border: '1px solid rgba(0,0,0,.09)', color: styles.accentGreen, cursor: 'pointer', fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px'}}
+              >
+                ↓ CAT-72 Report PDF
+              </button>
+            </div>
+            {/* Simple Timeline Bar Chart */}
+            {timeline.length > 0 && (
+              <div>
+                <div style={{fontSize: '10px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '12px'}}>
+                  24-Hour Activity
+                </div>
+                <div style={{display: 'flex', gap: '2px', height: '60px', alignItems: 'flex-end'}}>
+                  {timeline.map((point, i) => {
+                    const maxTotal = Math.max(...timeline.map(t => t.total), 1);
+                    const height = (point.total / maxTotal) * 100;
+                    const passRatio = point.total > 0 ? point.pass / point.total : 1;
+                    
+                    return (
+                      <div
+                        key={i}
+                        style={{
+                          flex: 1,
+                          height: `${Math.max(height, 2)}%`,
+                          background: passRatio >= 0.99 ? styles.accentGreen : passRatio >= 0.95 ? styles.accentAmber : styles.accentRed,
+                          opacity: 0.8
+                        }}
+                        title={`${new Date(point.hour).toLocaleTimeString()}: ${point.total} actions (${point.pass} pass, ${point.block} block)`}
+                      />
+                    );
+                  })}
+                </div>
+                <div style={{display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px', marginTop: '4px', fontSize: '10px', color: styles.textTertiary}}>
+                  <span>24h ago</span>
+                  <span>Now</span>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
-const MonHeartStyle = () => <style>{`@keyframes heartbeat { 0%,100% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.3); opacity: 1; } }`}</style>;
+
+// User Management Page (Admin Only)
 
 export default MonitoringPage;
 
