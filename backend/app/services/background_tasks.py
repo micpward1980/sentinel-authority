@@ -7,7 +7,7 @@ Automatic Enforcement Background Tasks
 
 import asyncio
 from datetime import datetime, timedelta
-from sqlalchemy import select, and_
+from sqlalchemy import select, and_, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import AsyncSessionLocal as async_session_maker
 from app.models.models import (
@@ -99,7 +99,7 @@ async def enforce_session_compliance(db: AsyncSession, session: EnveloSession, n
     
     # === ENFORCEMENT RULES ===
     
-    # Rule 1: Offline > 72 hours → AUTO-REVOKE
+    # Rule 1: Offline > 72 hours -> AUTO-REVOKE
     if offline_hours >= OFFLINE_REVOKE_HOURS:
         if cert.state != "revoked":
             await auto_revoke_certificate(
@@ -108,7 +108,7 @@ async def enforce_session_compliance(db: AsyncSession, session: EnveloSession, n
             )
             return
     
-    # Rule 2: Offline > 24 hours → AUTO-SUSPEND
+    # Rule 2: Offline > 24 hours -> AUTO-SUSPEND
     elif offline_hours >= OFFLINE_SUSPEND_HOURS:
         if cert.state == "conformant":
             await auto_suspend_certificate(
@@ -117,7 +117,7 @@ async def enforce_session_compliance(db: AsyncSession, session: EnveloSession, n
             )
             return
     
-    # Rule 3: Violation rate > 20% → AUTO-SUSPEND
+    # Rule 3: Violation rate > 20% -> AUTO-SUSPEND
     if violation_rate >= VIOLATION_RATE_SUSPEND_THRESHOLD:
         if cert.state == "conformant":
             await auto_suspend_certificate(
@@ -125,16 +125,13 @@ async def enforce_session_compliance(db: AsyncSession, session: EnveloSession, n
                 f"Violation rate {violation_rate*100:.1f}% exceeds threshold ({VIOLATION_RATE_SUSPEND_THRESHOLD*100}%)"
             )
             return
-    
-    # Rule 4: Offline > 5 minutes → WARNING (notification only, handled elsewhere)
-    # This is handled by the existing notification system
 
 
 async def auto_suspend_certificate(
     db: AsyncSession, 
     cert: Certificate, 
     session: EnveloSession,
-    user: User,
+    user,
     reason: str
 ):
     """Automatically suspend a certificate"""
@@ -162,7 +159,7 @@ async def auto_suspend_certificate(
         if user and user.email:
             await send_email(
                 user.email,
-                f"⚠️ CERTIFICATE SUSPENDED: {cert.system_name}",
+                f"CERTIFICATE SUSPENDED: {cert.system_name}",
                 f"""
                 <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 20px;">
                     <h2 style="color: #d65c5c;">Certificate Automatically Suspended</h2>
@@ -180,8 +177,8 @@ async def auto_suspend_certificate(
                     
                     <h3>To Reinstate</h3>
                     <ol>
-                        <li>Restore ENVELO Agent operation</li>
-                        <li>Ensure agent is reporting telemetry</li>
+                        <li>Restore ENVELO Interlock operation</li>
+                        <li>Ensure interlock is reporting telemetry</li>
                         <li>Contact Sentinel Authority for reinstatement review</li>
                     </ol>
                     
@@ -195,7 +192,7 @@ async def auto_suspend_certificate(
         # Notify admin
         await send_email(
             ADMIN_EMAIL,
-            f"🔴 AUTO-SUSPEND: {cert.organization_name} - {cert.system_name}",
+            f"AUTO-SUSPEND: {cert.organization_name} - {cert.system_name}",
             f"""
             <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 20px;">
                 <h2 style="color: #d65c5c;">Certificate Auto-Suspended</h2>
@@ -219,7 +216,7 @@ async def auto_revoke_certificate(
     db: AsyncSession, 
     cert: Certificate, 
     session: EnveloSession,
-    user: User,
+    user,
     reason: str
 ):
     """Automatically revoke a certificate - this is permanent"""
@@ -248,7 +245,7 @@ async def auto_revoke_certificate(
         if user and user.email:
             await send_email(
                 user.email,
-                f"🔴 CERTIFICATE REVOKED: {cert.system_name}",
+                f"CERTIFICATE REVOKED: {cert.system_name}",
                 f"""
                 <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 20px;">
                     <h2 style="color: #8b0000;">Certificate Permanently Revoked</h2>
@@ -275,7 +272,7 @@ async def auto_revoke_certificate(
         # Notify admin
         await send_email(
             ADMIN_EMAIL,
-            f"⛔ AUTO-REVOKE: {cert.organization_name} - {cert.system_name}",
+            f"AUTO-REVOKE: {cert.organization_name} - {cert.system_name}",
             f"""
             <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 20px;">
                 <h2 style="color: #8b0000;">Certificate Auto-Revoked</h2>
@@ -295,9 +292,9 @@ async def auto_revoke_certificate(
         logger.error(f"Failed to send revocation notification: {e}")
 
 
-# ═══════════════════════════════════════════════════════════
+# ============================================================
 # Certificate Expiry Monitor
-# ═══════════════════════════════════════════════════════════
+# ============================================================
 
 EXPIRY_CHECK_INTERVAL = 6 * 3600  # 6 hours
 EXPIRY_WARNING_DAYS = [30, 7]  # Send warnings at these thresholds
@@ -356,7 +353,7 @@ async def check_certificate_expiry():
                         from app.services.email_service import send_email, ADMIN_EMAIL
                         await send_email(
                             user.email,
-                            f"🔴 Certificate Expired: {cert.certificate_number}",
+                            f"Certificate Expired: {cert.certificate_number}",
                             f"""
                             <div style="font-family: -apple-system, BlinkMacSystemFont, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 20px;">
                                 <div style="background: #5B4B8A; padding: 20px; text-align: center; border-radius: 12px 12px 0 0;">
@@ -390,8 +387,6 @@ async def check_certificate_expiry():
             
             # === SEND WARNINGS at 30 and 7 day thresholds ===
             for threshold in EXPIRY_WARNING_DAYS:
-                # Only send if we're within the window (threshold to threshold-1 days)
-                # This prevents re-sending every 6 hours
                 if days_remaining == threshold or (
                     days_remaining <= threshold and 
                     not _already_warned(cert, threshold)
@@ -421,7 +416,7 @@ async def check_certificate_expiry():
                     cert.history = history
                     
                     logger.info(f"Expiry warning sent for {cert.certificate_number}: {days_remaining} days remaining")
-                    break  # Only send one warning per check
+                    break
         
         await db.commit()
         
@@ -452,6 +447,7 @@ async def _get_certificate_owner(db, cert):
 
 async def auto_suspend_offline():
     """Auto-suspend certificates for systems offline > 24 hours."""
+    from app.core.database import AsyncSessionLocal
     while True:
         await asyncio.sleep(3600)  # Check every hour
         try:
@@ -475,7 +471,7 @@ async def auto_suspend_offline():
                 sessions = result.scalars().all()
                 
                 for s in sessions:
-                    # Look up the certificate
+                    # Look up the certificate by integer ID
                     cert_result = await db.execute(
                         select(Certificate).where(
                             Certificate.id == s.certificate_id,
@@ -501,9 +497,9 @@ async def auto_suspend_offline():
 async def demo_session_ticker():
     """Tick demo sessions every 15s to simulate live telemetry."""
     import random
-    from sqlalchemy import select, text
+    from sqlalchemy import select
     from app.core.database import AsyncSessionLocal
-    from app.models.models import EnveloSession, Certificate
+    from app.models.models import EnveloSession
 
     DEMO_IDS = [
         '88dd4e8c18cc46d6b71c0440a99b71cd',
@@ -528,24 +524,21 @@ async def demo_session_ticker():
                     blocked = actions - passed
                     s.pass_count = (s.pass_count or 0) + passed
                     s.block_count = (s.block_count or 0) + blocked
-                    s.last_heartbeat_at = __import__('datetime').datetime.utcnow()
+                    s.last_heartbeat_at = datetime.utcnow()
                     s.is_online = True
                 await db.commit()
         except Exception as e:
             print(f"Demo ticker error: {e}")
-        await __import__('asyncio').sleep(15)
+        await asyncio.sleep(15)
 
 
 async def cat72_auto_evaluator():
     """Check running CAT-72 tests every 60s for auto-complete or auto-fail."""
-    import logging
-    from datetime import datetime, timedelta
-    from sqlalchemy import select
+    import hashlib
     from app.core.database import AsyncSessionLocal
     from app.models.models import CAT72Test, Application, Certificate, EnveloSession, CertificationState
-    import hashlib, uuid
 
-    logger = logging.getLogger("cat72_evaluator")
+    cat72_logger = logging.getLogger("cat72_evaluator")
     MIN_PASS_RATE = 95.0
     MIN_ACTIONS = 100
     TEST_DURATION_HOURS = 72
@@ -596,13 +589,12 @@ async def cat72_auto_evaluator():
 
                     # AUTO-FAIL: below threshold after minimum sample
                     if total_actions >= MIN_ACTIONS and pass_rate < MIN_PASS_RATE:
-                        logger.info(f"CAT-72 {test.test_id} AUTO-FAIL: {pass_rate:.1f}% < {MIN_PASS_RATE}% after {total_actions} actions")
+                        cat72_logger.info(f"CAT-72 {test.test_id} AUTO-FAIL: {pass_rate:.1f}% < {MIN_PASS_RATE}% after {total_actions} actions")
                         test.state = "completed"
                         test.result = "FAIL"
                         test.ended_at = datetime.utcnow()
                         test.result_notes = f"Auto-failed: conformance {pass_rate:.1f}% below {MIN_PASS_RATE}% threshold after {total_actions} actions at {elapsed_hours:.1f}h"
                         application.state = "failed"
-                        # End monitoring sessions
                         for s in test_sessions:
                             s.status = "ended"
                             s.ended_at = datetime.utcnow()
@@ -611,7 +603,7 @@ async def cat72_auto_evaluator():
 
                     # AUTO-TIMEOUT: 72h elapsed but not enough actions
                     if elapsed_hours >= TEST_DURATION_HOURS and total_actions < MIN_ACTIONS:
-                        logger.info(f"CAT-72 {test.test_id} AUTO-TIMEOUT: only {total_actions} actions after {elapsed_hours:.1f}h (need {MIN_ACTIONS})")
+                        cat72_logger.info(f"CAT-72 {test.test_id} AUTO-TIMEOUT: only {total_actions} actions after {elapsed_hours:.1f}h (need {MIN_ACTIONS})")
                         test.state = "completed"
                         test.result = "FAIL"
                         test.ended_at = datetime.utcnow()
@@ -625,7 +617,7 @@ async def cat72_auto_evaluator():
 
                     # AUTO-PASS: 72h elapsed and above threshold
                     if elapsed_hours >= TEST_DURATION_HOURS and total_actions >= MIN_ACTIONS and pass_rate >= MIN_PASS_RATE:
-                        logger.info(f"CAT-72 {test.test_id} AUTO-PASS: {pass_rate:.1f}% after {elapsed_hours:.1f}h / {total_actions} actions")
+                        cat72_logger.info(f"CAT-72 {test.test_id} AUTO-PASS: {pass_rate:.1f}% after {elapsed_hours:.1f}h / {total_actions} actions")
                         test.state = "completed"
                         test.result = "PASS"
                         test.ended_at = datetime.utcnow()
@@ -635,11 +627,28 @@ async def cat72_auto_evaluator():
                         evidence = f"{test.test_id}:{total_pass}:{total_block}:{elapsed_hours}"
                         test.evidence_hash = hashlib.sha256(evidence.encode()).hexdigest()
 
-                        # Issue certificate
-                        cert_number = f"ODDC-{datetime.utcnow().year}-{test.application_id:04d}"
+                        # Check if certificate already exists
+                        existing_cert = await db.execute(
+                            select(Certificate).where(Certificate.application_id == application.id)
+                        )
+                        if existing_cert.scalar_one_or_none():
+                            cat72_logger.info(f"Certificate already exists for application {application.id}, skipping issuance")
+                            await db.commit()
+                            continue
+
+                        # Generate sequential certificate number
+                        year = datetime.utcnow().year
+                        cert_count_r = await db.execute(
+                            select(func.count(Certificate.id)).where(
+                                Certificate.certificate_number.like(f"ODDC-{year}-%")
+                            )
+                        )
+                        cert_count = (cert_count_r.scalar() or 0) + 1
+                        cert_number = f"ODDC-{year}-{cert_count:05d}"
                         now = datetime.utcnow()
-                        signature = f"SA-SIG-{uuid.uuid4().hex[:8].upper()}"
-                        audit_ref = f"AUDIT-{test.id}-{now.strftime('%Y%m%d%H%M%S')}"
+
+                        sig_content = f"{cert_number}:{application.organization_name}:{application.system_name}:{now.isoformat()}:{test.evidence_hash}"
+                        signature = hashlib.sha256(sig_content.encode()).hexdigest()
 
                         certificate = Certificate(
                             certificate_number=cert_number,
@@ -657,7 +666,6 @@ async def cat72_auto_evaluator():
                             convergence_score=pass_rate,
                             evidence_hash=test.evidence_hash,
                             signature=signature,
-                            audit_log_ref=audit_ref,
                             verification_url=f"https://sentinelauthority.org/verify.html?cert={cert_number}",
                             history=[{"action": "auto_issued", "timestamp": now.isoformat(), "by": "CAT-72 Auto-Evaluator"}]
                         )
@@ -666,19 +674,23 @@ async def cat72_auto_evaluator():
                         # Update application state
                         application.state = CertificationState.CONFORMANT
 
-                        # Convert test sessions to production monitoring
+                        # Commit first to get the certificate's integer ID
+                        await db.commit()
+                        await db.refresh(certificate)
+
+                        # Now assign the integer certificate.id to sessions
                         for s in test_sessions:
                             s.session_type = "production"
-                            s.certificate_id = cert_number
+                            s.certificate_id = certificate.id  # INTEGER, not string
 
                         await db.commit()
-                        logger.info(f"Certificate {cert_number} auto-issued for {application.system_name}")
+                        cat72_logger.info(f"Certificate {cert_number} (id={certificate.id}) auto-issued for {application.system_name}")
                         continue
 
                     # Otherwise just save updated metrics
                     await db.commit()
 
         except Exception as e:
-            logger.warning(f"CAT-72 auto-evaluator error: {e}")
+            cat72_logger.warning(f"CAT-72 auto-evaluator error: {e}")
 
-        await __import__("asyncio").sleep(60)
+        await asyncio.sleep(60)
