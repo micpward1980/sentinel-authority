@@ -17,15 +17,7 @@ function ResourcesPage() {
 
   const handleDownload = async (docId, title) => {
     try {
-      const response = await api.get('/api/documents/' + docId + '/download', { responseType: 'blob' });
-      const url = window.URL.createObjectURL(response.data);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = title.replace(/\s+/g, '_') + '.pdf';
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      window.URL.revokeObjectURL(url);
+      window.open('https://api.sentinelauthority.org/api/documents/' + docId + '/download', '_blank');
     } catch (err) {
       console.error('Download error:', err);
     }

@@ -43,14 +43,11 @@ async def list_documents(current_user: dict = Depends(get_current_user)):
 
 
 @router.get("/{doc_id}/download", summary="Download document")
-async def download_document(doc_id: str, current_user: dict = Depends(get_current_user)):
+async def download_document(doc_id: str):
     if doc_id == "oddc-certification-guide":
     doc = AVAILABLE_DOCS.get(doc_id)
     if not doc:
         raise HTTPException(status_code=404, detail="Document not found")
-    role = current_user.get("role", "applicant")
-    if role not in doc["roles"]:
-        raise HTTPException(status_code=403, detail="Access denied")
     file_path = DOCS_DIR / doc["filename"]
     if not file_path.exists():
         raise HTTPException(status_code=404, detail="File not found on server")
