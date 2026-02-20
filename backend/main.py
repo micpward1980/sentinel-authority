@@ -26,6 +26,18 @@ from fastapi import Depends
 from app.api.routes import audit as audit_routes, auth, dashboard, applicants, cat72, certificates, verification, licensees, envelo, apikeys, envelo_boundaries, registry, users, documents, deploy, session_routes
 
 # Logging setup
+
+# Error monitoring
+import sentry_sdk
+sentry_dsn = os.environ.get("SENTRY_DSN")
+if sentry_dsn:
+    sentry_sdk.init(
+        dsn=sentry_dsn,
+        environment=os.environ.get("RAILWAY_ENVIRONMENT", "production"),
+        traces_sample_rate=0.1,
+        enable_tracing=True,
+    )
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("main")
 
@@ -293,8 +305,8 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.CORS_ORIGINS,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+    allow_headers=["Authorization", "Content-Type", "Accept", "Origin", "X-Requested-With"],
 )
 
 # Request logging
@@ -310,7 +322,7 @@ app.include_router(cat72.router, prefix="/api/cat72", tags=["CAT-72 Console"])
 app.include_router(certificates.router, prefix="/api/certificates", tags=["Certification Registry"])
 app.include_router(verification.router, prefix="/api/verify", tags=["Public Verification"])
 app.include_router(licensees.router, prefix="/api/licensees", tags=["Licensee Portal"])
-app.include_router(envelo.router, prefix="/api/envelo", tags=["ENVELO Agent"])
+app.include_router(envelo.router, prefix="/api/envelo", tags=["ENVELO Interlock"])
 app.include_router(envelo_boundaries.router, prefix="/api/envelo/boundaries", tags=["ENVELO Boundaries"])
 app.include_router(apikeys.router, prefix="/api/apikeys", tags=["API Keys"])
 app.include_router(registry.router, prefix="/api/registry", tags=["Registry"])
@@ -333,6 +345,29 @@ async def root():
         "framework": "ENVELO",
         
     }
+
+@app.get("/robots.txt", tags=["System"], include_in_schema=False)
+async def robots_txt():
+    from starlette.responses import PlainTextResponse
+    return PlainTextResponse(
+        "User-agent: *\nDisallow: /api/\nDisallow: /admin/\nAllow: /health\n"
+    )
+
+
+# Security headers middleware
+class SecurityHeadersMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request, call_next):
+        response = await call_next(request)
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["X-Frame-Options"] = "DENY"
+        response.headers["X-XSS-Protection"] = "1; mode=block"
+        response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+        response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
+        response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+        return response
+
+app.add_middleware(SecurityHeadersMiddleware)
+
 
 
 
@@ -433,73 +468,3 @@ async def mark_notifications_read(
     return {"message": "Notifications marked as read"}
 
 
-
-# Start auto-evaluator background task
-@app.on_event("startup")
-async def start_auto_evaluator():
-    # Auto-migrate columns
-    try:
-        from sqlalchemy import text
-        from app.core.database import engine
-        async with engine.begin() as conn:
-            migrations = [
-                "ALTER TABLE users ADD COLUMN IF NOT EXISTS email_preferences JSON",
-                "ALTER TABLE users ADD COLUMN IF NOT EXISTS totp_secret VARCHAR(32)",
-                "ALTER TABLE users ADD COLUMN IF NOT EXISTS totp_enabled BOOLEAN DEFAULT FALSE",
-                "ALTER TABLE users ADD COLUMN IF NOT EXISTS totp_backup_codes TEXT",
-                "ALTER TABLE users ADD COLUMN IF NOT EXISTS notifications_read_at TIMESTAMP",
-                "ALTER TABLE audit_log ADD COLUMN IF NOT EXISTS prev_hash VARCHAR(64)",
-                """CREATE TABLE IF NOT EXISTS application_comments (
-                    id SERIAL PRIMARY KEY,
-                    application_id INTEGER REFERENCES applications(id),
-                    user_id INTEGER REFERENCES users(id),
-                    user_email VARCHAR(255),
-                    user_role VARCHAR(50),
-                    content TEXT NOT NULL,
-                    is_internal BOOLEAN DEFAULT FALSE,
-                    created_at TIMESTAMP DEFAULT NOW()
-                )""",
-                "CREATE INDEX IF NOT EXISTS idx_comments_app_id ON application_comments(application_id)",
-            ]
-            for sql in migrations:
-                try:
-                    await conn.execute(text(sql))
-                except Exception:
-                    pass
-        logger.info("Migration: all columns OK")
-    except Exception as e:
-        logger.warning(f"Migration check: {e}")
-
-    import asyncio
-
-    try:
-        from app.services.auto_evaluator import run_auto_evaluator
-        asyncio.create_task(run_auto_evaluator())
-        logger.info("Auto evaluator started")
-    except Exception as e:
-        logger.warning(f"Auto evaluator failed to start: {e}")
-
-    try:
-        from app.services.background_tasks import check_offline_agents_task
-        from app.core.database import get_db
-        asyncio.create_task(check_offline_agents_task(get_db))
-        logger.info("Offline agent monitor started")
-    except Exception as e:
-        logger.warning(f"Offline agent monitor failed to start: {e}")
-
-    try:
-        from app.services.background_tasks import check_certificate_expiry_task
-        asyncio.create_task(check_certificate_expiry_task())
-        logger.info("Certificate expiry monitor started (checks every 6 hours)")
-    except Exception as e:
-        logger.warning(f"Certificate expiry monitor failed to start: {e}")
-
-    try:
-        from app.services.background_tasks import demo_session_ticker, auto_suspend_offline
-        asyncio.create_task(demo_session_ticker())
-        asyncio.create_task(auto_suspend_offline())
-        logger.info("Auto-suspend monitor started (checks every hour)")
-        logger.info("Demo session ticker started (ticks every 15s)")
-    except Exception as e:
-        logger.warning(f"Demo ticker failed to start: {e}")
-    logger.info("Auto-evaluator background task started")
