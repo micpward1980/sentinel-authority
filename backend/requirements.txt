@@ -45,3 +45,4 @@ slowapi==0.1.9
 pyotp
 qrcode[pil]
 sentry-sdk[fastapi]==1.40.6
+anthropic
