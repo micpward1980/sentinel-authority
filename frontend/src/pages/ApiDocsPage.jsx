@@ -22,9 +22,9 @@ export default function ApiDocsPage() {
   if (!unlocked) {
     return (
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
-        <div style={{ background: 'transparent', border: '1px solid rgba(0,0,0,0.09)', padding: '2rem', maxWidth: 'min(400px, 90vw)', width: '100%' }}>
-          <h2 style={{ color: styles.textPrimary, marginBottom: '0.5rem' }}>API Documentation</h2>
-          <p style={{ color: '#a896d6', marginBottom: '1.5rem', fontSize: '0.9rem' }}>Enter the docs password to view the API reference.</p>
+        <div style={{ background: styles.cardSurface, border: '1px solid ' + styles.borderGlass, padding: '2rem', maxWidth: 'min(400px, 90vw)', width: '100%', borderRadius: 8 }}>
+          <h2 style={{ fontFamily: styles.serif, color: styles.textPrimary, marginBottom: '0.5rem', fontWeight: 200 }}>API Documentation</h2>
+          <p style={{ color: styles.purpleBright, marginBottom: '1.5rem', fontSize: '0.9rem' }}>Enter the docs password to view the API reference.</p>
           <div>
             <input
               type="password"
@@ -32,12 +32,12 @@ export default function ApiDocsPage() {
               onChange={(e) => setPassword(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleUnlock(e)}
               placeholder="Docs password"
-              style={{ width: '100%', padding: '0.75rem', background: 'transparent', border: '1px solid rgba(0,0,0,0.09)', color: styles.textPrimary, fontSize: '1rem', marginBottom: '1rem', boxSizing: 'border-box' }}
+              style={{ width: '100%', padding: '0.75rem', background: styles.cardSurface, border: '1px solid ' + styles.borderGlass, color: styles.textPrimary, fontSize: '1rem', marginBottom: '1rem', boxSizing: 'border-box', borderRadius: 6 }}
             />
-            {error && <p style={{ color: '#ff6b6b', fontSize: '0.85rem', marginBottom: '0.5rem' }}>{error}</p>}
+            {error && <p style={{ color: styles.accentRed, fontSize: '0.85rem', marginBottom: '0.5rem' }}>{error}</p>}
             <button
               onClick={handleUnlock}
-              style={{ width: '100%', padding: '0.75rem', background: styles.purplePrimary, border: 'none', color: '#fff', fontSize: '1rem', cursor: 'pointer' }}
+              style={{ width: '100%', padding: '0.75rem 0', background: 'transparent', border: 'none', borderBottom: `1px solid ${styles.purpleBright}`, color: styles.purpleBright, fontSize: '1rem', fontFamily: styles.mono, cursor: 'pointer' }}
             >
               Unlock Docs
             </button>
@@ -47,13 +47,18 @@ export default function ApiDocsPage() {
     );
   }
 
+  // Open in new tab since backend blocks iframes
+  window.open(`${API_URL}/internal-docs`, '_blank', 'noreferrer');
+  setUnlocked(false);
+
   return (
-    <div style={{ width: '100%', height: 'calc(100vh - 80px)' }}>
-      <iframe
-        src={`${API_URL}/internal-docs`}
-        style={{ width: '100%', height: '100%', border: 'none' }}
-        title="API Documentation"
-      />
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
+      <div style={{ background: styles.cardSurface, border: '1px solid ' + styles.borderGlass, padding: '2rem', maxWidth: 'min(400px, 90vw)', width: '100%', borderRadius: 8, textAlign: 'center' }}>
+        <p style={{ color: styles.accentGreen, fontFamily: styles.mono, fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase' }}>✓ Docs opened in new tab</p>
+        <button onClick={() => window.open(`${API_URL}/internal-docs`, '_blank', 'noreferrer')} style={{ marginTop: '1rem', padding: '0.5rem 0', background: 'transparent', border: 'none', borderBottom: `1px solid ${styles.purpleBright}`, color: styles.purpleBright, fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer' }}>
+          Open Again
+        </button>
+      </div>
     </div>
   );
 }

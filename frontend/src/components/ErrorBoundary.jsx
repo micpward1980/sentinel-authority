@@ -1,4 +1,5 @@
 import React from 'react';
+import { styles } from '../config/styles';
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -22,7 +23,7 @@ class ErrorBoundary extends React.Component {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          background: '#2a2f3d',
+          background: styles.bgDeep,
           padding: '24px'
         }}>
           <div style={{ textAlign: 'center', maxWidth: 440 }}>
@@ -31,20 +32,20 @@ class ErrorBoundary extends React.Component {
               fontSize: 9,
               letterSpacing: 2.5,
               textTransform: 'uppercase',
-              color: 'rgba(214,92,92,0.6)',
+              color: 'rgba(180,52,52,0.6)',
               marginBottom: 12
             }}>System Error</div>
             <h1 style={{
-              fontFamily: "Georgia, serif",
+              fontFamily: "Georgia, 'Source Serif 4', serif",
               fontSize: 28,
               fontWeight: 200,
-              color: '#fff',
+              color: styles.textPrimary,
               marginBottom: 8
             }}>Something went wrong</h1>
             <p style={{
               fontFamily: "Consolas, monospace",
               fontSize: 12,
-              color: 'rgba(255,255,255,0.6)',
+              color: 'rgba(15,18,30,.56)',
               lineHeight: 1.6,
               marginBottom: 24
             }}>
@@ -55,8 +56,8 @@ class ErrorBoundary extends React.Component {
               style={{
                 appearance: 'none',
                 background: 'transparent',
-                border: '1px solid rgba(157,140,207,0.3)',
-                color: 'rgba(157,140,207,0.9)',
+                border: '1px solid rgba(74,61,117,0.25)',
+                color: styles.purpleBright,
                 padding: '12px 24px',
                 fontFamily: "Consolas, monospace",
                 fontSize: 10,

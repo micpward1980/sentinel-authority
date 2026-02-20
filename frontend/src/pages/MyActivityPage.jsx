@@ -74,7 +74,7 @@ function MyActivityPage() {
             {logs.map(log => {
               const ai = actionIcon(log.action);
               return (
-                <div key={log.id} style={{display: 'flex', alignItems: 'flex-start', gap: '12px', padding: '12px', background: 'transparent', borderBottom: `1px solid ${styles.borderSubtle}`}}>
+                <div key={log.id} style={{display: 'flex', alignItems: 'flex-start', gap: '12px', padding: '12px', background: styles.cardSurface, borderBottom: `1px solid ${styles.borderSubtle}`}}>
                   <div style={{width: '28px', height: '28px', borderRadius: '50%', background: `${ai.color}15`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '2px'}}>
                     <span style={{color: ai.color, fontSize: '13px', fontWeight: 'bold'}}>{ai.icon}</span>
                   </div>

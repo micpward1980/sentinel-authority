@@ -8,6 +8,7 @@ import { useToast } from '../context/ToastContext';
 import { useConfirm } from '../context/ConfirmContext';
 import Panel from '../components/Panel';
 import StatCard from '../components/StatCard';
+import BrandMark from '../components/BrandMark';
 import EmptyState from '../components/EmptyState';
 
 function CustomerDashboard() {
@@ -78,7 +79,6 @@ function CustomerDashboard() {
           <h1 style={{fontFamily: "Georgia, 'Source Serif 4', serif", fontSize: 'clamp(24px, 5vw, 36px)', fontWeight: 200, margin: 0}}>Welcome{user?.full_name ? `, ${user.full_name.split(' ')[0]}` : ''}</h1>
           <p style={{color: styles.textSecondary, marginTop: '8px'}}>{user?.organization ? user.organization + ' · ' : ''}Track your certification progress and manage your systems.</p>
         </div>
-
       </div>
 
       {/* Quick Stats */}
@@ -110,12 +110,12 @@ function CustomerDashboard() {
         </div>
         {applications.length === 0 ? (
           <div style={{textAlign: 'center', padding: '56px 20px'}}>
-            <div style={{width: '72px', height: '72px', background: 'transparent', border: '1px solid rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px'}}>
+            <div style={{width: '72px', height: '72px', background: styles.cardSurface, border: '1px solid ' + styles.borderSubtle, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', borderRadius: 8}}>
               <Shield fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} size={32} style={{color: styles.purpleBright, opacity: 0.7}} />
             </div>
             <p style={{color: styles.textPrimary, fontSize: '17px', fontWeight: 500, marginBottom: '8px', fontFamily: "Georgia, 'Source Serif 4', serif"}}>Begin Your Certification</p>
             <p style={{color: styles.textTertiary, fontSize: '13px', marginBottom: '28px', maxWidth: '360px', margin: '0 auto 28px', lineHeight: '1.6'}}>Submit your autonomous system for ODDC certification. Our CAT-72 test validates real-time boundary enforcement over 72 hours.</p>
-            <Link to="/applications/new" className="inline-flex items-center gap-2 px-6 py-3 no-underline" style={{background: styles.purplePrimary, border: 'none', color: '#fff', fontFamily: styles.mono, fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase' }}>
+            <Link to="/applications/new" className="inline-flex items-center gap-2 px-6 py-3 no-underline" style={{background: 'transparent', border: 'none', color: styles.purpleBright, fontFamily: styles.mono, fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase' }}>
               <Plus className="w-4 h-4" />
               New Application
             </Link>
@@ -126,8 +126,7 @@ function CustomerDashboard() {
               const idx = stageIdx(app.state);
               return (
                 <Link key={app.id} to={`/applications/${app.id}`} style={{textDecoration: 'none', display: 'block'}}>
-                  <div style={{padding: '20px', background: 'transparent', border: `1px solid ${styles.borderGlass}`, cursor: 'pointer', transition: 'border-color 0.2s'}} onMouseEnter={e => e.currentTarget.style.borderColor = styles.purpleBright} onMouseLeave={e => e.currentTarget.style.borderColor = styles.borderGlass}>
-                    {/* Top row: name + badge */}
+                  <div style={{padding: '20px', background: styles.cardSurface, border: `1px solid ${styles.borderGlass}`, cursor: 'pointer', transition: 'border-color 0.2s'}} onMouseEnter={e => e.currentTarget.style.borderColor = styles.purpleBright} onMouseLeave={e => e.currentTarget.style.borderColor = styles.borderGlass}>
                     <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '16px'}}>
                       <div>
                         <div style={{fontWeight: 500, color: styles.textPrimary, fontSize: '15px', marginBottom: '4px'}}>{app.system_name}</div>
@@ -142,7 +141,6 @@ function CustomerDashboard() {
                         }}>{app.state}</span>
                       </div>
                     </div>
-                    {/* Mini progress bar */}
                     <div style={{display: 'flex', gap: '3px', height: '4px'}}>
                       {STAGES.map((s, i) => (
                         <div key={s.key} style={{flex: 1, background: i <= idx ? stateColor(app.state) : 'rgba(0,0,0,0.025)'}} />
@@ -157,24 +155,21 @@ function CustomerDashboard() {
       </Panel>
 
       {/* Certificates */}
-      
-        {certificates.length === 0 && (
-          <EmptyState icon={Award} title="No Certificates Yet" description="Certificates are issued after your system passes the 72-hour CAT-72 conformance test. Submit an application to begin."  />
-        )}
-        {certificates.length > 0 && (
+      {certificates.length === 0 && (
+        <EmptyState icon={Award} title="No Certificates Yet" description="Certificates are issued after your system passes the 72-hour CAT-72 conformance test. Submit an application to begin." />
+      )}
+      {certificates.length > 0 && (
         <Panel>
           <h2 style={{fontFamily: styles.mono, fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Your Certificates</h2>
           <div className="space-y-3">
             {certificates.map(cert => (
-              <div key={cert.id} style={{padding: '16px', background: 'transparent', border: '1px solid rgba(0,0,0,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px'}}>
+              <div key={cert.id} style={{padding: '16px', background: styles.cardSurface, border: '1px solid ' + styles.borderSubtle, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', borderRadius: 8}}>
                 <div>
                   <div style={{fontWeight: 500, color: styles.accentGreen, marginBottom: '4px', fontFamily: styles.mono, fontSize: '14px'}}>{cert.certificate_number}</div>
                   <div style={{fontSize: '12px', color: styles.textTertiary}}>Issued: {new Date(cert.issued_at).toLocaleDateString()}{cert.expires_at ? ` · Expires: ${new Date(cert.expires_at).toLocaleDateString()}` : ''}</div>
                 </div>
                 <div style={{display: 'flex', gap: '8px'}}>
-                  <a href={`${API_BASE}/api/certificates/${cert.certificate_number}/pdf`}
-                     target="_blank"
-                     style={{padding: '8px 16px', background: styles.purplePrimary, color: '#fff', fontSize: '11px', fontFamily: styles.mono, textDecoration: 'none'}}>
+                  <a href={`${API_BASE}/api/certificates/${cert.certificate_number}/pdf`} target="_blank" rel="noreferrer noopener" style={{padding: '8px 16px', background: 'transparent', color: styles.purpleBright, fontSize: '11px', fontFamily: styles.mono, textDecoration: 'none'}}>
                     Download PDF
                   </a>
                 </div>
@@ -183,8 +178,6 @@ function CustomerDashboard() {
           </div>
         </Panel>
       )}
-
-
 
       {/* Recent Activity */}
       <Panel>
@@ -198,39 +191,22 @@ function CustomerDashboard() {
           <div style={{display: 'flex', flexDirection: 'column', gap: '1px'}}>
             {recentActivity.map((log, i) => {
               const actionLabels = {
-                user_login: 'Signed in',
-                user_registered: 'Account created',
-                login_failed: 'Failed login attempt',
-                application_submitted: 'Application submitted',
-                application_state_changed: 'Application status updated',
-                application_deleted: 'Application deleted',
-                test_created: 'CAT-72 test scheduled',
-                test_started: 'CAT-72 test started',
-                test_completed: 'CAT-72 test completed',
-                certificate_issued: 'Certificate issued',
-                certificate_suspended: 'Certificate suspended',
-                certificate_revoked: 'Certificate revoked',
-                certificate_reinstated: 'Certificate reinstated',
-                api_key_created: 'API key created',
-                api_key_revoked: 'API key revoked',
-                password_changed: 'Password changed',
-                profile_updated: 'Profile updated',
-                '2fa_enabled': 'Two-factor authentication enabled',
-                '2fa_disabled': 'Two-factor authentication disabled'
+                user_login: 'Signed in', user_registered: 'Account created', login_failed: 'Failed login attempt',
+                application_submitted: 'Application submitted', application_state_changed: 'Application status updated',
+                application_deleted: 'Application deleted', test_created: 'CAT-72 test scheduled',
+                test_started: 'CAT-72 test started', test_completed: 'CAT-72 test completed',
+                certificate_issued: 'Certificate issued', certificate_suspended: 'Certificate suspended',
+                certificate_revoked: 'Certificate revoked', certificate_reinstated: 'Certificate reinstated',
+                api_key_created: 'API key created', api_key_revoked: 'API key revoked',
+                password_changed: 'Password changed', profile_updated: 'Profile updated',
+                '2fa_enabled': 'Two-factor authentication enabled', '2fa_disabled': 'Two-factor authentication disabled'
               };
               const actionColors = {
-                user_login: styles.textTertiary,
-                login_failed: styles.accentRed,
-                application_submitted: styles.purpleBright,
-                application_state_changed: styles.accentAmber,
-                test_created: styles.purpleBright,
-                test_started: styles.accentAmber,
-                test_completed: styles.accentGreen,
-                certificate_issued: styles.accentGreen,
-                certificate_suspended: styles.accentAmber,
-                certificate_revoked: styles.accentRed,
-                api_key_created: styles.purpleBright,
-                api_key_revoked: styles.accentRed
+                user_login: styles.textTertiary, login_failed: styles.accentRed,
+                application_submitted: styles.purpleBright, application_state_changed: styles.accentAmber,
+                test_created: styles.purpleBright, test_started: styles.accentAmber, test_completed: styles.accentGreen,
+                certificate_issued: styles.accentGreen, certificate_suspended: styles.accentAmber,
+                certificate_revoked: styles.accentRed, api_key_created: styles.purpleBright, api_key_revoked: styles.accentRed
               };
               const label = actionLabels[log.action] || log.action.replace(/_/g, ' ');
               const color = actionColors[log.action] || styles.textSecondary;
@@ -242,11 +218,10 @@ function CustomerDashboard() {
                 if (mins < 60) return mins + 'm ago';
                 const hrs = Math.floor(mins / 60);
                 if (hrs < 24) return hrs + 'h ago';
-                const days = Math.floor(hrs / 24);
-                return days + 'd ago';
+                return Math.floor(hrs / 24) + 'd ago';
               };
               return (
-                <div key={log.id || i} style={{display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 0', borderBottom: i < recentActivity.length - 1 ? '1px solid rgba(0,0,0,0.05)' : 'none'}}>
+                <div key={log.id || i} style={{display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 0', borderBottom: i < recentActivity.length - 1 ? '1px solid ' + styles.borderSubtle : 'none', borderRadius: 8}}>
                   <div style={{width: '6px', height: '6px', borderRadius: '50%', background: color, flexShrink: 0}} />
                   <div style={{flex: 1, minWidth: 0}}>
                     <span style={{fontSize: '13px', color: styles.textPrimary}}>{label}</span>
@@ -259,22 +234,15 @@ function CustomerDashboard() {
           </div>
         )}
       </Panel>
-
     </div>
   );
 }
 
-
-// Role-based dashboard routing
-
 function RoleBasedDashboard() {
   const { user } = useAuth();
-  if (user?.role === 'admin') {
-    return <Dashboard />;
-  }
+  if (user?.role === 'admin') return <Dashboard />;
   return <CustomerDashboard />;
 }
-
 
 function Dashboard() {
   const { user } = useAuth();
@@ -300,13 +268,8 @@ function Dashboard() {
     if (manual) setTimeout(() => setRefreshing(false), 800);
   };
 
-  useEffect(() => {
-    loadData();
-    const interval = setInterval(loadData, 30000);
-    return () => clearInterval(interval);
-  }, []);
+  useEffect(() => { loadData(); const interval = setInterval(loadData, 30000); return () => clearInterval(interval); }, []);
 
-  // Pipeline breakdown
   const pipeline = {
     pending: allApps.filter(a => a.state === 'pending').length,
     under_review: allApps.filter(a => a.state === 'under_review').length,
@@ -322,15 +285,11 @@ function Dashboard() {
     if (!await confirm({title: 'Confirm', message: label + '?'})) return;
     try {
       await api.patch(`/api/applications/${appId}/state?new_state=${newState}`);
-      // Auto-provision API key when approving
       if (newState === 'approved') {
         try {
-          await api.post('/api/apikeys/admin/provision', null, {
-            params: { application_id: appId, send_email: true }
-          });
+          await api.post('/api/apikeys/admin/provision', null, { params: { application_id: appId, send_email: true } });
           toast.show('Approved — API key provisioned and emailed to applicant', 'success');
-        } catch (provErr) {
-          // Non-fatal: key may already exist or endpoint may not support it yet
+        } catch {
           toast.show('Approved — applicant can generate key from their dashboard', 'success');
         }
       }
@@ -351,9 +310,10 @@ function Dashboard() {
           <h1 style={{fontFamily: "Georgia, 'Source Serif 4', serif", fontSize: 'clamp(24px, 5vw, 36px)', fontWeight: 200, margin: 0}}>Welcome{user?.full_name ? `, ${user.full_name.split(' ')[0]}` : ''}</h1>
           <p style={{color: styles.textTertiary, marginTop: '6px', fontSize: '13px', fontFamily: styles.mono}}>{new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</p>
         </div>
-        <div style={{display: 'flex', gap: '10px'}}>
-          <button onClick={() => loadData(true)} style={{background: 'transparent', border: `1px solid ${styles.borderGlass}`, padding: '10px 16px', color: styles.textSecondary, cursor: 'pointer', fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '8px'}}><RefreshCw fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} size={14} style={refreshing ? {animation: "spin 0.8s linear infinite"} : {}} /> {refreshing ? "Refreshing..." : "Refresh"}</button>
-        </div>
+        <button onClick={() => loadData(true)} style={{background: styles.cardSurface, border: `1px solid ${styles.borderGlass}`, padding: '10px 16px', color: styles.textSecondary, cursor: 'pointer', fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '8px'}}>
+          <RefreshCw fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} size={14} style={refreshing ? {animation: "spin 0.8s linear infinite"} : {}} />
+          {refreshing ? "Refreshing..." : "Refresh"}
+        </button>
       </div>
 
       {/* Stats Row */}
@@ -366,17 +326,17 @@ function Dashboard() {
         const actionCount = needsAction.length + expiringCount;
         return (
           <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px'}}>
-            <StatCard label="Total Applications" value={stats?.total_applications || 0} color={styles.purpleBright} icon={<FileText fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{color: styles.purpleBright}} />} />
+            <StatCard onClick={() => navigate("/applications")} label="Total Applications" value={stats?.total_applications || 0} color={styles.purpleBright} icon={<FileText fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{color: styles.purpleBright}} />} />
             <StatCard onClick={() => navigate("/cat72")} label="Active Tests" value={stats?.active_tests || 0} color={styles.accentAmber} icon={<Activity fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{color: styles.accentAmber}} />} />
-            <StatCard label="Active Certificates" value={stats?.certificates_active || 0} color={styles.accentGreen} icon={<Shield fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{color: styles.accentGreen}} />} />
-            <StatCard label="Online Interlocks" value={onlineAgents} color={onlineAgents > 0 ? styles.accentGreen : styles.textTertiary} icon={<Wifi fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{color: onlineAgents > 0 ? styles.accentGreen : styles.textTertiary}} />} />
-            <StatCard label="Certificates Issued" value={stats?.certificates_issued || 0} color={styles.purpleBright} icon={<Award fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{color: styles.purpleBright}} />} />
-            <StatCard label="Needs Action" value={actionCount} color={actionCount > 0 ? styles.accentAmber : styles.textTertiary} icon={<AlertCircle fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{color: actionCount > 0 ? styles.accentAmber : styles.textTertiary}} />} />
+            <StatCard onClick={() => navigate("/certificates")} label="Active Certificates" value={stats?.certificates_active || 0} color={styles.accentGreen} icon={<BrandMark size={20} />} />
+            <StatCard onClick={() => navigate("/monitoring")} label="Online Interlocks" value={onlineAgents} color={onlineAgents > 0 ? styles.accentGreen : styles.textTertiary} icon={<Wifi fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{color: onlineAgents > 0 ? styles.accentGreen : styles.textTertiary}} />} />
+            <StatCard onClick={() => navigate("/certificates")} label="Certificates Issued" value={stats?.certificates_issued || 0} color={styles.purpleBright} icon={<Award fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{color: styles.purpleBright}} />} />
+            <StatCard onClick={() => navigate("/applications")} label="Needs Action" value={actionCount} color={actionCount > 0 ? styles.accentAmber : styles.textTertiary} icon={<AlertCircle fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{color: actionCount > 0 ? styles.accentAmber : styles.textTertiary}} />} />
           </div>
         );
       })()}
 
-      {/* Pipeline Breakdown */}
+      {/* Pipeline */}
       <Panel>
         <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '16px'}}>
           <h2 style={{fontFamily: styles.mono, fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, margin: 0}}>Certification Pipeline</h2>
@@ -391,20 +351,18 @@ function Dashboard() {
             { key: 'conformant', label: 'Conformant', color: styles.accentGreen, count: pipeline.conformant },
             { key: 'revoked', label: 'Suspended', color: styles.accentRed, count: pipeline.revoked },
           ].map(stage => {
-            const total = allApps.length || 1;
-            const pct = Math.max((stage.count / total) * 100, stage.count > 0 ? 8 : 0);
+            const pct = Math.max((stage.count / (allApps.length || 1)) * 100, stage.count > 0 ? 8 : 0);
             return stage.count > 0 ? (
-              <div key={stage.key} style={{width: `${pct}%`, background: `${stage.color}08`, display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: '48px', position: 'relative', borderLeft: `2px solid ${stage.color}`}} title={`${stage.label}: ${stage.count}`}>
+              <div key={stage.key} style={{width: `${pct}%`, background: `${stage.color}08`, display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: '48px', borderLeft: `2px solid ${stage.color}`}} title={`${stage.label}: ${stage.count}`}>
                 <span style={{fontFamily: styles.mono, fontSize: '10px', color: stage.color, whiteSpace: 'nowrap'}}>{stage.count} {stage.label}</span>
               </div>
             ) : null;
           })}
-          {allApps.length === 0 && <div style={{flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'transparent', padding: 'clamp(20px, 4vw, 40px) clamp(12px, 3vw, 20px)', textAlign: 'center'}}>
-            <div style={{width: '48px', height: '48px', background: 'transparent', border: '1px solid rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px'}}><FileText fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} size={22} style={{color: styles.purpleBright, opacity: 0.6}} /></div>
-            <p style={{color: styles.textSecondary, fontSize: '14px', fontWeight: 500, margin: '0 0 6px 0'}}>No applications yet</p>
-            <p style={{color: styles.textTertiary, fontSize: '12px', margin: '0 0 16px 0', maxWidth: '260px'}}>Submit your first ODDC certification application to get started.</p>
-
-          </div>}
+          {allApps.length === 0 && (
+            <div style={{flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '20px', textAlign: 'center'}}>
+              <p style={{color: styles.textSecondary, fontSize: '14px', margin: '0 0 6px 0'}}>No applications yet</p>
+            </div>
+          )}
         </div>
       </Panel>
 
@@ -417,19 +375,19 @@ function Dashboard() {
           </div>
           <div className="space-y-3">
             {needsAction.slice(0, 5).map(app => (
-              <div key={app.id} style={{padding: '14px 16px', background: 'transparent', border: `1px solid ${styles.borderGlass}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px'}}>
+              <div key={app.id} style={{padding: '14px 16px', background: styles.cardSurface, border: `1px solid ${styles.borderGlass}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px'}}>
                 <div style={{display: 'flex', alignItems: 'center', gap: '16px'}}>
                   <Link to={`/applications/${app.id}`} style={{color: styles.purpleBright, textDecoration: 'none', fontWeight: 500, fontSize: '14px'}}>{app.system_name}</Link>
                   <span style={{color: styles.textTertiary, fontSize: '12px'}}>{app.organization_name}</span>
-                  <span className="px-2 py-1" style={{background: 'transparent', color: styles.accentAmber, fontFamily: styles.mono, fontSize: '9px', letterSpacing: '1px', textTransform: 'uppercase'}}>{app.state?.replace('_', ' ')}</span>
+                  <span style={{color: styles.accentAmber, fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase'}}>{app.state?.replace('_', ' ')}</span>
                 </div>
                 <div style={{display: 'flex', gap: '8px'}}>
                   {app.state === 'pending' && (
-                    <button onClick={() => handleQuickAdvance(app.id, 'under_review', `Begin review for ${app.system_name}`)} className="px-3 py-1" style={{background: 'transparent', border: '1px solid rgba(0,0,0,0.05)', color: styles.accentAmber, fontFamily: styles.mono, fontSize: '9px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>Begin Review</button>
+                    <button onClick={() => handleQuickAdvance(app.id, 'under_review', `Begin review for ${app.system_name}`)} style={{background: styles.cardSurface, border: '1px solid ' + styles.borderSubtle, color: styles.accentAmber, fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer', padding: '4px 10px', borderRadius: 8}}>Begin Review</button>
                   )}
-                  <button onClick={() => handleQuickAdvance(app.id, 'approved', `Approve ${app.system_name}`)} className="px-3 py-1" style={{background: 'transparent', border: '1px solid rgba(0,0,0,0.05)', color: styles.accentGreen, fontFamily: styles.mono, fontSize: '9px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>Approve</button>
-                  <button onClick={() => handleQuickAdvance(app.id, 'suspended', `Suspend ${app.system_name}`)} className="px-3 py-1" style={{background: 'transparent', border: '1px solid rgba(0,0,0,0.05)', color: styles.accentRed, fontFamily: styles.mono, fontSize: '9px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>Suspend</button>
-                  <Link to={`/applications/${app.id}`} className="px-3 py-1 no-underline" style={{background: 'transparent', border: `1px solid ${styles.borderGlass}`, color: styles.purpleBright, fontFamily: styles.mono, fontSize: '9px', letterSpacing: '1px', textTransform: 'uppercase'}}>View</Link>
+                  <button onClick={() => handleQuickAdvance(app.id, 'approved', `Approve ${app.system_name}`)} style={{background: styles.cardSurface, border: '1px solid ' + styles.borderSubtle, color: styles.accentGreen, fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer', padding: '4px 10px', borderRadius: 8}}>Approve</button>
+                  <button onClick={() => handleQuickAdvance(app.id, 'suspended', `Suspend ${app.system_name}`)} style={{background: styles.cardSurface, border: '1px solid ' + styles.borderSubtle, color: styles.accentRed, fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer', padding: '4px 10px', borderRadius: 8}}>Suspend</button>
+                  <Link to={`/applications/${app.id}`} style={{background: styles.cardSurface, border: `1px solid ${styles.borderGlass}`, color: styles.purpleBright, fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', textDecoration: 'none', padding: '4px 10px'}}>View</Link>
                 </div>
               </div>
             ))}
@@ -449,16 +407,16 @@ function Dashboard() {
               const pct = Math.round((test.elapsed_seconds / (test.duration_hours * 3600)) * 100);
               const hoursLeft = Math.max(0, ((test.duration_hours * 3600) - test.elapsed_seconds) / 3600).toFixed(1);
               return (
-                <div key={test.id} className="p-4" style={{background: 'transparent', border: `1px solid ${styles.borderGlass}`}}>
-                  <div className="flex justify-between items-center mb-2">
+                <div key={test.id} style={{padding: '16px', background: styles.cardSurface, border: `1px solid ${styles.borderGlass}`}}>
+                  <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px'}}>
                     <span style={{fontFamily: styles.mono, fontSize: '12px', color: styles.purpleBright}}>{test.organization_name} — {test.system_name}</span>
                     <div style={{display: 'flex', alignItems: 'center', gap: '12px'}}>
                       <span style={{fontFamily: styles.mono, fontSize: '11px', color: styles.textTertiary}}>{hoursLeft}h remaining</span>
                       <span style={{fontFamily: styles.mono, fontSize: '11px', color: styles.accentAmber}}>{pct}%</span>
                     </div>
                   </div>
-                  <div className="w-full h-2 overflow-hidden" style={{background: 'transparent'}}>
-                    <div className="h-full transition-all" style={{width: `${pct}%`, background: pct >= 100 ? styles.accentGreen : styles.purpleBright}} />
+                  <div style={{height: '4px', background: 'rgba(0,0,0,0.05)'}}>
+                    <div style={{width: `${pct}%`, height: '100%', background: pct >= 100 ? styles.accentGreen : styles.purpleBright, transition: 'width 0.3s'}} />
                   </div>
                 </div>
               );
@@ -467,33 +425,31 @@ function Dashboard() {
         </Panel>
       )}
 
-      {/* Expiring Certificates Warning */}
+      {/* Expiring Certificates */}
       {(() => {
         const expiring = recentCerts.filter(c => c.expires_at && c.state === 'conformant' && new Date(c.expires_at) < new Date(Date.now() + 30*24*60*60*1000));
         if (expiring.length === 0) return null;
         return (
-          <div style={{background: 'transparent', border: '1px solid rgba(0,0,0,0.05)', padding: '16px'}}>
+          <div style={{background: styles.cardSurface, border: '1px solid ' + styles.borderSubtle, padding: '16px', borderRadius: 8}}>
             <div style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px'}}>
               <AlertTriangle fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} size={16} style={{color: styles.accentAmber}} />
-              <span style={{fontFamily: styles.mono, fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', color: styles.accentAmber, fontWeight: 500}}>{expiring.length} Certificate{expiring.length > 1 ? 's' : ''} Expiring Within 30 Days</span>
+              <span style={{fontFamily: styles.mono, fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', color: styles.accentAmber}}>{expiring.length} Certificate{expiring.length > 1 ? 's' : ''} Expiring Within 30 Days</span>
             </div>
-            <div style={{display: 'flex', flexDirection: 'column', gap: '8px'}}>
-              {expiring.map(c => {
-                const daysLeft = Math.ceil((new Date(c.expires_at) - Date.now()) / (1000*60*60*24));
-                return (
-                  <div key={c.id} style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', background: 'transparent', padding: '10px 14px'}}>
-                    <div>
-                      <span style={{color: styles.textPrimary, fontWeight: 500, fontSize: '13px'}}>{c.system_name}</span>
-                      <span style={{color: styles.textTertiary, fontSize: '12px', marginLeft: '12px'}}>{c.organization_name}</span>
-                    </div>
-                    <div style={{display: 'flex', alignItems: 'center', gap: '12px'}}>
-                      <span style={{fontFamily: styles.mono, fontSize: '11px', color: daysLeft <= 7 ? styles.accentRed : styles.accentAmber, fontWeight: 500}}>{daysLeft}d remaining</span>
-                      <Link to={`/verify?cert=${c.certificate_number}`} style={{fontFamily: styles.mono, fontSize: '10px', color: styles.purpleBright, textDecoration: 'none'}}>{c.certificate_number}</Link>
-                    </div>
+            {expiring.map(c => {
+              const daysLeft = Math.ceil((new Date(c.expires_at) - Date.now()) / (1000*60*60*24));
+              return (
+                <div key={c.id} style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', padding: '10px 0', borderTop: '1px solid ' + styles.borderSubtle, borderRadius: 8}}>
+                  <div>
+                    <span style={{color: styles.textPrimary, fontWeight: 500, fontSize: '13px'}}>{c.system_name}</span>
+                    <span style={{color: styles.textTertiary, fontSize: '12px', marginLeft: '12px'}}>{c.organization_name}</span>
                   </div>
-                );
-              })}
-            </div>
+                  <div style={{display: 'flex', alignItems: 'center', gap: '12px'}}>
+                    <span style={{fontFamily: styles.mono, fontSize: '11px', color: daysLeft <= 7 ? styles.accentRed : styles.accentAmber}}>{daysLeft}d remaining</span>
+                    <Link to={`/verify?cert=${c.certificate_number}`} style={{fontFamily: styles.mono, fontSize: '10px', color: styles.purpleBright, textDecoration: 'none'}}>{c.certificate_number}</Link>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         );
       })()}
@@ -505,23 +461,23 @@ function Dashboard() {
             <h2 style={{fontFamily: styles.mono, fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, margin: 0}}>Recent Certificates</h2>
             <Link to="/certificates" style={{fontFamily: styles.mono, fontSize: '10px', color: styles.purpleBright, textDecoration: 'none'}}>View All →</Link>
           </div>
-          <div className="overflow-x-auto">
-            <table className="w-full">
+          <div style={{overflowX: 'auto'}}>
+            <table style={{width: '100%', borderCollapse: 'collapse'}}>
               <thead>
                 <tr style={{borderBottom: `1px solid ${styles.borderGlass}`}}>
                   {['Certificate', 'System', 'Status', 'Issued', 'Expires'].map(h => (
-                    <th key={h} className="px-4 py-3 text-left" style={{fontFamily: styles.mono, fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>{h}</th>
+                    <th key={h} style={{padding: '12px 16px', textAlign: 'left', fontFamily: styles.mono, fontSize: '11px', letterSpacing: '0.08em', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
                 {recentCerts.slice(0, 5).map(c => (
                   <tr key={c.id} style={{borderBottom: `1px solid ${styles.borderGlass}`}}>
-                    <td className="px-4 py-3"><Link to={`/verify?cert=${c.certificate_number}`} style={{color: styles.purpleBright, textDecoration: 'none', fontFamily: styles.mono, fontSize: '12px'}}>{c.certificate_number}</Link></td>
-                    <td className="px-4 py-3"><span style={{color: styles.textPrimary, fontSize: '13px'}}>{c.system_name}</span><span style={{color: styles.textTertiary, fontSize: '11px', marginLeft: '8px'}}>{c.organization_name}</span></td>
-                    <td className="px-4 py-3"><span style={{fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', padding: '2px 8px', background: c.state === 'conformant' ? 'rgba(22,135,62,0.06)' : 'rgba(180,52,52,0.06)', color: c.state === 'conformant' ? styles.accentGreen : styles.accentRed}}>{c.state}</span></td>
-                    <td className="px-4 py-3" style={{color: styles.textTertiary, fontSize: '13px'}}>{c.issued_at ? new Date(c.issued_at).toLocaleDateString() : '-'}</td>
-                    <td className="px-4 py-3" style={{fontFamily: styles.mono, fontSize: '12px', color: c.expires_at && new Date(c.expires_at) < new Date(Date.now() + 30*24*60*60*1000) ? styles.accentAmber : styles.textTertiary}}>{c.expires_at ? new Date(c.expires_at).toLocaleDateString() : '-'}</td>
+                    <td style={{padding: '12px 16px'}}><Link to={`/verify?cert=${c.certificate_number}`} style={{color: styles.purpleBright, textDecoration: 'none', fontFamily: styles.mono, fontSize: '12px'}}>{c.certificate_number}</Link></td>
+                    <td style={{padding: '12px 16px'}}><span style={{color: styles.textPrimary, fontSize: '13px'}}>{c.system_name}</span><span style={{color: styles.textTertiary, fontSize: '11px', marginLeft: '8px'}}>{c.organization_name}</span></td>
+                    <td style={{padding: '12px 16px'}}><span style={{fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', padding: '2px 8px', background: c.state === 'conformant' ? 'rgba(22,135,62,0.06)' : 'rgba(180,52,52,0.06)', color: c.state === 'conformant' ? styles.accentGreen : styles.accentRed}}>{c.state}</span></td>
+                    <td style={{padding: '12px 16px', color: styles.textTertiary, fontSize: '13px'}}>{c.issued_at ? new Date(c.issued_at).toLocaleDateString() : '-'}</td>
+                    <td style={{padding: '12px 16px', fontFamily: styles.mono, fontSize: '12px', color: c.expires_at && new Date(c.expires_at) < new Date(Date.now() + 30*24*60*60*1000) ? styles.accentAmber : styles.textTertiary}}>{c.expires_at ? new Date(c.expires_at).toLocaleDateString() : '-'}</td>
                   </tr>
                 ))}
               </tbody>
@@ -532,33 +488,32 @@ function Dashboard() {
 
       {/* Recent Applications */}
       <Panel>
-        <div className="flex justify-between items-center mb-4">
+        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px'}}>
           <h2 style={{fontFamily: styles.mono, fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, margin: 0}}>Recent Applications</h2>
           <Link to="/applications" style={{fontFamily: styles.mono, fontSize: '10px', color: styles.purpleBright, textDecoration: 'none'}}>View All →</Link>
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full">
+        <div style={{overflowX: 'auto'}}>
+          <table style={{width: '100%', borderCollapse: 'collapse'}}>
             <thead>
               <tr style={{borderBottom: `1px solid ${styles.borderGlass}`}}>
-                <th className="px-4 py-3 text-left" style={{fontFamily: styles.mono, fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>System</th>
-                <th className="px-4 py-3 text-left" style={{fontFamily: styles.mono, fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>Organization</th>
-                <th className="px-4 py-3 text-left" style={{fontFamily: styles.mono, fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>State</th>
-                <th className="px-4 py-3 text-left" style={{fontFamily: styles.mono, fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>Submitted</th>
+                {['System', 'Organization', 'State', 'Submitted'].map(h => (
+                  <th key={h} style={{padding: '12px 16px', textAlign: 'left', fontFamily: styles.mono, fontSize: '11px', letterSpacing: '0.08em', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>{h}</th>
+                ))}
               </tr>
             </thead>
             <tbody>
               {recentApps.map((app) => (
-                <tr key={app.id} className="transition-colors cursor-pointer" style={{borderBottom: `1px solid ${styles.borderGlass}`}} onClick={() => window.location.hash = `#/applications/${app.id}`}>
-                  <td className="px-4 py-3"><Link to={`/applications/${app.id}`} style={{color: styles.purpleBright, textDecoration: 'none'}}>{app.system_name}</Link></td>
-                  <td className="px-4 py-3" style={{color: styles.textSecondary}}>{app.organization_name}</td>
-                  <td className="px-4 py-3">
-                    <span className="px-2 py-1 text-xs" style={{
-                      background: app.state === 'conformant' ? 'rgba(22,135,62,0.06)' : app.state === 'observe' ? 'rgba(74,61,117,0.04)' : app.state === 'revoked' ? 'rgba(180,52,52,0.06)' : 'rgba(158,110,18,0.06)',
-                      color: app.state === 'conformant' ? styles.accentGreen : app.state === 'observe' ? styles.purpleBright : app.state === 'revoked' ? styles.accentRed : styles.accentAmber,
-                      fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase'
+                <tr key={app.id} style={{borderBottom: `1px solid ${styles.borderGlass}`, cursor: 'pointer'}} onClick={() => window.location.hash = `#/applications/${app.id}`}>
+                  <td style={{padding: '12px 16px'}}><Link to={`/applications/${app.id}`} style={{color: styles.purpleBright, textDecoration: 'none'}}>{app.system_name}</Link></td>
+                  <td style={{padding: '12px 16px', color: styles.textSecondary}}>{app.organization_name}</td>
+                  <td style={{padding: '12px 16px'}}>
+                    <span style={{
+                      background: app.state === 'conformant' ? 'rgba(22,135,62,0.06)' : app.state === 'revoked' ? 'rgba(180,52,52,0.06)' : 'rgba(158,110,18,0.06)',
+                      color: app.state === 'conformant' ? styles.accentGreen : app.state === 'revoked' ? styles.accentRed : styles.accentAmber,
+                      fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', padding: '2px 8px'
                     }}>{app.state}</span>
                   </td>
-                  <td className="px-4 py-3" style={{color: styles.textTertiary, fontSize: '14px'}}>{app.submitted_at ? new Date(app.submitted_at).toLocaleDateString() : "N/A"}</td>
+                  <td style={{padding: '12px 16px', color: styles.textTertiary, fontSize: '13px'}}>{app.submitted_at ? new Date(app.submitted_at).toLocaleDateString() : 'N/A'}</td>
                 </tr>
               ))}
             </tbody>
@@ -569,8 +524,5 @@ function Dashboard() {
   );
 }
 
-// Applications List
-
 export { CustomerDashboard, RoleBasedDashboard };
 export default Dashboard;
-

@@ -54,7 +54,7 @@ function ResourcesPage() {
         </div>
       ) : documents.length === 0 ? (
         <div style={{
-          padding: 'clamp(16px, 4vw, 40px)', textAlign: 'center', border: '1px solid ' + styles.borderGlass, background: 'transparent',
+          padding: 'clamp(16px, 4vw, 40px)', textAlign: 'center', border: '1px solid ' + styles.borderGlass, background: styles.cardSurface, borderRadius: 8,
           color: styles.textTertiary
         }}>
           No documents available.
@@ -63,7 +63,7 @@ function ResourcesPage() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           {documents.map(doc => (
             <div key={doc.id} style={{
-              padding: '24px', border: '1px solid ' + styles.borderGlass, background: 'transparent',
+              padding: '24px', border: '1px solid ' + styles.borderGlass, background: styles.cardSurface, borderRadius: 8,
               display: 'flex', alignItems: 'center', gap: '20px'
             }}>
               <div style={{
@@ -74,7 +74,7 @@ function ResourcesPage() {
                 <BookOpen fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} style={{ width: '22px', height: '22px', color: styles.purpleBright }} />
               </div>
               <div style={{ flex: 1 }}>
-                <div style={{ fontWeight: 600, color: styles.textPrimary, fontSize: '15px', marginBottom: '4px' }}>
+                <div style={{ fontWeight: 500, color: styles.textPrimary, fontSize: '15px', marginBottom: '4px' }}>
                   {doc.title}
                 </div>
                 <div style={{ color: styles.textTertiary, fontSize: '13px', lineHeight: '1.4' }}>
@@ -91,9 +91,9 @@ function ResourcesPage() {
               <button
                 onClick={() => handleDownload(doc.id, doc.title)}
                 style={{
-                  padding: '10px 20px', background: styles.purplePrimary,
-                  border: '1px solid ' + styles.purpleBright,
-                  color: styles.textPrimary, fontFamily: styles.mono,
+                  padding: '10px 16px', background: 'transparent', border: 'none',
+                  borderBottom: `1px solid ${styles.purpleBright}`,
+                  color: styles.purpleBright, fontFamily: styles.mono,
                   fontSize: '11px', letterSpacing: '1px',
                   textTransform: 'uppercase', cursor: 'pointer', flexShrink: 0
                 }}
@@ -110,7 +110,7 @@ function ResourcesPage() {
           marginTop: '40px', padding: '20px', border: '1px dashed ' + styles.borderGlass,
           color: styles.textTertiary, fontSize: '12px',
           fontFamily: styles.mono
-        }}>
+        , borderRadius: 8}}>
           ADMIN: To add documents, place PDFs in backend/static/documents/ and register them in documents.py
         </div>
       )}

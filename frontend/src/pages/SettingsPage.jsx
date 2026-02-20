@@ -124,17 +124,17 @@ function SettingsPage() {
         <div style={{display: 'flex', flexDirection: 'column', gap: '12px', maxWidth: 'min(400px, 90vw)'}}>
           <div>
             <label style={{fontSize: '11px', color: styles.textTertiary, display: 'block', marginBottom: '4px'}}>Full Name</label>
-            <input type="text" value={profileForm.full_name} onChange={e => setProfileForm({...profileForm, full_name: e.target.value})} className="w-full px-4 py-3 outline-none sexy-input" style={{background: 'transparent', border: `1px solid ${styles.borderGlass}`, color: styles.textPrimary, fontSize: '13px'}} />
+            <input type="text" value={profileForm.full_name} onChange={e => setProfileForm({...profileForm, full_name: e.target.value})} className="w-full px-4 py-3 outline-none" style={{background: styles.cardSurface, border: `1px solid ${styles.borderGlass}`, color: styles.textPrimary, fontSize: '13px'}} />
           </div>
           <div>
             <label style={{fontSize: '11px', color: styles.textTertiary, display: 'block', marginBottom: '4px'}}>Organization</label>
-            <input type="text" value={profileForm.organization} onChange={e => setProfileForm({...profileForm, organization: e.target.value})} className="w-full px-4 py-3 outline-none sexy-input" style={{background: 'transparent', border: `1px solid ${styles.borderGlass}`, color: styles.textPrimary, fontSize: '13px'}} />
+            <input type="text" value={profileForm.organization} onChange={e => setProfileForm({...profileForm, organization: e.target.value})} className="w-full px-4 py-3 outline-none" style={{background: styles.cardSurface, border: `1px solid ${styles.borderGlass}`, color: styles.textPrimary, fontSize: '13px'}} />
           </div>
           <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '16px'}}>
             <div><span style={{fontSize: '11px', color: styles.textTertiary}}>Email</span><div style={{color: styles.textPrimary, marginTop: '4px', fontSize: '13px'}}>{user?.email || '-'}</div></div>
             <div><span style={{fontSize: '11px', color: styles.textTertiary}}>Role</span><div style={{color: styles.purpleBright, marginTop: '4px', fontFamily: styles.mono, fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1px'}}>{user?.role || '-'}</div></div>
           </div>
-          <button onClick={handleSaveProfile} disabled={profileSaving} className="sexy-btn" style={{padding: '10px 24px', background: styles.purplePrimary, border: `1px solid ${styles.purpleBright}`, color: '#fff', fontFamily: styles.mono, fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: profileSaving ? 'wait' : 'pointer', opacity: profileSaving ? 0.7 : 1, alignSelf: 'flex-start'}}>
+          <button onClick={handleSaveProfile} disabled={profileSaving} style={{padding: '10px 24px', background: 'transparent', border: 'none', borderBottom: `1px solid ${styles.purpleBright}`, color: styles.purpleBright, fontFamily: styles.mono, fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: profileSaving ? 'wait' : 'pointer', opacity: profileSaving ? 0.7 : 1, alignSelf: 'flex-start'}}>
             {profileSaving ? 'Saving...' : 'Save Profile'}
           </button>
         </div>
@@ -145,19 +145,19 @@ function SettingsPage() {
         <div style={{display: 'flex', flexDirection: 'column', gap: '12px', maxWidth: 'min(400px, 90vw)'}}>
           <div>
             <label style={{fontSize: '11px', color: styles.textTertiary, display: 'block', marginBottom: '4px'}}>Current Password</label>
-            <input type="password" value={pwForm.current} onChange={e => setPwForm({...pwForm, current: e.target.value})} className="w-full px-4 py-3 outline-none sexy-input" style={{background: 'transparent', border: `1px solid ${styles.borderGlass}`, color: styles.textPrimary, fontSize: '13px'}} />
+            <input type="password" value={pwForm.current} onChange={e => setPwForm({...pwForm, current: e.target.value})} className="w-full px-4 py-3 outline-none" style={{background: styles.cardSurface, border: `1px solid ${styles.borderGlass}`, color: styles.textPrimary, fontSize: '13px'}} />
           </div>
           <div>
             <label style={{fontSize: '11px', color: styles.textTertiary, display: 'block', marginBottom: '4px'}}>New Password</label>
-            <input type="password" value={pwForm.new_pw} onChange={e => setPwForm({...pwForm, new_pw: e.target.value})} className="w-full px-4 py-3 outline-none sexy-input" style={{background: 'transparent', border: `1px solid ${styles.borderGlass}`, color: styles.textPrimary, fontSize: '13px'}} />
+            <input type="password" value={pwForm.new_pw} onChange={e => setPwForm({...pwForm, new_pw: e.target.value})} className="w-full px-4 py-3 outline-none" style={{background: styles.cardSurface, border: `1px solid ${styles.borderGlass}`, color: styles.textPrimary, fontSize: '13px'}} />
           </div>
           <div>
             <label style={{fontSize: '11px', color: styles.textTertiary, display: 'block', marginBottom: '4px'}}>Confirm New Password</label>
-            <input type="password" value={pwForm.confirm} onChange={e => setPwForm({...pwForm, confirm: e.target.value})} className="w-full px-4 py-3 outline-none sexy-input" style={{background: 'transparent', border: `1px solid ${styles.borderGlass}`, color: styles.textPrimary, fontSize: '13px'}} />
+            <input type="password" value={pwForm.confirm} onChange={e => setPwForm({...pwForm, confirm: e.target.value})} className="w-full px-4 py-3 outline-none" style={{background: styles.cardSurface, border: `1px solid ${styles.borderGlass}`, color: styles.textPrimary, fontSize: '13px'}} />
           </div>
           {pwError && <div style={{color: styles.accentRed, fontSize: '12px'}}>{pwError}</div>}
           <div style={{fontSize: '11px', color: styles.textTertiary}}>Min 8 chars, 1 uppercase, 1 lowercase, 1 number</div>
-          <button onClick={handleChangePassword} disabled={pwSaving} className="sexy-btn" style={{padding: '10px 24px', background: styles.purplePrimary, border: `1px solid ${styles.purpleBright}`, color: '#fff', fontFamily: styles.mono, fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: pwSaving ? 'wait' : 'pointer', opacity: pwSaving ? 0.7 : 1, alignSelf: 'flex-start'}}>
+          <button onClick={handleChangePassword} disabled={pwSaving} style={{padding: '10px 24px', background: 'transparent', border: 'none', borderBottom: `1px solid ${styles.purpleBright}`, color: styles.purpleBright, fontFamily: styles.mono, fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: pwSaving ? 'wait' : 'pointer', opacity: pwSaving ? 0.7 : 1, alignSelf: 'flex-start'}}>
             {pwSaving ? 'Changing...' : 'Change Password'}
           </button>
         </div>
@@ -175,20 +175,20 @@ function SettingsPage() {
             </div>
             <p style={{color: styles.textSecondary, fontSize: '13px', marginBottom: '12px'}}>Your account is protected with TOTP two-factor authentication.</p>
             {twoFA.backupCodes && twoFA.backupCodes.length > 0 && (
-              <div style={{marginBottom: '16px', padding: '16px', background: 'transparent', border: '1px solid rgba(0,0,0,0.05)' }}>
-                <p style={{color: styles.accentAmber, fontFamily: styles.mono, fontSize: '11px', marginBottom: '8px', fontWeight: 600}}>SAVE YOUR BACKUP CODES</p>
+              <div style={{marginBottom: '16px', padding: '16px', background: styles.cardSurface, border: '1px solid ' + styles.borderSubtle , borderRadius: 8}}>
+                <p style={{color: styles.accentAmber, fontFamily: styles.mono, fontSize: '11px', marginBottom: '8px', fontWeight: 500}}>SAVE YOUR BACKUP CODES</p>
                 <p style={{color: styles.textSecondary, fontSize: '12px', marginBottom: '12px'}}>Use these if you lose your authenticator. Each code works once.</p>
                 <div style={{display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '4px'}}>
                   {twoFA.backupCodes.map((code, i) => (
                     <span key={i} style={{fontFamily: styles.mono, fontSize: '13px', color: styles.textPrimary, padding: '4px 8px', background: 'transparent', textAlign: 'center'}}>{code}</span>
                   ))}
                 </div>
-                <button onClick={() => {navigator.clipboard.writeText(twoFA.backupCodes.join(String.fromCharCode(10))); toast.show('Backup codes copied');}} style={{marginTop: '12px', padding: '6px 16px', background: 'transparent', border: '1px solid rgba(0,0,0,0.05)', color: styles.accentAmber, fontFamily: styles.mono, fontSize: '10px', cursor: 'pointer', letterSpacing: '1px', textTransform: 'uppercase'}}>Copy All</button>
+                <button onClick={() => {navigator.clipboard.writeText(twoFA.backupCodes.join(String.fromCharCode(10))); toast.show('Backup codes copied');}} style={{marginTop: '12px', padding: '6px 16px', background: styles.cardSurface, border: '1px solid ' + styles.borderSubtle, color: styles.accentAmber, fontFamily: styles.mono, fontSize: '10px', cursor: 'pointer', letterSpacing: '1px', textTransform: 'uppercase', borderRadius: 8}}>Copy All</button>
               </div>
             )}
             <div style={{display: 'flex', gap: '8px', alignItems: 'center', maxWidth: 'min(400px, 90vw)'}}>
-              <input type="password" value={twoFA.disablePw} onChange={e => setTwoFA(prev => ({...prev, disablePw: e.target.value}))} placeholder="Enter password to disable" className="sexy-input" style={{flex: 1, background: 'transparent', border: `1px solid ${styles.borderGlass}`, padding: '8px 12px', color: styles.textPrimary, fontSize: '13px'}} />
-              <button onClick={disable2FA} disabled={twoFA.disabling} style={{padding: '8px 16px', background: 'transparent', border: '1px solid rgba(0,0,0,0.05)', color: styles.accentRed, fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', cursor: twoFA.disabling ? 'wait' : 'pointer', whiteSpace: 'nowrap'}}>
+              <input type="password" value={twoFA.disablePw} onChange={e => setTwoFA(prev => ({...prev, disablePw: e.target.value}))} placeholder="Enter password to disable" style={{flex: 1, background: styles.cardSurface, border: `1px solid ${styles.borderGlass}`, padding: '8px 12px', color: styles.textPrimary, fontSize: '13px'}} />
+              <button onClick={disable2FA} disabled={twoFA.disabling} style={{padding: '8px 16px', background: styles.cardSurface, border: '1px solid ' + styles.borderSubtle, color: styles.accentRed, fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', cursor: twoFA.disabling ? 'wait' : 'pointer', whiteSpace: 'nowrap', borderRadius: 8}}>
                 {twoFA.disabling ? '...' : 'Disable 2FA'}
               </button>
             </div>
@@ -197,13 +197,13 @@ function SettingsPage() {
           <div style={{maxWidth: 'min(400px, 90vw)'}}>
             <p style={{color: styles.textSecondary, fontSize: '13px', marginBottom: '16px'}}>Scan this QR code with your authenticator app (Google Authenticator, Authy, 1Password):</p>
             {twoFA.setup.qr_base64 && <div style={{textAlign: 'center', marginBottom: '16px'}}><img src={'data:image/png;base64,' + twoFA.setup.qr_base64} alt="QR Code" style={{width: '200px', height: '200px' }} /></div>}
-            <div style={{background: 'transparent', border: `1px solid ${styles.borderGlass}`, padding: '12px', marginBottom: '16px'}}>
+            <div style={{background: styles.cardSurface, border: `1px solid ${styles.borderGlass}`, padding: '12px', marginBottom: '16px'}}>
               <div style={{fontSize: '10px', color: styles.textTertiary, marginBottom: '4px', fontFamily: styles.mono, textTransform: 'uppercase', letterSpacing: '1px'}}>Manual Entry Key</div>
               <div style={{fontFamily: styles.mono, fontSize: '14px', color: styles.purpleBright, letterSpacing: '2px', wordBreak: 'break-all'}}>{twoFA.setup.secret}</div>
             </div>
             <div style={{display: 'flex', gap: '8px', alignItems: 'center'}}>
-              <input type="text" value={twoFA.code} onChange={e => setTwoFA(prev => ({...prev, code: e.target.value.replace(/\D/g, '').slice(0, 6)}))} placeholder="6-digit code" maxLength={6} className="sexy-input" style={{flex: 1, background: 'transparent', border: `1px solid ${styles.borderGlass}`, padding: '10px 12px', color: styles.textPrimary, fontSize: '18px', fontFamily: styles.mono, letterSpacing: '6px', textAlign: 'center'}} />
-              <button onClick={enable2FA} disabled={twoFA.verifying || twoFA.code.length !== 6} className="sexy-btn" style={{padding: '10px 20px', background: styles.purplePrimary, border: `1px solid ${styles.purpleBright}`, color: '#fff', fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', cursor: twoFA.verifying ? 'wait' : 'pointer', opacity: twoFA.code.length !== 6 ? 0.5 : 1}}>
+              <input type="text" value={twoFA.code} onChange={e => setTwoFA(prev => ({...prev, code: e.target.value.replace(/\D/g, '').slice(0, 6)}))} placeholder="6-digit code" maxLength={6} style={{flex: 1, background: styles.cardSurface, border: `1px solid ${styles.borderGlass}`, padding: '10px 12px', color: styles.textPrimary, fontSize: '18px', fontFamily: styles.mono, letterSpacing: '6px', textAlign: 'center'}} />
+              <button onClick={enable2FA} disabled={twoFA.verifying || twoFA.code.length !== 6} style={{padding: '10px 20px', background: 'transparent', border: 'none', borderBottom: `1px solid ${styles.purpleBright}`, color: styles.purpleBright, fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', cursor: twoFA.verifying ? 'wait' : 'pointer', opacity: twoFA.code.length !== 6 ? 0.5 : 1}}>
                 {twoFA.verifying ? '...' : 'Verify'}
               </button>
             </div>
@@ -211,7 +211,7 @@ function SettingsPage() {
         ) : (
           <div>
             <p style={{color: styles.textSecondary, fontSize: '13px', marginBottom: '16px'}}>Add an extra layer of security by requiring a code from your authenticator app when signing in.</p>
-            <button onClick={setup2FA} className="sexy-btn" style={{padding: '10px 24px', background: styles.purplePrimary, border: `1px solid ${styles.purpleBright}`, color: '#fff', fontFamily: styles.mono, fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>
+            <button onClick={setup2FA} style={{padding: '10px 24px', background: 'transparent', border: 'none', borderBottom: `1px solid ${styles.purpleBright}`, color: styles.purpleBright, fontFamily: styles.mono, fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>
               Enable 2FA
             </button>
           </div>
@@ -238,7 +238,7 @@ function SettingsPage() {
         </div>
         <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginTop: '20px', paddingTop: '16px', borderTop: `1px solid ${styles.borderGlass}`}}>
           <span style={{fontSize: '11px', color: styles.textTertiary}}>Admin and security emails are always sent.</span>
-          <button onClick={savePrefs} disabled={saving} className="sexy-btn" style={{padding: '10px 24px', background: saved ? 'rgba(22,135,62,0.06)' : styles.purplePrimary, border: `1px solid ${saved ? 'rgba(22,135,62,0.25)' : styles.purpleBright}`, color: saved ? styles.accentGreen : '#fff', fontFamily: styles.mono, fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: saving ? 'wait' : 'pointer', opacity: saving ? 0.7 : 1}}>
+          <button onClick={savePrefs} disabled={saving} style={{padding: '10px 24px', background: 'transparent', border: 'none', borderBottom: `1px solid ${saved ? 'rgba(22,135,62,0.25)' : styles.purpleBright}`, color: saved ? styles.accentGreen : styles.purpleBright, fontFamily: styles.mono, fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: saving ? 'wait' : 'pointer', opacity: saving ? 0.7 : 1}}>
             {saved ? '✓ Saved' : saving ? 'Saving...' : 'Save Preferences'}
           </button>
         </div>

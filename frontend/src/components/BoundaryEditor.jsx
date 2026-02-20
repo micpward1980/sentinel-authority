@@ -6,7 +6,7 @@ import { styles } from '../config/styles';
 
 const Panel = ({ children, style = {} }) => (
   <div style={{
-    background: 'transparent',
+    background: styles.cardSurface,
     border: `1px solid ${styles.borderGlass}`,
     padding: '24px',
     ...style
@@ -30,13 +30,13 @@ const Button = ({ children, onClick, variant = 'primary', disabled = false, styl
       transition: 'all 0.2s',
       opacity: disabled ? 0.5 : 1,
       ...(variant === 'primary' ? {
-        background: styles.purpleBright,
-        color: styles.textPrimary
+        background: 'transparent',
+        color: styles.purpleBright
       } : variant === 'danger' ? {
         background: styles.accentRed,
-        color: styles.textPrimary
+        color: '#fff'
       } : {
-        background: 'transparent',
+        background: styles.cardSurface,
         border: `1px solid ${styles.borderGlass}`,
         color: styles.textSecondary
       }),
@@ -70,7 +70,7 @@ const Input = ({ label, value, onChange, type = 'text', placeholder = '', style 
       style={{
         width: '100%',
         padding: '10px 12px',
-        background: 'transparent',
+        background: styles.cardSurface,
         border: `1px solid ${styles.borderGlass}`,
         color: styles.textPrimary,
         fontSize: '14px',
@@ -101,7 +101,7 @@ const Select = ({ label, value, onChange, options, style = {} }) => (
       style={{
         width: '100%',
         padding: '10px 12px',
-        background: 'transparent',
+        background: styles.cardSurface,
         border: `1px solid ${styles.borderGlass}`,
         color: styles.textPrimary,
         fontSize: '14px',
@@ -326,7 +326,7 @@ const TimeBoundaryEditor = ({ boundary, onChange, onRemove }) => (
 const StateBoundaryEditor = ({ boundary, onChange, onRemove }) => (
   <Panel style={{ marginBottom: '12px', padding: '16px' }}>
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-      <span style={{ color: '#ec4899', fontSize: '12px', fontFamily: styles.mono }}>
+      <span style={{ color: styles.purpleBright, fontSize: '12px', fontFamily: styles.mono }}>
         STATE BOUNDARY
       </span>
       <Button variant="danger" onClick={onRemove} style={{ padding: '4px 12px', fontSize: '10px' }}>
@@ -491,7 +491,7 @@ export default function BoundaryEditor({ applicationId, initialBoundaries, onSav
               width: '100%',
               minHeight: '400px',
               padding: '16px',
-              background: 'transparent',
+              background: styles.cardSurface,
               border: `1px solid ${styles.borderGlass}`,
               color: styles.textPrimary,
               fontSize: '13px',

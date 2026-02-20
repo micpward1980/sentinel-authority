@@ -2,6 +2,8 @@
 <html lang="en" style="scroll-behavior:smooth;">
 <head>
   <meta charset="UTF-8" />
+  <link rel="canonical" href="https://www.sentinelauthority.org/status.html">
+
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <title>CAT-72 Status — Sentinel Authority</title>
   <meta name="description" content="Track your CAT-72 conformance test in real time" />
@@ -9,7 +11,7 @@
   <meta property="og:description" content="Track your CAT-72 conformance test in real time" />
   <meta property="og:type" content="website" />
   <meta property="og:image" content="https://sentinelauthority.org/og.png" />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect x='6' y='6' width='20' height='20' rx='5' fill='%235B4B8A' stroke='%239d8ccf' stroke-width='2'/><circle cx='16' cy='16' r='4' fill='%239d8ccf'/></svg>" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'><rect x='2' y='2' width='32' height='32' rx='8' fill='%237B6BAE' stroke='%23b8aad4' stroke-width='2'/><circle cx='18' cy='18' r='6' fill='%23e0d8f0'/></svg>" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
@@ -24,25 +26,25 @@
 
     :root{
       color-scheme: light;
-      --purple-primary:#5B4B8A;
-      --purple-bright:rgba(88,80,150,1.00);
-      --purple-glow:rgba(88,80,150,.12);
-      --bg-deep:#f8f9fb;
-      --bg-panel:rgba(255,255,255,.55);
+      --purple-primary:#4a3d75;
+      --purple-bright:#6b5a9e;
+      --purple-glow:transparent;
+      --bg-deep:#ffffff;
+      --bg-panel:rgba(0,0,0,.025);
       --accent-green:rgba(22,163,74,1.00);
       --accent-amber:rgba(202,138,4,1.00);
       --accent-red:rgba(220,53,69,1.00);
-      --text-primary:rgba(15,18,30,.97);
-      --text-secondary:rgba(15,18,30,.82);
-      --text-tertiary:rgba(15,18,30,.62);
-      --border-glass:rgba(255,255,255,.60);
-      --border-subtle:rgba(15,18,30,.06);
+      --text-primary:#111318;
+      --text-secondary:rgba(15,18,30,.74);
+      --text-tertiary:rgba(15,18,30,.56);
+      --border-glass:rgba(0,0,0,.09);
+      --border-subtle:rgba(0,0,0,.05);
       --serif:Georgia,'Source Serif 4',serif;
       --mono:Consolas,'IBM Plex Mono',monospace;
       --sans:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
       --ease: cubic-bezier(0.16, 1, 0.3, 1);
       --ease-out: cubic-bezier(0.33, 1, 0.68, 1);
-      --space-1: 10px; --space-2: 20px; --space-3: 20px; --space-4: 28px;
+      --space-1: 10px; --space-2: 16px; --space-3: 24px; --space-4: 28px;
       --space-5: 35px; --space-6: 40px; --space-8: 50px; --space-10: 60px;
       --max: 1200px; --nav-height: 72px;
     }
@@ -51,14 +53,14 @@
     .skip-link{ position:absolute; left:-9999px; top:auto; width:1px; height:1px; overflow:hidden; z-index:999; }
     .skip-link:focus{ position:fixed; top:10px; left:10px; width:auto; height:auto; padding:12px 18px; background:#fff; border:1px solid var(--purple-bright); color:var(--text-primary); font-family:var(--mono); font-size:11px; letter-spacing:2px; text-transform:uppercase; text-decoration:none; z-index:9999; }
     .sr-only{ position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
-    a:focus-visible, button:focus-visible { outline: 2px solid rgba(88,80,150,.75); outline-offset: 3px; }
+    a:focus-visible, button:focus-visible { outline: 2px solid rgba(74,61,117,.75); outline-offset: 3px; }
     :focus:not(:focus-visible) { outline: none; }
 
-    html{ scroll-behavior:smooth; background:#f8f9fb; }
+    html{ scroll-behavior:smooth; background:#f5f5f7; }
     body{
       margin:0;
       font-family:var(--sans);
-      background:#f8f9fb;
+      background:#f5f5f7;
       color:var(--text-primary);
       overflow-x:hidden;
       -webkit-font-smoothing:antialiased;
@@ -69,30 +71,30 @@
       content: '';
       position: fixed; inset: 0; z-index: -1;
       background:
-        radial-gradient(ellipse 80% 50% at 20% 10%, rgba(88,80,150,0.04), transparent 60%),
+        radial-gradient(ellipse 80% 50% at 20% 10%, rgba(74,61,117,0.04), transparent 60%),
         radial-gradient(ellipse 60% 40% at 80% 80%, rgba(22,163,74,0.03), transparent 50%);
       pointer-events: none;
     }
     a{ color:inherit; text-decoration:none; }
     a:hover{ text-decoration:none; }
-    ::selection{ background:rgba(88,80,150,.15); color:var(--text-primary); }
+    ::selection{ background:rgba(74,61,117,.15); color:var(--text-primary); }
 
     /* ═══ HEADER ═══ */
     .site-header{
       position:fixed; top:0; width:100%; z-index:50;
       padding:0 20px; height:var(--nav-height);
-      border-bottom:1px solid rgba(15,18,30,0.08);
-      background:rgba(255,255,255,0.85);
-      box-shadow:0 0.5px 0 rgba(15,18,30,0.10);
-      backdrop-filter:blur(20px) saturate(1.8);
-      -webkit-backdrop-filter:blur(20px) saturate(1.8);
+      border-bottom:1px solid rgba(15,18,30,0.06);
+      background:rgba(245,245,247,0.88);
+      box-shadow:none;
+      backdrop-filter:blur(28px) saturate(1.5);
+      -webkit-backdrop-filter:blur(28px) saturate(1.5);
       display:flex; align-items:center;
     }
     .nav-inner{ max-width:var(--max); margin:0 auto; width:100%; display:flex; align-items:center; justify-content:space-between; gap:20px; }
     .brand{ display:flex; align-items:center; gap:10px; text-decoration:none; }
     .brand:hover{ text-decoration:none; }
-    .brand-mark{ width:24px; height:24px; background:var(--purple-primary); border:2px solid rgba(88,80,150,0.6); border-radius:6px; display:flex; align-items:center; justify-content:center; }
-    .brand-mark-inner{ width:8px; height:8px; background:rgba(88,80,150,0.4); border-radius:50%; animation:eye-pulse 7s ease-in-out infinite; }
+    .brand-mark{ width:36px; height:36px; background:var(--purple-primary); border:2px solid rgba(74,61,117,0.6); border-radius:8px; display:flex; align-items:center; justify-content:center; }
+    .brand-mark-inner{ width:12px; height:12px; background:#e0d8f0; border-radius:50%; animation:eye-pulse 7s ease-in-out infinite; }
     @keyframes eye-pulse { 0%,100%{opacity:.75;transform:scale(.98);} 50%{opacity:1;transform:scale(1.02);} }
     .brand-name{ font-family:var(--mono); font-size:10px; letter-spacing:2px; text-transform:uppercase; color:rgba(15,18,30,1); font-weight:600; white-space:nowrap; }
 
@@ -103,16 +105,16 @@
     main{ position:relative; z-index:1; max-width:880px; margin:0 auto; padding:calc(var(--nav-height) + 60px) 20px 60px; }
 
     .section-label{ font-family:var(--mono); font-size:10px; letter-spacing:2px; text-transform:uppercase; color:var(--purple-bright); display:block; margin-bottom:12px; font-weight:600; }
-    .section-title{ font-family:var(--serif); font-size:clamp(30px, 4vw, 50px); font-weight:500; line-height:1.1; margin:0; letter-spacing:-0.02em; color:var(--text-primary); }
+    .section-title{ font-family:var(--serif); font-size:clamp(30px, 4vw, 50px); font-weight:500; line-height:1.1; margin:0; letter-spacing:-0.02em; color:#3d3262; }
     .section-lead{ max-width:70ch; color:var(--text-secondary); font-weight:400; line-height:1.55; margin:var(--space-2) 0 0; font-size:16px; }
 
     /* ═══ HUD SYSTEM — GLASS ═══ */
     .hud-frame{
       position:relative; padding:20px 16px;
-      background:rgba(255,255,255,0.45);
-      backdrop-filter:blur(14px) saturate(1.4);
-      -webkit-backdrop-filter:blur(14px) saturate(1.4);
-      box-shadow:0 1px 3px rgba(15,18,30,0.03), inset 0 1px 0 rgba(255,255,255,0.7);
+      background:rgba(255,255,255,0.78);
+      backdrop-filter:blur(22px) saturate(1.35);
+      -webkit-backdrop-filter:blur(22px) saturate(1.35);
+      box-shadow:0 1px 3px rgba(15,18,30,0.03), 0 10px 40px rgba(15,18,30,0.05);
       border:none;
     }
     .hud-frame::before,.hud-frame::after,
@@ -126,11 +128,11 @@
     .hud-frame>i::before{bottom:0;left:0;border-width:0 0 1px 1px;position:absolute;}
     .hud-frame>i::after{bottom:0;right:0;border-width:0 1px 1px 0;position:absolute;}
     .hud-frame>i{position:absolute;inset:0;pointer-events:none;}
-    @keyframes corner-breathe { 0%,100%{border-color:rgba(15,18,30,0.08);} 50%{border-color:rgba(88,80,150,0.20);} }
+    @keyframes corner-breathe { 0%,100%{border-color:rgba(15,18,30,0.08);} 50%{border-color:rgba(74,61,117,0.20);} }
 
     .hud-frame + .hud-frame { margin-top: var(--space-4); }
     .hud-scanline{ border-bottom:1px solid rgba(15,18,30,0.04); }
-    .hud-dot{ display:inline-block; width:4px; height:4px; border-radius:50%; background:rgba(88,80,150,0.35); margin-right:8px; flex-shrink:0; }
+    .hud-dot{ display:inline-block; width:4px; height:4px; border-radius:50%; background:rgba(74,61,117,0.35); margin-right:8px; flex-shrink:0; }
     .hud-dot-green{ background:rgba(22,163,74,0.6); animation:hud-breathe 3s ease-in-out infinite; }
     .hud-dot-amber{ background:rgba(202,138,4,0.6); animation:hud-breathe 3s ease-in-out infinite; }
     .hud-dot-red{ background:rgba(220,53,69,0.5); }
@@ -140,41 +142,41 @@
     .hud-label{ font-family:var(--mono); font-size:10px; letter-spacing:1.5px; color:var(--text-tertiary); text-transform:uppercase; font-weight:500; }
     .hud-title{ font-size:14px; color:var(--text-primary); font-weight:500; margin:2px 0; }
     .hud-desc{ font-size:12px; color:var(--text-secondary); line-height:1.55; }
-    .hud-num{ font-family:var(--mono); font-size:10px; letter-spacing:1px; color:rgba(88,80,150,0.40); margin-right:12px; }
-    .hud-link{ font-family:var(--mono); font-size:11px; letter-spacing:2px; color:rgba(88,80,150,0.70); text-decoration:none !important; padding-bottom:2px; transition:all 0.2s; }
-    .hud-link:hover{ color:rgba(88,80,150,1.00); }
+    .hud-num{ font-family:var(--mono); font-size:10px; letter-spacing:1px; color:rgba(74,61,117,0.40); margin-right:12px; }
+    .hud-link{ font-family:var(--mono); font-size:11px; letter-spacing:2px; color:rgba(74,61,117,1.00); text-decoration:none !important; padding-bottom:2px; transition:all 0.2s; }
+    .hud-link:hover{ color:rgba(74,61,117,1.00); }
 
     /* ═══ FORM ELEMENTS — GLASS ═══ */
     input[type="text"]{
       flex:1; padding:14px 0;
       font-family:var(--mono); font-size:15px; letter-spacing:2px;
       background:transparent;
-      border:none; border-bottom:1px solid rgba(88,80,150,0.15);
+      border:none; border-bottom:1px solid rgba(74,61,117,0.15);
       color:var(--text-primary); outline:none;
     }
-    input[type="text"]:focus{ border-bottom-color:rgba(88,80,150,0.40); }
+    input[type="text"]:focus{ border-bottom-color:rgba(74,61,117,0.40); }
     input[type="text"]::placeholder{ color:var(--text-tertiary); }
 
     button{
       padding:14px 20px; font-family:var(--mono); font-size:10px; letter-spacing:2px;
-      background:transparent; border:none; border-bottom:1px solid rgba(88,80,150,.15);
-      color:rgba(88,80,150,.90); cursor:pointer; white-space:nowrap; font-weight:600;
+      background:transparent; border:none; border-bottom:1px solid rgba(74,61,117,.15);
+      color:rgba(74,61,117,.90); cursor:pointer; white-space:nowrap; font-weight:600;
       transition:all .2s ease;
     }
-    button:hover{ border-bottom-color:rgba(88,80,150,.40); }
+    button:hover{ border-bottom-color:rgba(74,61,117,.40); }
 
     /* ═══ PROGRESS ═══ */
     .spinner{ width:20px; height:20px; border:2px solid rgba(15,18,30,.06); border-top-color:var(--purple-bright); border-radius:50%; animation:spin .7s linear infinite; display:inline-block; vertical-align:middle; margin-right:8px; }
     @keyframes spin{to{transform:rotate(360deg);}}
     .progress-track{ height:3px; background:rgba(15,18,30,.06); margin:12px 0 6px; }
-    .progress-fill{ height:100%; background:linear-gradient(90deg,rgba(88,80,150,0.6),rgba(22,163,74,0.6)); box-shadow:0 0 8px rgba(88,80,150,.15); transition:width .8s; }
+    .progress-fill{ height:100%; background:linear-gradient(90deg,rgba(74,61,117,0.6),rgba(22,163,74,0.6)); box-shadow:0 0 8px rgba(74,61,117,.15); transition:width .8s; }
 
     /* ═══ FOOTER ═══ */
     footer{
-      border-top:1px solid rgba(255,255,255,.60);
+      border-top:1px solid rgba(0,0,0,.05);
       padding:var(--space-6) 0 var(--space-4);
       margin-top:var(--space-4);
-      background:rgba(255,255,255,0.40);
+      background:#f5f5f7;
       backdrop-filter:blur(12px) saturate(1.3);
       -webkit-backdrop-filter:blur(12px) saturate(1.3);
       color:var(--text-tertiary);
@@ -195,7 +197,151 @@
       main { padding:calc(var(--nav-height) + 30px) 12px 30px; }
       .section-title { font-size:21px !important; }
     }
-  </style>
+/* ── ROOT TOKENS ── */
+:root{
+  --hairline:rgba(15,18,30,0.08);
+  --glass-bg:rgba(255,255,255,0.58);
+  --glass-border:rgba(255,255,255,0.45);
+}
+
+/* ── BODY ── */
+body{background:#f5f5f7!important;}
+body::before{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:radial-gradient(ellipse 1000px 700px at 10% 15%,rgba(88,62,165,0.05),transparent 55%),
+  radial-gradient(ellipse 900px 600px at 85% 75%,rgba(16,185,80,0.04),transparent 50%),
+  radial-gradient(ellipse 1200px 500px at 50% 45%,rgba(88,62,165,0.03),transparent 45%);}
+
+/* ── HEADER ── */
+.site-header,header,.nav-bar{background:rgba(245,245,247,0.92)!important;backdrop-filter:blur(24px) saturate(1.4)!important;-webkit-backdrop-filter:blur(24px) saturate(1.4)!important;border-bottom:1px solid var(--hairline)!important;}
+.brand-name{color:rgba(15,18,30,0.92)!important;}
+
+/* ── SECTION HEAD (glass box) ── */
+.section-head{
+  display:flex!important;
+  align-items:flex-end!important;
+  justify-content:space-between!important;
+  gap:16px!important;
+  flex-wrap:wrap!important;
+  margin-bottom:24px!important;
+  background:rgba(255,255,255,0.45)!important;
+  backdrop-filter:blur(18px) saturate(1.25)!important;
+  -webkit-backdrop-filter:blur(18px) saturate(1.25)!important;
+  border-radius:16px!important;
+  padding:28px 24px!important;
+  text-align:left!important;
+}
+
+/* ── SECTION LABEL ── */
+.section-label{
+  font-family:var(--mono,Consolas,'IBM Plex Mono',monospace)!important;
+  font-size:10px!important;
+  letter-spacing:5px!important;
+  text-transform:uppercase!important;
+  color:rgba(15,18,30,0.44)!important;
+  display:block!important;
+  margin-bottom:12px!important;
+}
+
+/* ── SECTION TITLE ── */
+.section-title,h1.section-title{
+  font-family:var(--serif,Georgia,'Source Serif 4',serif)!important;
+  font-size:clamp(30px,4vw,50px)!important;
+  font-weight:300!important;
+  line-height:1.1!important;
+  margin:0!important;
+  letter-spacing:-0.03em!important;
+  color:#3d3262!important;
+}
+
+/* ── SECTION LEAD ── */
+.section-lead{
+  max-width:580px!important;
+  color:rgba(15,18,30,0.64)!important;
+  font-weight:300!important;
+  line-height:1.75!important;
+  margin:16px 0 0!important;
+  margin-left:0!important;
+  margin-right:auto!important;
+  font-size:16px!important;
+}
+
+/* ── CARDS: glass, rounded, no brackets ── */
+.doc-card,.wp-featured,.artifact-card,.cert-card,.research-card,.fee-card,.process-card,.guarantee-box{
+  background:rgba(255,255,255,0.65)!important;
+  backdrop-filter:blur(20px) saturate(1.3)!important;
+  -webkit-backdrop-filter:blur(20px) saturate(1.3)!important;
+  border:1px solid rgba(15,18,30,0.06)!important;
+  border-radius:16px!important;
+  box-shadow:0 1px 2px rgba(15,18,30,0.03),0 4px 16px rgba(15,18,30,0.02)!important;
+  overflow:hidden;
+}
+/* Kill bracket corners */
+.doc-card::before,.doc-card::after,
+.wp-featured::before,.wp-featured::after,
+.hud-frame::before,.hud-frame::after,
+.hud-frame>i::before,.hud-frame>i::after{display:none!important;}
+
+/* ── HUD FRAMES ── */
+.hud-frame{
+  border-radius:16px!important;
+  border:1px solid var(--hairline)!important;
+  background:rgba(255,255,255,0.40)!important;
+  backdrop-filter:blur(18px) saturate(1.2)!important;
+  -webkit-backdrop-filter:blur(18px) saturate(1.2)!important;
+}
+
+/* ── SECTIONS ── */
+.section{border-top:1px solid var(--hairline)!important;padding-top:80px!important;padding-bottom:80px!important;}
+
+/* ── REVEALS ── */
+.reveal{opacity:0;transform:translateY(8px);transition:opacity .35s ease,transform .35s ease;}
+.reveal.active{opacity:1!important;transform:none!important;}
+@media(prefers-reduced-motion:reduce){.reveal{opacity:1!important;transform:none!important;transition:none!important;}}
+
+/* ── MISC ── */
+a:hover{filter:none!important;}
+::selection{background:rgba(0,0,0,0.03);color:#111318;}
+.hud-scanline::before,.hud-scanline::after{display:none!important;}
+.sa-particles,.sa-noise,.sa-vignette,.hud-shimmer{display:none!important;}
+.section-title,.section-label,.hud-title,.hud-label,.hud-desc,.hud-link,h1,h2,h3,p,span,a,div{text-shadow:none!important;}
+footer{border-top:1px solid var(--hairline)!important;}
+
+/* Stagger cascade animation */
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+.reveal.active{animation:fadeUp .7s cubic-bezier(0.16,1,0.3,1) both;}
+.r1{animation-delay:.1s;}.r2{animation-delay:.15s;}.r3{animation-delay:.2s;}.r4{animation-delay:.25s;}.r5{animation-delay:.3s;}.r6{animation-delay:.35s;}.r7{animation-delay:.4s;}.r8{animation-delay:.45s;}.r9{animation-delay:.5s;}.r10{animation-delay:.55s;}
+</style>
+  <link rel="stylesheet" href="type.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Sentinel Authority",
+    "url": "https://sentinelauthority.org",
+    "logo": "https://sentinelauthority.org/og.webp",
+    "description": "Independent conformance certification body for autonomous systems. ODDC certification attests to runtime-enforced operational boundary compliance.",
+    "sameAs": [],
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "contactType": "customer service",
+      "url": "https://app.sentinelauthority.org"
+    }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Sentinel Authority",
+    "url": "https://sentinelauthority.org",
+    "description": "Independent conformance certification for autonomous systems.",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://sentinelauthority.org/?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>
 </head>
 <body>
   <a href="#main" class="skip-link">Skip to content</a>
@@ -212,11 +358,15 @@
     </div>
   </header>
 
-  <main id="main" role="main">
-    <div style="margin-bottom:40px;">
-      <span class="section-label">CAT-72 CONFORMANCE</span>
-      <h1 class="section-title">Test Status</h1>
-      <p class="section-lead">Track your 72-hour continuous conformance test in real time.</p>
+  <main role="main" aria-label="Page content" id="main" role="main">
+    <div style="padding-top:calc(var(--nav-height) + 48px);">
+      <div class="section-head reveal" style="margin-bottom:40px;">
+        <div>
+          <span class="section-label reveal r1">CAT-72 CONFORMANCE</span>
+          <h1 class="section-title reveal r2">Test Status</h1>
+          <p class="section-lead reveal r3">Track your 72-hour continuous conformance test in real time.</p>
+        </div>
+      </div>
     </div>
 
     <div class="hud-frame hud-scanline"><i></i>
@@ -231,7 +381,7 @@
         <input type="text" id="certId" placeholder="ODDC-2026-00001">
         <button onclick="checkStatus()">CHECK</button>
       </div>
-      <div class="hud-desc" style="margin-top:8px;">Find your Certificate ID in the <a href="https://app.sentinelauthority.org" style="color:rgba(88,80,150,0.70);">applicant portal</a> or approval email.</div>
+      <div class="hud-desc" style="margin-top:8px;">Find your Certificate ID in the <a href="https://app.sentinelauthority.org" style="color:rgba(74,61,117,1.00);">applicant portal</a> or approval email.</div>
     </div>
 
     <div id="result"></div>
@@ -250,7 +400,7 @@
       </div>
       <div class="hud-row" style="display:flex;align-items:flex-start;gap:12px;">
         <span class="hud-num" style="margin-top:2px;">03</span>
-        <span class="hud-dot" style="width:6px;height:6px;border-radius:50%;background:rgba(88,80,150,0.35);margin-top:5px;flex-shrink:0;"></span>
+        <span class="hud-dot" style="width:6px;height:6px;border-radius:50%;background:rgba(74,61,117,0.35);margin-top:5px;flex-shrink:0;"></span>
         <div><div class="hud-title">Sealed Record</div><div class="hud-desc">Cryptographic hash-chain telemetry. Tamper-evident. Auditor-ready.</div></div>
       </div>
     </div>
@@ -258,7 +408,7 @@
 
   <footer>
     <div class="footer-inner">
-      <div>&#169; <span id="year"></span> SENTINEL AUTHORITY</div>
+      <div>&#169; <span id="year"></span> SENTINEL AUTHORITY</div><div style="margin-top:8px;font-size:9px;letter-spacing:1px;"><a href="privacy.html" style="color:inherit;text-decoration:none;">Privacy Notice</a> · <a href="terms.html" style="color:inherit;text-decoration:none;">Terms of Use</a></div>
     </div>
   </footer>
 
@@ -303,5 +453,15 @@
       }
     }
   </script>
+<script>
+(function(){
+  /* Green status dot on brand */
+  var b=document.querySelector(".brand");
+  if(b){var d=document.createElement("span");d.style.cssText="display:inline-block;width:4px;height:4px;border-radius:50%;background:rgba(22,135,62,1.00);margin-left:8px;vertical-align:middle;";b.appendChild(d);}
+  /* Reveal observer */
+  var obs=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add("active");obs.unobserve(e.target);}});},{threshold:0.1});
+  document.querySelectorAll(".reveal,.section-head").forEach(function(el){obs.observe(el);});
+})();
+</script>
 </body>
 </html>

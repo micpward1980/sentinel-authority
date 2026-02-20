@@ -135,7 +135,7 @@ function VerifyPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden" style={{background: '#ffffff'}}>
+    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden" style={{background: styles.bgDeep}}>
       <Link to="/dashboard" style={{
         position: 'fixed', top: '24px', right: '32px', zIndex: 20,
         color: styles.textTertiary, fontFamily: styles.mono,
@@ -185,7 +185,7 @@ function VerifyPage() {
         .verify-input { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .verify-input:focus { border-color: rgba(74,61,117,0.6) !important; box-shadow: 0 0 0 3px rgba(74,61,117,0.1), 0 4px 20px transparent; transform: translateY(-1px); }
         .verify-btn { position: relative; overflow: hidden; transition: all 0.3s ease; }
-        .verify-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(74,61,117,0.5); }
+        .verify-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(74,61,117,0.15); }
         .verify-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
       `}</style>
 
@@ -195,18 +195,18 @@ function VerifyPage() {
           <div className="relative flex justify-center mb-6" style={{height: '100px', alignItems: 'center'}}>
             <div style={{
               position: 'absolute', width: '80px', height: '80px',
-              border: '1px solid rgba(0,0,0,0.05)', borderRadius: '50%',
+              border: '1px solid ' + styles.borderSubtle, borderRadius: '50%',
               animation: 'pulse-ring 3s ease-out infinite'
             }} />
             <div style={{
               position: 'absolute', width: '100px', height: '100px',
-              border: '1px solid rgba(0,0,0,0.05)', borderRadius: '50%',
+              border: '1px solid ' + styles.borderSubtle, borderRadius: '50%',
               animation: 'pulse-ring 3s ease-out infinite 0.5s'
             }} />
             <div style={{
               width: '56px', height: '56px',
               background: 'transparent',
-              border: '2px solid #a896d6', display: 'flex', alignItems: 'center', justifyContent: 'center'
+              border: '2px solid #6b5a9e', display: 'flex', alignItems: 'center', justifyContent: 'center'
               }}>
               <div style={{
                 width: '18px', height: '18px',
@@ -248,10 +248,10 @@ function VerifyPage() {
         
         {/* Verification card */}
         <div style={{
-          background: 'transparent', backdropFilter: 'blur(20px)',
-          border: '1px solid rgba(0,0,0,0.05)', padding: 'clamp(16px, 4vw, 40px)',
+          background: styles.cardSurface, backdropFilter: styles.frostModal,
+          border: '1px solid ' + styles.borderSubtle, padding: 'clamp(16px, 4vw, 40px)',
           transition: 'all 0.3s ease', minHeight: '280px'
-        }}>
+        , borderRadius: 8}}>
 {mode === "verify" && (
           <form onSubmit={handleVerify} className="space-y-6">
             <div>
@@ -267,10 +267,10 @@ function VerifyPage() {
                 onChange={(e) => { setCertNumber(e.target.value.toUpperCase()); setError(""); setResult(null); }}
                 className="verify-input w-full px-5 py-4 outline-none"
                 style={{
-                  background: 'transparent', border: '1px solid rgba(0,0,0,0.05)',
+                  background: styles.cardSurface, border: '1px solid ' + styles.borderSubtle,
                   color: styles.textPrimary, fontFamily: styles.mono,
                   fontSize: '18px', textAlign: 'center', letterSpacing: '2px'
-                }}
+                , borderRadius: 8}}
               />
             </div>
             <button 
@@ -304,7 +304,7 @@ function VerifyPage() {
                 {label: 'Last 30 Days', value: registryStats.issued_last_30_days, color: styles.accentAmber},
               ].map(s => (
                 <div key={s.label} style={{textAlign: 'center'}}>
-                  <div style={{fontFamily: styles.mono, fontSize: '24px', fontWeight: 600, color: s.color}}>{s.value}</div>
+                  <div style={{fontFamily: styles.mono, fontSize: '24px', fontWeight: 500, color: s.color}}>{s.value}</div>
                   <div style={{fontFamily: styles.mono, fontSize: '9px', color: styles.textTertiary, letterSpacing: '1px', textTransform: 'uppercase', marginTop: '2px'}}>{s.label}</div>
                 </div>
               ))}
@@ -324,10 +324,10 @@ function VerifyPage() {
                 onChange={(e) => { setSearchQuery(e.target.value); setError(""); }}
                 className="verify-input w-full px-5 py-4 outline-none"
                 style={{
-                  background: 'transparent', border: '1px solid rgba(0,0,0,0.05)',
+                  background: styles.cardSurface, border: '1px solid ' + styles.borderSubtle,
                   color: styles.textPrimary, fontFamily: styles.mono,
                   fontSize: '18px', textAlign: 'center', letterSpacing: '2px'
-                }}
+                , borderRadius: 8}}
               />
             </div>
             {/* Status Filter */}
@@ -336,11 +336,11 @@ function VerifyPage() {
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
                 style={{
-                  background: 'transparent', border: '1px solid rgba(0,0,0,0.05)',
+                  background: styles.cardSurface, border: '1px solid ' + styles.borderSubtle,
                   color: styles.textPrimary, fontFamily: styles.mono,
                   fontSize: '11px', padding: '8px 16px', outline: 'none',
                   letterSpacing: '1px', textTransform: 'uppercase'
-                }}
+                , borderRadius: 8}}
               >
                 <option value="conformant">Conformant</option>
                 <option value="expired">Expired</option>
@@ -373,10 +373,10 @@ function VerifyPage() {
                   </p>
                   {searchResults.map((cert) => (
                     <div key={cert.certificate_number} onClick={() => {setCertNumber(cert.certificate_number); setMode("verify"); setTimeout(() => document.querySelector("form")?.requestSubmit(), 100);}} style={{
-                      background: 'transparent', border: "1px solid rgba(0,0,0,0.05)",
+                      background: styles.cardSurface, border: '1px solid ' + styles.borderSubtle,
                       padding: "16px", marginBottom: "8px", cursor: "pointer",
                       transition: "all 0.2s"
-                    }}>
+                    , borderRadius: 8}}>
                       <div style={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
                         <div>
                           <div style={{color: styles.textPrimary, fontWeight: 500}}>{cert.organization_name}</div>
@@ -395,8 +395,8 @@ function VerifyPage() {
           <div style={{minHeight: '80px', marginTop: '16px'}}>
           {error && (
             <div className="p-5 text-center" style={{
-              background: 'transparent', border: '1px solid rgba(0,0,0,0.05)'
-            }}>
+              background: styles.cardSurface, border: '1px solid ' + styles.borderSubtle
+            , borderRadius: 8}}>
               <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', marginBottom: '8px'}}>
                 <AlertTriangle fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{color: styles.accentRed}} />
                 <span style={{color: styles.accentRed, fontFamily: styles.mono, fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase'}}>Not Found</span>
@@ -407,8 +407,8 @@ function VerifyPage() {
 
           {result && (result.status === 'NOT_FOUND' || result.state === 'NOT_FOUND') && (
             <div className="mt-6 p-5 text-center" style={{
-              background: 'transparent', border: '1px solid rgba(0,0,0,0.05)'
-            }}>
+              background: styles.cardSurface, border: '1px solid ' + styles.borderSubtle
+            , borderRadius: 8}}>
               <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', marginBottom: '8px'}}>
                 <AlertTriangle fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{color: styles.accentRed}} />
                 <span style={{color: styles.accentRed, fontFamily: styles.mono, fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase'}}>Certificate Not Found</span>
@@ -427,7 +427,7 @@ function VerifyPage() {
               EXPIRED: { color: styles.accentRed, bg: 'rgba(180,52,52,0.08)', border: 'rgba(180,52,52,0.25)', headerBg: 'rgba(180,52,52,0.06)', icon: 'Expired', label: 'EXPIRED' }
             };
             const cfg = statusConfig[status] || statusConfig.CONFORMANT;
-            const rowStyle = {display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', paddingBottom: '12px', borderBottom: '1px solid rgba(0,0,0,0.05)'};
+            const rowStyle = {display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', paddingBottom: '12px', borderBottom: '1px solid ' + styles.borderSubtle};
             const labelSt = {color: styles.textTertiary, fontSize: '12px', fontFamily: styles.mono, textTransform: 'uppercase', letterSpacing: '1px'};
             const valSt = {color: styles.textPrimary, fontSize: '14px'};
             
@@ -449,7 +449,7 @@ function VerifyPage() {
               
               {/* Status Message */}
               {result.message && (
-                <div style={{padding: '12px 20px', background: 'transparent', borderBottom: '1px solid rgba(0,0,0,0.05)'}}>
+                <div style={{padding: '12px 20px', background: styles.cardSurface, borderBottom: '1px solid ' + styles.borderSubtle, borderRadius: 8}}>
                   <p style={{margin: 0, color: cfg.color, fontSize: '13px'}}>{result.message}</p>
                 </div>
               )}
@@ -471,11 +471,11 @@ function VerifyPage() {
                   </div>
                   <div style={rowStyle}>
                     <span style={labelSt}>Issued</span>
-                    <span style={valSt}>{result.issued_at ? new Date(result.issued_at).toLocaleDateString() : 'N/A'}</span>
+                    <span style={valSt}>{result.issued_at ? new Date(result.issued_at).toISOString().substring(0,10) + ' UTC' : 'N/A'}</span>
                   </div>
                   <div style={rowStyle}>
                     <span style={labelSt}>Expires</span>
-                    <span style={{...valSt, color: status === 'EXPIRED' ? styles.accentRed : styles.textPrimary}}>{result.expires_at ? new Date(result.expires_at).toLocaleDateString() : 'N/A'}</span>
+                    <span style={{...valSt, color: status === 'EXPIRED' ? styles.accentRed : styles.textPrimary}}>{result.expires_at ? new Date(result.expires_at).toISOString().substring(0,10) + ' UTC' : 'N/A'}</span>
                   </div>
                   {result.convergence_score != null && (
                     <div style={rowStyle}>
@@ -484,7 +484,7 @@ function VerifyPage() {
                     </div>
                   )}
                   {result.evidence_hash && (
-                    <div style={{paddingBottom: '12px', borderBottom: '1px solid rgba(0,0,0,0.05)'}}>
+                    <div style={{paddingBottom: '12px', borderBottom: '1px solid ' + styles.borderSubtle, borderRadius: 8}}>
                       <span style={labelSt}>Evidence Hash</span>
                       <div style={{fontFamily: styles.mono, fontSize: '11px', color: styles.textTertiary, marginTop: '6px', wordBreak: 'break-all', lineHeight: '1.5'}}>{result.evidence_hash}</div>
                     </div>
@@ -494,32 +494,32 @@ function VerifyPage() {
                 {/* Action Buttons */}
                 <div style={{display: 'flex', gap: '8px', marginTop: '20px', flexWrap: 'wrap'}}>
                   <button onClick={copyVerificationUrl} style={{
-                    padding: '8px 16px', background: 'transparent', border: '1px solid rgba(0,0,0,0.09)',
+                    padding: '8px 16px', background: styles.cardSurface, border: '1px solid ' + styles.borderGlass,
                     color: styles.textSecondary, cursor: 'pointer',
                     fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase',
                     display: 'flex', alignItems: 'center', gap: '6px'
-                  }}>
+                  , borderRadius: 8}}>
                     {copied ? '✓ Copied!' : '⎘ Share Link'}
                   </button>
                   <button onClick={() => setShowQR(!showQR)} style={{
-                    padding: '8px 16px', background: showQR ? 'rgba(74,61,117,0.25)' : 'rgba(0,0,0,0.025)', border: showQR ? '1px solid rgba(74,61,117,0.4)' : '1px solid rgba(0,0,0,0.09)',
+                    padding: '8px 16px', background: showQR ? 'rgba(74,61,117,0.25)' : 'rgba(0,0,0,0.025)', border: showQR ? '1px solid rgba(74,61,117,0.4)' : '1px solid ' + styles.borderGlass,
                     color: showQR ? styles.purpleBright : styles.textSecondary, cursor: 'pointer',
                     fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase',
                     display: 'flex', alignItems: 'center', gap: '6px'
-                  }}>
+                  , borderRadius: 8}}>
                     {showQR ? '▾ Hide QR' : '◱ QR Code'}
                   </button>
                   {isValid && (
                     <a 
                       href={`${API_BASE}/api/certificates/${certNumber}/pdf`}
                       target="_blank"
-                      rel="noopener noreferrer"
+                      rel="noreferrer noopener"
                       style={{
-                        padding: '8px 16px', background: 'transparent', border: '1px solid rgba(0,0,0,0.05)',
+                        padding: '8px 16px', background: styles.cardSurface, border: '1px solid ' + styles.borderSubtle,
                         color: styles.accentGreen, cursor: 'pointer',
                         fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase',
                         display: 'flex', alignItems: 'center', gap: '6px', textDecoration: 'none'
-                      }}
+                      , borderRadius: 8}}
                     >
                       <Download size={12} /> Certificate PDF
                     </a>
@@ -538,7 +538,7 @@ function VerifyPage() {
                 
                 {/* QR Code Panel */}
                 {showQR && qrDataUrl && (
-                  <div style={{marginTop: '16px', padding: '20px', background: 'transparent', border: '1px solid rgba(0,0,0,0.05)', textAlign: 'center'}}>
+                  <div style={{marginTop: '16px', padding: '20px', background: styles.cardSurface, border: '1px solid ' + styles.borderSubtle, textAlign: 'center', borderRadius: 8}}>
                     <div style={{fontFamily: styles.mono, fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Verification QR Code</div>
                     <div style={{display: 'inline-block', padding: '12px', background: '#fff' }}>
                       <img src={qrDataUrl} alt="Verification QR Code" style={{width: '200px', height: '200px', display: 'block'}} />
@@ -559,7 +559,7 @@ function VerifyPage() {
 
                 {/* Evidence Panel */}
                 {showEvidence && evidence && (
-                  <div style={{marginTop: '16px', padding: '16px', background: 'transparent', border: '1px solid rgba(0,0,0,0.05)'}}>
+                  <div style={{marginTop: '16px', padding: '16px', background: styles.cardSurface, border: '1px solid ' + styles.borderSubtle, borderRadius: 8}}>
                     <div style={{fontFamily: styles.mono, fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '12px'}}>Evidence Chain</div>
                     <div style={{display: 'grid', gap: '10px'}}>
                       <div>

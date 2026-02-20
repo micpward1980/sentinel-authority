@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Activity, AlertTriangle, Download, RefreshCw } from 'lucide-react';
 import { api } from '../config/api';
 import { useToast } from '../context/ToastContext';
@@ -8,13 +9,11 @@ import { useAuth } from '../context/AuthContext';
 import Panel from '../components/Panel';
 
 function MonitoringPage() {
-  const [overview, setOverview] = useState(null);
-  const [alerts, setAlerts] = useState([]);
   const [selectedSession, setSelectedSession] = useState(null);
   const [timeline, setTimeline] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [autoRefresh, setAutoRefresh] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const qc = useQueryClient();
   const [customerFilter, setCustomerFilter] = useState("");
   const [onlineOnly, setOnlineOnly] = useState(false);
   const [hideEnded, setHideEnded] = useState(true);
@@ -22,28 +21,29 @@ function MonitoringPage() {
   const toast = useToast();
   const confirm = useConfirm();
 
-  const fetchData = async () => {
-    try {
-      const [overviewRes, alertsRes] = await Promise.all([
-        api.get('/api/envelo/monitoring/overview'),
-        api.get('/api/envelo/monitoring/alerts')
-      ]);
-      setOverview(overviewRes.data);
-      setAlerts(alertsRes.data.alerts || []);
-    } catch (err) {
-      console.error('Failed to fetch monitoring data:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { data: overviewData, isLoading: loading, refetch: refetchOverview } = useQuery({
+    queryKey: ['monitoring-overview'],
+    queryFn: () => api.get('/api/envelo/monitoring/overview').then(r => r.data),
+    refetchInterval: autoRefresh ? 10000 : false,
+  });
 
-  useEffect(() => {
-    fetchData();
-    if (autoRefresh) {
-      const interval = setInterval(fetchData, 10000); // Refresh every 10 seconds
-      return () => clearInterval(interval);
-    }
-  }, [autoRefresh]);
+  const { data: alertsData } = useQuery({
+    queryKey: ['monitoring-alerts'],
+    queryFn: () => api.get('/api/envelo/monitoring/alerts').then(r => r.data),
+    refetchInterval: autoRefresh ? 10000 : false,
+  });
+
+  const overview = overviewData ?? null;
+  const alerts = alertsData?.alerts ?? [];
+
+  const fetchData = useCallback(async () => {
+    setRefreshing(true);
+    await Promise.all([
+      qc.invalidateQueries({ queryKey: ['monitoring-overview'] }),
+      qc.invalidateQueries({ queryKey: ['monitoring-alerts'] }),
+    ]);
+    setTimeout(() => setRefreshing(false), 600);
+  }, [qc]);
 
   const fetchTimeline = async (sessionId) => {
     try {
@@ -141,7 +141,7 @@ function MonitoringPage() {
             Auto-refresh
           </label>
           <button 
-            onClick={async () => { setRefreshing(true); await fetchData(); setTimeout(() => setRefreshing(false), 600); }}
+            onClick={fetchData}
             style={{
               background: styles.bgPanel, border: `1px solid ${styles.borderGlass}`,
               padding: '8px 16px', color: styles.textPrimary,
@@ -168,10 +168,10 @@ function MonitoringPage() {
       {alerts.length > 0 && (
         <div style={{
           background: 'rgba(214, 92, 92, 0.1)',
-          border: '1px solid rgba(0,0,0,.09)',
+          border: '1px solid ' + styles.borderGlass,
           padding: '16px',
           marginBottom: '24px'
-        }}>
+        , borderRadius: 8}}>
           <div style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px'}}>
             <AlertTriangle fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} size={18} style={{color: styles.accentRed}} />
             <span style={{fontWeight: 500, color: styles.accentRed}}>{alerts.length} Active Alert{alerts.length > 1 ? 's' : ''}</span>
@@ -208,7 +208,7 @@ function MonitoringPage() {
         const offlineCount = sessions.filter(s => !s.is_online && s.status !== 'ended').length;
         const totalFleet = onlineCount + offlineCount;
         const healthPct = totalFleet > 0 ? (onlineCount / totalFleet * 100) : 0;
-        const cardStyle = {background: 'transparent', border: '1px solid rgba(0,0,0,0.05)', padding: '20px'};
+        const cardStyle = {background: styles.cardSurface, border: '1px solid ' + styles.borderSubtle, padding: '20px'};
         const labelStyle = {fontSize: '10px', fontFamily: styles.mono, textTransform: 'uppercase', letterSpacing: '2px', color: styles.textTertiary, marginBottom: '8px'};
         const subStyle = {fontSize: '12px', color: styles.textSecondary, marginTop: '4px'};
         return (
@@ -277,7 +277,7 @@ function MonitoringPage() {
       })()}
 
       {/* Sessions Table */}
-      <div style={{background: 'transparent', border: '1px solid rgba(0,0,0,0.05)', overflow: 'hidden'}}>
+      <div style={{background: styles.cardSurface, border: '1px solid ' + styles.borderSubtle, overflow: 'hidden', borderRadius: 8}}>
         <div style={{padding: '16px 20px', borderBottom: `1px solid ${styles.borderGlass}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px'}}>
           <h2 style={{margin: 0, fontSize: '14px', fontFamily: styles.mono, textTransform: 'uppercase', letterSpacing: '2px', color: styles.textTertiary}}>{user?.role === 'admin' ? 'Agent Sessions' : 'System Monitoring'}</h2>
           <div style={{display: 'flex', gap: '12px', alignItems: 'center'}}>
@@ -340,7 +340,7 @@ function MonitoringPage() {
                           <div style={{
                             width: '10px', height: '10px', borderRadius: '50%',
                             background: session.is_online ? styles.accentGreen : session.status === 'ended' ? styles.textTertiary : styles.accentRed,
-                            boxShadow: session.is_online ? `0 0 8px ${styles.accentGreen}` : 'none'
+                            boxShadow: 'none'
                           }} />
                           <span style={{
                             fontSize: '11px', fontFamily: styles.mono,
@@ -376,7 +376,7 @@ function MonitoringPage() {
                         </span>
                       </td>
                       <td style={{padding: '14px 16px', color: styles.textTertiary, fontSize: '12px'}}>
-                        {session.last_activity ? new Date(session.last_activity).toLocaleString() : '-'}
+                        {session.last_activity ? new Date(session.last_activity).toISOString().replace('T',' ').substring(0,16)+'Z' : '-'}
                       </td>
                     </tr>
                   );
@@ -422,10 +422,10 @@ function MonitoringPage() {
                     try {
                       await api.post('/api/envelo/sessions/' + selectedSession.session_id + '/end', { ended_at: new Date().toISOString(), final_stats: { pass_count: selectedSession.pass_count, block_count: selectedSession.block_count } });
                       setSelectedSession(null);
-                      fetchData();
+                      qc.invalidateQueries({ queryKey: ['monitoring-overview'] });
                     } catch (e) { toast.show('Failed: ' + e.message, 'error'); }
                   }}
-                  style={{padding: '8px 16px', background: 'transparent', border: '1px solid rgba(0,0,0,0.05)', color: styles.accentRed, cursor: 'pointer', fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase'}}
+                  style={{padding: '8px 16px', background: styles.cardSurface, border: '1px solid ' + styles.borderSubtle, color: styles.accentRed, cursor: 'pointer', fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', borderRadius: 8}}
                 >
                   Force End Session
                 </button>
@@ -436,7 +436,7 @@ function MonitoringPage() {
             <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '16px', marginBottom: '24px'}}>
               <div style={{background: 'transparent', padding: '14px'}}>
                 <div style={{fontSize: '10px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '6px'}}>Started</div>
-                <div style={{color: styles.textPrimary, fontSize: '13px'}}>{selectedSession.started_at ? new Date(selectedSession.started_at).toLocaleString() : '-'}</div>
+                <div style={{color: styles.textPrimary, fontSize: '13px'}}>{selectedSession.started_at ? new Date(selectedSession.started_at).toISOString().replace('T',' ').substring(0,16)+'Z' : '-'}</div>
               </div>
               <div style={{background: 'transparent', padding: '14px'}}>
                 <div style={{fontSize: '10px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '6px'}}>Uptime</div>
@@ -467,7 +467,7 @@ function MonitoringPage() {
               <div style={{marginBottom: '24px'}}>
                 <div style={{fontSize: '10px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px'}}>Enforcement Distribution</div>
                 <div style={{height: '12px', background: 'transparent', overflow: 'hidden', display: 'flex'}}>
-                  <div style={{width: pp + '%', background: 'linear-gradient(90deg, ' + styles.accentGreen + ', #4BC87A)', transition: 'width 0.5s'}} />
+                  <div style={{width: pp + '%', background: styles.accentGreen, transition: 'width 0.5s'}} />
                   <div style={{width: (100 - pp) + '%', background: styles.accentRed, transition: 'width 0.5s'}} />
                 </div>
                 <div style={{display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px', marginTop: '4px', fontSize: '11px'}}>
@@ -497,7 +497,7 @@ function MonitoringPage() {
                     link.click();
                   } catch (e) { toast.show('Failed to download telemetry', 'error'); }
                 }}
-                style={{padding: '8px 16px', background: 'transparent', border: '1px solid rgba(0,0,0,0.05)', color: styles.purpleBright, cursor: 'pointer', fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px'}}
+                style={{padding: '8px 16px', background: styles.cardSurface, border: '1px solid ' + styles.borderSubtle, color: styles.purpleBright, cursor: 'pointer', fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px', borderRadius: 8}}
               >
                 ↓ Telemetry CSV
               </button>
@@ -518,7 +518,7 @@ function MonitoringPage() {
                     link.click();
                   } catch (e) { toast.show('Failed to download violations', 'error'); }
                 }}
-                style={{padding: '8px 16px', background: 'transparent', border: '1px solid rgba(0,0,0,0.05)', color: styles.accentRed, cursor: 'pointer', fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px'}}
+                style={{padding: '8px 16px', background: styles.cardSurface, border: '1px solid ' + styles.borderSubtle, color: styles.accentRed, cursor: 'pointer', fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px', borderRadius: 8}}
               >
                 ↓ Violations CSV
               </button>
@@ -535,7 +535,7 @@ function MonitoringPage() {
                     link.click();
                   } catch (e) { toast.show('Failed to download report', 'error'); }
                 }}
-                style={{padding: '8px 16px', background: 'transparent', border: '1px solid rgba(0,0,0,.09)', color: styles.accentGreen, cursor: 'pointer', fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px'}}
+                style={{padding: '8px 16px', background: styles.cardSurface, border: '1px solid ' + styles.borderGlass, color: styles.accentGreen, cursor: 'pointer', fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px', borderRadius: 8}}
               >
                 ↓ CAT-72 Report PDF
               </button>
@@ -561,7 +561,7 @@ function MonitoringPage() {
                           background: passRatio >= 0.99 ? styles.accentGreen : passRatio >= 0.95 ? styles.accentAmber : styles.accentRed,
                           opacity: 0.8
                         }}
-                        title={`${new Date(point.hour).toLocaleTimeString()}: ${point.total} actions (${point.pass} pass, ${point.block} block)`}
+                        title={`${new Date(point.hour).toISOString().substring(11,16)+'Z'}: ${point.total} actions (${point.pass} pass, ${point.block} block)`}
                       />
                     );
                   })}

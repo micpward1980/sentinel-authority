@@ -1,7 +1,7 @@
 import React from 'react';
 
 const shimmer = {
-  background: 'linear-gradient(90deg, rgba(255,255,255,0.02) 25%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.02) 75%)',
+  background: 'linear-gradient(90deg, rgba(0,0,0,0.04) 25%, rgba(0,0,0,0.08) 50%, rgba(0,0,0,0.04) 75%)',
   backgroundSize: '200% 100%',
   animation: 'sa-shimmer 1.5s ease infinite',
   borderRadius: 0,
@@ -13,7 +13,7 @@ export function SkeletonLine({ width = '100%', height = 12, style = {} }) {
 
 export function SkeletonCard({ style = {} }) {
   return (
-    <div style={{ padding: '20px 16px', borderBottom: '1px solid rgba(255,255,255,0.02)', ...style }}>
+    <div style={{ padding: '20px 16px', borderBottom: '1px solid rgba(0,0,0,0.06)', ...style }}>
       <div style={{ ...shimmer, width: 60, height: 8, marginBottom: 12 }} />
       <div style={{ ...shimmer, width: 80, height: 24, marginBottom: 8 }} />
       <div style={{ ...shimmer, width: '70%', height: 8 }} />
@@ -24,13 +24,13 @@ export function SkeletonCard({ style = {} }) {
 export function SkeletonTable({ rows = 5 }) {
   return (
     <div style={{ padding: '16px 0' }}>
-      <div style={{ display: 'flex', gap: 16, marginBottom: 12, padding: '0 0 10px', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+      <div style={{ display: 'flex', gap: 16, marginBottom: 12, padding: '0 0 10px', borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
         {[80, 120, 100, 60].map((w, i) => (
           <div key={i} style={{ ...shimmer, width: w, height: 8 }} />
         ))}
       </div>
       {Array.from({ length: rows }).map((_, i) => (
-        <div key={i} style={{ display: 'flex', gap: 16, padding: '12px 0', borderBottom: '1px solid rgba(255,255,255,0.02)' }}>
+        <div key={i} style={{ display: 'flex', gap: 16, padding: '12px 0', borderBottom: '1px solid rgba(0,0,0,0.04)' }}>
           {[80, 120, 100, 60].map((w, j) => (
             <div key={j} style={{ ...shimmer, width: w + Math.random() * 40, height: 10 }} />
           ))}
@@ -54,4 +54,4 @@ export function DashboardSkeleton() {
   );
 }
 
-export default { SkeletonLine, SkeletonCard, SkeletonTable, DashboardSkeleton };
+export default DashboardSkeleton;

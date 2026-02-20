@@ -1,0 +1,380 @@
+/* ═══════════════════════════════════════════════════════════
+   SENTINEL AUTHORITY DASHBOARD
+   Pixel-matched to sentinelauthority.org
+   ═══════════════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
+
+:root {
+  color-scheme: light;
+  --purple-primary: #4a3d75;
+  --purple-bright: #6b5a9e;
+  --purple-accent: #3d3262;
+  --purple-glow: transparent;
+  --bg-deep: #f5f5f7;
+  --bg-panel: rgba(0,0,0,.025);
+  --accent-green: #16873e;
+  --accent-amber: #9e6e12;
+  --accent-red: #b43434;
+  --text-primary: rgba(15,18,30,.94);
+  --text-secondary: rgba(15,18,30,.64);
+  --text-tertiary: rgba(15,18,30,.44);
+  --text-dim: rgba(15,18,30,.30);
+  --border-glass: rgba(0,0,0,.09);
+  --border-subtle: rgba(0,0,0,.05);
+  --serif: Georgia, 'Source Serif 4', serif;
+  --mono: Consolas, 'IBM Plex Mono', monospace;
+  --sans: Calibri, 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out: cubic-bezier(0.33, 1, 0.68, 1);
+  --space-1: 10px;
+  --space-2: 20px;
+  --space-3: 20px;
+  --space-4: 28px;
+  --space-5: 35px;
+  --space-6: 40px;
+  --space-8: 50px;
+  --space-10: 60px;
+  --space-12: 120px;
+  --max: 1200px;
+  --nav-height: 72px;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; background: var(--bg-deep); }
+
+body {
+  margin: 0;
+  font-family: var(--sans) !important;
+  background:
+    radial-gradient(1200px 700px at 15% 10%, rgba(74,61,117,.08), transparent 55%),
+    var(--bg-deep) !important;
+  color: rgba(15,18,30,0.94) !important;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Gradient mesh for frost depth — exact from website apple-glass */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: 
+    radial-gradient(ellipse 1000px 700px at 10% 15%, rgba(88,62,165,0.06), transparent 55%),
+    radial-gradient(ellipse 800px 600px at 85% 75%, rgba(16,185,80,0.04), transparent 50%),
+    radial-gradient(ellipse 1200px 500px at 50% 45%, rgba(88,62,165,0.03), transparent 45%);
+  pointer-events: none;
+}
+
+/* Noise/particles/shimmer hidden — exact from website sa-override */
+.sa-noise, .sa-particles, .sa-vignette, .hud-shimmer { display: none !important; }
+
+::selection { background: rgba(0,0,0,0.03); color: #111318; }
+a { color: inherit; text-decoration: none; }
+a:hover { text-decoration: none; }
+a:focus-visible, button:focus-visible {
+  outline: 2px solid rgba(74,61,117,1);
+  outline-offset: 3px;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   GLOBAL RESETS
+   ═══════════════════════════════════════════════════════════ */
+/* Border-radius controlled per-component, not globally */
+
+/* ═══════════════════════════════════════════════════════════
+   GRID OVERLAY — matches main site (opacity:0)
+   ═══════════════════════════════════════════════════════════ */
+.sa-grid-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image:
+    linear-gradient(rgba(0,0,0,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,0,0,0.025) 1px, transparent 1px);
+  background-size: var(--space-12) var(--space-12);
+  opacity: 0;
+  mask-image: radial-gradient(ellipse at center, rgba(0,0,0,.9) 20%, transparent 70%);
+  -webkit-mask-image: radial-gradient(ellipse at center, rgba(0,0,0,.9) 20%, transparent 70%);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   NOISE TEXTURE — matches main site exactly
+   ═══════════════════════════════════════════════════════════ */
+.sa-noise {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 99990;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   TYPOGRAPHY — defaults only, NO !important (inline styles must win)
+   Website headings are all styled inline; CSS only sets fallback defaults
+   ═══════════════════════════════════════════════════════════ */
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+}
+p {
+  color: var(--text-secondary);
+  line-height: 1.85;
+  font-weight: 300;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   HUD UTILITY CLASSES — exact from website index.html L558-589
+   ═══════════════════════════════════════════════════════════ */
+.hud-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: rgba(15,18,30,0.48);
+  text-transform: uppercase;
+}
+.hud-title {
+  font-size: 15px;
+  color: rgba(15,18,30,0.94);
+  font-weight: 400;
+  margin: 2px 0;
+}
+.hud-desc {
+  font-size: 12.5px;
+  color: rgba(15,18,30,0.76);
+  line-height: 1.7;
+}
+.hud-num {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 1px;
+  color: rgba(74,61,117,1.00);
+  margin-right: 12px;
+}
+.hud-link {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: rgba(74,61,117,1.00);
+  text-decoration: none !important;
+  border-bottom: none !important;
+  padding-bottom: 2px;
+  transition: all 0.2s;
+  position: relative;
+}
+.hud-link:hover { color: rgba(74,61,117,1.00); }
+.hud-row {
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(0,0,0,0.03);
+  transition: background 0.3s ease;
+}
+.hud-row:last-child { border-bottom: none; }
+.hud-row:hover { background: rgba(0,0,0,0.03); }
+.hud-scanline { border-bottom: 1px solid rgba(0,0,0,0.06); }
+.hud-dot {
+  display: inline-block;
+  width: 4px;
+  height: 4px;
+  border-radius: 50% !important;
+  background: rgba(74,61,117,1.00);
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+.hud-dot-green { background: rgba(22,135,62,1.00); }
+.hud-dot-amber { background: rgba(158,110,18,1.00); }
+.hud-dot-red { background: rgba(180,52,52,1.00); }
+
+/* ═══════════════════════════════════════════════════════════
+   FORM ELEMENTS — consistent styling across all pages
+   ═══════════════════════════════════════════════════════════ */
+input, textarea, select {
+  font-family: var(--mono);
+  color: var(--text-primary);
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(74,61,117,0.60);
+  outline: none;
+  font-size: 15px;
+  letter-spacing: 2px;
+  padding: 14px 0;
+  transition: border-color 0.2s ease;
+}
+input:focus, textarea:focus, select:focus {
+  border-color: rgba(74,61,117,1.00);
+}
+input::placeholder, textarea::placeholder {
+  color: rgba(15,18,30,0.22);
+  letter-spacing: 1px;
+}
+select {
+  cursor: pointer;
+}
+/* Checkbox/radio accent */
+input[type="checkbox"], input[type="radio"] {
+  accent-color: var(--purple-primary);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   HUD FRAMES — frosted glass + bracket corners
+   Matches main site <style id="frosted-glass"> exactly
+   ═══════════════════════════════════════════════════════════ */
+.hud-frame {
+  position: relative;
+  overflow: visible;
+  background: rgba(255,255,255,0.40) !important;
+  backdrop-filter: blur(18px) saturate(1.2) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(1.2) !important;
+  border: 1px solid rgba(15,18,30,0.08);
+  border-radius: 16px !important;
+  box-shadow: 
+    0 1px 3px rgba(15,18,30,0.04),
+    0 8px 32px rgba(15,18,30,0.03);
+}
+
+/* Bracket corners — exact from website base + apple-stagger */
+.hud-frame::before, .hud-frame::after,
+.hud-frame > i::before, .hud-frame > i::after {
+  content: '';
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-style: solid;
+  border-color: rgba(15,18,30,0.10);
+  pointer-events: none;
+  transition: border-color 1.5s ease;
+  z-index: 2;
+}
+.hud-frame::before  { top: -1px; left: -1px;  border-width: 1px 0 0 1px; }
+.hud-frame::after   { top: -1px; right: -1px; border-width: 1px 1px 0 0; }
+.hud-frame > i {
+  position: absolute; inset: 0;
+  pointer-events: none; font-style: normal;
+}
+.hud-frame > i::before { bottom: -1px; left: -1px;  top: auto; border-width: 0 0 0.5px 0.5px; opacity: 0.5; }
+.hud-frame > i::after  { bottom: -1px; right: -1px; top: auto; border-width: 0 0.5px 0.5px 0; opacity: 0.5; }
+
+.hud-frame:hover::before, .hud-frame:hover::after,
+.hud-frame:hover > i::before, .hud-frame:hover > i::after {
+  border-color: rgba(0,0,0,0.20);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   TABLES — institutional flat
+   ═══════════════════════════════════════════════════════════ */
+table { width: 100%; border-collapse: collapse; }
+th {
+  font-family: var(--mono) !important;
+  font-size: 10px !important;
+  letter-spacing: 2px !important;
+  text-transform: uppercase !important;
+  color: var(--text-tertiary) !important;
+  text-align: left;
+  padding: 12px 16px !important;
+  border-bottom: 1px solid var(--border-glass) !important;
+  background: transparent !important;
+  font-weight: 500 !important;
+}
+td {
+  padding: 14px 16px !important;
+  border-bottom: 1px solid var(--border-subtle) !important;
+  color: var(--text-secondary) !important;
+  font-size: 14px !important;
+  background: transparent !important;
+}
+tr:hover td { background: rgba(0,0,0,.02) !important; }
+
+/* ═══════════════════════════════════════════════════════════
+   DARK BACKGROUND OVERRIDES (safety net)
+   ═══════════════════════════════════════════════════════════ */
+[style*="background: #2a2f3d"],
+[style*="background:#2a2f3d"],
+[style*="background: rgb(42, 47, 61"],
+[style*="background: #1a1f2e"],
+[style*="background:#1a1f2e"],
+[style*="background: #232838"],
+[style*="background:#232838"] {
+  background: transparent !important;
+}
+
+/* Status colors now handled by styles.js light tokens */
+
+/* ═══════════════════════════════════════════════════════════
+   TAILWIND DARK-CLASS OVERRIDES
+   ═══════════════════════════════════════════════════════════ */
+.bg-gray-800, .bg-gray-900, .bg-slate-800, .bg-slate-900,
+.bg-zinc-800, .bg-zinc-900 { background-color: transparent !important; }
+
+.border-gray-700, .border-gray-600, .border-slate-700, .border-slate-600 {
+  border-color: var(--border-glass) !important;
+}
+
+.text-white { color: rgba(15,18,30,0.94) !important; }
+.text-gray-300, .text-slate-300 { color: var(--text-secondary) !important; }
+.text-gray-400, .text-gray-500, .text-slate-400, .text-slate-500 {
+  color: var(--text-tertiary) !important;
+}
+
+/* Tailwind radius classes no longer overridden */
+
+.shadow, .shadow-lg, .shadow-xl, .shadow-md, .shadow-sm { box-shadow: none !important; }
+
+/* ═══════════════════════════════════════════════════════════
+   ANIMATIONS
+   ═══════════════════════════════════════════════════════════ */
+@keyframes sa-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes sa-fadeDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes sa-fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes sa-fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes eye-pulse {
+  0%, 100% { opacity: .75; transform: scale(.98); }
+  50% { opacity: 1; transform: scale(1.02); box-shadow: 0 0 10px rgba(74,61,117,.60); }
+}
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SCROLLBAR
+   ═══════════════════════════════════════════════════════════ */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(0,0,0,.12); }
+::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,.20); }
+
+/* ═══════════════════════════════════════════════════════════
+   REDUCED MOTION
+   ═══════════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media (max-width: 768px) {
+  :root { --space-10: 40px; --space-12: 60px; }
+}

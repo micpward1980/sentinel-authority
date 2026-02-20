@@ -474,7 +474,7 @@ function AgentSimulator({ apiKey }) {
             padding: '12px 24px',
             background: running ? 'rgba(0,0,0,0.15)' : styles.accentGreen,
             border: 'none',
-            color: running ? styles.textTertiary : '#000',
+            color: running ? styles.textTertiary : styles.textPrimary,
             fontFamily: styles.mono,
             fontSize: '12px',
             fontWeight: 400,
@@ -491,11 +491,11 @@ function AgentSimulator({ apiKey }) {
       
       {stats.pass + stats.block > 0 && (
         <div style={{display: 'flex', gap: '24px', marginBottom: '16px'}}>
-          <div style={{padding: '12px 20px', background: 'transparent', border: '1px solid rgba(0,0,0,0.05)' }}>
+          <div style={{padding: '12px 20px', background: styles.cardSurface, border: '1px solid ' + styles.borderSubtle , borderRadius: 8}}>
             <div style={{fontSize: 'clamp(18px, 4vw, 24px)', fontWeight: 500, color: styles.accentGreen}}>{stats.pass}</div>
             <div style={{fontSize: '11px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px'}}>Passed</div>
           </div>
-          <div style={{padding: '12px 20px', background: 'transparent', border: '1px solid rgba(0,0,0,0.05)' }}>
+          <div style={{padding: '12px 20px', background: styles.cardSurface, border: '1px solid ' + styles.borderSubtle , borderRadius: 8}}>
             <div style={{fontSize: 'clamp(18px, 4vw, 24px)', fontWeight: 500, color: styles.accentRed}}>{stats.block}</div>
             <div style={{fontSize: '11px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px'}}>Blocked</div>
           </div>
@@ -504,7 +504,7 @@ function AgentSimulator({ apiKey }) {
       
       {logs.length > 0 && (
         <div style={{
-          background: 'transparent',
+          background: styles.cardSurface,
           border: `1px solid ${styles.borderGlass}`,
           padding: '16px',
           maxHeight: '300px',
@@ -555,9 +555,9 @@ function SessionReport({ session }) {
         </div>
       </div>
       <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px'}}>
-        <div><div style={{fontSize: '11px', color: styles.textTertiary, marginBottom: '4px'}}>SESSION ID</div><div style={{fontFamily: styles.mono, color: '#ccc'}}>{session.session_id}</div></div>
-        <div><div style={{fontSize: '11px', color: styles.textTertiary, marginBottom: '4px'}}>CERTIFICATE</div><div style={{color: '#ccc'}}>{session.certificate_id || 'N/A'}</div></div>
-        <div><div style={{fontSize: '11px', color: styles.textTertiary, marginBottom: '4px'}}>STARTED</div><div style={{color: '#ccc'}}>{session.started_at ? new Date(session.started_at).toLocaleString() : 'N/A'}</div></div>
+        <div><div style={{fontSize: '11px', color: styles.textTertiary, marginBottom: '4px'}}>SESSION ID</div><div style={{fontFamily: styles.mono, color: styles.textSecondary}}>{session.session_id}</div></div>
+        <div><div style={{fontSize: '11px', color: styles.textTertiary, marginBottom: '4px'}}>CERTIFICATE</div><div style={{color: styles.textSecondary}}>{session.certificate_id || 'N/A'}</div></div>
+        <div><div style={{fontSize: '11px', color: styles.textTertiary, marginBottom: '4px'}}>STARTED</div><div style={{color: styles.textSecondary}}>{session.started_at ? new Date(session.started_at).toLocaleString() : 'N/A'}</div></div>
         <div><div style={{fontSize: '11px', color: styles.textTertiary, marginBottom: '4px'}}>STATUS</div><span style={{padding: '4px 12px', fontSize: '12px', background: session.status === 'active' ? 'rgba(22,135,62,0.10)' : 'rgba(0,0,0,0.04)', color: session.status === 'active' ? styles.accentGreen : styles.textTertiary}}>{session.status?.toUpperCase()}</span></div>
       </div>
     </div>
@@ -581,8 +581,8 @@ function TelemetryLog({ sessionId }) {
   return (
     <div style={{maxHeight: '300px', overflowY: 'auto'}}>
       <table style={{width: '100%', borderCollapse: 'collapse', fontSize: '12px'}}>
-        <thead><tr style={{borderBottom: '1px solid rgba(0,0,0,0.09)'}}><th style={{padding: '8px', textAlign: 'left', color: styles.textTertiary}}>Time</th><th style={{padding: '8px', textAlign: 'left', color: styles.textTertiary}}>Action</th><th style={{padding: '8px', textAlign: 'left', color: styles.textTertiary}}>Result</th><th style={{padding: '8px', textAlign: 'left', color: styles.textTertiary}}>Params</th></tr></thead>
-        <tbody>{records.map((r, i) => (<tr key={i} style={{borderBottom: '1px solid rgba(0,0,0,0.05)'}}><td style={{padding: '8px', fontFamily: styles.mono, fontSize: '11px', color: styles.textTertiary}}>{r.timestamp ? new Date(r.timestamp).toLocaleTimeString() : '-'}</td><td style={{padding: '8px', color: styles.textPrimary}}>{r.action_type}</td><td style={{padding: '8px'}}><span style={{padding: '2px 8px', fontSize: '10px', fontWeight: 400, background: r.result === 'PASS' ? 'rgba(22,135,62,0.10)' : 'rgba(180,52,52,0.10)', color: r.result === 'PASS' ? styles.accentGreen : styles.accentRed}}>{r.result}</span></td><td style={{padding: '8px', color: styles.textTertiary, fontFamily: styles.mono, fontSize: '10px'}}>{JSON.stringify(r.parameters || {})}</td></tr>))}</tbody>
+        <thead><tr style={{borderBottom: '1px solid ' + styles.borderGlass, borderRadius: 8}}><th style={{padding: '8px', textAlign: 'left', color: styles.textTertiary}}>Time</th><th style={{padding: '8px', textAlign: 'left', color: styles.textTertiary}}>Action</th><th style={{padding: '8px', textAlign: 'left', color: styles.textTertiary}}>Result</th><th style={{padding: '8px', textAlign: 'left', color: styles.textTertiary}}>Params</th></tr></thead>
+        <tbody>{records.map((r, i) => (<tr key={i} style={{borderBottom: '1px solid ' + styles.borderSubtle, borderRadius: 8}}><td style={{padding: '8px', fontFamily: styles.mono, fontSize: '11px', color: styles.textTertiary}}>{r.timestamp ? new Date(r.timestamp).toLocaleTimeString() : '-'}</td><td style={{padding: '8px', color: styles.textPrimary}}>{r.action_type}</td><td style={{padding: '8px'}}><span style={{padding: '2px 8px', fontSize: '10px', fontWeight: 400, background: r.result === 'PASS' ? 'rgba(22,135,62,0.10)' : 'rgba(180,52,52,0.10)', color: r.result === 'PASS' ? styles.accentGreen : styles.accentRed}}>{r.result}</span></td><td style={{padding: '8px', color: styles.textTertiary, fontFamily: styles.mono, fontSize: '10px'}}>{JSON.stringify(r.parameters || {})}</td></tr>))}</tbody>
       </table>
     </div>
   );
@@ -728,14 +728,14 @@ function APIKeyManager({ onKeyGenerated }) {
   return (
     <div>
       {generatedKey && (
-        <div style={{background: 'transparent', border: '1px solid rgba(0,0,0,0.05)', padding: '16px', marginBottom: '20px'}}>
+        <div style={{background: styles.cardSurface, border: '1px solid ' + styles.borderSubtle, padding: '16px', marginBottom: '20px', borderRadius: 8}}>
           <div style={{fontFamily: styles.mono, fontSize: '11px', color: styles.accentGreen, marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '1px'}}>✓ New API Key Generated</div>
           <div style={{background: 'transparent', padding: '12px', fontFamily: styles.mono, fontSize: '13px', color: styles.textPrimary, wordBreak: 'break-all', marginBottom: '12px'}}>
             {generatedKey.key}
           </div>
           <div style={{display: 'flex', gap: '12px'}}>
-            <button onClick={copyKey} style={{padding: '8px 16px', background: styles.purplePrimary, border: `1px solid ${styles.purpleBright}`, color: '#fff', fontFamily: styles.mono, fontSize: '11px', cursor: 'pointer'}}>Copy to Clipboard</button>
-            <button onClick={() => setGeneratedKey(null)} style={{padding: '8px 16px', background: 'transparent', border: `1px solid ${styles.borderGlass}`, color: styles.textSecondary, fontFamily: styles.mono, fontSize: '11px', cursor: 'pointer'}}>Dismiss</button>
+            <button onClick={copyKey} style={{padding: '8px 16px', background: 'transparent', border: 'none', borderBottom: `1px solid ${styles.purpleBright}`, color: styles.purpleBright, fontFamily: styles.mono, fontSize: '11px', cursor: 'pointer'}}>Copy to Clipboard</button>
+            <button onClick={() => setGeneratedKey(null)} style={{padding: '8px 16px', background: styles.cardSurface, border: `1px solid ${styles.borderGlass}`, color: styles.textSecondary, fontFamily: styles.mono, fontSize: '11px', cursor: 'pointer'}}>Dismiss</button>
           </div>
           <p style={{color: styles.textTertiary, fontSize: '12px', marginTop: '12px'}}>⚠️ Save this key now. You won't be able to see it again.</p>
           <div style={{marginTop: '16px', padding: '16px', background: 'rgba(74,61,117,0.2)', border: '1px solid rgba(74,61,117,0.3)' }}>
@@ -743,7 +743,7 @@ function APIKeyManager({ onKeyGenerated }) {
             <p style={{color: styles.textSecondary, fontSize: '13px', marginBottom: '12px'}}>Download the ENVELO Interlock pre-configured with your credentials:</p>
             <button 
               onClick={() => downloadConfiguredAgent(generatedKey.key)}
-              style={{padding: '12px 24px', background: styles.purplePrimary, border: `1px solid ${styles.purpleBright}`, color: '#fff', fontFamily: styles.mono, fontSize: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px'}}
+              style={{padding: '12px 24px', background: 'transparent', border: 'none', borderBottom: `1px solid ${styles.purpleBright}`, color: styles.purpleBright, fontFamily: styles.mono, fontSize: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px'}}
             >
               <Download size={16} /> Download ENVELO Interlock
             </button>
@@ -757,7 +757,7 @@ function APIKeyManager({ onKeyGenerated }) {
           placeholder="Key name (e.g., Production)"
           value={newKeyName}
           onChange={(e) => setNewKeyName(e.target.value)}
-          style={{flex: 1, padding: '10px 14px', background: 'transparent', border: `1px solid ${styles.borderGlass}`, color: styles.textPrimary, fontFamily: styles.mono, fontSize: '13px'}}
+          style={{flex: 1, padding: '10px 14px', background: styles.cardSurface, border: `1px solid ${styles.borderGlass}`, color: styles.textPrimary, fontFamily: styles.mono, fontSize: '13px'}}
         />
         <button
           onClick={generateKey}
@@ -772,14 +772,14 @@ function APIKeyManager({ onKeyGenerated }) {
         <div>
           <div style={{fontFamily: styles.mono, fontSize: '10px', color: styles.textTertiary, marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '1px'}}>Your API Keys</div>
           {keys.map((k) => (
-            <div key={k.id} style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', padding: '12px 16px', background: 'transparent', border: `1px solid ${styles.borderGlass}`, marginBottom: '8px'}}>
+            <div key={k.id} style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', padding: '12px 16px', background: styles.cardSurface, border: `1px solid ${styles.borderGlass}`, marginBottom: '8px'}}>
               <div>
                 <div style={{fontFamily: styles.mono, fontSize: '13px', color: styles.textPrimary}}>{k.name}</div>
                 <div style={{fontFamily: styles.mono, fontSize: '11px', color: styles.textTertiary, marginTop: '4px'}}>{k.key_prefix}••••••••</div>
               </div>
               <div style={{display: 'flex', alignItems: 'center', gap: '16px'}}>
                 <span style={{fontSize: '11px', color: styles.textTertiary}}>{k.last_used_at ? `Last used: ${new Date(k.last_used_at).toLocaleDateString()}` : 'Never used'}</span>
-                <button onClick={() => revokeKey(k.id)} style={{padding: '6px 12px', background: 'rgba(255,100,100,0.1)', border: '1px solid rgba(255,100,100,0.3)', color: '#ff6464', fontFamily: styles.mono, fontSize: '10px', cursor: 'pointer'}}>Revoke</button>
+                <button onClick={() => revokeKey(k.id)} style={{padding: '6px 12px', background: 'rgba(180,52,52,0.06)', border: '1px solid rgba(180,52,52,0.22)', color: styles.accentRed, fontFamily: styles.mono, fontSize: '10px', cursor: 'pointer'}}>Revoke</button>
               </div>
             </div>
           ))}
@@ -886,7 +886,7 @@ function BoundaryConfigurator({ certificateNumber, initialBoundaries, onSave }) 
     setSaving(false);
   };
 
-  const inputStyle = { background: 'transparent', border: '1px solid ' + styles.borderGlass, color: styles.textPrimary, fontFamily: styles.mono, fontSize: '12px', outline: 'none' };
+  const inputStyle = { background: styles.cardSurface, border: '1px solid ' + styles.borderGlass, color: styles.textPrimary, fontFamily: styles.mono, fontSize: '12px', outline: 'none' };
   const sectionTitle = (text) => <div style={{ fontFamily: styles.mono, fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.purpleBright, marginBottom: '8px', marginTop: '20px' }}>{text}</div>;
   const helpText = (text) => <p style={{ color: styles.textTertiary, fontSize: '11px', marginBottom: '8px' }}>{text}</p>;
   const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -901,7 +901,7 @@ function BoundaryConfigurator({ certificateNumber, initialBoundaries, onSave }) 
           <span style={{ fontFamily: styles.mono, fontSize: '11px', color: styles.textTertiary }}>{totalCount} boundaries defined</span>
           {dirty && <span style={{ fontFamily: styles.mono, fontSize: '10px', color: styles.accentAmber, letterSpacing: '1px', textTransform: 'uppercase' }}>● Unsaved changes</span>}
         </div>
-        <button onClick={handleSave} disabled={saving || !dirty} style={{ padding: '8px 24px', background: dirty ? styles.purplePrimary : 'rgba(0,0,0,0.025)', border: '1px solid ' + (dirty ? styles.purpleBright : styles.borderGlass), color: dirty ? '#fff' : styles.textTertiary, fontFamily: styles.mono, fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: dirty ? 'pointer' : 'default', opacity: saving ? 0.6 : 1 }}>
+        <button onClick={handleSave} disabled={saving || !dirty} style={{ padding: '8px 24px', background: dirty ? styles.purplePrimary : 'rgba(0,0,0,0.025)', border: '1px solid ' + (dirty ? styles.purpleBright : styles.borderGlass), color: dirty ? '#fff' : styles.textTertiary, fontFamily: styles.mono, fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: dirty ? 'pointer' : 'default', opacity: saving ? 0.6 : 1 , borderRadius: 8}}>
           {saving ? 'Saving...' : dirty ? 'Save Boundaries' : 'Saved ✓'}
         </button>
       </div>
@@ -910,7 +910,7 @@ function BoundaryConfigurator({ certificateNumber, initialBoundaries, onSave }) 
       {sectionTitle('Numeric Boundaries')}
       {helpText('Measurable limits: speed, temperature, altitude, weight, pressure, distance.')}
       {bounds.numeric.map((b, i) => (
-        <div key={i} style={{ background: 'transparent', border: '1px solid ' + styles.borderGlass, padding: '12px', marginBottom: '8px' }}>
+        <div key={i} style={{ background: styles.cardSurface, border: '1px solid ' + styles.borderGlass, padding: '12px', marginBottom: '8px' , borderRadius: 8}}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '8px' }}>
             <input type="text" value={b.name} onChange={e => update('numeric', i, 'name', e.target.value)} className="px-3 py-2" style={{ ...inputStyle }} placeholder="Name (e.g., Speed Limit)" />
             <input type="text" value={b.parameter} onChange={e => update('numeric', i, 'parameter', e.target.value)} className="px-3 py-2" style={{ ...inputStyle }} placeholder="Parameter (e.g., speed)" />
@@ -927,13 +927,13 @@ function BoundaryConfigurator({ certificateNumber, initialBoundaries, onSave }) 
           </div>
         </div>
       ))}
-      <button onClick={() => addRow('numeric', { name: '', parameter: '', min_value: '', max_value: '', hard_limit: '', unit: '', tolerance: '' })} style={{ width: '100%', marginBottom: '4px', background: 'transparent', border: '1px dashed ' + styles.borderGlass, padding: '8px', color: styles.purpleBright, cursor: 'pointer', fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px' }}>+ Add Numeric Boundary</button>
+      <button onClick={() => addRow('numeric', { name: '', parameter: '', min_value: '', max_value: '', hard_limit: '', unit: '', tolerance: '' })} style={{ width: '100%', marginBottom: '4px', background: styles.cardSurface, border: '1px dashed ' + styles.borderGlass, padding: '8px', color: styles.purpleBright, cursor: 'pointer', fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px' , borderRadius: 8}}>+ Add Numeric Boundary</button>
 
       {/* ── GEOGRAPHIC ── */}
       {sectionTitle('Geographic Boundaries')}
       {helpText('Physical operating zone — center coordinates + radius.')}
       {bounds.geo.map((b, i) => (
-        <div key={i} style={{ background: 'transparent', border: '1px solid ' + styles.borderGlass, padding: '12px', marginBottom: '8px' }}>
+        <div key={i} style={{ background: styles.cardSurface, border: '1px solid ' + styles.borderGlass, padding: '12px', marginBottom: '8px' , borderRadius: 8}}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '8px' }}>
             <input type="text" value={b.name} onChange={e => update('geo', i, 'name', e.target.value)} className="px-3 py-2" style={{ ...inputStyle }} placeholder="Name (e.g., Operating Zone)" />
             <select value={b.boundary_type} onChange={e => update('geo', i, 'boundary_type', e.target.value)} className="px-3 py-2" style={{ ...inputStyle }}>
@@ -952,13 +952,13 @@ function BoundaryConfigurator({ certificateNumber, initialBoundaries, onSave }) 
           </div>
         </div>
       ))}
-      <button onClick={() => addRow('geo', { name: '', boundary_type: 'circle', lat: '', lon: '', radius_meters: '', altitude_min: '', altitude_max: '' })} style={{ width: '100%', marginBottom: '4px', background: 'transparent', border: '1px dashed ' + styles.borderGlass, padding: '8px', color: styles.purpleBright, cursor: 'pointer', fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px' }}>+ Add Geographic Boundary</button>
+      <button onClick={() => addRow('geo', { name: '', boundary_type: 'circle', lat: '', lon: '', radius_meters: '', altitude_min: '', altitude_max: '' })} style={{ width: '100%', marginBottom: '4px', background: styles.cardSurface, border: '1px dashed ' + styles.borderGlass, padding: '8px', color: styles.purpleBright, cursor: 'pointer', fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px' , borderRadius: 8}}>+ Add Geographic Boundary</button>
 
       {/* ── TIME ── */}
       {sectionTitle('Time Boundaries')}
       {helpText('Allowed operating hours and days of week.')}
       {bounds.time.map((b, i) => (
-        <div key={i} style={{ background: 'transparent', border: '1px solid ' + styles.borderGlass, padding: '12px', marginBottom: '8px' }}>
+        <div key={i} style={{ background: styles.cardSurface, border: '1px solid ' + styles.borderGlass, padding: '12px', marginBottom: '8px' , borderRadius: 8}}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '8px', marginBottom: '8px' }}>
             <input type="text" value={b.name} onChange={e => update('time', i, 'name', e.target.value)} className="px-3 py-2" style={{ ...inputStyle }} placeholder="Name" />
             <input type="number" min="0" max="23" value={b.start_hour} onChange={e => update('time', i, 'start_hour', e.target.value)} className="px-3 py-2" style={{ ...inputStyle }} placeholder="Start hour" />
@@ -988,13 +988,13 @@ function BoundaryConfigurator({ certificateNumber, initialBoundaries, onSave }) 
           </div>
         </div>
       ))}
-      <button onClick={() => addRow('time', { name: '', start_hour: '6', end_hour: '22', timezone: 'America/Chicago', days: [0,1,2,3,4,5,6] })} style={{ width: '100%', marginBottom: '4px', background: 'transparent', border: '1px dashed ' + styles.borderGlass, padding: '8px', color: styles.purpleBright, cursor: 'pointer', fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px' }}>+ Add Time Boundary</button>
+      <button onClick={() => addRow('time', { name: '', start_hour: '6', end_hour: '22', timezone: 'America/Chicago', days: [0,1,2,3,4,5,6] })} style={{ width: '100%', marginBottom: '4px', background: styles.cardSurface, border: '1px dashed ' + styles.borderGlass, padding: '8px', color: styles.purpleBright, cursor: 'pointer', fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px' , borderRadius: 8}}>+ Add Time Boundary</button>
 
       {/* ── STATE ── */}
       {sectionTitle('State Boundaries')}
       {helpText('Allowed/forbidden operational states and modes.')}
       {bounds.state.map((b, i) => (
-        <div key={i} style={{ background: 'transparent', border: '1px solid ' + styles.borderGlass, padding: '12px', marginBottom: '8px' }}>
+        <div key={i} style={{ background: styles.cardSurface, border: '1px solid ' + styles.borderGlass, padding: '12px', marginBottom: '8px' , borderRadius: 8}}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '8px' }}>
             <input type="text" value={b.name} onChange={e => update('state', i, 'name', e.target.value)} className="px-3 py-2" style={{ ...inputStyle }} placeholder="Name (e.g., Mode Check)" />
             <input type="text" value={b.parameter} onChange={e => update('state', i, 'parameter', e.target.value)} className="px-3 py-2" style={{ ...inputStyle }} placeholder="Parameter (e.g., mode)" />
@@ -1014,7 +1014,7 @@ function BoundaryConfigurator({ certificateNumber, initialBoundaries, onSave }) 
           </div>
         </div>
       ))}
-      <button onClick={() => addRow('state', { name: '', parameter: '', allowed_values: '', forbidden_values: '' })} style={{ width: '100%', marginBottom: '4px', background: 'transparent', border: '1px dashed ' + styles.borderGlass, padding: '8px', color: styles.purpleBright, cursor: 'pointer', fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px' }}>+ Add State Boundary</button>
+      <button onClick={() => addRow('state', { name: '', parameter: '', allowed_values: '', forbidden_values: '' })} style={{ width: '100%', marginBottom: '4px', background: styles.cardSurface, border: '1px dashed ' + styles.borderGlass, padding: '8px', color: styles.purpleBright, cursor: 'pointer', fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px' , borderRadius: 8}}>+ Add State Boundary</button>
     </div>
   );
 }
@@ -1107,9 +1107,9 @@ function EnveloAdminView() {
             onClick={() => setActiveTab(tab.id)}
             style={{
               padding: '10px 20px',
-              background: activeTab === tab.id ? styles.purplePrimary : 'transparent',
-              border: `1px solid ${activeTab === tab.id ? styles.purpleBright : styles.borderGlass}`,
-              color: activeTab === tab.id ? '#fff' : styles.textSecondary,
+              background: activeTab === tab.id ? 'rgba(74,61,117,0.08)' : 'transparent',
+              border: `1px solid ${activeTab === tab.id ? 'rgba(74,61,117,0.60)' : styles.borderGlass}`,
+              color: activeTab === tab.id ? 'rgba(74,61,117,1.00)' : styles.textSecondary,
               fontFamily: styles.mono,
               fontSize: '11px',
               letterSpacing: '1px',
@@ -1151,7 +1151,7 @@ function EnveloAdminView() {
             <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '20px'}}>
               <p style={{fontFamily: styles.mono, fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary}}>Active Sessions</p>
               <div style={{display: 'flex', alignItems: 'center', gap: '8px', padding: '4px 12px', background: 'transparent' }}>
-                <div style={{width: '6px', height: '6px', borderRadius: '50%', background: styles.accentGreen, boxShadow: `0 0 8px ${styles.accentGreen}`, animation: 'pulse 2s infinite'}}></div>
+                <div style={{width: '6px', height: '6px', borderRadius: '50%', background: styles.accentGreen, animation: 'pulse 2s infinite'}}></div>
                 <span style={{fontFamily: styles.mono, fontSize: '10px', color: styles.accentGreen, textTransform: 'uppercase'}}>Live</span>
               </div>
             </div>
@@ -1170,11 +1170,11 @@ function EnveloAdminView() {
                   </thead>
                   <tbody>
                     {sessions.map((s, i) => (
-                      <tr key={i} className="sexy-row" style={{borderBottom: `1px solid ${styles.borderGlass}`}}>
+                      <tr key={i} style={{borderBottom: `1px solid ${styles.borderGlass}`}}>
                         <td style={{padding: '16px', fontFamily: styles.mono, fontSize: '12px', color: styles.purpleBright}}>{s.certificate_id || 'N/A'}</td>
                         <td style={{padding: '16px'}}>
                           <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
-                            <div style={{width: '8px', height: '8px', borderRadius: '50%', background: s.status === 'active' ? styles.accentGreen : styles.textTertiary, boxShadow: s.status === 'active' ? `0 0 8px ${styles.accentGreen}` : 'none'}}></div>
+                            <div style={{width: '8px', height: '8px', borderRadius: '50%', background: s.status === 'active' ? styles.accentGreen : styles.textTertiary}}></div>
                             <span style={{fontFamily: styles.mono, fontSize: '11px', textTransform: 'uppercase', color: s.status === 'active' ? styles.accentGreen : styles.textTertiary}}>{s.status}</span>
                           </div>
                         </td>
@@ -1208,8 +1208,8 @@ function EnveloAdminView() {
                       link.download = `CAT72-Report-${selectedSession.session_id}.pdf`;
                       link.click();
                     } catch(e) { toast.show('Failed: ' + e.message, 'error'); }
-                  }} style={{padding: '8px 16px', background: styles.purplePrimary, border: 'none', color: '#fff', fontSize: '11px', cursor: 'pointer'}}>Download Report</button>
-                  <button onClick={() => setSelectedSession(null)} style={{padding: '8px 16px', background: 'transparent', border: `1px solid ${styles.borderGlass}`, color: styles.textTertiary, cursor: 'pointer', fontSize: '11px'}}>✕ Close</button>
+                  }} style={{padding: '8px 16px', background: 'transparent', border: 'none', color: styles.purpleBright, fontSize: '11px', cursor: 'pointer'}}>Download Report</button>
+                  <button onClick={() => setSelectedSession(null)} style={{padding: '8px 16px', background: styles.cardSurface, border: `1px solid ${styles.borderGlass}`, color: styles.textTertiary, cursor: 'pointer', fontSize: '11px'}}>✕ Close</button>
                 </div>
               </div>
               <SessionReport session={selectedSession} />
@@ -1229,7 +1229,7 @@ function EnveloAdminView() {
             {activeCerts.length > 0 ? (
               <div className="space-y-4">
                 {activeCerts.map(cert => (
-                  <div key={cert.id} style={{padding: '20px', background: 'transparent', border: `1px solid ${styles.borderGlass}` }}>
+                  <div key={cert.id} style={{padding: '20px', background: styles.cardSurface, border: `1px solid ${styles.borderGlass}` }}>
                     <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px'}}>
                       <div>
                         <h3 style={{fontSize: '16px', fontWeight: 500, color: styles.textPrimary, margin: '0 0 4px 0'}}>{cert.system_name || 'Unnamed'}</h3>
@@ -1240,10 +1240,10 @@ function EnveloAdminView() {
                         <button onClick={() => { setReviewingCert(cert); setActiveTab('review'); }} style={{padding: '8px 16px', background: 'transparent', border: `1px solid ${styles.purpleBright}`, color: styles.purpleBright, fontSize: '11px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px'}}>
                           <Shield fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} size={12} /> Review Boundaries
                         </button>
-                        <span style={{padding: '8px 16px', background: 'transparent', border: '1px solid rgba(0,0,0,0.05)', color: styles.accentGreen, fontSize: '11px', display: 'flex', alignItems: 'center', gap: '6px'}}>
+                        <span style={{padding: '8px 16px', background: styles.cardSurface, border: '1px solid ' + styles.borderSubtle, color: styles.accentGreen, fontSize: '11px', display: 'flex', alignItems: 'center', gap: '6px', borderRadius: 8}}>
                           ✓ Auto-provisioned on Approve
                         </span>
-                        <button onClick={() => downloadAgentForCert(cert)} style={{padding: '8px 16px', background: 'transparent', border: `1px solid ${styles.borderGlass}`, color: styles.textSecondary, fontSize: '11px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px'}}>
+                        <button onClick={() => downloadAgentForCert(cert)} style={{padding: '8px 16px', background: styles.cardSurface, border: `1px solid ${styles.borderGlass}`, color: styles.textSecondary, fontSize: '11px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px'}}>
                           <Download size={12} /> Download Only
                         </button>
                       </div>
@@ -1262,13 +1262,13 @@ function EnveloAdminView() {
               <p style={{fontFamily: styles.mono, fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.accentAmber, marginBottom: '20px'}}>CAT-72 Testing In Progress</p>
               <div className="space-y-4">
                 {pendingApps.map(app => (
-                  <div key={app.id} style={{padding: '16px', background: 'transparent', border: `1px solid ${styles.borderGlass}`}}>
+                  <div key={app.id} style={{padding: '16px', background: styles.cardSurface, border: `1px solid ${styles.borderGlass}`}}>
                     <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px'}}>
                       <div>
                         <p style={{fontSize: '14px', color: styles.textPrimary, marginBottom: '4px'}}>{app.system_name}</p>
                         <p style={{fontSize: '12px', color: styles.textSecondary}}>{app.organization_name}</p>
                       </div>
-                      <span style={{padding: '4px 12px', background: 'transparent', border: '1px solid rgba(0,0,0,0.05)', fontSize: '10px', color: styles.accentAmber, fontFamily: styles.mono, textTransform: 'uppercase'}}>
+                      <span style={{padding: '4px 12px', background: styles.cardSurface, border: '1px solid ' + styles.borderSubtle, fontSize: '10px', color: styles.accentAmber, fontFamily: styles.mono, textTransform: 'uppercase', borderRadius: 8}}>
                         {app.cat72_started ? 'In Progress' : 'Ready'}
                       </span>
                     </div>
@@ -1301,13 +1301,13 @@ function EnveloAdminView() {
                 <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px'}}>
                   <div>
                     <p style={{fontFamily: styles.mono, fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.purpleBright, marginBottom: '8px'}}>Boundary Review — Read Only</p>
-                    <h2 style={{fontSize: 'clamp(18px, 4vw, 24px)', fontWeight: 200, margin: '0 0 4px 0'}}>{reviewingCert.system_name}</h2>
+                    <h2 style={{fontFamily: styles.serif, fontSize: 'clamp(18px, 4vw, 24px)', fontWeight: 200, margin: '0 0 4px 0'}}>{reviewingCert.system_name}</h2>
                     <p style={{color: styles.textSecondary}}>{reviewingCert.organization_name} • {reviewingCert.certificate_number}</p>
                   </div>
-                  <button onClick={() => setReviewingCert(null)} style={{padding: '8px 16px', background: 'transparent', border: `1px solid ${styles.borderGlass}`, color: styles.textTertiary, cursor: 'pointer', fontSize: '11px'}}>← Back</button>
+                  <button onClick={() => setReviewingCert(null)} style={{padding: '8px 16px', background: styles.cardSurface, border: `1px solid ${styles.borderGlass}`, color: styles.textTertiary, cursor: 'pointer', fontSize: '11px'}}>← Back</button>
                 </div>
 
-                <div style={{padding: '12px 16px', background: 'transparent', border: '1px solid rgba(0,0,0,.09)', marginBottom: '24px'}}>
+                <div style={{padding: '12px 16px', background: styles.cardSurface, border: '1px solid ' + styles.borderGlass, marginBottom: '24px', borderRadius: 8}}>
                   <p style={{color: styles.accentAmber, fontSize: '13px', margin: 0}}>⚠ Sentinel Authority does not modify customer boundaries. Review and approve as submitted, or reject with required changes.</p>
                 </div>
 
@@ -1320,7 +1320,7 @@ function EnveloAdminView() {
                         <p style={{fontFamily: styles.mono, fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '12px'}}>Numeric Boundaries ({numeric.length})</p>
                         <div style={{display: 'grid', gap: '8px'}}>
                           {numeric.map((b, i) => (
-                            <div key={i} style={{padding: '14px 16px', background: 'transparent', border: `1px solid ${styles.borderGlass}`, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '16px', alignItems: 'center'}}>
+                            <div key={i} style={{padding: '14px 16px', background: styles.cardSurface, border: `1px solid ${styles.borderGlass}`, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '16px', alignItems: 'center'}}>
                               <div>
                                 <p style={{fontFamily: styles.mono, fontSize: '10px', color: styles.textTertiary, marginBottom: '2px'}}>Parameter</p>
                                 <p style={{fontWeight: 500, color: styles.textPrimary, fontSize: '14px'}}>{b.name || b.parameter || '—'}</p>
@@ -1348,7 +1348,7 @@ function EnveloAdminView() {
                         <p style={{fontFamily: styles.mono, fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '12px'}}>Geographic Boundaries ({geo.length})</p>
                         <div style={{display: 'grid', gap: '8px'}}>
                           {geo.map((b, i) => (
-                            <div key={i} style={{padding: '14px 16px', background: 'transparent', border: `1px solid ${styles.borderGlass}`, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '16px', alignItems: 'center'}}>
+                            <div key={i} style={{padding: '14px 16px', background: styles.cardSurface, border: `1px solid ${styles.borderGlass}`, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '16px', alignItems: 'center'}}>
                               <div>
                                 <p style={{fontFamily: styles.mono, fontSize: '10px', color: styles.textTertiary, marginBottom: '2px'}}>Zone</p>
                                 <p style={{fontWeight: 500, color: styles.textPrimary, fontSize: '14px'}}>{b.name || '—'}</p>
@@ -1376,7 +1376,7 @@ function EnveloAdminView() {
                         <p style={{fontFamily: styles.mono, fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '12px'}}>Time Boundaries ({time.length})</p>
                         <div style={{display: 'grid', gap: '8px'}}>
                           {time.map((b, i) => (
-                            <div key={i} style={{padding: '14px 16px', background: 'transparent', border: `1px solid ${styles.borderGlass}`, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '16px', alignItems: 'center'}}>
+                            <div key={i} style={{padding: '14px 16px', background: styles.cardSurface, border: `1px solid ${styles.borderGlass}`, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '16px', alignItems: 'center'}}>
                               <div>
                                 <p style={{fontFamily: styles.mono, fontSize: '10px', color: styles.textTertiary, marginBottom: '2px'}}>Schedule</p>
                                 <p style={{fontWeight: 500, color: styles.textPrimary, fontSize: '14px'}}>{b.name || '—'}</p>
@@ -1400,7 +1400,7 @@ function EnveloAdminView() {
                         <p style={{fontFamily: styles.mono, fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '12px'}}>State Boundaries ({state.length})</p>
                         <div style={{display: 'grid', gap: '8px'}}>
                           {state.map((b, i) => (
-                            <div key={i} style={{padding: '14px 16px', background: 'transparent', border: `1px solid ${styles.borderGlass}`, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '16px', alignItems: 'center'}}>
+                            <div key={i} style={{padding: '14px 16px', background: styles.cardSurface, border: `1px solid ${styles.borderGlass}`, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '16px', alignItems: 'center'}}>
                               <div>
                                 <p style={{fontFamily: styles.mono, fontSize: '10px', color: styles.textTertiary, marginBottom: '2px'}}>Parameter</p>
                                 <p style={{fontWeight: 500, color: styles.textPrimary, fontSize: '14px'}}>{b.name || b.parameter || '—'}</p>
@@ -1431,7 +1431,7 @@ function EnveloAdminView() {
                     placeholder="Review notes (required for rejection, optional for approval)..."
                     style={{
                       width: '100%', minHeight: '80px', padding: '12px 16px',
-                      background: 'transparent', border: `1px solid ${styles.borderGlass}`,
+                      background: styles.cardSurface, border: `1px solid ${styles.borderGlass}`,
                       color: styles.textPrimary, fontSize: '13px',
                       fontFamily: "Georgia, 'Source Serif 4', serif", resize: 'vertical'
                     }}
@@ -1477,11 +1477,11 @@ function EnveloAdminView() {
                         } catch (e) { toast.show('Failed: ' + (e.response?.data?.detail || e.message), 'error'); }
                       }}
                       style={{
-                        flex: 1, padding: '14px', background: 'transparent',
-                        border: '1px solid rgba(0,0,0,0.05)', color: styles.accentRed, fontFamily: styles.mono,
+                        flex: 1, padding: '14px', background: styles.cardSurface,
+                        border: '1px solid ' + styles.borderSubtle, color: styles.accentRed, fontFamily: styles.mono,
                         fontSize: '12px', letterSpacing: '1px', textTransform: 'uppercase',
                         cursor: 'pointer'
-                      }}
+                      , borderRadius: 8}}
                     >
                       ✗ Reject — Require Changes
                     </button>
@@ -1493,9 +1493,9 @@ function EnveloAdminView() {
             <Panel>
               <div style={{textAlign: 'center', padding: 'clamp(24px, 5vw, 60px) clamp(12px, 3vw, 20px)'}}>
                 <Shield fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} size={48} style={{color: styles.textTertiary, margin: '0 auto 16px'}} />
-                <h2 style={{fontSize: '20px', fontWeight: 200, marginBottom: '8px'}}>Select a System to Review</h2>
+                <h2 style={{fontFamily: styles.serif, fontSize: '20px', fontWeight: 200, marginBottom: '8px'}}>Select a System to Review</h2>
                 <p style={{color: styles.textSecondary, marginBottom: '24px'}}>Choose a system from the Customer Systems tab to review its submitted boundaries.</p>
-                <button onClick={() => setActiveTab('customers')} style={{padding: '12px 24px', background: styles.purplePrimary, border: `1px solid ${styles.purpleBright}`, color: '#fff', fontFamily: styles.mono, fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>View Customer Systems</button>
+                <button onClick={() => setActiveTab('customers')} style={{padding: '12px 24px', background: 'transparent', border: 'none', borderBottom: `1px solid ${styles.purpleBright}`, color: styles.purpleBright, fontFamily: styles.mono, fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}>View Customer Systems</button>
               </div>
             </Panel>
           )}
@@ -1626,7 +1626,7 @@ function EnveloCustomerView() {
                 </div>
               </div>
               {session && (
-                <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '16px', marginTop: '24px', paddingTop: '24px', borderTop: '1px solid ' + styles.borderGlass}}>
+                <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '16px', marginTop: '24px', paddingTop: '24px', borderTop: '1px solid ' + styles.borderGlass, borderRadius: 8}}>
                   <div style={{textAlign: 'center'}}>
                     <p style={{fontSize: 'clamp(20px, 4vw, 28px)', fontWeight: 200, color: styles.accentGreen}}>{session.uptime || '0h'}</p>
                     <p style={{fontFamily: styles.mono, fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary}}>Uptime</p>
@@ -1660,7 +1660,7 @@ function EnveloCustomerView() {
                 </div>
               </div>
               {session && (
-                <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '16px', marginTop: '24px', paddingTop: '24px', borderTop: '1px solid ' + styles.borderGlass}}>
+                <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '16px', marginTop: '24px', paddingTop: '24px', borderTop: '1px solid ' + styles.borderGlass, borderRadius: 8}}>
                   <div style={{textAlign: 'center'}}>
                     <p style={{fontSize: 'clamp(20px, 4vw, 28px)', fontWeight: 200, color: styles.accentGreen}}>{session.pass_count || 0}</p>
                     <p style={{fontFamily: styles.mono, fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary}}>Passed</p>
@@ -1696,7 +1696,7 @@ function EnveloCustomerView() {
                   toast.show('Failed: ' + (e.response?.data?.detail || e.message), 'error');
                 }
               }}
-              style={{padding: '16px', background: 'transparent', border: '1px solid rgba(0,0,0,.09)', cursor: 'pointer', textAlign: 'left'}}
+              style={{padding: '16px', background: styles.cardSurface, border: '1px solid ' + styles.borderGlass, cursor: 'pointer', textAlign: 'left', borderRadius: 8}}
             >
               <p style={{fontWeight: 500, color: styles.accentRed, marginBottom: '4px', fontSize: '14px'}}>⏹ Stop Agent</p>
               <p style={{color: styles.textTertiary, fontSize: '11px', margin: 0}}>Revokes API key. Agent shuts down within 30s.</p>
@@ -1736,7 +1736,7 @@ function EnveloCustomerView() {
                   toast.show('Failed: ' + (e.response?.data?.detail || e.message), 'error');
                 }
               }}
-              style={{padding: '16px', background: 'transparent', border: '1px solid ' + styles.borderGlass, cursor: 'pointer', textAlign: 'left'}}
+              style={{padding: '16px', background: styles.cardSurface, border: '1px solid ' + styles.borderGlass, cursor: 'pointer', textAlign: 'left', borderRadius: 8}}
             >
               <p style={{fontWeight: 500, color: styles.textSecondary, marginBottom: '4px', fontSize: '14px'}}>⊘ Uninstall</p>
               <p style={{color: styles.textTertiary, fontSize: '11px', margin: 0}}>Remove agent, config, and auto-restart service.</p>
@@ -1744,7 +1744,7 @@ function EnveloCustomerView() {
           </div>
 
           {showUninstall && (
-            <div style={{marginTop: '16px', padding: '16px', background: 'transparent', border: '1px solid ' + styles.borderGlass}}>
+            <div style={{marginTop: '16px', padding: '16px', background: styles.cardSurface, border: '1px solid ' + styles.borderGlass, borderRadius: 8}}>
               <p style={{fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', color: styles.accentAmber, marginBottom: '8px'}}>Paste in terminal to fully remove</p>
               <div style={{fontFamily: styles.mono, fontSize: '12px', color: styles.textSecondary, padding: '12px', background: 'transparent', whiteSpace: 'pre-wrap', lineHeight: '1.8'}}>
                 {'# Stop agent\nkill $(cat ~/.envelo/envelo.pid) 2>/dev/null\n\n# Remove systemd service (Linux)\nsystemctl --user stop envelo.service 2>/dev/null\nsystemctl --user disable envelo.service 2>/dev/null\nrm -f ~/.config/systemd/user/envelo.service\n\n# Remove launchd (macOS)\nlaunchctl unload ~/Library/LaunchAgents/org.sentinelauthority.envelo.plist 2>/dev/null\nrm -f ~/Library/LaunchAgents/org.sentinelauthority.envelo.plist\n\n# Remove files\nrm -rf ~/.envelo\n\necho "✓ ENVELO uninstalled"'}
@@ -1810,7 +1810,7 @@ function EnveloCustomerView() {
               {/* Terminal */}
               <div style={{maxWidth: 'min(700px, 95vw)', margin: '0 auto', textAlign: 'left'}}>
                 <div style={{background: 'transparent', border: '1px solid ' + styles.purpleBright, overflow: 'hidden'}}>
-                  <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 16px', background: 'transparent', borderBottom: '1px solid ' + styles.borderGlass}}>
+                  <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 16px', background: styles.cardSurface, borderBottom: '1px solid ' + styles.borderGlass, borderRadius: 8}}>
                     <div style={{display: 'flex', gap: '6px'}}>
                       <div style={{width: '10px', height: '10px', borderRadius: '50%', background: '#ff5f57'}}></div>
                       <div style={{width: '10px', height: '10px', borderRadius: '50%', background: '#febc2e'}}></div>
@@ -1840,7 +1840,7 @@ function EnveloCustomerView() {
                   </div>
                 </div>
 
-                <div style={{marginTop: '20px', padding: '16px', background: 'transparent', border: '1px solid ' + styles.borderGlass}}>
+                <div style={{marginTop: '20px', padding: '16px', background: styles.cardSurface, border: '1px solid ' + styles.borderGlass, borderRadius: 8}}>
                   <p style={{fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '12px'}}>What happens</p>
                   <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '12px', textAlign: 'center'}}>
                     {[

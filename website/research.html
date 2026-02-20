@@ -2,203 +2,580 @@
 <html lang="en" style="scroll-behavior:smooth;">
 <head>
   <meta charset="UTF-8" />
-  <meta name="theme-color" content="#2a2f3d">
+  <link rel="canonical" href="https://www.sentinelauthority.org/research.html">
+
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>Research — Sentinel Authority</title>
-  <meta name="description" content="Published research and white papers from Sentinel Authority on autonomous systems conformance, certification frameworks, and regulatory architecture." />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect x='6' y='6' width='20' height='20' rx='5' fill='%235B4B8A' stroke='%239d8ccf' stroke-width='2'/><circle cx='16' cy='16' r='4' fill='%239d8ccf'/></svg>" />
-  <link rel="preload" href="https://fonts.gstatic.com/s/ibmplexmono/v19/-F63fjptAgt5VM-kVkqdyU8n1iIq131nj-otFQ.woff2" as="font" type="font/woff2" crossorigin>
+  <title>Technical Publications — Sentinel Authority</title>
+  <meta name="description" content="ODDC technical publications, conformance documentation, and enforcement architecture specifications." />
+  <meta property="og:title" content="Technical Publications — Sentinel Authority" />
+  <meta property="og:description" content="ODDC technical publications, conformance documentation, and enforcement architecture specifications." />
+  <meta property="og:type" content="website" />
+  <meta name="theme-color" content="#f5f5f7" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'><rect x='2' y='2' width='32' height='32' rx='8' fill='%237B6BAE' stroke='%23b8aad4' stroke-width='2'/><circle cx='18' cy='18' r='6' fill='%23e0d8f0'/></svg>" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <style>
     @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:0.01ms!important;animation-iteration-count:1!important;transition-duration:0.01ms!important;}}
     :root{
-      color-scheme:dark;
-      --purple-primary:#5B4B8A;--purple-bright:#a896d6;--purple-glow:rgba(157,140,207,.20);
-      --bg-deep:#2a2f3d;--bg-panel:rgba(255,255,255,.03);
-      --accent-green:#5CD685;--accent-amber:#D6A05C;--accent-red:#D65C5C;
-      --text-primary:rgba(255,255,255,.94);--text-secondary:rgba(255,255,255,.78);--text-tertiary:rgba(255,255,255,.50);
-      --border-glass:rgba(255,255,255,.07);--border-subtle:rgba(255,255,255,.04);
-      --serif:Georgia,'Source Serif 4',serif;--mono:Consolas,'IBM Plex Mono',monospace;
-      --sans:Calibri,'Inter',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-      --ease:cubic-bezier(0.16,1,0.3,1);--ease-out:cubic-bezier(0.33,1,0.68,1);
-      --space-1:10px;--space-2:20px;--space-3:20px;--space-4:28px;--space-5:35px;--space-6:40px;--space-8:50px;--space-10:60px;--space-12:120px;
-      --max:1200px;--nav-height:72px;
+      color-scheme:light;
+      --purple-primary:#4a3d75;--purple-bright:#6b5a9e;
+      --bg-deep:#ffffff;--bg-panel:rgba(0,0,0,.025);
+      --accent-green:#16873e;--accent-amber:#9e6e12;
+      --text-primary:#111318;--text-secondary:rgba(15,18,30,.74);--text-tertiary:rgba(15,18,30,.56);
+      --border-glass:rgba(0,0,0,.09);--border-subtle:rgba(0,0,0,.05);
+      --serif:Georgia,'Source Serif 4',serif;
+      --mono:Consolas,'IBM Plex Mono',monospace;
+      --sans:Calibri,'Inter',system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;
+      --ease:cubic-bezier(0.16,1,0.3,1);
+      --space-2:20px;--space-3:20px;--space-4:28px;--space-6:40px;--space-8:50px;
+      --max:1320px;--nav-height:72px;
     }
     *{box-sizing:border-box;}
-    .skip-link{position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;z-index:999;}
-    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}
-    a:focus-visible,button:focus-visible{outline:2px solid rgba(157,140,207,.75);outline-offset:3px;border-radius:10px;}
-    html{scroll-behavior:smooth;background:var(--bg-deep);}
-    body{margin:0;font-family:var(--sans);background:radial-gradient(1200px 700px at 15% 10%,rgba(91,75,138,.10),transparent 55%),radial-gradient(900px 600px at 85% 80%,rgba(92,214,133,.04),transparent 55%),var(--bg-deep);color:var(--text-primary);overflow-x:hidden;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;}
+    html{scroll-behavior:smooth;background:#f5f5f7;}
+    body{margin:0;font-family:var(--sans);background:#f5f5f7;color:var(--text-primary);overflow-x:hidden;-webkit-font-smoothing:antialiased;text-rendering:geometricPrecision;}
+    body::before{content:'';position:fixed;inset:0;z-index:-1;background: #f9fafb;pointer-events:none;}
     a{color:inherit;text-decoration:none;}
-    a:hover{text-decoration:none;filter:brightness(1.3);}
-    ::selection{background:var(--purple-primary);color:#fff;}
-    .grid-overlay{position:fixed;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px);background-size:var(--space-12) var(--space-12);opacity:.2;mask-image:radial-gradient(ellipse at center,rgba(0,0,0,.9) 20%,transparent 70%);-webkit-mask-image:radial-gradient(ellipse at center,rgba(0,0,0,.9) 20%,transparent 70%);}
-    .site-header{position:fixed;top:0;width:100%;z-index:50;padding:0 var(--space-2,20px);height:var(--nav-height,72px);border-bottom:1px solid rgba(255,255,255,.06);background:rgba(42,47,61,.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);display:flex;align-items:center;}
-    .nav-inner{max-width:var(--max,1200px);margin:0 auto;width:100%;display:flex;align-items:center;justify-content:space-between;gap:var(--space-2,20px);}
-    .brand{display:flex;align-items:center;gap:10px;gap:var(--space-1,10px);flex-shrink:0;text-decoration:none;visibility:visible;opacity:1;}
-    .brand:hover{text-decoration:none;}
-    .brand-mark{width:24px;height:24px;background:#5B4B8A;background:var(--purple-primary,#5B4B8A);border:2px solid #9d8ccf;border:2px solid var(--purple-bright,#9d8ccf);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-    .brand-mark-inner{width:8px;height:8px;background:#c4b8e8;border-radius:50%;animation:eye-pulse 7s ease-in-out infinite;will-change:transform,opacity,box-shadow;}
-    @keyframes eye-pulse{0%,100%{opacity:.75;transform:scale(.98);box-shadow:0 0 0 rgba(196,184,232,0);}50%{opacity:1;transform:scale(1.02);box-shadow:0 0 10px rgba(157,140,207,.22);}}
-    @media(prefers-reduced-motion:reduce){.brand-mark-inner{animation:none;opacity:.9;}}
-    .brand-name{font-family:'IBM Plex Mono',monospace;font-family:var(--mono,'IBM Plex Mono',monospace);font-size:10px;letter-spacing:3px;text-transform:uppercase;color:#dbdbdb;color:rgba(255,255,255,.86);white-space:nowrap;}
-    .nav-links{display:flex;align-items:center;gap:14px;flex-wrap:nowrap;justify-content:center;}
-    .nav-links a{font-family:var(--mono);font-size:9px;letter-spacing:1.5px;color:var(--text-tertiary);padding:8px 4px;position:relative;transition:color .25s ease;white-space:nowrap;}
-    .nav-links a:hover{color:var(--text-primary);text-decoration:none;filter:brightness(1.3);}
-    .nav-links a::after{content:none;}
-    .nav-links a.active{color:var(--text-primary);filter:brightness(1.2);}
-    .nav-badge{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(214,160,92,.95);text-decoration:none!important;border:none;background:transparent;padding:6px 0;border-radius:0;white-space:nowrap;flex-shrink:0;}
-    .nav-badge:hover{text-decoration:none!important;}
-    .nav-toggle{display:none;appearance:none;border:1px solid var(--border-glass);background:rgba(255,255,255,.03);width:40px;height:40px;border-radius:0;cursor:pointer;position:relative;transition:border-color .2s ease;}
-    .nav-toggle:hover{border-color:rgba(157,140,207,.3);background:transparent;}
-    .nav-toggle span{position:absolute;left:50%;width:16px;height:1px;background:var(--text-secondary);transform:translateX(-50%);transition:all .18s var(--ease-out);}
-    .nav-toggle span:nth-child(1){top:14px;}
-    .nav-toggle span:nth-child(2){top:19px;}
-    .nav-toggle span:nth-child(3){top:24px;}
-    .nav-toggle[aria-expanded="true"] span:nth-child(1){top:19px;transform:translateX(-50%) rotate(45deg);}
-    .nav-toggle[aria-expanded="true"] span:nth-child(2){opacity:0;transform:translateX(-50%) scaleX(0);}
-    .nav-toggle[aria-expanded="true"] span:nth-child(3){top:19px;transform:translateX(-50%) rotate(-45deg);}
-    .nav-drawer{display:none;position:fixed;top:var(--nav-height);right:0;width:280px;max-width:calc(100vw - var(--space-4));height:calc(100vh - var(--nav-height));background:rgba(42,47,61,.96);backdrop-filter:blur(24px);border-left:1px solid var(--border-glass);transform:translateX(100%);transition:transform .18s var(--ease-out);z-index:49;padding:var(--space-3) var(--space-2);overflow-y:auto;}
-    .nav-drawer.open{transform:translateX(0);}
-    .nav-drawer a{display:flex;align-items:center;font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-secondary);padding:14px 0;border-bottom:1px solid var(--border-subtle);transition:color .2s ease;}
-    .nav-drawer a:hover{color:var(--text-primary);text-decoration:none;}
-    .nav-drawer .nav-signin{color:var(--purple-bright);border-bottom:none;margin-top:12px;padding-top:16px;border-top:1px solid var(--border-glass);}
-    .nav-drawer a.active{color:var(--purple-bright);}
-    .drawer-overlay{display:none;position:fixed;inset:0;top:var(--nav-height);background:rgba(0,0,0,.4);z-index:48;opacity:0;transition:opacity .18s ease;pointer-events:none;}
-    .drawer-overlay.open{opacity:1;pointer-events:auto;}
-    @media(max-width:860px){.nav-links{display:none;}.nav-toggle{display:block;}.nav-drawer{display:block;}.drawer-overlay{display:block;}}
-    main{position:relative;z-index:1;max-width:var(--max);margin:0 auto;padding:0 var(--space-2);}
-    .section{padding:var(--space-10) 0;scroll-margin-top:calc(var(--nav-height) + 24px);}
-    .section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:var(--space-2);}
-    .section-label{font-family:var(--mono);font-size:10px;letter-spacing:5px;text-transform:uppercase;color:var(--purple-bright);display:block;margin-bottom:12px;}
-    .section-title{font-family:var(--serif);font-size:clamp(30px,4vw,50px);font-weight:normal;line-height:1.1;margin:0;letter-spacing:-0.01em;}
-    @media(max-width:600px){.section-title{font-weight:normal;}}
-    .section-lead{max-width:62ch;color:var(--text-secondary);font-weight:300;line-height:1.85;margin:var(--space-2) 0 0;font-size:16px;}
-    .paper-section{padding:var(--space-6) 0;max-width:720px;margin:0 auto;}
-    .paper-type{font-family:var(--mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--accent-amber);margin-bottom:var(--space-2);display:inline-block;}
-    .paper-title{font-family:var(--serif);font-size:clamp(22px,3vw,30px);font-weight:normal;color:var(--text-primary);line-height:1.25;margin:0 0 10px;letter-spacing:-0.01em;}
-    .paper-subtitle{font-family:var(--serif);font-size:16px;font-style:italic;color:var(--purple-bright);margin:0 0 var(--space-2);opacity:.8;}
-    .paper-abstract{font-size:15px;font-weight:300;line-height:1.75;color:var(--text-secondary);margin:0 0 var(--space-4);max-width:62ch;}
-    .paper-meta{display:flex;align-items:center;gap:20px;flex-wrap:wrap;margin-bottom:var(--space-4);}
-    .meta-tag{font-family:var(--mono);font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--text-tertiary);display:flex;align-items:center;gap:8px;}
-    .meta-dot{width:4px;height:4px;background:var(--accent-green);border-radius:50%;flex-shrink:0;}
-    .download-btn{display:inline-flex;align-items:center;gap:12px;font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--purple-bright);padding:14px 24px;border:1px solid rgba(157,140,207,.22);background:rgba(91,75,138,.05);cursor:pointer;transition:all .25s ease;}
-    .download-btn:hover{border-color:rgba(157,140,207,.45);background:rgba(91,75,138,.10);color:#fff;filter:none;}
-    .download-btn svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;}
-    .toc-preview{margin-top:var(--space-4);padding:var(--space-4);background:var(--bg-panel);border:1px solid var(--border-glass);}
-    .toc-label{font-family:var(--mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--text-tertiary);margin-bottom:var(--space-2);display:block;}
+    ::selection{background:rgba(74,61,117,.15);color:var(--text-primary);}
+
+    .site-header{position:fixed;top:0;width:100%;z-index:50;padding:0 24px;height:var(--nav-height);border-bottom:1px solid rgba(15,18,30,0.06);background:rgba(245,245,247,0.88);backdrop-filter:blur(28px) saturate(1.5);-webkit-backdrop-filter:blur(28px) saturate(1.5);display:flex;align-items:center;}
+    .nav-inner{max-width:var(--max);margin:0 auto;width:100%;display:flex;align-items:center;justify-content:space-between;gap:20px;}
+    .brand{display:flex;align-items:center;gap:14px;text-decoration:none;}
+    .brand-mark{width:36px;height:36px;background:#7B6BAE;border:2px solid #b8aad4;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+    .brand-mark-inner{width:12px;height:12px;background:#e0d8f0;border-radius:50%;animation:eye-pulse 7s ease-in-out infinite;will-change:transform,opacity,box-shadow;}
+    @keyframes eye-pulse{0%,100%{opacity:.75;transform:scale(.98);}50%{opacity:1;transform:scale(1.02);box-shadow:0 0 10px rgba(74,61,117,0.60);}}
+    .brand-name{font-family:var(--mono);font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#111318;}
+    .back-link{font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--text-tertiary);transition:color .2s;font-weight:500;}
+    .back-link:hover{color:var(--text-primary);}
+
+    main{position:relative;z-index:1;max-width:var(--max);margin:0 auto;padding:0 20px 80px;}
+    .section-label{font-family:var(--mono);font-size:10px;letter-spacing:2.4px;text-transform:uppercase;color:var(--purple-bright);display:block;margin-bottom:12px;font-weight:600;}
+    .section-title{font-family:var(--serif);font-size:clamp(30px,4vw,50px);font-weight:500;line-height:1.1;margin:0;letter-spacing:-0.03em;color:#3d3262;}
+    .section-lead{max-width:65ch;color:var(--text-secondary);font-weight:400;line-height:1.55;margin:var(--space-2) 0 0;font-size:16px;}
+
+    .cat-header{margin-top:var(--space-8);margin-bottom:var(--space-3);border-bottom:1px solid rgba(15,18,30,0.06);padding-bottom:12px;}
+    .cat-label{font-family:var(--mono);font-size:10px;letter-spacing:2.4px;text-transform:uppercase;color:var(--purple-bright);font-weight:600;}
+
+    .doc-card{position:relative;padding:24px;background:rgba(255,255,255,0.78);backdrop-filter:blur(22px) saturate(1.35);-webkit-backdrop-filter:blur(22px) saturate(1.35);border:1px solid rgba(15,18,30,0.06);margin-bottom:var(--space-2);}
+    .doc-card::before,.doc-card::after{content:'';position:absolute;width:10px;height:10px;border-color:rgba(15,18,30,0.08);border-style:solid;pointer-events:none;}
+    .doc-card::before{top:0;left:0;border-width:1px 0 0 1px;}
+    .doc-card::after{top:0;right:0;border-width:1px 1px 0 0;}
+    .doc-top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+    .doc-info{flex:1;min-width:200px;}
+    .doc-title{font-size:16px;font-weight:500;color:var(--text-primary);margin-bottom:4px;}
+    .doc-meta{font-family:var(--mono);font-size:9px;letter-spacing:1px;color:var(--text-tertiary);display:flex;gap:16px;flex-wrap:wrap;margin-top:6px;}
+    .doc-desc{font-size:13.5px;color:var(--text-secondary);line-height:1.7;margin-top:12px;max-width:60ch;}
+    .doc-actions{display:flex;align-items:center;gap:12px;flex-shrink:0;}
+    .dl-btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--purple-primary);padding:10px 18px;border:1px solid rgba(74,61,117,.22);background:rgba(74,61,117,.04);cursor:pointer;transition:all .25s ease;white-space:nowrap;}
+    .dl-btn:hover{border-color:rgba(74,61,117,.45);background:rgba(74,61,117,.08);}
+    .dl-btn svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2;}
+    .version-tag{font-family:var(--mono);font-size:9px;letter-spacing:1px;color:var(--accent-green);font-weight:500;}
+    .sample-tag{font-family:var(--mono);font-size:9px;letter-spacing:1px;color:var(--accent-amber);font-weight:500;}
+
+    .ver-toggle{font-family:var(--mono);font-size:9px;letter-spacing:1px;color:var(--text-tertiary);cursor:pointer;background:none;border:none;padding:6px 0;margin-top:8px;text-transform:uppercase;transition:color .2s;}
+    .ver-toggle:hover{color:var(--text-primary);}
+    .ver-list{display:none;margin-top:8px;padding-top:8px;border-top:1px solid rgba(15,18,30,0.04);}
+    .ver-list.open{display:block;}
+    .ver-row{display:flex;align-items:center;gap:16px;padding:4px 0;}
+    .ver-row a{font-family:var(--mono);font-size:9px;letter-spacing:1px;color:var(--text-tertiary);transition:color .2s;}
+    .ver-row a:hover{color:var(--purple-primary);}
+    .ver-num{font-family:var(--mono);font-size:9px;letter-spacing:1px;color:var(--text-tertiary);min-width:32px;}
+
+    .wp-featured{position:relative;padding:28px;background:rgba(255,255,255,0.78);backdrop-filter:blur(22px) saturate(1.35);-webkit-backdrop-filter:blur(22px) saturate(1.35);border:1px solid rgba(15,18,30,0.06);margin-bottom:var(--space-2);}
+    .wp-featured::before,.wp-featured::after{content:'';position:absolute;width:12px;height:12px;border-color:rgba(15,18,30,0.08);border-style:solid;pointer-events:none;}
+    .wp-featured::before{top:0;left:0;border-width:1px 0 0 1px;}
+    .wp-featured::after{top:0;right:0;border-width:1px 1px 0 0;}
+    .toc-preview{margin-top:var(--space-4);padding:var(--space-3);background:var(--bg-panel);border:1px solid var(--border-glass);}
+    .toc-label{font-family:var(--mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--text-tertiary);margin-bottom:12px;display:block;}
     .toc-list{list-style:none;padding:0;margin:0;}
-    .toc-list li{font-size:13px;color:var(--text-tertiary);padding:4px 0;font-family:var(--sans);}
-    .toc-list li.section-entry{color:var(--text-secondary);font-weight:600;padding-top:12px;}
-    .toc-list li.section-entry:first-child{padding-top:0;}
-    .coming-soon{padding:var(--space-6) 0;max-width:720px;margin:0 auto;}
-    .coming-inner{padding:var(--space-4);border:1px dashed rgba(255,255,255,.06);}
-    .coming-title{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-tertiary);margin-bottom:8px;}
-    .coming-desc{font-size:14px;font-weight:300;color:var(--text-tertiary);line-height:1.7;}
-    footer{position:relative;z-index:1;border-top:1px solid var(--border-glass);padding:var(--space-6) 0 var(--space-6);font-family:var(--mono);font-size:10px;letter-spacing:1px;}
-    .footer-inner{max-width:var(--max);margin:0 auto;padding:0 var(--space-2);color:rgba(255,255,255,.38);}
+    .toc-list li{font-size:13px;color:var(--text-secondary);padding:3px 0;font-family:var(--sans);}
+
+    footer{border-top:1px solid var(--border-subtle);padding:var(--space-6) 0 var(--space-4);margin-top:var(--space-4);background:#f5f5f7;color:var(--text-tertiary);font-family:var(--mono);font-size:12px;letter-spacing:1px;}
+    .footer-inner{max-width:var(--max);margin:0 auto;padding:0 20px;color:var(--text-tertiary);}
+
     .reveal{opacity:0;animation:fadeUp .7s var(--ease) both;}
     @keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
-    .reveal-1{animation-delay:.1s;}
-    .reveal-2{animation-delay:.2s;}
-    .reveal-3{animation-delay:.35s;}
-    @media(max-width:768px){:root{--nav-height:60px;}.site-header{padding:0 16px;height:60px;}.brand-name{font-size:11px!important;letter-spacing:1.5px!important;}.section-title{font-size:22px!important;margin-bottom:12px!important;}}
-  </style>
+    .r1{animation-delay:.1s;}.r2{animation-delay:.15s;}.r3{animation-delay:.2s;}.r4{animation-delay:.25s;}.r5{animation-delay:.3s;}.r6{animation-delay:.35s;}.r7{animation-delay:.4s;}.r8{animation-delay:.45s;}.r9{animation-delay:.5s;}.r10{animation-delay:.55s;}
+
+    @media(max-width:768px){
+      .site-header{height:56px;padding:0 12px;}
+      :root{--nav-height:56px;}
+      .doc-top{flex-direction:column;}
+      .doc-actions{width:100%;}
+      .dl-btn{width:100%;justify-content:center;}
+    }
+/* ── ROOT TOKENS ── */
+:root{
+  --hairline:rgba(15,18,30,0.08);
+  --glass-bg:rgba(255,255,255,0.58);
+  --glass-border:rgba(255,255,255,0.45);
+}
+
+/* ── BODY ── */
+body{background:#f5f5f7!important;}
+body::before{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background: #f9fafb;}
+
+/* ── HEADER ── */
+.site-header,header,.nav-bar{background:rgba(245,245,247,0.92)!important;backdrop-filter:blur(24px) saturate(1.4)!important;-webkit-backdrop-filter:blur(24px) saturate(1.4)!important;border-bottom:1px solid var(--hairline)!important;}
+.brand-name{color:rgba(15,18,30,0.92)!important;}
+
+/* ── SECTION HEAD (glass box) ── */
+.section-head{
+  display:flex!important;
+  align-items:flex-end!important;
+  justify-content:space-between!important;
+  gap:16px!important;
+  flex-wrap:wrap!important;
+  margin-bottom:24px!important;
+  background:rgba(255,255,255,0.45)!important;
+  backdrop-filter:blur(18px) saturate(1.25)!important;
+  -webkit-backdrop-filter:blur(18px) saturate(1.25)!important;
+  border-radius:16px!important;
+  padding:28px 24px!important;
+  text-align:left!important;
+}
+
+/* ── SECTION LABEL ── */
+.section-label{
+  font-family:var(--mono,Consolas,'IBM Plex Mono',monospace)!important;
+  font-size:10px!important;
+  letter-spacing:5px!important;
+  text-transform:uppercase!important;
+  color:rgba(15,18,30,0.44)!important;
+  display:block!important;
+  margin-bottom:12px!important;
+}
+
+/* ── SECTION TITLE ── */
+.section-title,h1.section-title{
+  font-family:var(--serif,Georgia,'Source Serif 4',serif)!important;
+  font-size:clamp(30px,4vw,50px)!important;
+  font-weight:300!important;
+  line-height:1.1!important;
+  margin:0!important;
+  letter-spacing:-0.03em!important;
+  color:#3d3262!important;
+}
+
+/* ── SECTION LEAD ── */
+.section-lead{
+  max-width:580px!important;
+  color:rgba(15,18,30,0.64)!important;
+  font-weight:300!important;
+  line-height:1.75!important;
+  margin:16px 0 0!important;
+  margin-left:0!important;
+  margin-right:auto!important;
+  font-size:16px!important;
+}
+
+/* ── CARDS: glass, rounded, no brackets ── */
+.doc-card,.wp-featured,.artifact-card,.cert-card,.research-card,.fee-card,.process-card,.guarantee-box{
+  background:rgba(255,255,255,0.65)!important;
+  backdrop-filter:blur(20px) saturate(1.3)!important;
+  -webkit-backdrop-filter:blur(20px) saturate(1.3)!important;
+  border:1px solid rgba(15,18,30,0.06)!important;
+  border-radius:16px!important;
+  box-shadow:0 1px 2px rgba(15,18,30,0.03),0 4px 16px rgba(15,18,30,0.02)!important;
+  overflow:hidden;
+}
+/* Kill bracket corners */
+.doc-card::before,.doc-card::after,
+.wp-featured::before,.wp-featured::after,
+.hud-frame::before,.hud-frame::after,
+.hud-frame>i::before,.hud-frame>i::after{display:none!important;}
+
+/* ── HUD FRAMES ── */
+.hud-frame{
+  border-radius:16px!important;
+  border:1px solid var(--hairline)!important;
+  background:rgba(255,255,255,0.40)!important;
+  backdrop-filter:blur(18px) saturate(1.2)!important;
+  -webkit-backdrop-filter:blur(18px) saturate(1.2)!important;
+}
+
+/* ── SECTIONS ── */
+.section{border-top:1px solid var(--hairline)!important;padding-top:80px!important;padding-bottom:80px!important;}
+
+/* ── REVEALS ── */
+.reveal{opacity:0;transform:translateY(8px);transition:opacity .35s ease,transform .35s ease;}
+.reveal.active{opacity:1!important;transform:none!important;}
+@media(prefers-reduced-motion:reduce){.reveal{opacity:1!important;transform:none!important;transition:none!important;}}
+
+/* ── MISC ── */
+a:hover{filter:none!important;}
+::selection{background:rgba(0,0,0,0.03);color:#111318;}
+.hud-scanline::before,.hud-scanline::after{display:none!important;}
+.sa-particles,.sa-noise,.sa-vignette,.hud-shimmer{display:none!important;}
+.section-title,.section-label,.hud-title,.hud-label,.hud-desc,.hud-link,h1,h2,h3,p,span,a,div{text-shadow:none!important;}
+footer{border-top:1px solid var(--hairline)!important;}
+</style>
+  <link rel="stylesheet" href="type.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Sentinel Authority",
+    "url": "https://sentinelauthority.org",
+    "logo": "https://sentinelauthority.org/og.webp",
+    "description": "Independent conformance certification body for autonomous systems. ODDC certification attests to runtime-enforced operational boundary compliance.",
+    "sameAs": [],
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "contactType": "customer service",
+      "url": "https://app.sentinelauthority.org"
+    }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Sentinel Authority",
+    "url": "https://sentinelauthority.org",
+    "description": "Independent conformance certification for autonomous systems.",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://sentinelauthority.org/?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>
 </head>
 <body>
-  <a href="#main" class="skip-link">Skip to content</a>
   <header class="site-header">
-    <div class="nav-inner">
+    <nav class="nav-inner">
       <a href="index.html" class="brand">
         <div class="brand-mark"><div class="brand-mark-inner"></div></div>
         <div class="brand-name">Sentinel Authority</div>
       </a>
-      <a href="index.html" style="font-family:var(--mono);font-size:10px;letter-spacing:1.5px;color:var(--text-tertiary);text-decoration:none;display:flex;align-items:center;gap:6px;">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-        BACK
-      </a>
-    </div>
+      <a href="index.html" class="back-link">&#x2190; Back</a>
+    </nav>
   </header>
-  <div id="nav-drawer" class="nav-drawer" role="navigation" aria-label="Mobile navigation">
-    <a href="index.html#envelo" data-section="envelo">STANDARD</a>
-    <a href="index.html#buyers" data-section="buyers">ENTERPRISE</a>
-    <a href="index.html#security" data-section="security">SECURITY</a>
-    <a href="index.html#criteria" data-section="criteria">CERTIFICATION</a>
-    <a href="index.html#process" data-section="process">PROCESS</a>
-    <a href="research.html" class="active">RESEARCH</a>
-    <a href="index.html#artifacts" data-section="artifacts">ARTIFACTS</a>
-    <a href="index.html#verify" data-section="verify">REGISTRY</a>
-    <a href="index.html#contact" data-section="contact">CONTACT</a>
-    <a href="https://app.sentinelauthority.org" class="nav-signin">SIGN IN</a>
-  </div>
-  <div class="grid-overlay"></div>
-  <main id="main" role="main">
-    <section class="section" style="margin-top:var(--nav-height);">
-      <div class="section-head reveal reveal-1">
+
+  <main role="main">
+    <div style="padding-top:calc(var(--nav-height) + 48px);">
+      <div class="section-head reveal">
         <div>
-          <span class="section-label">PUBLICATIONS</span>
-          <h2 class="section-title">Research</h2>
-          <p class="section-lead">Published analysis on autonomous systems conformance, certification architecture, and regulatory frameworks. All documents are public and may be cited or circulated without restriction.</p>
+          <span class="section-label reveal r1">PUBLICATIONS</span>
+          <h1 class="section-title reveal r2">Technical Publications</h1>
+          <p class="section-lead reveal r3">Foundational documentation for the ODDC conformance framework, ENVELO enforcement architecture, and CAT-72 assessment methodology.</p>
         </div>
       </div>
-    </section>
-    <div class="paper-section reveal reveal-2">
-      <span class="paper-type">White Paper</span>
-      <h2 class="paper-title">When Self-Certification Fails</h2>
-      <p class="paper-subtitle">Lessons from Boeing 737 MAX for the Age of Autonomous Systems</p>
-      <p class="paper-abstract">This white paper examines the structural certification failure that caused two Boeing 737 MAX crashes, killing 346 people. Drawing on the U.S. House Transportation Committee&#8217;s 238-page investigation and Department of Justice proceedings, it identifies the same self-certification vulnerability emerging across the autonomous systems landscape&#8212;and introduces ODDC as the independent conformance framework designed to prevent aviation&#8217;s failures from repeating in the age of autonomous systems.</p>
-      <div class="paper-meta">
-        <span class="meta-tag"><span class="meta-dot"></span> February 2026</span>
-        <span class="meta-tag"><span class="meta-dot"></span> Public Document</span>
-        <span class="meta-tag"><span class="meta-dot"></span> 8 Pages</span>
+    </div>
+
+    <div style="max-width:720px;margin:0 auto;">
+
+    <!-- ══════════════════════════════════════ -->
+    <!-- WHITE PAPERS                           -->
+    <!-- ══════════════════════════════════════ -->
+    <div class="cat-header reveal r1"><span class="cat-label">Informative — White Papers</span></div>
+
+    <!-- Featured -->
+    <div class="wp-featured reveal r2">
+      <div class="doc-meta" style="margin-bottom:8px;"><span class="version-tag">INFORMATIVE</span></div>
+      <div class="doc-title" style="font-size:18px;">When Self-Certification Fails</div>
+      <div class="doc-meta" style="margin-top:8px;">
+        <span>FEBRUARY 2026</span>
+        <span>12 PAGES</span>
+        <span>151 KB</span>
       </div>
-      <a href="Sentinel_Authority_When_Self-Certification_Fails.pdf" class="download-btn" download="Sentinel_Authority_When_Self-Certification_Fails.pdf">
-        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        Download PDF
-      </a>
+      <div class="doc-desc">The Boeing 737 MAX certification process illustrates the structural risks of delegated self-certification in safety-critical systems. Drawing on the Congressional investigation and DOJ proceedings, this paper analyzes the certification failure and introduces ODDC as the independent conformance framework designed to address it.</div>
+      <div style="margin-top:20px;">
+        <a href="SA_White_Paper_When_Self-Certification_Fails.pdf" class="dl-btn" target="_blank">
+          <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            PDF
+        </a>
+      </div>
       <div class="toc-preview">
         <span class="toc-label">Contents</span>
         <ul class="toc-list">
-          <li class="section-entry">Executive Summary</li>
-          <li class="section-entry">1. The Boeing 737 MAX: Anatomy of a Certification Failure</li>
-          <li>&emsp;1.1 What Happened</li>
-          <li>&emsp;1.2 Five Systemic Failures</li>
-          <li>&emsp;1.3 The Delegation Model</li>
-          <li>&emsp;1.4 The Accountability Gap</li>
-          <li class="section-entry">2. The Autonomous Systems Parallel</li>
-          <li>&emsp;2.1 A Familiar Pattern</li>
-          <li>&emsp;2.2 The Scope of Exposure</li>
-          <li>&emsp;2.3 The Question</li>
-          <li class="section-entry">3. ODDC: The Structural Solution</li>
-          <li>&emsp;3.1 Design Principles</li>
-          <li>&emsp;3.2 How ODDC Works</li>
-          <li>&emsp;3.3 Why This Architecture Matters</li>
-          <li class="section-entry">4. The Regulatory Case for Independent Conformance</li>
-          <li>&emsp;4.1 Cutting Both Ways</li>
-          <li>&emsp;4.2 What Regulators Need</li>
-          <li>&emsp;4.3 Precedent in Other Industries</li>
-          <li class="section-entry">5. Conclusion: Before, Not After</li>
-          <li class="section-entry">References</li>
+          <li>Executive Summary</li>
+          <li>1. The Boeing 737 MAX: Anatomy of a Certification Failure</li>
+          <li>2. The Autonomous Parallel</li>
+          <li>3. ODDC: The Structural Solution</li>
+          <li>4. The Regulatory Case for Independent Conformance</li>
+          <li>5. Conclusion: Before, Not After</li>
+          <li>References</li>
         </ul>
       </div>
     </div>
-    <div class="coming-soon reveal reveal-3">
-      <div class="coming-inner">
-        <p class="coming-title">Forthcoming</p>
-        <p class="coming-desc">Additional publications on ENVELO enforcement architecture, CAT-72 test methodology, and domain-specific conformance applications are in development.</p>
+
+    <!-- WP-01 -->
+    <div class="doc-card reveal r2">
+      <div class="doc-top">
+        <div class="doc-info">
+          <div class="doc-title">Insurance Considerations in Autonomous System Underwriting</div>
+          <div class="doc-meta" style="margin-top:6px;">
+            <span>FEBRUARY 2026</span>
+          </div>
+          <div class="doc-desc">Implications for autonomous system underwriting and the role of independent conformance data. Examines the underwriting blind spot, analyzes Swiss Re actuarial data and the Waymo-Swiss Re study covering 25.3 million autonomous miles.</div>
+        </div>
+        <div class="doc-actions">
+          <a href="publications/The_Insurance_Imperative.pdf" class="dl-btn" target="_blank">
+            <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            PDF
+          </a>
+        </div>
       </div>
     </div>
+
+    <!-- WP-02 -->
+    <div class="doc-card reveal r3">
+      <div class="doc-top">
+        <div class="doc-info">
+          <div class="doc-title">Process Attestation vs. Behavioral Attestation</div>
+          <div class="doc-meta" style="margin-top:6px;">
+            <span>FEBRUARY 2026</span>
+          </div>
+          <div class="doc-desc">Why existing AI governance frameworks verify management systems, not runtime behavior. Framework-by-framework analysis of ISO 42001, NIST AI RMF, the EU AI Act, SOC 2, and sector-specific standards.</div>
+        </div>
+        <div class="doc-actions">
+          <a href="publications/Process_vs_Behavioral_Attestation.pdf" class="dl-btn" target="_blank">
+            <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            PDF
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- WP-03 -->
+    <div class="doc-card reveal r3">
+      <div class="doc-top">
+        <div class="doc-info">
+          <div class="doc-title">The Accountability Chain</div>
+          <div class="doc-meta" style="margin-top:6px;">
+            <span>FEBRUARY 2026</span>
+          </div>
+          <div class="doc-desc">How ODDC resolves multi-party liability in autonomous system incidents. Dissects five landmark cases including Tesla Autopilot, Cruise robotaxi, and healthcare AI litigation.</div>
+        </div>
+        <div class="doc-actions">
+          <a href="publications/The_Accountability_Chain.pdf" class="dl-btn" target="_blank">
+            <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            PDF
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- WP-04 -->
+    <div class="doc-card reveal r4">
+      <div class="doc-top">
+        <div class="doc-info">
+          <div class="doc-title">Cross-Domain Analysis of Autonomous System Deployment Absent Behavioral Verification Standards</div>
+          <div class="doc-meta" style="margin-top:6px;">
+            <span>FEBRUARY 2026</span>
+          </div>
+          <div class="doc-desc">Cross-domain analysis of autonomous deployment without behavioral verification. Covers autonomous vehicles, industrial robotics, healthcare AI, data centers, energy grid, aviation, defense, construction, logistics, and oil and gas.</div>
+        </div>
+        <div class="doc-actions">
+          <a href="publications/Ten_Domains_Zero_Standards.pdf" class="dl-btn" target="_blank">
+            <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            PDF
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════ -->
+    <!-- STANDARD                               -->
+    <!-- ══════════════════════════════════════ -->
+    <div class="cat-header reveal r4"><span class="cat-label">Normative — Standard</span></div>
+
+    <div class="doc-card reveal r5">
+      <div class="doc-top">
+        <div class="doc-info">
+          <div class="doc-title">ODDC Conformance Guide</div>
+          <div class="doc-meta">
+            <span class="version-tag">v4.0 · CURRENT</span>
+            <span>FEBRUARY 2026</span>
+            <span>103 KB</span>
+          </div>
+          <div class="doc-desc">Comprehensive specification governing Operational Design Domain Conformance determination, including scope definitions, conformance gate requirements, evaluation criteria, and registry procedures.</div>
+        </div>
+        <div class="doc-actions">
+          <a href="docs/ODDC_Certification_Guide_v4.0.pdf" class="dl-btn" target="_blank">
+            <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            PDF
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════ -->
+    <!-- PROCEDURES                             -->
+    <!-- ══════════════════════════════════════ -->
+    <div class="cat-header reveal r5"><span class="cat-label">Normative — Procedures</span></div>
+
+    <div class="doc-card reveal r6">
+      <div class="doc-top">
+        <div class="doc-info">
+          <div class="doc-title">CAT-72 Procedure</div>
+          <div class="doc-meta">
+            <span class="version-tag">v3.0 · CURRENT</span>
+            <span>FEBRUARY 2026</span>
+          </div>
+          <div class="doc-desc">Cumulative enforcement verification procedure. Defines enforcement exposure requirements, telemetry integrity standards, audit chain preservation, and conformance determination criteria across active operational intervals.</div>
+        </div>
+        <div class="doc-actions">
+          <a href="docs/CAT-72_Procedure_v3.0.pdf" class="dl-btn" target="_blank">
+            <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            PDF
+          </a>
+        </div>
+      </div>
+      <button class="ver-toggle" onclick="this.nextElementSibling.classList.toggle('open')">Version History &#x25BE;</button>
+      <div class="ver-list">
+        <div class="ver-row"><span class="ver-num">v2.0</span><a href="docs/CAT-72_Procedure_v2.0.pdf">CAT-72_Procedure_v2.0.pdf</a></div>
+        <div class="ver-row"><span class="ver-num">v1.0</span><a href="docs/CAT-72_Procedure_v1.0.pdf">CAT-72_Procedure_v1.0.pdf</a></div>
+      </div>
+    </div>
+
+    <div class="doc-card reveal r6">
+      <div class="doc-top">
+        <div class="doc-info">
+          <div class="doc-title">ENVELO Interlock Requirements</div>
+          <div class="doc-meta">
+            <span class="version-tag">v3.0 · CURRENT</span>
+            <span>FEBRUARY 2026</span>
+          </div>
+          <div class="doc-desc">Technical requirements for the Enforced Non-Violable Execution-Limit Override interlock. Covers deployment architecture, telemetry signing, hash-chain integrity, and minimum runtime enforcement thresholds.</div>
+        </div>
+        <div class="doc-actions">
+          <a href="docs/ENVELO_Requirements_v3.0.pdf" class="dl-btn" target="_blank">
+            <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            PDF
+          </a>
+        </div>
+      </div>
+      <button class="ver-toggle" onclick="this.nextElementSibling.classList.toggle('open')">Version History &#x25BE;</button>
+      <div class="ver-list">
+        <div class="ver-row"><span class="ver-num">v2.0</span><a href="docs/ENVELO_Requirements_v2.0.pdf">ENVELO_Requirements_v2.0.pdf</a></div>
+        <div class="ver-row"><span class="ver-num">v1.0</span><a href="docs/ENVELO_Requirements_v1.0.pdf">ENVELO_Requirements_v1.0.pdf</a></div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════ -->
+    <!-- GUIDES                                 -->
+    <!-- ══════════════════════════════════════ -->
+    <div class="cat-header reveal r7"><span class="cat-label">Informative — Guides</span></div>
+
+    <div class="doc-card reveal r7">
+      <div class="doc-top">
+        <div class="doc-info">
+          <div class="doc-title">ODDC Overview</div>
+          <div class="doc-meta">
+            <span class="version-tag">v3.0 · CURRENT</span>
+            <span>FEBRUARY 2026</span>
+          </div>
+          <div class="doc-desc">Executive-level introduction to the ODDC conformance framework. Covers the five conformance gates, determination process, and registry architecture.</div>
+        </div>
+        <div class="doc-actions">
+          <a href="docs/ODDC_Overview_v3.0.pdf" class="dl-btn" target="_blank">
+            <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            PDF
+          </a>
+        </div>
+      </div>
+      <button class="ver-toggle" onclick="this.nextElementSibling.classList.toggle('open')">Version History &#x25BE;</button>
+      <div class="ver-list">
+        <div class="ver-row"><span class="ver-num">v2.0</span><a href="docs/ODDC_Overview_v2.0.pdf">ODDC_Overview_v2.0.pdf</a></div>
+        <div class="ver-row"><span class="ver-num">v1.0</span><a href="docs/ODDC_Overview_v1.0.pdf">ODDC_Overview_v1.0.pdf</a></div>
+      </div>
+    </div>
+
+    <div class="doc-card reveal r8">
+      <div class="doc-top">
+        <div class="doc-info">
+          <div class="doc-title">ODDC Conformance Scenarios</div>
+          <div class="doc-meta">
+            <span class="version-tag">v3.0 · CURRENT</span>
+            <span>FEBRUARY 2026</span>
+          </div>
+          <div class="doc-desc">Representative conformance scenarios across operational sectors including autonomous vehicles, industrial robotics, healthcare systems, and critical infrastructure.</div>
+        </div>
+        <div class="doc-actions">
+          <a href="docs/ODDC_Scenarios_v3.0.pdf" class="dl-btn" target="_blank">
+            <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            PDF
+          </a>
+        </div>
+      </div>
+      <button class="ver-toggle" onclick="this.nextElementSibling.classList.toggle('open')">Version History &#x25BE;</button>
+      <div class="ver-list">
+        <div class="ver-row"><span class="ver-num">v2.0</span><a href="docs/ODDC_Scenarios_v2.0.pdf">ODDC_Scenarios_v2.0.pdf</a></div>
+        <div class="ver-row"><span class="ver-num">v1.0</span><a href="docs/ODDC_Scenarios_v1.0.pdf">ODDC_Scenarios_v1.0.pdf</a></div>
+      </div>
+    </div>
+
+    <div class="doc-card reveal r9">
+      <div class="doc-top">
+        <div class="doc-info">
+          <div class="doc-title">Conformance Determination Clarifications</div>
+          <div class="doc-meta">
+            <span class="version-tag">v3.0 · CURRENT</span>
+            <span>FEBRUARY 2026</span>
+          </div>
+          <div class="doc-desc">Detailed responses to anticipated technical, legal, and operational questions regarding ODDC conformance determination and ENVELO enforcement architecture.</div>
+        </div>
+        <div class="doc-actions">
+          <a href="docs/ODDC_Critical_QA_v3.0.pdf" class="dl-btn" target="_blank">
+            <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            PDF
+          </a>
+        </div>
+      </div>
+      <button class="ver-toggle" onclick="this.nextElementSibling.classList.toggle('open')">Version History &#x25BE;</button>
+      <div class="ver-list">
+        <div class="ver-row"><span class="ver-num">v2.0</span><a href="docs/ODDC_Critical_QA_v2.0.pdf">ODDC_Critical_QA_v2.0.pdf</a></div>
+        <div class="ver-row"><span class="ver-num">v1.0</span><a href="docs/ODDC_Critical_QA_v1.0.pdf">ODDC_Critical_QA_v1.0.pdf</a></div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════ -->
+    <!-- REFERENCE                              -->
+    <!-- ══════════════════════════════════════ -->
+    <div class="cat-header reveal r10"><span class="cat-label">Informative — Reference</span></div>
+
+    <div class="doc-card reveal r10">
+      <div class="doc-top">
+        <div class="doc-info">
+          <div class="doc-title">Sample ODDC Certificate</div>
+          <div class="doc-meta">
+            <span class="sample-tag">SAMPLE</span>
+            <span>FEBRUARY 2026</span>
+          </div>
+          <div class="doc-desc">Representative certificate of conformance illustrating the format, fields, and integrity verification structure of an issued ODDC determination.</div>
+        </div>
+        <div class="doc-actions">
+          <a href="docs/ODDC_Sample_Certificate.pdf" class="dl-btn" target="_blank">
+            <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            PDF
+          </a>
+        </div>
+      </div>
+    </div>
+
+    </div>
   </main>
+
   <footer>
-    <div class="footer-inner">&copy; <span id="year"></span> SENTINEL AUTHORITY</div>
+    <div class="footer-inner">
+      <div>&#169; <span id="year"></span> Sentinel Authority</div>
+      <div style="margin-top:8px;font-size:9px;letter-spacing:1px;"><a href="privacy.html" style="color:inherit;">Privacy Notice</a> &#183; <a href="terms.html" style="color:inherit;">Terms of Use</a></div>
+    </div>
   </footer>
-  <script>
-    document.getElementById('year').textContent=new Date().getFullYear();
-    const toggle=document.querySelector('.nav-toggle'),drawer=document.getElementById('nav-drawer'),overlay=document.querySelector('.drawer-overlay');
-    if(toggle&&drawer&&overlay){toggle.addEventListener('click',()=>{const o=drawer.classList.toggle('open');overlay.classList.toggle('open',o);toggle.setAttribute('aria-expanded',o);});overlay.addEventListener('click',()=>{drawer.classList.remove('open');overlay.classList.remove('open');toggle.setAttribute('aria-expanded','false');});drawer.querySelectorAll('a').forEach(a=>{a.addEventListener('click',()=>{drawer.classList.remove('open');overlay.classList.remove('open');toggle.setAttribute('aria-expanded','false');});});}
-  </script>
+  <script>document.getElementById('year').textContent=new Date().getFullYear();</script>
+<script>
+(function(){
+  /* Green status dot on brand */
+  var b=document.querySelector(".brand");
+  if(b){var d=document.createElement("span");d.style.cssText="display:inline-block;width:4px;height:4px;border-radius:50%;background:rgba(22,135,62,1.00);margin-left:8px;vertical-align:middle;";b.appendChild(d);}
+  /* Reveal observer */
+  var obs=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add("active");obs.unobserve(e.target);}});},{threshold:0.1});
+  document.querySelectorAll(".reveal,.section-head").forEach(function(el){obs.observe(el);});
+})();
+</script>
 </body>
 </html>

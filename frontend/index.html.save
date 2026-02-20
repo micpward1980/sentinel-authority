@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en" style="scroll-behavior:smooth;">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="theme-color" content="#f5f5f7">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Sentinel Authority — Conformance Certification for Autonomous Systems</title>
+
+  <meta name="description" content="ODDC certification attests that an autonomous system operates within declared operational limits, with runtime enforcement verified independently and recorded immutably." />
+
+  <meta property="og:title" content="Sentinel Authority" />
+  <meta property="og:description" content="Independent conformance certification for autonomous systems." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://sentinelauthority.org/" />
+  <meta property="og:image" content="https://sentinelauthority.org/og.webp" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=IBM+Plex+Mono:wght@300;400;500;600&family=Source+Serif+4:opsz,wght@8..60,300;400&display=swap" rel="stylesheet" />
+
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'><rect x='2' y='2' width='32' height='32' rx='8' fill='%237B6BAE' stroke='%23b8aad4' stroke-width='2'/><circle cx='18' cy='18' r='6' fill='%23e0d8f0'/></svg>" />
+
+  <style>
+    /* SENTINEL AUTHORITY - GOLDEN MASTER V4 (SCRUBBED) */
+    :root {
+      color-scheme: light;
+      --purple-primary: #4a3d75;
+      --purple-bright: #6b5a9e;
+      --accent-green: #16873e;
+      --accent-amber: #9e6e12;
+      --accent-red: #b43434;
+
+      /* Premium Frost System */
+      --bg-deep: #f5f5f7;
+      --text-primary: rgba(15,18,30,0.94);
+      --text-secondary: rgba(15,18,30,0.64);
+      --text-tertiary: rgba(15,18,30,0.44);
+
+      /* Glassmorphism System */
+      --glass-bg: rgba(255,255,255,0.65);
+      --glass-border: rgba(255,255,255,0.6);
+      --glass-inset: rgba(255,255,255,0.4);
+      --glass-shadow-1: rgba(15,18,30,0.04);
+      --glass-shadow-2: rgba(15,18,30,0.06);
+      --hairline: rgba(15,18,30,0.08);
+
+      /* Typography */
+      --serif: 'Source Serif 4', Georgia, serif;
+      --mono: 'IBM Plex Mono', Consolas, monospace;
+      --sans: 'Inter', system-ui, sans-serif;
+
+      /* Layout */
+      --max: 1100px;
+      --nav-height: 72px;
+      --space-2: 16px; 
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: var(--sans);
+      background-color: var(--bg-deep);
+      color: var(--text-primary);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      position: relative;
+    }
+
+    /* Ambient Background Gradient */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background: 
+        radial-gradient(ellipse 1000px 700px at 10% 15%, rgba(88,62,165,0.05), transparent 55%),
+        radial-gradient(ellipse 900px 600px at 85% 75%, rgba(16,185,80,0.04), transparent 50%),
+        radial-gradient(ellipse 1200px 500px at 50% 45%, rgba(88,62,165,0.03), transparent 45%);
+    }
+
+    h1, h2, h3 { margin: 0; font-weight: inherit; }
+    a { color: inherit; text-decoration: none; transition: color 0.2s; }
+    
+    /* Navigation */
+    .site-header {
+      position: fixed; top: 0; left: 0; right: 0;
+      height: var(--nav-height);
+      display: flex; align-items: center;
+      padding: 0 var(--space-2);
+      z-index: 100;
+      background: rgba(245, 245, 247, 0.85);
+      backdrop-filter: blur(20px) saturate(1.4);
+      -webkit-backdrop-filter: blur(20px) saturate(1.4);
+      border-bottom: 1px solid var(--hairline);
+    }
+
+    .nav-inner {
+      width: 100%; max-width: var(--max); margin: 0 auto;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand-mark {
+      width: 32px; height: 32px;
+      background: var(--purple-bright);
+      border: 1px solid #b8aad4; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      position: relative; overflow: hidden;
+    }
+    .brand-mark-inner {
+      width: 10px; height: 10px; background: #e0d8f0; border-radius: 50%;
+      animation: pulse 4s infinite ease-in-out;
+    }
+    @keyframes pulse { 0%,100% { opacity: 0.6; transform: scale(0.9); } 50% { opacity: 1; transform: scale(1.1); } }
+
+    .brand-name {
+      font-family: var(--mono); font-size: 11px; letter-spacing: 2px;
+      text-transform: uppercase; color: var(--text-primary); font-weight: 500;
+    }
+
+    .nav-links { display: flex; gap: 32px; }
+    .nav-links a {
+      font-family: var(--mono); font-size: 10px; letter-spacing: 1.5px;
+      text-transform: uppercase; color: var(--text-secondary);
+    }
+    .nav-links a:hover { color: var(--purple-primary); }
+    .nav-btn {
+      color: var(--purple-primary) !important; 
+      border: 1px solid var(--hairline);
+      padding: 6px 12px; border-radius: 4px;
+      transition: all 0.2s ease;
+    }
+    .nav-btn:hover { background: rgba(74, 61, 117, 0.05); border-color: var(--purple-primary); }
+
+    /* Mobile Nav */
+    .nav-toggle { display: none; background: none; border: none; cursor: pointer; }
+    .nav-drawer {
+      position: fixed; top: var(--nav-height); right: 0; bottom: 0;
+      width: 280px; background: rgba(250,250,252,0.98);
+      border-left: 1px solid var(--hairline);
+      padding: 40px; display: flex; flex-direction: column; gap: 24px;
+      transform: translateX(100%); transition: transform 0.3s var(--ease);
+      z-index: 90;
+    }
+    .nav-drawer.open { transform: translateX(0); }
+    .nav-drawer a {
+      font-family: var(--mono); font-size: 14px; letter-spacing: 1px;
+      text-transform: uppercase; color: var(--text-primary);
+      border-bottom: 1px solid var(--hairline); padding-bottom: 12px;
+    }
+    .drawer-overlay {
+      position: fixed; inset: 0; background: rgba(15,18,30,0.2);
+      z-index: 80; opacity: 0; pointer-events: none; transition: opacity 0.3s;
+    }
+    .drawer-overlay.open { opacity: 1; pointer-events: auto; }
+
+    /* Hero */
+    .hero {
+      padding-top: 140px; padding-bottom: 100px;
+      max-width: var(--max); margin: 0 auto;
+      padding-left: var(--space-2); padding-right: var(--space-2);
+      display: flex; gap: 60px; align-items: center;
+      position: relative;
+    }
+    .hero-content { flex: 1; position: relative; z-index: 2; }
+    .eyebrow {
+      font-family: var(--mono); font-size: 10px; letter-spacing: 3px;
+      text-transform: uppercase; color: var(--text-tertiary);
+      margin-bottom: 24px; display: block;
+    }
+    h1 {
+      font-family: var(--serif);
+      font-size: clamp(42px, 5vw, 72px);
+      line-height: 1.05; letter-spacing: -0.04em;
+      color: #3d3262; margin-bottom: 32px;
+    }
+    h1 span { display: block; font-style: italic; color: var(--text-primary); }
+    .lead {
+      font-size: 16px; line-height: 1.7; color: var(--text-secondary);
+      max-width: 540px; margin-bottom: 40px; font-weight: 400;
+    }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: 14px 28px; border-radius: 4px;
+      font-family: var(--mono); font-size: 11px; letter-spacing: 1px;
+      text-transform: uppercase; cursor: pointer;
+      border: 1px solid var(--hairline);
+      background: transparent; color: var(--text-primary);
+      transition: all 0.2s ease;
+    }
+    .btn:hover { border-color: var(--purple-primary); color: var(--purple-primary); transform: translateY(-1px); }
+    .btn-primary { border-color: var(--purple-primary); color: var(--purple-primary); background: rgba(74,61,117,0.03); }
+
+    .hero-viz {
+      flex: 1; height: 400px; position: relative;
+      border-radius: 24px; overflow: hidden;
+      background: linear-gradient(135deg, rgba(255,255,255,0.4), rgba(255,255,255,0.1));
+      border: 1px solid var(--hairline);
+    }
+    canvas { display: block; width: 100%; height: 100%; }
+
+    /* Sections */
+    .section { padding: 120px 0; border-top: 1px solid var(--hairline); }
+    .container { max-width: var(--max); margin: 0 auto; padding: 0 var(--space-2); }
+    .section-head {
+      margin-bottom: 60px;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      box-shadow: 0 4px 20px var(--glass-shadow-1);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      padding: 40px; border-radius: 16px;
+    }
+    .section-head h2 {
+      font-family: var(--serif); font-size: 32px; letter-spacing: -0.02em;
+      color: #3d3262; margin-top: 12px;
+    }
+
+    /* HUD Panels */
+    .hud-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
+    .hud-frame {
+      position: relative;
+      background: var(--glass-bg);
+      border: 1px solid var(--hairline);
+      box-shadow: var(--glass-shadow-1);
+      backdrop-filter: blur(12px);
+      padding: 32px; border-radius: 12px;
+      transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease);
+    }
+    .hud-frame:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 40px var(--glass-shadow-2);
+      border-color: rgba(74, 61, 117, 0.2);
+    }
+    .hud-frame::before, .hud-frame::after {
+      content: ''; position: absolute; width: 8px; height: 8px;
+      border-color: rgba(15,18,30,0.1); border-style: solid;
+      pointer-events: none; transition: border-color 0.3s;
+    }
+    .hud-frame::before { top: -1px; left: -1px; border-width: 1px 0 0 1px; border-radius: 12px 0 0 0; }
+    .hud-frame::after { bottom: -1px; right: -1px; border-width: 0 1px 1px 0; border-radius: 0 0 12px 0; }
+    .hud-frame:hover::before, .hud-frame:hover::after { border-color: var(--purple-primary); }
+    .hud-title { font-size: 16px; font-weight: 500; margin-bottom: 12px; color: var(--text-primary); }
+    .hud-desc { font-size: 14px; color: var(--text-secondary); line-height: 1.6; }
+
+    /* Verify Input */
+    .verify-input-group { display: flex; gap: 12px; margin-top: 24px; }
+    .verify-input {
+      flex: 1; background: rgba(255,255,255,0.8);
+      border: 1px solid var(--hairline);
+      padding: 12px 16px; border-radius: 6px;
+      font-family: var(--mono); color: var(--text-primary); font-size: 12px;
+      outline: none; transition: border-color 0.2s;
+    }
+    .verify-input:focus { border-color: var(--purple-primary); }
+    #verify-result { margin-top: 16px; height: 20px; font-family: var(--mono); font-size: 11px; color: var(--text-tertiary); }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--hairline);
+      padding: 80px 0 40px; margin-top: 80px;
+      background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.5));
+    }
+    .footer-inner {
+      max-width: var(--max); margin: 0 auto; padding: 0 var(--space-2);
+      display: flex; justify-content: space-between; flex-wrap: wrap; gap: 40px;
+    }
+    .foot-col h4 {
+      font-family: var(--mono); font-size: 10px; letter-spacing: 2px;
+      text-transform: uppercase; color: #3d3262; margin-bottom: 16px;
+    }
+    .foot-col a { display: block; font-size: 13px; color: var(--text-secondary); margin-bottom: 8px; }
+    .foot-col a:hover { color: var(--text-primary); }
+    .copyright { margin-top: 60px; font-family: var(--mono); font-size: 10px; color: var(--text-tertiary); text-align: center; }
+
+    #sa-boot {
+      position: fixed; inset: 0; z-index: 9999;
+      background: #f5f5f7; color: #3d3262;
+      font-family: var(--mono); font-size: 11px;
+      display: flex; align-items: center; justify-content: center;
+      transition: opacity 0.5s ease;
+    }
+    #sa-boot.done { opacity: 0; pointer-events: none; }
+
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .nav-toggle { display: block; width: 24px; height: 24px; position: relative; }
+      .nav-toggle::before, .nav-toggle::after {
+        content:''; position: absolute; left:0; width: 100%; height: 1px; background: #3d3262;
+      }
+      .nav-toggle::before { top: 8px; }
+      .nav-toggle::after { bottom: 8px; }
+      .hero { flex-direction: column; text-align: center; padding-top: 100px; }
+      .lead { margin-left: auto; margin-right: auto; }
+      .hero-viz { width: 100%; height: 300px; }
+      .brand-name { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div id="sa-boot"><div id="boot-text">INITIALIZING SENTINEL PROTOCOL...</div></div>
+
+  <header class="site-header">
+    <div class="nav-inner">
+      <a href="#" class="brand">
+        <div class="brand-mark"><div class="brand-mark-inner"></div></div>
+        <span class="brand-name">Sentinel Authority</span>
+      </a>
+      <nav class="nav-links">
+        <a href="#envelo">Standard</a>
+        <a href="#criteria">Conformance</a>
+        <a href="#verify">Registry</a>
+        <a href="research.html">Publications</a>
+        <a href="https://app.sentinelauthority.org" class="nav-btn">Portal</a>
+      </nav>
+      <button class="nav-toggle" onclick="toggleNav()" aria-label="Menu"></button>
+    </div>
+  </header>
+
+  <div class="drawer-overlay" onclick="toggleNav()"></div>
+  <div class="nav-drawer" id="mobile-nav">
+    <a href="#envelo" onclick="toggleNav()">Standard</a>
+    <a href="#criteria" onclick="toggleNav()">Conformance</a>
+    <a href="#verify" onclick="toggleNav()">Registry</a>
+    <a href="https://app.sentinelauthority.org" style="color:var(--purple-primary);">Portal Login</a>
+  </div>
+
+  <main>
+    <section class="hero">
+      <div class="hero-content">
+        <span class="eyebrow">ODDC Certification · Sentinel Authority</span>
+        <h1>Operational Boundary<br><span>Conformance</span></h1>
+        <p class="lead">The global standard for autonomous system certification. Runtime enforcement, verified independently, recorded immutably.</p>
+        <div style="display: flex; gap: 16px; justify-content: center;">
+            <a href="https://app.sentinelauthority.org" class="btn btn-primary">Start Certification</a>
+            <a href="#verify" class="btn">Verify Certificate</a>
+        </div>
+      </div>
+      <div class="hero-viz"><canvas id="hero-canvas"></canvas></div>
+    </section>
+
+    <section id="envelo" class="section">
+      <div class="container">
+        <div class="section-head">
+          <span class="eyebrow">The ENVELO Interlock</span>
+          <h2>Runtime Enforcement</h2>
+          <p class="lead" style="margin-top:16px;">Certified systems integrate the ENVELO Interlock—a non-bypassable logic gate that validates every action against the declared Operational Design Domain (ODD).</p>
+        </div>
+        <div class="hud-grid">
+            <div class="hud-frame">
+                <div class="hud-title">Deterministic</div>
+                <div class="hud-desc">Policy is enforced via cryptographic signatures. Logic is not heuristic; it is binary. Pass or Fail.</div>
+            </div>
+            <div class="hud-frame">
+                <div class="hud-title">Tamper-Evident</div>
+                <div class="hud-desc">Every enforcement decision is hashed and logged to the transparency ledger.</div>
+            </div>
+            <div class="hud-frame">
+                <div class="hud-title">Universal</div>
+                <div class="hud-desc">Compatible with ROS2, Apollo, and proprietary stacks via the Sentinel SDK.</div>
+            </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="verify" class="section">
+      <div class="container">
+        <div class="section-head"><span class="eyebrow">Public Registry</span><h2>Verify Certification</h2></div>
+        <div class="hud-frame" style="max-width: 500px; margin: 0 auto;">
+            <div class="hud-title">Certificate Lookup</div>
+            <p class="hud-desc">Enter a Sentinel ID to verify conformance status.</p>
+            <div class="verify-input-group">
+                <input type="text" class="verify-input" placeholder="e.g. SNTL-2026-X892" id="cert-input">
+                <button class="btn btn-primary" onclick="checkCert()">Check</button>
+            </div>
+            <div id="verify-result"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="foot-col">
+        <div class="brand-name">Sentinel Authority</div>
+        <p style="font-size:11px; color:var(--text-tertiary); max-width:200px; line-height:1.5; margin-top:12px;">Independent Conformance Determination Body.<br>North American Registry.</p>
+      </div>
+      <div class="foot-col"><h4>Framework</h4><a href="#">ENVELO Standard</a><a href="#">Criteria</a><a href="#">Integration SDK</a></div>
+      <div class="foot-col"><h4>Governance</h4><a href="#">About Us</a><a href="#">Transparency</a><a href="#">Contact</a></div>
+    </div>
+    <div class="copyright">© 2026 Sentinel Authority. All rights reserved.</div>
+  </footer>
+
+  <script>
+    window.addEventListener('load', () => { setTimeout(() => { document.getElementById('sa-boot').classList.add('done'); }, 600); });
+    function toggleNav() {
+        const d = document.getElementById('mobile-nav');
+        const o = document.querySelector('.drawer-overlay');
+        d.classList.toggle('open'); o.classList.toggle('open');
+    }
+    function checkCert() {
+        const val = document.getElementById('cert-input').value;
+        const res = document.getElementById('verify-result');
+        res.innerHTML = "Querying Ledger...";
+        res.style.color = "var(--purple-primary)";
+        setTimeout(() => {
+            if(val.length > 5) {
+                res.innerHTML = "Certificate <strong>"+val+"</strong> not found in public registry.";
+                res.style.color = "var(--accent-amber)";
+            } else {
+                res.innerHTML = "Invalid ID format.";
+                res.style.color = "var(--accent-red)";
+            }
+        }, 800);
+    }
+    (function() {
+        const c = document.getElementById('hero-canvas');
+        if (!c) return;
+        const ctx = c.getContext('2d');
+        let w, h;
+        const GRID_COLOR = 'rgba(15, 18, 30, 0.05)';
+        const NODE_COLOR = 'rgba(74, 61, 117, 0.6)';
+        const LINE_COLOR = 'rgba(74, 61, 117, 0.15)';
+        function resize() { w = c.width = c.parentElement.clientWidth; h = c.height = c.parentElement.clientHeight; }
+        window.addEventListener('resize', resize); resize();
+        let nodes = [];
+        for(let i=0; i<15; i++) { nodes.push({ x: Math.random()*w, y: Math.random()*h, vx: (Math.random()-0.5)*0.5, vy: (Math.random()-0.5)*0.5 }); }
+        function animate() {
+            ctx.clearRect(0,0,w,h);
+            ctx.fillStyle = NODE_COLOR;
+            nodes.forEach(n => {
+                n.x += n.vx; n.y += n.vy;
+                if(n.x < 0 || n.x > w) n.vx *= -1; if(n.y < 0 || n.y > h) n.vy *= -1;
+                ctx.beginPath(); ctx.arc(n.x, n.y, 2, 0, Math.PI*2); ctx.fill();
+            });
+            ctx.strokeStyle = LINE_COLOR;
+            for(let i=0; i<nodes.length; i++) {
+                for(let j=i+1; j<nodes.length; j++) {
+                    const dx = nodes[i].x - nodes[j].x; const dy = nodes[i].y - nodes[j].y;
+                    if(Math.sqrt(dx*dx + dy*dy) < 150) { ctx.beginPath(); ctx.moveTo(nodes[i].x, nodes[i].y); ctx.lineTo(nodes[j].x, nodes[j].y); ctx.stroke(); }
+                }
+            }
+            requestAnimationFrame(animate);
+        }
+        animate();
+    })();
+  </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="description" content="Sentinel Authority — ODDC conformance certification platform for autonomous systems." />
+    <meta property="og:title" content="Sentinel Authority Platform" />
+    <meta property="og:description" content="ODDC conformance certification platform for autonomous systems." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://app.sentinelauthority.org/" />
+    <meta name="robots" content="noindex" />
+    <title>Sentinel Authority Platform</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect x='2' y='2' width='28' height='28' rx='7' fill='%237B6BAE' stroke='%23b8aad4' stroke-width='2'/><circle cx='16' cy='16' r='6' fill='%23e0d8f0'/></svg>" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&family=Inter:wght@200;300;400;500&family=Source+Serif+4:opsz,wght@8..60,200;8..60,300;8..60,400&display=swap" rel="stylesheet" />
+    <style>
+      body { background: #ffffff; }
+      @media (max-width: 768px) {
+        body { overflow-x: hidden; }
+        .grid-cols-2, .grid-cols-3, .grid-cols-4 { grid-template-columns: 1fr !important; }
+        h1 { font-size: 24px !important; }
+        table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

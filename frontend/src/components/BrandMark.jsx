@@ -1,10 +1,22 @@
 import React from 'react';
 
-export default function BrandMark({ size = 24 }) {
+export default function BrandMark({ size = 32 }) {
+  const inner = Math.round(size * 0.33);
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect x="1" y="1" width="22" height="22" rx="5" fill="#6b5a9e" stroke="#b8aad4" strokeWidth="2"/>
-      <circle cx="12" cy="12" r="3.5" fill="#e0d8f0"><animate attributeName="opacity" values="0.75;1;0.75" dur="7s" repeatCount="indefinite"/></circle>
-    </svg>
+    <div style={{
+      width: size, height: size,
+      background: '#7B6BAE',
+      border: '2px solid #b8aad4',
+      borderRadius: Math.round(size * 0.22),
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      flexShrink: 0,
+    }}>
+      <div style={{
+        width: inner, height: inner,
+        background: '#e0d8f0',
+        borderRadius: '50%',
+        animation: 'sa-eye-pulse 7s ease-in-out infinite',
+      }} />
+    </div>
   );
 }
