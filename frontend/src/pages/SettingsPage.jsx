@@ -230,7 +230,7 @@ function SettingsPage() {
                 <div style={{color: styles.textPrimary, fontWeight: 500, fontSize: '14px', marginBottom: '4px'}}>{cat.label}</div>
                 <div style={{color: styles.textTertiary, fontSize: '12px', lineHeight: '1.5'}}>{cat.desc}</div>
               </div>
-              <button onClick={() => togglePref(cat.key)} style={{width: '48px', height: '26px', border: 'none', cursor: 'pointer', background: prefs[cat.key] ? styles.accentGreen : 'rgba(0,0,0,0.04)', position: 'relative', transition: 'background 0.2s', flexShrink: 0, marginLeft: '16px'}}>
+              <button onClick={() => togglePref(cat.key)} style={{width: "48px", height: "26px", borderRadius: "13px", border: "none", cursor: "pointer", background: prefs[cat.key] ? styles.accentGreen : 'rgba(0,0,0,0.04)', position: 'relative', transition: 'background 0.2s', flexShrink: 0, marginLeft: '16px'}}>
                 <div style={{width: '20px', height: '20px', borderRadius: '50%', background: '#fff', position: 'absolute', top: '3px', left: prefs[cat.key] ? '25px' : '3px', transition: 'left 0.2s' }} />
               </button>
             </div>

@@ -6,6 +6,7 @@ import { styles } from '../config/styles';
 import { useAuth } from '../context/AuthContext';
 import useIsMobile from '../hooks/useIsMobile';
 import BrandMark from './BrandMark';
+import SentinelChatbot from './SentinelChatbot';
 
 // ─── Nav structure ────────────────────────────────────────────────────────────
 // Operational items first, admin/config last
@@ -285,7 +286,8 @@ function Layout({ children }) {
           {children}
         </main>
       </div>
-    </div>
+    <SentinelChatbot />
+      </div>
   );
 }
 

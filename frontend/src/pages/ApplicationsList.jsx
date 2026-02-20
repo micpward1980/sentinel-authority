@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { FileText, Search } from 'lucide-react';
+import { FileText, Search, Plus } from "lucide-react";
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { api } from '../config/api';
 import { styles } from '../config/styles';
@@ -228,6 +228,7 @@ function ApplicationsList() {
             {isAdmin ? 'Applications' : 'Certification Status'}
           </h1>
         </div>
+        <Link to="/applications/new" className="inline-flex items-center gap-2 px-4 py-2 no-underline" style={{ background: "transparent", border: "none", borderBottom: "1px solid " + styles.purpleBright, color: styles.purpleBright, fontFamily: styles.mono, fontSize: "11px", letterSpacing: "1px", textTransform: "uppercase", cursor: "pointer", alignSelf: "center" }}><Plus className="w-4 h-4" /> New Application</Link>
         {isFetching && !isLoading && (
           <span style={{ fontFamily: styles.mono, fontSize: '10px', color: styles.textDim, alignSelf: 'center' }}>Updating…</span>
         )}

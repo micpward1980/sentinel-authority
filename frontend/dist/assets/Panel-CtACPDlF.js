@@ -1,0 +1,1 @@
+import{j as a,s as t}from"./index-CiYkEjR4.js";import{R as o}from"./icons-CE7UjK-E.js";const c=o.memo(function({children:e,className:r="",style:s={},...i}){return a.jsxs("div",{className:`hud-frame ${r}`,style:{padding:"20px 16px",position:"relative",borderRadius:8,background:t.cardSurface,...s},...i,children:[a.jsx("i",{"aria-hidden":"true"}),e]})});export{c as P};

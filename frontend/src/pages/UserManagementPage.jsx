@@ -13,6 +13,7 @@ function UserManagementPage() {
   const toast = useToast();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [activeFilter, setActiveFilter] = useState(null);
   const [search, setSearch] = useState('');
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [expandedUserId, setExpandedUserId] = useState(null);
@@ -33,7 +34,13 @@ function UserManagementPage() {
     setLoading(false);
   };
 
-  const filteredUsers = users.filter(u => 
+  const filteredUsers = users.filter(u => {
+    if (activeFilter === "admins") return u.role === "admin";
+    if (activeFilter === "applicants") return u.role === "applicant";
+    if (activeFilter === "pending") return u.role === "pending";
+    if (activeFilter === "inactive") return u.is_active === false;
+    return true;
+  }).filter(u => 
     u.email?.toLowerCase().includes(search.toLowerCase()) ||
     u.full_name?.toLowerCase().includes(search.toLowerCase()) ||
     u.company?.toLowerCase().includes(search.toLowerCase())
@@ -136,11 +143,11 @@ function UserManagementPage() {
         action={<button onClick={() => setShowInviteModal(true)} className="px-4 py-2 flex items-center gap-2" style={{background: 'transparent', border: 'none', borderBottom: '1px solid ' + styles.purpleBright, color: styles.purpleBright, fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}><Plus className="w-4 h-4" /> Invite User</button>}
       />
       <div className="grid gap-4" style={{gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))"}}>
-        <StatCard label="Total Users" value={stats.total} color={styles.textPrimary} />
-        <StatCard label="Admins" value={stats.admins} color={styles.purpleBright} />
-        <StatCard label="Applicants" value={stats.applicants} color={styles.accentGreen} />
-        <StatCard label="Pending" value={stats.pending} color={styles.accentAmber || styles.accentAmber} />
-        <StatCard label="Inactive" value={stats.inactive} color={styles.accentRed} />
+        <StatCard label="Total Users" value={stats.total} color={activeFilter === null ? styles.purpleBright : styles.textPrimary} onClick={() => setActiveFilter(null)} />
+        <StatCard label="Admins" value={stats.admins} color={styles.purpleBright} onClick={() => setActiveFilter(activeFilter === "admins" ? null : "admins")} />
+        <StatCard label="Applicants" value={stats.applicants} color={styles.accentGreen} onClick={() => setActiveFilter(activeFilter === "applicants" ? null : "applicants")} />
+        <StatCard label="Pending" value={stats.pending} color={styles.accentAmber} onClick={() => setActiveFilter(activeFilter === "pending" ? null : "pending")} />
+        <StatCard label="Inactive" value={stats.inactive} color={styles.accentRed} onClick={() => setActiveFilter(activeFilter === "inactive" ? null : "inactive")} />
       </div>
       <Panel>
         <div className="flex items-center gap-3">

@@ -12,16 +12,16 @@
     - paragraph [ref=e12]: Access the ODDC certification portal. Manage applications, certificates, and ENVELO Interlock.
     - generic [ref=e13]:
       - generic [ref=e14]:
-        - button "Sign In" [active] [ref=e15] [cursor=pointer]
+        - button "Sign In" [ref=e15] [cursor=pointer]
         - button "Register" [ref=e16] [cursor=pointer]
       - generic [ref=e17]:
         - generic [ref=e18]:
           - generic [ref=e19]: Email Address
-          - textbox "you@company.com" [ref=e20]: info@sentinelauthority.org
+          - textbox "you@company.com" [ref=e20]
         - generic [ref=e21]:
           - generic [ref=e22]: Password
           - generic [ref=e23]:
-            - textbox "••••••••••••" [ref=e24]: Swsales1980!
+            - textbox "••••••••••••" [ref=e24]
             - button [ref=e25] [cursor=pointer]:
               - img [ref=e26]
         - button "Sign In →" [ref=e29] [cursor=pointer]

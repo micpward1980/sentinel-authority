@@ -11,6 +11,8 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from chat import router as chat_router
+from app.api.routes.content import router as content_router
+from app.services.content_scraper import scraper_loop
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
@@ -48,6 +50,8 @@ async def lifespan(app: FastAPI):
     logger.info("Starting Sentinel Authority Platform...")
     await init_db()
     logger.info("Database initialized")
+    import asyncio as _asyncio; _asyncio.create_task(scraper_loop())
+    logger.info("Content scraper started")
     
     # Organization migration
     from app.core.database import engine
@@ -316,6 +320,7 @@ app.add_middleware(RequestLoggingMiddleware)
 
 # API Routes
 app.include_router(chat_router)
+app.include_router(content_router)
 app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
 app.include_router(session_routes.router, prefix="/api/auth", tags=["Session Management"])
 app.include_router(dashboard.router, prefix="/api/dashboard", tags=["Dashboard"])
