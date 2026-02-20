@@ -9,23 +9,23 @@ DOCS_DIR = Path(__file__).resolve().parent.parent.parent.parent / "static" / "do
 
 AVAILABLE_DOCS = {
     "oddc-certification-guide": {
-        "filename": "ODDC_Certification_Guide_v4.pdf",
+        "filename": "ODDC_Certification_Guide_v5.pdf",
         "title": "ODDC Certification Guide",
         "description": "Complete applicant roadmap for ODDC certification — Phase 1 through Continued Monitoring, post-certification compliance policy, ENVELO CLI reference, three-tier enforcement model",
-        "version": "4.0",
+        "version": "5.0",
         "roles": ["admin", "applicant"],
     },
     "oddc-certification-guide-v3": {
         "filename": "ODDC_Certification_Guide_v3.pdf",
         "title": "ODDC Certification Guide (v3)",
-        "description": "Version 3.0 — superseded by v4.0",
+        "description": "Version 3.0 — superseded by v5.0",
         "version": "3.0",
         "roles": ["admin"],
     },
     "oddc-certification-guide-v1": {
         "filename": "ODDC_Certification_Guide.pdf",
         "title": "ODDC Certification Guide (Legacy)",
-        "description": "Version 1.0 — superseded by v4.0",
+        "description": "Version 1.0 — superseded by v5.0",
         "version": "1.0",
         "roles": ["admin"],
     },
@@ -44,9 +44,7 @@ async def list_documents(current_user: dict = Depends(get_current_user)):
 
 @router.get("/{doc_id}/download", summary="Download document")
 async def download_document(doc_id: str, current_user: dict = Depends(get_current_user)):
-    # Serve cert guide from website (bypass Docker cache)
     if doc_id == "oddc-certification-guide":
-        return RedirectResponse("https://www.sentinelauthority.org/docs/ODDC_Certification_Guide_v4.0.pdf")
     doc = AVAILABLE_DOCS.get(doc_id)
     if not doc:
         raise HTTPException(status_code=404, detail="Document not found")
