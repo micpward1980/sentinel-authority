@@ -35,7 +35,7 @@ class ChatRequest(BaseModel):
     system: str
     messages: list[ChatMessage]
     stream: bool = True
-    model: str = "claude-sonnet-4-20250514"
+    model: str = "claude-haiku-4-5-20251001"
     max_tokens: int = 1024
 
 # ─── Auth dependency ───────────────────────────────────────────────────────────
