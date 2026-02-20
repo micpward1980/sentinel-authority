@@ -315,6 +315,7 @@ from app.middleware.request_logging import RequestLoggingMiddleware
 app.add_middleware(RequestLoggingMiddleware)
 
 # API Routes
+app.include_router(chat_router)
 app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
 app.include_router(session_routes.router, prefix="/api/auth", tags=["Session Management"])
 app.include_router(dashboard.router, prefix="/api/dashboard", tags=["Dashboard"])
