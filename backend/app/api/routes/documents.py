@@ -47,7 +47,5 @@ async def download_document(doc_id: str):
     doc = AVAILABLE_DOCS.get(doc_id)
     if not doc:
         raise HTTPException(status_code=404, detail="Document not found")
-    file_path = DOCS_DIR / doc["filename"]
-    if not file_path.exists():
-        raise HTTPException(status_code=404, detail="File not found on server")
-    return FileResponse(path=str(file_path), filename=doc["filename"], media_type="application/pdf")
+    filename = doc["filename"].replace(".pdf", ".0.pdf").replace("_v5.0.pdf", "_v5.0.pdf")
+    return RedirectResponse("https://www.sentinelauthority.org/docs/ODDC_Certification_Guide_v5.0.pdf")
