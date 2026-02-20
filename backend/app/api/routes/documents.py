@@ -44,7 +44,6 @@ async def list_documents(current_user: dict = Depends(get_current_user)):
 
 @router.get("/{doc_id}/download", summary="Download document")
 async def download_document(doc_id: str):
-    if doc_id == "oddc-certification-guide":
     doc = AVAILABLE_DOCS.get(doc_id)
     if not doc:
         raise HTTPException(status_code=404, detail="Document not found")
