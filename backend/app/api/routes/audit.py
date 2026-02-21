@@ -364,3 +364,36 @@ async def verify_anchor(
         )
     }
 
+
+
+@router.get("/admin-logs", summary="Recent activity feed for admin dashboard")
+async def get_admin_logs(
+    limit: int = Query(8, le=100),
+    offset: int = Query(0),
+    db: AsyncSession = Depends(get_db),
+    user: dict = Depends(require_role(["admin"])),
+):
+    """Recent audit events for the admin dashboard activity feed."""
+    count_result = await db.execute(select(func.count()).select_from(AuditLog))
+    total = count_result.scalar() or 0
+
+    query = select(AuditLog).order_by(desc(AuditLog.timestamp)).offset(offset).limit(limit)
+    result = await db.execute(query)
+    logs = result.scalars().all()
+
+    return {
+        "logs": [
+            {
+                "id": log.id,
+                "timestamp": log.timestamp.isoformat() if log.timestamp else None,
+                "user_email": log.user_email,
+                "action": log.action,
+                "resource_type": log.resource_type,
+                "resource_id": log.resource_id,
+                "details": log.details or {},
+                "log_hash": log.log_hash,
+            }
+            for log in logs
+        ],
+        "total": total,
+    }
