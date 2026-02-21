@@ -2895,3 +2895,69 @@ async def get_evidence_chain(
         "chain": test.evidence_chain or [],
         "total_samples": test.total_samples,
     }
+
+
+@router.get("/tests/{test_id}/telemetry", summary="Get recent telemetry samples")
+async def get_test_telemetry(
+    test_id: str,
+    limit: int = 50,
+    db: AsyncSession = Depends(get_db),
+    user: dict = Depends(get_current_user)
+):
+    """Return recent telemetry samples for AuditTrailView.
+    
+    Each sample includes in_envelope, state_vector, elapsed_seconds,
+    timestamp, sample_hash, and envelope_distance so the frontend
+    can reconstruct an enforcement log.
+    """
+    result = await db.execute(select(CAT72Test).where(CAT72Test.test_id == test_id))
+    test = result.scalar_one_or_none()
+    if not test:
+        raise HTTPException(status_code=404, detail="Test not found")
+
+    # Fetch recent telemetry
+    telem_result = await db.execute(
+        select(Telemetry)
+        .where(Telemetry.test_id == test.id)
+        .order_by(Telemetry.timestamp.desc())
+        .limit(limit)
+    )
+    samples = list(reversed(telem_result.scalars().all()))
+
+    # Fetch corresponding interlock events (violations)
+    events_result = await db.execute(
+        select(InterlockEvent)
+        .where(InterlockEvent.test_id == test.id)
+        .order_by(InterlockEvent.timestamp.desc())
+        .limit(limit)
+    )
+    events_by_elapsed = {
+        e.elapsed_seconds: e for e in events_result.scalars().all()
+    }
+
+    logs = []
+    for s in samples:
+        ev = events_by_elapsed.get(s.elapsed_seconds)
+        logs.append({
+            "timestamp": s.timestamp.isoformat() if s.timestamp else None,
+            "elapsed_seconds": s.elapsed_seconds,
+            "in_envelope": s.in_envelope,
+            "envelope_distance": s.envelope_distance,
+            "sample_hash": s.sample_hash,
+            "boundary_hit": not s.in_envelope,
+            "interlock_action": ev.action_type.upper() if ev else None,
+            "trigger_parameter": ev.trigger_parameter if ev else None,
+            "trigger_value": ev.trigger_value if ev else None,
+            "threshold_value": ev.threshold_value if ev else None,
+            "proximity": min(1.0, s.envelope_distance / 10.0) if s.envelope_distance else 0,
+        })
+
+    return {
+        "test_id": test_id,
+        "state": test.state,
+        "total_samples": test.total_samples or 0,
+        "interlock_activations": test.interlock_activations or 0,
+        "convergence_score": test.convergence_score or 0,
+        "logs": logs,
+    }
+
