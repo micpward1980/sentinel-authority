@@ -55,3 +55,6 @@ patch_*.py
 migrate_*.py
 patch_*.py
 patch_*.js
+*.colorbak
+*.bak
+*.bak2
