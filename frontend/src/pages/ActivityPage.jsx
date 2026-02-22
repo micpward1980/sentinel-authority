@@ -211,7 +211,7 @@ function ActivityPage() {
             {['7', '30', '90', 'all'].map(r => (
               <button key={r} onClick={() => applyQuickRange(r)} style={{
                 padding: '5px 10px', cursor: 'pointer',
-                background: quickRange === r ? 'rgba(74,61,117,0.08)' : 'transparent',
+                background: quickRange === r ? 'rgba(29,26,59,0.08)' : 'transparent',
                 border: `1px solid ${quickRange === r ? styles.purpleBright : styles.borderGlass}`,
                 color: quickRange === r ? styles.purpleBright : styles.textTertiary,
                 fontFamily: styles.mono, fontSize: '10px', fontWeight: 600, letterSpacing: '0.08em',
@@ -229,15 +229,15 @@ function ActivityPage() {
             {total.toLocaleString()} entries{isFetching && !isLoading ? ' ↻' : ''}
           </span>
 
-          <button onClick={exportCSV} style={{ padding: '6px 14px', background: 'rgba(74,61,117,0.08)', border: `1px solid rgba(74,61,117,0.15)`, color: styles.purpleBright, fontFamily: styles.mono, fontSize: '10px', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', cursor: 'pointer' }}>
+          <button onClick={exportCSV} style={{ padding: '6px 14px', background: 'rgba(29,26,59,0.08)', border: `1px solid rgba(29,26,59,0.15)`, color: styles.purpleBright, fontFamily: styles.mono, fontSize: '10px', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', cursor: 'pointer' }}>
             Export CSV
           </button>
 
           <button onClick={verifyIntegrity} disabled={verifying} style={{
             padding: '6px 14px', cursor: verifying ? 'wait' : 'pointer',
             fontFamily: styles.mono, fontSize: '10px', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase',
-            background: verifyResult ? (verifyResult.integrity === 'passed' ? 'rgba(22,135,62,0.08)' : 'rgba(180,52,52,0.08)') : 'rgba(74,61,117,0.08)',
-            border: `1px solid ${verifyResult ? (verifyResult.integrity === 'passed' ? 'rgba(22,135,62,0.20)' : 'rgba(180,52,52,0.20)') : 'rgba(74,61,117,0.15)'}`,
+            background: verifyResult ? (verifyResult.integrity === 'passed' ? 'rgba(22,135,62,0.08)' : 'rgba(180,52,52,0.08)') : 'rgba(29,26,59,0.08)',
+            border: `1px solid ${verifyResult ? (verifyResult.integrity === 'passed' ? 'rgba(22,135,62,0.20)' : 'rgba(180,52,52,0.20)') : 'rgba(29,26,59,0.15)'}`,
             color: verifyResult ? (verifyResult.integrity === 'passed' ? styles.accentGreen : styles.accentRed) : styles.purpleBright,
           }}>
             {verifying ? 'Verifying…' : verifyResult

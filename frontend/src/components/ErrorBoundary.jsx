@@ -56,7 +56,7 @@ class ErrorBoundary extends React.Component {
               style={{
                 appearance: 'none',
                 background: 'transparent',
-                border: '1px solid rgba(74,61,117,0.25)',
+                border: '1px solid rgba(29,26,59,0.25)',
                 color: styles.purpleBright,
                 padding: '12px 24px',
                 fontFamily: "Consolas, monospace",

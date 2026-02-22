@@ -1,7 +1,10 @@
 <!DOCTYPE html>
 <html lang="en" style="scroll-behavior:smooth;">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-192.png">
   <meta name="theme-color" content="#ffffff">
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <title>Sentinel Authority — Conformance Certification for Autonomous Systems</title>
@@ -24,11 +27,9 @@
   <!-- Canonical URL -->
   <link rel="canonical" href="https://sentinelauthority.org/" />
 
-  <!-- Favicon (purple diamond) -->
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'><rect x='2' y='2' width='32' height='32' rx='8' fill='%237B6BAE' stroke='%23b8aad4' stroke-width='2'/><circle cx='18' cy='18' r='6' fill='%23e0d8f0'/></svg>" />
-
   <!-- IBM Plex Mono loaded via font-family declaration -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@900&display=swap" rel="stylesheet">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <!-- Performance: Preload critical fonts -->
     <!-- Georgia is a system font — no preload needed -->
@@ -51,6 +52,25 @@
   </script>
 
   <style>
+    /* ═══════════════════════════════════════════════════
+       INSTITUTIONAL TOKEN SYSTEM — Supreme Court × ISO
+       ═══════════════════════════════════════════════════ */
+    :root {
+      --ink:          #0f1021;
+      --accent:       #2a2560;
+      --accent-hover: #1d1a3b;
+      --bg:           #ffffff;
+      --bg-soft:      #f6f7f9;
+      --border:       #e6e8ec;
+      --muted:        #5c6270;
+      --ease:         150ms ease;
+      --radius:       6px;
+
+      /* Legacy aliases — keep for backward compat */
+      --text-primary:   #0f1021;
+      --text-secondary: #5c6270;
+    }
+
 
     /* Performance optimizations */
     @media (prefers-reduced-motion: reduce) {
@@ -71,9 +91,9 @@
       color-scheme: light;
       
       /* Core palette */
-      --purple-primary:#4a3d75;
-      --purple-bright:#6b5a9e;
-      --purple-glow:transparent;
+      --purple-primary:#2a2560;
+      --purple-bright:#2a2560;
+      --purple-glow:transparent /* deprecated */;
       --bg-deep:#ffffff;
       --bg-panel:rgba(0,0,0,.025);
       --accent-green:#16873e;
@@ -91,8 +111,8 @@
 
       /* Typography */
       --serif:Georgia,'Source Serif 4',serif;
-      --mono:Consolas,'IBM Plex Mono',monospace;
-      --sans:Calibri,'Inter',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      --mono:'IBM Plex Mono',Consolas,monospace;
+      --sans:'Inter',system-ui,-apple-system,sans-serif;
 
       /* Timing */
       --ease: cubic-bezier(0.16, 1, 0.3, 1);
@@ -159,7 +179,7 @@
     
     /* Focus styles for accessibility */
     a:focus-visible, button:focus-visible {
-      outline: 2px solid rgba(74,61,117,1.00);
+      outline: 2px solid #1d1a3b;
       outline-offset: 3px;
       border-radius:8px;
     }
@@ -168,9 +188,7 @@
     body{
       margin:0;
       font-family:var(--sans);
-      background: radial-gradient(1200px 700px at 15% 10%, rgba(74,61,117,0.08), transparent 55%),
-                  
-                  var(--bg-deep);
+      background: var(--bg);
       color:var(--text-primary);
       overflow-x:hidden;
       -webkit-font-smoothing:antialiased;
@@ -178,7 +196,8 @@
     }
     a{ color:inherit; text-decoration:none; }
     a:hover{ text-decoration:none; }
-    ::selection{ background:#4a3d75; color:#fff; }
+    ::selection { background: var(--accent); color: #fff; }
+.sa-cursor, .sa-ring, .sa-progress { display: none !important; pointer-events: none !important; }
 
     /* Subtle grid overlay */
     .grid-overlay{
@@ -186,13 +205,10 @@
       inset:0;
       pointer-events:none;
       z-index:0;
-      background-image:
-        linear-gradient(rgba(0,0,0,0.025) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0,0,0,0.025) 1px, transparent 1px);
-      background-size: var(--space-12) var(--space-12);
+      
       opacity:0;
-      mask-image: radial-gradient(ellipse at center, rgba(0,0,0,.9) 20%, transparent 70%);
-      -webkit-mask-image: radial-gradient(ellipse at center, rgba(0,0,0,.9) 20%, transparent 70%);
+      
+      
     }
 
     /* ============================================
@@ -206,9 +222,8 @@
       padding:0 var(--space-2, 20px);
       height: var(--nav-height, 72px);
       border-bottom:1px solid rgba(0,0,0,0.09);
-      background: rgba(0,0,0,.85);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
+      background: #ffffff;
+      -webkit-
       display: flex;
       align-items: center;
     }
@@ -216,6 +231,7 @@
       max-width: var(--max, 1200px);
       margin:0 auto;
       width: 100%;
+      height: 100%;
       display:flex;
       align-items:center;
       justify-content:space-between;
@@ -232,27 +248,10 @@
       opacity: 1;
     }
     .brand:hover{ text-decoration: none; }
-    .brand-mark{
-      width: 36px;
-      height: 36px;
-      background: #7B6BAE;
-      background: #7B6BAE;
-      border: 2px solid #b8aad4;
-      border: 2px solid #b8aad4;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-    .brand-mark-inner{
-      width: 12px;
-      height: 12px;
-      background: #e0d8f0;
-      border-radius: 50%;
-      animation: eye-pulse 7s ease-in-out infinite;
-      will-change: transform, opacity, box-shadow;
-    }
+    .brand::after, .brand::before { display: none !important; }
+    .nav-inner::after, .nav-inner::before { display: none !important; }
+    .brand-mark { display: none; }
+    
     @keyframes eye-pulse {
       0%, 100% {
         opacity: .75;
@@ -262,21 +261,13 @@
       50% {
         opacity: 1;
         transform: scale(1.02);
-        box-shadow: 0 0 10px rgba(74,61,117,0.60);
+        box-shadow: none;
       }
     }
     @media (prefers-reduced-motion: reduce){
-      .brand-mark-inner{ animation: none; opacity: .9; }
+      
     }
-    .brand-name{
-      font-family: 'IBM Plex Mono', monospace;
-      font-family: var(--mono, 'IBM Plex Mono', monospace);
-      font-size:11px;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      color: rgba(15,18,30,0.92);
-      white-space: nowrap;
-    }
+    .brand-name { display: none; }
 
     .nav-links{
       display:flex;
@@ -288,21 +279,21 @@
     .nav-links a{
       font-family: var(--mono);
       font-size:11px;
-      letter-spacing: 1.5px;
+      letter-spacing:0.06em;
       color: var(--text-secondary);
       padding: 8px 4px;
       position: relative;
       transition: color .25s ease;
       white-space: nowrap;
     }
-    .nav-links a:hover{ color: #3d3262; text-decoration:none; }
+    .nav-links a:hover{ color: #1d1a3b; text-decoration:none; }
     .nav-links a::after{
       content:none;
     }
     
     /* Active section indicator */
     .nav-links a.active{
-      color: #3d3262;
+      color: #1d1a3b;
       opacity: 1;
     }
     .nav-links a.active::after{
@@ -343,7 +334,7 @@
       transition: border-color .2s ease;
     }
     .nav-toggle:hover{
-      border-color: rgba(74,61,117,0.60);
+      border-color: rgba(42,37,96,0.60);
       background: transparent;
     }
     .nav-toggle span{
@@ -382,7 +373,6 @@
       max-width: calc(100vw - var(--space-4));
       height: calc(100vh - var(--nav-height));
       background: rgba(0,0,0,.96);
-      backdrop-filter: blur(24px);
       border-left: 1px solid var(--border-glass);
       transform: translateX(100%);
       transition: transform .18s var(--ease-out);
@@ -409,9 +399,9 @@
       color: var(--text-primary);
       text-decoration: none;
     }
-    .nav-drawer .nav-signin{ color: #3d3262; border-bottom: none; margin-top: 12px; padding-top: 16px; border-top: 1px solid var(--border-glass); }
+    .nav-drawer .nav-signin{ color: #1d1a3b; border-bottom: none; margin-top: 12px; padding-top: 16px; border-top: 1px solid var(--border-glass); }
     .nav-drawer a.active{
-      color: #3d3262;
+      color: #1d1a3b;
     }
     
     .drawer-overlay{
@@ -454,20 +444,20 @@
     }
     .hero::before{ display: none; }
     
-    .hero-kicker { font-family:var(--mono); font-size:11px; letter-spacing:3px; text-transform:uppercase; color:rgba(78,74,107,0.70); margin-bottom:20px; display:block; }
+    .hero-kicker { font-family:var(--mono); font-size:11px; letter-spacing:3px; text-transform:uppercase; color:rgba(29,26,59,0.55); margin-bottom:20px; display:block; }
     .hero-kicker::before { display:none; }
     
     h1{
       font-family: var(--serif);
       font-size: clamp(44px, 7vw, 92px);
-      font-weight: normal;
+      font-weight: 400;
       line-height: .95;
       margin: 0;
       letter-spacing: -0.02em;
     }
     h1 .accent{
       font-style: italic;
-      color: #3d3262;
+      color: #1d1a3b;
       position: relative;
       text-shadow: 
         -1px 0 rgba(255,100,100,0.08), 
@@ -482,8 +472,8 @@
       font-family: var(--mono);
       font-size:14px;
       letter-spacing: 1px;
-      color: #3d3262;
-      border: 1px solid rgba(74,61,117,0.60);
+      color: #1d1a3b;
+      border: 1px solid rgba(42,37,96,0.60);
       background:rgba(0,0,0,0.03);
       padding: 8px 12px;
       border-radius: 8px;
@@ -497,7 +487,7 @@
       font-weight: 300;
       line-height: 1.75;
       color: var(--text-secondary);
-      border-left: 2px solid rgba(74,61,117,1.00);
+      border-left: 2px solid #1d1a3b;
       padding-left: var(--space-2);
       margin: 0;
     }
@@ -509,7 +499,7 @@
       font-family: var(--mono);
       letter-spacing: 0.5px;
       margin: 0;
-      line-height: 1.7;
+      line-height: 1.55;
     }
     .hero-disclaimer + .hero-disclaimer{
       margin-top: 6px;
@@ -557,27 +547,27 @@
     .hud-frame-red::before,.hud-frame-red::after,
     .hud-frame-red>i::before,.hud-frame-red>i::after{border-color:rgba(180,52,52,0.24);}
     .hud-scanline{border-bottom:1px solid rgba(0,0,0,0.06);}
-    .hud-dot{display:inline-block;width:4px;height:4px;border-radius:50%;background:rgba(74,61,117,1.00);margin-right:8px;flex-shrink:0;}
+    .hud-dot{display:inline-block;width:4px;height:4px;border-radius:50%;background:#1d1a3b;margin-right:8px;flex-shrink:0;}
     .hud-dot-green{background:rgba(22,135,62,1.00);}
     .hud-dot-amber{background:rgba(158,110,18,1.00);}
     .hud-dot-red{background:rgba(180,52,52,1.00);}
     @keyframes hud-breathe{0%,100%{opacity:0.4;}50%{opacity:1;}}
     .hud-row{padding:12px 0;border-bottom:1px solid rgba(0,0,0,0.03);}
     .hud-row:last-child{border-bottom:none;}
-    .hud-label{font-family:var(--mono);font-size:14px;letter-spacing:2px;color:rgba(15,18,30,0.48);text-transform:uppercase;}
-    .hud-title{font-size:14px;color:rgba(15,18,30,0.94);font-weight:400;margin:2px 0;}
+    .hud-label{font-family:var(--mono);font-size:11px;letter-spacing:0.08em;color:rgba(15,18,30,0.42);text-transform:uppercase;}
+    .hud-title{font-size:14px;color:rgba(15,18,30,0.88);font-weight:500;margin:2px 0;}
     .hud-desc{font-size:12.5px;color:rgba(15,18,30,0.76);line-height:1.5;}
-    .hud-num{font-family:var(--mono);font-size:14px;letter-spacing:1px;color:rgba(74,61,117,1.00);margin-right:12px;}
-    .hud-link{font-family:var(--mono);font-size:14px;letter-spacing:2px;color:rgba(74,61,117,1.00);text-decoration:none !important;border-bottom:none !important;padding-bottom:2px;transition:all 0.2s;}
-    .hud-link:hover{color:rgba(74,61,117,1.00);}
+    .hud-num{font-family:var(--mono);font-size:14px;letter-spacing:1px;color:#1d1a3b;margin-right:12px;}
+    .hud-link{font-family:var(--mono);font-size:14px;letter-spacing:2px;color:#1d1a3b;text-decoration:none !important;border-bottom:none !important;padding-bottom:2px;transition:all 0.2s;}
+    .hud-link:hover{color:#1d1a3b;}
 
 
     /* HUD phase row hover */
     .hud-row[style*="cursor:pointer"]:hover { background:rgba(0,0,0,0.03); }
     /* HUD verify tab hover */
-    #tab-verify:hover, #tab-search:hover { background:rgba(74,61,117,0.25) !important; color:rgba(74,61,117,1.00) !important; }
+    #tab-verify:hover, #tab-search:hover { background:rgba(42,37,96,0.25) !important; color:#1d1a3b !important; }
     /* HUD button hover */
-    #verify-btn:hover, #search-btn:hover { border-color:rgba(74,61,117,1.00) !important; color:#111318 !important; background:rgba(74,61,117,0.25) !important; }
+    #verify-btn:hover, #search-btn:hover { border-color:#1d1a3b !important; color:#111318 !important; background:rgba(42,37,96,0.25) !important; }
 
     /* 2050 HUD OVERLAY */
 
@@ -590,9 +580,9 @@
       height: 1px;
       background: linear-gradient(90deg,
         transparent,
-        rgba(74,61,117,0.25) 30%,
-        rgba(74,61,117,0.60) 50%,
-        rgba(74,61,117,0.25) 70%,
+        rgba(42,37,96,0.25) 30%,
+        rgba(42,37,96,0.60) 50%,
+        rgba(42,37,96,0.25) 70%,
         transparent);
       animation: edge-pulse 4s ease-in-out infinite;
     }
@@ -622,7 +612,7 @@
     }
     @keyframes corner-breathe {
       0%, 100% { border-color: rgba(0,0,0,0.09); }
-      50% { border-color: rgba(74,61,117,0.60); }
+      50% { border-color: rgba(42,37,96,0.60); }
     }
     .hud-frame-green::before, .hud-frame-green::after,
     .hud-frame-green > i::before, .hud-frame-green > i::after {
@@ -643,9 +633,9 @@
       width: 100%;
       background: linear-gradient(105deg,
         transparent 40%,
-        rgba(74,61,117,0.08) 45%,
-        rgba(74,61,117,0.08) 50%,
-        rgba(74,61,117,0.08) 55%,
+        rgba(42,37,96,0.08) 45%,
+        rgba(42,37,96,0.08) 50%,
+        rgba(42,37,96,0.08) 55%,
         transparent 60%);
       pointer-events: none;
       z-index: 0;
@@ -695,7 +685,7 @@
       position: absolute;
       width: 6px; height: 6px;
       border-style: solid;
-      border-color: rgba(74,61,117,0.60);
+      border-color: rgba(42,37,96,0.60);
       pointer-events: none;
       transition: border-color 0.3s ease;
     }
@@ -708,7 +698,7 @@
       border-width: 0 1px 1px 0;
     }
     .btn:hover::before, .btn:hover::after {
-      border-color: rgba(74,61,117,1.00);
+      border-color: #1d1a3b;
     }
 
     .hud-link {
@@ -716,13 +706,12 @@
     }
 
     .section-title.glow {
-      text-shadow: 0 0 30px rgba(74,61,117,0.25);
+      text-shadow: 0 0 30px rgba(42,37,96,0.25);
     }
 
     #verify .hud-frame,
     #contact .hud-frame {
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
+      -webkit-
       background: rgba(0,0,0,0.4);
     }
 
@@ -730,13 +719,7 @@
     /* AWWWARDS LAYER */
 
 
-    .sa-progress {
-      position: fixed; top: 0; left: 0;
-      height: 2px;
-      background: linear-gradient(90deg, rgba(74,61,117,1.00), rgba(22,135,62,1.00));
-      z-index: 99997; width: 0%;
-      pointer-events: none;
-    }
+    
     .sa-noise {
       position: fixed; inset: 0;
       pointer-events: none; z-index: 99990; opacity: 0.025;
@@ -787,19 +770,19 @@
     }
     .btn:hover{
       transform: none;
-      border-color: rgba(74,61,117,1.00);
-      color: rgba(74,61,117,1.00);
+      border-color: #1d1a3b;
+      color: #1d1a3b;
       background: transparent;
       text-decoration: none;
     }
     .btn.primary{
-      border-color: rgba(74,61,117,0.60);
+      border-color: rgba(42,37,96,0.60);
       background: transparent;
       box-shadow: none;
-      color: rgba(74,61,117,1.00);
+      color: #1d1a3b;
     }
     .btn.primary:hover{
-      border-color: rgba(74,61,117,1.00);
+      border-color: #1d1a3b;
       background:rgba(0,0,0,0.03);
     }
 
@@ -835,7 +818,7 @@
       line-height: 1.1;
       margin: 0;
       letter-spacing: -0.01em;
-      color: #3d3262;
+      color: #1d1a3b;
     }
     .section-lead{
       max-width: 70ch;
@@ -916,7 +899,7 @@
       border-bottom: 1px solid var(--border-glass);
       color: var(--text-secondary);
       font-size: 14px;
-      line-height: 1.6;
+      line-height: 1.55;
     }
     .list li:last-child{ border-bottom:none; }
     .list b{ color: var(--text-primary); font-weight: 600; }
@@ -950,9 +933,9 @@
       gap: 6px;
       padding: 6px 12px;
       background:rgba(0,0,0,0.03);
-      border: 1px solid rgba(74,61,117,0.60);
+      border: 1px solid rgba(42,37,96,0.60);
       border-radius: 4px;
-      color: #3d3262;
+      color: #1d1a3b;
       font-family: var(--mono);
       font-size:14px;
       letter-spacing: 0.5px;
@@ -961,7 +944,7 @@
     }
     .doc-link:hover {
       background:rgba(0,0,0,0.03);
-      border-color: rgba(74,61,117,1.00);
+      border-color: #1d1a3b;
       color: #111318;
       text-decoration: none;
     }
@@ -1006,7 +989,7 @@
     .check-desc{
       color: var(--text-secondary);
       font-size:14px;
-      line-height: 1.6;
+      line-height: 1.55;
       font-weight: 300;
     }
 
@@ -1039,14 +1022,14 @@
       font-family: var(--mono);
       font-size:14px;
       letter-spacing: 4px;
-      color: #3d3262;
+      color: #1d1a3b;
       text-transform: uppercase;
       margin-bottom: 12px;
     }
     .node-title{
       font-family: var(--serif);
       font-size: 22px;
-      font-weight: normal;
+      font-weight: 400;
       margin: 0 0 var(--space-1);
       letter-spacing: -0.01em;
     }
@@ -1119,15 +1102,15 @@
       font-size:14px;
       letter-spacing: 1.5px;
       text-transform: uppercase;
-      color: #3d3262;
-      border: 1px solid rgba(74,61,117,1.00);
+      color: #1d1a3b;
+      border: 1px solid #1d1a3b;
       background:rgba(0,0,0,0.03);
       padding: 6px 10px;
       border-radius: 6px;
       transition: all .2s ease;
     }
     .verify-link:hover{
-      border-color: rgba(74,61,117,1.00);
+      border-color: #1d1a3b;
       background:rgba(0,0,0,0.03);
       text-decoration: none;
     }
@@ -1175,7 +1158,7 @@
       transition:all .2s ease;
     }
     .copy-btn:hover{
-      border-color:rgba(74,61,117,1.00);
+      border-color:#1d1a3b;
       background:rgba(0,0,0,0.03);
       color:#111318;
     }
@@ -1190,7 +1173,7 @@
       border-top: 1px solid rgba(0,0,0,0.15);
       color: rgba(15,18,30,0.94);
       font-size: 11.5px;
-      line-height: 1.7;
+      line-height: 1.55;
       font-weight: 300;
       font-family: var(--sans);
     }
@@ -1210,7 +1193,6 @@
       text-transform: uppercase;
       padding: 12px 18px;
       border-radius:8px;
-      backdrop-filter: blur(12px);
       opacity: 0;
       transition: opacity .18s ease, transform .18s var(--ease-out);
       pointer-events: none;
@@ -1252,7 +1234,7 @@
     .state-desc{
       color: var(--text-secondary);
       font-size:14px;
-      line-height: 1.6;
+      line-height: 1.55;
       font-weight: 300;
       margin:0;
     }
@@ -1343,12 +1325,12 @@
     /* Subtle interlock pulse */
     @keyframes interlock-pulse {
       0%, 100% { 
-        stroke: rgba(74,61,117,1.00);
-        filter: drop-shadow(0 0 0 rgba(74,61,117,0.00));
+        stroke: #1d1a3b;
+        filter: drop-shadow(0 0 0 rgba(42,37,96,0.00));
       }
       50% { 
-        stroke: rgba(74,61,117,1.00);
-        filter: drop-shadow(0 0 8px rgba(74,61,117,0.60));
+        stroke: #1d1a3b;
+        filter: drop-shadow(0 0 8px rgba(42,37,96,0.60));
       }
     }
     .interlock-bg{
@@ -1368,12 +1350,12 @@
     .process-step:last-child{ border-bottom: none; }
     .process-step-num{ 
       width: 28px; height: 28px; flex-shrink: 0;
-      background:rgba(0,0,0,0.03); border: 1px solid rgba(74,61,117,1.00);
+      background:rgba(0,0,0,0.03); border: 1px solid #1d1a3b;
       border-radius: 50%; display: flex; align-items: center; justify-content: center;
-      font-family: var(--mono); font-size:14px; color: #3d3262;
+      font-family: var(--mono); font-size:14px; color: #1d1a3b;
     }
     .process-step-content b{ display: block; margin-bottom: 4px; }
-    .process-step-content p{ color: var(--text-secondary); font-size:14px; line-height: 1.6; margin: 0; }
+    .process-step-content p{ color: var(--text-secondary); font-size:14px; line-height: 1.55; margin: 0; }
 
     .contact-card{
       max-width: 540px;
@@ -1381,7 +1363,6 @@
       border: 1px solid rgba(0,0,0,0.11);
       border-radius: 18px;
       padding: 8px 0;
-      backdrop-filter: blur(18px);
     }
     .contact-row{
       display: flex;
@@ -1403,7 +1384,7 @@
     .contact-link{
       font-family: var(--sans);
       font-size: 14px;
-      color: #3d3262;
+      color: #1d1a3b;
       transition: color .2s ease;
     }
     .contact-link:hover{
@@ -1415,8 +1396,8 @@
        DEFINITION CALLOUT
        ============================================ */
     .definition-callout{
-      background: linear-gradient(180deg, rgba(74,61,117,0.25) 0%, rgba(74,61,117,0.08) 100%);
-      border: 1px solid rgba(74,61,117,0.25);
+      background: linear-gradient(180deg, rgba(42,37,96,0.25) 0%, rgba(42,37,96,0.08) 100%);
+      border: 1px solid rgba(42,37,96,0.25);
       border-radius:8px;
       padding: var(--space-2) 18px;
       margin-top: var(--space-2);
@@ -1426,7 +1407,7 @@
       font-size:14px;
       letter-spacing: 2px;
       text-transform: uppercase;
-      color: #3d3262;
+      color: #1d1a3b;
       margin-bottom: 6px;
     }
     .definition-text{
@@ -1468,7 +1449,7 @@
       color: var(--accent-amber);
     }
     .program-value a{
-      color: #3d3262;
+      color: #1d1a3b;
     }
     
     /* ============================================
@@ -1504,11 +1485,11 @@
       color: rgba(15,18,30,0.64);
       font-size:14px;
       max-width: 480px;
-      line-height: 1.7;
+      line-height: 1.55;
     }
     .foot-links{ display:flex; gap: var(--space-4); flex-wrap: wrap; }
     .foot-col{ display:flex; flex-direction:column; gap:8px; min-width:120px; }
-    .foot-col-title{ font-family:var(--mono); font-size:11px; letter-spacing:2px; color:#3d3262; margin-bottom:4px; }
+    .foot-col-title{ font-family:var(--mono); font-size:11px; letter-spacing:2px; color:#1d1a3b; margin-bottom:4px; }
     .foot-links a{ color: rgba(15,18,30,0.64); font-size:11px; }
     .foot-links a:hover{ color: #111318; text-decoration:none; }
     .old-foot-links{
@@ -1538,7 +1519,6 @@
       inset: 0;
       z-index: 100;
       background: rgba(0,0,0,0.12);
-      backdrop-filter: blur(6px);
       align-items: center;
       justify-content: center;
       padding: var(--space-2);
@@ -1573,14 +1553,14 @@
       font-weight: 400;
       letter-spacing: 2.5px;
       text-transform: uppercase;
-      color: rgba(74,61,117,1.00);
+      color: #1d1a3b;
       margin: 0 0 4px;
     }
     .download-modal-card > p{
       color: var(--text-tertiary);
       font-family: var(--mono);
       font-size:14px;
-      line-height: 1.6;
+      line-height: 1.55;
       margin: 0 0 var(--space-2);
     }
     .download-form-group{ margin-bottom: 14px; }
@@ -1604,7 +1584,7 @@
     }
     .download-form-input:focus, .download-form-select:focus{
       outline: none;
-      border-color: rgba(74,61,117,1.00);
+      border-color: #1d1a3b;
     }
     .download-form-select{
       appearance: none;
@@ -1615,9 +1595,9 @@
     .download-form-btn{
       appearance: none;
       width: 100%;
-      border: 1px solid rgba(74,61,117,0.60);
+      border: 1px solid rgba(42,37,96,0.60);
       background: transparent;
-      color: rgba(74,61,117,1.00);
+      color: #1d1a3b;
       padding: 12px 24px;
       font-family: var(--mono);
       font-size:14px;
@@ -1627,14 +1607,14 @@
       transition: filter .2s, border-color .2s;
     }
     .download-form-btn:hover{
-      border-color: rgba(74,61,117,1.00);
+      border-color: #1d1a3b;
     }
     .download-form-fine{
       font-size:14px;
       font-family: var(--mono);
       color: var(--text-tertiary);
       margin-top: var(--space-2);
-      line-height: 1.6;
+      line-height: 1.55;
       text-align: center;
       letter-spacing: 0.3px;
     }
@@ -1662,31 +1642,31 @@
     @keyframes ekg-flow { 0% { transform: translateX(0); } 100% { transform: translateX(-500px); } }
     @keyframes ekg-scan { 0% { left: -80px; } 100% { left: 100%; } }
     @keyframes rotate-slow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-    .hour-block { width: 100%; aspect-ratio: 1; background: rgba(74,61,117,0.25); border-radius: 4px; animation: block-fill 0.5s ease forwards; opacity: 0; }
+    .hour-block { width: 100%; aspect-ratio: 1; background: rgba(42,37,96,0.25); border-radius: 4px; animation: block-fill 0.5s ease forwards; opacity: 0; }
     .hour-block:nth-child(n+61) { animation-name: block-fill-green; }
-    @keyframes block-fill { 0% { opacity: 0; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1); background: rgba(74,61,117,1.00); } }
+    @keyframes block-fill { 0% { opacity: 0; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1); background: #1d1a3b; } }
     @keyframes trail-fill { 0% { stroke-dashoffset: 880; } 100% { stroke-dashoffset: 0; } }
     @keyframes orbit-dot { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
     .cat72-progress { animation: cat72-fill 6s ease-in-out infinite; }
     @keyframes cat72-fill { 0%, 5% { stroke-dashoffset: 754; } 75% { stroke-dashoffset: 0; } 80%, 100% { stroke-dashoffset: 754; } }
-    .cat72-marker { fill: rgba(0,0,0,1); stroke: rgba(74,61,117,1.00); stroke-width: 2; }
+    .cat72-marker { fill: rgba(0,0,0,1); stroke: #1d1a3b; stroke-width: 2; }
     .cat72-m0 { animation: cat72-mark 6s ease-in-out infinite; }
     .cat72-m24 { animation: cat72-mark 6s ease-in-out infinite; animation-delay: 0.5s; }
     .cat72-m48 { animation: cat72-mark 6s ease-in-out infinite; animation-delay: 1s; }
     .cat72-m72 { animation: cat72-mark-end 6s ease-in-out infinite; }
-    @keyframes cat72-mark { 0%, 10% { fill: rgba(0,0,0,1); stroke: rgba(74,61,117,1.00); } 20%, 75% { fill: rgba(22,135,62,1.00); stroke: rgba(22,135,62,1.00); } 80%, 100% { fill: rgba(0,0,0,1); stroke: rgba(74,61,117,1.00); } }
-    @keyframes cat72-mark-end { 0%, 70% { fill: rgba(0,0,0,1); stroke: rgba(74,61,117,1.00); } 75% { fill: rgba(22,135,62,1.00); stroke: rgba(22,135,62,1.00); filter: drop-shadow(0 0 8px rgba(22,135,62,1.00)); } 80%, 100% { fill: rgba(0,0,0,1); stroke: rgba(74,61,117,1.00); filter: none; } }
+    @keyframes cat72-mark { 0%, 10% { fill: rgba(0,0,0,1); stroke: #1d1a3b; } 20%, 75% { fill: rgba(22,135,62,1.00); stroke: rgba(22,135,62,1.00); } 80%, 100% { fill: rgba(0,0,0,1); stroke: #1d1a3b; } }
+    @keyframes cat72-mark-end { 0%, 70% { fill: rgba(0,0,0,1); stroke: #1d1a3b; } 75% { fill: rgba(22,135,62,1.00); stroke: rgba(22,135,62,1.00); filter: drop-shadow(0 0 8px rgba(22,135,62,1.00)); } 80%, 100% { fill: rgba(0,0,0,1); stroke: #1d1a3b; filter: none; } }
     .cat72-dot { animation: cat72-orbit 6s ease-in-out infinite; transform-origin: 140px 140px; }
     @keyframes cat72-orbit { 0%, 5% { transform: translateX(-50%) rotate(0deg); } 75% { transform: translateX(-50%) rotate(360deg); } 80%, 100% { transform: translateX(-50%) rotate(0deg); } }
     @keyframes thermo-width { 0% { width: 0%; } 80% { width: 100%; } 85%, 100% { width: 0%; } }
-    @keyframes thermo-dot-0 { 0%, 0% { background: rgba(0,0,0,1); border-color: rgba(74,61,117,0.60); opacity: 0.6; } 1%, 80% { background: rgba(22,135,62,1.00); border-color: rgba(22,135,62,1.00); opacity: 1; } 85%, 100% { background: rgba(0,0,0,1); border-color: rgba(74,61,117,0.60); opacity: 0.6; } } 1%, 80% { background: rgba(22,135,62,1.00); border-color: rgba(22,135,62,1.00); box-shadow: 0 0 12px rgba(22,135,62,1.00); } 85%, 100% { background: rgba(0,0,0,1); border-color: rgba(74,61,117,0.60); box-shadow: none; } }
-    @keyframes thermo-dot-33 { 0%, 26% { background: rgba(0,0,0,1); border-color: rgba(74,61,117,0.60); opacity: 0.6; } 27%, 80% { background: rgba(22,135,62,1.00); border-color: rgba(22,135,62,1.00); opacity: 1; } 85%, 100% { background: rgba(0,0,0,1); border-color: rgba(74,61,117,0.60); opacity: 0.6; } } 27%, 80% { background: rgba(22,135,62,1.00); border-color: rgba(22,135,62,1.00); box-shadow: 0 0 12px rgba(22,135,62,1.00); } 85%, 100% { background: rgba(0,0,0,1); border-color: rgba(74,61,117,0.60); box-shadow: none; } }
-    @keyframes thermo-dot-66 { 0%, 52% { background: rgba(0,0,0,1); border-color: rgba(74,61,117,0.60); opacity: 0.6; } 53%, 80% { background: rgba(22,135,62,1.00); border-color: rgba(22,135,62,1.00); opacity: 1; } 85%, 100% { background: rgba(0,0,0,1); border-color: rgba(74,61,117,0.60); opacity: 0.6; } } 53%, 80% { background: rgba(22,135,62,1.00); border-color: rgba(22,135,62,1.00); box-shadow: 0 0 12px rgba(22,135,62,1.00); } 85%, 100% { background: rgba(0,0,0,1); border-color: rgba(74,61,117,0.60); box-shadow: none; } }
-    @keyframes thermo-dot-100 { 0%, 79% { background: rgba(0,0,0,1); border-color: rgba(74,61,117,0.60); opacity: 0.6; } 80%, 80% { background: rgba(22,135,62,1.00); border-color: rgba(22,135,62,1.00); opacity: 1; } 85%, 100% { background: rgba(0,0,0,1); border-color: rgba(74,61,117,0.60); opacity: 0.6; } } 80% { background: rgba(22,135,62,1.00); border-color: rgba(22,135,62,1.00); box-shadow: 0 0 16px rgba(22,135,62,1.00); } 85%, 100% { background: rgba(0,0,0,1); border-color: rgba(74,61,117,0.60); box-shadow: none; } }
-     17%, 52% { background: rgba(22,135,62,1.00); border: 2px solid rgba(22,135,62,1.00); box-shadow: 0 0 12px rgba(22,135,62,1.00); } 54%, 100% { background: rgba(0,0,0,1); border: 2px solid rgba(74,61,117,1.00); box-shadow: none; } }
-     34%, 52% { background: rgba(22,135,62,1.00); border: 2px solid rgba(22,135,62,1.00); box-shadow: 0 0 12px rgba(22,135,62,1.00); } 54%, 100% { background: rgba(0,0,0,1); border: 2px solid rgba(74,61,117,1.00); box-shadow: none; } }
-     50%, 52% { background: rgba(22,135,62,1.00); border: 2px solid rgba(22,135,62,1.00); box-shadow: 0 0 16px rgba(22,135,62,1.00); } 54%, 100% { background: rgba(0,0,0,1); border: 2px solid rgba(74,61,117,1.00); box-shadow: none; } }
+    @keyframes thermo-dot-0 { 0%, 0% { background: rgba(0,0,0,1); border-color: rgba(42,37,96,0.60); opacity: 0.6; } 1%, 80% { background: rgba(22,135,62,1.00); border-color: rgba(22,135,62,1.00); opacity: 1; } 85%, 100% { background: rgba(0,0,0,1); border-color: rgba(42,37,96,0.60); opacity: 0.6; } } 1%, 80% { background: rgba(22,135,62,1.00); border-color: rgba(22,135,62,1.00); box-shadow: 0 0 12px rgba(22,135,62,1.00); } 85%, 100% { background: rgba(0,0,0,1); border-color: rgba(42,37,96,0.60); box-shadow: none; } }
+    @keyframes thermo-dot-33 { 0%, 26% { background: rgba(0,0,0,1); border-color: rgba(42,37,96,0.60); opacity: 0.6; } 27%, 80% { background: rgba(22,135,62,1.00); border-color: rgba(22,135,62,1.00); opacity: 1; } 85%, 100% { background: rgba(0,0,0,1); border-color: rgba(42,37,96,0.60); opacity: 0.6; } } 27%, 80% { background: rgba(22,135,62,1.00); border-color: rgba(22,135,62,1.00); box-shadow: 0 0 12px rgba(22,135,62,1.00); } 85%, 100% { background: rgba(0,0,0,1); border-color: rgba(42,37,96,0.60); box-shadow: none; } }
+    @keyframes thermo-dot-66 { 0%, 52% { background: rgba(0,0,0,1); border-color: rgba(42,37,96,0.60); opacity: 0.6; } 53%, 80% { background: rgba(22,135,62,1.00); border-color: rgba(22,135,62,1.00); opacity: 1; } 85%, 100% { background: rgba(0,0,0,1); border-color: rgba(42,37,96,0.60); opacity: 0.6; } } 53%, 80% { background: rgba(22,135,62,1.00); border-color: rgba(22,135,62,1.00); box-shadow: 0 0 12px rgba(22,135,62,1.00); } 85%, 100% { background: rgba(0,0,0,1); border-color: rgba(42,37,96,0.60); box-shadow: none; } }
+    @keyframes thermo-dot-100 { 0%, 79% { background: rgba(0,0,0,1); border-color: rgba(42,37,96,0.60); opacity: 0.6; } 80%, 80% { background: rgba(22,135,62,1.00); border-color: rgba(22,135,62,1.00); opacity: 1; } 85%, 100% { background: rgba(0,0,0,1); border-color: rgba(42,37,96,0.60); opacity: 0.6; } } 80% { background: rgba(22,135,62,1.00); border-color: rgba(22,135,62,1.00); box-shadow: 0 0 16px rgba(22,135,62,1.00); } 85%, 100% { background: rgba(0,0,0,1); border-color: rgba(42,37,96,0.60); box-shadow: none; } }
+     17%, 52% { background: rgba(22,135,62,1.00); border: 2px solid rgba(22,135,62,1.00); box-shadow: 0 0 12px rgba(22,135,62,1.00); } 54%, 100% { background: rgba(0,0,0,1); border: 2px solid #1d1a3b; box-shadow: none; } }
+     34%, 52% { background: rgba(22,135,62,1.00); border: 2px solid rgba(22,135,62,1.00); box-shadow: 0 0 12px rgba(22,135,62,1.00); } 54%, 100% { background: rgba(0,0,0,1); border: 2px solid #1d1a3b; box-shadow: none; } }
+     50%, 52% { background: rgba(22,135,62,1.00); border: 2px solid rgba(22,135,62,1.00); box-shadow: 0 0 16px rgba(22,135,62,1.00); } 54%, 100% { background: rgba(0,0,0,1); border: 2px solid #1d1a3b; box-shadow: none; } }
     @keyframes trail-fill { 0% { stroke-dashoffset: 880; } 100% { stroke-dashoffset: 0; } }
     @keyframes orbit-dot { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     @keyframes block-fill-green { 0% { opacity: 0; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1); background: rgba(22,135,62,1.00); } }
@@ -1729,7 +1709,7 @@
     .badge:hover {
       transform: translateY(-2px);
       background: rgba(0,0,0,0.12);
-      border-color: #3d3262;
+      border-color: #1d1a3b;
     }
     
     /* Smooth section transitions */
@@ -1856,7 +1836,7 @@
     
     
     .theme-toggle:hover {
-      border-color: #4a3d75 !important;
+      border-color: #2a2560 !important;
     }
     
     .theme-toggle svg {
@@ -2124,7 +2104,7 @@
   position: fixed;
   inset: 0;
   z-index: 99999;
-  background: #f5f5f7;
+  background: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2143,7 +2123,7 @@
   display: inline-block;
   width: 6px;
   height: 12px;
-  background: #3d3262;
+  background: #1d1a3b;
   animation: blink-cursor 0.6s step-end infinite;
   vertical-align: middle;
   margin-left: 2px;
@@ -2185,7 +2165,7 @@
   font-size:14px;
   letter-spacing: 2.5px;
   text-transform: uppercase;
-  color: #3d3262;
+  color: #1d1a3b;
   text-decoration: none;
   padding: 14px 28px;
   display: inline-flex;
@@ -2215,7 +2195,7 @@
   border-right: 1px solid rgba(61,50,98,0.50);
 }
 .hud-cta-primary:hover {
-  color: #3d3262;
+  color: #1d1a3b;
 }
 .hud-cta-primary:hover > i::before,
 .hud-cta-primary:hover > i::after {
@@ -2248,7 +2228,7 @@
   letter-spacing: 2px;
   text-transform: uppercase;
   text-decoration: none;
-  color: #3d3262;
+  color: #1d1a3b;
   padding: 6px 16px;
   border: none;
   transition: color 0.2s;
@@ -2292,29 +2272,29 @@
   --glass-shadow-2: rgba(15,18,30,0.06);
 }
 html{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility;}
-body{background:#f5f5f7;}
-body::before{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(ellipse 1000px 700px at 10% 15%,rgba(88,62,165,0.05),transparent 55%),radial-gradient(ellipse 900px 600px at 85% 75%,rgba(16,185,80,0.04),transparent 50%),radial-gradient(ellipse 1200px 500px at 50% 45%,rgba(88,62,165,0.03),transparent 45%);}
+body{background:#ffffff;}
+body::before{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;background:var(--bg);}
 
-.glass{background:var(--glass-bg);backdrop-filter:blur(30px) saturate(1.45);-webkit-backdrop-filter:blur(30px) saturate(1.45);border:1px solid var(--glass-border);box-shadow:0 0 0 1px var(--glass-inset) inset,0 2px 6px var(--glass-shadow-1),0 18px 60px var(--glass-shadow-2);border-radius:16px;}
+.glass{background:var(--glass-bg);backdrop--webkit-backdrop-border:1px solid var(--glass-border);box-shadow:0 0 0 1px var(--glass-inset) inset,0 2px 6px var(--glass-shadow-1),0 18px 60px var(--glass-shadow-2);border-radius:16px;}
 .glass:hover{box-shadow:0 0 0 1px rgba(255,255,255,0.40) inset,0 6px 20px rgba(15,18,30,0.05),0 24px 80px rgba(15,18,30,0.08);}
 
-.site-header,header,.nav-bar{background:rgba(245,245,247,0.92)!important;backdrop-filter:blur(24px) saturate(1.4)!important;-webkit-backdrop-filter:blur(24px) saturate(1.4)!important;border-bottom:1px solid var(--hairline)!important;}
-.brand-name{color:rgba(15,18,30,0.92)!important;}
+.site-header,header,.nav-bar{background:#ffffff!important;border-bottom:1px solid rgba(0,0,0,0.08)!important;}
+.brand-name { display: none; }
 .nav-links a{color:rgba(15,18,30,0.75)!important;}
-.nav-links a.active{color:#3d3262!important;}
+.nav-links a.active{color:#1d1a3b!important;}
 
 .nav-drawer{background:rgba(255,255,255,0.98)!important;border-left:1px solid rgba(0,0,0,0.08)!important;box-shadow:-8px 0 32px rgba(0,0,0,0.08)!important;}
 .nav-drawer a{color:rgba(15,18,30,0.72)!important;font-family:var(--mono);font-size:11px;letter-spacing:2px;}
-.nav-drawer a:hover{color:rgba(74,61,117,1)!important;background:rgba(74,61,117,0.04)!important;}
-.nav-drawer a.active{color:rgba(74,61,117,1)!important;}
-.nav-drawer .nav-signin{color:#3d3262!important;border-top:1px solid rgba(0,0,0,0.06)!important;margin-top:8px!important;}
+.nav-drawer a:hover{color:rgba(42,37,96,1)!important;background:rgba(42,37,96,0.04)!important;}
+.nav-drawer a.active{color:rgba(42,37,96,1)!important;}
+.nav-drawer .nav-signin{color:#1d1a3b!important;border-top:1px solid rgba(0,0,0,0.06)!important;margin-top:8px!important;}
 
 .section{border-top:1px solid var(--hairline)!important;}
-.section-head{background:rgba(255,255,255,0.45)!important;backdrop-filter:blur(18px) saturate(1.25)!important;-webkit-backdrop-filter:blur(18px) saturate(1.25)!important;border-radius:16px!important;padding:28px 24px!important;text-align:left!important;}
+.section-head{background:rgba(255,255,255,0.45)!important;backdrop--webkit-backdrop-border-radius:16px!important;padding:28px 24px!important;text-align:left!important;}
 .section-lead{margin-left:0!important;margin-right:auto!important;}
 .hud-frame .hud-title,.hud-frame .hud-desc,.hud-frame .hud-row{text-align:left!important;}
 
-.hud-frame{border-radius:16px!important;border:1px solid var(--hairline)!important;background:rgba(255,255,255,0.40);backdrop-filter:blur(18px) saturate(1.2);-webkit-backdrop-filter:blur(18px) saturate(1.2);}
+.hud-frame{border-radius:16px!important;border:1px solid var(--hairline)!important;background:rgba(255,255,255,0.40);backdrop--webkit-backdrop-}
 .hud-frame::before,.hud-frame::after,.hud-frame>i::before,.hud-frame>i::after{border-color:rgba(15,18,30,0.10)!important;}
 .hud-frame>i::before,.hud-frame>i::after{border-width:0.5px!important;opacity:0.5!important;}
 
@@ -2329,7 +2309,7 @@ body::before{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;ba
 .hud-frame:hover{transform:translateY(-1px)!important;}
 
 a:hover{filter:none!important;text-decoration:none;}
-.nav-links a:hover,.hud-link:hover,.doc-link:hover,.verify-link:hover,.contact-link:hover{filter:none!important;color:#3d3262;}
+.nav-links a:hover,.hud-link:hover,.doc-link:hover,.verify-link:hover,.contact-link:hover{filter:none!important;color:#1d1a3b;}
 
 #envelo-canvas,#security-canvas,#cat72-canvas,#process-canvas,canvas{background:transparent!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;border:none!important;box-shadow:none!important;}
 
@@ -2342,10 +2322,11 @@ h1{letter-spacing:-0.04em!important;}
 .section-lead{font-size:16px!important;line-height:1.8!important;max-width:62ch!important;}
 footer{border-top:1px solid var(--hairline)!important;}
 
-.guarantee-box,.fee-card,.process-card,.artifact-card,.cert-card,.research-card{background:rgba(255,255,255,0.65)!important;backdrop-filter:blur(20px) saturate(1.3)!important;-webkit-backdrop-filter:blur(20px) saturate(1.3)!important;border:1px solid rgba(15,18,30,0.06)!important;box-shadow:0 1px 2px rgba(15,18,30,0.03),0 4px 16px rgba(15,18,30,0.02)!important;}
-.verify-panel,#verify-result,#search-result{background:rgba(255,255,255,0.70)!important;backdrop-filter:blur(16px) saturate(1.2)!important;-webkit-backdrop-filter:blur(16px) saturate(1.2)!important;}
+.guarantee-box,.fee-card,.process-card,.artifact-card,.cert-card,.research-card{background:rgba(255,255,255,0.65)!important;backdrop--webkit-backdrop-border:1px solid rgba(15,18,30,0.06)!important;box-shadow:0 1px 2px rgba(15,18,30,0.03),0 4px 16px rgba(15,18,30,0.02)!important;}
+.verify-panel,#verify-result,#search-result{background:rgba(255,255,255,0.70)!important;backdrop--webkit-backdrop-}
 
-::selection{background:rgba(0,0,0,0.03);color:#111318}
+::selection { background: var(--accent); color: #fff; }
+.sa-cursor, .sa-ring, .sa-progress { display: none !important; pointer-events: none !important; }
 .sa-particles,.sa-noise,.sa-vignette,.hud-shimmer{display:none!important}
 .hud-scanline::before,.hud-scanline::after { display:none; }
 .section-title,.section-label,.hud-title,.hud-label,.hud-desc,.hud-link,.hud-num,h1,h2,h3,p,span,a,div{text-shadow:none!important}
@@ -2355,7 +2336,7 @@ footer{border-top:1px solid var(--hairline)!important;}
 .hud-title{font-size:15px!important}
 .hud-desc{line-height:1.7!important}
 .section{padding-top:16px!important;padding-bottom:16px!important}
-.sa-progress{height:2px!important}
+
 /* Flow Diagram Mobile */
   
     /* Conformance States Mobile */
@@ -2391,10 +2372,101 @@ footer{border-top:1px solid var(--hairline)!important;}
   .section-head { margin-bottom: 8px !important; }
   .diagram-well { padding: 12px 0 !important; }
 }
-</style>
+
+    /* ── Nav bar ── */
+    .site-header {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 50;
+      height: var(--nav-height, 72px);
+      background: #ffffff;
+      border-bottom: 1px solid rgba(0,0,0,0.08);
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+    }
+    .nav-inner {
+      max-width: var(--max, 1320px);
+      margin: 0 auto;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+      text-decoration: none;
+    }
+    .brand:hover { opacity: 0.8; }
+    .brand-mark { display: none; }
+    .brand-name { display: none; }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      flex: 1;
+      justify-content: center;
+    }
+    .nav-links a {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing:0.06em;
+      color: rgba(15,16,33,0.6);
+      text-decoration: none;
+      white-space: nowrap;
+      transition: color 150ms ease;
+    }
+    .nav-links a:hover,
+    .nav-links a.active { color: var(--ink); }
+    .nav-signin {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 1.5px;
+      color: var(--ink);
+      text-decoration: none;
+      border: 1px solid rgba(15,16,33,0.25);
+      padding: 7px 14px;
+      border-radius: 4px;
+      flex-shrink: 0;
+      transition: border-color 150ms ease;
+      white-space: nowrap;
+    }
+    .nav-signin:hover { border-color: rgba(15,16,33,0.6); }
+    .nav-signin > i { display: none; }
+    .nav-toggle {
+      display: none;
+      appearance: none;
+      background: none;
+      border: 1px solid rgba(15,16,33,0.2);
+      border-radius: 4px;
+      padding: 8px;
+      cursor: pointer;
+      flex-direction: column;
+      gap: 4px;
+      width: 36px;
+      height: 36px;
+      align-items: center;
+      justify-content: center;
+    }
+    .nav-toggle span {
+      display: block;
+      width: 16px;
+      height: 1.5px;
+      background: var(--ink);
+      border-radius: 1px;
+    }
+    .nav-badge { display: none; }
+
+    </style>
   <link rel="stylesheet" href="mobile.css">
 
   <link rel="stylesheet" href="type.css">
+  <link rel="stylesheet" href="global.css">
 </head>
 
 <body>
@@ -2402,28 +2474,34 @@ footer{border-top:1px solid var(--hairline)!important;}
   <a href="#main" class="skip-link">Skip to content</a>
   <div class="grid-overlay" aria-hidden="true"></div>
 
-  <header class="site-header">
+    <header class="site-header">
     <div class="nav-inner">
-      <a href="#main" class="brand">
-        <div class="brand-mark" aria-hidden="true">
-          <div class="brand-mark-inner"></div>
-        </div>
-        <div class="brand-name">Sentinel Authority</div>
+
+      <a href="/" class="brand" aria-label="Sentinel Authority home">
+        <svg width="220" height="48" viewBox="0 0 460 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="62" cy="60" r="50" stroke="#1d1a3b" stroke-width="3.4"/>
+          <circle cx="62" cy="60" r="43" stroke="#1d1a3b" stroke-width="1.1" stroke-opacity="0.20"/>
+          <text x="62" y="74" text-anchor="middle" font-family="'League Spartan', Arial, sans-serif" font-weight="900" font-size="40" fill="#1d1a3b" letter-spacing="-1.1">SA</text>
+          <text x="132" y="54" font-family="'League Spartan', Arial, sans-serif" font-weight="900" font-size="34" fill="#1d1a3b" letter-spacing="-0.15">SENTINEL</text>
+          <text x="132" y="84" font-family="'League Spartan', Arial, sans-serif" font-weight="900" font-size="34" fill="#1d1a3b" letter-spacing="-0.25">AUTHORITY</text>
+        </svg>
       </a>
 
-    <nav class="nav-links" aria-label="Main navigation">
-        <a href="#envelo" data-section="envelo">STANDARD</a>
-        <a href="#cat72" data-section="cat72">CONFORMANCE</a>
-        <a href="#verify" data-section="verify">REGISTRY</a>
-        <a href="research.html">PUBLICATIONS</a>
-    </nav>
-    <a href="https://app.sentinelauthority.org" class="nav-signin"><i></i>APPLICANT PORTAL</a>
-      
+      <nav class="nav-links" aria-label="Main navigation">
+        <a href="/#envelo" data-section="envelo">STANDARD</a>
+        <a href="/#cat72" data-section="cat72">CONFORMANCE</a>
+        <a href="/#verify" data-section="verify">REGISTRY</a>
+        <a href="/research.html">PUBLICATIONS</a>
+      </nav>
+
+      <a href="https://app.sentinelauthority.org" class="nav-signin">APPLICANT PORTAL</a>
+
       <button class="nav-toggle" aria-label="Open navigation menu" aria-expanded="false" aria-controls="nav-drawer">
         <span></span>
         <span></span>
         <span></span>
       </button>
+
     </div>
   </header>
   
@@ -2446,34 +2524,30 @@ footer{border-top:1px solid var(--hairline)!important;}
         <div style="flex:1;min-width:0;max-width:560px;padding-top:48px;">
         
 
-        <h1 style="font-family:var(--serif);font-size:clamp(38px,5.5vw,60px);font-weight:300;line-height:1.05;margin:0 0 28px;letter-spacing:-0.03em;color:#3d3262;">
+        <h1 style="font-family:var(--serif);font-size:clamp(38px,5.5vw,60px);font-weight:300;line-height:1.05;margin:0 0 24px;letter-spacing:-0.03em;color:#1d1a3b;">
           Operational Boundary Conformance<br>for Autonomous Systems
         </h1>
+        <div style="width:72px;height:1px;background:rgba(15,18,30,0.22);margin:0 0 24px;"></div>
         
         <p style="font-size:17px;color:rgba(15,18,30,0.75);max-width:480px;margin:0 0 14px;line-height:1.75;">
-          ODDC certification attests to conformance with declared operational boundary requirements under the ODDC standard. Enforcement is non-bypassable, verification is independent, and records are maintained in a tamper-evident, immutable registry.
-        </p>
-
-        <p style="font-size:17px;color:rgba(15,18,30,0.75);max-width:480px;margin:0 0 14px;line-height:1.75;">
+          Independent attestation of runtime operational boundary conformance. Enforcement is non-bypassable, verification is independent, and records are maintained in a tamper-evident, immutable registry.
         </p>
         
         </div>
 
         <!-- Product: Certificate/Dashboard render -->
         <div class="cert-scene" style="flex:1;min-width:320px;max-width:480px;position:relative;">
-          <div style="position:relative;background:rgba(255,255,255,1.0);border:1px solid rgba(15,18,30,0.06);border-radius:4px;padding:28px 32px;font-family:var(--mono);overflow:hidden;" class="cert-card-main">
+          <div style="position:relative;background:rgba(15,18,30,0.02);border:1px solid rgba(15,18,30,0.12);border-radius:4px;padding:36px 40px;font-family:var(--mono);overflow:hidden;" class="cert-card-main">
             
             <!-- Certificate header -->
             <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;">
-              <div style="width:18px;height:18px;background:#7B6BAE;border:1.5px solid #b8aad4;border-radius:4px;display:flex;align-items:center;justify-content:center;">
-                <div style="width:6px;height:6px;background:#e0d8f0;border-radius:50%;"></div>
-              </div>
+              <svg width="38" height="38" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="60" cy="60" r="50" stroke="#1d1a3b" stroke-width="3.4"/><circle cx="60" cy="60" r="43" stroke="#1d1a3b" stroke-width="1.1" stroke-opacity="0.20"/><text x="60" y="74" text-anchor="middle" font-family="League Spartan,Arial,sans-serif" font-weight="900" font-size="42" letter-spacing="-1.1" fill="#1d1a3b">SA</text></svg>
               <span style="font-size:14px;letter-spacing:3px;text-transform:uppercase;color:rgba(15,18,30,0.55);">ODDC Certificate</span>
               <span style="margin-left:auto;font-size:14px;color:rgba(22,135,62,0.9);letter-spacing:1px;display:flex;align-items:center;gap:4px;"><span class="cert-active-dot"></span> ACTIVE</span>
             </div>
 
             <!-- Certificate ID -->
-            <div style="font-size:18px;letter-spacing:-0.02em;color:#3d3262;font-weight:500;margin-bottom:4px;font-family:var(--serif);">ODDC-2025-00847</div>
+            <div style="font-size:18px;letter-spacing:-0.02em;color:#1d1a3b;font-weight:500;margin-bottom:4px;font-family:var(--serif);">ODDC-2025-00847</div>
             <div style="font-size:14px;color:rgba(15,18,30,0.55);letter-spacing:1px;margin-bottom:20px;">ISSUED 2025-02-13T08:42:17Z</div>
 
             <!-- Divider -->
@@ -3025,7 +3099,7 @@ footer{border-top:1px solid var(--hairline)!important;}
     <!-- ═══ INEVITABILITY ANCHOR ═══ -->
     <section class="section" style="padding:24px 0 16px;">
       <div class="reveal" style="max-width:700px;margin:0 auto;text-align:center;">
-        <p style="font-family:var(--serif);font-size:clamp(18px,2.5vw,24px);font-weight:300;color:rgba(15,18,30,0.88);line-height:1.7;letter-spacing:-0.01em;">
+        <p style="font-family:var(--serif);font-size:clamp(18px,2.5vw,24px);font-weight:300;color:rgba(15,18,30,0.88);line-height:1.55;letter-spacing:-0.01em;">
           Autonomous systems operate across transportation, finance, robotics, healthcare, and industrial automation without independently verified runtime boundary enforcement.<br><br>
           ODDC defines and attests a discrete category of independent runtime boundary enforcement verification. Historically, this category has not been formalized as a recognized conformance domain.
         </p>
@@ -3168,7 +3242,7 @@ footer{border-top:1px solid var(--hairline)!important;}
 <path d="M662,182 L668,182 M662,182 L662,176" stroke="rgba(78,74,107,0.72)" stroke-width="1" fill="none"/>
 <path d="M730,182 L724,182 M730,182 L730,176" stroke="rgba(78,74,107,0.72)" stroke-width="1" fill="none"/>
 <text x="696" y="200" text-anchor="middle" font-family="IBM Plex Mono" font-size="11" font-weight="500" fill="rgba(78,74,107,1.0)" letter-spacing="2.5">GATE</text>
-<text x="696" y="212" text-anchor="middle" font-family="IBM Plex Mono" font-size="8" fill="rgba(78,74,107,0.70)" letter-spacing="1.5">IDLE</text>
+<text x="696" y="212" text-anchor="middle" font-family="IBM Plex Mono" font-size="8" fill="rgba(29,26,59,0.55)" letter-spacing="1.5">IDLE</text>
 <!-- OUTCOME NODES -->
 <rect x="800" y="84" width="92" height="26" rx="3" fill="rgba(248,249,250,0.95)" stroke="rgba(16,185,80,0.65)" stroke-width="1.5"/>
 <line x1="803" y1="84.5" x2="889" y2="84.5" stroke="url(#etop1)" stroke-width="0.7"/>
@@ -3329,7 +3403,7 @@ footer{border-top:1px solid var(--hairline)!important;}
 <line x1="780" y1="142" x2="780" y2="158" stroke="rgba(78,74,107,0.25)" stroke-width="1"/>
 <line x1="804" y1="142" x2="804" y2="158" stroke="rgba(78,74,107,0.25)" stroke-width="1"/>
 <text x="792" y="210" text-anchor="middle" font-family="IBM Plex Mono" font-size="11" font-weight="500" fill="rgba(78,74,107,1.0)" letter-spacing="2.5">SENTINEL</text>
-<text x="792" y="222" text-anchor="middle" font-family="IBM Plex Mono" font-size="8" fill="rgba(78,74,107,0.70)" letter-spacing="1">AUTHORITY REGISTRY</text>
+<text x="792" y="222" text-anchor="middle" font-family="IBM Plex Mono" font-size="8" fill="rgba(29,26,59,0.55)" letter-spacing="1">AUTHORITY REGISTRY</text>
 <!-- Status -->
 <line x1="80" y1="306" x2="880" y2="306" 
 </svg>
@@ -3338,15 +3412,15 @@ footer{border-top:1px solid var(--hairline)!important;}
       <div class="reveal" style="max-width:880px;margin:0 auto var(--space-3);">
         <div class="five-gates-grid" style="display:flex;justify-content:center;gap:4px;flex-wrap:wrap;">
           <div style="text-align:center;padding:16px 12px;flex:1;min-width:120px;">
-            <div style="font-family:var(--mono);font-size:14px;letter-spacing:2px;color:rgba(74,61,117,1.00);margin-bottom:4px;">01</div>
-            <div style="font-family:var(--mono);font-size:14px;letter-spacing:2px;color:rgba(74,61,117,1.00);margin-bottom:6px;">ODD</div>
+            <div style="font-family:var(--mono);font-size:14px;letter-spacing:2px;color:#1d1a3b;margin-bottom:4px;">01</div>
+            <div style="font-family:var(--mono);font-size:14px;letter-spacing:2px;color:#1d1a3b;margin-bottom:6px;">ODD</div>
             <div style="font-size:14px;color:#111318;margin-bottom:4px;">Established</div>
             <div style="font-size:14px;color:rgba(15,18,30,0.64);">Operator-declared operational boundaries</div>
           </div>
           <div style="width:1px;background:rgba(0,0,0,0.06);align-self:stretch;"></div>
           <div style="text-align:center;padding:16px 12px;flex:1;min-width:120px;">
-            <div style="font-family:var(--mono);font-size:14px;letter-spacing:2px;color:rgba(74,61,117,1.00);margin-bottom:4px;">02</div>
-            <div style="font-family:var(--mono);font-size:14px;letter-spacing:2px;color:rgba(74,61,117,1.00);margin-bottom:6px;">SUSTAINED ENFORCEMENT VERIFICATION</div>
+            <div style="font-family:var(--mono);font-size:14px;letter-spacing:2px;color:#1d1a3b;margin-bottom:4px;">02</div>
+            <div style="font-family:var(--mono);font-size:14px;letter-spacing:2px;color:#1d1a3b;margin-bottom:6px;">SUSTAINED ENFORCEMENT VERIFICATION</div>
             <div style="font-size:14px;color:#111318;margin-bottom:4px;">Enforcement Verified</div>
             <div style="font-size:14px;color:rgba(15,18,30,0.64);">72 cumulative hours of enforced operational exposure</div>
           </div>
@@ -3359,15 +3433,15 @@ footer{border-top:1px solid var(--hairline)!important;}
           </div>
           <div style="width:1px;background:rgba(0,0,0,0.06);align-self:stretch;"></div>
           <div style="text-align:center;padding:16px 12px;flex:1;min-width:120px;">
-            <div style="font-family:var(--mono);font-size:14px;letter-spacing:2px;color:rgba(74,61,117,1.00);margin-bottom:4px;">04</div>
-            <div style="font-family:var(--mono);font-size:14px;letter-spacing:2px;color:rgba(74,61,117,1.00);margin-bottom:6px;">AUDIT</div>
+            <div style="font-family:var(--mono);font-size:14px;letter-spacing:2px;color:#1d1a3b;margin-bottom:4px;">04</div>
+            <div style="font-family:var(--mono);font-size:14px;letter-spacing:2px;color:#1d1a3b;margin-bottom:6px;">AUDIT</div>
             <div style="font-size:14px;color:#111318;margin-bottom:4px;">Tamper-Evident</div>
             <div style="font-size:14px;color:rgba(15,18,30,0.64);">Cryptographic records</div>
           </div>
           <div style="width:1px;background:rgba(0,0,0,0.06);align-self:stretch;"></div>
           <div style="text-align:center;padding:16px 12px;flex:1;min-width:120px;">
-            <div style="font-family:var(--mono);font-size:14px;letter-spacing:2px;color:rgba(74,61,117,1.00);margin-bottom:4px;">05</div>
-            <div style="font-family:var(--mono);font-size:14px;letter-spacing:2px;color:rgba(74,61,117,1.00);margin-bottom:6px;">DRIFT DETECTION AND REVOCATION PROTOCOL</div>
+            <div style="font-family:var(--mono);font-size:14px;letter-spacing:2px;color:#1d1a3b;margin-bottom:4px;">05</div>
+            <div style="font-family:var(--mono);font-size:14px;letter-spacing:2px;color:#1d1a3b;margin-bottom:6px;">DRIFT DETECTION AND REVOCATION PROTOCOL</div>
             <div style="font-size:14px;color:#111318;margin-bottom:4px;">Drift Protocol</div>
             <div style="font-size:14px;color:rgba(15,18,30,0.64);">Clear suspension path</div>
           </div>
@@ -4129,25 +4203,25 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
 <!-- Step 2: APPROVE -->
 <circle cx="230" cy="90" r="30" stroke="rgba(78,74,107,0.72)" stroke-width="1.5" fill="none"/>
 <circle cx="230" cy="90" r="22" stroke="rgba(78,74,107,0.08)" stroke-width="0.5" fill="none"/>
-<text x="230" y="95" text-anchor="middle" font-family="IBM Plex Mono" font-size="14" font-weight="300" fill="rgba(78,74,107,0.70)">2</text>
+<text x="230" y="95" text-anchor="middle" font-family="IBM Plex Mono" font-size="14" font-weight="300" fill="rgba(29,26,59,0.55)">2</text>
 <text x="230" y="136" text-anchor="middle" font-family="IBM Plex Mono" font-size="10" font-weight="500" fill="rgba(78,74,107,0.75)" letter-spacing="1">APPROVE</text>
 <text x="230" y="149" text-anchor="middle" font-family="IBM Plex Mono" font-size="8" fill="rgba(78,74,107,0.65)" letter-spacing="0.5">PAYMENT</text>
 <!-- Step 3: DEPLOY -->
 <circle cx="380" cy="90" r="30" stroke="rgba(78,74,107,0.72)" stroke-width="1.5" fill="none"/>
 <circle cx="380" cy="90" r="22" stroke="rgba(78,74,107,0.08)" stroke-width="0.5" fill="none"/>
-<text x="380" y="95" text-anchor="middle" font-family="IBM Plex Mono" font-size="14" font-weight="300" fill="rgba(78,74,107,0.70)">3</text>
+<text x="380" y="95" text-anchor="middle" font-family="IBM Plex Mono" font-size="14" font-weight="300" fill="rgba(29,26,59,0.55)">3</text>
 <text x="380" y="136" text-anchor="middle" font-family="IBM Plex Mono" font-size="10" font-weight="500" fill="rgba(78,74,107,0.75)" letter-spacing="1">DEPLOY</text>
 <text x="380" y="149" text-anchor="middle" font-family="IBM Plex Mono" font-size="8" fill="rgba(78,74,107,0.65)" letter-spacing="0.5">ONE COMMAND</text>
 <!-- Step 4: DISCOVER -->
 <circle cx="530" cy="90" r="30" stroke="rgba(78,74,107,0.72)" stroke-width="1.5" fill="none"/>
 <circle cx="530" cy="90" r="22" stroke="rgba(78,74,107,0.08)" stroke-width="0.5" fill="none"/>
-<text x="530" y="95" text-anchor="middle" font-family="IBM Plex Mono" font-size="14" font-weight="300" fill="rgba(78,74,107,0.70)">4</text>
+<text x="530" y="95" text-anchor="middle" font-family="IBM Plex Mono" font-size="14" font-weight="300" fill="rgba(29,26,59,0.55)">4</text>
 <text x="530" y="136" text-anchor="middle" font-family="IBM Plex Mono" font-size="10" font-weight="500" fill="rgba(78,74,107,0.75)" letter-spacing="1">DISCOVER</text>
 <text x="530" y="149" text-anchor="middle" font-family="IBM Plex Mono" font-size="8" fill="rgba(78,74,107,0.65)" letter-spacing="0.5">AUTO-BOUNDARIES</text>
 <!-- Step 5: CAT-72 -->
 <circle cx="680" cy="90" r="30" stroke="rgba(78,74,107,0.72)" stroke-width="1.5" fill="none"/>
 <circle cx="680" cy="90" r="22" stroke="rgba(78,74,107,0.08)" stroke-width="0.5" fill="none"/>
-<text x="680" y="95" text-anchor="middle" font-family="IBM Plex Mono" font-size="14" font-weight="300" fill="rgba(78,74,107,0.70)">5</text>
+<text x="680" y="95" text-anchor="middle" font-family="IBM Plex Mono" font-size="14" font-weight="300" fill="rgba(29,26,59,0.55)">5</text>
 <text x="680" y="136" text-anchor="middle" font-family="IBM Plex Mono" font-size="10" font-weight="500" fill="rgba(78,74,107,0.75)" letter-spacing="1">CAT-72</text>
 <text x="680" y="149" text-anchor="middle" font-family="IBM Plex Mono" font-size="8" fill="rgba(78,74,107,0.65)" letter-spacing="0.5">72 HOURS</text>
 <!-- Step 6: CERTIFIED -->
@@ -4389,7 +4463,7 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
       <!-- Fee Schedule -->
       <div class="reveal" style="margin-top: var(--space-4); max-width: 600px; margin-left: auto; margin-right: auto;">
         <div style="text-align: center; margin-bottom: var(--space-2);">
-          <div style="font-family: var(--mono); font-size:14px; letter-spacing: 4px; color: rgba(74,61,117,1.00);">FEE SCHEDULE</div>
+          <div style="font-family: var(--mono); font-size:14px; letter-spacing: 4px; color: #1d1a3b;">FEE SCHEDULE</div>
         </div>
         <div class="hud-frame hud-scanline" style="max-width:500px;margin:0 auto;"><i></i>
           <div class="fee-grid" style="display:grid;grid-template-columns:1fr 120px;align-items:center;" class="hud-row">
@@ -4410,16 +4484,16 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
             Conformance Assessment — USD 15,000<br>Annual Maintenance — USD 12,000
           </p>
         </div>
-        <p style="text-align:center;font-size:14px;color:rgba(15,18,30,0.64);margin-top:12px;font-family:var(--mono);">All fees USD · Base rates · <a href="#contact" style="color:rgba(74,61,117,1.00);">Enterprise inquiries</a></p>
+        <p style="text-align:center;font-size:14px;color:rgba(15,18,30,0.64);margin-top:12px;font-family:var(--mono);">All fees USD · Base rates · <a href="#contact" style="color:#1d1a3b;">Enterprise inquiries</a></p>
       </div>
 
       <!-- CTA -->
       <div class="reveal" style="text-align: center; margin-top: var(--space-4);">
-        <a href="https://app.sentinelauthority.org" style="display:inline-flex;align-items:center;gap:10px;font-family:var(--mono);font-size:14px;letter-spacing:2px;text-transform:uppercase;color:rgba(74,61,117,1.00);text-decoration:none;transition:filter .2s;" >
+        <a href="https://app.sentinelauthority.org" style="display:inline-flex;align-items:center;gap:10px;font-family:var(--mono);font-size:14px;letter-spacing:2px;text-transform:uppercase;color:#1d1a3b;text-decoration:none;transition:filter .2s;" >
           Submit Application
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </a>
-        <p style="font-size:14px; color: var(--text-tertiary); margin-top: 16px;">Questions? <a href="#contact" style="color: rgba(74,61,117,1.00);">Contact us</a></p>
+        <p style="font-size:14px; color: var(--text-tertiary); margin-top: 16px;">Questions? <a href="#contact" style="color: #1d1a3b;">Contact us</a></p>
       </div>
     </section>
     <section id="insight" class="section">
@@ -4436,19 +4510,19 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
       <div class="reveal" style="max-width:700px;margin:0 auto;">
         <div class="hud-frame hud-scanline"><i></i>
           <div class="hud-row" style="display:flex;align-items:flex-start;">
-            <span class="hud-num" style="min-width:56px;">01</span><span style="width:6px;height:6px;border-radius:50%;background:rgba(74,61,117,1.00);flex-shrink:0;margin-top:6px;"></span><div style="width:8px;flex-shrink:0;"></div>
+            <span class="hud-num" style="min-width:56px;">01</span><span style="width:6px;height:6px;border-radius:50%;background:#1d1a3b;flex-shrink:0;margin-top:6px;"></span><div style="width:8px;flex-shrink:0;"></div>
             <div><div class="hud-title">Boundary Exceedance Conditions</div><div class="hud-desc">Structured records of conditions under which enforcement actions were triggered during the verification period.</div></div>
           </div>
           <div class="hud-row" style="display:flex;align-items:flex-start;">
-            <span class="hud-num" style="min-width:56px;">02</span><span style="width:6px;height:6px;border-radius:50%;background:rgba(74,61,117,1.00);flex-shrink:0;margin-top:6px;"></span><div style="width:8px;flex-shrink:0;"></div>
+            <span class="hud-num" style="min-width:56px;">02</span><span style="width:6px;height:6px;border-radius:50%;background:#1d1a3b;flex-shrink:0;margin-top:6px;"></span><div style="width:8px;flex-shrink:0;"></div>
             <div><div class="hud-title">Cross-Cycle Enforcement Metrics</div><div class="hud-desc">Longitudinal enforcement data across certification periods, available for operator review and regulatory submission.</div></div>
           </div>
           <div class="hud-row" style="display:flex;align-items:flex-start;">
-            <span class="hud-num" style="min-width:56px;">03</span><span style="width:6px;height:6px;border-radius:50%;background:rgba(74,61,117,1.00);flex-shrink:0;margin-top:6px;"></span><div style="width:8px;flex-shrink:0;"></div>
+            <span class="hud-num" style="min-width:56px;">03</span><span style="width:6px;height:6px;border-radius:50%;background:#1d1a3b;flex-shrink:0;margin-top:6px;"></span><div style="width:8px;flex-shrink:0;"></div>
             <div><div class="hud-title">Structured Determination Records</div><div class="hud-desc">Reproducible, cryptographically authenticated enforcement records suitable for regulatory submission and underwriting review.</div></div>
           </div>
           <div class="hud-row" style="display:flex;align-items:flex-start;">
-            <span class="hud-num" style="min-width:56px;">04</span><span style="width:6px;height:6px;border-radius:50%;background:rgba(74,61,117,1.00);flex-shrink:0;margin-top:6px;"></span><div style="width:8px;flex-shrink:0;"></div>
+            <span class="hud-num" style="min-width:56px;">04</span><span style="width:6px;height:6px;border-radius:50%;background:#1d1a3b;flex-shrink:0;margin-top:6px;"></span><div style="width:8px;flex-shrink:0;"></div>
             <div><div class="hud-title">Documented Remediation and Reassessment Pathways</div><div class="hud-desc">Upon suspension or exceedance, structured remediation and reassessment procedures are defined under the Conformance Agreement.</div></div>
           </div>
         </div>
@@ -4703,22 +4777,22 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
         </div>
 
         <div style="display:flex;gap:0;margin-bottom:24px;border-bottom:1px solid rgba(0,0,0,0.09);">
-          <button id="tab-verify" onclick="setVerifyMode('verify')" style="flex:1;padding:10px 0;border:none;cursor:pointer;font-family:var(--mono);font-size:14px;letter-spacing:2px;background:transparent;color:rgba(74,61,117,1.00);border-bottom:2px solid rgba(74,61,117,1.00);transition:all 0.2s;">VERIFY CERTIFICATE</button>
+          <button id="tab-verify" onclick="setVerifyMode('verify')" style="flex:1;padding:10px 0;border:none;cursor:pointer;font-family:var(--mono);font-size:14px;letter-spacing:2px;background:transparent;color:#1d1a3b;border-bottom:2px solid #1d1a3b;transition:all 0.2s;">VERIFY CERTIFICATE</button>
           <button id="tab-search" onclick="setVerifyMode('search')" style="flex:1;padding:10px 0;border:none;cursor:pointer;font-family:var(--mono);font-size:14px;letter-spacing:2px;background:transparent;color:rgba(15,18,30,0.64);border-bottom:2px solid transparent;transition:all 0.2s;">SEARCH REGISTRY</button>
         </div>
 
         <div id="verify-mode">
           <div style="display:flex;gap:8px;align-items:stretch;">
-            <input type="text" id="cert-input" autocomplete="off" placeholder="ODDC-2026-00001" style="flex:1;padding:14px 0;font-family:var(--mono);font-size:15px;letter-spacing:2px;background:transparent;border:none;border-bottom:1px solid rgba(74,61,117,0.60);color:var(--text-primary);outline:none;">
-            <button id="verify-btn" onclick="verifyCertificate()" style="padding:14px 20px;font-family:var(--mono);font-size:14px;letter-spacing:2px;background:transparent;border:none;border-bottom:1px solid rgba(74,61,117,0.60);color:rgba(74,61,117,1.00);cursor:pointer;transition:all 0.2s;white-space:nowrap;">VERIFY</button>
+            <input type="text" id="cert-input" autocomplete="off" placeholder="ODDC-2026-00001" style="flex:1;padding:14px 0;font-family:var(--mono);font-size:15px;letter-spacing:2px;background:transparent;border:none;border-bottom:1px solid rgba(42,37,96,0.60);color:var(--text-primary);outline:none;">
+            <button id="verify-btn" onclick="verifyCertificate()" style="padding:14px 20px;font-family:var(--mono);font-size:14px;letter-spacing:2px;background:transparent;border:none;border-bottom:1px solid rgba(42,37,96,0.60);color:#1d1a3b;cursor:pointer;transition:all 0.2s;white-space:nowrap;">VERIFY</button>
           </div>
           <div class="hud-desc" style="margin-top:8px;">Enter a certificate ID from any ODDC mark or certificate document.</div>
         </div>
 
         <div id="search-mode" style="display:none;">
           <div style="display:flex;gap:8px;align-items:stretch;">
-            <input type="text" id="search-input" placeholder="Company or system name..." style="flex:1;padding:14px 0;font-family:var(--mono);font-size:15px;letter-spacing:2px;background:transparent;border:none;border-bottom:1px solid rgba(74,61,117,0.60);color:var(--text-primary);outline:none;">
-            <button id="search-btn" onclick="searchRegistry()" style="padding:14px 20px;font-family:var(--mono);font-size:14px;letter-spacing:2px;background:transparent;border:none;border-bottom:1px solid rgba(74,61,117,0.60);color:rgba(74,61,117,1.00);cursor:pointer;transition:all 0.2s;white-space:nowrap;">SEARCH</button>
+            <input type="text" id="search-input" placeholder="Company or system name..." style="flex:1;padding:14px 0;font-family:var(--mono);font-size:15px;letter-spacing:2px;background:transparent;border:none;border-bottom:1px solid rgba(42,37,96,0.60);color:var(--text-primary);outline:none;">
+            <button id="search-btn" onclick="searchRegistry()" style="padding:14px 20px;font-family:var(--mono);font-size:14px;letter-spacing:2px;background:transparent;border:none;border-bottom:1px solid rgba(42,37,96,0.60);color:#1d1a3b;cursor:pointer;transition:all 0.2s;white-space:nowrap;">SEARCH</button>
           </div>
           <div class="hud-desc" style="margin-top:8px;">Search the public conformance registry by company or system name.</div>
         </div>
@@ -4729,7 +4803,7 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
           <div class="hud-label" style="margin-bottom:12px;">PROGRAMMATIC ACCESS</div>
           <div class="hud-desc" style="margin-bottom:16px;">Registry verification is available via REST API.</div>
           <div style="padding:8px 0;border-top:1px solid rgba(0,0,0,0.09);font-family:var(--mono);font-size:14px;color:var(--text-secondary);word-break:break-all;">
-            <span style="color:rgba(74,61,117,1.00);">GET</span> <span style="color:var(--text-tertiary);">https://api.sentinelauthority.org/v1/verify/</span><span style="color:rgba(22,135,62,1.00);">{cert_id}</span>
+            <span style="color:#1d1a3b;">GET</span> <span style="color:var(--text-tertiary);">https://api.sentinelauthority.org/v1/verify/</span><span style="color:rgba(22,135,62,1.00);">{cert_id}</span>
           </div>
           <div style="padding:12px 0;">
             <a href="mailto:conformance@sentinelauthority.org" class="hud-link">API Access Documentation &#x2192;</a>
@@ -4750,7 +4824,7 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
 
       <div class="reveal" style="max-width:700px;margin:0 auto;">
         <div style="padding:20px 0;border-bottom:1px solid rgba(0,0,0,0.09);display:flex;align-items:flex-start;gap:12px;">
-          <span class="hud-dot" style="width:6px;height:6px;border-radius:50%;background:rgba(74,61,117,1.00);flex-shrink:0;margin-top:6px;"></span>
+          <span class="hud-dot" style="width:6px;height:6px;border-radius:50%;background:#1d1a3b;flex-shrink:0;margin-top:6px;"></span>
           <div>
             <div class="hud-label" style="margin-bottom:4px;">GENERAL INQUIRIES</div>
             <a href="mailto:info@sentinelauthority.org" style="font-family:var(--mono);font-size:14px;color:var(--text-primary);letter-spacing:0.5px;text-decoration:none;">info@sentinelauthority.org</a>
@@ -4759,16 +4833,16 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
         </div>
 
         <div style="padding:20px 0;border-bottom:1px solid rgba(0,0,0,0.09);display:flex;align-items:flex-start;gap:12px;">
-          <span class="hud-dot" style="width:6px;height:6px;border-radius:50%;background:rgba(74,61,117,1.00);flex-shrink:0;margin-top:6px;"></span>
+          <span class="hud-dot" style="width:6px;height:6px;border-radius:50%;background:#1d1a3b;flex-shrink:0;margin-top:6px;"></span>
           <div>
             <div class="hud-label" style="margin-bottom:4px;">CONFORMANCE ASSESSMENT</div>
-            <a href="mailto:conformance@sentinelauthority.org" style="font-family:var(--mono);font-size:14px;color:#3d3262;letter-spacing:0.5px;text-decoration:none;">conformance@sentinelauthority.org</a>
+            <a href="mailto:conformance@sentinelauthority.org" style="font-family:var(--mono);font-size:14px;color:#1d1a3b;letter-spacing:0.5px;text-decoration:none;">conformance@sentinelauthority.org</a>
             <div class="hud-desc" style="margin-top:4px;">Conformance assessment inquiries and application submissions.</div>
           </div>
         </div>
 
         <div style="padding:20px 0;border-bottom:1px solid rgba(0,0,0,0.09);display:flex;align-items:flex-start;gap:12px;">
-          <span class="hud-dot" style="width:6px;height:6px;border-radius:50%;background:rgba(74,61,117,1.00);flex-shrink:0;margin-top:6px;"></span>
+          <span class="hud-dot" style="width:6px;height:6px;border-radius:50%;background:#1d1a3b;flex-shrink:0;margin-top:6px;"></span>
           <div>
             <div class="hud-label" style="margin-bottom:4px;">APPLY</div>
             <a href="https://app.sentinelauthority.org" class="hud-link" style="font-size:14px;">APP.SENTINELAUTHORITY.ORG &#x2192;</a>
@@ -4810,7 +4884,7 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
     <section class="section" style="padding:24px 0 16px;">
       <div class="reveal" style="max-width:600px;margin:0 auto;text-align:center;">
         <span style="font-family:var(--mono);font-size:14px;letter-spacing:2.5px;color:rgba(15,18,30,0.55);text-transform:uppercase;">Scope and Mission</span>
-        <p style="font-family:var(--serif);font-size:clamp(18px,2.5vw,24px);font-weight:300;color:rgba(15,18,30,0.88);line-height:1.7;margin:20px 0 0;letter-spacing:-0.01em;">
+        <p style="font-family:var(--serif);font-size:clamp(18px,2.5vw,24px);font-weight:300;color:rgba(15,18,30,0.88);line-height:1.55;margin:20px 0 0;letter-spacing:-0.01em;">
           Independent conformance supports infrastructure-scale deployment of autonomous systems.
         </p>
         <p style="font-family:var(--mono);font-size:14px;color:rgba(15,18,30,0.55);line-height:1.8;margin-top:20px;">
@@ -5107,8 +5181,8 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
         var el = document.getElementById(id);
         if (!el) return;
         var active = id === "tab-" + mode;
-        el.style.color = active ? "rgba(74,61,117,1.00)" : "rgba(0,0,0,0.45)";
-        el.style.borderBottomColor = active ? "rgba(74,61,117,1.00)" : "transparent";
+        el.style.color = active ? "#1d1a3b" : "rgba(0,0,0,0.45)";
+        el.style.borderBottomColor = active ? "#1d1a3b" : "transparent";
         el.style.background = "transparent";
       });
     }    
@@ -5146,7 +5220,7 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
           '<div style="display:flex;justify-content:space-between;align-items:center;">' +
           '<div><div style="color:var(--text-primary);font-weight:500;">' + cert.organization_name + '</div>' +
           '<div style="color:var(--text-tertiary);font-size:14px;">' + cert.system_name + '</div></div>' +
-          '<div style="text-align:right;"><div style="color:#3d3262;font-family:var(--mono);font-size:14px;">' + cert.certificate_number + '</div>' +
+          '<div style="text-align:right;"><div style="color:#1d1a3b;font-family:var(--mono);font-size:14px;">' + cert.certificate_number + '</div>' +
           '<div style="color:#16873e;font-size:14px;text-transform:uppercase;">' + cert.state + '</div></div></div></div>';
       });
       if (resultDiv) resultDiv.innerHTML = html;
@@ -5191,7 +5265,7 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
         '<div style="display:grid;gap:10px;">' +
         '<div style="display:flex;justify-content:space-between;padding-bottom:8px;border-bottom:1px solid rgba(0,0,0,0.09);"><span style="color:var(--text-tertiary);font-size:14px;">Organization</span><span style="color:var(--text-primary);font-size:14px;font-weight:500;">' + (data.organization_name||"—") + '</span></div>' +
         '<div style="display:flex;justify-content:space-between;padding-bottom:8px;border-bottom:1px solid rgba(0,0,0,0.09);"><span style="color:var(--text-tertiary);font-size:14px;">System</span><span style="color:var(--text-primary);font-size:14px;">' + (data.system_name||"—") + '</span></div>' +
-        '<div style="display:flex;justify-content:space-between;padding-bottom:8px;border-bottom:1px solid rgba(0,0,0,0.09);"><span style="color:var(--text-tertiary);font-size:14px;">Certificate</span><span style="color:#3d3262;font-family:var(--mono);font-size:14px;">' + (data.certificate_number||"—") + '</span></div>' +
+        '<div style="display:flex;justify-content:space-between;padding-bottom:8px;border-bottom:1px solid rgba(0,0,0,0.09);"><span style="color:var(--text-tertiary);font-size:14px;">Certificate</span><span style="color:#1d1a3b;font-family:var(--mono);font-size:14px;">' + (data.certificate_number||"—") + '</span></div>' +
         '<div style="display:flex;justify-content:space-between;"><span style="color:var(--text-tertiary);font-size:14px;">Valid Until</span><span style="color:var(--text-primary);font-size:14px;">' + expiresDate + '</span></div></div></div>';
     }
     
@@ -5333,152 +5407,10 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
       }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
       var targets = document.querySelectorAll('.reveal, .section-head, [data-tick]');
       for (var i = 0; i < targets.length; i++) observer.observe(targets[i]);
-      var navBrand = document.querySelector('.brand');
-      if (navBrand) {
-        var pulse = document.createElement('span');
-        pulse.style.cssText = 'display:inline-block;width:4px;height:4px;border-radius:50%;background:rgba(22,135,62,1.00);margin-left:8px;vertical-align:middle;';
-        navBrand.appendChild(pulse);
-      }
+      // nav pulse dot removed
     })();
     </script>
 
-    <script>
-    (function() {
-      'use strict';
-      if (window.matchMedia('(pointer: fine)').matches) {
-        var cursor = document.createElement('div');
-        cursor.className = 'sa-cursor';
-        document.body.appendChild(cursor);
-        var ring = document.createElement('div');
-        ring.className = 'sa-ring';
-        document.body.appendChild(ring);
-        var mx = 0, my = 0, rx = 0, ry = 0;
-        document.addEventListener('mousemove', function(e) {
-          mx = e.clientX; my = e.clientY;
-          cursor.style.left = mx + 'px';
-          cursor.style.top = my + 'px';
-        });
-        function followRing() {
-          rx += (mx - rx) * 0.12;
-          ry += (my - ry) * 0.12;
-          ring.style.left = rx + 'px';
-          ring.style.top = ry + 'px';
-          requestAnimationFrame(followRing);
-        }
-        followRing();
-        var hovers = 'a, button, [onclick], .btn, .hud-link, .hud-row[style*="cursor"], .nav-links a, .nav-toggle, input, select, textarea';
-        document.addEventListener('mouseover', function(e) {
-          if (e.target.closest(hovers)) { cursor.classList.add('hovering'); ring.classList.add('hovering'); }
-        });
-        document.addEventListener('mouseout', function(e) {
-          if (e.target.closest(hovers)) { cursor.classList.remove('hovering'); ring.classList.remove('hovering'); }
-        });
-        document.addEventListener('mousedown', function() { ring.classList.add('clicking'); });
-        document.addEventListener('mouseup', function() { ring.classList.remove('clicking'); });
-      }
-      var btns = document.querySelectorAll('.btn');
-      var threshold = 80;
-      for (var bi = 0; bi < btns.length; bi++) {
-        (function(btn) {
-          btn.addEventListener('mousemove', function(e) {
-            var r = btn.getBoundingClientRect();
-            var cx = r.left + r.width / 2;
-            var cy = r.top + r.height / 2;
-            var dx = e.clientX - cx;
-            var dy = e.clientY - cy;
-            var dist = Math.sqrt(dx * dx + dy * dy);
-            if (dist < threshold) {
-              var pull = (1 - dist / threshold) * 8;
-              btn.style.transform = 'translate(' + (dx / dist * pull).toFixed(1) + 'px,' + (dy / dist * pull).toFixed(1) + 'px)';
-            }
-          });
-          btn.addEventListener('mouseleave', function() { btn.style.transform = ''; });
-        })(btns[bi]);
-      }
-      var progressBar = document.createElement('div');
-      progressBar.className = 'sa-progress';
-      document.body.appendChild(progressBar);
-      window.addEventListener('scroll', function() {
-        var h = document.documentElement.scrollHeight - window.innerHeight;
-        var p = h > 0 ? (window.scrollY / h) * 100 : 0;
-        progressBar.style.width = p + '%';
-      }, { passive: true });
-      var pc = document.createElement('canvas');
-      pc.className = 'sa-particles'; pc.style.display='none';
-      document.body.appendChild(pc);
-      var pctx = pc.getContext('2d');
-      var particles = [];
-      var PCOUNT = 45;
-      var pW = 0, pH = 0;
-      function pResize() {
-        pW = window.innerWidth; pH = window.innerHeight;
-        pc.width = pW * (window.devicePixelRatio || 1);
-        pc.height = pH * (window.devicePixelRatio || 1);
-        pc.style.width = pW + 'px'; pc.style.height = pH + 'px';
-        pctx.setTransform(window.devicePixelRatio || 1, 0, 0, window.devicePixelRatio || 1, 0, 0);
-      }
-      pResize();
-      window.addEventListener('resize', pResize);
-      for (var pi = 0; pi < PCOUNT; pi++) {
-        particles.push({
-          x: Math.random() * pW, y: Math.random() * pH,
-          vx: (Math.random() - 0.5) * 0.15, vy: (Math.random() - 0.5) * 0.15,
-          r: 0.8 + Math.random() * 1.2, a: 0.03 + Math.random() * 0.04,
-          phase: Math.random() * Math.PI * 2
-        });
-      }
-      function pDraw() {
-        pctx.clearRect(0, 0, pW, pH);
-        for (var i = 0; i < particles.length; i++) {
-          var p = particles[i];
-          p.phase += 0.003;
-          p.x += p.vx + Math.sin(p.phase) * 0.02;
-          p.y += p.vy + Math.cos(p.phase * 0.7) * 0.02;
-          if (p.x < -10) p.x = pW + 10;
-          if (p.x > pW + 10) p.x = -10;
-          if (p.y < -10) p.y = pH + 10;
-          if (p.y > pH + 10) p.y = -10;
-          pctx.beginPath();
-          pctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-          pctx.fillStyle = 'rgba(157,140,207,' + p.a + ')';
-          pctx.fill();
-          for (var j = i + 1; j < particles.length; j++) {
-            var q = particles[j];
-            var dx = p.x - q.x, dy = p.y - q.y;
-            var d = dx * dx + dy * dy;
-            if (d < 18000) {
-              pctx.beginPath();
-              pctx.moveTo(p.x, p.y);
-              pctx.lineTo(q.x, q.y);
-              pctx.strokeStyle = 'rgba(157,140,207,' + (0.02 * (1 - d / 18000)).toFixed(4) + ')';
-              pctx.lineWidth = 0.5;
-              pctx.stroke();
-            }
-          }
-        }
-        requestAnimationFrame(pDraw);
-      }
-      pDraw();
-      var noise = document.createElement('div');
-      noise.className = 'sa-noise'; noise.style.display='none';
-      document.body.appendChild(noise);
-      var vignette = document.createElement('div');
-      vignette.className = 'sa-vignette'; vignette.style.display='none';
-      document.body.appendChild(vignette);
-
-      document.querySelectorAll('a[href^="#"]').forEach(function(a) {
-        a.addEventListener('click', function(e) {
-          var target = document.querySelector(this.getAttribute('href'));
-          if (target) {
-            e.preventDefault();
-            var navH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--nav-height')) || 64;
-            var top = target.getBoundingClientRect().top + window.scrollY - navH;
-            window.scrollTo({ top: top, behavior: 'smooth' });
-          }
-        });
-      });
-    })();
-    </script>
   <script src="mobile-canvas.js"></script>
 
 

@@ -278,7 +278,7 @@ function ApplicationDetail() {
               <React.Fragment key={stage.key}>
                 {i > 0 && <div style={{ flex: 1, height: '2px', background: isComplete ? styles.accentGreen : styles.borderGlass, margin: '0 8px' , borderRadius: 8}} />}
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', minWidth: '72px' }}>
-                  <div style={{ width: '30px', height: '30px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: styles.mono, fontSize: '11px', fontWeight: 700, background: isComplete ? 'rgba(22,135,62,0.08)' : isActive ? 'rgba(74,61,117,0.12)' : 'transparent', border: `2px solid ${color}`, color }}>
+                  <div style={{ width: '30px', height: '30px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: styles.mono, fontSize: '11px', fontWeight: 700, background: isComplete ? 'rgba(22,135,62,0.08)' : isActive ? 'rgba(29,26,59,0.12)' : 'transparent', border: `2px solid ${color}`, color }}>
                     {isComplete ? '✓' : stage.icon}
                   </div>
                   <span style={{ fontFamily: styles.mono, fontSize: '9px', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: isActive ? styles.purpleBright : isComplete ? styles.accentGreen : styles.textDim, textAlign: 'center' }}>

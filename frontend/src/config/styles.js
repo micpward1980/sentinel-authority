@@ -1,117 +1,53 @@
-// Design tokens — exact match to golden-master-v3.html Premium Frost system
-// v2: Readability pass — solid text colors, real border colors, no opacity stacking
-
 export const colors = {
-  purple: { primary: '#4a3d75', bright: '#6b5a9e', accent: '#3d3262', glow: 'transparent' },
-  bg: { deep: '#f5f5f7', panel: 'rgba(0,0,0,.025)' },
-  accent: { green: '#16873e', amber: '#9e6e12', red: '#b43434' },
-  text: { primary: '#0f121e', secondary: '#2b3040', tertiary: '#5a6070' },
-  border: { glass: '#e2e5ea', subtle: '#eceef1' },
+  purple: { primary: '#1d1a3b', bright: '#1d1a3b', accent: '#1d1a3b', glow: 'transparent' },
+  bg: { deep: '#f3f3f3', panel: 'rgba(0,0,0,.018)' },
+  accent: { green: '#2e844a', amber: '#dd7a01', red: '#ea001b' },
+  text: { primary: '#181818', secondary: '#444444', tertiary: '#666666' },
+  border: { glass: '#dddbda', subtle: '#e8e8e8' },
   status: {
-    green: { border: 'rgba(22,135,62,.22)', text: 'rgba(22,135,62,.90)', bg: 'rgba(22,135,62,.06)' },
-    amber: { border: 'rgba(158,110,18,.22)', text: 'rgba(158,110,18,.95)', bg: 'rgba(158,110,18,.06)' },
-    red:   { border: 'rgba(180,52,52,.22)',  text: 'rgba(180,52,52,.95)',  bg: 'rgba(180,52,52,.06)' },
+    green: { border: 'rgba(46,132,74,.25)',  text: '#2e844a', bg: 'rgba(46,132,74,.06)' },
+    amber: { border: 'rgba(221,122,1,.28)',  text: '#dd7a01', bg: 'rgba(221,122,1,.07)' },
+    red:   { border: 'rgba(234,0,27,.22)',   text: '#ea001b', bg: 'rgba(234,0,27,.05)'  },
   },
 };
-
 export const fonts = {
   serif: "Georgia, 'Source Serif 4', serif",
-  mono: "Consolas, 'IBM Plex Mono', monospace",
-  sans: "Calibri, 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif",
+  mono:  "'IBM Plex Mono', Consolas, monospace",
+  sans:  "'Inter', system-ui, sans-serif",
 };
-
-// Premium Frost .hud-frame (golden-master-v3 line 2380)
 export const panelStyle = {
-  background: 'rgba(255,255,255,0.40)',
-  border: '1px solid #e2e5ea',
-  borderRadius: 16,
-  backdropFilter: 'blur(18px) saturate(1.2)',
-  WebkitBackdropFilter: 'blur(18px) saturate(1.2)',
-  boxShadow: '0 1px 3px rgba(15,18,30,0.04), 0 8px 32px rgba(15,18,30,0.03)',
-  padding: '20px 16px',
+  background: '#ffffff', border: '1px solid #dddbda', borderRadius: 4,
+  boxShadow: '0 2px 2px 0 rgba(0,0,0,0.05)', padding: '20px 24px',
 };
-
-// .btn
 export const buttonStyle = {
-  appearance: 'none',
-  border: '1px solid #d0d4db',
-  background: 'transparent',
-  backgroundImage: 'none',
-  color: '#0f121e',
-  padding: '12px 20px',
-  borderRadius: 0,
-  fontFamily: fonts.mono,
-  fontSize: '11px',
-  letterSpacing: '0.08em',
-  textTransform: 'uppercase',
-  cursor: 'pointer',
-  position: 'relative',
-  overflow: 'visible',
+  appearance: 'none', border: '1px solid #dddbda', background: '#ffffff',
+  backgroundImage: 'none', color: '#181818', padding: '8px 16px',
+  borderRadius: 3, fontFamily: "'Inter', system-ui, sans-serif",
+  fontSize: '13px', cursor: 'pointer', transition: 'border-color 0.15s, color 0.15s',
 };
-
-// .btn.primary
 export const primaryButtonStyle = {
-  ...buttonStyle,
-  borderColor: 'rgba(74,61,117,0.60)',
-  background: 'transparent',
-  color: '#4a3d75',
+  ...buttonStyle, background: '#1d1a3b', borderColor: '#1d1a3b', color: '#ffffff',
 };
-
-// Flat property map — every component imports { styles }
 export const styles = {
-  // Colors
-  purplePrimary: '#4a3d75',
-  purpleBright: '#6b5a9e',
-  purpleAccent: '#3d3262',
-  purpleGlow: 'transparent',
-  bgDeep: '#f5f5f7',
-  bgPanel: 'rgba(0,0,0,.025)',
-  accentGreen: '#16873e',
-  accentAmber: '#9e6e12',
-  accentRed: '#b43434',
-
-  // Text — solid colors, no opacity stacking
-  textPrimary:   '#0f121e',   // near-black, high contrast
-  textSecondary: '#2b3040',   // solid mid-dark gray
-  textTertiary:  '#5a6070',   // solid mid gray, still readable
-  textDim:       '#8a909c',   // labels, timestamps
-
-  // Borders — real colors, not transparent
-  cardSurface:  'rgba(255,255,255,0.92)',  // uniform card background
-  borderGlass:  '#e2e5ea',    // main panel borders
-  borderSubtle: '#eceef1',    // inner dividers
-  hairline:     '#d8dce3',    // table rows, tight hairlines
-  hairline2:    '#cdd1d8',    // stronger hairlines
-
-  // Glass system (premium-frost block)
-  glassBg: 'rgba(255,255,255,0.58)',
-  glassBorder: 'rgba(255,255,255,0.45)',
-  glassInset: 'rgba(255,255,255,0.35)',
-  glassShadow1: 'rgba(15,18,30,0.04)',
-  glassShadow2: 'rgba(15,18,30,0.06)',
-
-  // Frost tiers — exact from golden-master-v3 premium-frost
-  frostChrome: 'blur(24px) saturate(1.4)',
-  frostPanel:  'blur(18px) saturate(1.2)',
-  frostGlass:  'blur(30px) saturate(1.45)',
-  frostModal:  'blur(24px) saturate(1.4)',
-  frostOverlay: 'blur(6px)',
-  frostToast:  'blur(12px)',
-
-  // Fonts
+  purplePrimary: '#1d1a3b', purpleBright: '#1d1a3b', purpleAccent: '#1d1a3b',
+  purpleHover: '#2a2660', purpleGlow: 'transparent',
+  bgDeep: '#f3f3f3', bgCoolWhite: '#f9f9fb', bgPanel: 'rgba(0,0,0,0.018)',
+  accentGreen: '#2e844a', accentAmber: '#dd7a01', accentBlue: '#0176d3', accentRed: '#ea001b',
+  textPrimary: '#181818', textSecondary: '#444444', textTertiary: '#666666', textDim: '#8a909c',
+  cardSurface: '#ffffff', borderGlass: '#dddbda', borderSubtle: '#e8e8e8',
+  hairline: '#c9c7c5', hairline2: '#b8b6b4',
+  glassBg: 'rgba(255,255,255,0.92)', glassBorder: '#dddbda', glassInset: 'rgba(255,255,255,0.70)',
+  glassShadow1: 'rgba(0,0,0,0.04)', glassShadow2: 'rgba(0,0,0,0.06)',
+  frostChrome: 'blur(18px) saturate(1.2)', frostPanel: 'blur(14px) saturate(1.1)',
+  frostGlass: 'blur(22px) saturate(1.3)', frostModal: 'blur(18px) saturate(1.2)',
+  frostOverlay: 'blur(6px)', frostToast: 'blur(10px)',
   serif: "Georgia, 'Source Serif 4', serif",
-  mono:  "Consolas, 'IBM Plex Mono', monospace",
-  sans:  "Calibri, 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif",
-
-  // Status
-  statusGreen: { border: 'rgba(22,135,62,.22)',  text: '#16873e', bg: 'rgba(22,135,62,.06)' },
-  statusAmber: { border: 'rgba(158,110,18,.22)', text: '#9e6e12', bg: 'rgba(158,110,18,.06)' },
-  statusRed:   { border: 'rgba(180,52,52,.22)',  text: '#b43434', bg: 'rgba(180,52,52,.06)' },
-
-  // Transitions
-  transitionFast: 'all 0.15s ease',
-  transitionBase: 'all 0.2s ease',
-  transitionSlow: 'all 0.3s ease',
+  mono:  "'IBM Plex Mono', Consolas, monospace",
+  sans:  "'Inter', system-ui, sans-serif",
+  spacing: { xs: '4px', small: '8px', medium: '16px', large: '24px', xl: '32px', xxl: '48px' },
+  statusGreen: { border: 'rgba(46,132,74,.25)',  text: '#2e844a', bg: 'rgba(46,132,74,.06)' },
+  statusAmber: { border: 'rgba(221,122,1,.28)',  text: '#dd7a01', bg: 'rgba(221,122,1,.07)' },
+  statusRed:   { border: 'rgba(234,0,27,.22)',   text: '#ea001b', bg: 'rgba(234,0,27,.05)'  },
+  transitionFast: 'all 0.12s ease', transitionBase: 'all 0.18s ease', transitionSlow: 'all 0.28s ease',
 };
-
 export default { colors, fonts, styles, panelStyle, buttonStyle, primaryButtonStyle };

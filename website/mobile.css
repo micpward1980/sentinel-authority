@@ -10,7 +10,7 @@ body { overflow-x: hidden; -webkit-text-size-adjust: 100%; }
   #hero-canvas, #envelo-canvas, #security-canvas, #cat72-canvas, #process-canvas {
     display: none !important; height: 0 !important; overflow: hidden !important;
   }
-  .m-diagram { display: none !important; }
+  .m-diagram { display: block !important; }
 }
 
 /* ── Nav Collapse ── */
@@ -318,5 +318,3 @@ body { overflow-x: hidden; -webkit-text-size-adjust: 100%; }
   .c72-phase-title { font-family: var(--mono); font-size: 9px; letter-spacing: 1.5px; color: rgba(15,18,30,0.8); margin-bottom: 3px; }
   .c72-phase-desc { font-size: 11px; color: rgba(15,18,30,0.6); line-height: 1.45; }
 }
-
-.m-diagram { display: none !important; }

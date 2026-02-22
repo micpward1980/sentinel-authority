@@ -88,24 +88,3 @@
   .hud-desc { font-size: 12px !important; }
   .hud-title { font-size: 13px !important; }
 }
-
-/* ── Reveal system — single source of truth ── */
-.reveal {
-  opacity: 0;
-  transform: translateY(10px);
-  transition: opacity 0.45s cubic-bezier(.16,1,.3,1), transform 0.45s cubic-bezier(.16,1,.3,1);
-}
-.reveal.active {
-  opacity: 1;
-  transform: none;
-}
-/* Stagger children */
-.reveal.active > *:nth-child(1) { transition-delay: 0ms; }
-.reveal.active > *:nth-child(2) { transition-delay: 60ms; }
-.reveal.active > *:nth-child(3) { transition-delay: 120ms; }
-.reveal.active > *:nth-child(4) { transition-delay: 180ms; }
-.reveal.active > *:nth-child(5) { transition-delay: 240ms; }
-/* Respect reduced motion */
-@media (prefers-reduced-motion: reduce) {
-  .reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
-}

@@ -5,6 +5,8 @@ import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { useConfirm } from '../context/ConfirmContext';
 import Panel from '../components/Panel';
+import AuditTrailView from '../components/AuditTrailView';
+import ConformanceReport from '../components/ConformanceReport';
 
 function CAT72Console() {
   const confirm = useConfirm();
@@ -13,9 +15,19 @@ function CAT72Console() {
   const toast = useToast();
   const [loading, setLoading] = useState({});
   const [now, setNow] = useState(Date.now());
+  const [telemetryLogs, setTelemetryLogs] = useState({});
 
   const loadTests = () => {
-    api.get('/api/cat72/tests').then(res => setTests(Array.isArray(res.data) ? res.data : [])).catch(console.error);
+    api.get('/api/cat72/tests').then(res => {
+      const list = Array.isArray(res.data) ? res.data : [];
+      setTests(list);
+      // Fetch telemetry for running tests
+      list.filter(t => t.state === 'running').forEach(t => {
+        api.get(`/api/cat72/tests/${t.test_id}/telemetry?limit=50`)
+          .then(r => setTelemetryLogs(prev => ({ ...prev, [t.test_id]: r.data?.logs || [] })))
+          .catch(() => {});
+      });
+    }).catch(console.error);
   };
 
   useEffect(() => {
@@ -76,8 +88,8 @@ function CAT72Console() {
   return (
     <div className="space-y-6">
       <div>
-        <p style={{fontFamily: styles.mono, fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', color: styles.purpleBright, marginBottom: '8px'}}>Testing</p>
-        <h1 style={{fontFamily: "Georgia, 'Source Serif 4', serif", fontSize: 'clamp(24px, 5vw, 36px)', fontWeight: 200, margin: 0}}>CAT-72 Console</h1>
+        <p style={{ fontFamily: styles.mono, fontSize: '10px', fontWeight: 600, letterSpacing: '0.20em', textTransform: 'uppercase', color: styles.purpleBright, margin: '0 0 8px 0' }}>Testing</p>
+        <h1 style={{ fontFamily: styles.serif, fontSize: 'clamp(24px, 5vw, 36px)', fontWeight: 200, margin: 0, color: styles.textPrimary }}>CAT-72 Console</h1>
         <p style={{color: styles.textSecondary, marginTop: '8px'}}>{user?.role === 'admin' ? '72-hour Convergence Authorization Tests · Auto-refreshes every 15s' : 'Monitor your 72-hour conformance test in real time'}</p>
       </div>
 
@@ -111,6 +123,7 @@ function CAT72Console() {
               const pct = Math.min(100, Math.round((test.elapsed_seconds / totalSec) * 100));
               const remaining = Math.max(0, totalSec - test.elapsed_seconds);
               return (
+                <React.Fragment key={test.id}>
                 <Panel key={test.id}>
                   <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px', marginBottom: '16px'}}>
                     <div>
@@ -133,9 +146,18 @@ function CAT72Console() {
                   <div style={{display: 'flex', gap: '24px'}}>
                     <span style={{fontFamily: styles.mono, fontSize: '10px', color: styles.textTertiary}}>Remaining: {formatTime(remaining)}</span>
                     <span style={{fontFamily: styles.mono, fontSize: '10px', color: styles.textTertiary}}>Telemetry: {test.telemetry_count || 0} events</span>
-                    <span style={{fontFamily: styles.mono, fontSize: '10px', color: test.violations_count > 0 ? styles.accentRed : styles.textTertiary}}>Violations: {test.violations_count || 0}</span>
+                    <span style={{fontFamily: styles.mono, fontSize: '10px', color: test.violations_count > 0 ? styles.accentAmber : styles.textTertiary}}>
+                      {(test.violations_count || 0) > 0
+                        ? `✓ ${test.violations_count} interventions`
+                        : '0 boundary events'}
+                    </span>
                   </div>
                 </Panel>
+                <AuditTrailView logs={telemetryLogs[test.test_id] || []}
+                  certNumber={test.certificate_number}
+                  nodeId="0847"
+                />
+                </React.Fragment>
               );
             })}
           </div>
@@ -220,4 +242,3 @@ function CAT72Console() {
 // Certificates
 
 export default CAT72Console;
-

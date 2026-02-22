@@ -17,7 +17,7 @@ export default function NotFoundPage() {
           fontFamily: "Consolas, 'IBM Plex Mono', monospace",
           fontSize: 9, letterSpacing: 2.5,
           textTransform: 'uppercase',
-          color: 'rgba(74,61,117,0.5)',
+          color: 'rgba(29,26,59,0.5)',
           marginBottom: 12
         }}>Error 404</div>
         <h1 style={{
@@ -32,7 +32,7 @@ export default function NotFoundPage() {
         }}>The requested resource does not exist.</p>
         <Link to="/dashboard" style={{
           display: 'inline-flex', alignItems: 'center', gap: 8,
-          border: '1px solid rgba(74,61,117,0.25)',
+          border: '1px solid rgba(29,26,59,0.25)',
           color: styles.purpleBright,
           padding: '12px 24px',
           fontFamily: "Consolas, 'IBM Plex Mono', monospace",

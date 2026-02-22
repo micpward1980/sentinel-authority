@@ -106,8 +106,8 @@ function CertificatesPage() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       <div>
-        <p style={{ fontFamily: styles.mono, fontSize: '10px', fontWeight: 600, letterSpacing: '0.20em', textTransform: 'uppercase', color: styles.purpleBright, marginBottom: '8px' }}>Records</p>
-        <h1 style={{ fontFamily: styles.serif, fontSize: 'clamp(24px, 5vw, 36px)', fontWeight: 200, margin: 0 }}>Certificates</h1>
+        <p style={{ fontFamily: styles.mono, fontSize: '10px', fontWeight: 600, letterSpacing: '0.20em', textTransform: 'uppercase', color: styles.purpleBright, margin: '0 0 8px 0' }}>Records</p>
+        <h1 style={{ fontFamily: styles.serif, fontSize: 'clamp(24px, 5vw, 36px)', fontWeight: 200, margin: 0, color: styles.textPrimary }}>Certificates</h1>
         <p style={{ color: styles.textSecondary, marginTop: '8px', marginBottom: 0 }}>Issued ODDC conformance determinations</p>
       </div>
 
@@ -119,7 +119,7 @@ function CertificatesPage() {
               flex: 1, padding: '7px 12px', border: 'none', cursor: 'pointer',
               fontFamily: styles.mono, fontSize: '10px', fontWeight: active ? 600 : 400,
               letterSpacing: '0.08em', textTransform: 'uppercase',
-              background: active ? 'rgba(74,61,117,0.08)' : 'transparent',
+              background: active ? 'rgba(29,26,59,0.08)' : 'transparent',
               color: active ? styles.purpleBright : styles.textTertiary,
             }}>
               {tab.label}{counts[tab.key] > 0 ? ` (${counts[tab.key]})` : ''}

@@ -9,9 +9,9 @@
   color-scheme: light;
 
   /* Core palette */
-  --purple-primary: #4a3d75;
-  --purple-bright: #6b5a9e;
-  --purple-accent: #3d3262;
+  --purple-primary: #1d1a3b;
+  --purple-bright: #1d1a3b;
+  --purple-accent: #1d1a3b;
   --purple-glow: transparent;
 
   --bg-deep: #f5f5f7;
@@ -170,7 +170,7 @@ body::before {
   font-family: var(--mono);
   font-size: 9px;
   letter-spacing: 1px;
-  color: rgba(74,61,117,1.00);
+  color: rgba(29,26,59,1.00);
   margin-right: 12px;
 }
 
@@ -178,7 +178,7 @@ body::before {
   font-family: var(--mono);
   font-size: 11px;
   letter-spacing: 2px;
-  color: rgba(74,61,117,1.00);
+  color: rgba(29,26,59,1.00);
   text-decoration: none;
   border-bottom: none;
   padding-bottom: 2px;
@@ -195,7 +195,7 @@ body::before {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: rgba(74,61,117,1.00);
+  background: rgba(29,26,59,1.00);
   margin-right: 8px;
   flex-shrink: 0;
 }
@@ -235,14 +235,14 @@ body::before {
 }
 
 .btn.primary {
-  border-color: rgba(74,61,117,0.60);
+  border-color: rgba(29,26,59,0.60);
   background: transparent;
   box-shadow: none;
-  color: rgba(74,61,117,1.00);
+  color: rgba(29,26,59,1.00);
 }
 .btn.primary:hover {
-  border-color: rgba(74,61,117,0.90);
-  background: rgba(74,61,117,0.04);
+  border-color: rgba(29,26,59,0.90);
+  background: rgba(29,26,59,0.04);
 }
 
 /* Solid purple button (Sign In, CTA) */
@@ -265,7 +265,7 @@ input, textarea, select {
   color: var(--text-primary);
   background: transparent;
   border: none;
-  border-bottom: 1px solid rgba(74,61,117,0.60);
+  border-bottom: 1px solid rgba(29,26,59,0.60);
   outline: none;
   font-size: 15px;
   letter-spacing: 2px;
@@ -274,7 +274,7 @@ input, textarea, select {
   width: 100%;
 }
 input:focus, textarea:focus, select:focus {
-  border-bottom-color: rgba(74,61,117,1.00);
+  border-bottom-color: rgba(29,26,59,1.00);
 }
 input::placeholder, textarea::placeholder {
   color: rgba(15,18,30,0.22);

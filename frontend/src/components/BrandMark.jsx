@@ -1,22 +1,11 @@
 import React from 'react';
 
 export default function BrandMark({ size = 32 }) {
-  const inner = Math.round(size * 0.33);
   return (
-    <div style={{
-      width: size, height: size,
-      background: '#7B6BAE',
-      border: '2px solid #b8aad4',
-      borderRadius: Math.round(size * 0.22),
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-      flexShrink: 0,
-    }}>
-      <div style={{
-        width: inner, height: inner,
-        background: '#e0d8f0',
-        borderRadius: '50%',
-        animation: 'sa-eye-pulse 7s ease-in-out infinite',
-      }} />
-    </div>
+    <svg width={size} height={size} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0 }}>
+      <circle cx="50" cy="50" r="46" stroke="#1d1a3b" strokeWidth="5" fill="white"/>
+      <circle cx="50" cy="50" r="39" stroke="#1d1a3b" strokeWidth="1.5" strokeOpacity="0.20" fill="none"/>
+      <text x="50" y="64" textAnchor="middle" fontFamily="'League Spartan', Arial, sans-serif" fontWeight="900" fontSize="38" fill="#1d1a3b" letterSpacing="-1">SA</text>
+    </svg>
   );
 }

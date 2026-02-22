@@ -120,10 +120,13 @@ function MonitoringPage() {
   });
 
   return (
-    <div style={{maxWidth: '1400px', margin: '0 auto'}}>
+    <div style={{maxWidth: '1400px'}}>
       <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '24px'}}>
         <div>
-          <h1 className="sa-page-title" style={{fontFamily: "Georgia, 'Source Serif 4', serif", fontSize: 'clamp(20px, 4vw, 28px)', fontWeight: 300, margin: 0}}>
+          <p style={{fontFamily: styles.mono, fontSize: '10px', fontWeight: 600, letterSpacing: '0.20em', textTransform: 'uppercase', color: styles.purpleBright, margin: '0 0 8px 0'}}>
+            {user?.role === 'admin' ? 'Administration' : 'Compliance'}
+          </p>
+          <h1 style={{ fontFamily: styles.serif, fontSize: 'clamp(24px, 5vw, 36px)', fontWeight: 200, margin: 0, color: styles.textPrimary }}>
             System Monitoring
           </h1>
           <p style={{color: styles.textSecondary, marginTop: '4px', fontSize: '14px'}}>
@@ -171,7 +174,7 @@ function MonitoringPage() {
           border: '1px solid ' + styles.borderGlass,
           padding: '16px',
           marginBottom: '24px'
-        , borderRadius: 8}}>
+        , borderRadius: 4}}>
           <div style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px'}}>
             <AlertTriangle fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} size={18} style={{color: styles.accentRed}} />
             <span style={{fontWeight: 500, color: styles.accentRed}}>{alerts.length} Active Alert{alerts.length > 1 ? 's' : ''}</span>
@@ -277,7 +280,7 @@ function MonitoringPage() {
       })()}
 
       {/* Sessions Table */}
-      <div style={{background: styles.cardSurface, border: '1px solid ' + styles.borderSubtle, overflow: 'hidden', borderRadius: 8}}>
+      <div style={{background: styles.cardSurface, border: '1px solid ' + styles.borderSubtle, overflow: 'hidden', borderRadius: 4}}>
         <div style={{padding: '16px 20px', borderBottom: `1px solid ${styles.borderGlass}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px'}}>
           <h2 style={{margin: 0, fontSize: '14px', fontFamily: styles.mono, textTransform: 'uppercase', letterSpacing: '2px', color: styles.textTertiary}}>{user?.role === 'admin' ? 'Agent Sessions' : 'System Monitoring'}</h2>
           <div style={{display: 'flex', gap: '12px', alignItems: 'center'}}>
@@ -425,7 +428,7 @@ function MonitoringPage() {
                       qc.invalidateQueries({ queryKey: ['monitoring-overview'] });
                     } catch (e) { toast.show('Failed: ' + e.message, 'error'); }
                   }}
-                  style={{padding: '8px 16px', background: styles.cardSurface, border: '1px solid ' + styles.borderSubtle, color: styles.accentRed, cursor: 'pointer', fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', borderRadius: 8}}
+                  style={{padding: '8px 16px', background: styles.cardSurface, border: '1px solid ' + styles.borderSubtle, color: styles.accentRed, cursor: 'pointer', fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', borderRadius: 4}}
                 >
                   Force End Session
                 </button>
@@ -497,7 +500,7 @@ function MonitoringPage() {
                     link.click();
                   } catch (e) { toast.show('Failed to download telemetry', 'error'); }
                 }}
-                style={{padding: '8px 16px', background: styles.cardSurface, border: '1px solid ' + styles.borderSubtle, color: styles.purpleBright, cursor: 'pointer', fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px', borderRadius: 8}}
+                style={{padding: '8px 16px', background: styles.cardSurface, border: '1px solid ' + styles.borderSubtle, color: styles.purpleBright, cursor: 'pointer', fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px', borderRadius: 4}}
               >
                 ↓ Telemetry CSV
               </button>
@@ -518,7 +521,7 @@ function MonitoringPage() {
                     link.click();
                   } catch (e) { toast.show('Failed to download violations', 'error'); }
                 }}
-                style={{padding: '8px 16px', background: styles.cardSurface, border: '1px solid ' + styles.borderSubtle, color: styles.accentRed, cursor: 'pointer', fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px', borderRadius: 8}}
+                style={{padding: '8px 16px', background: styles.cardSurface, border: '1px solid ' + styles.borderSubtle, color: styles.accentRed, cursor: 'pointer', fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px', borderRadius: 4}}
               >
                 ↓ Violations CSV
               </button>
@@ -535,7 +538,7 @@ function MonitoringPage() {
                     link.click();
                   } catch (e) { toast.show('Failed to download report', 'error'); }
                 }}
-                style={{padding: '8px 16px', background: styles.cardSurface, border: '1px solid ' + styles.borderGlass, color: styles.accentGreen, cursor: 'pointer', fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px', borderRadius: 8}}
+                style={{padding: '8px 16px', background: styles.cardSurface, border: '1px solid ' + styles.borderGlass, color: styles.accentGreen, cursor: 'pointer', fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px', borderRadius: 4}}
               >
                 ↓ CAT-72 Report PDF
               </button>
@@ -583,4 +586,3 @@ function MonitoringPage() {
 // User Management Page (Admin Only)
 
 export default MonitoringPage;
-

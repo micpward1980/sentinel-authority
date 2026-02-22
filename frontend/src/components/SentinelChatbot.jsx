@@ -210,12 +210,12 @@ function Msg({ msg }) {
   return (
     <div style={{ display: 'flex', justifyContent: isUser ? 'flex-end' : 'flex-start', marginBottom: '9px', gap: '7px', alignItems: 'flex-start' }}>
       {!isUser && (
-        <div style={{ width: '20px', height: '20px', flexShrink: 0, marginTop: '4px', borderRadius: '50%', background: 'rgba(74,61,117,0.09)', border: '1px solid rgba(74,61,117,0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px' }}>⬡</div>
+        <div style={{ width: '20px', height: '20px', flexShrink: 0, marginTop: '4px', borderRadius: '50%', background: 'rgba(29,26,59,0.09)', border: '1px solid rgba(29,26,59,0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px' }}>⬡</div>
       )}
       <div style={{
         maxWidth: '84%', padding: '9px 12px',
-        background: isUser ? 'rgba(74,61,117,0.07)' : 'rgba(255,255,255,0.75)',
-        border: `1px solid ${isUser ? 'rgba(74,61,117,0.14)' : styles.borderGlass}`,
+        background: isUser ? 'rgba(29,26,59,0.07)' : 'rgba(255,255,255,0.75)',
+        border: `1px solid ${isUser ? 'rgba(29,26,59,0.14)' : styles.borderGlass}`,
         borderRadius: isUser ? '11px 3px 11px 11px' : '3px 11px 11px 11px',
         backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)',
       }}>
@@ -239,12 +239,12 @@ function Chips({ role, onSend }) {
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px', padding: '7px 11px 3px', borderTop: `1px solid ${styles.borderSubtle}` }}>
       {chips.map((chip, i) => (
         <button key={i} onClick={() => onSend(chip)} style={{
-          padding: '4px 9px', background: 'rgba(74,61,117,0.05)', border: '1px solid rgba(74,61,117,0.15)',
+          padding: '4px 9px', background: 'rgba(29,26,59,0.05)', border: '1px solid rgba(29,26,59,0.15)',
           color: styles.purpleBright, fontFamily: styles.mono, fontSize: '10px', cursor: 'pointer',
           borderRadius: '999px', whiteSpace: 'nowrap',
         }}
-          onMouseEnter={e => e.currentTarget.style.background = 'rgba(74,61,117,0.11)'}
-          onMouseLeave={e => e.currentTarget.style.background = 'rgba(74,61,117,0.05)'}
+          onMouseEnter={e => e.currentTarget.style.background = 'rgba(29,26,59,0.11)'}
+          onMouseLeave={e => e.currentTarget.style.background = 'rgba(29,26,59,0.05)'}
         >
           {chip}
         </button>
@@ -370,9 +370,9 @@ export default function SentinelChatbot() {
       {/* Floating button */}
       {!open && (
         <button onClick={() => setOpen(true)}
-          style={{ position:'fixed', bottom:'24px', right:'24px', zIndex:1000, width:'50px', height:'50px', borderRadius:'50%', background:styles.purplePrimary, border:'1px solid rgba(100,80,160,0.5)', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', boxShadow:'0 4px 20px rgba(74,61,117,0.35)', transition:'all 0.2s', fontSize:'22px', color:'#fff' }}
-          onMouseEnter={e=>{e.currentTarget.style.transform='scale(1.07)';e.currentTarget.style.boxShadow='0 6px 28px rgba(74,61,117,0.5)';}}
-          onMouseLeave={e=>{e.currentTarget.style.transform='scale(1)';e.currentTarget.style.boxShadow='0 4px 20px rgba(74,61,117,0.35)';}}
+          style={{ position:'fixed', bottom:'24px', right:'24px', zIndex:1000, width:'50px', height:'50px', borderRadius:'50%', background:styles.purplePrimary, border:'1px solid rgba(100,80,160,0.5)', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', boxShadow:'0 4px 20px rgba(29,26,59,0.35)', transition:'all 0.2s', fontSize:'22px', color:'#fff' }}
+          onMouseEnter={e=>{e.currentTarget.style.transform='scale(1.07)';e.currentTarget.style.boxShadow='0 6px 28px rgba(29,26,59,0.5)';}}
+          onMouseLeave={e=>{e.currentTarget.style.transform='scale(1)';e.currentTarget.style.boxShadow='0 4px 20px rgba(29,26,59,0.35)';}}
           title="Sentinel Assistant">⬡</button>
       )}
 
@@ -382,7 +382,7 @@ export default function SentinelChatbot() {
 
           {/* Header */}
           <div style={{ display:'flex', alignItems:'center', gap:'10px', padding:'13px 16px', borderBottom:`1px solid ${styles.borderSubtle}`, background:'rgba(255,255,255,0.55)', flexShrink:0 }}>
-            <div style={{ width:'26px', height:'26px', borderRadius:'50%', background:'rgba(74,61,117,0.08)', border:'1px solid rgba(74,61,117,0.18)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'13px', flexShrink:0 }}>⬡</div>
+            <div style={{ width:'26px', height:'26px', borderRadius:'50%', background:'rgba(29,26,59,0.08)', border:'1px solid rgba(29,26,59,0.18)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'13px', flexShrink:0 }}>⬡</div>
             <div style={{ flex:1 }}>
               <div style={{ fontFamily:styles.mono, fontSize:'11px', letterSpacing:'2px', textTransform:'uppercase', color:styles.textPrimary, fontWeight:500 }}>Sentinel Assistant</div>
               <div style={{ display:'flex', alignItems:'center', gap:'5px', marginTop:'2px' }}>

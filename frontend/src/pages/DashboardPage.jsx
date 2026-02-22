@@ -86,8 +86,8 @@ function CustomerDashboard() {
     <div className="space-y-6" style={{ maxWidth: '1000px', margin: '0 auto' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
         <div>
-          <p style={{ fontFamily: styles.mono, fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', color: styles.purpleBright, marginBottom: '8px' }}>ODDC Certification</p>
-          <h1 style={{ fontFamily: "Georgia, 'Source Serif 4', serif", fontSize: 'clamp(24px, 5vw, 36px)', fontWeight: 200, margin: 0 }}>Welcome{user?.full_name ? ', ' + user.full_name.split(' ')[0] : ''}</h1>
+          <p style={{ fontFamily: styles.mono, fontSize: '10px', fontWeight: 600, letterSpacing: '0.20em', textTransform: 'uppercase', color: styles.purpleBright, margin: '0 0 8px 0' }}>ODDC Certification</p>
+          <h1 style={{ fontFamily: styles.serif, fontSize: 'clamp(24px, 5vw, 36px)', fontWeight: 200, margin: 0, color: styles.textPrimary }}>Welcome{user?.full_name ? ', ' + user.full_name.split(' ')[0] : ''}</h1>
           <p style={{ color: styles.textSecondary, marginTop: '8px' }}>{user?.organization ? user.organization + ' · ' : ''}Track your certification progress and manage your systems.</p>
         </div>
       </div>
@@ -283,10 +283,9 @@ function Dashboard() {
     <div className="space-y-6" style={{ maxWidth: '1200px', margin: '0 auto' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px', marginBottom: '28px' }}>
         <div>
-          <p style={{ fontFamily: styles.mono, fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', color: styles.purpleBright, marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <span style={{ width: '24px', height: '1px', background: styles.purpleBright }} />Administration
+          <p style={{ fontFamily: styles.mono, fontSize: '10px', fontWeight: 600, letterSpacing: '0.20em', textTransform: 'uppercase', color: styles.purpleBright, margin: '0 0 8px 0' }}>Administration
           </p>
-          <h1 style={{ fontFamily: "Georgia, 'Source Serif 4', serif", fontSize: 'clamp(24px, 5vw, 36px)', fontWeight: 200, margin: 0 }}>Welcome{user?.full_name ? ', ' + user.full_name.split(' ')[0] : ''}</h1>
+          <h1 style={{ fontFamily: styles.serif, fontSize: 'clamp(24px, 5vw, 36px)', fontWeight: 200, margin: 0, color: styles.textPrimary }}>Welcome{user?.full_name ? ', ' + user.full_name.split(' ')[0] : ''}</h1>
           <p style={{ color: styles.textTertiary, marginTop: '6px', fontSize: '13px', fontFamily: styles.mono }}>{new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</p>
         </div>
         <button onClick={() => loadData(true)} style={{ background: styles.cardSurface, border: '1px solid ' + styles.borderGlass, padding: '10px 16px', color: styles.textSecondary, cursor: 'pointer', fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '8px' }}>

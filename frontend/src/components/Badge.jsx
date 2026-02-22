@@ -5,7 +5,7 @@ const VARIANTS = {
   green:  { background: 'rgba(22,135,62,0.08)',  color: styles.accentGreen  },
   amber:  { background: 'rgba(158,110,18,0.08)', color: styles.accentAmber  },
   red:    { background: 'rgba(180,52,52,0.08)',   color: styles.accentRed    },
-  purple: { background: 'rgba(74,61,117,0.08)',   color: styles.purpleBright },
+  purple: { background: 'rgba(29,26,59,0.08)',   color: styles.purpleBright },
   dim:    { background: 'rgba(15,18,30,0.05)',    color: styles.textTertiary },
 };
 

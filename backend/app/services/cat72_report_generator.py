@@ -19,13 +19,13 @@ from reportlab.platypus import (
 from reportlab.platypus.flowables import Flowable
 
 # ── Brand palette ──────────────────────────────────────────
-PURPLE_DEEP  = colors.Color(91/255, 75/255, 138/255)      # #5B4B8A
-PURPLE_LIGHT = colors.Color(157/255, 140/255, 207/255)    # #9D8CCF
+PURPLE_DEEP  = colors.Color(29/255, 26/255, 59/255)       # #1d1a3b
+PURPLE_LIGHT = colors.Color(74/255, 85/255, 104/255)      # #4a5568
 GREEN        = colors.Color(92/255, 214/255, 133/255)     # #5CD685
 RED          = colors.Color(214/255, 92/255, 92/255)      # #D65C5C
 AMBER        = colors.Color(214/255, 160/255, 92/255)     # #D6A05C
-BG_LIGHT     = colors.Color(250/255, 249/255, 252/255)    # #FAF9FC
-BORDER       = colors.Color(230/255, 226/255, 238/255)    # #E6E2EE
+BG_LIGHT     = colors.Color(250/255, 250/255, 250/255)    # #fafafa
+BORDER       = colors.Color(221/255, 219/255, 218/255)    # #dddbda
 TEXT_PRIMARY  = colors.Color(30/255, 30/255, 40/255)
 TEXT_SECONDARY = colors.Color(120/255, 115/255, 130/255)
 
@@ -41,21 +41,20 @@ class EnveloMark(Flowable):
     def draw(self):
         s = self._size
         self.canv.saveState()
-        # Purple rounded square
-        self.canv.setFillColor(PURPLE_DEEP)
-        self.canv.setStrokeColor(PURPLE_LIGHT)
-        self.canv.setLineWidth(1)
-        r = s * 0.22  # corner radius
-        self.canv.roundRect(0, 0, s, s, r, fill=1, stroke=1)
-        # White radial dot
-        dot_r = s * 0.16
         cx, cy = s / 2, s / 2
+        # Outer circle
+        self.canv.setStrokeColor(PURPLE_DEEP)
         self.canv.setFillColor(colors.white)
-        self.canv.circle(cx, cy, dot_r, fill=1, stroke=0)
-        # Subtle glow ring
-        self.canv.setStrokeColor(colors.Color(1, 1, 1, 0.3))
-        self.canv.setLineWidth(0.5)
-        self.canv.circle(cx, cy, dot_r + 2, fill=0, stroke=1)
+        self.canv.setLineWidth(s * 0.05)
+        self.canv.circle(cx, cy, s * 0.46, fill=1, stroke=1)
+        # Inner ring
+        self.canv.setStrokeColor(colors.Color(29/255, 26/255, 59/255, 0.20))
+        self.canv.setLineWidth(s * 0.015)
+        self.canv.circle(cx, cy, s * 0.39, fill=0, stroke=1)
+        # SA text
+        self.canv.setFillColor(PURPLE_DEEP)
+        self.canv.setFont("Helvetica-Bold", s * 0.38)
+        self.canv.drawCentredString(cx, cy - s * 0.12, "SA")
         self.canv.restoreState()
 
 
@@ -439,7 +438,7 @@ def generate_cat72_report(
         qr = qrcode.QRCode(version=1, box_size=8, border=2)
         qr.add_data("https://app.sentinelauthority.org/verify?test={}".format(test_id))
         qr.make(fit=True)
-        qr_img = qr.make_image(fill_color="#5B4B8A", back_color="white")
+        qr_img = qr.make_image(fill_color="#1d1a3b", back_color="white")
         qr_buf = io.BytesIO()
         qr_img.save(qr_buf, format='PNG')
         qr_buf.seek(0)
@@ -454,7 +453,7 @@ def generate_cat72_report(
         "<font size=8>Enforced Non-Violable Execution-Limit Override</font><br/>"
         "<font size=7 color='#787382'>ENVELO enforcement requirements verified present and auditable.</font><br/><br/>"
         "<font size=7 color='#787382'>VERIFY</font><br/>"
-        "<font size=8 color='#5B4B8A'>app.sentinelauthority.org/verify</font>".format(evidence_hash),
+        "<font size=8 color='#1d1a3b'>app.sentinelauthority.org/verify</font>".format(evidence_hash),
         s_body
     )
 
@@ -488,7 +487,7 @@ def generate_cat72_report(
         s_footer))
     story.append(Spacer(1, 4))
     story.append(Paragraph(
-        "<font color='#5B4B8A'><b>SENTINEL AUTHORITY</b></font>  &mdash;  sentinelauthority.org  &mdash;  &copy; 2026",
+        "<font color='#1d1a3b'><b>SENTINEL AUTHORITY</b></font>  &mdash;  sentinelauthority.org  &mdash;  &copy; 2026",
         s_footer))
 
     doc.build(story)

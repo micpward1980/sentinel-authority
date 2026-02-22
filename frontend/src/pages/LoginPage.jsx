@@ -58,9 +58,10 @@ function LoginPage() {
           <div className={`sa-card${isRegister ? " register" : ""}`}>
 
           <div className="sa-brand">
-            <svg width="36" height="36" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
-              <rect x="2" y="2" width="32" height="32" rx="8" fill="#7B6BAE" stroke="#b8aad4" strokeWidth="2" />
-              <circle cx="18" cy="18" r="6" fill="#e0d8f0" />
+            <svg width="36" height="36" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="50" cy="50" r="46" stroke="#1d1a3b" strokeWidth="5" fill="white"/>
+              <circle cx="50" cy="50" r="39" stroke="#1d1a3b" strokeWidth="1.5" strokeOpacity="0.20" fill="none"/>
+              <text x="50" y="64" textAnchor="middle" fontFamily="'League Spartan', Arial, sans-serif" fontWeight="900" fontSize="38" fill="#1d1a3b" letterSpacing="-1">SA</text>
             </svg>
             <span className="sa-brand-name">Sentinel Authority</span>
           </div>

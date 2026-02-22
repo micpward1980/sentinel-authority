@@ -2,21 +2,45 @@
 <html lang="en" style="scroll-behavior:smooth;">
 <head>
   <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-192.png">
   <link rel="canonical" href="https://www.sentinelauthority.org/404.html">
 
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <title>404 — Sentinel Authority</title>
   <meta name="description" content="Page not found." />
   <meta name="theme-color" content="#f5f5f7" />
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'><rect x='2' y='2' width='32' height='32' rx='8' fill='%237B6BAE' stroke='%23b8aad4' stroke-width='2'/><circle cx='18' cy='18' r='6' fill='%23e0d8f0'/></svg>" />
+<rect x='2' y='2' width='32' height='32' rx='8' fill='%232a2560' stroke='%23b8aad4' stroke-width='2'/><circle cx='18' cy='18' r='6' fill='%23e6e8ec'/></svg>" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@900&display=swap" rel="stylesheet">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <style>
+    /* ═══════════════════════════════════════════════════
+       INSTITUTIONAL TOKEN SYSTEM — Supreme Court × ISO
+       ═══════════════════════════════════════════════════ */
+    :root {
+      --ink:          #0f1021;
+      --accent:       #2a2560;
+      --accent-hover: #1d1a3b;
+      --bg:           #ffffff;
+      --bg-soft:      #f6f7f9;
+      --border:       #e6e8ec;
+      --muted:        #5c6270;
+      --ease:         150ms ease;
+      --radius:       6px;
+
+      /* Legacy aliases — keep for backward compat */
+      --text-primary:   #0f1021;
+      --text-secondary: #5c6270;
+    }
+
     @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:0.01ms !important;animation-iteration-count:1 !important;transition-duration:0.01ms !important;}}
     :root{
       color-scheme:light;
-      --purple-primary:#4a3d75;--purple-bright:#6b5a9e;--purple-glow:transparent;
+      --purple-primary:#2a2560;--purple-bright:#2a2560;--purple-glow:transparent /* deprecated */;
       --bg-deep:#ffffff;--bg-panel:rgba(0,0,0,.025);
       --accent-green:#16873e;--accent-amber:#9e6e12;--accent-red:#b43434;
       --text-primary:#111318;--text-secondary:rgba(15,18,30,.74);--text-tertiary:rgba(15,18,30,.56);
@@ -27,32 +51,32 @@
       --max:1320px;--nav-height:72px;
     }
     *{box-sizing:border-box;}
-    html{scroll-behavior:smooth;background:#f5f5f7;}
-    body{margin:0;font-family:var(--sans);background:#f5f5f7;color:var(--text-primary);overflow-x:hidden;-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;flex-direction:column;}
-    body::before{content:'';position:fixed;inset:0;z-index:-1;background:radial-gradient(ellipse 1000px 700px at 10% 15%,rgba(88,62,165,0.06),transparent 55%),radial-gradient(ellipse 800px 600px at 85% 75%,rgba(16,185,80,0.04),transparent 50%),radial-gradient(ellipse 1200px 500px at 50% 45%,rgba(88,62,165,0.03),transparent 45%);pointer-events:none;}
+    html{scroll-behavior:smooth;background:#ffffff;}
+    body{margin:0;font-family:var(--sans);background:#ffffff;color:var(--text-primary);overflow-x:hidden;-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;flex-direction:column;}
+    body::before{content:'';position:fixed;inset:0;z-index:-1;background:var(--bg);pointer-events:none;}
     a{color:inherit;text-decoration:none;} a:hover{text-decoration:none;filter:none;}
-    ::selection{background:rgba(74,61,117,.15);color:var(--text-primary);}
+    ::selection { background: var(--accent); color: #fff; }
 
-    .site-header{position:fixed;top:0;width:100%;z-index:50;padding:0 24px;height:var(--nav-height);border-bottom:1px solid rgba(15,18,30,0.06);background:rgba(245,245,247,0.88);box-shadow:none;backdrop-filter:blur(28px) saturate(1.5);-webkit-backdrop-filter:blur(28px) saturate(1.5);display:flex;align-items:center;}
+    .site-header{position:fixed;top:0;width:100%;z-index:50;padding:0 24px;height:var(--nav-height);border-bottom:1px solid rgba(15,18,30,0.06);background:rgba(245,245,247,0.88);box-shadow:none;backdrop--webkit-backdrop-display:flex;align-items:center;}
     .nav-inner{max-width:var(--max);margin:0 auto;width:100%;display:flex;align-items:center;justify-content:space-between;gap:20px;}
     .brand{display:flex;align-items:center;gap:14px;text-decoration:none;}
-    .brand-mark{width:36px;height:36px;background:#7B6BAE;background:var(--purple-bright,#7B6BAE);border:2px solid #b8aad4;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-    .brand-mark-inner{width:12px;height:12px;background:#e0d8f0;border-radius:50%;}
-    .brand-name{font-family:var(--mono,'IBM Plex Mono',monospace);font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#111318;white-space:nowrap;}
+    .brand-mark { display: none; }
+    
+    .brand-name { display: none; }
 
     .error-container{flex:1;display:flex;align-items:center;justify-content:center;padding:calc(var(--nav-height) + 40px) 20px 80px;}
     .error-inner{text-align:center;max-width:500px;}
     .error-code{font-family:var(--mono);font-size:80px;letter-spacing:8px;color:var(--text-tertiary);font-weight:400;margin:0;line-height:1;}
     .error-title{font-family:var(--serif);font-size:24px;color:var(--text-primary);margin:20px 0 12px;font-weight:500;}
     .error-desc{font-size:14px;color:var(--text-secondary);line-height:1.65;margin:0 0 28px;}
-    .error-link{display:inline-block;font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--purple-primary);padding:12px 24px;border:1px solid rgba(74,61,117,.22);transition:all .25s ease;}
-    .error-link:hover{border-color:rgba(74,61,117,.45);background:rgba(74,61,117,.05);}
+    .error-link{display:inline-block;font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--purple-primary);padding:12px 24px;border:1px solid rgba(42,37,96,.22);transition:all .25s ease;}
+    .error-link:hover{border-color:rgba(42,37,96,.45);background:rgba(42,37,96,.05);}
 
-    footer{border-top:1px solid var(--border-subtle);padding:40px 0 28px;background:#f5f5f7;color:var(--text-tertiary);font-family:var(--mono);font-size:12px;letter-spacing:1px;}
+    footer{border-top:1px solid var(--border-subtle);padding:40px 0 28px;background:#ffffff;color:var(--text-tertiary);font-family:var(--mono);font-size:12px;letter-spacing:1px;}
     .footer-inner{max-width:var(--max);margin:0 auto;padding:0 20px;}
 
     @media(max-width:768px){.site-header{height:56px;padding:0 12px;}:root{--nav-height:56px;}.error-code{font-size:56px;}}
-    a:focus-visible,button:focus-visible{outline:2px solid rgba(74,61,117,.75);outline-offset:3px;}
+    a:focus-visible,button:focus-visible{outline:2px solid rgba(42,37,96,.75);outline-offset:3px;}
 /* ── ROOT TOKENS ── */
 :root{
   --hairline:rgba(15,18,30,0.08);
@@ -61,15 +85,13 @@
 }
 
 /* ── BODY ── */
-body{background:#f5f5f7!important;}
+body{background: #ffffff!important;}
 body::before{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;
-  background:radial-gradient(ellipse 1000px 700px at 10% 15%,rgba(88,62,165,0.05),transparent 55%),
-  radial-gradient(ellipse 900px 600px at 85% 75%,rgba(16,185,80,0.04),transparent 50%),
-  radial-gradient(ellipse 1200px 500px at 50% 45%,rgba(88,62,165,0.03),transparent 45%);}
+  background:var(--bg);}
 
 /* ── HEADER ── */
-.site-header,header,.nav-bar{background:rgba(245,245,247,0.92)!important;backdrop-filter:blur(24px) saturate(1.4)!important;-webkit-backdrop-filter:blur(24px) saturate(1.4)!important;border-bottom:1px solid var(--hairline)!important;}
-.brand-name{color:rgba(15,18,30,0.92)!important;}
+.site-header,header,.nav-bar{background:#ffffff!important;border-bottom:1px solid rgba(0,0,0,0.08)!important;}
+.brand-name { display: none; }
 
 /* ── SECTION HEAD (glass box) ── */
 .section-head{
@@ -80,8 +102,7 @@ body::before{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;
   flex-wrap:wrap!important;
   margin-bottom:24px!important;
   background:rgba(255,255,255,0.45)!important;
-  backdrop-filter:blur(18px) saturate(1.25)!important;
-  -webkit-backdrop-filter:blur(18px) saturate(1.25)!important;
+  -webkit-
   border-radius:16px!important;
   padding:28px 24px!important;
   text-align:left!important;
@@ -106,7 +127,7 @@ body::before{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;
   line-height:1.1!important;
   margin:0!important;
   letter-spacing:-0.03em!important;
-  color:#3d3262!important;
+  color:#1d1a3b!important;
 }
 
 /* ── SECTION LEAD ── */
@@ -124,8 +145,7 @@ body::before{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;
 /* ── CARDS: glass, rounded, no brackets ── */
 .doc-card,.wp-featured,.artifact-card,.cert-card,.research-card,.fee-card,.process-card,.guarantee-box{
   background:rgba(255,255,255,0.65)!important;
-  backdrop-filter:blur(20px) saturate(1.3)!important;
-  -webkit-backdrop-filter:blur(20px) saturate(1.3)!important;
+  -webkit-
   border:1px solid rgba(15,18,30,0.06)!important;
   border-radius:16px!important;
   box-shadow:0 1px 2px rgba(15,18,30,0.03),0 4px 16px rgba(15,18,30,0.02)!important;
@@ -142,8 +162,7 @@ body::before{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;
   border-radius:16px!important;
   border:1px solid var(--hairline)!important;
   background:rgba(255,255,255,0.40)!important;
-  backdrop-filter:blur(18px) saturate(1.2)!important;
-  -webkit-backdrop-filter:blur(18px) saturate(1.2)!important;
+  -webkit-
 }
 
 /* ── SECTIONS ── */
@@ -156,7 +175,7 @@ body::before{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;
 
 /* ── MISC ── */
 a:hover{filter:none!important;}
-::selection{background:rgba(0,0,0,0.03);color:#111318;}
+::selection { background: var(--accent); color: #fff; }
 .hud-scanline::before,.hud-scanline::after{display:none!important;}
 .sa-particles,.sa-noise,.sa-vignette,.hud-shimmer{display:none!important;}
 .section-title,.section-label,.hud-title,.hud-label,.hud-desc,.hud-link,h1,h2,h3,p,span,a,div{text-shadow:none!important;}
@@ -166,8 +185,100 @@ footer{border-top:1px solid var(--hairline)!important;}
 @keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
 .reveal.active{animation:fadeUp .7s cubic-bezier(0.16,1,0.3,1) both;}
 .r1{animation-delay:.1s;}.r2{animation-delay:.15s;}.r3{animation-delay:.2s;}.r4{animation-delay:.25s;}.r5{animation-delay:.3s;}.r6{animation-delay:.35s;}.r7{animation-delay:.4s;}.r8{animation-delay:.45s;}.r9{animation-delay:.5s;}.r10{animation-delay:.55s;}
-</style>
+
+    /* ── Nav bar ── */
+    .site-header {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 50;
+      height: var(--nav-height, 72px);
+      background: #ffffff;
+      border-bottom: 1px solid rgba(0,0,0,0.08);
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+    }
+    .nav-inner {
+      max-width: var(--max, 1320px);
+      margin: 0 auto;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+      text-decoration: none;
+    }
+    .brand:hover { opacity: 0.8; }
+    .brand-mark { display: none; }
+    .brand-name { display: none; }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      flex: 1;
+      justify-content: center;
+    }
+    .nav-links a {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 1.5px;
+      color: rgba(15,16,33,0.6);
+      text-decoration: none;
+      white-space: nowrap;
+      transition: color 150ms ease;
+    }
+    .nav-links a:hover,
+    .nav-links a.active { color: var(--ink); }
+    .nav-signin {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 1.5px;
+      color: var(--ink);
+      text-decoration: none;
+      border: 1px solid rgba(15,16,33,0.25);
+      padding: 7px 14px;
+      border-radius: 4px;
+      flex-shrink: 0;
+      transition: border-color 150ms ease;
+      white-space: nowrap;
+    }
+    .nav-signin:hover { border-color: rgba(15,16,33,0.6); }
+    .nav-signin > i { display: none; }
+    .nav-toggle {
+      display: none;
+      appearance: none;
+      background: none;
+      border: 1px solid rgba(15,16,33,0.2);
+      border-radius: 4px;
+      padding: 8px;
+      cursor: pointer;
+      flex-direction: column;
+      gap: 4px;
+      width: 36px;
+      height: 36px;
+      align-items: center;
+      justify-content: center;
+    }
+    .nav-toggle span {
+      display: block;
+      width: 16px;
+      height: 1.5px;
+      background: var(--ink);
+      border-radius: 1px;
+    }
+    .nav-badge { display: none; }
+
+    </style>
   <link rel="stylesheet" href="type.css">
+  <link rel="stylesheet" href="global.css">
+  <link rel="stylesheet" href="mobile.css">
   <meta property="og:title" content="Page Not Found — Sentinel Authority" />
   <meta property="og:description" content="The page you are looking for could not be found." />
   <meta property="og:type" content="website" />
@@ -209,13 +320,35 @@ footer{border-top:1px solid var(--hairline)!important;}
   </script>
 </head>
 <body>
-  <a href="#main" class="skip-link" style="position:absolute;top:-40px;left:0;background:#4a3d75;color:#fff;padding:8px;z-index:100;font-size:14px;">Skip to content</a>
-  <header class="site-header">
+  <a href="#main" class="skip-link" style="position:absolute;top:-40px;left:0;background:#2a2560;color:#fff;padding:8px;z-index:100;font-size:14px;">Skip to content</a>
+    <header class="site-header">
     <div class="nav-inner">
-      <a href="/" class="brand">
-        <div class="brand-mark"><div class="brand-mark-inner"></div></div>
-        <div class="brand-name">Sentinel Authority</div>
+
+      <a href="/" class="brand" aria-label="Sentinel Authority home">
+        <svg width="220" height="48" viewBox="0 0 460 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="62" cy="60" r="50" stroke="#1d1a3b" stroke-width="3.4"/>
+          <circle cx="62" cy="60" r="43" stroke="#1d1a3b" stroke-width="1.1" stroke-opacity="0.20"/>
+          <text x="62" y="74" text-anchor="middle" font-family="'League Spartan', Arial, sans-serif" font-weight="900" font-size="40" fill="#1d1a3b" letter-spacing="-1.1">SA</text>
+          <text x="132" y="54" font-family="'League Spartan', Arial, sans-serif" font-weight="900" font-size="34" fill="#1d1a3b" letter-spacing="-0.15">SENTINEL</text>
+          <text x="132" y="84" font-family="'League Spartan', Arial, sans-serif" font-weight="900" font-size="34" fill="#1d1a3b" letter-spacing="-0.25">AUTHORITY</text>
+        </svg>
       </a>
+
+      <nav class="nav-links" aria-label="Main navigation">
+        <a href="/#envelo" data-section="envelo">STANDARD</a>
+        <a href="/#cat72" data-section="cat72">CONFORMANCE</a>
+        <a href="/#verify" data-section="verify">REGISTRY</a>
+        <a href="/research.html">PUBLICATIONS</a>
+      </nav>
+
+      <a href="https://app.sentinelauthority.org" class="nav-signin">APPLICANT PORTAL</a>
+
+      <button class="nav-toggle" aria-label="Open navigation menu" aria-expanded="false" aria-controls="nav-drawer">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
     </div>
   </header>
 
@@ -238,7 +371,7 @@ footer{border-top:1px solid var(--hairline)!important;}
 (function(){
   /* Green status dot on brand */
   var b=document.querySelector(".brand");
-  if(b){var d=document.createElement("span");d.style.cssText="display:inline-block;width:4px;height:4px;border-radius:50%;background:rgba(22,135,62,1.00);margin-left:8px;vertical-align:middle;";b.appendChild(d);}
+  // dot removed
   /* Reveal observer */
   var obs=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add("active");obs.unobserve(e.target);}});},{threshold:0.1});
   document.querySelectorAll(".reveal,.section-head").forEach(function(el){obs.observe(el);});

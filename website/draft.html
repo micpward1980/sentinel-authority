@@ -2748,12 +2748,7 @@ footer{border-top:1px solid var(--hairline)!important;}
     (function() {
       'use strict';
       
-      var navBrand = document.querySelector('.brand');
-      if (navBrand) {
-        var pulse = document.createElement('span');
-        pulse.style.cssText = 'display:inline-block;width:4px;height:4px;border-radius:50%;background:rgba(22,135,62,0.7);margin-left:8px;animation:hud-breathe 3s ease-in-out infinite;vertical-align:middle;';
-        navBrand.appendChild(pulse);
-      }
+      // nav pulse dot removed
       if (window.matchMedia('(pointer: fine)').matches) {
         var cursor = document.createElement('div');
         cursor.className = 'sa-cursor';
@@ -2893,7 +2888,7 @@ footer{border-top:1px solid var(--hairline)!important;}
 (function(){
   /* Green status dot on brand */
   var b=document.querySelector(".brand");
-  if(b){var d=document.createElement("span");d.style.cssText="display:inline-block;width:4px;height:4px;border-radius:50%;background:rgba(22,135,62,1.00);margin-left:8px;vertical-align:middle;";b.appendChild(d);}
+  // dot removed
   /* Reveal observer */
   var obs=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add("active");obs.unobserve(e.target);}});},{threshold:0.1});
   document.querySelectorAll(".reveal,.section-head").forEach(function(el){obs.observe(el);});

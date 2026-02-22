@@ -428,7 +428,8 @@ function EnveloAdminView() {
   const beginCAT72 = async (app) => {
     if (!await confirm({ title: 'Begin CAT-72', message: `Start the 72-hour conformance test for ${app.system_name}? The interlock must be confirmed online.`, confirmLabel: 'Begin Test', danger: false })) return;
     try {
-      await api.post(`/api/applications/${app.id}/begin-cat72`);
+      const reqId = `cat72-${app.id}-${Date.now()}`;
+      await api.post(`/api/applications/${app.id}/begin-cat72`, { request_id: reqId });
       toast.show('CAT-72 test started', 'success');
       load();
     } catch (e) {
@@ -466,7 +467,7 @@ function EnveloAdminView() {
 
   return (
     <div className="space-y-6">
-      <SectionHeader label="⬡ Admin Console" title="ENVELO Management" description="Certify, monitor, and manage all customer systems" />
+      <SectionHeader label="Admin Console" title="ENVELO Management" description="Certify, monitor, and manage all customer systems" />
 
       {/* Stats row */}
       <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))' }}>
@@ -490,15 +491,15 @@ function EnveloAdminView() {
         {tabs.map(tab => (
           <button key={tab.id} onClick={() => setActiveTab(tab.id)} style={{
             padding: '8px 18px', borderRadius: '6px',
-            background:  activeTab === tab.id ? 'rgba(74,61,117,0.08)' : 'transparent',
-            border:      `1px solid ${activeTab === tab.id ? 'rgba(74,61,117,0.5)' : styles.borderGlass}`,
+            background:  activeTab === tab.id ? 'rgba(29,26,59,0.08)' : 'transparent',
+            border:      `1px solid ${activeTab === tab.id ? 'rgba(29,26,59,0.5)' : styles.borderGlass}`,
             color:       activeTab === tab.id ? styles.purpleBright : styles.textSecondary,
             fontFamily:  styles.mono, fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase',
             cursor: 'pointer', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: '8px',
           }}>
             {tab.label}
             {tab.badge > 0 && (
-              <span style={{ padding: '1px 6px', borderRadius: '999px', background: 'rgba(74,61,117,0.15)', color: styles.purpleBright, fontSize: '10px' }}>{tab.badge}</span>
+              <span style={{ padding: '1px 6px', borderRadius: '999px', background: 'rgba(29,26,59,0.15)', color: styles.purpleBright, fontSize: '10px' }}>{tab.badge}</span>
             )}
           </button>
         ))}
@@ -564,7 +565,7 @@ function EnveloAdminView() {
                         { label: 'Time', count: tb.length },
                         { label: 'State', count: sb.length },
                       ].map(s => (
-                        <div key={s.label} style={{ padding: '10px', background: 'rgba(74,61,117,0.05)', borderRadius: '6px' }}>
+                        <div key={s.label} style={{ padding: '10px', background: 'rgba(29,26,59,0.05)', borderRadius: '6px' }}>
                           <div style={{ fontSize: '20px', fontWeight: 500, color: styles.purpleBright }}>{s.count}</div>
                           <div style={{ fontFamily: styles.mono, fontSize: '9px', textTransform: 'uppercase', letterSpacing: '1px', color: styles.textTertiary, marginTop: '2px' }}>{s.label}</div>
                         </div>
@@ -599,7 +600,8 @@ function EnveloAdminView() {
                 <button
                   onClick={async () => {
                     try {
-                      await api.post(`/api/applications/${app.id}/approve`, { note: reviewComment || 'Approved.' });
+                      const approveReqId = `approve-${app.id}-${Date.now()}`;
+      await api.post(`/api/applications/${app.id}/approve`, { note: reviewComment || 'Approved.', request_id: approveReqId });
                       toast.show('Application approved — API key generated and emailed to customer', 'success');
                       setReviewComment(''); load();
                     } catch (e) { toast.show('Failed: ' + (e.response?.data?.detail || e.message), 'error'); }
@@ -612,7 +614,8 @@ function EnveloAdminView() {
                   onClick={async () => {
                     if (!reviewComment.trim()) { toast.show('Rejection requires specific feedback', 'error'); return; }
                     try {
-                      await api.post(`/api/applications/${app.id}/reject`, { note: reviewComment });
+                      const rejectReqId = `reject-${app.id}-${Date.now()}`;
+      await api.post(`/api/applications/${app.id}/reject`, { note: reviewComment, request_id: rejectReqId });
                       toast.show('Sent back with required changes', 'success');
                       setReviewComment(''); load();
                     } catch (e) { toast.show('Failed: ' + (e.response?.data?.detail || e.message), 'error'); }

@@ -20,7 +20,7 @@ function ToastProvider({ children }) {
     success: { bg: 'rgba(22,135,62,.08)', border: 'rgba(22,135,62,.25)', text: styles.accentGreen, icon: '✓' },
     error:   { bg: 'rgba(180,52,52,.08)',  border: 'rgba(180,52,52,.25)',  text: styles.accentRed, icon: '✗' },
     warning: { bg: 'rgba(158,110,18,.08)', border: 'rgba(158,110,18,.25)', text: styles.accentAmber, icon: '⚠' },
-    info:    { bg: 'rgba(74,61,117,.08)', border: 'rgba(74,61,117,.25)', text: styles.purpleBright, icon: 'ℹ' },
+    info:    { bg: 'rgba(29,26,59,.08)', border: 'rgba(29,26,59,.25)', text: styles.purpleBright, icon: 'ℹ' },
   };
 
   return (

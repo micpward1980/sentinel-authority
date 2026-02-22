@@ -8,20 +8,20 @@ from io import BytesIO
 from datetime import datetime
 import qrcode
 
-PURPLE        = HexColor("#4a3d75")
-PURPLE_LIGHT  = HexColor("#7c6baa")
+PURPLE        = HexColor("#1d1a3b")
+PURPLE_LIGHT  = HexColor("#4a5568")
 ACCENT_GREEN  = HexColor("#16873e")
 TEXT_PRIMARY  = HexColor("#1a1a1a")
 TEXT_SECONDARY= HexColor("#444444")
 TEXT_TERTIARY = HexColor("#888888")
 BORDER        = HexColor("#cccccc")
-BG_LIGHT      = HexColor("#f5f5f7")
+BG_LIGHT      = HexColor("#fafafa")
 
 def _qr(url):
     qr = qrcode.QRCode(version=1, error_correction=qrcode.constants.ERROR_CORRECT_M, box_size=8, border=2)
     qr.add_data(url)
     qr.make(fit=True)
-    img = qr.make_image(fill_color="#4a3d75", back_color="white")
+    img = qr.make_image(fill_color="#1d1a3b", back_color="white")
     buf = BytesIO()
     img.save(buf, format="PNG")
     buf.seek(0)
@@ -70,11 +70,11 @@ def generate_certificate_pdf(data: dict) -> bytes:
     c.setFillColor(white)
     c.setFont("Helvetica-Bold", 15)
     c.drawString(0.55*inch, h - 0.62*inch, "SENTINEL AUTHORITY")
-    c.setFillColor(HexColor("#c4b8e8"))
+    c.setFillColor(HexColor("#8899aa"))
     c.setFont("Helvetica", 8)
     c.drawString(0.55*inch, h - 0.82*inch, "Independent Certification Body for Autonomous Systems")
 
-    c.setFillColor(HexColor("#c4b8e8"))
+    c.setFillColor(HexColor("#8899aa"))
     c.setFont("Helvetica", 7)
     c.drawRightString(w - 0.4*inch, h - 0.62*inch, "CERTIFICATE NO.")
     c.setFillColor(white)
@@ -83,7 +83,7 @@ def generate_certificate_pdf(data: dict) -> bytes:
 
     # ODDC badge
     bx, by = w - 1.3*inch, h - 1.30*inch
-    c.setFillColor(HexColor("#7c6baa"))
+    c.setFillColor(HexColor("#1d1a3b"))
     c.roundRect(bx, by, 0.9*inch, 0.28*inch, 4, fill=True, stroke=False)
     c.setFillColor(white)
     c.setFont("Helvetica-Bold", 8)

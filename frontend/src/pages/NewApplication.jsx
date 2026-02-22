@@ -4,6 +4,7 @@ import { CheckCircle, AlertTriangle, ArrowLeft } from 'lucide-react';
 import { api } from '../config/api';
 import { styles } from '../config/styles';
 import { useAuth } from '../context/AuthContext';
+import { useBeforeUnload } from 'react-router-dom';
 import Panel from '../components/Panel';
 import { BulkImportModal } from './ApplicationsList';
 import { SYSTEM_TYPES, DOMAIN_GROUPS } from '../systemTypesData';
@@ -25,6 +26,23 @@ function NewApplication() {
   const [stateBounds, setStateBounds] = useState([{ name: '', parameter: '', allowed_values: '', forbidden_values: '' }]);
   const [safety, setSafety] = useState({ violation_action: 'stop', connection_loss_action: 'stop', fail_closed: true, emergency_contact_name: '', emergency_contact_phone: '', emergency_contact_email: '', existing_safety_systems: '', escalation_triggers: '' });
   const [submitted, setSubmitted] = useState(false);
+
+  // Dirty check — warn before leaving with unsaved form data
+  const isDirty = !submitted && (
+    step > 1 ||
+    org.organization_name !== '' ||
+    org.contact_email !== '' ||
+    sys.system_name !== ''
+  );
+
+  useBeforeUnload(
+    React.useCallback((e) => {
+      if (isDirty) {
+        e.preventDefault();
+        e.returnValue = 'You have unsaved application data. Leave anyway?';
+      }
+    }, [isDirty])
+  );
 
   // Pre-fill org from user profile
   useEffect(() => {
@@ -226,4 +244,3 @@ function NewApplication() {
 // Application Detail
 
 export default NewApplication;
-

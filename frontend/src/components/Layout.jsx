@@ -36,6 +36,80 @@ function fmtUTC(ts) {
   return new Date(ts).toISOString().replace('T', ' ').substring(0, 16) + 'Z';
 }
 
+
+// ─── Breadcrumb ────────────────────────────────────────────────────────────
+const BREADCRUMB_MAP = {
+  '/dashboard':    [{ label: 'Dashboard' }],
+  '/applications': [{ label: 'Applications' }],
+  '/applications/new': [{ label: 'Applications', href: '/applications' }, { label: 'New Application' }],
+  '/cat72':        [{ label: 'CAT-72 Console' }],
+  '/certificates': [{ label: 'Certificates' }],
+  '/envelo':       [{ label: 'ENVELO Interlock' }],
+  '/monitoring':   [{ label: 'Monitoring' }],
+  '/activity':     [{ label: 'Activity Log' }],
+  '/my-activity':  [{ label: 'My Activity' }],
+  '/settings':     [{ label: 'Settings' }],
+  '/users':        [{ label: 'User Management' }],
+  '/licensees':    [{ label: 'Licensees' }],
+  '/resources':    [{ label: 'Resources' }],
+  '/api-docs':     [{ label: 'API Docs' }],
+};
+
+function Breadcrumbs({ pathname }) {
+  // Exact match first
+  let crumbs = BREADCRUMB_MAP[pathname];
+  // Dynamic routes
+  if (!crumbs) {
+    const appMatch = pathname.match(/^\/applications\/(.+)$/);
+    if (appMatch) crumbs = [
+      { label: 'Applications', href: '/applications' },
+      { label: appMatch[1], mono: true },
+    ];
+    const certMatch = pathname.match(/^\/certificates\/(.+)$/);
+    if (certMatch) crumbs = [
+      { label: 'Certificates', href: '/certificates' },
+      { label: certMatch[1], mono: true },
+    ];
+  }
+  if (!crumbs || crumbs.length <= 1) return null;
+
+  return (
+    <div style={{
+      display: 'flex', alignItems: 'center', gap: '6px',
+      padding: '8px clamp(16px, 3vw, 32px)',
+      borderBottom: '1px solid #dddbda',
+      background: '#fafafa',
+    }}>
+      {crumbs.map((crumb, i) => (
+        <React.Fragment key={i}>
+          {i > 0 && (
+            <span style={{ fontFamily: styles.mono, fontSize: '10px', color: styles.textDim, userSelect: 'none' }}>›</span>
+          )}
+          {crumb.href ? (
+            <Link to={crumb.href} style={{
+              fontFamily: crumb.mono ? styles.mono : styles.sans,
+              fontSize: '11px', color: styles.textTertiary,
+              textDecoration: 'none', letterSpacing: crumb.mono ? '0.05em' : '0',
+            }}
+            onMouseEnter={e => e.currentTarget.style.color = styles.purplePrimary}
+            onMouseLeave={e => e.currentTarget.style.color = styles.textTertiary}>
+              {crumb.label}
+            </Link>
+          ) : (
+            <span style={{
+              fontFamily: crumb.mono ? styles.mono : styles.sans,
+              fontSize: '11px', color: styles.textPrimary, fontWeight: 500,
+              letterSpacing: crumb.mono ? '0.05em' : '0',
+            }}>
+              {crumb.label}
+            </span>
+          )}
+        </React.Fragment>
+      ))}
+    </div>
+  );
+}
+
 function Layout({ children }) {
   const { user, logout } = useAuth();
   const isMobile = useIsMobile();
@@ -111,17 +185,17 @@ function Layout({ children }) {
     fontFamily: styles.mono,
     fontSize: '11px',
     fontWeight: active ? 600 : 400,
-    letterSpacing: '0.08em',
+    letterSpacing: '0.06em',
     textTransform: 'uppercase',
     color: active ? styles.textPrimary : styles.textTertiary,
     borderLeft: `2px solid ${active ? styles.purpleBright : 'transparent'}`,
-    background: active ? 'rgba(74,61,117,.06)' : 'transparent',
+    background: active ? 'rgba(29,26,59,.06)' : 'transparent',
     transition: 'color 0.15s, background 0.15s',
   });
 
   const sectionLabel = {
     fontFamily: styles.mono, fontSize: '9px',
-    fontWeight: 600, letterSpacing: '0.14em',
+    fontWeight: 500, letterSpacing: '0.14em',
     textTransform: 'uppercase', color: styles.textDim,
     padding: '16px 16px 4px',
   };
@@ -148,7 +222,7 @@ function Layout({ children }) {
         {/* Brand */}
         <div style={{ height: '72px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px', borderBottom: `1px solid ${frost.borderColor}`, flexShrink: 0 }}>
           <Link to="/dashboard" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
-            <BrandMark size={32} />
+            <svg width="32" height="32" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="60" cy="60" r="50" stroke="#1d1a3b" strokeWidth="3.4"/><circle cx="60" cy="60" r="43" stroke="#1d1a3b" strokeWidth="1.1" strokeOpacity="0.20"/><text x="60" y="74" textAnchor="middle" fontFamily="League Spartan,Arial,sans-serif" fontWeight="900" fontSize="42" letterSpacing="-1.1" fill="#1d1a3b">SA</text></svg>
             <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.15 }}>
               <span style={{ fontFamily: styles.mono, fontSize: '10px', letterSpacing: '0.20em', textTransform: 'uppercase', color: styles.textPrimary, whiteSpace: 'nowrap' }}>SENTINEL</span>
               <span style={{ fontFamily: styles.mono, fontSize: '8px', letterSpacing: '0.20em', textTransform: 'uppercase', color: styles.textTertiary, whiteSpace: 'nowrap' }}>AUTHORITY</span>
@@ -175,7 +249,7 @@ function Layout({ children }) {
                 onMouseLeave={e => { if (!active) { e.currentTarget.style.color = styles.textTertiary; e.currentTarget.style.background = 'transparent'; }}}
               >
                 {item.icon === 'brand'
-                  ? <BrandMark size={13} />
+                  ? <svg width="13" height="13" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="60" cy="60" r="50" stroke="#1d1a3b" strokeWidth="3.4"/><circle cx="60" cy="60" r="43" stroke="#1d1a3b" strokeWidth="1.1" strokeOpacity="0.20"/><text x="60" y="74" textAnchor="middle" fontFamily="League Spartan,Arial,sans-serif" fontWeight="900" fontSize="42" letterSpacing="-1.1" fill="#1d1a3b">SA</text></svg>
                   : <item.icon size={13} style={{ opacity: active ? 0.9 : 0.5, flexShrink: 0 }} />
                 }
                 {item.name}
@@ -187,21 +261,21 @@ function Layout({ children }) {
         {/* User footer */}
         <div style={{ padding: '12px 16px', borderTop: `1px solid ${frost.borderColor}`, flexShrink: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
-            <BrandMark size={26} />
+            <svg width="26" height="26" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="60" cy="60" r="50" stroke="#1d1a3b" strokeWidth="3.4"/><circle cx="60" cy="60" r="43" stroke="#1d1a3b" strokeWidth="1.1" strokeOpacity="0.20"/><text x="60" y="74" textAnchor="middle" fontFamily="League Spartan,Arial,sans-serif" fontWeight="900" fontSize="42" letterSpacing="-1.1" fill="#1d1a3b">SA</text></svg>
             <div style={{ minWidth: 0 }}>
               <div style={{ fontSize: '13px', color: styles.textPrimary, fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user?.full_name}</div>
-              <div style={{ fontFamily: styles.mono, fontSize: '9px', letterSpacing: '0.10em', textTransform: 'uppercase', color: styles.textTertiary }}>{user?.role}</div>
+              <div style={{ fontFamily: styles.mono, fontSize: '9px', letterSpacing: '0.06em', textTransform: 'uppercase', color: styles.textTertiary }}>{user?.role}</div>
             </div>
           </div>
-          <button onClick={logout} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontFamily: styles.mono, fontSize: '10px', letterSpacing: '0.08em', textTransform: 'uppercase', color: styles.textTertiary, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+          <button onClick={logout} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontFamily: styles.mono, fontSize: '10px', letterSpacing: '0.06em', textTransform: 'uppercase', color: styles.textTertiary, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
             onMouseEnter={e => e.currentTarget.style.color = styles.accentRed}
             onMouseLeave={e => e.currentTarget.style.color = styles.textTertiary}>
             <LogOut size={11} />
             Sign Out
           </button>
           <div style={{ display: 'flex', gap: '12px', marginTop: '10px' }}>
-            <a href="https://sentinelauthority.org/terms.html" target="_blank" rel="noreferrer noopener" style={{ fontFamily: 'var(--mono, monospace)', fontSize: '9px', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-tertiary)', textDecoration: 'none', opacity: 0.6 }}>Terms</a>
-            <a href="https://sentinelauthority.org/privacy.html" target="_blank" rel="noreferrer noopener" style={{ fontFamily: 'var(--mono, monospace)', fontSize: '9px', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-tertiary)', textDecoration: 'none', opacity: 0.6 }}>Privacy</a>
+            <a href="https://sentinelauthority.org/terms.html" target="_blank" rel="noreferrer noopener" style={{ fontFamily: 'var(--mono, monospace)', fontSize: '9px', letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-tertiary)', textDecoration: 'none', opacity: 0.6 }}>Terms</a>
+            <a href="https://sentinelauthority.org/privacy.html" target="_blank" rel="noreferrer noopener" style={{ fontFamily: 'var(--mono, monospace)', fontSize: '9px', letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-tertiary)', textDecoration: 'none', opacity: 0.6 }}>Privacy</a>
           </div>
         </div>
       </div>
@@ -227,12 +301,10 @@ function Layout({ children }) {
           <div style={{ flex: 1 }} />
 
           <a href="https://sentinelauthority.org" target="_blank" rel="noreferrer noopener"
-            style={{ position: 'relative', fontFamily: styles.mono, fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', textDecoration: 'none', color: '#3d3262', padding: '6px 14px', border: 'none', transition: 'color 0.2s' }}
-            onMouseEnter={e => { e.currentTarget.style.color = '#4a3d75'; Array.from(e.currentTarget.querySelectorAll('span')).forEach(s => s.style.borderColor = 'rgba(61,50,98,0.80)'); }}
-            onMouseLeave={e => { e.currentTarget.style.color = '#3d3262'; Array.from(e.currentTarget.querySelectorAll('span')).forEach(s => s.style.borderColor = 'rgba(61,50,98,0.35)'); }}>
-            <span style={{ position: 'absolute', top: 0, left: 0, width: '8px', height: '8px', borderTop: '1px solid rgba(61,50,98,0.35)', borderLeft: '1px solid rgba(61,50,98,0.35)', transition: 'border-color 0.2s' }} />
-            <span style={{ position: 'absolute', bottom: 0, right: 0, width: '8px', height: '8px', borderBottom: '1px solid rgba(61,50,98,0.35)', borderRight: '1px solid rgba(61,50,98,0.35)', transition: 'border-color 0.2s' }} />
-            Public Site
+            style={{ fontFamily: styles.mono, fontSize: '11px', letterSpacing: '1.5px', textTransform: 'uppercase', textDecoration: 'none', color: '#1d1a3b', padding: '7px 14px', border: '1px solid rgba(15,16,33,0.25)', borderRadius: '4px', transition: 'border-color 150ms ease', whiteSpace: 'nowrap' }}
+            onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(15,16,33,0.6)'}
+            onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(15,16,33,0.25)'}>
+            PUBLIC SITE
           </a>
 
           {/* Notifications */}
@@ -251,7 +323,7 @@ function Layout({ children }) {
                 <div onClick={() => setNotifOpen(false)} style={{ position: 'fixed', inset: 0, zIndex: 90 }} />
                 <div style={{ position: 'absolute', right: 0, top: '44px', width: 'min(340px, 90vw)', maxHeight: '70vh', overflowY: 'auto', background: frost.background, backdropFilter: frost.backdropFilter, WebkitBackdropFilter: frost.WebkitBackdropFilter, border: `1px solid ${frost.borderColor}`, zIndex: 100 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 16px', borderBottom: `1px solid ${frost.borderColor}` }}>
-                    <span style={{ fontFamily: styles.mono, fontSize: '10px', fontWeight: 600, letterSpacing: '0.10em', textTransform: 'uppercase', color: styles.textTertiary }}>Notifications</span>
+                    <span style={{ fontFamily: styles.mono, fontSize: '10px', fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: styles.textTertiary }}>Notifications</span>
                     {unreadCount > 0 && (
                       <button onClick={markAllRead} style={{ background: 'none', border: 'none', color: styles.purpleBright, fontFamily: styles.mono, fontSize: '10px', letterSpacing: '0.06em', cursor: 'pointer', padding: 0 }}>Mark all read</button>
                     )}
@@ -282,6 +354,7 @@ function Layout({ children }) {
           </div>
         </header>
 
+        <Breadcrumbs pathname={location.pathname} />
         <main style={{ padding: 'clamp(16px, 3vw, 32px)', position: 'relative', zIndex: 1 }}>
           {children}
         </main>

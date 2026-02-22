@@ -1,21 +1,161 @@
-import { styles } from '../config/styles';
-import React from 'react';
+// components/StatusBadge.jsx — Sentinel Authority v4
+// Salesforce "Lightning" pill style with Sentinel-specific status labels
+// 4px radius, colored dot, high-contrast status intensity
 
-const V = {
-  green:  { bc: 'rgba(22,135,62,.22)',  c: 'rgba(22,135,62,.90)',  bg: 'rgba(22,135,62,.06)',  dot: 'rgba(22,135,62,1.00)' },
-  amber:  { bc: 'rgba(158,110,18,.22)',  c: 'rgba(158,110,18,.95)',  bg: 'rgba(158,110,18,.06)',  dot: 'rgba(158,110,18,1.00)' },
-  red:    { bc: 'rgba(180,52,52,.22)',   c: 'rgba(180,52,52,.95)',   bg: 'rgba(180,52,52,.06)',   dot: 'rgba(180,52,52,1.00)' },
+import React from 'react';
+import { styles } from '../config/styles';
+
+// ── Sentinel status map ────────────────────────────────────────────────────────
+// Each entry: color (solid), bg (tinted), label (institutional copy)
+const STATUS_MAP = {
+  // ── Conformant / Active ────────────────────────────────────────────────────
+  conformant: {
+    color:  styles.accentGreen,
+    bg:     'rgba(22,135,62,0.08)',
+    border: 'rgba(22,135,62,0.20)',
+    label:  'CONFORMANT',
+  },
+  active: {
+    color:  styles.accentGreen,
+    bg:     'rgba(22,135,62,0.08)',
+    border: 'rgba(22,135,62,0.20)',
+    label:  'CONFORMANT',
+  },
+  approved: {
+    color:  styles.accentGreen,
+    bg:     'rgba(22,135,62,0.08)',
+    border: 'rgba(22,135,62,0.20)',
+    label:  'APPROVED',
+  },
+  issued: {
+    color:  styles.accentGreen,
+    bg:     'rgba(22,135,62,0.08)',
+    border: 'rgba(22,135,62,0.20)',
+    label:  'ISSUED',
+  },
+  passed: {
+    color:  styles.accentGreen,
+    bg:     'rgba(22,135,62,0.08)',
+    border: 'rgba(22,135,62,0.20)',
+    label:  'PASSED',
+  },
+
+  // ── In Progress / Bounded ─────────────────────────────────────────────────
+  testing: {
+    color:  styles.purpleBright,
+    bg:     'rgba(107,90,158,0.08)',
+    border: 'rgba(107,90,158,0.20)',
+    label:  'CAT-72 IN PROGRESS',
+  },
+  pending: {
+    color:  styles.accentAmber,
+    bg:     'rgba(158,110,18,0.08)',
+    border: 'rgba(158,110,18,0.20)',
+    label:  'PENDING REVIEW',
+  },
+  bounded: {
+    color:  styles.accentAmber,
+    bg:     'rgba(158,110,18,0.08)',
+    border: 'rgba(158,110,18,0.20)',
+    label:  'BOUNDED',
+  },
+  review: {
+    color:  styles.accentAmber,
+    bg:     'rgba(158,110,18,0.08)',
+    border: 'rgba(158,110,18,0.20)',
+    label:  'UNDER REVIEW',
+  },
+  warning: {
+    color:  styles.accentAmber,
+    bg:     'rgba(158,110,18,0.08)',
+    border: 'rgba(158,110,18,0.20)',
+    label:  'WARNING',
+  },
+  submitted: {
+    color:  styles.accentBlue,
+    bg:     'rgba(26,111,168,0.08)',
+    border: 'rgba(26,111,168,0.20)',
+    label:  'SUBMITTED',
+  },
+  odd_review: {
+    color:  styles.accentBlue,
+    bg:     'rgba(26,111,168,0.08)',
+    border: 'rgba(26,111,168,0.20)',
+    label:  'ODD REVIEW',
+  },
+
+  // ── Revoked / Failed ──────────────────────────────────────────────────────
+  revoked: {
+    color:  styles.accentRed,
+    bg:     'rgba(180,52,52,0.08)',
+    border: 'rgba(180,52,52,0.20)',
+    label:  'REVOKED',
+  },
+  suspended: {
+    color:  styles.accentRed,
+    bg:     'rgba(180,52,52,0.08)',
+    border: 'rgba(180,52,52,0.20)',
+    label:  'SUSPENDED',
+  },
+  failed: {
+    color:  styles.accentRed,
+    bg:     'rgba(180,52,52,0.08)',
+    border: 'rgba(180,52,52,0.20)',
+    label:  'FAILED',
+  },
+  error: {
+    color:  styles.accentRed,
+    bg:     'rgba(180,52,52,0.08)',
+    border: 'rgba(180,52,52,0.20)',
+    label:  'ERROR',
+  },
 };
-const ALIAS = { active:'green', conformant:'green', approved:'green', passed:'green', pending:'amber', bounded:'amber', review:'amber', warning:'amber', revoked:'red', suspended:'red', failed:'red', error:'red' };
-const DEF = { bc: 'rgba(0,0,0,.09)', c: 'rgba(15,18,30,.64)', bg: 'transparent', dot: 'rgba(15,18,30,.40)' };
+
+const DEFAULT_CFG = {
+  color:  styles.textTertiary,
+  bg:     'rgba(0,0,0,0.04)',
+  border: 'rgba(0,0,0,0.10)',
+};
 
 export default function StatusBadge({ status = '', label, children, showDot = true }) {
-  const k = status.toLowerCase().replace(/[^a-z]/g, '');
-  const v = V[k] || V[ALIAS[k]] || DEF;
+  const key = (status || '').toLowerCase().replace(/[\s-]/g, '_');
+  const cfg = STATUS_MAP[key] || DEFAULT_CFG;
+  const displayLabel = label || children || cfg.label || status;
+
   return (
-    <span data-badge="true" style={{ fontFamily: styles.mono, fontSize: '9px', letterSpacing: '2px', textTransform: 'uppercase', padding: '6px 10px', borderRadius: '999px', border: '1px solid '+v.bc, color: v.c, background: v.bg, whiteSpace: 'nowrap', display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
-      {showDot && <span data-dot="true" style={{ width: '4px', height: '4px', borderRadius: '50%', background: v.dot, flexShrink: 0 }} />}
-      {label || children || status}
+    <span
+      data-badge="true"
+      style={{
+        display:        'inline-flex',
+        alignItems:     'center',
+        gap:            styles.spacing.xs,
+        padding:        '4px 10px',
+        borderRadius:   '4px',           // Salesforce standard pill (not 999px)
+        background:     cfg.bg,
+        color:          cfg.color,
+        fontFamily:     styles.mono,
+        fontSize:       '10px',
+        fontWeight:     600,
+        letterSpacing:  '1px',
+        border:         `1px solid ${cfg.border}`,
+        textTransform:  'uppercase',
+        whiteSpace:     'nowrap',
+        lineHeight:     1,
+      }}
+    >
+      {showDot && (
+        <span
+          data-dot="true"
+          style={{
+            width:        '6px',
+            height:       '6px',
+            borderRadius: '50%',
+            background:   cfg.color,
+            flexShrink:   0,
+          }}
+        />
+      )}
+      {displayLabel}
     </span>
   );
 }

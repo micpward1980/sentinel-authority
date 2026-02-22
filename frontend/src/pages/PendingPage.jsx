@@ -12,7 +12,7 @@ function PendingPage() {
           <Clock fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} style={{ width: '36px', height: '36px', color: styles.accentAmber }} />
         </div>
         <p style={{ fontFamily: styles.mono, fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.accentAmber, marginBottom: '12px' }}>APPLICATION UNDER REVIEW</p>
-        <h1 style={{ fontFamily: styles.serif, fontSize: 'clamp(20px, 4vw, 28px)', fontWeight: 200, color: styles.textPrimary, margin: '0 0 16px' }}>Welcome to Sentinel Authority</h1>
+        <h1 style={{ fontFamily: styles.serif, fontSize: 'clamp(24px, 5vw, 36px)', fontWeight: 200, color: styles.textPrimary, margin: '0 0 16px' }}>Welcome to Sentinel Authority</h1>
         <p style={{ color: styles.textTertiary, fontSize: '15px', lineHeight: '1.6', marginBottom: '32px' }}>
           Your account is being reviewed by our team. You will receive full portal access once approved. This typically takes 1-2 business days.
         </p>

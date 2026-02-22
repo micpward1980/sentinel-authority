@@ -1,43 +1,50 @@
-/* ─── Sentinel Authority Design System v2 ───────────────────────────────────
-   Readability + Institutional Aesthetic pass
-   Solid text, real borders, 8px spacing scale, hard-edge frames
+/* ─── Sentinel Authority Design System v4 "Brutalist Institutional" ──────────
+   Audit-Grade palette. 90% neutral canvas, brand/status colors carry the weight.
+   IBM Plex Mono for machine data. Inter for everything human-readable.
+   8px grid. 4px radius. SLDS border standard.
    ─────────────────────────────────────────────────────────────────────────── */
+
+/* Google Fonts — loaded here so it works without editing index.html */
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
   color-scheme: light;
 
-  /* Core palette */
-  --purple-primary: #4a3d75;
-  --purple-bright:  #6b5a9e;
-  --purple-accent:  #3d3262;
+  /* Brand */
+  --purple-primary: #1d1a3b;
+  --purple-bright:  #1d1a3b;
+  --purple-accent:  #1d1a3b;
 
-  /* Backgrounds */
-  --bg-deep:  #f5f5f7;
-  --bg-panel: rgba(255,255,255,0.60);
+  /* Backgrounds — Neutral Ground */
+  --bg-deep:  #f3f3f3;
+  --bg-panel: rgba(255,255,255,0.70);
 
-  /* Accents */
-  --accent-green: #16873e;
-  --accent-amber: #9e6e12;
-  --accent-red:   #b43434;
+  /* Status signals — three jobs only */
+  --accent-green: #2e844a;   /* Conformant / verified */
+  --accent-amber: #dd7a01;   /* Intervention / active protection */
+  --accent-blue:  #0176d3;   /* Info / secondary */
+  --accent-red:   #ea001b;   /* Enforcement failure / critical */
 
-  /* Text — solid, no opacity stacking */
-  --text-primary:   #0f121e;
+  /* Text — Ink system */
+  --text-primary:   #181818;
   --text-secondary: #2b3040;
   --text-tertiary:  #5a6070;
   --text-dim:       #8a909c;
 
-  /* Borders — real colors */
-  --border-glass:  #e2e5ea;
-  --border-subtle: #eceef1;
-  --hairline:      #d8dce3;
-  --hairline-2:    #cdd1d8;
+  /* Borders — SLDS standard */
+  --border-glass:  #dddbda;
+  --border-subtle: #e8e8e8;
+  --hairline:      #d4d4d4;
+  --hairline-2:    #c8c8c8;
 
-  /* Glass / frost */
-  --glass-bg:      rgba(255,255,255,0.58);
-  --glass-border:  rgba(255,255,255,0.45);
-  --glass-inset:   rgba(255,255,255,0.35);
-  --glass-shadow1: rgba(15,18,30,0.04);
-  --glass-shadow2: rgba(15,18,30,0.06);
+  /* Card surface */
+  --card-surface: #ffffff;
+
+  /* Legacy glass tokens */
+  --glass-bg:      rgba(255,255,255,0.72);
+  --glass-border:  #dddbda;
+  --glass-shadow1: rgba(0,0,0,0.04);
+  --glass-shadow2: rgba(0,0,0,0.06);
 
   /* 8px spacing scale */
   --space-1:  8px;
@@ -49,15 +56,15 @@
 
   /* Typography */
   --serif: Georgia, 'Source Serif 4', serif;
-  --mono:  Consolas, 'IBM Plex Mono', monospace;
-  --sans:  Calibri, 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  --mono:  'IBM Plex Mono', Consolas, monospace;
+  --sans:  'Inter', system-ui, -apple-system, sans-serif;
 
-  /* Mono label scale */
-  --mono-xs:  10px;
-  --mono-sm:  11px;
-  --mono-md:  12px;
-  --mono-track-tight: 0.06em;
-  --mono-track-wide:  0.12em;
+  /* Mono scale */
+  --mono-xs:          10px;
+  --mono-sm:          11px;
+  --mono-md:          12px;
+  --mono-track-tight: 0.04em;
+  --mono-track-wide:  0.10em;
 
   /* Timing */
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
@@ -74,139 +81,280 @@ body {
   line-height: 1.5;
   color: var(--text-primary);
   background: var(--bg-deep);
-  background-image:
-    radial-gradient(ellipse at 15% 0%, rgba(74,61,117,0.06) 0%, transparent 50%),
-    radial-gradient(ellipse at 90% 100%, rgba(107,90,158,0.04) 0%, transparent 50%);
-  background-attachment: fixed;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* ─── Institutional frame system ─────────────────────────────────────────── */
+/* ─── Institutional card — the core structural element ───────────────────── */
 
-/* Hard-edge panel — no radius, real border, no decorative shadow */
+.sentinel-card {
+  background:    var(--card-surface);
+  border:        1px solid var(--border-glass);
+  border-radius: 4px;
+  box-shadow:    0 2px 2px 0 rgba(0,0,0,0.06);
+  transition:    border-color 0.15s ease;
+}
+
+.sentinel-card:hover {
+  border-color: #c8c8c8;
+}
+
+/* Hard-edge panel — for data frames and audit blocks */
 .frame {
-  background: rgba(255,255,255,0.70);
-  border: 1px solid var(--border-glass);
-  backdrop-filter: blur(18px) saturate(1.2);
-  -webkit-backdrop-filter: blur(18px) saturate(1.2);
-  padding: var(--space-3);
+  background:    var(--card-surface);
+  border:        1px solid var(--border-glass);
+  border-radius: 4px;
+  padding:       var(--space-3);
 }
 
 /* Inset data row */
 .frame-row {
-  padding: var(--space-1) var(--space-2);
+  padding:       var(--space-1) var(--space-2);
   border-bottom: 1px solid var(--border-subtle);
 }
 .frame-row:last-child { border-bottom: none; }
 
-/* ─── Mono label system ──────────────────────────────────────────────────── */
+/* ─── Mono label system — RULE: mono for machine data, never for sentences ── */
 
 .label {
-  font-family: var(--mono);
-  font-size: var(--mono-sm);
-  font-weight: 600;
-  letter-spacing: var(--mono-track-wide);
-  text-transform: uppercase;
-  color: var(--text-tertiary);
+  font-family:     var(--mono);
+  font-size:       var(--mono-sm);
+  font-weight:     600;
+  letter-spacing:  var(--mono-track-wide);
+  text-transform:  uppercase;
+  color:           var(--text-tertiary);
 }
 
 .label-xs {
-  font-family: var(--mono);
-  font-size: var(--mono-xs);
-  font-weight: 600;
+  font-family:    var(--mono);
+  font-size:      var(--mono-xs);
+  font-weight:    600;
   letter-spacing: var(--mono-track-wide);
   text-transform: uppercase;
-  color: var(--text-dim);
+  color:          var(--text-dim);
+}
+
+/* Hash truncation — full in detail views, truncated in tables */
+.hash-truncated {
+  font-family:   var(--mono);
+  font-size:     11px;
+  color:         var(--text-tertiary);
+  white-space:   nowrap;
+  overflow:      hidden;
+  text-overflow: ellipsis;
+  max-width:     160px;
+}
+.hash-full {
+  font-family:  var(--mono);
+  font-size:    11px;
+  color:        var(--purple-bright);
+  word-break:   break-all;
+  line-height:  1.6;
 }
 
 /* ─── Badge / pill system ────────────────────────────────────────────────── */
 
+/* Square badges — for status on tight tables */
 .badge {
-  display: inline-block;
-  font-family: var(--mono);
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
+  display:        inline-block;
+  font-family:    var(--mono);
+  font-size:      10px;
+  font-weight:    700;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  padding: 2px 8px;
-  line-height: 1.6;
+  padding:        2px 8px;
+  border-radius:  3px;
+  line-height:    1.6;
 }
 
-.badge-green { background: rgba(22,135,62,0.08);  color: var(--accent-green); }
-.badge-amber { background: rgba(158,110,18,0.08); color: var(--accent-amber); }
-.badge-red   { background: rgba(180,52,52,0.08);  color: var(--accent-red);   }
-.badge-purple { background: rgba(74,61,117,0.08); color: var(--purple-bright); }
-.badge-dim   { background: rgba(15,18,30,0.05);   color: var(--text-tertiary); }
+/* Pill badges — preferred for status chips */
+.pill {
+  display:        inline-block;
+  font-family:    var(--mono);
+  font-size:      10px;
+  font-weight:    700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding:        3px 10px;
+  border-radius:  999px;
+  line-height:    1.6;
+}
+
+.badge-green, .pill-green {
+  background: rgba(46,132,74,0.09);
+  color:      var(--accent-green);
+  border:     1px solid rgba(46,132,74,0.22);
+}
+.badge-amber, .pill-amber {
+  background: rgba(221,122,1,0.09);
+  color:      var(--accent-amber);
+  border:     1px solid rgba(221,122,1,0.25);
+}
+.badge-red, .pill-red {
+  background: rgba(234,0,27,0.07);
+  color:      var(--accent-red);
+  border:     1px solid rgba(234,0,27,0.20);
+}
+.badge-purple, .pill-purple {
+  background: rgba(29,26,59,0.08);
+  color:      var(--purple-bright);
+  border:     1px solid rgba(29,26,59,0.20);
+}
+.badge-blue, .pill-blue {
+  background: rgba(1,118,211,0.08);
+  color:      var(--accent-blue);
+  border:     1px solid rgba(1,118,211,0.22);
+}
+.badge-dim, .pill-dim {
+  background: rgba(15,18,30,0.05);
+  color:      var(--text-tertiary);
+  border:     1px solid var(--border-subtle);
+}
 
 /* ─── Table system ───────────────────────────────────────────────────────── */
 
 .data-table {
-  width: 100%;
+  width:           100%;
   border-collapse: collapse;
-  font-size: 13px;
+  font-size:       13px;
 }
 
 .data-table th {
-  font-family: var(--mono);
-  font-size: 10px;
-  font-weight: 600;
+  font-family:    var(--mono);
+  font-size:      10px;
+  font-weight:    600;
   letter-spacing: 0.10em;
   text-transform: uppercase;
-  color: var(--text-tertiary);
-  padding: var(--space-1) var(--space-2);
-  text-align: left;
-  border-bottom: 1px solid var(--border-glass);
-  white-space: nowrap;
+  color:          var(--text-tertiary);
+  padding:        var(--space-1) var(--space-2);
+  text-align:     left;
+  border-bottom:  1px solid var(--border-glass);
+  white-space:    nowrap;
+  background:     rgba(0,0,0,0.015);
 }
 
 .data-table td {
-  padding: var(--space-1) var(--space-2);
-  color: var(--text-primary);
+  padding:       var(--space-1) var(--space-2);
+  color:         var(--text-primary);
   border-bottom: 1px solid var(--border-subtle);
   vertical-align: middle;
 }
 
 .data-table tr:last-child td { border-bottom: none; }
+.data-table tr:hover td      { background: rgba(29,26,59,0.02); }
 
-.data-table tr:hover td { background: rgba(74,61,117,0.025); }
+/* ─── Input fields — SLDS focus pattern ─────────────────────────────────── */
 
-/* ─── Button system ──────────────────────────────────────────────────────── */
+input, textarea, select {
+  font-family:  var(--sans);
+  font-size:    13px;
+  color:        var(--text-primary);
+  background:   #ffffff;
+  border:       1px solid var(--border-glass);
+  border-radius: 3px;
+  padding:      8px 12px;
+  outline:      none;
+  transition:   border-color 0.15s, box-shadow 0.15s;
+  width:        100%;
+  box-sizing:   border-box;
+}
+
+input:focus, textarea:focus, select:focus {
+  border-color: var(--purple-primary);
+  border-width: 2px;
+  box-shadow:   0 0 0 3px rgba(29,26,59,0.10);
+  padding:      7px 11px; /* compensate 1px→2px border */
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--text-dim);
+}
+
+/* Mono input — for hashes, cert IDs, API keys */
+input.mono-input {
+  font-family:    var(--mono);
+  font-size:      12px;
+  letter-spacing: 0.04em;
+}
+
+/* ─── Button system — single primary rule ───────────────────────────────── */
+/* Rule: ONE solid button per page. All others are ghost/neutral.           */
+
+.btn-primary {
+  background:     var(--purple-primary);
+  border:         1px solid var(--purple-primary);
+  color:          #ffffff;
+  font-family:    var(--sans);
+  font-size:      13px;
+  font-weight:    600;
+  padding:        8px 20px;
+  border-radius:  3px;
+  cursor:         pointer;
+  transition:     opacity 0.15s;
+  white-space:    nowrap;
+}
+.btn-primary:hover    { opacity: 0.88; }
+.btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
 
 .btn-ghost {
-  background: transparent;
-  border: 1px solid var(--border-glass);
-  color: var(--text-secondary);
-  font-family: var(--mono);
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  padding: var(--space-1) var(--space-2);
-  cursor: pointer;
-  transition: border-color 0.15s, color 0.15s;
+  background:   #ffffff;
+  border:       1px solid var(--border-glass);
+  color:        var(--text-secondary);
+  font-family:  var(--sans);
+  font-size:    13px;
+  font-weight:  500;
+  padding:      8px 16px;
+  border-radius: 3px;
+  cursor:       pointer;
+  transition:   border-color 0.15s, color 0.15s;
+  white-space:  nowrap;
 }
-.btn-ghost:hover { border-color: var(--purple-bright); color: var(--purple-bright); }
+.btn-ghost:hover    { border-color: var(--purple-bright); color: var(--purple-primary); }
+.btn-ghost:disabled { opacity: 0.45; cursor: not-allowed; }
 
-.btn-solid {
-  background: var(--purple-primary);
-  border: 1px solid var(--purple-primary);
-  color: #fff;
-  font-family: var(--mono);
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  padding: var(--space-1) var(--space-2);
-  cursor: pointer;
-  transition: opacity 0.15s;
+.btn-danger {
+  background:    transparent;
+  border:        1px solid rgba(234,0,27,0.35);
+  color:         var(--accent-red);
+  font-family:   var(--sans);
+  font-size:     13px;
+  font-weight:   500;
+  padding:       8px 16px;
+  border-radius: 3px;
+  cursor:        pointer;
+  transition:    background 0.15s;
 }
-.btn-solid:hover { opacity: 0.88; }
+.btn-danger:hover { background: rgba(234,0,27,0.04); }
+
+/* Icon buttons */
+.btn-icon {
+  display:        inline-flex;
+  align-items:    center;
+  justify-content: center;
+  width:          32px;
+  height:         32px;
+  background:     transparent;
+  border:         1px solid var(--border-glass);
+  border-radius:  3px;
+  cursor:         pointer;
+  color:          var(--text-tertiary);
+  transition:     border-color 0.12s, color 0.12s;
+  padding:        0;
+}
+.btn-icon:hover { border-color: var(--purple-bright); color: var(--purple-primary); }
 
 /* ─── Mono utility ───────────────────────────────────────────────────────── */
 
 .mono { font-family: var(--mono); }
+
+/* ─── Status color utilities ─────────────────────────────────────────────── */
+
+.text-green  { color: var(--accent-green); }
+.text-amber  { color: var(--accent-amber); }
+.text-red    { color: var(--accent-red);   }
+.text-purple { color: var(--purple-bright);}
+.text-dim    { color: var(--text-dim);     }
 
 /* ─── Skeleton shimmer ───────────────────────────────────────────────────── */
 
@@ -217,12 +365,13 @@ body {
 
 .skeleton {
   background: linear-gradient(90deg,
-    rgba(15,18,30,0.04) 25%,
-    rgba(15,18,30,0.08) 50%,
-    rgba(15,18,30,0.04) 75%
+    rgba(0,0,0,0.04) 25%,
+    rgba(0,0,0,0.07) 50%,
+    rgba(0,0,0,0.04) 75%
   );
   background-size: 600px 100%;
   animation: shimmer 1.4s ease infinite;
+  border-radius: 3px;
 }
 
 /* ─── Scrollbars ─────────────────────────────────────────────────────────── */
@@ -230,12 +379,12 @@ body {
 ::-webkit-scrollbar       { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--hairline-2); border-radius: 0; }
-::-webkit-scrollbar-thumb:hover { background: rgba(74,61,117,0.35); }
+::-webkit-scrollbar-thumb:hover { background: rgba(29,26,59,0.30); }
 
 /* ─── Focus ring ─────────────────────────────────────────────────────────── */
 
 :focus-visible {
-  outline: 2px solid var(--purple-bright);
+  outline:        2px solid var(--purple-primary);
   outline-offset: 2px;
 }
 
@@ -245,16 +394,51 @@ body {
 .space-y-2 > * + * { margin-top: var(--space-2); }
 .space-y-3 > * + * { margin-top: var(--space-3); }
 .space-y-4 > * + * { margin-top: var(--space-4); }
+.space-y-6 > * + * { margin-top: var(--space-6); }
 
+/* ─── Grid utilities ─────────────────────────────────────────────────────── */
+
+.grid  { display: grid; }
+.gap-4 { gap: var(--space-1); }
+.gap-3 { gap: 12px; }
+.gap-2 { gap: var(--space-2); }
+.w-full { width: 100%; }
+
+/* ─── Animations ─────────────────────────────────────────────────────────── */
+
+@keyframes spin {
+  from { transform: rotate(0deg);   }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1;   }
+  50%       { opacity: 0.4; }
+}
 
 @keyframes sa-eye-pulse {
-  0%, 100% { opacity: .75; transform: scale(.98); box-shadow: 0 0 0 rgba(196,184,232,0); }
-  50% { opacity: 1; transform: scale(1.02); box-shadow: 0 0 10px rgba(74,61,117,0.60); }
+  0%, 100% { opacity: .80; transform: scale(.98); }
+  50%       { opacity: 1;   transform: scale(1.02); box-shadow: 0 0 8px rgba(29,26,59,0.50); }
 }
+
 @media (prefers-reduced-motion: reduce) {
-  [style*="sa-eye-pulse"] { animation: none !important; opacity: .9; }
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
+
+/* ─── Verify page hero (dark context override) ───────────────────────────── */
 
 .hud-frame { border-radius: 8px; overflow: hidden; }
 
-input, textarea, select { border-radius: 6px; }
+/* Registry table optical anchor */
+.registry-table thead th,
+.data-table thead th {
+  background-color: #f3f3f3;
+  border-bottom: 2px solid #dddbda;
+  color: #666666;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 12px 16px;
+  text-transform: uppercase;
+}

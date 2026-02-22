@@ -49,7 +49,7 @@ function MyActivityPage() {
   const totalPages = Math.ceil(total / PAGE_SIZE);
 
   return (
-    <div className="space-y-6" style={{maxWidth: 'min(800px, 95vw)', margin: '0 auto'}}>
+    <div className="space-y-6" style={{}}>
       <SectionHeader label="Account" title="My Activity" />
 
       <Panel>
@@ -57,7 +57,7 @@ function MyActivityPage() {
           <span style={{fontFamily: styles.mono, fontSize: '11px', color: styles.textTertiary, letterSpacing: '1px', textTransform: 'uppercase'}}>Activity Log</span>
           <div style={{display: 'flex', gap: '6px', alignItems: 'center'}}>
             {['7', '30', '90', 'all'].map(r => (
-              <button key={r} onClick={() => { setDateRange(r); setPage(0); }} style={{padding: '4px 10px', background: dateRange === r ? 'rgba(74,61,117,0.08)' : 'transparent', border: `1px solid ${dateRange === r ? 'rgba(74,61,117,0.30)' : styles.borderGlass}`, color: dateRange === r ? styles.purpleBright : styles.textTertiary, fontFamily: styles.mono, fontSize: '10px', cursor: 'pointer', letterSpacing: '0.5px', transition: 'all 0.15s ease'}}>
+              <button key={r} onClick={() => { setDateRange(r); setPage(0); }} style={{padding: '4px 10px', background: dateRange === r ? 'rgba(29,26,59,0.08)' : 'transparent', border: `1px solid ${dateRange === r ? 'rgba(29,26,59,0.30)' : styles.borderGlass}`, color: dateRange === r ? styles.purpleBright : styles.textTertiary, fontFamily: styles.mono, fontSize: '10px', cursor: 'pointer', letterSpacing: '0.5px', transition: 'all 0.15s ease'}}>
                 {r === 'all' ? 'All' : r + 'd'}
               </button>
             ))}

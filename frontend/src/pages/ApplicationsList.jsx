@@ -55,21 +55,21 @@ export function BulkImportModal({ isOpen, onClose, onImport, boundaryType }) {
   if (!isOpen) return null;
   return (
     <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }} onClick={onClose}>
-      <div style={{ background: styles.bgDeep, border: '1px solid rgba(74,61,117,0.2)', padding: '32px', maxWidth: 'min(700px, 95vw)', width: '100%', maxHeight: '80vh', overflowY: 'auto' }} onClick={e => e.stopPropagation()}>
+      <div style={{ background: styles.bgDeep, border: '1px solid rgba(29,26,59,0.2)', padding: '32px', maxWidth: 'min(700px, 95vw)', width: '100%', maxHeight: '80vh', overflowY: 'auto' }} onClick={e => e.stopPropagation()}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
           <h3 style={{ fontFamily: styles.serif, fontSize: '20px', fontWeight: 200, margin: 0 }}>Bulk Import — {boundaryType}</h3>
           <button onClick={onClose} style={{ background: 'none', border: 'none', color: styles.textTertiary, fontSize: '20px', cursor: 'pointer' }}>×</button>
         </div>
         <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
           {['json', 'csv'].map(f => (
-            <button key={f} onClick={() => { setFormat(f); setError(''); setPreview(null); }} style={{ padding: '6px 16px', border: `1px solid ${format === f ? styles.purpleBright : styles.borderGlass}`, background: format === f ? 'rgba(74,61,117,0.08)' : 'transparent', color: format === f ? styles.purpleBright : styles.textTertiary, fontFamily: styles.mono, fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer' }}>{f}</button>
+            <button key={f} onClick={() => { setFormat(f); setError(''); setPreview(null); }} style={{ padding: '6px 16px', border: `1px solid ${format === f ? styles.purpleBright : styles.borderGlass}`, background: format === f ? 'rgba(29,26,59,0.08)' : 'transparent', color: format === f ? styles.purpleBright : styles.textTertiary, fontFamily: styles.mono, fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer' }}>{f}</button>
           ))}
           <button onClick={() => setRaw(templates[boundaryType]?.[format] || '')} style={{ marginLeft: 'auto', padding: '6px 12px', border: `1px solid ${styles.borderGlass}`, background: 'transparent', color: styles.textTertiary, fontSize: '11px', cursor: 'pointer' }}>Load Example</button>
         </div>
         <textarea value={raw} onChange={e => setRaw(e.target.value)} rows={10} placeholder={format === 'json' ? 'Paste JSON array...' : 'Paste CSV with header row...'} style={{ width: '100%', background: styles.cardSurface, border: `1px solid ${styles.borderGlass}`, padding: '12px', color: styles.textPrimary, fontFamily: styles.mono, fontSize: '12px', lineHeight: '1.5', resize: 'vertical', outline: 'none' }} />
         {error && <p style={{ color: styles.accentRed, fontSize: '12px', marginTop: '8px' }}>⚠ {error}</p>}
         <div style={{ display: 'flex', gap: '8px', marginTop: '16px' }}>
-          <button onClick={parseData} style={{ padding: '8px 20px', border: `1px solid ${styles.purpleBright}`, background: 'transparent', color: styles.purpleBright, fontSize: '12px', cursor: 'pointer' }}>Preview</button>
+          <button onClick={parseData} style={{ padding: '8px 20px', border: 'none', borderBottom: `1px solid ${styles.purpleBright}`, background: 'transparent', color: styles.purpleBright, fontSize: '12px', cursor: 'pointer' }}>Preview</button>
           {preview && <button onClick={() => { onImport(preview); onClose(); setRaw(''); setPreview(null); }} style={{ padding: '8px 20px', border: 'none', background: 'transparent', color: styles.textPrimary, fontSize: '12px', cursor: 'pointer', fontWeight: 500 }}>Import {preview.length} {preview.length === 1 ? 'boundary' : 'boundaries'}</button>}
         </div>
         {preview && (
@@ -143,12 +143,12 @@ function ApplicationsList() {
   const [selected, setSelected] = useState(new Set());
   const [bulkLoading, setBulkLoading] = useState(false);
 
-  // Debounce search input
+  // Debounce search input (fixed)
   const searchTimer = React.useRef(null);
   const handleSearch = (val) => {
     setSearchQuery(val);
     clearTimeout(searchTimer.current);
-    searchTimer.current = React.useRef(setTimeout(() => setDebouncedSearch(val), 300)).current;
+    searchTimer.current = setTimeout(() => setDebouncedSearch(val), 150);
   };
 
   // React Query — refetches when filter or debounced search changes
@@ -221,14 +221,35 @@ function ApplicationsList() {
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
         <div>
-          <p style={{ fontFamily: styles.mono, fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', color: styles.purpleBright, marginBottom: '8px' }}>
+          <p style={{ fontFamily: styles.mono, fontSize: '10px', fontWeight: 600, letterSpacing: '0.20em', textTransform: 'uppercase', color: styles.purpleBright, margin: '0 0 8px 0' }}>
             {isAdmin ? 'Conformance' : 'My Organization'}
           </p>
-          <h1 style={{ fontFamily: styles.serif, fontSize: 'clamp(24px, 5vw, 36px)', fontWeight: 200, margin: 0 }}>
+          <h1 style={{ fontFamily: styles.serif, fontSize: 'clamp(24px, 5vw, 36px)', fontWeight: 200, margin: 0, color: styles.textPrimary }}>
             {isAdmin ? 'Applications' : 'Certification Status'}
           </h1>
         </div>
-        <Link to="/applications/new" className="inline-flex items-center gap-2 px-4 py-2 no-underline" style={{ background: "transparent", border: "none", borderBottom: "1px solid " + styles.purpleBright, color: styles.purpleBright, fontFamily: styles.mono, fontSize: "11px", letterSpacing: "1px", textTransform: "uppercase", cursor: "pointer", alignSelf: "center" }}><Plus className="w-4 h-4" /> New Application</Link>
+        <Link
+          to="/applications/new"
+          className="no-underline"
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '8px',
+            padding: '10px 20px',
+            background: styles.purplePrimary,
+            borderLeft: '3px solid ' + styles.purpleBright,
+            color: '#fff',
+            fontFamily: styles.mono,
+            fontSize: '10px',
+            fontWeight: 700,
+            letterSpacing: '0.15em',
+            textTransform: 'uppercase',
+            textDecoration: 'none',
+            cursor: 'pointer',
+          }}
+        >
+          <Plus size={12} />&nbsp;New Application
+        </Link>
         {isFetching && !isLoading && (
           <span style={{ fontFamily: styles.mono, fontSize: '10px', color: styles.textDim, alignSelf: 'center' }}>Updating…</span>
         )}
@@ -265,7 +286,7 @@ function ApplicationsList() {
                 padding: '6px 14px', cursor: 'pointer',
                 fontFamily: styles.mono, fontSize: '10px', fontWeight: 600,
                 letterSpacing: '0.08em', textTransform: 'uppercase',
-                background: active ? 'rgba(74,61,117,0.10)' : 'transparent',
+                background: active ? 'rgba(29,26,59,0.10)' : 'transparent',
                 border: `1px solid ${active ? styles.purpleBright : styles.borderGlass}`,
                 color: active ? styles.purpleBright : styles.textTertiary,
               }}>
@@ -298,7 +319,7 @@ function ApplicationsList() {
               {isLoading ? (
                 <tr><td colSpan={isAdmin ? 6 : 3} style={{ padding: '40px', textAlign: 'center', fontFamily: styles.mono, fontSize: '11px', color: styles.textDim }}>LOADING...</td></tr>
               ) : applications.map(app => (
-                <tr key={app.id} onMouseEnter={() => prefetchApp(app.id)} style={{ borderBottom: `1px solid ${styles.borderSubtle}`, background: selected.has(app.id) ? 'rgba(74,61,117,0.04)' : 'transparent' }}>
+                <tr key={app.id} onMouseEnter={() => prefetchApp(app.id)} style={{ borderBottom: `1px solid ${styles.borderSubtle}`, background: selected.has(app.id) ? 'rgba(29,26,59,0.04)' : 'transparent' }}>
                   {isAdmin && (
                     <td style={{ padding: '12px 8px', textAlign: 'center' }}>
                       <input type="checkbox" checked={selected.has(app.id)} onChange={() => toggleSelect(app.id)} style={{ cursor: 'pointer', accentColor: styles.purpleBright }} />
@@ -340,7 +361,7 @@ function ApplicationsList() {
 
         {/* Bulk action bar */}
         {selected.size > 0 && isAdmin && (
-          <div style={{ position: 'sticky', bottom: '16px', zIndex: 50, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px', padding: '12px 20px', margin: '16px 0 0', background: 'rgba(0,0,0,0.92)', backdropFilter: 'blur(12px)', border: `1px solid ${styles.purpleBright}` }}>
+          <div style={{ position: 'sticky', bottom: '16px', zIndex: 50, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px', padding: '12px 20px', margin: '16px 0 0', background: 'rgba(0,0,0,0.92)', backdropFilter: 'blur(12px)', border: 'none', borderBottom: `1px solid ${styles.purpleBright}` }}>
             <span style={{ fontFamily: styles.mono, fontSize: '12px', color: styles.purpleBright }}>{selected.size} selected</span>
             <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
               <button onClick={() => handleBulkAction('approve', 'approved')}   disabled={bulkLoading} style={ACTION_BTN(styles.accentGreen)}>Approve</button>
