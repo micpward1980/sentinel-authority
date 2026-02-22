@@ -58,36 +58,48 @@ def generate_certificate_pdf(data: dict) -> bytes:
     c.setFillColor(white)
     c.rect(0, 0, w, h, fill=True, stroke=False)
 
-    # Left accent bar
+    # Top header band (navy)
     c.setFillColor(PURPLE)
-    c.rect(0, 0, 0.18*inch, h, fill=True, stroke=False)
+    c.rect(0, h - 1.2*inch, w, 1.2*inch, fill=True, stroke=False)
 
-    # Top header band
+    # SA Seal in header
+    seal_cx = 0.65*inch
+    seal_cy = h - 0.58*inch
+    seal_r  = 0.28*inch
+    c.setFillColor(white)
+    c.setStrokeColor(white)
+    c.setLineWidth(seal_r * 0.10)
+    c.circle(seal_cx, seal_cy, seal_r, fill=1, stroke=1)
+    c.setStrokeColor(HexColor("#1d1a3b"))
+    c.setLineWidth(0.4)
+    c.circle(seal_cx, seal_cy, seal_r * 0.82, fill=0, stroke=1)
     c.setFillColor(PURPLE)
-    c.rect(0, h - 1.4*inch, w, 1.4*inch, fill=True, stroke=False)
+    c.setFont("Helvetica-Bold", seal_r * 26)
+    c.drawCentredString(seal_cx, seal_cy - seal_r * 0.24, "SA")
 
     # Header text
     c.setFillColor(white)
-    c.setFont("Helvetica-Bold", 15)
-    c.drawString(0.55*inch, h - 0.62*inch, "SENTINEL AUTHORITY")
+    c.setFont("Helvetica-Bold", 13)
+    c.drawString(seal_cx + seal_r + 0.14*inch, h - 0.52*inch, "SENTINEL AUTHORITY")
     c.setFillColor(HexColor("#8899aa"))
-    c.setFont("Helvetica", 8)
-    c.drawString(0.55*inch, h - 0.82*inch, "Independent Certification Body for Autonomous Systems")
+    c.setFont("Helvetica", 7.5)
+    c.drawString(seal_cx + seal_r + 0.14*inch, h - 0.70*inch, "Independent Certification Body for Autonomous Systems")
 
+    # Cert number top right
     c.setFillColor(HexColor("#8899aa"))
     c.setFont("Helvetica", 7)
-    c.drawRightString(w - 0.4*inch, h - 0.62*inch, "CERTIFICATE NO.")
+    c.drawRightString(w - 0.4*inch, h - 0.48*inch, "CERTIFICATE NO.")
     c.setFillColor(white)
-    c.setFont("Helvetica-Bold", 11)
-    c.drawRightString(w - 0.4*inch, h - 0.80*inch, cert_num)
+    c.setFont("Helvetica-Bold", 10)
+    c.drawRightString(w - 0.4*inch, h - 0.65*inch, cert_num)
 
     # ODDC badge
-    bx, by = w - 1.3*inch, h - 1.30*inch
-    c.setFillColor(HexColor("#1d1a3b"))
-    c.roundRect(bx, by, 0.9*inch, 0.28*inch, 4, fill=True, stroke=False)
+    bx, by = w - 1.3*inch, h - 1.10*inch
+    c.setFillColor(HexColor("#2e4057"))
+    c.roundRect(bx, by, 0.9*inch, 0.22*inch, 3, fill=True, stroke=False)
     c.setFillColor(white)
-    c.setFont("Helvetica-Bold", 8)
-    c.drawCentredString(bx + 0.45*inch, by + 0.08*inch, "ODDC CERTIFIED")
+    c.setFont("Helvetica-Bold", 7)
+    c.drawCentredString(bx + 0.45*inch, by + 0.06*inch, "ODDC CERTIFIED")
 
     # Title
     y = h - 2.0*inch

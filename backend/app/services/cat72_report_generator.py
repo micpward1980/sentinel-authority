@@ -59,7 +59,7 @@ class EnveloMark(Flowable):
 
 
 class HeaderBar(Flowable):
-    """Full-width branded header with ENVELO mark + ODDC + SENTINEL AUTHORITY"""
+    """Full-width branded header with SA seal"""
     def __init__(self, width, height=54):
         Flowable.__init__(self)
         self.width = width
@@ -67,31 +67,33 @@ class HeaderBar(Flowable):
 
     def draw(self):
         self.canv.saveState()
-        # Purple bar
+        # Navy bar
         self.canv.setFillColor(PURPLE_DEEP)
-        self.canv.roundRect(0, 0, self.width, self.height, 4, fill=1, stroke=0)
+        self.canv.rect(0, 0, self.width, self.height, fill=1, stroke=0)
 
-        # ENVELO mark (small version in header)
-        mark_s = 30
-        mark_x = 12
-        mark_y = (self.height - mark_s) / 2
-        # Purple rounded square for mark
-        self.canv.setFillColor(colors.Color(120/255, 100/255, 170/255))
-        self.canv.setStrokeColor(PURPLE_LIGHT)
-        self.canv.setLineWidth(0.8)
-        self.canv.roundRect(mark_x, mark_y, mark_s, mark_s, mark_s * 0.22, fill=1, stroke=1)
-        # White dot
+        # SA seal
+        r = self.height * 0.36
+        cx = 12 + r
+        cy = self.height / 2
         self.canv.setFillColor(colors.white)
-        self.canv.circle(mark_x + mark_s/2, mark_y + mark_s/2, mark_s * 0.14, fill=1, stroke=0)
+        self.canv.setStrokeColor(colors.white)
+        self.canv.setLineWidth(r * 0.10)
+        self.canv.circle(cx, cy, r, fill=1, stroke=1)
+        self.canv.setStrokeColor(colors.Color(29/255, 26/255, 59/255, 0.25))
+        self.canv.setLineWidth(r * 0.025)
+        self.canv.circle(cx, cy, r * 0.82, fill=0, stroke=1)
+        self.canv.setFillColor(PURPLE_DEEP)
+        self.canv.setFont("Helvetica-Bold", r * 0.78)
+        self.canv.drawCentredString(cx, cy - r * 0.24, "SA")
 
-        # ODDC + SENTINEL AUTHORITY text
-        text_x = mark_x + mark_s + 10
+        # Text
+        text_x = cx + r + 10
         self.canv.setFillColor(colors.white)
-        self.canv.setFont("Helvetica-Bold", 13)
-        self.canv.drawString(text_x, self.height - 22, "ODDC")
+        self.canv.setFont("Helvetica-Bold", 11)
+        self.canv.drawString(text_x, self.height - 22, "SENTINEL AUTHORITY")
         self.canv.setFont("Helvetica", 7)
-        self.canv.setFillColor(PURPLE_LIGHT)
-        self.canv.drawString(text_x, self.height - 34, "SENTINEL AUTHORITY")
+        self.canv.setFillColor(colors.Color(180/255, 195/255, 210/255))
+        self.canv.drawString(text_x, self.height - 34, "Independent Certification Body for Autonomous Systems")
 
         # Right text
         self.canv.setFillColor(colors.white)
