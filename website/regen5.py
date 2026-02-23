@@ -94,19 +94,17 @@ class CalloutBox(Flowable):
         p.drawOn(c, 0.25*inch, (self.height - ph)/2)
         c.restoreState()
 
+WORDMARK_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+    '../backend/app/services/sa-wordmark.png')
+
 def page_cb(doc_title, label):
     def cb(c, doc):
         c.saveState()
-        r = 0.155*inch
-        cx, cy = 0.5*inch, H - 0.54*inch
-        c.setFillColor(white); c.setStrokeColor(NAVY); c.setLineWidth(r*0.12)
-        c.circle(cx, cy, r, fill=1, stroke=1)
-        c.setStrokeColor(NAVY); c.setLineWidth(0.28)
-        c.circle(cx, cy, r*0.82, fill=0, stroke=1)
-        c.setFillColor(NAVY); c.setFont('Helvetica-Bold', r*25)
-        c.drawCentredString(cx, cy - r*0.25, 'SA')
-        c.setFillColor(NAVY); c.setFont('Helvetica-Bold', 8.5)
-        c.drawString(0.74*inch, H - 0.50*inch, 'SENTINEL AUTHORITY')
+        from reportlab.lib.utils import ImageReader
+        wm_w = 1.8*inch
+        wm_h = wm_w * (240/920)
+        c.drawImage(ImageReader(WORDMARK_PATH), 0.5*inch, H - 0.62*inch,
+                    width=wm_w, height=wm_h, mask='auto')
         c.setFillColor(T3); c.setFont('Helvetica', 8)
         c.drawRightString(W - 0.5*inch, H - 0.50*inch, doc_title)
         c.setStrokeColor(NAVY); c.setLineWidth(0.5)
@@ -127,7 +125,20 @@ def build_pdf(story, path, title, label):
         topMargin=0.95*inch, bottomMargin=0.72*inch,
         title=title, author='Sentinel Authority')
     cb = page_cb(title, label)
-    doc.build(story, onFirstPage=cb, onLaterPages=cb)
+    def cb_later(c, doc, _dt=title, _lb=label):
+        c.saveState()
+        c.setFillColor(T3); c.setFont('Helvetica', 8)
+        c.drawRightString(W - 0.5*inch, H - 0.50*inch, _dt)
+        c.setStrokeColor(NAVY); c.setLineWidth(0.5)
+        c.line(0.5*inch, H - 0.70*inch, W - 0.5*inch, H - 0.70*inch)
+        c.setStrokeColor(BORD); c.setLineWidth(0.4)
+        c.line(0.5*inch, 0.5*inch, W - 0.5*inch, 0.5*inch)
+        c.setFillColor(T3); c.setFont('Helvetica', 6.5)
+        c.drawString(0.5*inch, 0.34*inch, 'SENTINEL AUTHORITY  ·  ODD Conformance Determination')
+        c.drawCentredString(W/2, 0.34*inch, _lb)
+        c.drawRightString(W - 0.5*inch, 0.34*inch, f'Page {doc.page}')
+        c.restoreState()
+    doc.build(story, onFirstPage=cb, onLaterPages=cb_later)
     buf.seek(0)
     with open(path, 'wb') as f: f.write(buf.read())
 
@@ -158,9 +169,9 @@ def make_table(rows):
     elif ncols == 2:
         col_widths = [BW*0.28, BW*0.72]
     elif ncols == 3:
-        col_widths = [BW*0.25, BW*0.37, BW*0.38]
+        col_widths = [BW*0.32, BW*0.33, BW*0.35]
     elif ncols == 4:
-        col_widths = [BW*0.08, BW*0.22, BW*0.28, BW*0.42]
+        col_widths = [BW*0.18, BW*0.20, BW*0.25, BW*0.37]
     elif ncols == 5:
         col_widths = [BW*0.20, BW*0.16, BW*0.16, BW*0.16, BW*0.32]
     else:
