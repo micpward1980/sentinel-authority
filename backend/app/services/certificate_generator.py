@@ -13,6 +13,18 @@ from reportlab.lib.units import inch
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image
 from reportlab.lib.enums import TA_CENTER, TA_LEFT
 
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+import os
+
+_font_path = os.path.join(os.path.dirname(__file__), 'LeagueSpartan-Bold.ttf')
+if os.path.exists(_font_path):
+    pdfmetrics.registerFont(TTFont('LeagueSpartan', _font_path))
+    _LS = 'LeagueSpartan'
+else:
+    _LS = 'Helvetica-Bold'
+
+NAVY = colors.Color(15/255, 16/255, 33/255)
 PURPLE = colors.Color(91/255, 75/255, 138/255)
 PURPLE_LIGHT = colors.Color(157/255, 140/255, 207/255)
 
@@ -41,8 +53,9 @@ def generate_certificate_pdf(
         'Title',
         parent=styles['Heading1'],
         fontSize=28,
-        textColor=PURPLE,
+        textColor=NAVY,
         alignment=TA_CENTER,
+        fontName=_LS,
         spaceAfter=6
     )
     
@@ -61,7 +74,7 @@ def generate_certificate_pdf(
         fontSize=14,
         textColor=PURPLE,
         alignment=TA_CENTER,
-        fontName='Helvetica-Bold',
+        fontName=_LS,
         spaceAfter=20
     )
     
@@ -86,7 +99,7 @@ def generate_certificate_pdf(
         parent=styles['Normal'],
         fontSize=11,
         alignment=TA_LEFT,
-        fontName='Helvetica-Bold'
+        fontName=_LS
     )
     
     story = []
@@ -94,6 +107,7 @@ def generate_certificate_pdf(
     # Header
     story.append(Spacer(1, 0.3*inch))
     story.append(Paragraph("SENTINEL AUTHORITY", title_style))
+    story.append(Paragraph("ODDC CONFORMANCE CERTIFICATE", ParagraphStyle('SubLabel', fontSize=9, textColor=colors.Color(0.5,0.5,0.5), alignment=TA_CENTER, fontName=_LS, letterSpacing=3, spaceAfter=16)))
     story.append(Paragraph("Operational Design Domain Conformance Certificate", subtitle_style))
     
     # Certificate number
@@ -122,7 +136,7 @@ def generate_certificate_pdf(
     detail_table = Table(details, colWidths=[2*inch, 4*inch])
     detail_table.setStyle(TableStyle([
         ('FONTNAME', (0, 0), (0, -1), 'Helvetica'),
-        ('FONTNAME', (1, 0), (1, -1), 'Helvetica-Bold'),
+        (('FONTNAME', (1, 0), (1, -1), _LS)),
         ('FONTSIZE', (0, 0), (-1, -1), 10),
         ('TEXTCOLOR', (0, 0), (0, -1), colors.gray),
         ('ALIGN', (0, 0), (0, -1), 'RIGHT'),
