@@ -1924,7 +1924,7 @@
     @keyframes md-drift{0%,100%{transform:translate(0,0)}33%{transform:translate(2px,-1.5px)}66%{transform:translate(-1.5px,1px)}}
     @keyframes md-flow{0%{background-position:-200% 0}100%{background-position:200% 0}}
 
-    .m-diagram .d-label{display:flex;align-items:center;gap:8px;margin-bottom:16px;}
+    .m-diagram .d-label{display:flex;align-items:center;gap:10px;margin-bottom:20px;}
     .m-diagram .d-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
     .m-diagram .d-dot-g{background:rgba(var(--g),.9);box-shadow:0 0 10px rgba(var(--g),.35);}
     .m-diagram .d-dot-p{background:rgba(var(--p),.9);box-shadow:0 0 10px rgba(var(--p),.35);}
@@ -2519,66 +2519,57 @@ footer{border-top:1px solid var(--hairline)!important;}
 
     <!-- HERO -->
     <section class="hero">
-      <div style="max-width:1100px;padding:24px 40px 40px;display:flex;align-items:center;gap:60px;">
+      <div style="max-width:1100px;padding:24px 40px 80px;display:flex;align-items:center;gap:60px;">
 
-        <div style="flex:1;min-width:0;max-width:560px;padding-top:48px;">
+        <div style="flex:1;min-width:0;max-width:560px;padding-top:32px;">
         
 
-        <h1 style="font-family:var(--serif);font-size:clamp(38px,5.5vw,60px);font-weight:300;line-height:1.05;margin:0 0 24px;letter-spacing:-0.03em;color:#1d1a3b;">
-          Operational Boundary Conformance<br>for Autonomous Systems
+        <h1 style="font-family:var(--serif);font-size:clamp(38px,5.5vw,60px);font-weight:300;line-height:1.05;margin:0 0 32px;letter-spacing:-0.03em;color:#1d1a3b;">
+          Autonomous Systems Certification
         </h1>
-        <div style="width:72px;height:1px;background:rgba(15,18,30,0.22);margin:0 0 24px;"></div>
+        <div style="width:72px;height:1px;background:rgba(15,18,30,0.22);margin:0 0 32px;"></div>
         
         <p style="font-size:17px;color:rgba(15,18,30,0.75);max-width:480px;margin:0 0 14px;line-height:1.75;">
-          Independent attestation of runtime operational boundary conformance. Enforcement is non-bypassable, verification is independent, and records are maintained in a tamper-evident, immutable registry.
+          Independent verification that autonomous systems operate within their declared boundaries. Enforcement is non-bypassable, verification is independent, and conformance is recorded in a tamper-evident, immutable registry.
         </p>
         
         </div>
 
         <!-- Product: Certificate/Dashboard render -->
-        <div class="cert-scene" style="flex:1;min-width:320px;max-width:480px;position:relative;">
-          <div style="position:relative;background:rgba(15,18,30,0.02);border:1px solid rgba(15,18,30,0.12);border-radius:4px;padding:36px 40px;font-family:var(--mono);overflow:hidden;" class="cert-card-main">
+        <div class="cert-scene" style="flex:1;min-width:320px;max-width:440px;margin-left:auto;margin-right:-72px;padding-top:72px;position:relative;">
+          <div style="position:relative;background:rgba(15,18,30,0.02);border:1px solid rgba(15,18,30,0.12);border-radius:4px;padding:36px 36px;font-family:var(--mono);overflow:hidden;" class="cert-card-main">
             
             <!-- Certificate header -->
-            <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;">
-              <svg width="38" height="38" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="60" cy="60" r="50" stroke="#1d1a3b" stroke-width="3.4"/><circle cx="60" cy="60" r="43" stroke="#1d1a3b" stroke-width="1.1" stroke-opacity="0.20"/><text x="60" y="74" text-anchor="middle" font-family="League Spartan,Arial,sans-serif" font-weight="900" font-size="42" letter-spacing="-1.1" fill="#1d1a3b">SA</text></svg>
-              <span style="font-size:14px;letter-spacing:3px;text-transform:uppercase;color:rgba(15,18,30,0.55);">ODDC Certificate</span>
-              <span style="margin-left:auto;font-size:14px;color:rgba(22,135,62,0.9);letter-spacing:1px;display:flex;align-items:center;gap:4px;"><span class="cert-active-dot"></span> ACTIVE</span>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:18px;">
+              <svg width="28" height="28" viewBox="0 0 120 120" fill="none"><circle cx="60" cy="60" r="50" stroke="#0f1021" stroke-width="3.4"/><circle cx="60" cy="60" r="43" stroke="#0f1021" stroke-width="1.1" stroke-opacity="0.20"/><text x="60" y="74" text-anchor="middle" font-family="League Spartan,Arial,sans-serif" font-weight="900" font-size="42" letter-spacing="-1.1" fill="#0f1021">SA</text></svg>
+              <span style="font-size:8px;letter-spacing:2.5px;text-transform:uppercase;color:rgba(15,18,30,0.45);">ODDC CONFORMANCE CERTIFICATE</span>
+              <span style="margin-left:auto;border:1.5px solid #2ea85a;border-radius:3px;padding:3px 8px;text-align:center;line-height:1.3;"><span style="font-size:10px;font-weight:700;color:#1d8a47;letter-spacing:0.5px;">CONFORMANT</span><br><span style="font-size:7px;color:#1d8a47;">ODDC v1.0</span></span>
             </div>
 
-            <!-- Certificate ID -->
-            <div style="font-size:18px;letter-spacing:-0.02em;color:#1d1a3b;font-weight:500;margin-bottom:4px;font-family:var(--serif);">ODDC-2025-00847</div>
-            <div style="font-size:14px;color:rgba(15,18,30,0.55);letter-spacing:1px;margin-bottom:20px;">ISSUED 2025-02-13T08:42:17Z</div>
-
-            <!-- Divider -->
-            <div style="height:1px;background:rgba(15,18,30,0.06);margin-bottom:16px;"></div>
-
-            <!-- Fields -->
-            <div style="display:grid;grid-template-columns:90px 1fr;gap:8px 12px;font-size:14px;">
-              <span style="color:rgba(15,18,30,0.55);letter-spacing:1px;">SYSTEM</span>
-              <span style="color:rgba(15,18,30,0.8);">Autonomous Navigation v3.2</span>
-              <span style="color:rgba(15,18,30,0.55);letter-spacing:1px;">OPERATOR</span>
-              <span style="color:rgba(15,18,30,0.8);">Meridian Robotics Inc.</span>
-              <span style="color:rgba(15,18,30,0.55);letter-spacing:1px;">ODD</span>
-              <span style="color:rgba(15,18,30,0.8);">Highway, <35mph, Clear Weather</span>
-              <span style="color:rgba(15,18,30,0.55);letter-spacing:1px;">ENVELO</span>
-              <span style="color:rgba(15,18,30,0.8);">Interlock v4.2.1</span>
-              <span style="color:rgba(15,18,30,0.55);letter-spacing:1px;">CAT-72</span>
-              <span style="color:rgba(22,135,62,0.9);">PASSED · 0 violations</span>
-              <span style="color:rgba(15,18,30,0.55);letter-spacing:1px;">HASH</span>
-              <span style="color:rgba(15,18,30,0.55);font-size:14px;">8f3a2b...e9d1c4</span>
+            <div style="text-align:center;font-family:var(--serif);font-size:20px;font-weight:700;color:#0f1021;margin-bottom:8px;">Certificate of Conformance</div>
+            <div style="text-align:center;background:rgba(15,18,30,0.03);border-radius:3px;padding:12px;margin-bottom:18px;">
+              <span style="font-size:7px;letter-spacing:1.5px;color:rgba(15,18,30,0.4);">CERT </span><span style="font-size:15px;font-weight:600;color:#0f1021;">ODDC-2025-00847</span>
             </div>
 
-            <!-- Divider -->
-            <div style="height:1px;background:rgba(15,18,30,0.06);margin:16px 0;"></div>
+            <div style="border-left:2px solid #0f1021;padding-left:10px;margin-bottom:16px;">
+              <div style="font-size:15px;font-weight:600;color:#0f1021;">Meridian Autonomous Systems, Inc.</div>
+              <div style="font-size:13px;color:#2a2560;">MAS-Route Optimizer v2.3.1</div>
+            </div>
 
-            <!-- Footer -->
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:20px;">
+              <div style="background:rgba(15,18,30,0.03);border-radius:3px;padding:6px;"><div style="font-size:6px;letter-spacing:1px;color:rgba(15,18,30,0.4);">ISSUED</div><div style="font-size:13px;font-weight:600;color:#0f1021;">14 Jan 2025</div></div>
+              <div style="background:rgba(15,18,30,0.03);border-radius:3px;padding:6px;"><div style="font-size:6px;letter-spacing:1px;color:rgba(15,18,30,0.4);">EXPIRES</div><div style="font-size:13px;font-weight:600;color:#0f1021;">14 Jan 2026</div></div>
+              <div style="background:rgba(15,18,30,0.03);border-radius:3px;padding:6px;"><div style="font-size:6px;letter-spacing:1px;color:rgba(15,18,30,0.4);">CAT-72</div><div style="font-size:13px;font-weight:600;color:#1d8a47;">PASS</div></div>
+            </div>
+
+            <div style="background:rgba(15,18,30,0.03);border-radius:3px;padding:8px;font-size:11px;font-style:italic;color:rgba(15,18,30,0.6);line-height:1.4;margin-bottom:10px;">Urban surface roads, ≤45 mph, daylight, low-precipitation. Geofenced to metro area.</div>
+
+            <div style="height:1px;background:rgba(15,18,30,0.06);margin-bottom:14px;"></div>
             <div style="display:flex;justify-content:space-between;align-items:center;">
-              <span style="font-size:14px;letter-spacing:2px;color:rgba(15,18,30,0.55);">SENTINEL AUTHORITY · IMMUTABLE REGISTRY</span>
-              <div style="display:flex;gap:6px;">
-                <div style="width:5px;height:5px;border-radius:50%;background:rgba(22,135,62,0.70);"></div>
-                <div style="width:5px;height:5px;border-radius:50%;background:rgba(22,135,62,0.40);"></div>
-                <div style="width:5px;height:5px;border-radius:50%;background:rgba(22,135,62,0.20);"></div>
+              <span style="font-size:9px;letter-spacing:1.5px;color:rgba(15,18,30,0.4);">SENTINEL AUTHORITY</span>
+              <span style="font-size:9px;color:rgba(15,18,30,0.4);">8f3a2b...e9d1c4</span>
+            </div>
+                <div style="font-size:8px;color:#1d8a47;">ODDC v1.0</div>
               </div>
             </div>
 
@@ -3154,7 +3145,7 @@ footer{border-top:1px solid var(--hairline)!important;}
           <span class="section-label">RUNTIME ENFORCEMENT</span>
           <h2 class="section-title">ENVELO Interlock</h2>
           <p class="section-lead">
-            Enforced Non-Violable Execution-Limit Override — a non-bypassable runtime enforcement layer providing three-tier response from self-correction to hard halt.
+            Enforced Non-Violable Execution-Limit Override — a non-bypassable runtime enforcement layer providing three-tier response from self-correction to hard halt. ENVELO is an architecture requirement — operators implement it, Sentinel Authority independently verifies it.
           </p>
 
         </div>
@@ -4465,7 +4456,7 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
         <div style="text-align: center; margin-bottom: var(--space-2);">
           <div style="font-family: var(--mono); font-size:14px; letter-spacing: 4px; color: #1d1a3b;">FEE SCHEDULE</div>
         </div>
-        <div class="hud-frame hud-scanline" style="max-width:500px;margin:0 auto;"><i></i>
+        <div class="hud-frame hud-scanline" style="max-width:440px;margin:0 auto;"><i></i>
           <div class="fee-grid" style="display:grid;grid-template-columns:1fr 120px;align-items:center;" class="hud-row">
             <div><div class="hud-title">Conformance Assessment</div><div class="hud-desc">Due at application — covers ODD review, CAT-72, certificate issuance</div></div>
             <span style="font-family:Consolas,monospace;font-size:14px;font-weight:400;color:#111318;text-align:right;">$15,000</span>
@@ -4479,7 +4470,7 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
             <span style="text-align:right;"><a href="#contact" class="hud-link">CONTACT →</a></span>
           </div>
         </div>
-        <div style="max-width:500px;margin:12px auto 0;padding:12px 16px;border:1px solid rgba(0,0,0,0.09);border-radius:8px;background:rgba(0,0,0,0.03);">
+        <div style="max-width:440px;margin:12px auto 0;padding:12px 16px;border:1px solid rgba(0,0,0,0.09);border-radius:8px;background:rgba(0,0,0,0.03);">
           <p style="font-size:14px;color:#111318;line-height:1.6;margin:0;font-family:var(--mono);">
             Conformance Assessment — USD 15,000<br>Annual Maintenance — USD 12,000
           </p>
@@ -4744,7 +4735,7 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
             <span class="hud-dot hud-dot-green"></span>
           </div>
           <div style="font-family:var(--serif);font-size:22px;color:#111318;font-weight:200;margin-bottom:8px;">ENVELO Interlock</div>
-          <div class="hud-desc" style="margin-bottom:16px;max-width:500px;">Non-bypassable execution-layer enforcement of operator-declared operational boundaries. Normative specification and deployment requirements are published in the Standards Library.</div>
+          <div class="hud-desc" style="margin-bottom:16px;max-width:440px;">Non-bypassable execution-layer enforcement of operator-declared operational boundaries. Normative specification and deployment requirements are published in the Standards Library.</div>
           <div class="hud-row" style="display:flex;justify-content:space-between;align-items:center;">
         <a href="mailto:regulatory@sentinelauthority.org?subject=ODDC%20Regulatory%20Integration" class="hud-link" style="font-size:14px;">Regulatory Integration Documentation &#x2192;</a>
             <span class="hud-label">REQUIRED FOR ODDC</span>
@@ -4914,7 +4905,7 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
             <div class="foot-col-title">FRAMEWORK</div>
             <a href="#envelo">Enforcement Interlock</a>
             <a href="security.html">Security Architecture</a>
-            <a href="#criteria">Criteria</a>
+            <a href="#buyers">Criteria</a>
             <a href="#cat72">CAT-72</a>
             <a href="#process">Conformance Process</a>
           </div>

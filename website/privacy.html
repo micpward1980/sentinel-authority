@@ -1,13 +1,7 @@
 <!DOCTYPE html>
-<html lang="en" style="scroll-behavior:smooth;">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <link rel="icon" type="image/svg+xml" href="favicon.svg">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
-  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="favicon-192.png">
-  <link rel="canonical" href="https://www.sentinelauthority.org/privacy.html">
-
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <title>Privacy Notice — Sentinel Authority</title>
   <meta name="description" content="Sentinel Authority privacy policy. How we collect, use, and protect your information." />
@@ -15,474 +9,124 @@
   <meta property="og:description" content="How we collect, use, and protect your information." />
   <meta property="og:type" content="website" />
   <meta property="og:image" content="https://sentinelauthority.org/og.png" />
-
+  <link rel="canonical" href="https://www.sentinelauthority.org/privacy.html" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-192.png">
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@900&display=swap" rel="stylesheet">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Source+Serif+4:opsz,wght@8..60,300;500&display=swap" rel="stylesheet" />
   <style>
-    /* ═══════════════════════════════════════════════════
-       INSTITUTIONAL TOKEN SYSTEM — Supreme Court × ISO
-       ═══════════════════════════════════════════════════ */
-    :root {
-      --ink:          #0f1021;
-      --accent:       #2a2560;
-      --accent-hover: #1d1a3b;
-      --bg:           #ffffff;
-      --bg-soft:      #f6f7f9;
-      --border:       #e6e8ec;
-      --muted:        #5c6270;
-      --ease:         150ms ease;
-      --radius:       6px;
-
-      /* Legacy aliases — keep for backward compat */
-      --text-primary:   #0f1021;
-      --text-secondary: #5c6270;
-    }
-
-    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important; } }
-    :root{
-      color-scheme:light;
-      --purple-primary:#2a2560; --purple-bright:#2a2560; --purple-glow:transparent /* deprecated */;
-      --bg-deep:#ffffff; --accent-green:rgba(22,163,74,1.00); --accent-amber:rgba(202,138,4,1.00); --accent-red:rgba(220,53,69,1.00);
-      --text-primary:#111318; --text-secondary:rgba(15,18,30,.74); --text-tertiary:rgba(15,18,30,.56);
-      --border-glass:rgba(0,0,0,.09); --border-subtle:rgba(0,0,0,.05);
-      --serif:Georgia,'Source Serif 4',serif; --mono:Consolas,'IBM Plex Mono',monospace; --sans:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
-      --ease:cubic-bezier(0.16,1,0.3,1); --ease-out:cubic-bezier(0.33,1,0.68,1);
-      --space-1:10px; --space-2:20px; --space-3:20px; --space-4:28px; --space-5:35px; --space-6:40px;
-      --max:1320px; --nav-height:72px;
-    }
-    *{box-sizing:border-box;}
-    .skip-link{position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;z-index:999;}
-    .skip-link:focus{position:fixed;top:10px;left:10px;width:auto;height:auto;padding:12px 18px;background:#fff;border:1px solid var(--purple-bright);color:var(--text-primary);font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;z-index:9999;}
-    a:focus-visible,button:focus-visible{outline:2px solid rgba(42,37,96,.75);outline-offset:3px;}
-    :focus:not(:focus-visible){outline:none;}
-    html{scroll-behavior:smooth;background:#ffffff;}
-    body{margin:0;font-family:var(--sans);background:#ffffff;color:var(--text-primary);overflow-x:hidden;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:geometricPrecision;}
-    body::before{content:'';position:fixed;inset:0;z-index:-1;background: var(--bg);pointer-events:none;}
-    a{color:inherit;text-decoration:none;} a:hover{text-decoration:none;}
-    ::selection { background: var(--accent); color: #fff; }
-
-    /* ═══ HEADER ═══ */
-    .site-header{position:fixed;top:0;width:100%;z-index:50;padding:0 24px;height:var(--nav-height);border-bottom:1px solid rgba(15,18,30,0.06);background:rgba(245,245,247,0.88);box-shadow:none;backdrop--webkit-backdrop-display:flex;align-items:center;}
-    .nav-inner{max-width:var(--max);margin:0 auto;width:100%;display:flex;align-items:center;justify-content:space-between;gap:20px;}
-    .brand{display:flex;align-items:center;gap:14px;text-decoration:none;} .brand:hover{text-decoration:none;}
-    .brand-mark { display: none; }
-    
-    @keyframes eye-pulse{0%,100%{opacity:.75;transform:scale(.98);}50%{opacity:1;transform:scale(1.02);}}
-    .brand-name { display: none; }
-    .back-link{font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--text-tertiary);transition:color .2s;text-decoration:none;font-weight:500;}
-    .back-link:hover{color:var(--text-primary);text-decoration:none;}
-
-    /* ═══ MAIN ═══ */
-    main{position:relative;z-index:1;max-width:var(--max);margin:0 auto;padding:0 20px 80px;}
-
-    /* ═══ PAGE HERO ═══ */
-    .section{position:relative;padding:var(--space-6) 0;}
-    .section-label{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--purple-bright);display:block;margin-bottom:12px;font-weight:600;}
-    .section-title{font-family:var(--serif);font-size:clamp(30px,4vw,50px);font-weight:500;line-height:1.1;margin:0;letter-spacing:-0.02em;color:#1d1a3b;}
-    .section-lead{max-width:65ch;color:var(--text-secondary);font-weight:400;line-height:1.55;margin:var(--space-2) 0 0;font-size:16px;}
-
-    /* ═══ HUD SYSTEM — GLASS ═══ */
-    .hud-frame{position:relative;padding:20px 16px;background:rgba(255,255,255,0.78);backdrop--webkit-backdrop-box-shadow:0 1px 2px rgba(15,18,30,0.03),0 10px 40px rgba(15,18,30,0.05);border:1px solid rgba(15,18,30,0.06);overflow:hidden;}
-    .hud-frame::before,.hud-frame::after,.hud-frame>i::before,.hud-frame>i::after{content:'';position:absolute;width:12px;height:12px;border-color:rgba(15,18,30,0.08);border-style:solid;pointer-events:none;animation:corner-breathe 4s ease-in-out infinite;}
-    .hud-frame::before{top:0;left:0;border-width:1px 0 0 1px;}
-    .hud-frame::after{top:0;right:0;border-width:1px 1px 0 0;}
-    .hud-frame>i::before{bottom:0;left:0;border-width:0 0 1px 1px;position:absolute;}
-    .hud-frame>i::after{bottom:0;right:0;border-width:0 1px 1px 0;position:absolute;}
-    .hud-frame>i{position:absolute;inset:0;pointer-events:none;}
-    @keyframes corner-breathe{0%,100%{border-color:rgba(15,18,30,0.08);}50%{border-color:rgba(42,37,96,0.20);}}
-    .hud-frame-green::before,.hud-frame-green::after,.hud-frame-green>i::before,.hud-frame-green>i::after{animation:corner-breathe-green 4s ease-in-out infinite !important;}
-    @keyframes corner-breathe-green{0%,100%{border-color:rgba(22,163,74,0.08);}50%{border-color:rgba(22,163,74,0.25);}}
-    .hud-frame+.hud-frame{margin-top:var(--space-3);}
-    .hud-scanline{border-bottom:1px solid rgba(15,18,30,0.04);}
-    .hud-dot{display:inline-block;width:4px;height:4px;border-radius:50%;background:rgba(42,37,96,0.35);margin-right:8px;flex-shrink:0;}
-    .hud-dot-green{background:rgba(22,163,74,0.6);animation:hud-breathe 3s ease-in-out infinite;}
-    .hud-dot-amber{background:rgba(202,138,4,0.6);animation:hud-breathe 3s ease-in-out infinite;}
-    @keyframes hud-breathe{0%,100%{opacity:0.4;}50%{opacity:1;}}
-    .hud-row{padding:12px 0;border-bottom:1px solid rgba(15,18,30,0.04);}
-    .hud-row:last-child{border-bottom:none;}
-    .hud-label{font-family:var(--mono);font-size:10px;letter-spacing:1.5px;color:var(--text-tertiary);text-transform:uppercase;font-weight:500;}
-    .hud-desc{font-size:13px;color:var(--text-secondary);line-height:1.55;}
-    .hud-link{font-family:var(--mono);font-size:11px;letter-spacing:2px;color:rgba(42,37,96,1.00);text-decoration:none !important;padding-bottom:2px;transition:all 0.2s;}
-    .hud-link:hover{color:rgba(42,37,96,1.00);}
-    a[href^="mailto:"]{color:var(--purple-bright);}
-
-    /* ═══ FOOTER ═══ */
-    footer{border-top:1px solid rgba(0,0,0,.05);padding:var(--space-6) 0 var(--space-4);margin-top:var(--space-4);background:#ffffff;color:var(--text-tertiary);font-family:var(--mono);font-size:12px;letter-spacing:1px;}
-    .footer-inner{max-width:var(--max);margin:0 auto;padding:0 20px;display:flex;justify-content:space-between;align-items:flex-start;gap:20px;flex-wrap:wrap;}
-
-    /* ═══ MOBILE ═══ */
-    @media(max-width:768px){.site-header{height:56px;padding:0 12px;}:root{--nav-height:56px;}.brand-name { display: none; }.hud-frame{backdrop--webkit-backdrop-}.section-title{font-size:24px !important;}}
-    @media(max-width:480px){.section-title{font-size:21px !important;}}
-/* ── ROOT TOKENS ── */
-:root{
-  --hairline:rgba(15,18,30,0.08);
-  --glass-bg:rgba(255,255,255,0.58);
-  --glass-border:rgba(255,255,255,0.45);
-}
-
-/* ── BODY ── */
-body{background: #ffffff!important;}
-body::before{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;
-  background:var(--bg);}
-
-/* ── HEADER ── */
-.site-header,header,.nav-bar{background:#ffffff!important;border-bottom:1px solid rgba(0,0,0,0.08)!important;}
-.brand-name { display: none; }
-
-/* ── SECTION HEAD (glass box) ── */
-.section-head{
-  display:flex!important;
-  align-items:flex-end!important;
-  justify-content:space-between!important;
-  gap:16px!important;
-  flex-wrap:wrap!important;
-  margin-bottom:24px!important;
-  background:rgba(255,255,255,0.45)!important;
-  -webkit-
-  border-radius:16px!important;
-  padding:28px 24px!important;
-  text-align:left!important;
-}
-
-/* ── SECTION LABEL ── */
-.section-label{
-  font-family:var(--mono,Consolas,'IBM Plex Mono',monospace)!important;
-  font-size:10px!important;
-  letter-spacing:5px!important;
-  text-transform:uppercase!important;
-  color:rgba(15,18,30,0.44)!important;
-  display:block!important;
-  margin-bottom:12px!important;
-}
-
-/* ── SECTION TITLE ── */
-.section-title,h1.section-title{
-  font-family:var(--serif,Georgia,'Source Serif 4',serif)!important;
-  font-size:clamp(30px,4vw,50px)!important;
-  font-weight:300!important;
-  line-height:1.1!important;
-  margin:0!important;
-  letter-spacing:-0.03em!important;
-  color:#1d1a3b!important;
-}
-
-/* ── SECTION LEAD ── */
-.section-lead{
-  max-width:580px!important;
-  color:rgba(15,18,30,0.64)!important;
-  font-weight:300!important;
-  line-height:1.75!important;
-  margin:16px 0 0!important;
-  margin-left:0!important;
-  margin-right:auto!important;
-  font-size:16px!important;
-}
-
-/* ── CARDS: glass, rounded, no brackets ── */
-.doc-card,.wp-featured,.artifact-card,.cert-card,.research-card,.fee-card,.process-card,.guarantee-box{
-  background:rgba(255,255,255,0.65)!important;
-  -webkit-
-  border:1px solid rgba(15,18,30,0.06)!important;
-  border-radius:16px!important;
-  box-shadow:0 1px 2px rgba(15,18,30,0.03),0 4px 16px rgba(15,18,30,0.02)!important;
-  overflow:hidden;
-}
-/* Kill bracket corners */
-.doc-card::before,.doc-card::after,
-.wp-featured::before,.wp-featured::after,
-.hud-frame::before,.hud-frame::after,
-.hud-frame>i::before,.hud-frame>i::after{display:none!important;}
-
-/* ── HUD FRAMES ── */
-.hud-frame{
-  border-radius:16px!important;
-  border:1px solid var(--hairline)!important;
-  background:rgba(255,255,255,0.40)!important;
-  -webkit-
-}
-
-/* ── SECTIONS ── */
-.section{border-top:1px solid var(--hairline)!important;padding-top:80px!important;padding-bottom:80px!important;}
-
-/* ── REVEALS ── */
-.reveal{opacity:0;transform:translateY(8px);transition:opacity .35s ease,transform .35s ease;}
-.reveal.active{opacity:1!important;transform:none!important;}
-@media(prefers-reduced-motion:reduce){.reveal{opacity:1!important;transform:none!important;transition:none!important;}}
-
-/* ── MISC ── */
-a:hover{filter:none!important;}
-::selection { background: var(--accent); color: #fff; }
-.hud-scanline::before,.hud-scanline::after{display:none!important;}
-.sa-particles,.sa-noise,.sa-vignette,.hud-shimmer{display:none!important;}
-.section-title,.section-label,.hud-title,.hud-label,.hud-desc,.hud-link,h1,h2,h3,p,span,a,div{text-shadow:none!important;}
-footer{border-top:1px solid var(--hairline)!important;}
-
-/* Stagger cascade animation */
-@keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
-.reveal.active{animation:fadeUp .7s cubic-bezier(0.16,1,0.3,1) both;}
-.r1{animation-delay:.1s;}.r2{animation-delay:.15s;}.r3{animation-delay:.2s;}.r4{animation-delay:.25s;}.r5{animation-delay:.3s;}.r6{animation-delay:.35s;}.r7{animation-delay:.4s;}.r8{animation-delay:.45s;}.r9{animation-delay:.5s;}.r10{animation-delay:.55s;}
-
-    /* ── Nav bar ── */
-    .site-header {
-      position: fixed;
-      top: 0;
-      width: 100%;
-      z-index: 50;
-      height: var(--nav-height, 72px);
-      background: #ffffff;
-      border-bottom: 1px solid rgba(0,0,0,0.08);
-      display: flex;
-      align-items: center;
-      padding: 0 24px;
-    }
-    .nav-inner {
-      max-width: var(--max, 1320px);
-      margin: 0 auto;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 20px;
-    }
-    .brand {
-      display: flex;
-      align-items: center;
-      flex-shrink: 0;
-      text-decoration: none;
-    }
-    .brand:hover { opacity: 0.8; }
-    .brand-mark { display: none; }
-    .brand-name { display: none; }
-    .nav-links {
-      display: flex;
-      align-items: center;
-      gap: 32px;
-      flex: 1;
-      justify-content: center;
-    }
-    .nav-links a {
-      font-family: var(--mono);
-      font-size: 11px;
-      letter-spacing: 1.5px;
-      color: rgba(15,16,33,0.6);
-      text-decoration: none;
-      white-space: nowrap;
-      transition: color 150ms ease;
-    }
-    .nav-links a:hover,
-    .nav-links a.active { color: var(--ink); }
-    .nav-signin {
-      font-family: var(--mono);
-      font-size: 11px;
-      letter-spacing: 1.5px;
-      color: var(--ink);
-      text-decoration: none;
-      border: 1px solid rgba(15,16,33,0.25);
-      padding: 7px 14px;
-      border-radius: 4px;
-      flex-shrink: 0;
-      transition: border-color 150ms ease;
-      white-space: nowrap;
-    }
-    .nav-signin:hover { border-color: rgba(15,16,33,0.6); }
-    .nav-signin > i { display: none; }
-    .nav-toggle {
-      display: none;
-      appearance: none;
-      background: none;
-      border: 1px solid rgba(15,16,33,0.2);
-      border-radius: 4px;
-      padding: 8px;
-      cursor: pointer;
-      flex-direction: column;
-      gap: 4px;
-      width: 36px;
-      height: 36px;
-      align-items: center;
-      justify-content: center;
-    }
-    .nav-toggle span {
-      display: block;
-      width: 16px;
-      height: 1.5px;
-      background: var(--ink);
-      border-radius: 1px;
-    }
-    .nav-badge { display: none; }
-
-    </style>
-  <link rel="stylesheet" href="type.css">
-  <link rel="stylesheet" href="global.css">
-  <link rel="stylesheet" href="mobile.css">
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    "name": "Sentinel Authority",
-    "url": "https://sentinelauthority.org",
-    "logo": "https://sentinelauthority.org/og.webp",
-    "description": "Independent conformance certification body for autonomous systems. ODDC certification attests to runtime-enforced operational boundary compliance.",
-    "sameAs": [],
-    "contactPoint": {
-      "@type": "ContactPoint",
-      "contactType": "customer service",
-      "url": "https://app.sentinelauthority.org"
-    }
-  }
-  </script>
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    "name": "Sentinel Authority",
-    "url": "https://sentinelauthority.org",
-    "description": "Independent conformance certification for autonomous systems.",
-    "potentialAction": {
-      "@type": "SearchAction",
-      "target": "https://sentinelauthority.org/?q={search_term_string}",
-      "query-input": "required name=search_term_string"
-    }
-  }
-  </script>
+    :root{--navy:#1d1a3b;--text:#111318;--text-2:rgba(15,18,30,.72);--text-3:rgba(15,18,30,.50);--border:rgba(15,18,30,.08);--bg:#ffffff;--green:rgba(22,163,74,1);--amber:rgba(202,138,4,1);--mono:'IBM Plex Mono',Consolas,monospace;--serif:'Source Serif 4',Georgia,serif;--sans:'Inter',system-ui,sans-serif;--nav-h:60px;--max:760px;}
+    *,*::before,*::after{box-sizing:border-box;}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition-duration:0.01ms!important;animation-duration:0.01ms!important;}}
+    html{scroll-behavior:smooth;background:var(--bg);}
+    body{margin:0;font-family:var(--sans);color:var(--text);background:var(--bg);-webkit-font-smoothing:antialiased;overflow-x:hidden;}
+    a{color:inherit;text-decoration:none;}
+    ::selection{background:var(--navy);color:#fff;}
+    .site-header{position:fixed;top:0;left:0;right:0;z-index:50;height:var(--nav-h);background:rgba(255,255,255,0.92);border-bottom:1px solid var(--border);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:flex;align-items:center;padding:0 24px;}
+    .back-link{font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--text-3);transition:color .15s;font-weight:500;}
+    .back-link:hover{color:var(--text);}
+    main{padding-top:calc(var(--nav-h) + 56px);padding-bottom:96px;}
+    .inner{max-width:var(--max);margin:0 auto;padding:0 24px;}
+    .page-label{font-family:var(--mono);font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--text-3);display:block;margin-bottom:14px;}
+    .page-title{font-family:var(--serif);font-size:clamp(32px,5vw,52px);font-weight:300;color:var(--navy);margin:0 0 12px;letter-spacing:-0.02em;line-height:1.1;}
+    .page-lead{font-size:15px;color:var(--text-2);line-height:1.65;margin:0 0 48px;max-width:58ch;}
+    .effective{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:10px;letter-spacing:1.5px;color:rgba(22,163,74,.8);text-transform:uppercase;margin-bottom:20px;}
+    .dot{width:5px;height:5px;border-radius:50%;background:var(--green);animation:breathe 2.5s ease-in-out infinite;flex-shrink:0;}
+    @keyframes breathe{0%,100%{opacity:.4;}50%{opacity:1;}}
+    .card{border:1px solid var(--border);border-radius:10px;padding:22px 20px;margin-bottom:16px;background:#fff;}
+    .card-label{font-family:var(--mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-3);margin-bottom:14px;display:block;}
+    .card-sub{font-family:var(--mono);font-size:9.5px;letter-spacing:1px;text-transform:uppercase;color:var(--text-3);margin:14px 0 8px;display:block;}
+    .row{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid rgba(15,18,30,.04);font-size:13px;color:var(--text-2);line-height:1.55;}
+    .row:last-child{border-bottom:none;}
+    .pip{width:4px;height:4px;border-radius:50%;background:rgba(42,37,96,.30);margin-top:6px;flex-shrink:0;}
+    .pip-amber{background:rgba(202,138,4,.6);animation:breathe 3s ease-in-out infinite;}
+    .card-text{font-size:13px;color:var(--text-2);line-height:1.65;margin:0 0 10px;}
+    .card-text:last-child{margin-bottom:0;}
+    .card-green{border-color:rgba(22,163,74,.15);}
+    .card-link{font-family:var(--mono);font-size:11px;letter-spacing:2px;color:var(--navy);text-transform:uppercase;display:inline-block;margin-top:14px;}
+    .card-link:hover{text-decoration:underline;}
+    footer{border-top:1px solid var(--border);padding:32px 0 24px;background:#fff;font-family:var(--mono);font-size:11px;letter-spacing:1px;color:var(--text-3);}
+    .footer-inner{max-width:var(--max);margin:0 auto;padding:0 24px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+    .foot-links{display:flex;gap:20px;}
+    .foot-links a:hover{color:var(--text);}
+  </style>
 </head>
 <body>
-  <a href="#main" class="skip-link">Skip to content</a>
-    <header class="site-header">
-    <div class="nav-inner">
-
-      <a href="/" class="brand" aria-label="Sentinel Authority home">
-        <svg width="220" height="48" viewBox="0 0 460 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="62" cy="60" r="50" stroke="#1d1a3b" stroke-width="3.4"/>
-          <circle cx="62" cy="60" r="43" stroke="#1d1a3b" stroke-width="1.1" stroke-opacity="0.20"/>
-          <text x="62" y="74" text-anchor="middle" font-family="'League Spartan', Arial, sans-serif" font-weight="900" font-size="40" fill="#1d1a3b" letter-spacing="-1.1">SA</text>
-          <text x="132" y="54" font-family="'League Spartan', Arial, sans-serif" font-weight="900" font-size="34" fill="#1d1a3b" letter-spacing="-0.15">SENTINEL</text>
-          <text x="132" y="84" font-family="'League Spartan', Arial, sans-serif" font-weight="900" font-size="34" fill="#1d1a3b" letter-spacing="-0.25">AUTHORITY</text>
-        </svg>
-      </a>
-
-      <nav class="nav-links" aria-label="Main navigation">
-        <a href="/#envelo" data-section="envelo">STANDARD</a>
-        <a href="/#cat72" data-section="cat72">CONFORMANCE</a>
-        <a href="/#verify" data-section="verify">REGISTRY</a>
-        <a href="/research.html">PUBLICATIONS</a>
-      </nav>
-
-      <a href="https://app.sentinelauthority.org" class="nav-signin">APPLICANT PORTAL</a>
-
-      <button class="nav-toggle" aria-label="Open navigation menu" aria-expanded="false" aria-controls="nav-drawer">
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
-
-    </div>
+  <header class="site-header">
+    <a href="/" class="back-link" aria-label="Back to home">← Sentinel Authority</a>
   </header>
-
-  <main role="main" aria-label="Page content" id="main" role="main">
-    <div style="padding-top:calc(var(--nav-height) + 48px);max-width:var(--max);margin:0 auto;">
-      <div class="section-head reveal">
-        <div>
-          <span class="section-label reveal r1">LEGAL</span>
-          <h1 class="section-title reveal r2">Privacy Notice</h1>
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
-        <span class="hud-dot hud-dot-green"></span>
-        <span class="hud-label" style="color:rgba(22,163,74,0.7);">EFFECTIVE: JANUARY 2026</span>
+  <main id="main">
+    <div class="inner">
+      <span class="page-label">Legal</span>
+      <h1 class="page-title">Privacy Notice</h1>
+      <div class="effective"><span class="dot"></span>Effective: January 2026</div>
+      <p class="page-lead">Sentinel Authority operates the sentinelauthority.org website and the ODDC attestation platform. This Privacy Notice describes the categories of information collected, the purposes for which it is processed, and the safeguards applied.</p>
+      <div class="card">
+        <span class="card-label">Legal Entity and Jurisdiction</span>
+        <div class="row"><span class="pip"></span><span>Data Controller: Sentinel Authority, an Ontario, Canada-based independent conformance body</span></div>
+        <div class="row"><span class="pip"></span><span>Governing Law: Province of Ontario, Canada</span></div>
+        <div class="row"><span class="pip"></span><span>Jurisdictional Scope: This Notice applies to information processed in connection with services provided globally by Sentinel Authority</span></div>
+        <div class="row"><span class="pip"></span><span>International Transfers: Data may be processed in Canada and internationally. By submitting information, applicants acknowledge transfer to and processing in Canada and other jurisdictions where Sentinel Authority operates</span></div>
+        <div class="row"><span class="pip"></span><span>Legal Basis for Processing: Contractual necessity and legitimate interest in maintaining attestation integrity</span></div>
       </div>
-      <p class="section-lead">Sentinel Authority operates the sentinelauthority.org website and the ODDC attestation platform. This Privacy Notice describes the categories of information collected, the purposes for which it is processed, and the safeguards applied.</p>
-    </div>
-
-    <div style="max-width:700px;margin:0 auto;padding:0 var(--space-2);">
-
-      <div class="hud-frame hud-scanline"><i></i>
-        <div class="hud-label" style="margin-bottom:16px;">LEGAL ENTITY AND JURISDICTION</div>
-        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Data Controller: Sentinel Authority, an Ontario, Canada-based independent conformance body</span></div>
-        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Governing Law: Province of Ontario, Canada</span></div>
-        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Jurisdictional Scope: This Notice applies to information processed in connection with services provided globally by Sentinel Authority</span></div>
-        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">International Transfers: Data may be processed in Canada and internationally. By submitting information, applicants acknowledge transfer to and processing in Canada and other jurisdictions where Sentinel Authority operates</span></div>
-        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Legal Basis for Processing: Contractual necessity and legitimate interest in maintaining attestation integrity</span></div>
+      <div class="card">
+        <span class="card-label">Information We Collect</span>
+        <span class="card-sub">Information You Provide</span>
+        <div class="row"><span class="pip"></span><span>Contact information (name, email, phone, organization)</span></div>
+        <div class="row"><span class="pip"></span><span>Application data (system descriptions, ODD specifications, technical documentation)</span></div>
+        <div class="row"><span class="pip"></span><span>Account credentials for the attestation portal</span></div>
+        <div class="row"><span class="pip"></span><span>Payment information (processed by third-party providers)</span></div>
+        <span class="card-sub">Collected Automatically</span>
+        <div class="row"><span class="pip pip-amber"></span><span>ENVELO Interlock telemetry data from systems undergoing assessment</span></div>
+        <div class="row"><span class="pip pip-amber"></span><span>Log data (IP address, browser type, pages visited)</span></div>
+        <div class="row"><span class="pip pip-amber"></span><span>Cookies for session management</span></div>
       </div>
-
-      <div class="hud-frame hud-scanline"><i></i>
-        <div class="hud-label" style="margin-bottom:16px;">INFORMATION WE COLLECT</div>
-        <div class="hud-label" style="margin-bottom:8px;color:var(--text-tertiary);">INFORMATION YOU PROVIDE</div>
-        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Contact information (name, email, phone, organization)</span></div>
-        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Application data (system descriptions, ODD specifications, technical documentation)</span></div>
-        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Account credentials for the attestation portal</span></div>
-        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Payment information (processed by third-party providers)</span></div>
-        <div class="hud-label" style="margin:16px 0 8px;color:var(--text-tertiary);">COLLECTED AUTOMATICALLY</div>
-        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-amber" style="margin-top:5px;"></span><span class="hud-desc">ENVELO Interlock telemetry data from systems undergoing assessment</span></div>
-        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-amber" style="margin-top:5px;"></span><span class="hud-desc">Log data (IP address, browser type, pages visited)</span></div>
-        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-amber" style="margin-top:5px;"></span><span class="hud-desc">Cookies for session management</span></div>
+      <div class="card">
+        <span class="card-label">How We Use Your Information</span>
+        <div class="row"><span class="pip"></span><span>Process and evaluate assessment applications</span></div>
+        <div class="row"><span class="pip"></span><span>Conduct CAT-72 conformance testing</span></div>
+        <div class="row"><span class="pip"></span><span>Issue and manage ODDC attestations</span></div>
+        <div class="row"><span class="pip"></span><span>Communicate about your application or attestation status</span></div>
+        <div class="row"><span class="pip"></span><span>Maintain audit records as required for attestation integrity</span></div>
+        <div class="row"><span class="pip"></span><span>Maintain, secure, and administer the attestation platform</span></div>
       </div>
-
-      <div class="hud-frame"><i></i>
-        <div class="hud-label" style="margin-bottom:16px;">HOW WE USE YOUR INFORMATION</div>
-        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Process and evaluate assessment applications</span></div>
-        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Conduct CAT-72 conformance testing</span></div>
-        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Issue and manage ODDC attestations</span></div>
-        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Communicate about your application or attestation status</span></div>
-        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Maintain audit records as required for attestation integrity</span></div>
-        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Maintain, secure, and administer the attestation platform</span></div>
+      <div class="card">
+        <span class="card-label">Data Retention</span>
+        <p class="card-text">We retain attestation records, including CAT-72 evidence and audit logs, for the duration of your attestation plus seven (7) years, to preserve evidentiary integrity and support potential regulatory, legal, or contractual review.</p>
+        <p class="card-text">Account information is retained while your account is active and for a reasonable period thereafter for legal and business purposes.</p>
       </div>
-
-      <div class="hud-frame"><i></i>
-        <div class="hud-label" style="margin-bottom:16px;">DATA RETENTION</div>
-        <div class="hud-desc" style="margin-bottom:12px;">We retain attestation records, including CAT-72 evidence and audit logs, for the duration of your attestation plus seven (7) years, to preserve evidentiary integrity and support potential regulatory, legal, or contractual review.</div>
-        <div class="hud-desc">Account information is retained while your account is active and for a reasonable period thereafter for legal and business purposes.</div>
+      <div class="card card-green">
+        <span class="card-label">Data Security</span>
+        <p class="card-text">All data is encrypted in transit (TLS 1.3) and at rest. We implement industry-standard security measures including access controls, audit logging, and regular security assessments.</p>
       </div>
-
-      <div class="hud-frame hud-frame-green"><i></i>
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-          <span class="hud-label">DATA SECURITY</span>
-          <span class="hud-dot hud-dot-green"></span>
-        </div>
-        <div class="hud-desc">All data is encrypted in transit (TLS 1.3) and at rest. We implement industry-standard security measures including access controls, audit logging, and regular security assessments.</div>
+      <div class="card">
+        <span class="card-label">Your Rights</span>
+        <p class="card-text">Depending on your jurisdiction, you may have rights to access, correct, delete, or port your personal data. Note that attestation records may be subject to retention requirements that limit deletion rights.</p>
       </div>
-
-      <div class="hud-frame"><i></i>
-        <div class="hud-label" style="margin-bottom:16px;">YOUR RIGHTS</div>
-        <div class="hud-desc">Depending on your jurisdiction, you may have rights to access, correct, delete, or port your personal data. Note that attestation records may be subject to retention requirements that limit deletion rights.</div>
+      <div class="card">
+        <span class="card-label">Third Parties</span>
+        <p class="card-text">Sentinel Authority does not monetize personal data. We may share data with service providers who assist in operating our platform, subject to confidentiality obligations.</p>
       </div>
-
-      <div class="hud-frame"><i></i>
-        <div class="hud-label" style="margin-bottom:16px;">THIRD PARTIES</div>
-        <div class="hud-desc">Sentinel Authority does not monetize personal data. We may share data with service providers who assist in operating our platform, subject to confidentiality obligations.</div>
+      <div class="card">
+        <span class="card-label">Updates</span>
+        <p class="card-text">The effective date of this Privacy Notice appears above. Material revisions will be communicated via email or platform notification. Prior versions are archived upon revision.</p>
       </div>
-
-      <div class="hud-frame"><i></i>
-        <div class="hud-label" style="margin-bottom:16px;">UPDATES</div>
-        <div class="hud-desc">The effective date of this Privacy Notice appears above. Material revisions will be communicated via email or platform notification. Prior versions are archived upon revision.</div>
-      </div>
-
-      <div class="hud-frame"><i></i>
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-          <span class="hud-label">DATA PROTECTION INQUIRIES</span>
-          <span class="hud-dot"></span>
-        </div>
-        <div class="hud-desc" style="margin-bottom:16px;">Direct data protection inquiries to the address below.</div>
-        <a href="mailto:conformance@sentinelauthority.org" class="hud-link">CONFORMANCE@SENTINELAUTHORITY.ORG &#x2192;</a>
+      <div class="card">
+        <span class="card-label">Data Protection Inquiries</span>
+        <p class="card-text">Direct data protection inquiries to the address below.</p>
+        <a href="mailto:conformance@sentinelauthority.org" class="card-link">conformance@sentinelauthority.org →</a>
       </div>
     </div>
   </main>
-
   <footer>
     <div class="footer-inner">
-      <div>&#169; <span id="year"></span> SENTINEL AUTHORITY</div><div style="margin-top:8px;font-size:9px;letter-spacing:1px;"><a href="privacy.html" style="color:inherit;text-decoration:none;">Privacy Notice</a> · <a href="terms.html" style="color:inherit;text-decoration:none;">Terms of Use</a></div>
+      <div>© <span id="yr"></span> Sentinel Authority</div>
+      <div class="foot-links"><a href="privacy.html">Privacy Notice</a><a href="terms.html">Terms of Use</a></div>
     </div>
   </footer>
-  <script>document.getElementById('year').textContent=new Date().getFullYear();</script>
-<script>
-(function(){
-  /* Green status dot on brand */
-  var b=document.querySelector(".brand");
-  // dot removed
-  /* Reveal observer */
-  var obs=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add("active");obs.unobserve(e.target);}});},{threshold:0.1});
-  document.querySelectorAll(".reveal,.section-head").forEach(function(el){obs.observe(el);});
-})();
-</script>
+  <script>document.getElementById('yr').textContent=new Date().getFullYear();</script>
 </body>
 </html>
