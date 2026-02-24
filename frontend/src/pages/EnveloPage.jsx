@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import CAT72ConsolePage from './CAT72Console';
 import ErrorBoundary from '../components/ErrorBoundary';
 import CertificatesPageEmbed from './CertificatesPage';
+import LicenseesPageEmbed from './LicenseesPage';
 import MonitoringPageEmbed from './MonitoringPage';
 import { Shield, Download, RefreshCw } from 'lucide-react';
 import { api } from '../config/api';
@@ -468,6 +469,7 @@ function EnveloAdminView() {
     { id: 'monitoring',   label: 'Monitoring',       badge: activeSessions.length },
     { id: 'cat72',        label: 'CAT-72',           badge: testing.length },
     { id: 'certificates', label: 'Certificates',     badge: conformant.length },
+    { id: 'licensees',    label: 'Licensees' },
   ];
 
   return (
@@ -789,6 +791,11 @@ function EnveloAdminView() {
       {/* ── CERTIFICATES ── */}
       {activeTab === 'certificates' && (
         <ErrorBoundary><CertificatesPageEmbed /></ErrorBoundary>
+      )}
+
+      {/* ── LICENSEES ── */}
+      {activeTab === 'licensees' && (
+        <ErrorBoundary><LicenseesPageEmbed /></ErrorBoundary>
       )}
 
       {/* ── CERTIFIED (legacy) ── */}
