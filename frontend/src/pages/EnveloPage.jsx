@@ -415,20 +415,6 @@ function EnveloAdminView() {
   const totalViolations  = sessions.reduce((a, s) => a + (s.block_count || 0), 0);
   const needsAttention   = pending.length + underReview.length;
 
-  const downloadAgentForCert = (cert) => {
-    const code = buildProductionAgent({
-      apiKey:           'YOUR_API_KEY',
-      certificateNumber: cert.certificate_number,
-      systemName:        cert.system_name || 'Unknown',
-      organizationName:  cert.organization_name || '',
-    });
-    const a = Object.assign(document.createElement('a'), {
-      href:     URL.createObjectURL(new Blob([code], { type: 'text/plain' })),
-      download: `envelo_agent_${cert.certificate_number}.py`,
-    });
-    document.body.appendChild(a); a.click(); document.body.removeChild(a);
-  };
-
   const beginCAT72 = async (app) => {
     if (!await confirm({ title: 'Begin CAT-72', message: `Start the 72-hour conformance test for ${app.system_name}? The interlock must be confirmed online.`, confirmLabel: 'Begin Test', danger: false })) return;
     try {
