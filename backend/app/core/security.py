@@ -52,6 +52,8 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
             raise HTTPException(status_code=401, detail="Session expired or revoked")
         session.last_active_at = datetime.utcnow()
         await db.commit()
+    if payload.get("role") == "pending":
+        raise HTTPException(status_code=403, detail="Account pending approval")
     return payload
 
 
