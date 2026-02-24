@@ -60,7 +60,7 @@ export default function ExportBundle({ app, history = [], comments = [], isAdmin
     try {
       let auditLogs = [];
       try {
-        const res = await api.get('/api/audit/logs?resource_type=application&resource_id=' + app.id + '&limit=500&offset=0');
+        const res = await api.get('/api/audit/logs?resource_type=application&resource_id=' + app.id + '&limit=200&offset=0');
         auditLogs = res.data.logs ?? [];
       } catch {}
 
@@ -99,7 +99,7 @@ export default function ExportBundle({ app, history = [], comments = [], isAdmin
   const exportAuditCSV = async () => {
     setLoad('audit', true);
     try {
-      const res = await api.get('/api/audit/logs?resource_type=application&resource_id=' + app.id + '&limit=500&offset=0');
+      const res = await api.get('/api/audit/logs?resource_type=application&resource_id=' + app.id + '&limit=200&offset=0');
       const logs = res.data.logs ?? [];
       if (!logs.length) { setLoad('audit', false); return; }
       const rows = logs.map(l => ({
