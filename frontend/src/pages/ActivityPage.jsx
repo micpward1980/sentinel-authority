@@ -150,7 +150,7 @@ function ActivityPage() {
 
   const exportCSV = async () => {
     try {
-      const qs = buildParams({ actionFilter, resourceFilter, emailFilter, dateFrom, dateTo, page: 0, limit: 10000 });
+      const qs = buildParams({ actionFilter, resourceFilter, emailFilter, dateFrom, dateTo, page: 0, limit: 200 });
       const res = await api.get(`/api/audit/logs?${qs}`);
       const rows = res.data.logs || [];
       if (!rows.length) { toast.show('No entries to export', 'warning'); return; }
