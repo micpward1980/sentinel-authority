@@ -1,4 +1,4 @@
-import{u as Y,j as t,a as K,e as Z,s as e,d as y}from"./index-CQToRwbo.js";import{r as d,i as V,p as q,D as U}from"./icons-DCxkC3Ow.js";import ee from"./CAT72Console-DLB-zD1C.js";import te from"./CertificatesPage-8XhqITkb.js";import{P as m}from"./Panel-CTXV6eYW.js";import{S as R}from"./SectionHeader-lim_qPma.js";import"./vendor-DxYwK_Rn.js";import"./useQuery-DvUtKwTH.js";import"./Badge-Ywk62EHg.js";import"./CopyableId-DLd-jDZI.js";const ne="https://sentinel-authority-production.up.railway.app";function M({apiKey:s,certificateNumber:u,systemName:f,organizationName:_}){return`#!/usr/bin/env python3
+import{u as Y,j as t,a as K,e as Z,s as e,d as y}from"./index-CIljmWKY.js";import{r as d,i as V,p as q,D as U}from"./icons-DCxkC3Ow.js";import ee from"./CAT72Console-CTxU2UJX.js";import te from"./CertificatesPage-8NTbqzCs.js";import{P as m}from"./Panel-8i-GO9Ya.js";import{S as R}from"./SectionHeader-B-UO-NIv.js";import"./vendor-DxYwK_Rn.js";import"./Badge-B6ub3kJK.js";import"./CopyableId-DamgLQC2.js";const ne="https://sentinel-authority-production.up.railway.app";function M({apiKey:s,certificateNumber:u,systemName:f,organizationName:_}){return`#!/usr/bin/env python3
 """
 ENVELO Interlock — Sentinel Authority
 Enforced Non-Violable Execution-Limit Override
@@ -270,4 +270,4 @@ systemctl --user stop envelo.service 2>/dev/null
 systemctl --user disable envelo.service 2>/dev/null
 rm -f ~/.config/systemd/user/envelo.service
 rm -rf ~/.envelo
-echo "✓ ENVELO uninstalled"`})]})]})]})}function ye(){const{user:s}=Y();return(s==null?void 0:s.role)==="admin"?t.jsx(oe,{}):t.jsx(se,{})}export{ye as default};
+echo "✓ ENVELO uninstalled"`})]})]})]})}function ge(){const{user:s}=Y();return(s==null?void 0:s.role)==="admin"?t.jsx(oe,{}):t.jsx(se,{})}export{ge as default};

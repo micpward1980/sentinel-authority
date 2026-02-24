@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Bell, Settings, FileText, Activity, Award, Users, Home, LogOut, Menu, X, ExternalLink, BookOpen, Clock, BarChart2 } from 'lucide-react';
 import { api } from '../config/api';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { styles } from '../config/styles';
 import { useAuth } from '../context/AuthContext';
 import useIsMobile from '../hooks/useIsMobile';
@@ -16,33 +17,18 @@ function Layout({ children }) {
   const [userCerts, setUserCerts] = useState([]);
   const [userApps, setUserApps] = useState([]);
   const location = useLocation();
-  const [notifs, setNotifs] = useState([]);
   const [notifOpen, setNotifOpen] = useState(false);
-  const [unreadCount, setUnreadCount] = useState(0);
-
-  // Auto-close sidebar on route change (mobile)
-  useEffect(() => {
-    if (isMobile) setSidebarOpen(false);
-  }, [location.pathname]);
-
-  useEffect(() => {
-    if (user) {
-      api.get('/api/certificates/').then(res => setUserCerts(res.data || [])).catch(() => setUserCerts([]));
-      api.get('/api/applications/').then(res => setUserApps(res.data.applications || res.data || [])).catch(() => setUserApps([]));
-      if (localStorage.getItem('token')) api.get('/api/users/notifications').then(res => { setNotifs(res.data.notifications || []); setUnreadCount(res.data.unread_count || 0); }).catch(() => {});
-    }
-  }, [user]);
-
-  useEffect(() => {
-    if (!user) return;
-    const iv = setInterval(() => {
-      if (!localStorage.getItem('token')) return;
-      api.get('/api/users/notifications').then(r => { setNotifs(r.data.notifications || []); setUnreadCount(r.data.unread_count || 0); }).catch(() => {});
-    }, 60000);
-    return () => clearInterval(iv);
-  }, [user]);
-
-  const markAllRead = () => { api.post('/api/users/notifications/mark-read').then(() => setUnreadCount(0)).catch(() => {}); setNotifOpen(false); };
+  const qcLayout = useQueryClient();
+  const { data: notifData } = useQuery({
+    queryKey: ['notifications'],
+    queryFn: () => api.get('/api/users/notifications').then(r => r.data),
+    refetchInterval: 60000,
+    enabled: !!localStorage.getItem('token'),
+    retry: false,
+  });
+  const notifs = notifData?.notifications || [];
+  const unreadCount = notifData?.unread_count || 0;
+  const markAllRead = () => { api.post('/api/users/notifications/mark-read').then(() => qcLayout.invalidateQueries({ queryKey: ['notifications'] })).catch(() => {}); setNotifOpen(false); };
 
   const navigation = [
     { name: 'Dashboard', href: '/dashboard', icon: Home, roles: ['admin', 'applicant'] },
