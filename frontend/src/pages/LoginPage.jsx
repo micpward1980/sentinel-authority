@@ -11,7 +11,7 @@ function LoginPage() {
   const [isRegister, setIsRegister] = useState(false);
   const [error, setError] = useState('');
   const [formData, setFormData] = useState({
-    email: '', password: '', full_name: '', organization_name: ''
+    email: '', password: '', full_name: '', organization: ''
   });
   const [showPassword, setShowPassword] = useState(false);
   const [twoFAStep, setTwoFAStep] = useState(false);
@@ -175,8 +175,8 @@ function LoginPage() {
                     <div className="sa-field">
                       <label className="sa-field-label">Organization</label>
                       <input className="sa-input" type="text" placeholder="Acme Robotics Inc."
-                        value={formData.organization_name}
-                        onChange={e => setFormData({...formData, organization_name: e.target.value})}
+                        value={formData.organization}
+                        onChange={e => setFormData({...formData, organization: e.target.value})}
                         required />
                     </div>
                   </>
