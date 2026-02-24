@@ -1,3 +1,4 @@
+from app.api.routes import ai_review
 """
 Sentinel Authority Platform API
 Unified certification platform for autonomous systems operating under ENVELO
@@ -340,6 +341,7 @@ app.include_router(users.router, prefix="/api/users", tags=["User Management"])
 app.include_router(documents.router, prefix="/api/documents", tags=["Documents"])
 app.include_router(deploy.router, prefix="/api", tags=["One-Command Deploy"])
 app.include_router(audit_routes.router, prefix="/api/audit", tags=["Audit Log"])
+app.include_router(ai_review.router, prefix="/api", tags=["AI Review"])
 
 
 @app.get("/health", tags=["System"], summary="Health check")
