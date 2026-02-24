@@ -47,14 +47,10 @@ function Layout({ children }) {
   const navigation = [
     { name: 'Dashboard', href: '/dashboard', icon: Home, roles: ['admin', 'applicant'] },
     { name: 'Applications', href: '/applications', icon: FileText, roles: ['admin', 'applicant'] },
-    { name: 'CAT-72 Console', href: '/cat72', icon: Clock, roles: ['admin', 'applicant'] },
-    { name: 'Certificates', href: '/certificates', icon: Award, roles: ['admin', 'applicant'] },
+    { name: 'ENVELO', href: '/envelo', icon: 'brand', roles: ['admin', 'applicant'] },
     { name: 'Resources', href: '/resources', icon: BookOpen, roles: ['admin', 'applicant'] },
-    { name: 'ENVELO Interlock', href: '/envelo', icon: 'brand', roles: ['admin', 'applicant'], requiresCert: true },
-    { name: 'Monitoring', href: '/monitoring', icon: BarChart2, roles: ['admin', 'applicant'] },
+    { name: 'Activity', href: '/activity', icon: Activity, roles: ['admin', 'applicant'] },
     { name: 'User Management', href: '/users', icon: Users, roles: ['admin'] },
-    { name: 'My Activity', href: '/my-activity', icon: Activity, roles: ['admin', 'applicant'] },
-    { name: 'Activity Log', href: '/activity', icon: FileText, roles: ['admin'] },
     { name: 'Settings', href: '/settings', icon: Settings, roles: ['admin', 'applicant'] },
     { name: 'API Docs', href: '/api-docs', icon: ExternalLink, roles: ['admin'] },
   ];

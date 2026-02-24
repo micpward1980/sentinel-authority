@@ -48,14 +48,14 @@ function App() {
           <Route path="/applications" element={<ProtectedRoute><Layout><LazyLoad><ApplicationsList /></LazyLoad></Layout></ProtectedRoute>} />
           <Route path="/applications/new" element={<ProtectedRoute><Layout><LazyLoad><NewApplication /></LazyLoad></Layout></ProtectedRoute>} />
           <Route path="/applications/:id" element={<ProtectedRoute><Layout><LazyLoad><ApplicationDetail /></LazyLoad></Layout></ProtectedRoute>} />
-          <Route path="/cat72" element={<ProtectedRoute roles={['admin', 'operator', 'applicant']}><Layout><LazyLoad><CAT72Console /></LazyLoad></Layout></ProtectedRoute>} />
-          <Route path="/certificates" element={<ProtectedRoute><Layout><LazyLoad><CertificatesPage /></LazyLoad></Layout></ProtectedRoute>} />
+          <Route path="/cat72" element={<Navigate to="/envelo" />} />
+          <Route path="/certificates" element={<Navigate to="/envelo" />} />
           <Route path="/pending" element={<LazyLoad><PendingPage /></LazyLoad>} />
           <Route path="/resources" element={<ProtectedRoute><Layout><LazyLoad><ResourcesPage /></LazyLoad></Layout></ProtectedRoute>} />
-          <Route path="/monitoring" element={<ProtectedRoute><Layout><LazyLoad><MonitoringPage /></LazyLoad></Layout></ProtectedRoute>} />
+          <Route path="/monitoring" element={<Navigate to="/envelo" />} />
           <Route path="/envelo" element={<ProtectedRoute><Layout><LazyLoad><EnveloPage /></LazyLoad></Layout></ProtectedRoute>} />
           <Route path="/activity" element={<ProtectedRoute roles={["admin"]}><Layout><LazyLoad><ActivityPage /></LazyLoad></Layout></ProtectedRoute>} />
-          <Route path="/my-activity" element={<ProtectedRoute><Layout><LazyLoad><MyActivityPage /></LazyLoad></Layout></ProtectedRoute>} />
+          <Route path="/my-activity" element={<Navigate to="/activity" />} />
           <Route path="/settings" element={<ProtectedRoute><Layout><LazyLoad><SettingsPage /></LazyLoad></Layout></ProtectedRoute>} />
           <Route path="/api-docs" element={<ProtectedRoute roles={["admin"]}><Layout><LazyLoad><ApiDocsPage /></LazyLoad></Layout></ProtectedRoute>} />
           <Route path="/licensees" element={<ProtectedRoute roles={["admin"]}><Layout><LazyLoad><LicenseesPage /></LazyLoad></Layout></ProtectedRoute>} />

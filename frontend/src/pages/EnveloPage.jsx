@@ -1,4 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
+import CAT72ConsolePage from './CAT72Console';
+import CertificatesPageEmbed from './CertificatesPage';
+import MonitoringPageEmbed from './MonitoringPage';
 import { Shield, Download, RefreshCw } from 'lucide-react';
 import { api } from '../config/api';
 import { styles } from '../config/styles';
@@ -460,31 +463,15 @@ function EnveloAdminView() {
   );
 
   const tabs = [
-    { id: 'queue',      label: 'Review Queue',  badge: needsAttention },
-    { id: 'monitoring', label: 'Live Monitoring', badge: activeSessions.length },
-    { id: 'certified',  label: 'Certified',      badge: conformant.length },
+    { id: 'queue',        label: 'Review Queue',    badge: needsAttention },
+    { id: 'monitoring',   label: 'Monitoring',       badge: activeSessions.length },
+    { id: 'cat72',        label: 'CAT-72',           badge: testing.length },
+    { id: 'certificates', label: 'Certificates',     badge: conformant.length },
   ];
 
   return (
-    <div className="space-y-6">
-      <SectionHeader label="Admin Console" title="ENVELO Management" description="Certify, monitor, and manage all customer systems" />
-
-      {/* Stats row */}
-      <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))' }}>
-        {[
-          { label: 'Awaiting Review', value: needsAttention,          color: needsAttention > 0 ? styles.accentAmber : styles.textTertiary },
-          { label: 'Approved / Deploying', value: approved.length,    color: styles.purpleBright },
-          { label: 'CAT-72 Running',   value: testing.length,         color: styles.accentAmber },
-          { label: 'Live Interlocks',  value: activeSessions.length,  color: styles.accentGreen },
-          { label: 'Certified Systems',value: conformant.length,      color: styles.purpleBright },
-          { label: 'Total Violations', value: totalViolations,        color: totalViolations > 0 ? styles.accentRed : styles.accentGreen },
-        ].map(s => (
-          <Panel key={s.label}>
-            <p style={{ fontFamily: styles.mono, fontSize: '9px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '8px' }}>{s.label}</p>
-            <p style={{ fontSize: 'clamp(22px,4vw,32px)', fontWeight: 200, color: s.color }}>{s.value}</p>
-          </Panel>
-        ))}
-      </div>
+    <div style={{display:"flex",flexDirection:"column",gap:"24px"}}>
+      <SectionHeader label="Admin Console" title="ENVELO Management" />
 
       {/* Tabs */}
       <div style={{ display: 'flex', gap: '8px', borderBottom: `1px solid ${styles.borderGlass}`, paddingBottom: '16px', overflowX: 'auto' }}>
@@ -507,7 +494,7 @@ function EnveloAdminView() {
 
       {/* ── REVIEW QUEUE ── */}
       {activeTab === 'queue' && (
-        <div className="space-y-6">
+        <div style={{display:"flex",flexDirection:"column",gap:"24px"}}>
           {/* Pending */}
           {pending.length > 0 && (
             <Panel accent="amber">
@@ -714,7 +701,7 @@ function EnveloAdminView() {
 
       {/* ── LIVE MONITORING ── */}
       {activeTab === 'monitoring' && (
-        <div className="space-y-6">
+        <div style={{display:"flex",flexDirection:"column",gap:"24px"}}>
           <Panel glow>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '20px' }}>
               <p style={{ fontFamily: styles.mono, fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary }}>Active Sessions</p>
@@ -764,7 +751,7 @@ function EnveloAdminView() {
             )}
           </Panel>
 
-          {selectedSession && (
+      {selectedSession && (
             <Panel accent="purple">
               <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px', marginBottom: '20px' }}>
                 <p style={{ fontFamily: styles.mono, fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary }}>Session Detail</p>
@@ -793,7 +780,17 @@ function EnveloAdminView() {
         </div>
       )}
 
-      {/* ── CERTIFIED ── */}
+      {/* ── CAT-72 ── */}
+      {activeTab === 'cat72' && (
+        <div><CAT72ConsolePage /></div>
+      )}
+
+      {/* ── CERTIFICATES ── */}
+      {activeTab === 'certificates' && (
+        <div><CertificatesPageEmbed /></div>
+      )}
+
+      {/* ── CERTIFIED (legacy) ── */}
       {activeTab === 'certified' && (
         <Panel>
           <p style={{ fontFamily: styles.mono, fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '20px' }}>ODDC Conformant Systems</p>
@@ -905,7 +902,7 @@ function EnveloCustomerView() {
   // ════ STATE 1: No applications ═══════════════════════════════════════════
   if (!latestApp) {
     return (
-      <div className="space-y-6">
+      <div style={{display:"flex",flexDirection:"column",gap:"24px"}}>
         <SectionHeader label="ENVELO Interlock" title="Get Started" />
         <Panel>
           <div style={{ textAlign: 'center', padding: 'clamp(32px,6vw,72px) clamp(16px,4vw,24px)' }}>
@@ -926,7 +923,7 @@ function EnveloCustomerView() {
   // ════ STATE 2: Pending / Under Review ════════════════════════════════════
   if (latestApp.state === 'pending' || latestApp.state === 'under_review') {
     return (
-      <div className="space-y-6">
+      <div style={{display:"flex",flexDirection:"column",gap:"24px"}}>
         <SectionHeader label="ENVELO Interlock" title="Application in Review" />
         <Panel>
           <div style={{ textAlign: 'center', padding: 'clamp(32px,5vw,60px) clamp(16px,4vw,24px)' }}>
@@ -967,7 +964,7 @@ function EnveloCustomerView() {
   // ════ STATE 3: Approved — key ready, need to deploy ═══════════════════════
   if (latestApp.state === 'approved') {
     return (
-      <div className="space-y-6">
+      <div style={{display:"flex",flexDirection:"column",gap:"24px"}}>
         <SectionHeader label="ENVELO Interlock" title="Deploy Your Interlock" description="Your application is approved. Install the agent to begin the 72-hour test." />
 
         {/* API Key panel */}
@@ -1058,7 +1055,7 @@ function EnveloCustomerView() {
     const isOnline = activeSessions.length > 0;
 
     return (
-      <div className="space-y-6">
+      <div style={{display:"flex",flexDirection:"column",gap:"24px"}}>
         <SectionHeader label="ENVELO Interlock" title="CAT-72 Running" description="72-hour conformance test in progress. Keep the agent running." />
 
         <Panel glow={isOnline}>
@@ -1117,7 +1114,7 @@ function EnveloCustomerView() {
 
   // ════ STATE 5: Conformant / Certified ════════════════════════════════════
   return (
-    <div className="space-y-6">
+    <div style={{display:"flex",flexDirection:"column",gap:"24px"}}>
       <SectionHeader label="ENVELO Interlock" title="Active" description="ODDC conformant — boundaries enforced in production" />
 
       {conformantCerts.map(cert => {

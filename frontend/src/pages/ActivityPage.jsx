@@ -5,8 +5,10 @@ import { styles } from '../config/styles';
 import { useToast } from '../context/ToastContext';
 import Panel from '../components/Panel';
 import SectionHeader from '../components/SectionHeader';
+import MyActivityPage from './MyActivityPage';
 import DataTable from '../components/DataTable';
 import Badge from '../components/Badge';
+import { useAuth } from '../context/AuthContext';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -96,6 +98,9 @@ const COLUMNS = [
 // ─── ActivityPage ─────────────────────────────────────────────────────────────
 
 function ActivityPage() {
+  const { user } = useAuth();
+  const [view, setView] = useState('all');
+  const isAdmin = user?.role === 'admin';
   const toast = useToast();
 
   const [actionFilter,   setActionFilter]   = useState('');
@@ -181,6 +186,8 @@ function ActivityPage() {
   };
 
   const resetFilter = (setter) => { setter(''); setPage(0); };
+
+  if (!isAdmin) return <MyActivityPage />;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
