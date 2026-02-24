@@ -138,7 +138,7 @@ function UserManagementPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" style={{ maxWidth: '1000px' }}>
       <SectionHeader label="Administration" title="User Management" description="Manage admin and applicant accounts"
         action={<button onClick={() => setShowInviteModal(true)} className="px-4 py-2 flex items-center gap-2" style={{background: 'transparent', border: 'none', borderBottom: '1px solid ' + styles.purpleBright, color: styles.purpleBright, fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}><Plus className="w-4 h-4" /> Invite User</button>}
       />
