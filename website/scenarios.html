@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en" style="scroll-behavior:smooth;">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-192.png">
+  <link rel="canonical" href="https://www.sentinelauthority.org/scenarios.html">
+
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>ODDC Conformance Scenarios — Sentinel Authority</title>
+  <meta name="description" content="Representative scenarios illustrating ODDC conformance determination across operational sectors." />
+  <meta property="og:title" content="ODDC Conformance Scenarios — Sentinel Authority" />
+  <meta property="og:description" content="Representative scenarios illustrating ODDC conformance determination across operational sectors." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://sentinelauthority.org/og.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@900&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    /* ═══════════════════════════════════════════════════
+       INSTITUTIONAL TOKEN SYSTEM — Supreme Court × ISO
+       ═══════════════════════════════════════════════════ */
+    :root {
+      --ink:          #0f1021;
+      --accent:       #2a2560;
+      --accent-hover: #1d1a3b;
+      --bg:           #ffffff;
+      --bg-soft:      #f6f7f9;
+      --border:       #e6e8ec;
+      --muted:        #5c6270;
+      --ease:         150ms ease;
+      --radius:       6px;
+
+      /* Legacy aliases — keep for backward compat */
+      --text-primary:   #0f1021;
+      --text-secondary: #5c6270;
+    }
+
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:0.01ms !important;animation-iteration-count:1 !important;transition-duration:0.01ms !important;}}
+    :root{
+      color-scheme:light;
+      --purple-primary:#2a2560;--purple-bright:#2a2560;--purple-glow:transparent /* deprecated */;
+      --bg-deep:#ffffff;--bg-panel:rgba(0,0,0,.025);
+      --accent-green:#16873e;--accent-amber:#9e6e12;--accent-red:#b43434;
+      --text-primary:#111318;--text-secondary:rgba(15,18,30,.74);--text-tertiary:rgba(15,18,30,.56);
+      --border-glass:rgba(0,0,0,.09);--border-subtle:rgba(0,0,0,.05);
+      --serif:Georgia,'Source Serif 4',serif;
+      --mono:Consolas,'IBM Plex Mono',monospace;
+      --sans:Calibri,'Inter',system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;
+      --ease:cubic-bezier(0.16,1,0.3,1);--ease-out:cubic-bezier(0.33,1,0.68,1);
+      --space-1:10px;--space-2:20px;--space-3:20px;--space-4:28px;--space-5:35px;--space-6:40px;--space-8:50px;
+      --max:1320px;--nav-height:72px;
+    }
+    *{box-sizing:border-box;}
+    .skip-link{position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;z-index:999;}
+    .skip-link:focus{position:fixed;top:10px;left:10px;width:auto;height:auto;padding:12px 18px;background:#fff;border:1px solid var(--purple-bright);color:var(--text-primary);font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;z-index:9999;}
+    a:focus-visible,button:focus-visible{outline:2px solid rgba(42,37,96,.75);outline-offset:3px;}
+    :focus:not(:focus-visible){outline:none;}
+    html{scroll-behavior:smooth;background:#ffffff;}
+    body{
+      margin:0;
+      font-family:var(--sans);
+      background:#ffffff;
+      color:var(--text-primary);
+      overflow-x:hidden;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      text-rendering:geometricPrecision;
+    }
+    body::before{content:'';position:fixed;inset:0;z-index:-1;background: var(--bg);pointer-events:none;}
+    a{color:inherit;text-decoration:none;} a:hover{text-decoration:none;filter:none;}
+    ::selection { background: var(--accent); color: #fff; }
+
+    /* NAV */
+    .site-header{position:fixed;top:0;width:100%;z-index:50;padding:0 24px;height:var(--nav-height);border-bottom:1px solid rgba(15,18,30,0.06);background:rgba(245,245,247,0.88);box-shadow:none;backdrop--webkit-backdrop-display:flex;align-items:center;}
+    .nav-inner{max-width:var(--max);margin:0 auto;width:100%;display:flex;align-items:center;justify-content:space-between;gap:20px;}
+    .brand{display:flex;align-items:center;gap:14px;text-decoration:none;} .brand:hover{text-decoration:none;}
+    .brand-mark { display: none; }
+    
+    @keyframes eye-pulse{0%,100%{opacity:.75;transform:scale(.98);box-shadow:0 0 0 rgba(196,184,232,0);}50%{opacity:1;transform:scale(1.02);box-shadow: none;}}
+    @media(prefers-reduced-motion:reduce){}
+    .brand-name { display: none; }
+    .back-link{font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--text-tertiary);transition:color .2s;text-decoration:none;font-weight:500;}
+    .back-link:hover{color:var(--text-primary);text-decoration:none;}
+
+    /* LAYOUT */
+    main{position:relative;z-index:1;max-width:var(--max);margin:0 auto;padding:0 20px 80px;}
+    .section{position:relative;padding:var(--space-6) 0;}
+    .section-label{font-family:var(--mono);font-size:10px;letter-spacing:2.4px;text-transform:uppercase;color:var(--purple-bright);display:block;margin-bottom:12px;font-weight:600;}
+    .section-title{font-family:var(--serif);font-size:clamp(30px,4vw,50px);font-weight:500;line-height:1.1;margin:0;letter-spacing:-0.03em;color:#1d1a3b;}
+    .section-lead{max-width:65ch;color:var(--text-secondary);font-weight:400;line-height:1.55;margin:var(--space-2) 0 0;font-size:16px;}
+
+    /* GLASS FRAMES */
+    .hud-frame{position:relative;padding:20px 16px;background:rgba(255,255,255,0.78);backdrop--webkit-backdrop-box-shadow:0 1px 2px rgba(15,18,30,0.03),0 10px 40px rgba(15,18,30,0.05);border:1px solid rgba(15,18,30,0.06);overflow:hidden;}
+    .hud-frame::before,.hud-frame::after,.hud-frame>i::before,.hud-frame>i::after{content:'';position:absolute;width:12px;height:12px;border-color:rgba(15,18,30,0.08);border-style:solid;pointer-events:none;animation:corner-breathe 4s ease-in-out infinite;}
+    .hud-frame::before{top:0;left:0;border-width:1px 0 0 1px;}
+    .hud-frame::after{top:0;right:0;border-width:1px 1px 0 0;}
+    .hud-frame>i::before{bottom:0;left:0;border-width:0 0 1px 1px;position:absolute;}
+    .hud-frame>i::after{bottom:0;right:0;border-width:0 1px 1px 0;position:absolute;}
+    .hud-frame>i{position:absolute;inset:0;pointer-events:none;}
+    @keyframes corner-breathe{0%,100%{border-color:rgba(15,18,30,0.08);}50%{border-color:rgba(42,37,96,0.20);}}
+    .hud-frame-green::before,.hud-frame-green::after,.hud-frame-green>i::before,.hud-frame-green>i::after{animation:corner-breathe-green 4s ease-in-out infinite;}
+    @keyframes corner-breathe-green{0%,100%{border-color:rgba(22,163,74,0.08);}50%{border-color:rgba(22,163,74,0.25);}}
+    .hud-frame-amber::before,.hud-frame-amber::after,.hud-frame-amber>i::before,.hud-frame-amber>i::after{animation:corner-breathe-amber 4s ease-in-out infinite;}
+    @keyframes corner-breathe-amber{0%,100%{border-color:rgba(158,110,18,0.08);}50%{border-color:rgba(158,110,18,0.25);}}
+    .hud-frame-red::before,.hud-frame-red::after,.hud-frame-red>i::before,.hud-frame-red>i::after{animation:corner-breathe-red 4s ease-in-out infinite;}
+    @keyframes corner-breathe-red{0%,100%{border-color:rgba(180,52,52,0.08);}50%{border-color:rgba(180,52,52,0.25);}}
+    .hud-scanline{border-bottom:1px solid rgba(15,18,30,0.04);}
+
+    /* HUD ELEMENTS */
+    .hud-dot{display:inline-block;width:4px;height:4px;border-radius:50%;background:rgba(42,37,96,0.35);margin-right:8px;flex-shrink:0;}
+    .hud-dot-green{background:rgba(22,163,74,0.6);}
+    .hud-dot-red{background:rgba(180,52,52,0.5);}
+    .hud-dot-amber{background:rgba(158,110,18,0.5);}
+    .hud-row{padding:12px 0;border-bottom:1px solid rgba(15,18,30,0.04);}
+    .hud-row:last-child{border-bottom:none;}
+    .hud-label{font-family:var(--mono);font-size:10px;letter-spacing:1.5px;color:var(--text-tertiary);text-transform:uppercase;font-weight:500;}
+    .hud-title{font-size:14px;color:var(--text-primary);font-weight:500;margin:2px 0;}
+    .hud-desc{font-size:13.5px;color:var(--text-secondary);line-height:1.75;}
+    .hud-num{font-family:var(--mono);font-size:10px;letter-spacing:1px;color:var(--purple-primary);margin-right:8px;}
+    .hud-link{font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--purple-primary);text-decoration:none;transition:opacity 0.2s;}
+    .hud-link:hover{opacity:0.7;}
+
+    /* SCENARIO CARD */
+    .scenario-card{margin-top:var(--space-3);}
+    .scenario-card .hud-title{font-size:15px;margin-bottom:8px;}
+    .scenario-card .hud-desc{margin-bottom:16px;}
+    .scenario-card .behavior-item{display:flex;align-items:flex-start;gap:8px;padding:6px 0;font-size:13px;color:var(--text-secondary);line-height:1.6;}
+    .scenario-card .behavior-item::before{content:'';width:4px;height:4px;border-radius:50%;background:var(--accent-green);flex-shrink:0;margin-top:7px;}
+    .scenario-card .evidence-item{display:flex;align-items:flex-start;gap:8px;padding:4px 0;font-size:12px;color:var(--text-tertiary);line-height:1.6;}
+    .scenario-card .evidence-item::before{content:'';width:3px;height:3px;border-radius:50%;background:var(--text-tertiary);flex-shrink:0;margin-top:6px;}
+    .download-link{display:inline-block;font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--purple-primary);margin-top:12px;transition:opacity 0.2s;}
+    .download-link:hover{opacity:0.7;}
+
+    /* FOOTER */
+    footer{border-top:1px solid var(--border-subtle);padding:var(--space-6) 0 var(--space-4);margin-top:var(--space-4);background:#ffffff;color:var(--text-tertiary);font-family:var(--mono);font-size:12px;letter-spacing:1px;}
+    .footer-inner{max-width:var(--max);margin:0 auto;padding:0 20px;display:flex;justify-content:space-between;align-items:flex-start;gap:20px;flex-wrap:wrap;}
+
+    /* REVEAL */
+    .reveal{opacity:0;animation:fadeUp .7s var(--ease) both;}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+    .reveal-1{animation-delay:.1s;}.reveal-2{animation-delay:.2s;}.reveal-3{animation-delay:.35s;}
+
+    /* MOBILE */
+    @media(max-width:768px){
+      .site-header{height:56px;padding:0 12px;}
+      :root{--nav-height:56px;}
+      .brand-name { display: none; }
+      .section-title{font-size:24px;}
+    }
+    @media(max-width:480px){.section-title{font-size:21px;}}
+/* ── ROOT TOKENS ── */
+:root{
+  --hairline:rgba(15,18,30,0.08);
+  --glass-bg:rgba(255,255,255,0.58);
+  --glass-border:rgba(255,255,255,0.45);
+}
+
+/* ── BODY ── */
+body{background: #ffffff!important;}
+body::before{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background: var(--bg);}
+
+/* ── HEADER ── */
+.site-header,header,.nav-bar{background:#ffffff!important;border-bottom:1px solid rgba(0,0,0,0.08)!important;}
+.brand-name { display: none; }
+
+/* ── SECTION HEAD (glass box) ── */
+.section-head{
+  display:flex!important;
+  align-items:flex-end!important;
+  justify-content:space-between!important;
+  gap:16px!important;
+  flex-wrap:wrap!important;
+  margin-bottom:24px!important;
+  background:rgba(255,255,255,0.45)!important;
+  -webkit-
+  border-radius:16px!important;
+  padding:28px 24px!important;
+  text-align:left!important;
+}
+
+/* ── SECTION LABEL ── */
+.section-label{
+  font-family:var(--mono,Consolas,'IBM Plex Mono',monospace)!important;
+  font-size:10px!important;
+  letter-spacing:5px!important;
+  text-transform:uppercase!important;
+  color:rgba(15,18,30,0.44)!important;
+  display:block!important;
+  margin-bottom:12px!important;
+}
+
+/* ── SECTION TITLE ── */
+.section-title,h1.section-title{
+  font-family:var(--serif,Georgia,'Source Serif 4',serif)!important;
+  font-size:clamp(30px,4vw,50px)!important;
+  font-weight:300!important;
+  line-height:1.1!important;
+  margin:0!important;
+  letter-spacing:-0.03em!important;
+  color:#1d1a3b!important;
+}
+
+/* ── SECTION LEAD ── */
+.section-lead{
+  max-width:580px!important;
+  color:rgba(15,18,30,0.64)!important;
+  font-weight:300!important;
+  line-height:1.75!important;
+  margin:16px 0 0!important;
+  margin-left:0!important;
+  margin-right:auto!important;
+  font-size:16px!important;
+}
+
+/* ── CARDS: glass, rounded, no brackets ── */
+.doc-card,.wp-featured,.artifact-card,.cert-card,.research-card,.fee-card,.process-card,.guarantee-box{
+  background:rgba(255,255,255,0.65)!important;
+  -webkit-
+  border:1px solid rgba(15,18,30,0.06)!important;
+  border-radius:16px!important;
+  box-shadow:0 1px 2px rgba(15,18,30,0.03),0 4px 16px rgba(15,18,30,0.02)!important;
+  overflow:hidden;
+}
+/* Kill bracket corners */
+.doc-card::before,.doc-card::after,
+.wp-featured::before,.wp-featured::after,
+.hud-frame::before,.hud-frame::after,
+.hud-frame>i::before,.hud-frame>i::after{display:none!important;}
+
+/* ── HUD FRAMES ── */
+.hud-frame{
+  border-radius:16px!important;
+  border:1px solid var(--hairline)!important;
+  background:rgba(255,255,255,0.40)!important;
+  -webkit-
+}
+
+/* ── SECTIONS ── */
+.section{border-top:1px solid var(--hairline)!important;padding-top:80px!important;padding-bottom:80px!important;}
+
+/* ── REVEALS ── */
+.reveal{opacity:0;transform:translateY(8px);transition:opacity .35s ease,transform .35s ease;}
+.reveal.active{opacity:1!important;transform:none!important;}
+@media(prefers-reduced-motion:reduce){.reveal{opacity:1!important;transform:none!important;transition:none!important;}}
+
+/* ── MISC ── */
+a:hover{filter:none!important;}
+::selection { background: var(--accent); color: #fff; }
+.hud-scanline::before,.hud-scanline::after{display:none!important;}
+.sa-particles,.sa-noise,.sa-vignette,.hud-shimmer{display:none!important;}
+.section-title,.section-label,.hud-title,.hud-label,.hud-desc,.hud-link,h1,h2,h3,p,span,a,div{text-shadow:none!important;}
+footer{border-top:1px solid var(--hairline)!important;}
+
+    /* ── Header ── */
+    .site-header{position:fixed;top:0;left:0;right:0;z-index:50;height:var(--nav-height,72px);background:rgba(255,255,255,0.92);border-bottom:1px solid rgba(15,18,30,0.08);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:flex;align-items:center;padding:0 24px;}
+    .nav-inner{max-width:var(--max,1320px);margin:0 auto;width:100%;display:flex;align-items:center;}
+    .back-link{font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--text-tertiary,rgba(15,18,30,.50));transition:color .15s;font-weight:500;text-decoration:none;}
+    .back-link:hover{color:var(--text-primary,#111318);}
+    </style>
+  <link rel="stylesheet" href="type.css">
+  <link rel="stylesheet" href="global.css">
+  <link rel="stylesheet" href="mobile.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Sentinel Authority",
+    "url": "https://sentinelauthority.org",
+    "logo": "https://sentinelauthority.org/og.webp",
+    "description": "Independent conformance certification body for autonomous systems. ODDC certification attests to runtime-enforced operational boundary compliance.",
+    "sameAs": [],
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "contactType": "customer service",
+      "url": "https://app.sentinelauthority.org"
+    }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Sentinel Authority",
+    "url": "https://sentinelauthority.org",
+    "description": "Independent conformance certification for autonomous systems.",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://sentinelauthority.org/?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to content</a>
+    <header class="site-header">
+    <div class="nav-inner">
+      <a href="/" class="back-link" aria-label="Back to home">← Sentinel Authority</a>
+    </div>
+  </header>
+
+  <main role="main" aria-label="Page content" id="main" role="main">
+    <div style="padding-top:calc(var(--nav-height) + 48px);">
+      <div class="section-head reveal">
+        <div>
+          <span class="section-label reveal r1">ILLUSTRATIVE CONFORMANCE SCENARIOS</span>
+          <h1 class="section-title reveal r2">Operational Scenarios by Sector</h1>
+          <p class="section-lead reveal r3">Representative scenarios illustrating ODDC conformance determination across operational sectors.</p>
+        </div>
+      </div>
+    </div>
+
+    <div style="max-width:700px;margin:0 auto;padding:0 var(--space-2);">
+
+      <!-- TABLE OF CONTENTS -->
+      <div class="hud-frame hud-scanline reveal"><i></i>
+        <div class="hud-label" style="margin-bottom:16px;">APPLICABLE SECTORS</div>
+        <div class="hud-row" style="display:flex;align-items:center;gap:12px;"><span class="hud-dot hud-dot-green" style="flex-shrink:0;"></span><span class="hud-num">01</span><a href="#datacenters" class="hud-link" style="font-size:10px;">DATA CENTERS</a></div>
+        <div class="hud-row" style="display:flex;align-items:center;gap:12px;"><span class="hud-dot" style="flex-shrink:0;"></span><span class="hud-num">02</span><a href="#vehicles" class="hud-link" style="font-size:10px;">AUTONOMOUS VEHICLES</a></div>
+        <div class="hud-row" style="display:flex;align-items:center;gap:12px;"><span class="hud-dot hud-dot-red" style="flex-shrink:0;"></span><span class="hud-num">03</span><a href="#healthcare" class="hud-link" style="font-size:10px;">HEALTHCARE &amp; MEDICAL AI</a></div>
+        <div class="hud-row" style="display:flex;align-items:center;gap:12px;"><span class="hud-dot hud-dot-amber" style="flex-shrink:0;"></span><span class="hud-num">04</span><a href="#finance" class="hud-link" style="font-size:10px;">FINANCIAL SERVICES</a></div>
+        <div class="hud-row" style="display:flex;align-items:center;gap:12px;"><span class="hud-dot hud-dot-green" style="flex-shrink:0;"></span><span class="hud-num">05</span><a href="#manufacturing" class="hud-link" style="font-size:10px;">MANUFACTURING</a></div>
+        <div class="hud-row" style="display:flex;align-items:center;gap:12px;"><span class="hud-dot" style="flex-shrink:0;"></span><span class="hud-num">06</span><a href="#aerospace" class="hud-link" style="font-size:10px;">AEROSPACE &amp; DEFENSE</a></div>
+        <div class="hud-row" style="display:flex;align-items:center;gap:12px;"><span class="hud-dot hud-dot-amber" style="flex-shrink:0;"></span><span class="hud-num">07</span><a href="#energy" class="hud-link" style="font-size:10px;">ENERGY &amp; UTILITIES</a></div>
+        <div class="hud-row" style="display:flex;align-items:center;gap:12px;"><span class="hud-dot hud-dot-red" style="flex-shrink:0;"></span><span class="hud-num">08</span><a href="#defense" class="hud-link" style="font-size:10px;">DEFENSE &amp; NATIONAL SECURITY</a></div>
+        <div class="hud-row" style="display:flex;align-items:center;gap:12px;"><span class="hud-dot hud-dot-green" style="flex-shrink:0;"></span><span class="hud-num">09</span><a href="#logistics" class="hud-link" style="font-size:10px;">LOGISTICS &amp; SUPPLY CHAIN</a></div>
+        <div class="hud-row" style="display:flex;align-items:center;gap:12px;"><span class="hud-dot" style="flex-shrink:0;"></span><span class="hud-num">10</span><a href="#maritime" class="hud-link" style="font-size:10px;">MARITIME &amp; PORT OPS</a></div>
+      </div>
+
+      <!-- 01 DATA CENTERS -->
+      <div id="datacenters" class="scenario-card">
+        <div class="hud-frame hud-frame-green reveal reveal-1"><i></i>
+          <div class="hud-label" style="margin-bottom:4px;"><span class="hud-num">01</span></div>
+          <div class="hud-title">DATA CENTERS &amp; HYPERSCALE COMPUTING</div>
+          <div class="hud-desc">Hyperscale environments rely on autonomous systems to allocate power, optimize cooling, place workloads, and orchestrate AI-on-AI stacks. ODDC scenarios illustrate facility-level and stack-level envelope boundaries.</div>
+          <div class="hud-label" style="margin-bottom:8px;">INTERLOCK BEHAVIOR</div>
+          <div class="behavior-item">Enforced thermal design power thresholds preventing processor overruns</div>
+          <div class="behavior-item">Automatic workload shedding as power approaches limits</div>
+          <div class="behavior-item">Maximum recursion depth for AI managing AI</div>
+          <div class="hud-label" style="margin:16px 0 8px;">EVIDENCE OUTPUTS</div>
+          <div class="evidence-item">Append-only envelope adherence logs</div>
+          <div class="evidence-item">Cryptographic attestations for underwriting review</div>
+          <a href="docs/ODDC_Scenarios_v3.0.pdf" class="download-link">Full scenario documentation available</a>
+        </div>
+      </div>
+
+      <!-- 02 AUTONOMOUS VEHICLES -->
+      <div id="vehicles" class="scenario-card">
+        <div class="hud-frame reveal reveal-1"><i></i>
+          <div class="hud-label" style="margin-bottom:4px;"><span class="hud-num">02</span></div>
+          <div class="hud-title">AUTONOMOUS VEHICLES</div>
+          <div class="hud-desc">Speed, geofence, and weather protocol enforcement for autonomous vehicle fleets operating within operational design domains.</div>
+          <div class="hud-label" style="margin-bottom:8px;">INTERLOCK BEHAVIOR</div>
+          <div class="behavior-item">Speed governors enforced at ODD boundary</div>
+          <div class="behavior-item">Geofence hard-walls preventing operation outside approved zones</div>
+          <div class="behavior-item">Weather-responsive degradation to minimum risk condition</div>
+          <div class="hud-label" style="margin:16px 0 8px;">EVIDENCE OUTPUTS</div>
+          <div class="evidence-item">Continuous telemetry of speed, position, heading</div>
+          <div class="evidence-item">Boundary proximity alerts and enforcement events</div>
+          <a href="docs/ODDC_Scenarios_v3.0.pdf" class="download-link">Full scenario documentation available</a>
+        </div>
+      </div>
+
+      <!-- 03 HEALTHCARE -->
+      <div id="healthcare" class="scenario-card">
+        <div class="hud-frame hud-frame-red reveal reveal-1"><i></i>
+          <div class="hud-label" style="margin-bottom:4px;"><span class="hud-num">03</span></div>
+          <div class="hud-title">HEALTHCARE &amp; MEDICAL AI</div>
+          <div class="hud-desc">Clinical decision support boundaries ensuring AI-assisted diagnostics operate within competency domains with fail-safe escalation.</div>
+          <div class="hud-label" style="margin-bottom:8px;">INTERLOCK BEHAVIOR</div>
+          <div class="behavior-item">Confidence threshold enforcement — flags below approved minimum</div>
+          <div class="behavior-item">Mandatory human-in-loop triggers for critical decisions</div>
+          <div class="behavior-item">Scope limitation preventing recommendations outside trained domains</div>
+          <div class="hud-label" style="margin:16px 0 8px;">EVIDENCE OUTPUTS</div>
+          <div class="evidence-item">Decision audit trail with confidence scores</div>
+          <div class="evidence-item">Escalation event logs with clinician acknowledgment</div>
+          <a href="docs/ODDC_Scenarios_v3.0.pdf" class="download-link">Full scenario documentation available</a>
+        </div>
+      </div>
+
+      <!-- 04 FINANCIAL SERVICES -->
+      <div id="finance" class="scenario-card">
+        <div class="hud-frame hud-frame-amber reveal reveal-1"><i></i>
+          <div class="hud-label" style="margin-bottom:4px;"><span class="hud-num">04</span></div>
+          <div class="hud-title">FINANCIAL SERVICES &amp; TRADING</div>
+          <div class="hud-desc">Trading limits and circuit breaker enforcement for autonomous trading systems operating within risk parameters.</div>
+          <div class="hud-label" style="margin-bottom:8px;">INTERLOCK BEHAVIOR</div>
+          <div class="behavior-item">Position size hard-caps enforced in real-time</div>
+          <div class="behavior-item">Sector exposure limits with automatic rebalancing</div>
+          <div class="behavior-item">Circuit breakers triggered by volatility thresholds</div>
+          <div class="hud-label" style="margin:16px 0 8px;">EVIDENCE OUTPUTS</div>
+          <div class="evidence-item">Trade-level compliance audit trail</div>
+          <div class="evidence-item">Risk parameter adherence reporting</div>
+          <a href="docs/ODDC_Scenarios_v3.0.pdf" class="download-link">Full scenario documentation available</a>
+        </div>
+      </div>
+
+      <!-- 05 MANUFACTURING -->
+      <div id="manufacturing" class="scenario-card">
+        <div class="hud-frame hud-frame-green reveal reveal-1"><i></i>
+          <div class="hud-label" style="margin-bottom:4px;"><span class="hud-num">05</span></div>
+          <div class="hud-title">INDUSTRIAL MANUFACTURING</div>
+          <div class="hud-desc">Robotics safety envelope enforcement for autonomous manufacturing systems operating alongside human workers.</div>
+          <div class="hud-label" style="margin-bottom:8px;">INTERLOCK BEHAVIOR</div>
+          <div class="behavior-item">Speed and force limits enforced by proximity zones</div>
+          <div class="behavior-item">Emergency stop integration with ENVELO enforcement layer</div>
+          <div class="behavior-item">Tool change validation preventing unauthorized operations</div>
+          <div class="hud-label" style="margin:16px 0 8px;">EVIDENCE OUTPUTS</div>
+          <div class="evidence-item">Safety zone violation logs</div>
+          <div class="evidence-item">Force and speed telemetry per cycle</div>
+          <a href="docs/ODDC_Scenarios_v3.0.pdf" class="download-link">Full scenario documentation available</a>
+        </div>
+      </div>
+
+      <!-- 06 AEROSPACE -->
+      <div id="aerospace" class="scenario-card">
+        <div class="hud-frame reveal reveal-1"><i></i>
+          <div class="hud-label" style="margin-bottom:4px;"><span class="hud-num">06</span></div>
+          <div class="hud-title">AEROSPACE &amp; DEFENSE</div>
+          <div class="hud-desc">Mission envelope and geofencing enforcement for autonomous aerial systems operating within airspace boundaries.</div>
+          <div class="hud-label" style="margin-bottom:8px;">INTERLOCK BEHAVIOR</div>
+          <div class="behavior-item">Altitude and airspeed hard-walls at approved limits</div>
+          <div class="behavior-item">Geofence enforcement with return-to-base failsafe</div>
+          <div class="behavior-item">Weather minimums triggering automatic mission abort</div>
+          <div class="hud-label" style="margin:16px 0 8px;">EVIDENCE OUTPUTS</div>
+          <div class="evidence-item">Flight envelope adherence recording</div>
+          <div class="evidence-item">Mission boundary event documentation</div>
+          <a href="docs/ODDC_Scenarios_v3.0.pdf" class="download-link">Full scenario documentation available</a>
+        </div>
+      </div>
+
+      <!-- 07 ENERGY -->
+      <div id="energy" class="scenario-card">
+        <div class="hud-frame hud-frame-amber reveal reveal-1"><i></i>
+          <div class="hud-label" style="margin-bottom:4px;"><span class="hud-num">07</span></div>
+          <div class="hud-title">ENERGY &amp; UTILITIES</div>
+          <div class="hud-desc">Grid management and power distribution enforcement for autonomous energy systems balancing load and generation.</div>
+          <div class="hud-label" style="margin-bottom:8px;">INTERLOCK BEHAVIOR</div>
+          <div class="behavior-item">Frequency deviation hard-limits preventing cascade failure</div>
+          <div class="behavior-item">Load shedding protocols enforced at threshold</div>
+          <div class="behavior-item">Renewable intermittency compensation within bounds</div>
+          <div class="hud-label" style="margin:16px 0 8px;">EVIDENCE OUTPUTS</div>
+          <div class="evidence-item">Grid stability telemetry logs</div>
+          <div class="evidence-item">Load balancing enforcement event records</div>
+          <a href="docs/ODDC_Scenarios_v3.0.pdf" class="download-link">Full scenario documentation available</a>
+        </div>
+      </div>
+
+      <!-- 08 DEFENSE -->
+      <div id="defense" class="scenario-card">
+        <div class="hud-frame hud-frame-red reveal reveal-1"><i></i>
+          <div class="hud-label" style="margin-bottom:4px;"><span class="hud-num">08</span></div>
+          <div class="hud-title">DEFENSE &amp; NATIONAL SECURITY</div>
+          <div class="hud-desc">Autonomous system enforcement in defense contexts with strict rules of engagement and operational boundary compliance.</div>
+          <div class="hud-label" style="margin-bottom:8px;">INTERLOCK BEHAVIOR</div>
+          <div class="behavior-item">Enforced operational boundary constraints within declared mission parameters</div>
+          <div class="behavior-item">Geographic restriction hard-walls</div>
+          <div class="behavior-item">Escalation-of-force protocol enforcement with human override</div>
+          <div class="hud-label" style="margin:16px 0 8px;">EVIDENCE OUTPUTS</div>
+          <div class="evidence-item">Engagement boundary compliance records</div>
+          <div class="evidence-item">Rules-of-engagement adherence audit trail</div>
+          <a href="docs/ODDC_Scenarios_v3.0.pdf" class="download-link">Full scenario documentation available</a>
+        </div>
+      </div>
+
+      <!-- 09 LOGISTICS -->
+      <div id="logistics" class="scenario-card">
+        <div class="hud-frame hud-frame-green reveal reveal-1"><i></i>
+          <div class="hud-label" style="margin-bottom:4px;"><span class="hud-num">09</span></div>
+          <div class="hud-title">LOGISTICS &amp; SUPPLY CHAIN</div>
+          <div class="hud-desc">Autonomous fleet and warehouse system enforcement for logistics operations within operational parameters.</div>
+          <div class="hud-label" style="margin-bottom:8px;">INTERLOCK BEHAVIOR</div>
+          <div class="behavior-item">Route corridor enforcement preventing unauthorized detours</div>
+          <div class="behavior-item">Load weight and volume limits enforced at pickup</div>
+          <div class="behavior-item">Speed and proximity enforcement in warehouse zones</div>
+          <div class="hud-label" style="margin:16px 0 8px;">EVIDENCE OUTPUTS</div>
+          <div class="evidence-item">Route adherence and deviation logs</div>
+          <div class="evidence-item">Load compliance verification records</div>
+          <a href="docs/ODDC_Scenarios_v3.0.pdf" class="download-link">Full scenario documentation available</a>
+        </div>
+      </div>
+
+      <!-- 10 MARITIME -->
+      <div id="maritime" class="scenario-card">
+        <div class="hud-frame reveal reveal-1"><i></i>
+          <div class="hud-label" style="margin-bottom:4px;"><span class="hud-num">10</span></div>
+          <div class="hud-title">MARITIME &amp; PORT OPERATIONS</div>
+          <div class="hud-desc">Autonomous vessel and port equipment enforcement for maritime operations within navigational and operational boundaries.</div>
+          <div class="hud-label" style="margin-bottom:8px;">INTERLOCK BEHAVIOR</div>
+          <div class="behavior-item">Navigation corridor hard-walls in port approaches</div>
+          <div class="behavior-item">Speed restrictions enforced by zone proximity</div>
+          <div class="behavior-item">Weather and sea-state minimum enforcement</div>
+          <div class="hud-label" style="margin:16px 0 8px;">EVIDENCE OUTPUTS</div>
+          <div class="evidence-item">Vessel track and boundary adherence logs</div>
+          <div class="evidence-item">Port operation compliance documentation</div>
+          <a href="docs/ODDC_Scenarios_v3.0.pdf" class="download-link">Full scenario documentation available</a>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <div>&#169; <span id="year"></span> SENTINEL AUTHORITY</div><div style="margin-top:8px;font-size:9px;letter-spacing:1px;"><a href="privacy.html" style="color:inherit;text-decoration:none;">Privacy Notice</a> · <a href="terms.html" style="color:inherit;text-decoration:none;">Terms of Use</a></div>
+    </div>
+  </footer>
+  <script>document.getElementById('year').textContent=new Date().getFullYear();</script>
+<script>
+(function(){
+  /* Green status dot on brand */
+  var b=document.querySelector(".brand");
+  // dot removed
+  /* Reveal observer */
+  var obs=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add("active");obs.unobserve(e.target);}});},{threshold:0.1});
+  document.querySelectorAll(".reveal,.section-head").forEach(function(el){obs.observe(el);});
+})();
+</script>
+</body>
+</html>

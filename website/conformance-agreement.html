@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en" style="scroll-behavior:smooth;">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-192.png">
+  <link rel="canonical" href="https://www.sentinelauthority.org/conformance-agreement.html">
+
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Conformance Agreement — Sentinel Authority</title>
+  <meta name="description" content="Sentinel Authority provides independent ODDC conformance for autonomous vehicles, robotics, and AI systems. CAT-72 testing, ENVELO enforcement, and trusted third-party attestation for AV safety compliance." />
+  <meta property="og:title" content="Conformance Agreement — Sentinel Authority" />
+  <meta property="og:description" content="Sentinel Authority provides independent ODDC conformance for autonomous vehicles, robotics, and AI systems." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://sentinelauthority.org/og.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@900&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    /* ═══════════════════════════════════════════════════
+       INSTITUTIONAL TOKEN SYSTEM — Supreme Court × ISO
+       ═══════════════════════════════════════════════════ */
+    :root {
+      --ink:          #0f1021;
+      --accent:       #2a2560;
+      --accent-hover: #1d1a3b;
+      --bg:           #ffffff;
+      --bg-soft:      #f6f7f9;
+      --border:       #e6e8ec;
+      --muted:        #5c6270;
+      --ease:         150ms ease;
+      --radius:       6px;
+
+      /* Legacy aliases — keep for backward compat */
+      --text-primary:   #0f1021;
+      --text-secondary: #5c6270;
+    }
+
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:0.01ms !important;animation-iteration-count:1 !important;transition-duration:0.01ms !important;}}
+    :root{
+      color-scheme:light;
+      --purple-primary:#2a2560;--purple-bright:#2a2560;--purple-glow:transparent /* deprecated */;
+      --bg-deep:#ffffff;--accent-green:rgba(22,163,74,1.00);--accent-amber:rgba(202,138,4,1.00);--accent-red:rgba(220,53,69,1.00);
+      --text-primary:#111318;--text-secondary:rgba(15,18,30,.74);--text-tertiary:rgba(15,18,30,.56);
+      --border-glass:rgba(0,0,0,.09);--border-subtle:rgba(0,0,0,.05);
+      --serif:Georgia,'Source Serif 4',serif;--mono:Consolas,'IBM Plex Mono',monospace;--sans:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+      --ease:cubic-bezier(0.16,1,0.3,1);--ease-out:cubic-bezier(0.33,1,0.68,1);
+      --space-1:10px;--space-2:20px;--space-3:20px;--space-4:28px;--space-5:35px;--space-6:40px;--space-8:50px;
+      --max:1320px;--nav-height:72px;
+    }
+    *{box-sizing:border-box;}
+    .skip-link{position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;z-index:999;}
+    .skip-link:focus{position:fixed;top:10px;left:10px;width:auto;height:auto;padding:12px 18px;background:#fff;border:1px solid var(--purple-bright);color:var(--text-primary);font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;z-index:9999;}
+    a:focus-visible,button:focus-visible{outline:2px solid rgba(42,37,96,.75);outline-offset:3px;}
+    :focus:not(:focus-visible){outline:none;}
+    html{scroll-behavior:smooth;background:#ffffff;}
+    body{margin:0;font-family:var(--sans);background:#ffffff;color:var(--text-primary);overflow-x:hidden;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:geometricPrecision;}
+    body::before{content:'';position:fixed;inset:0;z-index:-1;background: var(--bg);pointer-events:none;}
+    a{color:inherit;text-decoration:none;} a:hover{text-decoration:none;}
+    ::selection { background: var(--accent); color: #fff; }
+
+    /* NAV */
+    .site-header{position:fixed;top:0;width:100%;z-index:50;padding:0 24px;height:var(--nav-height);border-bottom:1px solid rgba(15,18,30,0.06);background:rgba(255,255,255,0.92);box-shadow:none;backdrop--webkit-backdrop-display:flex;align-items:center;}
+    .nav-inner{max-width:var(--max);margin:0 auto;width:100%;display:flex;align-items:center;justify-content:space-between;gap:20px;}
+    .brand{display:flex;align-items:center;gap:14px;text-decoration:none;} .brand:hover{text-decoration:none;}
+    .brand-mark { display: none; }
+    
+    @keyframes eye-pulse{0%,100%{opacity:.75;transform:scale(.98);}50%{opacity:1;transform:scale(1.02);}}
+    .brand-name { display: none; }
+    .back-link{font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--text-tertiary);transition:color .2s;text-decoration:none;font-weight:500;}
+    .back-link:hover{color:var(--text-primary);text-decoration:none;}
+
+    /* LAYOUT */
+    main{position:relative;z-index:1;max-width:var(--max);margin:0 auto;padding:0 20px 80px;}
+    .section{position:relative;padding:var(--space-6) 0;scroll-margin-top:calc(var(--nav-height) + 24px);}
+    .section-label{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--purple-bright);display:block;margin-bottom:12px;font-weight:600;}
+    .section-title{font-family:var(--serif);font-size:clamp(30px,4vw,50px);font-weight:500;line-height:1.1;margin:0;letter-spacing:-0.02em;color:#1d1a3b;}
+    .section-lead{max-width:65ch;color:var(--text-secondary);font-weight:400;line-height:1.55;margin:var(--space-2) 0 0;font-size:16px;}
+
+    /* GLASS FRAMES */
+    .hud-frame{position:relative;padding:20px 16px;background:rgba(255,255,255,0.78);backdrop--webkit-backdrop-box-shadow:0 1px 2px rgba(15,18,30,0.03),0 10px 40px rgba(15,18,30,0.05);border:1px solid rgba(15,18,30,0.06);overflow:hidden;}
+    .hud-frame::before,.hud-frame::after,.hud-frame>i::before,.hud-frame>i::after{content:'';position:absolute;width:12px;height:12px;border-color:rgba(15,18,30,0.08);border-style:solid;pointer-events:none;animation:corner-breathe 4s ease-in-out infinite;}
+    .hud-frame::before{top:0;left:0;border-width:1px 0 0 1px;}
+    .hud-frame::after{top:0;right:0;border-width:1px 1px 0 0;}
+    .hud-frame>i::before{bottom:0;left:0;border-width:0 0 1px 1px;position:absolute;}
+    .hud-frame>i::after{bottom:0;right:0;border-width:0 1px 1px 0;position:absolute;}
+    .hud-frame>i{position:absolute;inset:0;pointer-events:none;}
+    @keyframes corner-breathe{0%,100%{border-color:rgba(15,18,30,0.08);}50%{border-color:rgba(42,37,96,0.20);}}
+
+    /* Colored frames */
+    .hud-frame-green::before,.hud-frame-green::after,.hud-frame-green>i::before,.hud-frame-green>i::after{animation:corner-breathe-green 4s ease-in-out infinite !important;}
+    @keyframes corner-breathe-green{0%,100%{border-color:rgba(22,163,74,0.08);}50%{border-color:rgba(22,163,74,0.25);}}
+    .hud-frame-amber::before,.hud-frame-amber::after,.hud-frame-amber>i::before,.hud-frame-amber>i::after{animation:corner-breathe-amber 4s ease-in-out infinite !important;}
+    @keyframes corner-breathe-amber{0%,100%{border-color:rgba(202,138,4,0.08);}50%{border-color:rgba(202,138,4,0.25);}}
+    .hud-frame-red::before,.hud-frame-red::after,.hud-frame-red>i::before,.hud-frame-red>i::after{animation:corner-breathe-red 4s ease-in-out infinite !important;}
+    @keyframes corner-breathe-red{0%,100%{border-color:rgba(220,53,69,0.08);}50%{border-color:rgba(220,53,69,0.25);}}
+    .hud-scanline{border-bottom:1px solid rgba(15,18,30,0.04);}
+
+    /* HUD ELEMENTS */
+    .hud-dot{display:inline-block;width:4px;height:4px;border-radius:50%;background:rgba(42,37,96,0.35);margin-right:8px;flex-shrink:0;}
+    .hud-dot-green{background:rgba(22,163,74,0.6);animation:hud-breathe 3s ease-in-out infinite;}
+    .hud-dot-amber{background:rgba(202,138,4,0.6);animation:hud-breathe 3s ease-in-out infinite;}
+    .hud-dot-red{background:rgba(220,53,69,0.5);}
+    @keyframes hud-breathe{0%,100%{opacity:0.4;}50%{opacity:1;}}
+    .hud-row{padding:12px 0;border-bottom:1px solid rgba(15,18,30,0.04);}
+    .hud-row:last-child{border-bottom:none;}
+    .hud-label{font-family:var(--mono);font-size:10px;letter-spacing:1.5px;color:var(--text-tertiary);text-transform:uppercase;font-weight:500;}
+    .hud-title{font-size:14px;color:var(--text-primary);font-weight:500;margin:2px 0;}
+    .hud-desc{font-size:13px;color:var(--text-secondary);line-height:1.55;}
+    .hud-num{font-family:var(--mono);font-size:10px;letter-spacing:1px;color:rgba(42,37,96,0.4);margin-right:12px;font-weight:500;}
+    .hud-link{font-family:var(--mono);font-size:11px;letter-spacing:2px;color:rgba(42,37,96,1.00);text-decoration:none !important;padding-bottom:2px;transition:all 0.2s;}
+    .hud-link:hover{color:rgba(42,37,96,1.00);}
+
+    /* FOOTER */
+    footer{border-top:1px solid rgba(0,0,0,.05);padding:var(--space-6) 0 var(--space-4);margin-top:var(--space-4);background:#ffffff;color:var(--text-tertiary);font-family:var(--mono);font-size:12px;letter-spacing:1px;}
+    .footer-inner{max-width:var(--max);margin:0 auto;padding:0 20px;display:flex;justify-content:space-between;align-items:flex-start;gap:20px;flex-wrap:wrap;}
+
+    /* MOBILE */
+    @media(max-width:768px){.site-header{height:56px;padding:0 12px;}:root{--nav-height:56px;}.brand-name { display: none; }.hud-frame{backdrop--webkit-backdrop-}.section-title{font-size:24px !important;}}
+    @media(max-width:480px){.section-title{font-size:21px !important;}}
+/* ── ROOT TOKENS ── */
+:root{
+  --hairline:rgba(15,18,30,0.08);
+  --glass-bg:rgba(255,255,255,0.58);
+  --glass-border:rgba(255,255,255,0.45);
+}
+
+/* ── BODY ── */
+body{background: #ffffff!important;}
+body::before{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:var(--bg);}
+
+/* ── HEADER ── */
+.site-header,header,.nav-bar{background:rgba(255,255,255,0.92)!important;backdrop--webkit-backdrop-border-bottom:1px solid var(--hairline)!important;}
+.brand-name { display: none; }
+
+/* ── SECTION HEAD (glass box) ── */
+.section-head{
+  display:flex!important;
+  align-items:flex-end!important;
+  justify-content:space-between!important;
+  gap:16px!important;
+  flex-wrap:wrap!important;
+  margin-bottom:24px!important;
+  background:rgba(255,255,255,0.45)!important;
+  -webkit-
+  border-radius:16px!important;
+  padding:28px 24px!important;
+  text-align:left!important;
+}
+
+/* ── SECTION LABEL ── */
+.section-label{
+  font-family:var(--mono,Consolas,'IBM Plex Mono',monospace)!important;
+  font-size:10px!important;
+  letter-spacing:5px!important;
+  text-transform:uppercase!important;
+  color:rgba(15,18,30,0.44)!important;
+  display:block!important;
+  margin-bottom:12px!important;
+}
+
+/* ── SECTION TITLE ── */
+.section-title,h1.section-title{
+  font-family:var(--serif,Georgia,'Source Serif 4',serif)!important;
+  font-size:clamp(30px,4vw,50px)!important;
+  font-weight:300!important;
+  line-height:1.1!important;
+  margin:0!important;
+  letter-spacing:-0.03em!important;
+  color:#1d1a3b!important;
+}
+
+/* ── SECTION LEAD ── */
+.section-lead{
+  max-width:580px!important;
+  color:rgba(15,18,30,0.64)!important;
+  font-weight:300!important;
+  line-height:1.75!important;
+  margin:16px 0 0!important;
+  margin-left:0!important;
+  margin-right:auto!important;
+  font-size:16px!important;
+}
+
+/* ── CARDS: glass, rounded, no brackets ── */
+.doc-card,.wp-featured,.artifact-card,.cert-card,.research-card,.fee-card,.process-card,.guarantee-box{
+  background:rgba(255,255,255,0.65)!important;
+  -webkit-
+  border:1px solid rgba(15,18,30,0.06)!important;
+  border-radius:16px!important;
+  box-shadow:0 1px 2px rgba(15,18,30,0.03),0 4px 16px rgba(15,18,30,0.02)!important;
+  overflow:hidden;
+}
+/* Kill bracket corners */
+.doc-card::before,.doc-card::after,
+.wp-featured::before,.wp-featured::after,
+.hud-frame::before,.hud-frame::after,
+.hud-frame>i::before,.hud-frame>i::after{display:none!important;}
+
+/* ── HUD FRAMES ── */
+.hud-frame{
+  border-radius:16px!important;
+  border:1px solid var(--hairline)!important;
+  background:rgba(255,255,255,0.40)!important;
+  -webkit-
+}
+
+/* ── SECTIONS ── */
+.section{border-top:1px solid var(--hairline)!important;padding-top:80px!important;padding-bottom:80px!important;}
+
+/* ── REVEALS ── */
+.reveal{opacity:1;transform:none;}
+.reveal.active{opacity:1!important;transform:none!important;}
+@media(prefers-reduced-motion:reduce){.reveal{opacity:1!important;transform:none!important;transition:none!important;}}
+
+/* ── MISC ── */
+a:hover{filter:none!important;}
+::selection { background: var(--accent); color: #fff; }
+.hud-scanline::before,.hud-scanline::after{display:none!important;}
+.sa-particles,.sa-noise,.sa-vignette,.hud-shimmer{display:none!important;}
+.section-title,.section-label,.hud-title,.hud-label,.hud-desc,.hud-link,h1,h2,h3,p,span,a,div{text-shadow:none!important;}
+footer{border-top:1px solid var(--hairline)!important;}
+
+/* Stagger cascade animation */
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+.reveal.active{animation:fadeUp .7s cubic-bezier(0.16,1,0.3,1) both;}
+.r1{animation-delay:.1s;}.r2{animation-delay:.15s;}.r3{animation-delay:.2s;}.r4{animation-delay:.25s;}.r5{animation-delay:.3s;}.r6{animation-delay:.35s;}.r7{animation-delay:.4s;}.r8{animation-delay:.45s;}.r9{animation-delay:.5s;}.r10{animation-delay:.55s;}
+
+    /* ── Header ── */
+    .site-header{position:fixed;top:0;left:0;right:0;z-index:50;height:var(--nav-height,72px);background:rgba(255,255,255,0.92);border-bottom:1px solid rgba(15,18,30,0.08);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:flex;align-items:center;padding:0 24px;}
+    .nav-inner{max-width:var(--max,1320px);margin:0 auto;width:100%;display:flex;align-items:center;}
+    .back-link{font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--text-tertiary,rgba(15,18,30,.50));transition:color .15s;font-weight:500;text-decoration:none;}
+    .back-link:hover{color:var(--text-primary,#111318);}
+    </style>
+  <link rel="stylesheet" href="global.css">
+  <link rel="stylesheet" href="mobile.css">
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to content</a>
+    <header class="site-header">
+    <div class="nav-inner">
+      <a href="/" class="back-link" aria-label="Back to home">← Sentinel Authority</a>
+    </div>
+  </header>
+
+  <main role="main" aria-label="Page content" id="main" role="main">
+    <div style="padding-top:calc(var(--nav-height) + 48px);max-width:var(--max);margin:0 auto;">
+      <div class="section-head reveal">
+        <div>
+          <span class="section-label reveal r1">CONFORMANCE TERMS</span>
+          <h1 class="section-title reveal r2">Conformance Agreement</h1>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
+        <span class="hud-dot hud-dot-green"></span>
+        <span class="hud-label" style="color:rgba(22,163,74,0.7);">EFFECTIVE: JANUARY 2026</span>
+      </div>
+      <p class="section-lead" style="max-width:65ch;">This Agreement governs the relationship between Sentinel Authority (&ldquo;SA&rdquo;) and organizations seeking ODD Conformance Determination (ODDC) for autonomous systems.</p>
+    </div>
+
+    <div style="max-width:700px;margin:0 auto;padding:0 var(--space-2);">
+
+      <!-- Critical Understanding -->
+      <div class="hud-frame hud-frame-red hud-scanline"><i></i>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+          <span class="hud-label">NATURE AND SCOPE OF DETERMINATION</span>
+          <span class="hud-dot hud-dot-red"></span>
+        </div>
+        <div class="hud-desc" style="margin-bottom:12px;">ODDC attests that a system operates within defined boundaries with non-bypassable enforcement at the time of determination.</div>
+        <div class="hud-label" style="margin-bottom:8px;color:rgba(220,53,69,0.7);">ODDC IS NOT</div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-red" style="margin-top:5px;"></span><span class="hud-desc">Regulatory approval, safety attestation, product attestation</span></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-red" style="margin-top:5px;"></span><span class="hud-desc">Guarantee of performance, insurance, or warranty</span></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-red" style="margin-top:5px;"></span><span class="hud-desc">Applicant remains solely responsible for system behavior and all consequences of operation</span></div>
+      </div>
+
+      <!-- TOC -->
+      <div class="hud-frame hud-scanline" style="margin-top:var(--space-3);"><i></i>
+        <div class="hud-label" style="margin-bottom:16px;">CONTENTS</div>
+        <div class="hud-row" style="display:flex;align-items:center;gap:12px;"><span class="hud-num">01</span><a href="#scope" class="hud-link" style="font-size:10px;">SCOPE OF DETERMINATION</a></div>
+        <div class="hud-row" style="display:flex;align-items:center;gap:12px;"><span class="hud-num">02</span><a href="#obligations" class="hud-link" style="font-size:10px;">APPLICANT OBLIGATIONS</a></div>
+        <div class="hud-row" style="display:flex;align-items:center;gap:12px;"><span class="hud-num">03</span><a href="#sa-obligations" class="hud-link" style="font-size:10px;">SA OBLIGATIONS</a></div>
+        <div class="hud-row" style="display:flex;align-items:center;gap:12px;"><span class="hud-num">04</span><a href="#terms" class="hud-link" style="font-size:10px;">CONFORMANCE TERMS</a></div>
+        <div class="hud-row" style="display:flex;align-items:center;gap:12px;"><span class="hud-num">05</span><a href="#revocation" class="hud-link" style="font-size:10px;">REVOCATION</a></div>
+        <div class="hud-row" style="display:flex;align-items:center;gap:12px;"><span class="hud-num">06</span><a href="#suspension" class="hud-link" style="font-size:10px;">SUSPENSION &amp; REINSTATEMENT</a></div>
+        <div class="hud-row" style="display:flex;align-items:center;gap:12px;"><span class="hud-num">07</span><a href="#liability" class="hud-link" style="font-size:10px;">LIABILITY &amp; INDEMNIFICATION</a></div>
+        <div class="hud-row" style="display:flex;align-items:center;gap:12px;"><span class="hud-num">08</span><a href="#confidentiality" class="hud-link" style="font-size:10px;">CONFIDENTIALITY</a></div>
+        <div class="hud-row" style="display:flex;align-items:center;gap:12px;"><span class="hud-num">09</span><a href="#ip" class="hud-link" style="font-size:10px;">INTELLECTUAL PROPERTY</a></div>
+        <div class="hud-row" style="display:flex;align-items:center;gap:12px;"><span class="hud-num">10</span><a href="#general" class="hud-link" style="font-size:10px;">GENERAL PROVISIONS</a></div>
+      </div>
+
+      <!-- 1 Scope -->
+      <div id="scope" class="section hud-frame" style="margin-top:var(--space-3);"><i></i>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;"><span class="hud-num">01</span><span class="hud-label">SCOPE OF DETERMINATION</span></div>
+        <div class="hud-desc" style="margin-bottom:12px;">SA will evaluate and determine conformance based on:</div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-green" style="margin-top:5px;"></span><div><span class="hud-title" style="font-size:12px;">ODD Specification</span><div class="hud-desc">The Operational Design Domain as specified by Applicant</div></div></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-green" style="margin-top:5px;"></span><div><span class="hud-title" style="font-size:12px;">ENVELO Compliance</span><div class="hud-desc">Runtime enforcement architecture meeting ENVELO requirements</div></div></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-green" style="margin-top:5px;"></span><div><span class="hud-title" style="font-size:12px;">CAT-72 Evidence</span><div class="hud-desc">Successful completion of CAT-72 cumulative enforcement verification period</div></div></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-green" style="margin-top:5px;"></span><div><span class="hud-title" style="font-size:12px;">Architectural Review</span><div class="hud-desc">System architecture verified to support specified enforcement and boundary implementation</div></div></div>
+      </div>
+
+      <!-- 2 Applicant Obligations -->
+      <div id="obligations" class="section hud-frame" style="margin-top:var(--space-3);"><i></i>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;"><span class="hud-num">02</span><span class="hud-label">APPLICANT OBLIGATIONS</span></div>
+        <div class="hud-label" style="margin-bottom:8px;color:var(--text-tertiary);">2.1 APPLICATION REQUIREMENTS</div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Provide complete and accurate application materials</span></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Disclose all relevant system specifications and operational parameters</span></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Identify all boundaries, tolerances, and constraints in the ODD specification</span></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Submit documentation of ENVELO-compliant enforcement architecture</span></div>
+        <div class="hud-label" style="margin:16px 0 8px;color:var(--text-tertiary);">2.2 TESTING REQUIREMENTS</div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Deploy the ENVELO Interlock as configured by SA</span></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Conduct CAT-72 cumulative enforcement verification across active operational intervals within the declared ODD</span></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Not modify system configuration or enforcement settings during testing</span></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Report any test interruptions, violations, or anomalies</span></div>
+      </div>
+      <div class="hud-frame hud-frame-amber" style="margin-top:var(--space-2);"><i></i>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;"><span class="hud-label">2.3 POST-CONFORMANCE — UPTIME REQUIREMENTS</span><span class="hud-dot hud-dot-amber"></span></div>
+        <div class="hud-desc">Minimum 99% monthly uptime required. Outages under 1 hour require no action. Extended outages exceeding 1 hour trigger automated notification. Cumulative downtime exceeding 24 hours per calendar month may result in attestation suspension.</div>
+      </div>
+      <div class="hud-frame" style="margin-top:var(--space-2);"><i></i>
+        <div class="hud-label" style="margin-bottom:8px;color:var(--text-tertiary);">2.4 POST-CONFORMANCE REQUIREMENTS</div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Maintain ENVELO Interlock in continuous operation during attested system operation</span></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Not bypass, disable, or tamper with enforcement mechanisms</span></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Notify SA of any system modifications affecting ODD or enforcement</span></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Complete renewal testing prior to conformance expiration</span></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Use the ODDC mark only in accordance with mark usage guidelines</span></div>
+      </div>
+
+      <!-- 3 SA Obligations -->
+      <div id="sa-obligations" class="section hud-frame" style="margin-top:var(--space-3);"><i></i>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;"><span class="hud-num">03</span><span class="hud-label">SA OBLIGATIONS</span></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-green" style="margin-top:5px;"></span><span class="hud-desc">Review applications within stated timelines</span></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-green" style="margin-top:5px;"></span><span class="hud-desc">Conduct scope assessment and provide fee quotation</span></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-green" style="margin-top:5px;"></span><span class="hud-desc">Administer CAT-72 testing per documented procedures</span></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-green" style="margin-top:5px;"></span><span class="hud-desc">Issue conformance determination based on evidentiary record</span></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-green" style="margin-top:5px;"></span><span class="hud-desc">Maintain attestation records per retention requirements</span></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-green" style="margin-top:5px;"></span><span class="hud-desc">Provide attestation verification services</span></div>
+        <div class="hud-label" style="margin:16px 0 8px;color:var(--text-tertiary);">SA DOES NOT</div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-red" style="margin-top:5px;"></span><span class="hud-desc">Implement, operate, or monitor runtime systems</span></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-red" style="margin-top:5px;"></span><span class="hud-desc">Certify implementation correctness or validate code</span></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-red" style="margin-top:5px;"></span><span class="hud-desc">Warrant system behavior or performance</span></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-red" style="margin-top:5px;"></span><span class="hud-desc">Provide regulatory approval or compliance attestation</span></div>
+        <div style="margin-top:16px;padding-top:12px;border-top:1px solid rgba(15,18,30,0.06);"><span class="hud-desc" style="color:var(--text-tertiary);font-style:italic;">Sentinel Authority maintains strict separation between standard-setting and conformance determination, consistent with ISO/IEC 17065 conformity assessment principles.</span></div>
+      </div>
+
+      <!-- 4 Conformance Terms -->
+      <div id="terms" class="section hud-frame" style="margin-top:var(--space-3);"><i></i>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;"><span class="hud-num">04</span><span class="hud-label">CONFORMANCE TERMS</span></div>
+        <div class="hud-label" style="margin-bottom:8px;color:var(--text-tertiary);">4.1 TERM DURATION</div>
+        <div class="hud-desc" style="margin-bottom:16px;">6&ndash;24 months based on operational domain risk profile, ODD complexity, and applicant conformance history. Term duration specified in the conformance determination.</div>
+        <div class="hud-label" style="margin-bottom:8px;color:var(--text-tertiary);">4.2 RENEWAL</div>
+        <div class="hud-desc" style="margin-bottom:16px;">Renewal requires CAT-72 re-completion. Streamlined renewal (minimum 48 cumulative enforcement hours) may be available for applicants with clean conformance history and no system modifications.</div>
+        <div class="hud-label" style="margin-bottom:8px;color:var(--text-tertiary);">4.3 MODIFICATIONS</div>
+        <div class="hud-desc" style="margin-bottom:12px;">Any modification to ODD specification, enforcement architecture, or underlying simulation requires:</div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Notification to SA within 5 business days</span></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Evaluation of modification impact</span></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Potential re-assessment if modification affects conformance basis</span></div>
+      </div>
+
+      <!-- 5 Revocation -->
+      <div id="revocation" class="section hud-frame hud-frame-red" style="margin-top:var(--space-3);"><i></i>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;"><span class="hud-num">05</span><span class="hud-label">REVOCATION</span><span class="hud-dot hud-dot-red" style="margin-left:auto;"></span></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-red" style="margin-top:5px;"></span><span class="hud-desc">Material misrepresentation in application materials</span></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-red" style="margin-top:5px;"></span><span class="hud-desc">Unauthorized modification to attested system</span></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-red" style="margin-top:5px;"></span><span class="hud-desc">Disabling, bypassing, or tampering with ENVELO enforcement</span></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-red" style="margin-top:5px;"></span><span class="hud-desc">Failure to maintain ENVELO Interlock operation</span></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-red" style="margin-top:5px;"></span><span class="hud-desc">Non-payment of fees or violation of this Agreement</span></div>
+        <div class="hud-desc" style="margin-top:12px;">Revocation is recorded in the SA registry and reflected in verification results.</div>
+      </div>
+
+      <!-- 6 Suspension -->
+      <div id="suspension" class="section hud-frame hud-frame-amber" style="margin-top:var(--space-3);"><i></i>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;"><span class="hud-num">06</span><span class="hud-label">SUSPENSION &amp; REINSTATEMENT</span><span class="hud-dot hud-dot-amber" style="margin-left:auto;"></span></div>
+        <div class="hud-label" style="margin-bottom:8px;color:var(--text-tertiary);">6.1 AUTOMATIC SUSPENSION TRIGGERS</div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-amber" style="margin-top:5px;"></span><span class="hud-desc">ENVELO Interlock downtime exceeds 24 cumulative hours per calendar month</span></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-amber" style="margin-top:5px;"></span><span class="hud-desc">Violation metrics exceed thresholds defined in the applicable conformance determination</span></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-amber" style="margin-top:5px;"></span><span class="hud-desc">Interlock unreachable for more than 72 consecutive hours</span></div>
+        <div class="hud-label" style="margin:16px 0 8px;color:var(--text-tertiary);">6.2 REINSTATEMENT</div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-num">1st</span><span class="hud-desc">Restore interlock operation and pass 24-hour verification check</span></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-num">2nd</span><span class="hud-desc">Above plus written remediation plan</span></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-num">3rd</span><span class="hud-desc">Full CAT-72 re-assessment required</span></div>
+        <div class="hud-desc" style="margin-top:12px;">Reinstatement fee of $500 applies after first suspension. Conformance fees are non-refundable during suspension periods.</div>
+      </div>
+
+      <!-- 7 Liability -->
+      <div id="liability" class="section hud-frame" style="margin-top:var(--space-3);"><i></i>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;"><span class="hud-num">07</span><span class="hud-label">LIABILITY &amp; INDEMNIFICATION</span></div>
+        <div class="hud-desc" style="margin-bottom:12px;">SA&#39;s total liability shall not exceed fees paid for the specific attestation at issue. SA is not liable for indirect, incidental, consequential, special, or punitive damages.</div>
+        <div class="hud-desc" style="margin-bottom:12px;">SA has no liability for the behavior, performance, or consequences of operation of any system, whether attested or not.</div>
+        <div class="hud-desc">Applicant shall indemnify, defend, and hold harmless SA from any claims, damages, losses, or expenses arising from operation of Applicant&#39;s systems or violation of this Agreement.</div>
+      </div>
+
+      <!-- 8 Confidentiality -->
+      <div id="confidentiality" class="section hud-frame" style="margin-top:var(--space-3);"><i></i>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;"><span class="hud-num">08</span><span class="hud-label">CONFIDENTIALITY</span></div>
+        <div class="hud-desc" style="margin-bottom:12px;">SA will maintain confidentiality of technical documentation and application materials, except:</div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Certificate information is publicly verifiable</span></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Disclosure required by law or valid legal process</span></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Aggregate, anonymized data for research or reporting</span></div>
+      </div>
+
+      <!-- 9 IP -->
+      <div id="ip" class="section hud-frame" style="margin-top:var(--space-3);"><i></i>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;"><span class="hud-num">09</span><span class="hud-label">INTELLECTUAL PROPERTY</span></div>
+        <div class="hud-desc">Applicant retains all rights to its systems, documentation, and intellectual property. SA retains all rights to ODDC methodology, ENVELO specifications, CAT-72 procedures, and related IP. Nothing in this Agreement grants either party rights to the other&#39;s intellectual property except as expressly stated.</div>
+      </div>
+
+      <!-- 10 General -->
+      <div id="general" class="section hud-frame" style="margin-top:var(--space-3);"><i></i>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;"><span class="hud-num">10</span><span class="hud-label">GENERAL PROVISIONS</span></div>
+        <div class="hud-label" style="margin-bottom:8px;color:var(--text-tertiary);">10.1 GOVERNING LAW</div>
+        <div class="hud-desc" style="margin-bottom:16px;">This Agreement is governed by the laws of the Province of Ontario, Canada. Disputes shall be resolved in the courts of Ontario, Canada.</div>
+        <div class="hud-label" style="margin-bottom:8px;color:var(--text-tertiary);">10.2 ENTIRE AGREEMENT</div>
+        <div class="hud-desc" style="margin-bottom:16px;">This Agreement, together with the Terms of Use and applicable fee schedules, constitutes the entire agreement between the parties.</div>
+        <div class="hud-label" style="margin-bottom:8px;color:var(--text-tertiary);">10.3 AMENDMENTS</div>
+        <div class="hud-desc" style="margin-bottom:16px;">SA may amend this Agreement by providing thirty (30) days written notice. Amendments apply prospectively only. Prior versions are archived upon revision. Continued participation following the notice period constitutes acceptance of the amended terms.</div>
+        <div class="hud-label" style="margin-bottom:8px;color:var(--text-tertiary);">10.4 SEVERABILITY</div>
+        <div class="hud-desc" style="margin-bottom:16px;">If any provision is found unenforceable, the remaining provisions remain in effect.</div>
+        <div class="hud-label" style="margin-bottom:8px;color:var(--text-tertiary);">10.5 SURVIVAL</div>
+        <div class="hud-desc" style="margin-bottom:16px;">Sections 7 (Liability and Indemnification), 8 (Confidentiality), 9 (Intellectual Property), and 10.1 (Governing Law) survive termination or expiration of this Agreement.</div>
+        <div class="hud-label" style="margin-bottom:8px;color:var(--text-tertiary);">10.6 FORCE MAJEURE</div>
+        <div class="hud-desc" style="margin-bottom:16px;">Neither party shall be liable for delays or failures in performance resulting from causes beyond its reasonable control, including acts of God, governmental action, natural disaster, or failure of third-party infrastructure.</div>
+        <div class="hud-label" style="margin-bottom:8px;color:var(--text-tertiary);">10.7 ASSIGNMENT</div>
+        <div class="hud-desc" style="margin-bottom:16px;">Applicant may not assign this Agreement without SA's prior written consent. SA may assign this Agreement in connection with a merger, acquisition, or reorganization, provided the successor assumes all obligations herein.</div>
+        <div class="hud-label" style="margin-bottom:8px;color:var(--text-tertiary);">10.8 DISPUTE RESOLUTION</div>
+        <div class="hud-desc">The parties submit to the exclusive jurisdiction of the courts of Ontario, Canada. Each party waives any objection to venue in such courts. The prevailing party in any dispute shall be entitled to recover reasonable legal fees and costs.</div>
+      </div>
+
+      <!-- Contact -->
+      <div class="hud-frame" style="margin-top:var(--space-3);"><i></i>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+          <span class="hud-label">QUESTIONS ABOUT THIS AGREEMENT</span>
+          <span class="hud-dot"></span>
+        </div>
+        <div class="hud-desc" style="margin-bottom:16px;">Contact our conformance team for clarification.</div>
+        <a href="mailto:conformance@sentinelauthority.org" class="hud-link">CONFORMANCE@SENTINELAUTHORITY.ORG &#x2192;</a>
+      </div>
+
+    </div>
+  </div>
+  </div>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <div>&#169; <span id="year"></span> SENTINEL AUTHORITY</div><div style="margin-top:8px;font-size:9px;letter-spacing:1px;"><a href="privacy.html" style="color:inherit;text-decoration:none;">Privacy Notice</a> · <a href="terms.html" style="color:inherit;text-decoration:none;">Terms of Use</a></div>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent=new Date().getFullYear();
+    document.querySelectorAll('a[href^="#"]').forEach(function(a){
+      a.addEventListener('click',function(e){
+        var t=document.querySelector(this.getAttribute('href'));
+        if(t){e.preventDefault();var n=parseInt(getComputedStyle(document.documentElement).getPropertyValue('--nav-height'))||72;
+        window.scrollTo({top:t.getBoundingClientRect().top+window.scrollY-n,behavior:'smooth'});}
+      });
+    });
+  </script>
+<script>
+(function(){
+  /* Green status dot on brand */
+  var b=document.querySelector(".brand");
+  // dot removed
+  /* Reveal observer */
+  var obs=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add("active");obs.unobserve(e.target);}});},{threshold:0.1});
+  document.querySelectorAll(".reveal,.section-head").forEach(function(el){obs.observe(el);});
+})();
+</script>
+</body>
+</html>

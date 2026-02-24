@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.backends._legacy:_Backend"
+
+[project]
+name = "envelo"
+version = "3.0.0"
+description = "ENVELO Interlock SDK — Operational boundary enforcement for autonomous systems"
+readme = "README.md"
+license = {text = "Proprietary"}
+requires-python = ">=3.9"
+authors = [{name = "Sentinel Authority", email = "info@sentinelauthority.org"}]
+dependencies = [
+    "httpx>=0.24.0",
+]
+
+[project.scripts]
+envelo = "envelo.cli:main"
+
+[project.urls]
+Homepage = "https://sentinelauthority.org"
+Documentation = "https://app.sentinelauthority.org/resources"
+
+[tool.setuptools.packages.find]
+include = ["envelo*"]

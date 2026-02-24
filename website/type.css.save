@@ -1,0 +1,126 @@
+/* ── Laminated surface treatment ── */
+body { background: #eef0f4; background-image: radial-gradient(ellipse at 20% 20%, rgba(210,220,235,0.5) 0%, transparent 60%), radial-gradient(ellipse at 80% 80%, rgba(200,215,230,0.35) 0%, transparent 60%); background-attachment: fixed; }
+
+.nav-inner { background: rgba(255,255,255,0.82) !important; backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); border-bottom: 1px solid rgba(255,255,255,0.9); box-shadow: 0 1px 12px rgba(0,0,0,0.05); }
+
+.section-head { background: rgba(255,255,255,0.72); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.9); border-top: 1px solid rgba(255,255,255,1); box-shadow: 0 1px 0 rgba(255,255,255,0.8) inset, 0 4px 20px rgba(0,0,0,0.05); }
+
+.cert-card-main { backdrop-filter: blur(14px) !important; -webkit-backdrop-filter: blur(14px) !important; }
+/* ── Laminated surface treatment ── */
+body { background: #eef0f4; background-image: radial-gradient(ellipse at 20% 20%, rgba(210,220,235,0.5) 0%, transparent 60%), radial-gradient(ellipse at 80% 80%, rgba(200,215,230,0.35) 0%, transparent 60%); background-attachment: fixed; }
+
+.nav-inner { background: rgba(255,255,255,0.82) !important; backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); border-bottom: 1px solid rgba(255,255,255,0.9); box-shadow: 0 1px 12px rgba(0,0,0,0.05); }
+
+.section-head { background: rgba(255,255,255,0.72); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.9); border-top: 1px solid rgba(255,255,255,1); box-shadow: 0 1px 0 rgba(255,255,255,0.8) inset, 0 4px 20px rgba(0,0,0,0.05); }
+
+.cert-card-main { backdrop-filter: blur(14px) !important; -webkit-backdrop-filter: blur(14px) !important; }/*
+ * ═══════════════════════════════════════════════════
+ * SENTINEL AUTHORITY — Typography System
+ * ═══════════════════════════════════════════════════
+ * Single source of truth for type scale.
+ * Loaded after page-level styles to normalize.
+ *
+ * Scale:
+ *   10px / 2px tracking   — labels, tags, hud-label
+ *   11px / 1.5px tracking — nav, hud-num, hud-link, brand
+ *   13px / 0.5px tracking — hud-desc, body mono
+ *   14px / 0              — hud-title
+ *   16px / 0              — section-lead
+ *   serif clamp           — section-title, h1
+ */
+
+/* ── Label tier (10px) ── */
+.section-label,
+.hud-label,
+.hud-link,
+.d-tag,
+.md-tag,
+.c72-phase-title {
+  font-family: var(--mono, 'IBM Plex Mono', monospace) !important;
+  font-size: 10px !important;
+  letter-spacing: 2px !important;
+  text-transform: uppercase !important;
+}
+
+/* ── Nav / UI tier (11px) ── */
+.brand-name,
+.back-link,
+.nav-links a,
+.nav-drawer a,
+.hud-num,
+.hud-link {
+  font-family: var(--mono, 'IBM Plex Mono', monospace) !important;
+  font-size: 11px !important;
+  letter-spacing: 1.5px !important;
+}
+
+/* ── Body mono tier (13px) ── */
+.hud-desc,
+.section-lead {
+  font-size: 13px !important;
+  letter-spacing: 0 !important;
+  line-height: 1.7 !important;
+}
+
+/* ── HUD title (14px) ── */
+.hud-title {
+  font-size: 14px !important;
+  letter-spacing: 0 !important;
+  line-height: 1.45 !important;
+}
+
+/* ── Section lead override ── */
+.section-lead {
+  font-size: 16px !important;
+  font-family: var(--sans, system-ui, sans-serif) !important;
+  max-width: 62ch !important;
+  line-height: 1.75 !important;
+}
+
+/* ── Section title ── */
+.section-title {
+  font-family: var(--serif, Georgia, serif) !important;
+  letter-spacing: -0.03em !important;
+  font-weight: 300 !important;
+  line-height: 1.1 !important;
+}
+
+/* ── Kill 6px and 3px tracking — never intentional ── */
+[style*="letter-spacing: 6px"] { letter-spacing: 2px !important; }
+[style*="letter-spacing:6px"] { letter-spacing: 2px !important; }
+[style*="letter-spacing: 3px"] { letter-spacing: 2px !important; }
+[style*="letter-spacing:3px"] { letter-spacing: 2px !important; }
+
+/* ── Kill text-shadow on type elements ── */
+.section-title, .section-label, .hud-title, .hud-label,
+.hud-desc, .hud-link, .hud-num, h1, h2, h3 {
+  text-shadow: none !important;
+}
+
+/* ── Mobile overrides ── */
+@media (max-width: 768px) {
+  .section-lead { font-size: 14px !important; }
+  .hud-desc { font-size: 12px !important; }
+  .hud-title { font-size: 13px !important; }
+}
+
+/* ── Reveal system — single source of truth ── */
+.reveal {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.45s cubic-bezier(.16,1,.3,1), transform 0.45s cubic-bezier(.16,1,.3,1);
+}
+.reveal.active {
+  opacity: 1;
+  transform: none;
+}
+/* Stagger children */
+.reveal.active > *:nth-child(1) { transition-delay: 0ms; }
+.reveal.active > *:nth-child(2) { transition-delay: 60ms; }
+.reveal.active > *:nth-child(3) { transition-delay: 120ms; }
+.reveal.active > *:nth-child(4) { transition-delay: 180ms; }
+.reveal.active > *:nth-child(5) { transition-delay: 240ms; }
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
+}

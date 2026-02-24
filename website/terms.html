@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Terms of Use — Sentinel Authority</title>
+  <meta name="description" content="Sentinel Authority terms of service for ODDC attestation and related services." />
+  <meta property="og:title" content="Terms of Use — Sentinel Authority" />
+  <meta property="og:description" content="Terms governing use of Sentinel Authority services." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://sentinelauthority.org/og.png" />
+  <link rel="canonical" href="https://www.sentinelauthority.org/terms.html" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Source+Serif+4:opsz,wght@8..60,300;500&display=swap" rel="stylesheet" />
+  <style>
+    :root{--navy:#1d1a3b;--text:#111318;--text-2:rgba(15,18,30,.72);--text-3:rgba(15,18,30,.50);--border:rgba(15,18,30,.08);--bg:#ffffff;--green:rgba(22,163,74,1);--amber:rgba(202,138,4,1);--red:rgba(220,53,69,1);--mono:'IBM Plex Mono',Consolas,monospace;--serif:'Source Serif 4',Georgia,serif;--sans:'Inter',system-ui,sans-serif;--nav-h:60px;--max:760px;}
+    *,*::before,*::after{box-sizing:border-box;}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition-duration:0.01ms!important;animation-duration:0.01ms!important;}}
+    html{scroll-behavior:smooth;background:var(--bg);}
+    body{margin:0;font-family:var(--sans);color:var(--text);background:var(--bg);-webkit-font-smoothing:antialiased;overflow-x:hidden;}
+    a{color:inherit;text-decoration:none;}
+    ::selection{background:var(--navy);color:#fff;}
+    .site-header{position:fixed;top:0;left:0;right:0;z-index:50;height:var(--nav-h);background:rgba(255,255,255,0.92);border-bottom:1px solid var(--border);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:flex;align-items:center;padding:0 24px;}
+    .back-link{font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--text-3);transition:color .15s;font-weight:500;}
+    .back-link:hover{color:var(--text);}
+    main{padding-top:calc(var(--nav-h) + 56px);padding-bottom:96px;}
+    .inner{max-width:var(--max);margin:0 auto;padding:0 24px;}
+    .page-label{font-family:var(--mono);font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--text-3);display:block;margin-bottom:14px;}
+    .page-title{font-family:var(--serif);font-size:clamp(32px,5vw,52px);font-weight:300;color:var(--navy);margin:0 0 12px;letter-spacing:-0.02em;line-height:1.1;}
+    .page-lead{font-size:15px;color:var(--text-2);line-height:1.65;margin:0 0 48px;max-width:58ch;}
+    .effective{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:10px;letter-spacing:1.5px;color:rgba(22,163,74,.8);text-transform:uppercase;margin-bottom:20px;}
+    .dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;animation:breathe 2.5s ease-in-out infinite;}
+    .dot-green{background:var(--green);}
+    .dot-amber{background:var(--amber);}
+    .dot-red{background:var(--red);}
+    @keyframes breathe{0%,100%{opacity:.4;}50%{opacity:1;}}
+    .card{border:1px solid var(--border);border-radius:10px;padding:22px 20px;margin-bottom:16px;background:#fff;scroll-margin-top:calc(var(--nav-h) + 16px);}
+    .card-header{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+    .card-num{font-family:var(--mono);font-size:10px;letter-spacing:1px;color:var(--text-3);}
+    .card-label{font-family:var(--mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-3);}
+    .row{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid rgba(15,18,30,.04);font-size:13px;color:var(--text-2);line-height:1.55;}
+    .row:last-child{border-bottom:none;}
+    .pip{width:4px;height:4px;border-radius:50%;background:rgba(42,37,96,.30);margin-top:6px;flex-shrink:0;}
+    .pip-green{background:rgba(22,163,74,.6);animation:breathe 3s ease-in-out infinite;}
+    .pip-red{background:rgba(220,53,69,.5);}
+    .card-text{font-size:13px;color:var(--text-2);line-height:1.65;margin:0 0 10px;}
+    .card-text:last-child{margin-bottom:0;}
+    .card-amber{border-color:rgba(202,138,4,.2);}
+    .card-red{border-color:rgba(220,53,69,.15);}
+    .card-green{border-color:rgba(22,163,74,.15);}
+    .toc-link{font-family:var(--mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--navy);transition:opacity .15s;}
+    .toc-link:hover{opacity:.6;}
+    .card-link{font-family:var(--mono);font-size:11px;letter-spacing:2px;color:var(--navy);text-transform:uppercase;display:inline-block;margin-top:14px;}
+    .card-link:hover{text-decoration:underline;}
+    footer{border-top:1px solid var(--border);padding:32px 0 24px;background:#fff;font-family:var(--mono);font-size:11px;letter-spacing:1px;color:var(--text-3);}
+    .footer-inner{max-width:var(--max);margin:0 auto;padding:0 24px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+    .foot-links{display:flex;gap:20px;}
+    .foot-links a:hover{color:var(--text);}
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <a href="/" class="back-link" aria-label="Back to home">← Sentinel Authority</a>
+  </header>
+  <main id="main">
+    <div class="inner">
+      <span class="page-label">Legal</span>
+      <h1 class="page-title">Terms of Use</h1>
+      <div class="effective"><span class="dot dot-green"></span>Effective: January 2026</div>
+      <p class="page-lead">These Terms govern your use of the Sentinel Authority website, attestation portal, and related services. By accessing or using our Services, you agree to these Terms.</p>
+      <div class="card">
+        <div class="card-header"><span class="card-label">Contents</span></div>
+        <div class="row"><span class="card-num">01</span><a href="#services" class="toc-link">Services Description</a></div>
+        <div class="row"><span class="card-num">02</span><a href="#account" class="toc-link">Account Registration</a></div>
+        <div class="row"><span class="card-num">03</span><a href="#applications" class="toc-link">Conformance Applications</a></div>
+        <div class="row"><span class="card-num">04</span><a href="#fees" class="toc-link">Fees and Payment</a></div>
+        <div class="row"><span class="card-num">05</span><a href="#license" class="toc-link">ENVELO Interlock License</a></div>
+        <div class="row"><span class="card-num">06</span><a href="#liability" class="toc-link">Limitation of Liability</a></div>
+        <div class="row"><span class="card-num">07</span><a href="#indemnification" class="toc-link">Indemnification</a></div>
+        <div class="row"><span class="card-num">08</span><a href="#confidentiality" class="toc-link">Confidentiality</a></div>
+        <div class="row"><span class="card-num">09</span><a href="#revocation" class="toc-link">Revocation</a></div>
+        <div class="row"><span class="card-num">10</span><a href="#termination" class="toc-link">Termination</a></div>
+        <div class="row"><span class="card-num">11</span><a href="#modifications" class="toc-link">Modifications</a></div>
+        <div class="row"><span class="card-num">12</span><a href="#governing" class="toc-link">Governing Law</a></div>
+      </div>
+      <div class="card" id="definitions">
+        <div class="card-header"><span class="card-label">Definitions</span></div>
+        <div class="row"><span class="pip"></span><span><strong>Services</strong> means the ODDC conformance determination platform, ENVELO Interlock integration, CAT-72 assessment, and related attestation services provided by Sentinel Authority.</span></div>
+        <div class="row"><span class="pip"></span><span><strong>Attestation</strong> means a formal ODDC conformance determination issued by Sentinel Authority and recorded in the public registry.</span></div>
+        <div class="row"><span class="pip"></span><span><strong>Applicant</strong> means the legal entity submitting a system for conformance determination.</span></div>
+        <div class="row"><span class="pip"></span><span><strong>ENVELO Interlock</strong> means the non-bypassable runtime enforcement layer required for conformance determination.</span></div>
+        <div class="row"><span class="pip"></span><span><strong>Conformance Term</strong> means the period during which an Attestation remains active, subject to annual maintenance.</span></div>
+      </div>
+      <div class="card" id="services">
+        <div class="card-header"><span class="card-num">01</span><span class="card-label">Services Description</span></div>
+        <p class="card-text">Sentinel Authority provides ODD Conformance Determination (ODDC) services for autonomous systems:</p>
+        <div class="row"><span class="pip"></span><span>Application review and scope assessment</span></div>
+        <div class="row"><span class="pip"></span><span>CAT-72 conformance testing</span></div>
+        <div class="row"><span class="pip"></span><span>ODDC attestation issuance</span></div>
+        <div class="row"><span class="pip"></span><span>ENVELO Interlock software for runtime enforcement</span></div>
+        <div class="row"><span class="pip"></span><span>Certificate verification services</span></div>
+      </div>
+      <div class="card" id="account">
+        <div class="card-header"><span class="card-num">02</span><span class="card-label">Account Registration</span></div>
+        <p class="card-text">To access certain Services, you must create an account. You agree to:</p>
+        <div class="row"><span class="pip"></span><span>Provide accurate and complete information</span></div>
+        <div class="row"><span class="pip"></span><span>Maintain the security of your account credentials</span></div>
+        <div class="row"><span class="pip"></span><span>Promptly notify us of any unauthorized access</span></div>
+        <div class="row"><span class="pip"></span><span>Accept responsibility for all activities under your account</span></div>
+      </div>
+      <div class="card" id="applications">
+        <div class="card-header"><span class="card-num">03</span><span class="card-label">Conformance Applications</span></div>
+        <p class="card-text">By submitting an assessment application, you represent that:</p>
+        <div class="row"><span class="pip"></span><span>All information provided is accurate and complete</span></div>
+        <div class="row"><span class="pip"></span><span>The submitting party has authority to act on behalf of the applicant organization</span></div>
+        <div class="row"><span class="pip"></span><span>You will cooperate with the assessment process</span></div>
+        <div class="row"><span class="pip"></span><span>Incomplete or inaccurate information may result in denial</span></div>
+      </div>
+      <div class="card" id="fees">
+        <div class="card-header"><span class="card-num">04</span><span class="card-label">Fees and Payment</span></div>
+        <p class="card-text">Conformance fees are specified during scope assessment. Payment terms:</p>
+        <div class="row"><span class="pip"></span><span>Assessment fee due in full at application</span></div>
+        <div class="row"><span class="pip"></span><span>Fees are non-refundable — covers review, test administration, and certificate issuance</span></div>
+        <div class="row"><span class="pip"></span><span>Re-assessment fees apply for subsequent attempts</span></div>
+      </div>
+      <div class="card card-green" id="license">
+        <div class="card-header"><span class="card-num">05</span><span class="card-label">ENVELO Interlock License</span></div>
+        <p class="card-text">Subject to these Terms and valid attestation, we grant you a limited, non-exclusive, non-transferable license to use the ENVELO Interlock software solely for:</p>
+        <div class="row"><span class="pip pip-green"></span><span>Systems covered by your ODDC attestation</span></div>
+        <div class="row"><span class="pip pip-green"></span><span>The duration of your conformance term</span></div>
+        <p class="card-text" style="margin-top:12px;">You may not reverse engineer, modify, or distribute the ENVELO Interlock software.</p>
+      </div>
+      <div class="card card-amber">
+        <div class="card-header"><span class="card-label">Nature and Scope of Attestation</span><span class="dot dot-amber" style="margin-left:auto;"></span></div>
+        <p class="card-text">ODDC attestation does not constitute: regulatory approval, safety attestation (e.g., IEC 61508, ISO 26262), product attestation, guarantee of system performance, insurance, or warranty. Operators remain solely responsible for system behavior, regulatory compliance, and all consequences of system operation.</p>
+      </div>
+      <div class="card" id="liability">
+        <div class="card-header"><span class="card-num">06</span><span class="card-label">Limitation of Liability</span></div>
+        <p class="card-text">To the maximum extent permitted by law:</p>
+        <div class="row"><span class="pip"></span><span>Total liability shall not exceed fees paid for the specific attestation at issue</span></div>
+        <div class="row"><span class="pip"></span><span>We are not liable for indirect, incidental, consequential, or punitive damages</span></div>
+        <div class="row"><span class="pip"></span><span>We are not liable for damages arising from system operation, whether attested or not</span></div>
+      </div>
+      <div class="card" id="indemnification">
+        <div class="card-header"><span class="card-num">07</span><span class="card-label">Indemnification</span></div>
+        <p class="card-text">You agree to indemnify and hold harmless Sentinel Authority from any claims, damages, or expenses arising from:</p>
+        <div class="row"><span class="pip"></span><span>Your use of the Services</span></div>
+        <div class="row"><span class="pip"></span><span>Operation of your attested systems</span></div>
+        <div class="row"><span class="pip"></span><span>Violation of these Terms</span></div>
+        <div class="row"><span class="pip"></span><span>Infringement of third-party rights</span></div>
+      </div>
+      <div class="card" id="confidentiality">
+        <div class="card-header"><span class="card-num">08</span><span class="card-label">Confidentiality</span></div>
+        <p class="card-text">We will treat your application materials and technical documentation as confidential, except:</p>
+        <div class="row"><span class="pip"></span><span>Certificate information (number, organization, system name, status) is publicly verifiable</span></div>
+        <div class="row"><span class="pip"></span><span>Aggregate, anonymized data may be used for research or reporting</span></div>
+        <div class="row"><span class="pip"></span><span>Disclosure may be required by law or valid legal process</span></div>
+      </div>
+      <div class="card card-red" id="revocation">
+        <div class="card-header"><span class="card-num">09</span><span class="card-label">Revocation</span><span class="dot dot-red" style="margin-left:auto;"></span></div>
+        <p class="card-text">Revocation of attestation is governed by the Conformance Agreement. Grounds for revocation include:</p>
+        <div class="row"><span class="pip pip-red"></span><span>Information provided was materially false or misleading</span></div>
+        <div class="row"><span class="pip pip-red"></span><span>System modifications invalidate conformance</span></div>
+        <div class="row"><span class="pip pip-red"></span><span>ENVELO Interlock is disabled, bypassed, or tampered with</span></div>
+        <div class="row"><span class="pip pip-red"></span><span>Payment obligations are not met</span></div>
+        <div class="row"><span class="pip pip-red"></span><span>Terms of Use are violated</span></div>
+      </div>
+      <div class="card" id="termination">
+        <div class="card-header"><span class="card-num">10</span><span class="card-label">Termination</span></div>
+        <p class="card-text">We may suspend or terminate your access to Services for violation of these Terms. You may close your account at any time, but this does not affect any obligations incurred prior to termination.</p>
+      </div>
+      <div class="card" id="modifications">
+        <div class="card-header"><span class="card-num">11</span><span class="card-label">Modifications</span></div>
+        <p class="card-text">Sentinel Authority may amend these Terms upon thirty (30) days written notice. Amendments apply prospectively as of the stated effective date. Continued use of Services following the notice period constitutes acceptance of the amended Terms.</p>
+      </div>
+      <div class="card" id="governing">
+        <div class="card-header"><span class="card-num">12</span><span class="card-label">Governing Law</span></div>
+        <p class="card-text">These Terms are governed by the laws of the Province of Ontario, Canada. Any disputes shall be resolved in the courts of Ontario, Canada.</p>
+        <p class="card-text" style="font-size:11px;color:var(--text-3);">If any provision of these Terms is found unenforceable, the remaining provisions remain in effect.</p>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-label">Warranty Disclaimer</span></div>
+        <p class="card-text">Services are provided "as is" and "as available" without warranty of any kind, express or implied, including warranties of merchantability, fitness for a particular purpose, or non-infringement.</p>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-label">Survival</span></div>
+        <p class="card-text">Sections addressing Liability, Indemnification, Confidentiality, Governing Law, and Warranty Disclaimer survive termination or expiration of these Terms.</p>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-label">Force Majeure</span></div>
+        <p class="card-text">Neither party shall be liable for delays or failures in performance resulting from causes beyond its reasonable control, including acts of God, governmental action, natural disaster, or failure of third-party infrastructure.</p>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-label">Assignment</span></div>
+        <p class="card-text">Applicant may not assign these Terms without prior written consent of Sentinel Authority. Sentinel Authority may assign these Terms in connection with a merger, acquisition, or reorganization, provided the successor assumes all obligations herein.</p>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-label">Export Control</span></div>
+        <p class="card-text">Applicant represents that its use of Services complies with all applicable export control laws and regulations, including those of Canada, the United States, and any jurisdiction in which Applicant operates.</p>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-label">Questions About These Terms</span></div>
+        <p class="card-text">Contact our team for clarification.</p>
+        <a href="mailto:conformance@sentinelauthority.org" class="card-link">conformance@sentinelauthority.org →</a>
+      </div>
+    </div>
+  </main>
+  <footer>
+    <div class="footer-inner">
+      <div>© <span id="yr"></span> Sentinel Authority</div>
+      <div class="foot-links"><a href="privacy.html">Privacy Notice</a><a href="terms.html">Terms of Use</a></div>
+    </div>
+  </footer>
+  <script>
+    document.getElementById('yr').textContent=new Date().getFullYear();
+    document.querySelectorAll('a[href^="#"]').forEach(function(a){a.addEventListener('click',function(e){var t=document.querySelector(this.getAttribute('href'));if(t){e.preventDefault();window.scrollTo({top:t.getBoundingClientRect().top+window.scrollY-76,behavior:'smooth'});}});});
+  </script>
+</body>
+</html>
