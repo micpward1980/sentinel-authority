@@ -807,31 +807,29 @@ function EnveloAdminView() {
 function EnveloCustomerView() {
   const toast  = useToast();
   const { user } = useAuth();
-  const [loading, setLoading]     = useState(true);
-  const [userApps, setUserApps]   = useState([]);
-  const [userCerts, setUserCerts] = useState([]);
-  const [sessions, setSessions]   = useState([]);
-  const [apiKeys, setApiKeys]     = useState([]);
   const [copied, setCopied]       = useState(false);
   const [showUninstall, setShowUninstall] = useState(false);
 
-  const load = async () => {
-    try {
-      const [appsRes, certsRes, sessRes, keysRes] = await Promise.all([
-        api.get('/api/applications/').catch(() => ({ data: [] })),
-        api.get('/api/certificates/').catch(() => ({ data: [] })),
-        api.get('/api/envelo/sessions').catch(() => ({ data: { sessions: [] } })),
-        api.get('/api/apikeys/').catch(() => ({ data: [] })),
-      ]);
-      setUserApps(appsRes.data?.applications || appsRes.data || []);
-      setUserCerts(certsRes.data || []);
-      setSessions(sessRes.data.sessions || []);
-      setApiKeys(keysRes.data || []);
-    } catch (e) { console.error(e); }
-    setLoading(false);
-  };
-
-  useEffect(() => { reloadEnvelo(); const t = setInterval(load, 15000); return () => clearInterval(t); }, []);
+  const { data: custData, isLoading: loading } = useQuery({
+    queryKey: ['envelo-customer'],
+    queryFn: () => Promise.all([
+      api.get('/api/applications/').catch(() => ({ data: [] })),
+      api.get('/api/certificates/').catch(() => ({ data: [] })),
+      api.get('/api/envelo/sessions').catch(() => ({ data: { sessions: [] } })),
+      api.get('/api/apikeys/').catch(() => ({ data: [] })),
+    ]).then(([appsRes, certsRes, sessRes, keysRes]) => ({
+      userApps: appsRes.data?.applications || appsRes.data || [],
+      userCerts: certsRes.data || [],
+      sessions: sessRes.data.sessions || [],
+      apiKeys: keysRes.data || [],
+    })),
+    refetchInterval: 15000,
+    retry: false,
+  });
+  const userApps = custData?.userApps || [];
+  const userCerts = custData?.userCerts || [];
+  const sessions = custData?.sessions || [];
+  const apiKeys = custData?.apiKeys || [];
 
   if (loading) return (
     <div style={{ color: styles.textTertiary, padding: '40px', textAlign: 'center' }}>
