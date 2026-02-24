@@ -43,9 +43,15 @@ async def list_documents(current_user: dict = Depends(get_current_user)):
 
 
 @router.get("/{doc_id}/download", summary="Download document")
-async def download_document(doc_id: str):
+async def download_document(doc_id: str, current_user: dict = Depends(get_current_user)):
     doc = AVAILABLE_DOCS.get(doc_id)
     if not doc:
         raise HTTPException(status_code=404, detail="Document not found")
-    filename = doc["filename"].replace(".pdf", ".0.pdf").replace("_v5.0.pdf", "_v5.0.pdf")
-    return RedirectResponse("https://www.sentinelauthority.org/docs/ODDC_Certification_Guide_v5.0.pdf")
+    role = current_user.get("role", "applicant")
+    if role not in doc["roles"]:
+        raise HTTPException(status_code=403, detail="Access denied")
+    file_path = DOCS_DIR / doc["filename"]
+    if file_path.exists():
+        return FileResponse(file_path, filename=doc["filename"], media_type="application/pdf")
+    # Fallback to website-hosted docs
+    return RedirectResponse(f"https://www.sentinelauthority.org/docs/{doc['filename']}")
