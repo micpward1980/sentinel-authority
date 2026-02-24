@@ -190,7 +190,7 @@ function Layout({ children }) {
                   const tc = {success: styles.accentGreen, warning: styles.accentAmber, info: styles.purpleBright, error: styles.accentRed}[n.type] || styles.purpleBright;
                   return (
                     <div key={n.id || i}
-                      onClick={() => { if (n.resource_type === 'application' && n.resource_id) { setNotifOpen(false); window.location.hash = '#/applications/' + n.resource_id; }}}
+                      onClick={() => { if (n.resource_type === 'application' && n.resource_id) { setNotifOpen(false); window.location.href = '/applications/' + n.resource_id; }}}
                       style={{padding: '12px 16px', borderBottom: '1px solid rgba(15,18,30,0.04)', cursor: n.resource_id ? 'pointer' : 'default'}}>
                       <div style={{display: 'flex', gap: '10px', alignItems: 'flex-start'}}>
                         <span data-dot="true" style={{display: 'inline-block', width: '4px', height: '4px', borderRadius: '50%', background: tc, marginTop: '6px', flexShrink: 0}} />
