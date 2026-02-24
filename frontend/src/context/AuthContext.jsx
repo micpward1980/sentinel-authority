@@ -16,8 +16,10 @@ function AuthProvider({ children }) {
     setLoading(false);
   }, []);
 
-  const login = async (email, password) => {
-    const res = await api.post('/api/auth/login', { email, password });
+  const login = async (email, password, totp) => {
+    const payload = { email, password };
+    if (totp) payload.totp_code = totp;
+    const res = await api.post('/api/auth/login', payload);
     localStorage.setItem('token', res.data.access_token);
     localStorage.setItem('user', JSON.stringify(res.data.user));
     setUser(res.data.user);

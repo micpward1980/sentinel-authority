@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export const API_URL = 'https://sentinel-authority-production.up.railway.app';
+export const API_URL = import.meta.env.VITE_API_URL || 'https://sentinel-authority-production.up.railway.app';
 export const API_BASE = API_URL;
 
 export const api = axios.create({ baseURL: API_URL });
