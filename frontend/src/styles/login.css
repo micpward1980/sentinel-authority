@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200;0,8..60,300;0,8..60,400;1,8..60,200;1,8..60,300&family=Inter:wght@200;300;400;500;600&family=IBM+Plex+Mono:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=League+Spartan:wght@800;900&family=Source+Serif+4:ital,opsz,wght@0,8..60,200;0,8..60,300;0,8..60,400;1,8..60,200;1,8..60,300&family=Inter:wght@200;300;400;500;600&family=IBM+Plex+Mono:wght@300;400;500;600&display=swap');
 
 #sa-login{
   display:flex;
@@ -20,7 +20,7 @@
 #sa-login::before{ content:none; }
 #sa-login *, #sa-login *::before, #sa-login *::after{ box-sizing:border-box; margin:0; padding:0; }
 #sa-login .sa-wrap{ width:100%; max-width:480px; text-align:center; }
-#sa-login .sa-brand{ display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:32px; }
+#sa-login .sa-brand{ display:flex; align-items:center; justify-content:flex-start; gap:10px; margin-bottom:28px; }
 #sa-login .sa-brand-name{ font-family:var(--sa-font-mono); font-size:11px; letter-spacing:2.5px; text-transform:uppercase; color:var(--sa-text); }
 #sa-login .sa-card{ background:var(--sa-surface); border:1px solid var(--sa-border); border-radius:var(--sa-radius); padding:40px 36px; width:100%; transition:padding 0.2s ease; }
 #sa-login .sa-label{ font-family:var(--sa-font-mono); font-size:11px; letter-spacing:2.5px; text-transform:uppercase; color:var(--sa-text-3); margin-bottom:16px; display:block; }
@@ -63,3 +63,43 @@
 #sa-login .sa-card.register .sa-field{ margin-bottom:16px; }
 #sa-login .sa-card.register .sa-brand{ margin-bottom:20px; }
 #sa-login .sa-card.register{ padding:28px 32px; }
+
+/* ── Mobile: Portrait phones ── */
+@media(max-width:479px){
+  #sa-login{ position:relative; inset:auto; padding:24px 12px; min-height:100vh; overflow-y:auto; }
+  #sa-login .sa-wrap{ max-width:100%; }
+  #sa-login .sa-card{ padding:28px 20px; }
+  #sa-login .sa-card.register{ padding:20px 16px; }
+  #sa-login .sa-title{ font-size:32px; margin-bottom:12px; }
+  #sa-login .sa-lead{ font-size:13px; margin-bottom:28px; }
+  #sa-login .sa-brand img{ height:40px; }
+  #sa-login .sa-footer{ flex-direction:column; gap:12px; align-items:center; }
+  #sa-login .sa-2fa-input{ font-size:22px; letter-spacing:6px; }
+  #sa-login .sa-tab{ padding:10px 16px; font-size:10px; }
+  #sa-login .sa-input{ font-size:14px; padding:12px 0; }
+}
+
+/* ── Mobile: Landscape phones ── */
+@media(max-height:500px) and (orientation:landscape){
+  #sa-login{ position:relative; inset:auto; padding:12px 20px; min-height:100vh; overflow-y:auto; }
+  #sa-login .sa-card{ padding:16px 24px; }
+  #sa-login .sa-title{ font-size:24px; margin-bottom:6px; }
+  #sa-login .sa-lead{ font-size:12px; margin-bottom:12px; }
+  #sa-login .sa-brand{ margin-bottom:10px; }
+  #sa-login .sa-brand img{ height:32px; }
+  #sa-login .sa-field{ margin-bottom:10px; }
+  #sa-login .sa-input{ padding:8px 0; font-size:14px; }
+  #sa-login .sa-sep{ margin:12px 0 8px; }
+  #sa-login .sa-tabs{ margin-bottom:16px; }
+  #sa-login .sa-tab{ padding:8px 16px; font-size:10px; }
+  #sa-login .sa-label{ margin-bottom:8px; }
+  #sa-login .sa-submit{ margin-top:4px; padding:8px 0; }
+  #sa-login .sa-ghost{ margin-top:10px; }
+  #sa-login .sa-2fa-input{ font-size:20px; letter-spacing:6px; padding:12px 0; }
+}
+
+/* ── Tablets (480-767px) ── */
+@media(min-width:480px) and (max-width:767px){
+  #sa-login .sa-card{ padding:32px 28px; }
+  #sa-login .sa-title{ font-size:38px; }
+}

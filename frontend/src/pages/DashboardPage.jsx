@@ -10,11 +10,13 @@ import Panel from '../components/Panel';
 import StatCard from '../components/StatCard';
 import BrandMark from '../components/BrandMark';
 import EmptyState from '../components/EmptyState';
+import useIsMobile from '../hooks/useIsMobile';
 
 function CustomerDashboard() {
   const { user } = useAuth();
   const toast = useToast();
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const [applications, setApplications] = useState([]);
   const [certificates, setCertificates] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -92,7 +94,7 @@ function CustomerDashboard() {
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: `repeat(auto-fit, minmax(${isMobile ? '140px' : '200px'}, 1fr))`, gap: isMobile ? '10px' : '16px' }}>
         <StatCard onClick={() => navigate('/applications')} label="Applications" value={applications.length} color={styles.purpleBright} icon={<FileText fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{ color: styles.purpleBright }} />} subtitle={applications.filter(a => a.state === 'pending' || a.state === 'under_review').length > 0 ? applications.filter(a => a.state === 'pending' || a.state === 'under_review').length + ' in review' : null} />
         <StatCard onClick={() => navigate('/certificates')} label="Certificates" value={certificates.length} color={styles.accentGreen} icon={<Award fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{ color: styles.accentGreen }} />} subtitle={certificates.filter(c => c.state === 'conformant').length > 0 ? certificates.filter(c => c.state === 'conformant').length + ' active' : null} />
         <StatCard onClick={() => navigate('/cat72')} label="Active Tests" value={applications.filter(a => a.state === 'testing').length} color={styles.accentAmber} icon={<Activity fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{ color: styles.accentAmber }} />} />
@@ -114,13 +116,13 @@ function CustomerDashboard() {
         </div>
         {applications.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '56px 20px' }}>
-            <div style={{ width: '72px', height: '72px', background: styles.cardSurface, border: '1px solid ' + styles.borderSubtle, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', borderRadius: 8 }}>
-              <Shield fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} size={32} style={{ color: styles.purpleBright, opacity: 0.7 }} />
+            <div style={{ margin: '0 auto 20px', width: 72, height: 72 }}>
+              <BrandMark size={72} />
             </div>
             <p style={{ color: styles.textPrimary, fontSize: '17px', fontWeight: 500, marginBottom: '8px', fontFamily: "Georgia, 'Source Serif 4', serif" }}>Begin Your Certification</p>
             <p style={{ color: styles.textTertiary, fontSize: '13px', maxWidth: '380px', margin: '0 auto 28px', lineHeight: '1.6' }}>Submit your autonomous system for ODDC certification. The CAT-72 test verifies your system's ENVELO Interlock is enforcing ODD boundaries in real time across a continuous 72-hour window.</p>
-            <Link to="/applications/new" className="inline-flex items-center gap-2 px-6 py-3 no-underline" style={{ background: 'transparent', border: 'none', color: styles.purpleBright, fontFamily: styles.mono, fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase' }}>
-              <Plus className="w-4 h-4" /> New Application
+            <Link to="/applications/new" style={{ display: 'inline-block', background: styles.purplePrimary, color: '#fff', fontFamily: styles.mono, fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', padding: '12px 28px', borderRadius: '6px', textDecoration: 'none', border: 'none' }}>
+              + New Application
             </Link>
           </div>
         ) : (
@@ -216,6 +218,7 @@ function Dashboard() {
   const toast = useToast();
   const confirm = useConfirm();
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const [stats, setStats] = useState(null);
   const [recentApps, setRecentApps] = useState([]);
   const [activeTests, setActiveTests] = useState([]);
@@ -299,7 +302,7 @@ function Dashboard() {
         const expiringCount = recentCerts.filter(c => c.expires_at && c.state === 'conformant' && new Date(c.expires_at) < new Date(Date.now() + 30*24*60*60*1000)).length;
         const actionCount = needsAction.length + expiringCount;
         return (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: `repeat(auto-fit, minmax(${isMobile ? '140px' : '220px'}, 1fr))`, gap: isMobile ? '10px' : '16px' }}>
             <StatCard onClick={() => navigate('/applications')} label="Needs Action" value={actionCount} color={actionCount > 0 ? styles.accentAmber : styles.textTertiary} icon={<AlertCircle fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{ color: actionCount > 0 ? styles.accentAmber : styles.textTertiary }} />} subtitle={actionCount > 0 ? needsAction.length + ' pending · ' + expiringCount + ' expiring' : 'All clear'} />
             <StatCard onClick={() => navigate('/cat72')} label="Active Tests" value={stats?.active_tests || 0} color={styles.accentAmber} icon={<Activity fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{ color: styles.accentAmber }} />} />
             <StatCard onClick={() => navigate('/certificates')} label="Active Certificates" value={stats?.certificates_active || 0} color={styles.accentGreen} icon={<BrandMark size={20} />} />
@@ -328,7 +331,7 @@ function Dashboard() {
               const pct = Math.max((stage.count / allApps.length) * 100, 4);
               return (
                 <div key={stage.key} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <span style={{ fontFamily: styles.mono, fontSize: '10px', color: styles.textTertiary, width: '80px', textAlign: 'right', flexShrink: 0 }}>{stage.label}</span>
+                  <span style={{ fontFamily: styles.mono, fontSize: '10px', color: styles.textTertiary, width: isMobile ? '60px' : '80px', textAlign: 'right', flexShrink: 0 }}>{stage.label}</span>
                   <div style={{ flex: 1, height: '20px', background: 'rgba(0,0,0,0.03)', position: 'relative' }}>
                     <div style={{ width: pct + '%', height: '100%', background: stage.color + '14', borderLeft: '3px solid ' + stage.color, transition: 'width 0.4s' }} />
                   </div>
@@ -348,13 +351,13 @@ function Dashboard() {
           </div>
           <div className="space-y-3">
             {needsAction.slice(0, 5).map(app => (
-              <div key={app.id} style={{ padding: '14px 16px', background: styles.cardSurface, border: '1px solid ' + styles.borderGlass, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+              <div key={app.id} style={{ padding: isMobile ? '12px' : '14px 16px', background: styles.cardSurface, border: '1px solid ' + styles.borderGlass, display: 'flex', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center', flexDirection: isMobile ? 'column' : 'row', gap: '12px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '8px' : '16px', flexWrap: 'wrap' }}>
                   <Link to={'/applications/' + app.id} style={{ color: styles.purpleBright, textDecoration: 'none', fontWeight: 500, fontSize: '14px' }}>{app.system_name}</Link>
                   <span style={{ color: styles.textTertiary, fontSize: '12px' }}>{app.organization_name}</span>
                   <span style={{ color: styles.accentAmber, fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase' }}>{app.state?.replace('_', ' ')}</span>
                 </div>
-                <div style={{ display: 'flex', gap: '8px' }}>
+                <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', width: isMobile ? '100%' : 'auto' }}>
                   {app.state === 'pending' && <button onClick={() => handleBeginReview(app.id, app.system_name)} style={{ background: styles.cardSurface, border: '1px solid ' + styles.borderSubtle, color: styles.accentAmber, fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer', padding: '4px 10px', borderRadius: 8 }}>Begin Review</button>}
                   <button onClick={() => openJustify(app.id, 'approved', 'Approve ' + app.system_name)} style={{ background: styles.cardSurface, border: '1px solid ' + styles.borderSubtle, color: styles.accentGreen, fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer', padding: '4px 10px', borderRadius: 8 }}>Approve</button>
                   <button onClick={() => openJustify(app.id, 'suspended', 'Suspend ' + app.system_name)} style={{ background: styles.cardSurface, border: '1px solid ' + styles.borderSubtle, color: styles.accentRed, fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer', padding: '4px 10px', borderRadius: 8 }}>Suspend</button>
@@ -368,7 +371,7 @@ function Dashboard() {
 
       {justifyModal && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
-          <div style={{ background: '#fff', border: '1px solid ' + styles.borderGlass, padding: '32px', maxWidth: '480px', width: '90%' }}>
+          <div style={{ background: '#fff', border: '1px solid ' + styles.borderGlass, padding: isMobile ? '20px 16px' : '32px', maxWidth: '480px', width: '90%' }}>
             <h3 style={{ fontFamily: "Georgia, 'Source Serif 4', serif", fontWeight: 400, fontSize: '20px', marginBottom: '8px' }}>{justifyModal.label}</h3>
             <p style={{ color: styles.textTertiary, fontSize: '13px', marginBottom: '20px' }}>A justification note is required for all certification decisions. This is recorded in the audit log.</p>
             <textarea autoFocus value={justifyNote} onChange={e => setJustifyNote(e.target.value)} placeholder="Describe the basis for this decision…" rows={4} style={{ width: '100%', padding: '12px', border: '1px solid ' + styles.borderGlass, fontFamily: styles.mono, fontSize: '13px', color: styles.textPrimary, background: styles.cardSurface, resize: 'vertical', boxSizing: 'border-box' }} />

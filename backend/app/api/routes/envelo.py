@@ -487,7 +487,7 @@ async def update_session_type(
 
 @router.patch("/admin/sessions/{session_id}/meta")
 async def update_session_meta(
-    session_id: str, org: str = "", sys_name: str = "", demo: bool = None,
+    session_id: str, org: str = "", sys_name: str = "", demo: bool = None, cert: str = "",
     db: AsyncSession = Depends(get_db),
     current_user: dict = Depends(get_current_user)
 ):
@@ -499,6 +499,23 @@ async def update_session_meta(
     if org: s.organization_name = org
     if sys_name: s.system_name = sys_name
     if demo is not None: s.is_demo = demo
+    if cert:
+        # Find or create certificate record
+        cert_result = await db.execute(select(Certificate).where(Certificate.certificate_number == cert))
+        certificate = cert_result.scalar_one_or_none()
+        if not certificate:
+            from datetime import datetime, timedelta
+            certificate = Certificate(
+                certificate_number=cert,
+                organization_name=s.organization_name or "Unknown",
+                system_name=s.system_name or "Unknown",
+                state="active",
+                issued_at=datetime.utcnow(),
+                expires_at=datetime.utcnow() + timedelta(days=365),
+            )
+            db.add(certificate)
+            await db.flush()
+        s.certificate_id = certificate.id
     await db.commit()
     return {"ok": True}
 

@@ -30,6 +30,7 @@ const MyActivityPage = lazy(() => import('./pages/MyActivityPage'));
 const SettingsPage = lazy(() => import('./pages/SettingsPage'));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 const ApiDocsPage = lazy(() => import('./pages/ApiDocsPage'));
+const ResetPasswordPage = lazy(() => import('./pages/ResetPasswordPage'));
 
 function LazyLoad({ children }) {
   return <Suspense fallback={<DashboardSkeleton />}>{children}</Suspense>;
@@ -41,6 +42,7 @@ function App() {
       <AuthProvider>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/reset-password" element={<LazyLoad><ResetPasswordPage /></LazyLoad>} />
           <Route path="/verify" element={<LazyLoad><VerifyPage /></LazyLoad>} />
           <Route path="/dashboard" element={<ProtectedRoute><Layout><LazyLoad><DashboardPage /></LazyLoad></Layout></ProtectedRoute>} />
           <Route path="/applications" element={<ProtectedRoute><Layout><LazyLoad><ApplicationsList /></LazyLoad></Layout></ProtectedRoute>} />

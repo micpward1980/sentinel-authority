@@ -147,7 +147,7 @@ function ProfilePanel({ user, toast }) {
       <WsTitle title="My Profile" description="Update your display name and organization affiliation." />
       <WsCard>
         <CardHeading>Account Information</CardHeading>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, maxWidth: 520 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 14, maxWidth: 520 }}>
           <SLDSInput label="Full Name"    value={form.full_name}    onChange={e => setForm({ ...form, full_name: e.target.value })} />
           <SLDSInput label="Organization" value={form.organization} onChange={e => setForm({ ...form, organization: e.target.value })} />
           <div>
@@ -611,6 +611,15 @@ function SettingsPage() {
   const { user } = useAuth();
   const toast    = useToast();
   const [active, setActive] = useState('profile');
+  const [winW, setWinW] = useState(typeof window !== 'undefined' ? window.innerWidth : 1024);
+
+  React.useEffect(() => {
+    const onResize = () => setWinW(window.innerWidth);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+
+  const isMobile = winW < 768;
 
   const NAV = [
     { group: 'Personal',     items: [
@@ -623,6 +632,8 @@ function SettingsPage() {
     ]},
   ];
 
+  const allNavItems = NAV.flatMap(g => g.items);
+
   return (
     <div style={{ maxWidth: 1200, margin: '0 auto' }}>
       {/* Page heading */}
@@ -632,43 +643,79 @@ function SettingsPage() {
         <p style={{ color: styles.textSecondary, marginTop: 4, fontSize: 14, margin: '4px 0 0' }}>Account, security, and notification preferences</p>
       </div>
 
-      {/* Salesforce Setup layout */}
-      <div style={{
-        display:      'flex',
-        background:   WS_BG,
-        border:       `1px solid ${SB_BORDER}`,
-        borderRadius: 4,
-        minHeight:    'calc(100vh - 180px)',
-        overflow:     'hidden',
-      }}>
-        {/* Sidebar */}
-        <aside style={{
-          width:        240,
-          background:   SB_BG,
-          borderRight:  `1px solid ${SB_BORDER}`,
-          padding:      '20px 0',
-          flexShrink:   0,
+      {isMobile ? (
+        /* ── Mobile: horizontal tab strip + full-width workspace ── */
+        <>
+          <div style={{
+            display: 'flex', gap: '2px', overflowX: 'auto', WebkitOverflowScrolling: 'touch',
+            marginBottom: 16, paddingBottom: 2,
+            borderBottom: `1px solid ${SB_BORDER}`,
+          }}>
+            {allNavItems.map(item => (
+              <button key={item.id} onClick={() => setActive(item.id)} style={{
+                display: 'flex', alignItems: 'center', gap: 6,
+                padding: '10px 14px', border: 'none', cursor: 'pointer',
+                background: active === item.id ? WS_BG : 'transparent',
+                borderBottom: `2px solid ${active === item.id ? styles.purplePrimary : 'transparent'}`,
+                color: active === item.id ? styles.purplePrimary : styles.textTertiary,
+                fontFamily: styles.mono, fontSize: 10, fontWeight: active === item.id ? 700 : 400,
+                letterSpacing: '1px', textTransform: 'uppercase',
+                whiteSpace: 'nowrap', flexShrink: 0,
+              }}>
+                {item.icon}
+                {item.label.split(' ')[0]}
+              </button>
+            ))}
+          </div>
+          <div style={{
+            background: WS_BG, border: `1px solid ${SB_BORDER}`, borderRadius: 4,
+            padding: 'clamp(14px, 3vw, 28px)', minHeight: 300,
+          }}>
+            {active === 'profile'       && <ProfilePanel      user={user} toast={toast} />}
+            {active === 'notifications' && <NotificationsPanel toast={toast} />}
+            {active === 'apikeys'       && <APIKeysPanel       toast={toast} />}
+            {active === 'audit'         && <AuditLogPanel      toast={toast} />}
+          </div>
+        </>
+      ) : (
+        /* ── Desktop: Salesforce Setup layout ── */
+        <div style={{
+          display:      'flex',
+          background:   WS_BG,
+          border:       `1px solid ${SB_BORDER}`,
+          borderRadius: 4,
+          minHeight:    'calc(100vh - 180px)',
+          overflow:     'hidden',
         }}>
-          {NAV.map(group => (
-            <div key={group.group} style={{ marginBottom: 8 }}>
-              <div style={{ padding: '0 20px 6px', fontFamily: styles.mono, fontSize: 9, fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase', color: styles.textDim }}>
-                {group.group}
+          {/* Sidebar */}
+          <aside style={{
+            width:        240,
+            background:   SB_BG,
+            borderRight:  `1px solid ${SB_BORDER}`,
+            padding:      '20px 0',
+            flexShrink:   0,
+          }}>
+            {NAV.map(group => (
+              <div key={group.group} style={{ marginBottom: 8 }}>
+                <div style={{ padding: '0 20px 6px', fontFamily: styles.mono, fontSize: 9, fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase', color: styles.textDim }}>
+                  {group.group}
+                </div>
+                {group.items.map(item => (
+                  <NavItem key={item.id} {...item} active={active === item.id} onClick={setActive} />
+                ))}
               </div>
-              {group.items.map(item => (
-                <NavItem key={item.id} {...item} active={active === item.id} onClick={setActive} />
-              ))}
-            </div>
-          ))}
-        </aside>
+            ))}
+          </aside>
 
-        {/* Workspace */}
-        <main style={{ flex: 1, padding: '28px 32px', overflowY: 'auto' }}>
-          {active === 'profile'       && <ProfilePanel      user={user} toast={toast} />}
-          {active === 'notifications' && <NotificationsPanel toast={toast} />}
-          {active === 'apikeys'       && <APIKeysPanel       toast={toast} />}
-          {active === 'audit'         && <AuditLogPanel      toast={toast} />}
-        </main>
-      </div>
+          {/* Workspace */}
+          <main style={{ flex: 1, padding: '28px 32px', overflowY: 'auto' }}>
+            {active === 'profile'       && <ProfilePanel      user={user} toast={toast} />}
+            {active === 'notifications' && <NotificationsPanel toast={toast} />}
+            {active === 'apikeys'       && <APIKeysPanel       toast={toast} />}
+            {active === 'audit'         && <AuditLogPanel      toast={toast} />}
+          </main>
+        </div>
+      )}
     </div>
   );
 }

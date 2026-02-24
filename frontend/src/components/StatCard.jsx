@@ -2,7 +2,7 @@
 // Salesforce "Lightning Tile" — current state vs. target, trend delta
 // Information density: label → value → trend / sublabel
 
-import React from 'react';
+import React, { useState } from 'react';
 import { styles } from '../config/styles';
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
 
@@ -50,14 +50,16 @@ const StatCard = React.memo(function StatCard({
 }) {
   const sub = sublabel || subtitle;
   const isClickable = Boolean(onClick);
+  const [winW] = useState(() => typeof window !== 'undefined' ? window.innerWidth : 1024);
+  const compact = winW < 480;
 
   return (
     <div
       className={className}
       onClick={onClick}
       style={{
-        padding:         `${styles.spacing.medium} ${styles.spacing.medium}`,
-        minHeight:       '120px',
+        padding:         compact ? '12px' : `${styles.spacing.medium} ${styles.spacing.medium}`,
+        minHeight:       compact ? '90px' : '120px',
         display:         'flex',
         flexDirection:   'column',
         justifyContent:  'space-between',
@@ -104,7 +106,7 @@ const StatCard = React.memo(function StatCard({
       {/* ── Value block ── */}
       <div>
         <div style={{
-          fontSize:     '32px',
+          fontSize:     compact ? '24px' : '32px',
           fontWeight:   300,
           fontFamily:   styles.sans,
           color:        color || styles.textPrimary,

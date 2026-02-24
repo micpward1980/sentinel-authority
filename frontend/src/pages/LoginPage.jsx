@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import Logo from '../components/Logo';
+import { api } from '../config/api';
 
 function LoginPage() {
   const { login, register } = useAuth();
@@ -15,6 +17,10 @@ function LoginPage() {
   const [twoFAStep, setTwoFAStep] = useState(false);
   const [totpCode, setTotpCode] = useState('');
   const [verifying2FA, setVerifying2FA] = useState(false);
+  const [forgotStep, setForgotStep] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState('');
+  const [forgotSending, setForgotSending] = useState(false);
+  const [forgotSent, setForgotSent] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -49,6 +55,20 @@ function LoginPage() {
     }
   };
 
+  const handleForgotPassword = async (e) => {
+    e.preventDefault();
+    setForgotSending(true);
+    setError('');
+    try {
+      await api.post('/api/auth/forgot-password', { email: forgotEmail });
+      setForgotSent(true);
+    } catch (err) {
+      setForgotSent(true); // Always show success to prevent email enumeration
+    } finally {
+      setForgotSending(false);
+    }
+  };
+
   return (
     <div data-page="login">
 
@@ -58,25 +78,54 @@ function LoginPage() {
           <div className={`sa-card${isRegister ? " register" : ""}`}>
 
           <div className="sa-brand">
-            <svg width="36" height="36" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="50" cy="50" r="46" stroke="#1d1a3b" strokeWidth="5" fill="white"/>
-              <circle cx="50" cy="50" r="39" stroke="#1d1a3b" strokeWidth="1.5" strokeOpacity="0.20" fill="none"/>
-              <text x="50" y="64" textAnchor="middle" fontFamily="'League Spartan', Arial, sans-serif" fontWeight="900" fontSize="38" fill="#1d1a3b" letterSpacing="-1">SA</text>
-            </svg>
-            <span className="sa-brand-name">Sentinel Authority</span>
+            <Logo height={48} />
           </div>
 
           <h1 className="sa-title">
-            {twoFAStep ? <>Two-Factor <em>Auth</em></> : isRegister ? <>Create <em>Account</em></> : <>Sign <em>In</em></>}
+            {forgotStep ? <>Reset <em>Password</em></> : twoFAStep ? <>Two-Factor <em>Auth</em></> : isRegister ? <>Create <em>Account</em></> : <>Sign <em>In</em></>}
           </h1>
 
           <p className="sa-lead">
-            {twoFAStep
+            {forgotStep
+              ? "Enter your email address and we\u2019ll send you a link to reset your password."
+              : twoFAStep
               ? 'Enter the 6-digit code from your authenticator app to complete sign-in.'
               : 'Access the ODDC certification portal. Manage applications, certificates, and ENVELO Interlock.'}
           </p>
 
-          {twoFAStep ? (
+          {forgotStep ? (
+            <div>
+              {forgotSent ? (
+                <>
+                  <p style={{fontSize: '14px', lineHeight: 1.6, color: 'var(--sa-text-2)', marginBottom: '24px'}}>
+                    If an account exists for <strong>{forgotEmail}</strong>, a password reset link has been sent. Check your inbox and spam folder.
+                  </p>
+                  <button className="sa-ghost" onClick={() => {
+                    setForgotStep(false); setForgotSent(false); setForgotEmail(''); setError('');
+                  }}>{'\u2190'} Back to sign in</button>
+                </>
+              ) : (
+                <>
+                  {error && <p className="sa-error">{error}</p>}
+                  <form onSubmit={handleForgotPassword}>
+                    <div className="sa-field">
+                      <label className="sa-field-label">Email Address</label>
+                      <input className="sa-input" type="email" placeholder="you@company.com"
+                        value={forgotEmail}
+                        onChange={e => setForgotEmail(e.target.value)}
+                        required autoFocus />
+                    </div>
+                    <button className="sa-submit" type="submit" disabled={forgotSending}>
+                      {forgotSending ? 'Sending\u2026' : 'Send Reset Link \u2192'}
+                    </button>
+                  </form>
+                  <button className="sa-ghost" onClick={() => {
+                    setForgotStep(false); setForgotEmail(''); setError('');
+                  }}>{'\u2190'} Back to sign in</button>
+                </>
+              )}
+            </div>
+          ) : twoFAStep ? (
             <div>
               {error && <p className="sa-error">{error}</p>}
               <form onSubmit={handle2FASubmit}>
@@ -162,7 +211,9 @@ function LoginPage() {
               </form>
 
               {!isRegister && (
-                <button className="sa-ghost" onClick={() => {}}>
+                <button className="sa-ghost" onClick={() => {
+                  setForgotStep(true); setForgotEmail(formData.email); setError('');
+                }}>
                   Forgot password?
                 </button>
               )}

@@ -10,6 +10,7 @@ import { useToast } from '../context/ToastContext';
 import Panel from '../components/Panel';
 import CopyableId from '../components/CopyableId';
 import EmptyState from '../components/EmptyState';
+import useIsMobile from '../hooks/useIsMobile';
 
 // ─── BulkImportModal (unchanged) ─────────────────────────────────────────────
 
@@ -136,6 +137,7 @@ function ApplicationsList() {
   const { user } = useAuth();
   const confirm = useConfirm();
   const qc = useQueryClient();
+  const isMobile = useIsMobile();
 
   const [filter, setFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -237,7 +239,7 @@ function ApplicationsList() {
             gap: '8px',
             padding: '10px 20px',
             background: styles.purplePrimary,
-            borderLeft: '3px solid ' + styles.purpleBright,
+            borderRadius: '6px',
             color: '#fff',
             fontFamily: styles.mono,
             fontSize: '10px',
@@ -361,9 +363,9 @@ function ApplicationsList() {
 
         {/* Bulk action bar */}
         {selected.size > 0 && isAdmin && (
-          <div style={{ position: 'sticky', bottom: '16px', zIndex: 50, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px', padding: '12px 20px', margin: '16px 0 0', background: 'rgba(0,0,0,0.92)', backdropFilter: 'blur(12px)', border: 'none', borderBottom: `1px solid ${styles.purpleBright}` }}>
+          <div style={{ position: 'sticky', bottom: '16px', zIndex: 50, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexDirection: isMobile ? 'column' : 'row', gap: '12px', padding: isMobile ? '12px 14px' : '12px 20px', margin: '16px 0 0', background: 'rgba(0,0,0,0.92)', backdropFilter: 'blur(12px)', border: 'none', borderBottom: `1px solid ${styles.purpleBright}` }}>
             <span style={{ fontFamily: styles.mono, fontSize: '12px', color: styles.purpleBright }}>{selected.size} selected</span>
-            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+            <div style={{ display: 'flex', gap: '6px', alignItems: 'center', flexWrap: 'wrap', justifyContent: isMobile ? 'center' : 'flex-end' }}>
               <button onClick={() => handleBulkAction('approve', 'approved')}   disabled={bulkLoading} style={ACTION_BTN(styles.accentGreen)}>Approve</button>
               <button onClick={() => handleBulkAction('review', 'under_review')} disabled={bulkLoading} style={ACTION_BTN(styles.accentAmber)}>Review</button>
               <button onClick={() => handleBulkAction('suspend', 'suspended')}  disabled={bulkLoading} style={ACTION_BTN(styles.accentRed)}>Suspend</button>

@@ -56,7 +56,7 @@ function MonitoringPage() {
 
   useEffect(() => {
     if (selectedSession) {
-      fetchTimeline(selectedSession.id);
+      fetchTimeline(selectedSession.session_id);
     }
   }, [selectedSession]);
 
@@ -326,8 +326,8 @@ function MonitoringPage() {
                   const isSelected = selectedSession?.id === session.id;
                   
                   return (
-                    <tr 
-                      key={session.id}
+                    <React.Fragment key={session.id}>
+                    <tr
                       onClick={() => setSelectedSession(isSelected ? null : session)}
                       style={{
                         borderBottom: `1px solid ${styles.borderGlass}`,
@@ -382,6 +382,60 @@ function MonitoringPage() {
                         {session.last_activity ? new Date(session.last_activity).toISOString().replace('T',' ').substring(0,16)+'Z' : '-'}
                       </td>
                     </tr>
+                    {isSelected && (
+                      <tr><td colSpan={8} style={{padding: 0, border: 'none'}}>
+                        <div style={{background: styles.bgPanel, borderTop: '1px solid ' + styles.borderGlass, borderBottom: '2px solid ' + styles.purpleBright}}>
+                          <div style={{padding: '16px 20px', borderBottom: '1px solid ' + styles.borderGlass, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px'}}>
+                            <h2 style={{margin: 0, fontSize: '14px', fontFamily: styles.mono, textTransform: 'uppercase', letterSpacing: '2px', color: styles.textTertiary}}>
+                              Session Detail: {session.session_id}
+                            </h2>
+                            <button onClick={() => setSelectedSession(null)} style={{background: 'none', border: 'none', color: styles.textTertiary, cursor: 'pointer', fontSize: '18px'}}>×</button>
+                          </div>
+                          <div style={{padding: '20px'}}>
+                            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px', marginBottom: '24px'}}>
+                              <div>
+                                <h3 style={{margin: '0 0 4px 0', fontSize: '18px', fontWeight: 400, color: styles.textPrimary}}>{session.organization_name || 'Unknown Organization'}</h3>
+                                <p style={{margin: 0, fontSize: '13px', color: styles.textSecondary}}>{session.system_name || 'Unknown System'} · {session.certificate_id || 'No certificate'}</p>
+                                <p style={{margin: '4px 0 0', fontFamily: styles.mono, fontSize: '11px', color: styles.textTertiary}}>Agent v{session.agent_version || '1.0.0'} · Session {session.session_id}</p>
+                              </div>
+                              {session.is_online && (
+                                <button onClick={async () => { if (!await confirm({title: 'End Session', message: 'Force-end this session?', danger: true})) return; try { await api.post('/api/envelo/sessions/' + session.session_id + '/end', { ended_at: new Date().toISOString(), final_stats: { pass_count: session.pass_count, block_count: session.block_count } }); setSelectedSession(null); qc.invalidateQueries({ queryKey: ['monitoring-overview'] }); } catch (e) { toast.show('Failed: ' + e.message, 'error'); } }} style={{padding: '8px 16px', background: styles.cardSurface, border: '1px solid ' + styles.borderSubtle, color: styles.accentRed, cursor: 'pointer', fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', borderRadius: 4}}>Force End Session</button>
+                              )}
+                            </div>
+                            <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '16px', marginBottom: '24px'}}>
+                              <div style={{padding: '14px'}}><div style={{fontSize: '10px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '6px'}}>Started</div><div style={{color: styles.textPrimary, fontSize: '13px'}}>{session.started_at ? new Date(session.started_at).toISOString().replace('T',' ').substring(0,16)+'Z' : '-'}</div></div>
+                              <div style={{padding: '14px'}}><div style={{fontSize: '10px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '6px'}}>Uptime</div><div style={{color: styles.textPrimary, fontFamily: styles.mono, fontSize: '18px'}}>{session.uptime_hours?.toFixed(1) || '0'}h</div></div>
+                              <div style={{padding: '14px'}}><div style={{fontSize: '10px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '6px'}}>Passed</div><div style={{color: styles.accentGreen, fontFamily: styles.mono, fontSize: '18px'}}>{(session.pass_count || 0).toLocaleString()}</div></div>
+                              <div style={{padding: '14px'}}><div style={{fontSize: '10px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '6px'}}>Blocked</div><div style={{color: styles.accentRed, fontFamily: styles.mono, fontSize: '18px'}}>{(session.block_count || 0).toLocaleString()}</div></div>
+                              <div style={{padding: '14px'}}><div style={{fontSize: '10px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '6px'}}>Pass Rate</div>{(() => { const t2 = (session.pass_count || 0) + (session.block_count || 0); const r2 = t2 > 0 ? (session.pass_count / t2 * 100) : 0; return <div style={{color: r2 >= 99 ? styles.accentGreen : r2 >= 95 ? styles.accentAmber : styles.accentRed, fontFamily: styles.mono, fontSize: '18px'}}>{r2.toFixed(1)}%</div>; })()}</div>
+                              <div style={{padding: '14px'}}><div style={{fontSize: '10px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '6px'}}>Certificate</div><div style={{color: styles.purpleBright, fontFamily: styles.mono, fontSize: '12px'}}>{session.certificate_id || '-'}</div></div>
+                            </div>
+                            {(() => { const t3 = (session.pass_count || 0) + (session.block_count || 0); if (t3 === 0) return null; const pp = session.pass_count / t3 * 100; return (
+                              <div style={{marginBottom: '24px'}}>
+                                <div style={{fontSize: '10px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px'}}>Enforcement Distribution</div>
+                                <div style={{height: '12px', overflow: 'hidden', display: 'flex'}}><div style={{width: pp + '%', background: styles.accentGreen}} /><div style={{width: (100 - pp) + '%', background: styles.accentRed}} /></div>
+                                <div style={{display: 'flex', justifyContent: 'space-between', marginTop: '4px', fontSize: '11px'}}><span style={{color: styles.accentGreen}}>Pass: {pp.toFixed(1)}%</span><span style={{color: styles.accentRed}}>Block: {(100 - pp).toFixed(1)}%</span></div>
+                              </div>
+                            ); })()}
+                            <div style={{display: 'flex', gap: '8px', marginBottom: '24px', flexWrap: 'wrap'}}>
+                              <button onClick={async () => { try { const isAdmin = user?.role === 'admin'; const base = isAdmin ? '/api/envelo/admin/sessions/' : '/api/envelo/my/sessions/'; const res = await api.get(base + session.session_id + '/telemetry'); const records = res.data.records || []; if (records.length === 0) { toast.show('No telemetry data yet', 'info'); return; } const hdrs = ['timestamp','action_id','action_type','result','execution_time_ms']; const csv = [hdrs.join(','), ...records.map(r2 => hdrs.map(h => JSON.stringify(r2[h] ?? '')).join(','))].join('\n'); const blob = new Blob([csv], {type: 'text/csv'}); const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = 'telemetry-' + session.session_id + '.csv'; link.click(); } catch (e) { toast.show('Failed to download telemetry', 'error'); } }} style={{padding: '8px 16px', background: styles.cardSurface, border: '1px solid ' + styles.borderSubtle, color: styles.purpleBright, cursor: 'pointer', fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px', borderRadius: 4}}>↓ Telemetry CSV</button>
+                              <button onClick={async () => { try { const isAdmin = user?.role === 'admin'; const base = isAdmin ? '/api/envelo/admin/sessions/' : '/api/envelo/my/sessions/'; const res = await api.get(base + session.session_id + '/violations'); const viol = res.data.violations || []; if (viol.length === 0) { toast.show('No violations recorded', 'info'); return; } const hdrs = ['timestamp','boundary_name','violation_message']; const csv = [hdrs.join(','), ...viol.map(v => hdrs.map(h => JSON.stringify(v[h] ?? '')).join(','))].join('\n'); const blob = new Blob([csv], {type: 'text/csv'}); const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = 'violations-' + session.session_id + '.csv'; link.click(); } catch (e) { toast.show('Failed to download violations', 'error'); } }} style={{padding: '8px 16px', background: styles.cardSurface, border: '1px solid ' + styles.borderSubtle, color: styles.accentRed, cursor: 'pointer', fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px', borderRadius: 4}}>↓ Violations CSV</button>
+                              <button onClick={async () => { try { const isAdmin = user?.role === 'admin'; const base = isAdmin ? '/api/envelo/admin/sessions/' : '/api/envelo/my/sessions/'; const res = await api.get(base + session.session_id + '/report', { responseType: 'blob' }); const blob = new Blob([res.data], {type: 'application/pdf'}); const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = 'CAT72-Report-' + session.session_id + '.pdf'; link.click(); } catch (e) { toast.show('Failed to download report', 'error'); } }} style={{padding: '8px 16px', background: styles.cardSurface, border: '1px solid ' + styles.borderGlass, color: styles.accentGreen, cursor: 'pointer', fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px', borderRadius: 4}}>↓ CAT-72 Report PDF</button>
+                            </div>
+                            {timeline.length > 0 && (
+                              <div>
+                                <div style={{fontSize: '10px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '12px'}}>24-Hour Activity</div>
+                                <div style={{display: 'flex', gap: '2px', height: '60px', alignItems: 'flex-end'}}>
+                                  {timeline.map((point, ti) => { const maxTotal = Math.max(...timeline.map(t4 => t4.total), 1); const height = (point.total / maxTotal) * 100; const passRatio = point.total > 0 ? point.pass / point.total : 1; return (<div key={ti} style={{flex: 1, height: Math.max(height, 2) + '%', background: passRatio >= 0.99 ? styles.accentGreen : passRatio >= 0.95 ? styles.accentAmber : styles.accentRed, opacity: 0.8}} title={new Date(point.hour).toISOString().substring(11,16)+'Z: ' + point.total + ' actions (' + point.pass + ' pass, ' + point.block + ' block)'} />); })}
+                                </div>
+                                <div style={{display: 'flex', justifyContent: 'space-between', marginTop: '4px', fontSize: '10px', color: styles.textTertiary}}><span>24h ago</span><span>Now</span></div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </td></tr>
+                    )}
+                    </React.Fragment>
                   );
                 })}
               </tbody>
@@ -390,194 +444,6 @@ function MonitoringPage() {
         )}
       </div>
 
-      {/* Session Detail Panel */}
-      {selectedSession && (
-        <div style={{
-          marginTop: '24px',
-          background: styles.bgPanel,
-          border: `1px solid ${styles.borderGlass}`,
-          overflow: 'hidden'
-        }}>
-          <div style={{padding: '16px 20px', borderBottom: `1px solid ${styles.borderGlass}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px'}}>
-            <h2 style={{margin: 0, fontSize: '14px', fontFamily: styles.mono, textTransform: 'uppercase', letterSpacing: '2px', color: styles.textTertiary}}>
-              Session Detail: {selectedSession.session_id}
-            </h2>
-            <button 
-              onClick={() => setSelectedSession(null)}
-              style={{background: 'none', border: 'none', color: styles.textTertiary, cursor: 'pointer', fontSize: '18px'}}
-            >
-              ×
-            </button>
-          </div>
-          
-          <div style={{padding: '20px'}}>
-            {/* Session Info Header */}
-            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px', marginBottom: '24px'}}>
-              <div>
-                <h3 style={{margin: '0 0 4px 0', fontSize: '18px', fontWeight: 400, color: styles.textPrimary}}>{selectedSession.organization_name || 'Unknown Organization'}</h3>
-                <p style={{margin: 0, fontSize: '13px', color: styles.textSecondary}}>{selectedSession.system_name || 'Unknown System'} · {selectedSession.certificate_id || 'No certificate'}</p>
-                <p style={{margin: '4px 0 0', fontFamily: styles.mono, fontSize: '11px', color: styles.textTertiary}}>Agent v{selectedSession.agent_version || '1.0.0'} · Session {selectedSession.session_id}</p>
-              </div>
-              {selectedSession.is_online && (
-                <button
-                  onClick={async () => {
-                    if (!await confirm({title: 'End Session', message: 'Force-end this session?', danger: true})) return;
-                    try {
-                      await api.post('/api/envelo/sessions/' + selectedSession.session_id + '/end', { ended_at: new Date().toISOString(), final_stats: { pass_count: selectedSession.pass_count, block_count: selectedSession.block_count } });
-                      setSelectedSession(null);
-                      qc.invalidateQueries({ queryKey: ['monitoring-overview'] });
-                    } catch (e) { toast.show('Failed: ' + e.message, 'error'); }
-                  }}
-                  style={{padding: '8px 16px', background: styles.cardSurface, border: '1px solid ' + styles.borderSubtle, color: styles.accentRed, cursor: 'pointer', fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', borderRadius: 4}}
-                >
-                  Force End Session
-                </button>
-              )}
-            </div>
-            
-            {/* Stats Grid */}
-            <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '16px', marginBottom: '24px'}}>
-              <div style={{background: 'transparent', padding: '14px'}}>
-                <div style={{fontSize: '10px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '6px'}}>Started</div>
-                <div style={{color: styles.textPrimary, fontSize: '13px'}}>{selectedSession.started_at ? new Date(selectedSession.started_at).toISOString().replace('T',' ').substring(0,16)+'Z' : '-'}</div>
-              </div>
-              <div style={{background: 'transparent', padding: '14px'}}>
-                <div style={{fontSize: '10px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '6px'}}>Uptime</div>
-                <div style={{color: styles.textPrimary, fontFamily: styles.mono, fontSize: '18px'}}>{selectedSession.uptime_hours?.toFixed(1) || '0'}h</div>
-              </div>
-              <div style={{background: 'transparent', padding: '14px'}}>
-                <div style={{fontSize: '10px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '6px'}}>Passed</div>
-                <div style={{color: styles.accentGreen, fontFamily: styles.mono, fontSize: '18px'}}>{(selectedSession.pass_count || 0).toLocaleString()}</div>
-              </div>
-              <div style={{background: 'transparent', padding: '14px'}}>
-                <div style={{fontSize: '10px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '6px'}}>Blocked</div>
-                <div style={{color: styles.accentRed, fontFamily: styles.mono, fontSize: '18px'}}>{(selectedSession.block_count || 0).toLocaleString()}</div>
-              </div>
-              <div style={{background: 'transparent', padding: '14px'}}>
-                <div style={{fontSize: '10px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '6px'}}>Pass Rate</div>
-                {(() => { const t = (selectedSession.pass_count || 0) + (selectedSession.block_count || 0); const r = t > 0 ? (selectedSession.pass_count / t * 100) : 0; return (
-                  <div style={{color: r >= 99 ? styles.accentGreen : r >= 95 ? styles.accentAmber : styles.accentRed, fontFamily: styles.mono, fontSize: '18px'}}>{r.toFixed(1)}%</div>
-                ); })()}
-              </div>
-              <div style={{background: 'transparent', padding: '14px'}}>
-                <div style={{fontSize: '10px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '6px'}}>Certificate</div>
-                <div style={{color: styles.purpleBright, fontFamily: styles.mono, fontSize: '12px'}}>{selectedSession.certificate_id || '-'}</div>
-              </div>
-            </div>
-            
-            {/* Pass/Block Ratio Bar */}
-            {(() => { const t = (selectedSession.pass_count || 0) + (selectedSession.block_count || 0); if (t === 0) return null; const pp = selectedSession.pass_count / t * 100; return (
-              <div style={{marginBottom: '24px'}}>
-                <div style={{fontSize: '10px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px'}}>Enforcement Distribution</div>
-                <div style={{height: '12px', background: 'transparent', overflow: 'hidden', display: 'flex'}}>
-                  <div style={{width: pp + '%', background: styles.accentGreen, transition: 'width 0.5s'}} />
-                  <div style={{width: (100 - pp) + '%', background: styles.accentRed, transition: 'width 0.5s'}} />
-                </div>
-                <div style={{display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px', marginTop: '4px', fontSize: '11px'}}>
-                  <span style={{color: styles.accentGreen}}>Pass: {pp.toFixed(1)}%</span>
-                  <span style={{color: styles.accentRed}}>Block: {(100 - pp).toFixed(1)}%</span>
-                </div>
-              </div>
-            ); })()}
-
-
-            {/* Session Data Downloads */}
-            <div style={{display: 'flex', gap: '8px', marginBottom: '24px', flexWrap: 'wrap'}}>
-              <button
-                onClick={async () => {
-                  try {
-                    const isAdmin = user?.role === 'admin';
-                    const base = isAdmin ? '/api/envelo/admin/sessions/' : '/api/envelo/my/sessions/';
-                    const res = await api.get(base + selectedSession.id + '/telemetry');
-                    const records = res.data.records || [];
-                    if (records.length === 0) { toast.show('No telemetry data yet', 'info'); return; }
-                    const headers = ['timestamp','action_id','action_type','result','execution_time_ms'];
-                    const csv = [headers.join(','), ...records.map(r => headers.map(h => JSON.stringify(r[h] ?? '')).join(','))].join('\n');
-                    const blob = new Blob([csv], {type: 'text/csv'});
-                    const link = document.createElement('a');
-                    link.href = URL.createObjectURL(blob);
-                    link.download = `telemetry-${selectedSession.session_id}.csv`;
-                    link.click();
-                  } catch (e) { toast.show('Failed to download telemetry', 'error'); }
-                }}
-                style={{padding: '8px 16px', background: styles.cardSurface, border: '1px solid ' + styles.borderSubtle, color: styles.purpleBright, cursor: 'pointer', fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px', borderRadius: 4}}
-              >
-                ↓ Telemetry CSV
-              </button>
-              <button
-                onClick={async () => {
-                  try {
-                    const isAdmin = user?.role === 'admin';
-                    const base = isAdmin ? '/api/envelo/admin/sessions/' : '/api/envelo/my/sessions/';
-                    const res = await api.get(base + selectedSession.id + '/violations');
-                    const violations = res.data.violations || [];
-                    if (violations.length === 0) { toast.show('No violations recorded', 'info'); return; }
-                    const headers = ['timestamp','boundary_name','violation_message'];
-                    const csv = [headers.join(','), ...violations.map(v => headers.map(h => JSON.stringify(v[h] ?? '')).join(','))].join('\n');
-                    const blob = new Blob([csv], {type: 'text/csv'});
-                    const link = document.createElement('a');
-                    link.href = URL.createObjectURL(blob);
-                    link.download = `violations-${selectedSession.session_id}.csv`;
-                    link.click();
-                  } catch (e) { toast.show('Failed to download violations', 'error'); }
-                }}
-                style={{padding: '8px 16px', background: styles.cardSurface, border: '1px solid ' + styles.borderSubtle, color: styles.accentRed, cursor: 'pointer', fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px', borderRadius: 4}}
-              >
-                ↓ Violations CSV
-              </button>
-              <button
-                onClick={async () => {
-                  try {
-                    const isAdmin = user?.role === 'admin';
-                    const base = isAdmin ? '/api/envelo/admin/sessions/' : '/api/envelo/my/sessions/';
-                    const res = await api.get(base + selectedSession.id + '/report', { responseType: 'blob' });
-                    const blob = new Blob([res.data], {type: 'application/pdf'});
-                    const link = document.createElement('a');
-                    link.href = URL.createObjectURL(blob);
-                    link.download = `CAT72-Report-${selectedSession.session_id}.pdf`;
-                    link.click();
-                  } catch (e) { toast.show('Failed to download report', 'error'); }
-                }}
-                style={{padding: '8px 16px', background: styles.cardSurface, border: '1px solid ' + styles.borderGlass, color: styles.accentGreen, cursor: 'pointer', fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px', borderRadius: 4}}
-              >
-                ↓ CAT-72 Report PDF
-              </button>
-            </div>
-            {/* Simple Timeline Bar Chart */}
-            {timeline.length > 0 && (
-              <div>
-                <div style={{fontSize: '10px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '12px'}}>
-                  24-Hour Activity
-                </div>
-                <div style={{display: 'flex', gap: '2px', height: '60px', alignItems: 'flex-end'}}>
-                  {timeline.map((point, i) => {
-                    const maxTotal = Math.max(...timeline.map(t => t.total), 1);
-                    const height = (point.total / maxTotal) * 100;
-                    const passRatio = point.total > 0 ? point.pass / point.total : 1;
-                    
-                    return (
-                      <div
-                        key={i}
-                        style={{
-                          flex: 1,
-                          height: `${Math.max(height, 2)}%`,
-                          background: passRatio >= 0.99 ? styles.accentGreen : passRatio >= 0.95 ? styles.accentAmber : styles.accentRed,
-                          opacity: 0.8
-                        }}
-                        title={`${new Date(point.hour).toISOString().substring(11,16)+'Z'}: ${point.total} actions (${point.pass} pass, ${point.block} block)`}
-                      />
-                    );
-                  })}
-                </div>
-                <div style={{display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px', marginTop: '4px', fontSize: '10px', color: styles.textTertiary}}>
-                  <span>24h ago</span>
-                  <span>Now</span>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
     </div>
   );
 }

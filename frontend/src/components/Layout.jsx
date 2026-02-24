@@ -1,114 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Bell, Settings, FileText, Activity, Award, Users, Home, LogOut, Menu, X, ExternalLink, BookOpen, Clock, BarChart2, Shield } from 'lucide-react';
+import { Bell, Settings, FileText, Activity, Award, Users, Home, LogOut, Menu, X, ExternalLink, BookOpen, Clock, BarChart2 } from 'lucide-react';
 import { api } from '../config/api';
 import { styles } from '../config/styles';
 import { useAuth } from '../context/AuthContext';
 import useIsMobile from '../hooks/useIsMobile';
 import BrandMark from './BrandMark';
+import Logo from './Logo';
 import SentinelChatbot from './SentinelChatbot';
-
-// ─── Nav structure ────────────────────────────────────────────────────────────
-// Operational items first, admin/config last
-// Section dividers separate operational from administrative
-
-const NAV = [
-  { section: 'Operational' },
-  { name: 'Dashboard',       href: '/dashboard',    icon: Home,     roles: ['admin', 'applicant'] },
-  { name: 'Applications',    href: '/applications', icon: FileText, roles: ['admin', 'applicant'] },
-  { name: 'CAT-72 Console',  href: '/cat72',        icon: Clock,    roles: ['admin', 'applicant'] },
-  { name: 'Monitoring',      href: '/monitoring',   icon: BarChart2, roles: ['admin', 'applicant'] },
-  { name: 'Certificates',    href: '/certificates', icon: Award,    roles: ['admin', 'applicant'] },
-  { name: 'ENVELO Interlock', href: '/envelo',      icon: 'brand',  roles: ['admin', 'applicant'], requiresCert: true },
-  { section: 'Registry' },
-  { name: 'Activity Log',    href: '/activity',     icon: Activity, roles: ['admin'] },
-  { name: 'My Activity',     href: '/my-activity',  icon: Activity, roles: ['admin', 'applicant'] },
-  { name: 'Licensees',       href: '/licensees',    icon: Shield,   roles: ['admin'] },
-  { section: 'Admin' },
-  { name: 'User Management', href: '/users',        icon: Users,    roles: ['admin'] },
-  { name: 'Resources',       href: '/resources',    icon: BookOpen, roles: ['admin', 'applicant'] },
-  { name: 'API Docs',        href: '/api-docs',     icon: ExternalLink, roles: ['admin'] },
-  { name: 'Settings',        href: '/settings',     icon: Settings, roles: ['admin', 'applicant'] },
-];
-
-function fmtUTC(ts) {
-  if (!ts) return '';
-  return new Date(ts).toISOString().replace('T', ' ').substring(0, 16) + 'Z';
-}
-
-
-// ─── Breadcrumb ────────────────────────────────────────────────────────────
-const BREADCRUMB_MAP = {
-  '/dashboard':    [{ label: 'Dashboard' }],
-  '/applications': [{ label: 'Applications' }],
-  '/applications/new': [{ label: 'Applications', href: '/applications' }, { label: 'New Application' }],
-  '/cat72':        [{ label: 'CAT-72 Console' }],
-  '/certificates': [{ label: 'Certificates' }],
-  '/envelo':       [{ label: 'ENVELO Interlock' }],
-  '/monitoring':   [{ label: 'Monitoring' }],
-  '/activity':     [{ label: 'Activity Log' }],
-  '/my-activity':  [{ label: 'My Activity' }],
-  '/settings':     [{ label: 'Settings' }],
-  '/users':        [{ label: 'User Management' }],
-  '/licensees':    [{ label: 'Licensees' }],
-  '/resources':    [{ label: 'Resources' }],
-  '/api-docs':     [{ label: 'API Docs' }],
-};
-
-function Breadcrumbs({ pathname }) {
-  // Exact match first
-  let crumbs = BREADCRUMB_MAP[pathname];
-  // Dynamic routes
-  if (!crumbs) {
-    const appMatch = pathname.match(/^\/applications\/(.+)$/);
-    if (appMatch) crumbs = [
-      { label: 'Applications', href: '/applications' },
-      { label: appMatch[1], mono: true },
-    ];
-    const certMatch = pathname.match(/^\/certificates\/(.+)$/);
-    if (certMatch) crumbs = [
-      { label: 'Certificates', href: '/certificates' },
-      { label: certMatch[1], mono: true },
-    ];
-  }
-  if (!crumbs || crumbs.length <= 1) return null;
-
-  return (
-    <div style={{
-      display: 'flex', alignItems: 'center', gap: '6px',
-      padding: '8px clamp(16px, 3vw, 32px)',
-      borderBottom: '1px solid #dddbda',
-      background: '#fafafa',
-    }}>
-      {crumbs.map((crumb, i) => (
-        <React.Fragment key={i}>
-          {i > 0 && (
-            <span style={{ fontFamily: styles.mono, fontSize: '10px', color: styles.textDim, userSelect: 'none' }}>›</span>
-          )}
-          {crumb.href ? (
-            <Link to={crumb.href} style={{
-              fontFamily: crumb.mono ? styles.mono : styles.sans,
-              fontSize: '11px', color: styles.textTertiary,
-              textDecoration: 'none', letterSpacing: crumb.mono ? '0.05em' : '0',
-            }}
-            onMouseEnter={e => e.currentTarget.style.color = styles.purplePrimary}
-            onMouseLeave={e => e.currentTarget.style.color = styles.textTertiary}>
-              {crumb.label}
-            </Link>
-          ) : (
-            <span style={{
-              fontFamily: crumb.mono ? styles.mono : styles.sans,
-              fontSize: '11px', color: styles.textPrimary, fontWeight: 500,
-              letterSpacing: crumb.mono ? '0.05em' : '0',
-            }}>
-              {crumb.label}
-            </span>
-          )}
-        </React.Fragment>
-      ))}
-    </div>
-  );
-}
 
 function Layout({ children }) {
   const { user, logout } = useAuth();
@@ -121,15 +20,16 @@ function Layout({ children }) {
   const [notifOpen, setNotifOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
 
+  // Auto-close sidebar on route change (mobile)
   useEffect(() => {
-    if (!user) return;
-    api.get('/api/certificates/').then(r => setUserCerts(r.data || [])).catch(() => {});
-    api.get('/api/applications/').then(r => setUserApps(r.data.applications || r.data || [])).catch(() => {});
-    if (localStorage.getItem('token')) {
-      api.get('/api/users/notifications').then(r => {
-        setNotifs(r.data.notifications || []);
-        setUnreadCount(r.data.unread_count || 0);
-      }).catch(() => {});
+    if (isMobile) setSidebarOpen(false);
+  }, [location.pathname]);
+
+  useEffect(() => {
+    if (user) {
+      api.get('/api/certificates/').then(res => setUserCerts(res.data || [])).catch(() => setUserCerts([]));
+      api.get('/api/applications/').then(res => setUserApps(res.data.applications || res.data || [])).catch(() => setUserApps([]));
+      if (localStorage.getItem('token')) api.get('/api/users/notifications').then(res => { setNotifs(res.data.notifications || []); setUnreadCount(res.data.unread_count || 0); }).catch(() => {});
     }
   }, [user]);
 
@@ -137,230 +37,210 @@ function Layout({ children }) {
     if (!user) return;
     const iv = setInterval(() => {
       if (!localStorage.getItem('token')) return;
-      api.get('/api/users/notifications').then(r => {
-        setNotifs(r.data.notifications || []);
-        setUnreadCount(r.data.unread_count || 0);
-      }).catch(() => {});
+      api.get('/api/users/notifications').then(r => { setNotifs(r.data.notifications || []); setUnreadCount(r.data.unread_count || 0); }).catch(() => {});
     }, 60000);
     return () => clearInterval(iv);
   }, [user]);
 
-  const markAllRead = () => {
-    api.post('/api/users/notifications/mark-read').then(() => setUnreadCount(0)).catch(() => {});
-    setNotifOpen(false);
-  };
+  const markAllRead = () => { api.post('/api/users/notifications/mark-read').then(() => setUnreadCount(0)).catch(() => {}); setNotifOpen(false); };
 
-  const hasCert = userCerts.some(c => ['conformant', 'active', 'issued'].includes(c.state));
-  const hasApprovedApp = userApps.some(a => ['approved', 'testing'].includes(a.state));
+  const navigation = [
+    { name: 'Dashboard', href: '/dashboard', icon: Home, roles: ['admin', 'applicant'] },
+    { name: 'Applications', href: '/applications', icon: FileText, roles: ['admin', 'applicant'] },
+    { name: 'CAT-72 Console', href: '/cat72', icon: Clock, roles: ['admin', 'applicant'] },
+    { name: 'Certificates', href: '/certificates', icon: Award, roles: ['admin', 'applicant'] },
+    { name: 'Resources', href: '/resources', icon: BookOpen, roles: ['admin', 'applicant'] },
+    { name: 'ENVELO Interlock', href: '/envelo', icon: 'brand', roles: ['admin', 'applicant'], requiresCert: true },
+    { name: 'Monitoring', href: '/monitoring', icon: BarChart2, roles: ['admin', 'applicant'] },
+    { name: 'User Management', href: '/users', icon: Users, roles: ['admin'] },
+    { name: 'My Activity', href: '/my-activity', icon: Activity, roles: ['admin', 'applicant'] },
+    { name: 'Activity Log', href: '/activity', icon: FileText, roles: ['admin'] },
+    { name: 'Settings', href: '/settings', icon: Settings, roles: ['admin', 'applicant'] },
+    { name: 'API Docs', href: '/api-docs', icon: ExternalLink, roles: ['admin'] },
+  ];
+
+  const hasCert = Array.isArray(userCerts) && userCerts.some(c => c.state === 'conformant' || c.state === 'active' || c.state === 'issued');
+  const hasApprovedApp = Array.isArray(userApps) && userApps.some(a => a.state === 'approved' || a.state === 'testing');
   const canAccessAgent = hasCert || hasApprovedApp;
-
-  const filteredNav = NAV.filter(item => {
-    if (item.section) return true;
+  const filteredNav = navigation.filter(item => {
     if (!item.roles.includes(user?.role || '')) return false;
     if (item.requiresCert && user?.role !== 'admin' && !canAccessAgent) return false;
     return true;
   });
 
-  // Remove sections with no following items
-  const visibleNav = filteredNav.filter((item, i) => {
-    if (!item.section) return true;
-    const next = filteredNav[i + 1];
-    return next && !next.section;
-  });
+  const isActive = (href) => location.pathname === href || (href !== '/dashboard' && location.pathname.startsWith(href));
 
-  const isActive = (href) =>
-    location.pathname === href || (href !== '/dashboard' && location.pathname.startsWith(href));
-
-  const frost = {
-    background: 'rgba(245,245,247,0.92)',
-    backdropFilter: 'blur(24px) saturate(1.4)',
-    WebkitBackdropFilter: 'blur(24px) saturate(1.4)',
-    borderColor: 'rgba(15,18,30,0.06)',
-  };
-
-  const navLink = (active) => ({
+  const navLinkStyle = (active) => ({
     display: 'flex', alignItems: 'center', gap: '10px',
-    padding: '8px 16px',
+    padding: '9px 16px',
     textDecoration: 'none',
     fontFamily: styles.mono,
-    fontSize: '11px',
-    fontWeight: active ? 600 : 400,
-    letterSpacing: '0.06em',
+    fontSize: '9px',
+    letterSpacing: '1.5px',
     textTransform: 'uppercase',
-    color: active ? styles.textPrimary : styles.textTertiary,
-    borderLeft: `2px solid ${active ? styles.purpleBright : 'transparent'}`,
-    background: active ? 'rgba(29,26,59,.06)' : 'transparent',
-    transition: 'color 0.15s, background 0.15s',
+    color: active ? styles.textPrimary : 'rgba(15,18,30,0.72)',
+    borderLeft: active ? '2px solid ' + styles.purpleBright : '2px solid transparent',
+    background: active ? 'rgba(74,61,117,.06)' : 'transparent',
+    transition: 'color 0.25s ease, background 0.15s'
   });
 
-  const sectionLabel = {
-    fontFamily: styles.mono, fontSize: '9px',
-    fontWeight: 500, letterSpacing: '0.14em',
-    textTransform: 'uppercase', color: styles.textDim,
-    padding: '16px 16px 4px',
-  };
-
   return (
-    <div style={{ minHeight: '100vh', color: styles.textPrimary, fontFamily: styles.sans, background: styles.bgDeep }}>
+    <div style={{minHeight: '100vh', color: styles.textPrimary, fontFamily: styles.sans, background: styles.bgDeep}}>
+      {/* Grid overlay — matches main site (opacity:0 = hidden by default) */}
+      <div className="sa-grid-overlay" />
+
+      {/* Noise texture — matches main site exactly */}
+      <div className="sa-noise" />
 
       {isMobile && sidebarOpen && (
-        <div onClick={() => setSidebarOpen(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.12)', zIndex: 40 }} />
+        <div onClick={() => setSidebarOpen(false)} style={{position: 'fixed', inset: 0, background: 'rgba(0,0,0,.12)', zIndex: 40}} />
       )}
 
-      {/* Sidebar */}
-      <div style={{
-        position: 'fixed', top: 0, left: 0, bottom: 0, zIndex: 50,
-        width: '220px',
-        transform: (sidebarOpen || !isMobile) ? 'translateX(0)' : 'translateX(-100%)',
-        transition: 'transform 0.2s ease',
-        background: frost.background,
-        backdropFilter: frost.backdropFilter,
-        WebkitBackdropFilter: frost.WebkitBackdropFilter,
-        borderRight: `1px solid ${frost.borderColor}`,
-        display: 'flex', flexDirection: 'column',
-      }}>
-        {/* Brand */}
-        <div style={{ height: '72px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px', borderBottom: `1px solid ${frost.borderColor}`, flexShrink: 0 }}>
-          <Link to="/dashboard" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
-            <svg width="32" height="32" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="60" cy="60" r="50" stroke="#1d1a3b" strokeWidth="3.4"/><circle cx="60" cy="60" r="43" stroke="#1d1a3b" strokeWidth="1.1" strokeOpacity="0.20"/><text x="60" y="74" textAnchor="middle" fontFamily="League Spartan,Arial,sans-serif" fontWeight="900" fontSize="42" letterSpacing="-1.1" fill="#1d1a3b">SA</text></svg>
-            <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.15 }}>
-              <span style={{ fontFamily: styles.mono, fontSize: '10px', letterSpacing: '0.20em', textTransform: 'uppercase', color: styles.textPrimary, whiteSpace: 'nowrap' }}>SENTINEL</span>
-              <span style={{ fontFamily: styles.mono, fontSize: '8px', letterSpacing: '0.20em', textTransform: 'uppercase', color: styles.textTertiary, whiteSpace: 'nowrap' }}>AUTHORITY</span>
-            </div>
+      {/* Sidebar — frosted glass matching main site nav */}
+      <div
+        style={{
+          position: 'fixed', top: 0, left: 0, bottom: 0, zIndex: 50,
+          width: '240px',
+          transform: (sidebarOpen || !isMobile) ? 'translateX(0)' : 'translateX(-100%)',
+          transition: 'transform 0.2s ease',
+          background: 'rgba(255,255,255,0.95)',
+          backdropFilter: 'blur(20px) saturate(1.3)',
+          WebkitBackdropFilter: 'blur(20px) saturate(1.3)',
+          borderRight: '1px solid rgba(15,18,30,0.06)',
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden',
+        }}>
+
+        {/* Brand — fixed at top */}
+        <div style={{
+          height: isMobile ? '52px' : '72px',
+          minHeight: isMobile ? '52px' : '72px',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: '0 16px',
+          borderBottom: '1px solid rgba(15,18,30,0.06)',
+          flexShrink: 0,
+        }}>
+          <Link to="/dashboard" style={{display: 'flex', alignItems: 'center', textDecoration: 'none'}}>
+            <Logo height={isMobile ? 36 : 52} />
           </Link>
-          {isMobile && (
-            <button onClick={() => setSidebarOpen(false)} style={{ color: styles.textTertiary, background: 'none', border: 'none', cursor: 'pointer', padding: '4px' }}>
-              <X size={16} />
-            </button>
-          )}
+          <button onClick={() => setSidebarOpen(false)} style={{color: styles.textTertiary, background: 'none', border: 'none', cursor: 'pointer', padding: '4px', display: isMobile ? 'block' : 'none'}}>
+            <X size={18} />
+          </button>
         </div>
 
-        {/* Nav */}
-        <nav style={{ flex: 1, overflowY: 'auto', padding: '8px 0' }}>
-          {visibleNav.map((item, i) => {
-            if (item.section) {
-              return <div key={`section-${i}`} style={sectionLabel}>{item.section}</div>;
-            }
+        {/* Nav — scrollable middle section */}
+        <nav style={{padding: isMobile ? '4px 0' : '12px 0', flex: 1, minHeight: 0, overflowY: 'auto', WebkitOverflowScrolling: 'touch'}}>
+          {filteredNav.map((item) => {
             const active = isActive(item.href);
             return (
-              <Link key={item.href} to={item.href} style={navLink(active)}
-                onClick={() => isMobile && setSidebarOpen(false)}
+              <Link key={item.name} to={item.href} style={{...navLinkStyle(active), padding: isMobile ? '7px 16px' : '9px 16px'}}
                 onMouseEnter={e => { if (!active) { e.currentTarget.style.color = styles.textPrimary; e.currentTarget.style.background = 'rgba(0,0,0,.025)'; }}}
-                onMouseLeave={e => { if (!active) { e.currentTarget.style.color = styles.textTertiary; e.currentTarget.style.background = 'transparent'; }}}
+                onMouseLeave={e => { if (!active) { e.currentTarget.style.color = 'rgba(15,18,30,0.72)'; e.currentTarget.style.background = 'transparent'; }}}
               >
-                {item.icon === 'brand'
-                  ? <svg width="13" height="13" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="60" cy="60" r="50" stroke="#1d1a3b" strokeWidth="3.4"/><circle cx="60" cy="60" r="43" stroke="#1d1a3b" strokeWidth="1.1" strokeOpacity="0.20"/><text x="60" y="74" textAnchor="middle" fontFamily="League Spartan,Arial,sans-serif" fontWeight="900" fontSize="42" letterSpacing="-1.1" fill="#1d1a3b">SA</text></svg>
-                  : <item.icon size={13} style={{ opacity: active ? 0.9 : 0.5, flexShrink: 0 }} />
-                }
+                {item.icon === 'brand' ? <BrandMark size={14} /> : <item.icon size={14} style={{opacity: active ? 1 : 0.6}} />}
                 {item.name}
               </Link>
             );
           })}
         </nav>
 
-        {/* User footer */}
-        <div style={{ padding: '12px 16px', borderTop: `1px solid ${frost.borderColor}`, flexShrink: 0 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
-            <svg width="26" height="26" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="60" cy="60" r="50" stroke="#1d1a3b" strokeWidth="3.4"/><circle cx="60" cy="60" r="43" stroke="#1d1a3b" strokeWidth="1.1" strokeOpacity="0.20"/><text x="60" y="74" textAnchor="middle" fontFamily="League Spartan,Arial,sans-serif" fontWeight="900" fontSize="42" letterSpacing="-1.1" fill="#1d1a3b">SA</text></svg>
-            <div style={{ minWidth: 0 }}>
-              <div style={{ fontSize: '13px', color: styles.textPrimary, fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user?.full_name}</div>
-              <div style={{ fontFamily: styles.mono, fontSize: '9px', letterSpacing: '0.06em', textTransform: 'uppercase', color: styles.textTertiary }}>{user?.role}</div>
+        {/* User — fixed at bottom */}
+        <div style={{padding: isMobile ? '10px 16px' : '16px', borderTop: '1px solid rgba(15,18,30,0.06)', flexShrink: 0}}>
+          <div style={{display: 'flex', alignItems: 'center', gap: '10px', marginBottom: isMobile ? '8px' : '12px'}}>
+            <div data-avatar="true" style={{width: '28px', height: '28px', background: styles.purplePrimary, border: '1px solid rgba(107,90,158,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+              <span style={{color: '#fff', fontSize: '11px', fontWeight: 500}}>{user?.full_name?.[0] || 'U'}</span>
+            </div>
+            <div>
+              <div style={{fontSize: '13px', color: styles.textPrimary}}>{user?.full_name}</div>
+              <div style={{fontFamily: styles.mono, fontSize: '9px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary}}>{user?.role}</div>
             </div>
           </div>
-          <button onClick={logout} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontFamily: styles.mono, fontSize: '10px', letterSpacing: '0.06em', textTransform: 'uppercase', color: styles.textTertiary, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
-            onMouseEnter={e => e.currentTarget.style.color = styles.accentRed}
+          <button onClick={logout} style={{
+            display: 'flex', alignItems: 'center', gap: '8px',
+            fontFamily: styles.mono, fontSize: '9px', letterSpacing: '2px', textTransform: 'uppercase',
+            color: styles.textTertiary, background: 'none', border: 'none', cursor: 'pointer', padding: 0
+          }}
+            onMouseEnter={e => e.currentTarget.style.color = styles.textPrimary}
             onMouseLeave={e => e.currentTarget.style.color = styles.textTertiary}>
-            <LogOut size={11} />
+            <LogOut size={12} />
             Sign Out
           </button>
-          <div style={{ display: 'flex', gap: '12px', marginTop: '10px' }}>
-            <a href="https://sentinelauthority.org/terms.html" target="_blank" rel="noreferrer noopener" style={{ fontFamily: 'var(--mono, monospace)', fontSize: '9px', letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-tertiary)', textDecoration: 'none', opacity: 0.6 }}>Terms</a>
-            <a href="https://sentinelauthority.org/privacy.html" target="_blank" rel="noreferrer noopener" style={{ fontFamily: 'var(--mono, monospace)', fontSize: '9px', letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-tertiary)', textDecoration: 'none', opacity: 0.6 }}>Privacy</a>
-          </div>
         </div>
       </div>
 
-      {/* Main area */}
-      <div style={{ marginLeft: isMobile ? 0 : '220px', position: 'relative', zIndex: 10 }}>
-
-        {/* Header */}
+      {/* Main */}
+      <div style={{marginLeft: isMobile ? 0 : '240px', position: 'relative', zIndex: 10}}>
+        {/* Header — frosted glass matching main site */}
         <header style={{
-          height: '72px', display: 'flex', alignItems: 'center',
-          padding: '0 20px', gap: '14px',
-          borderBottom: `1px solid ${frost.borderColor}`,
-          background: frost.background,
-          backdropFilter: frost.backdropFilter,
-          WebkitBackdropFilter: frost.WebkitBackdropFilter,
-          position: 'sticky', top: 0, zIndex: 30,
+          height: isMobile ? '48px' : '72px',
+          display: 'flex', alignItems: 'center',
+          padding: isMobile ? '0 12px' : '0 20px',
+          gap: '14px',
+          borderBottom: '1px solid rgba(15,18,30,0.06)',
+          background: 'rgba(255,255,255,0.82)',
+          backdropFilter: 'blur(20px) saturate(1.3)',
+          WebkitBackdropFilter: 'blur(20px) saturate(1.3)',
+          position: 'sticky', top: 0, zIndex: 30
         }}>
-          {isMobile && (
-            <button onClick={() => setSidebarOpen(!sidebarOpen)} style={{ color: styles.textTertiary, background: 'none', border: 'none', cursor: 'pointer', padding: '4px' }}>
-              <Menu size={16} />
-            </button>
-          )}
-          <div style={{ flex: 1 }} />
+          <button onClick={() => setSidebarOpen(!sidebarOpen)} style={{color: styles.textTertiary, background: 'none', border: 'none', cursor: 'pointer', padding: '4px', display: isMobile ? 'block' : 'none'}}>
+            <Menu size={18} />
+          </button>
+          <div style={{flex: 1}} />
 
-          <a href="https://sentinelauthority.org" target="_blank" rel="noreferrer noopener"
-            style={{ fontFamily: styles.mono, fontSize: '11px', letterSpacing: '1.5px', textTransform: 'uppercase', textDecoration: 'none', color: '#1d1a3b', padding: '7px 14px', border: '1px solid rgba(15,16,33,0.25)', borderRadius: '4px', transition: 'border-color 150ms ease', whiteSpace: 'nowrap' }}
-            onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(15,16,33,0.6)'}
-            onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(15,16,33,0.25)'}>
-            PUBLIC SITE
+          <a href="https://sentinelauthority.org" target="_blank" rel="noopener noreferrer"
+            style={{display: 'flex', alignItems: 'center', gap: '6px', color: styles.textTertiary, fontFamily: styles.mono, fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', textDecoration: 'none', padding: '8px 4px', transition: 'color 0.25s ease'}}
+            onMouseEnter={e => e.currentTarget.style.color = styles.textPrimary}
+            onMouseLeave={e => e.currentTarget.style.color = styles.textTertiary}>
+            <ExternalLink size={12} />
+            {!isMobile && 'Main Site'}
           </a>
 
           {/* Notifications */}
-          <div style={{ position: 'relative' }}>
-            <button onClick={() => setNotifOpen(!notifOpen)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '6px', color: notifOpen ? styles.purpleBright : styles.textTertiary, position: 'relative' }}>
-              <Bell size={15} strokeWidth={1.5} />
-              {unreadCount > 0 && (
-                <span style={{ position: 'absolute', top: '1px', right: '1px', minWidth: '13px', height: '13px', borderRadius: '50%', background: styles.accentRed, color: '#fff', fontSize: '8px', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: styles.mono, padding: '0 2px' }}>
-                  {unreadCount > 9 ? '9+' : unreadCount}
-                </span>
-              )}
+          <div style={{position: 'relative'}}>
+            <button onClick={() => setNotifOpen(!notifOpen)} style={{background: 'none', border: 'none', cursor: 'pointer', padding: '4px', color: notifOpen ? styles.purpleBright : styles.textTertiary}}>
+              <Bell size={16} strokeWidth={1.5} />
+              {unreadCount > 0 && <span data-dot="true" style={{position: 'absolute', top: '-2px', right: '-2px', minWidth: '14px', height: '14px', borderRadius: '50%', background: styles.accentRed, color: '#fff', fontSize: '8px', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: styles.mono, padding: '0 2px'}}>{unreadCount > 9 ? '9+' : unreadCount}</span>}
             </button>
-
-            {notifOpen && (
-              <>
-                <div onClick={() => setNotifOpen(false)} style={{ position: 'fixed', inset: 0, zIndex: 90 }} />
-                <div style={{ position: 'absolute', right: 0, top: '44px', width: 'min(340px, 90vw)', maxHeight: '70vh', overflowY: 'auto', background: frost.background, backdropFilter: frost.backdropFilter, WebkitBackdropFilter: frost.WebkitBackdropFilter, border: `1px solid ${frost.borderColor}`, zIndex: 100 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 16px', borderBottom: `1px solid ${frost.borderColor}` }}>
-                    <span style={{ fontFamily: styles.mono, fontSize: '10px', fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: styles.textTertiary }}>Notifications</span>
-                    {unreadCount > 0 && (
-                      <button onClick={markAllRead} style={{ background: 'none', border: 'none', color: styles.purpleBright, fontFamily: styles.mono, fontSize: '10px', letterSpacing: '0.06em', cursor: 'pointer', padding: 0 }}>Mark all read</button>
-                    )}
-                  </div>
-                  {notifs.length === 0 ? (
-                    <div style={{ padding: '32px 16px', textAlign: 'center', color: styles.textDim, fontSize: '12px', fontFamily: styles.mono }}>No recent activity</div>
-                  ) : notifs.map((n, i) => {
-                    const typeColor = { success: styles.accentGreen, warning: styles.accentAmber, info: styles.purpleBright, error: styles.accentRed }[n.type] || styles.purpleBright;
-                    return (
-                      <div key={n.id || i}
-                        onClick={() => { if (n.resource_type === 'application' && n.resource_id) { setNotifOpen(false); window.location.href = `/applications/${n.resource_id}`; }}}
-                        style={{ padding: '10px 16px', borderBottom: `1px solid ${styles.borderSubtle}`, cursor: n.resource_id ? 'pointer' : 'default' }}>
-                        <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
-                          <span style={{ display: 'inline-block', width: '4px', height: '4px', borderRadius: '50%', background: typeColor, marginTop: '7px', flexShrink: 0 }} />
-                          <div style={{ flex: 1, minWidth: 0 }}>
-                            <p style={{ margin: '0 0 3px', fontSize: '13px', color: !n.read ? styles.textPrimary : styles.textSecondary, lineHeight: 1.4 }}>{n.message}</p>
-                            <span style={{ fontFamily: styles.mono, fontSize: '10px', color: styles.textDim }}>
-                              {fmtUTC(n.timestamp)}{n.user_email ? ' · ' + n.user_email : ''}
-                            </span>
-                          </div>
+            {notifOpen && (<>
+              <div onClick={() => setNotifOpen(false)} style={{position: 'fixed', inset: 0, zIndex: 90}} />
+              <div style={{position: 'absolute', right: 0, top: '44px', width: 'min(340px, 90vw)', maxHeight: '70vh', overflowY: 'auto', background: 'rgba(255,255,255,0.82)', backdropFilter: 'blur(20px) saturate(1.3)', WebkitBackdropFilter: 'blur(20px) saturate(1.3)', border: '1px solid rgba(15,18,30,0.06)', zIndex: 100}}>
+                <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', borderBottom: '1px solid rgba(15,18,30,0.06)'}}>
+                  <span style={{fontFamily: styles.mono, fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary}}>Notifications</span>
+                  {unreadCount > 0 && <button onClick={markAllRead} style={{background: 'none', border: 'none', color: styles.purpleBright, fontFamily: styles.mono, fontSize: '9px', letterSpacing: '1px', cursor: 'pointer', padding: 0}}>Mark all read</button>}
+                </div>
+                {notifs.length === 0 ? (
+                  <div style={{padding: '32px 16px', textAlign: 'center', color: styles.textDim, fontSize: '12px'}}>No recent activity</div>
+                ) : notifs.map((n, i) => {
+                  const typeColor = {success: styles.accentGreen, warning: styles.accentAmber, info: styles.purpleBright, error: styles.accentRed}[n.type] || styles.purpleBright;
+                  return (
+                    <div key={n.id || i}
+                      onClick={() => { if (n.resource_type === 'application' && n.resource_id) { setNotifOpen(false); window.location.hash = '#/applications/' + n.resource_id; }}}
+                      style={{padding: '12px 16px', borderBottom: '1px solid rgba(15,18,30,0.04)', cursor: n.resource_id ? 'pointer' : 'default'}}>
+                      <div style={{display: 'flex', gap: '10px', alignItems: 'flex-start'}}>
+                        <span data-dot="true" style={{display: 'inline-block', width: '4px', height: '4px', borderRadius: '50%', background: typeColor, marginTop: '6px', flexShrink: 0}} />
+                        <div style={{flex: 1, minWidth: 0}}>
+                          <p style={{margin: 0, fontSize: '13px', color: !n.read ? styles.textPrimary : styles.textSecondary, lineHeight: 1.4}}>{n.message}</p>
+                          <span style={{fontFamily: styles.mono, fontSize: '9px', color: styles.textDim, marginTop: '4px', display: 'block'}}>
+                            {n.timestamp ? new Date(n.timestamp).toLocaleString() : ''}{n.user_email ? ' · ' + n.user_email : ''}
+                          </span>
                         </div>
                       </div>
-                    );
-                  })}
-                </div>
-              </>
-            )}
+                    </div>
+                  );
+                })}
+              </div>
+            </>)}
           </div>
         </header>
 
-        <Breadcrumbs pathname={location.pathname} />
-        <main style={{ padding: 'clamp(16px, 3vw, 32px)', position: 'relative', zIndex: 1 }}>
+        <main className="sa-main-content" style={{padding: 'clamp(16px, 3vw, 32px)', position: 'relative', zIndex: 1}}>
           {children}
         </main>
       </div>
-    <SentinelChatbot />
-      </div>
+
+      <SentinelChatbot />
+    </div>
   );
 }
 

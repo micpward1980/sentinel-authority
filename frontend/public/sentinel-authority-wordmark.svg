@@ -1,0 +1,9 @@
+<svg width="280" height="56" viewBox="0 0 280 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- SA Circle Mark -->
+  <circle cx="28" cy="28" r="26" stroke="#1d1a3b" stroke-width="2" fill="none"/>
+  <circle cx="28" cy="28" r="21" stroke="#1d1a3b" stroke-width="0.75" stroke-opacity="0.25" fill="none"/>
+  <text x="28" y="35" text-anchor="middle" font-family="Inter, system-ui, -apple-system, sans-serif" font-weight="800" font-size="22" fill="#1d1a3b" letter-spacing="-0.5">SA</text>
+  <!-- SENTINEL AUTHORITY stacked text -->
+  <text x="66" y="24" font-family="Inter, system-ui, -apple-system, sans-serif" font-weight="800" font-size="18" fill="#1d1a3b" letter-spacing="0.5">SENTINEL</text>
+  <text x="66" y="46" font-family="Inter, system-ui, -apple-system, sans-serif" font-weight="800" font-size="18" fill="#1d1a3b" letter-spacing="0.5">AUTHORITY</text>
+</svg>

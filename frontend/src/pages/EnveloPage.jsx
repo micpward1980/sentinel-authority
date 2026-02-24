@@ -772,7 +772,7 @@ function EnveloAdminView() {
                   <button
                     onClick={async () => {
                       try {
-                        const res = await api.get(`/api/envelo/admin/sessions/${selectedSession.id}/report`, { responseType: 'blob' });
+                        const res = await api.get(`/api/envelo/admin/sessions/${selectedSession.session_id}/report`, { responseType: 'blob' });
                         const url = URL.createObjectURL(new Blob([res.data]));
                         Object.assign(document.createElement('a'), { href: url, download: `CAT72-${selectedSession.session_id}.pdf` }).click();
                       } catch (e) { toast.show('Report unavailable', 'error'); }
@@ -786,7 +786,7 @@ function EnveloAdminView() {
               </div>
               <SessionReport session={selectedSession} />
               <div style={{ marginTop: '20px' }}>
-                <TelemetryLog sessionId={selectedSession.id} />
+                <TelemetryLog sessionId={selectedSession.session_id} />
               </div>
             </Panel>
           )}
