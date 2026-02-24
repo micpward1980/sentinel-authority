@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import CAT72ConsolePage from './CAT72Console';
 import ErrorBoundary from '../components/ErrorBoundary';
 import CertificatesPageEmbed from './CertificatesPage';
@@ -373,31 +374,29 @@ function SessionReport({ session }) {
 function EnveloAdminView() {
   const toast = useToast();
   const confirm = useConfirm();
-  const [sessions, setSessions]     = useState([]);
-  const [applications, setApplications] = useState([]);
-  const [certificates, setCertificates] = useState([]);
   const [selectedSession, setSelectedSession] = useState(null);
   const [selectedCert, setSelectedCert]       = useState(null);
   const [activeTab, setActiveTab] = useState('queue'); // queue | monitoring | cat72 | certificates | licensees
   const [reviewComment, setReviewComment] = useState('');
   const [reviewingApp, setReviewingApp]   = useState(null);
-  const [loading, setLoading] = useState(true);
 
-  const load = async () => {
-    try {
-      const [sessRes, appsRes, certsRes] = await Promise.all([
-        api.get('/api/envelo/admin/sessions').catch(() => ({ data: { sessions: [] } })),
-        api.get('/api/applications/').catch(() => ({ data: [] })),
-        api.get('/api/certificates/').catch(() => ({ data: [] })),
-      ]);
-      setSessions(sessRes.data.sessions || []);
-      setApplications(appsRes.data.applications || appsRes.data || []);
-      setCertificates(certsRes.data || []);
-    } catch (e) { console.error(e); }
-    setLoading(false);
-  };
-
-  useEffect(() => { load(); const t = setInterval(load, 30000); return () => clearInterval(t); }, []);
+  const { data: enveloData, isLoading: loading, refetch: reloadEnvelo } = useQuery({
+    queryKey: ['envelo-admin'],
+    queryFn: () => Promise.all([
+      api.get('/api/envelo/admin/sessions').catch(() => ({ data: { sessions: [] } })),
+      api.get('/api/applications/').catch(() => ({ data: [] })),
+      api.get('/api/certificates/').catch(() => ({ data: [] })),
+    ]).then(([sessRes, appsRes, certsRes]) => ({
+      sessions: sessRes.data.sessions || [],
+      applications: appsRes.data.applications || appsRes.data || [],
+      certificates: certsRes.data || [],
+    })),
+    refetchInterval: 30000,
+    retry: false,
+  });
+  const sessions = enveloData?.sessions || [];
+  const applications = enveloData?.applications || [];
+  const certificates = enveloData?.certificates || [];
 
   // ── Segmented state buckets ───────────────────────────────
   const pending     = applications.filter(a => a.state === 'pending');
@@ -436,7 +435,7 @@ function EnveloAdminView() {
       const reqId = `cat72-${app.id}-${Date.now()}`;
       await api.post(`/api/applications/${app.id}/begin-cat72`, { request_id: reqId });
       toast.show('CAT-72 test started', 'success');
-      load();
+      reloadEnvelo();
     } catch (e) {
       toast.show('Failed: ' + (e.response?.data?.detail || e.message), 'error');
     }
@@ -452,7 +451,7 @@ function EnveloAdminView() {
         send_email:     true,
       });
       toast.show('Key generated and emailed to customer', 'success');
-      load();
+      reloadEnvelo();
     } catch (e) {
       toast.show('Failed: ' + (e.response?.data?.detail || e.message), 'error');
     }
@@ -515,7 +514,7 @@ function EnveloAdminView() {
                         onClick={async () => {
                           try {
                             await api.post(`/api/applications/${app.id}/begin-review`);
-                            toast.show('Review started', 'success'); load();
+                            toast.show('Review started', 'success'); reloadEnvelo();
                           } catch (e) { toast.show('Failed: ' + e.message, 'error'); }
                         }}
                         style={{ padding: '8px 16px', background: styles.purplePrimary, border: `1px solid ${styles.purpleBright}`, color: '#fff', fontFamily: styles.mono, fontSize: '11px', cursor: 'pointer', borderRadius: '6px' }}
@@ -593,7 +592,7 @@ function EnveloAdminView() {
                       const approveReqId = `approve-${app.id}-${Date.now()}`;
       await api.post(`/api/applications/${app.id}/approve`, { note: reviewComment || 'Approved.', request_id: approveReqId });
                       toast.show('Application approved — API key generated and emailed to customer', 'success');
-                      setReviewComment(''); load();
+                      setReviewComment(''); reloadEnvelo();
                     } catch (e) { toast.show('Failed: ' + (e.response?.data?.detail || e.message), 'error'); }
                   }}
                   style={{ flex: 1, padding: '12px', background: 'transparent', border: `1px solid ${styles.accentGreen}`, color: styles.accentGreen, fontFamily: styles.mono, fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer', borderRadius: '6px' }}
@@ -607,7 +606,7 @@ function EnveloAdminView() {
                       const rejectReqId = `reject-${app.id}-${Date.now()}`;
       await api.post(`/api/applications/${app.id}/reject`, { note: reviewComment, request_id: rejectReqId });
                       toast.show('Sent back with required changes', 'success');
-                      setReviewComment(''); load();
+                      setReviewComment(''); reloadEnvelo();
                     } catch (e) { toast.show('Failed: ' + (e.response?.data?.detail || e.message), 'error'); }
                   }}
                   style={{ flex: 1, padding: '12px', background: styles.cardSurface, border: `1px solid ${styles.borderGlass}`, color: styles.accentRed, fontFamily: styles.mono, fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer', borderRadius: '6px' }}
@@ -832,7 +831,7 @@ function EnveloCustomerView() {
     setLoading(false);
   };
 
-  useEffect(() => { load(); const t = setInterval(load, 15000); return () => clearInterval(t); }, []);
+  useEffect(() => { reloadEnvelo(); const t = setInterval(load, 15000); return () => clearInterval(t); }, []);
 
   if (loading) return (
     <div style={{ color: styles.textTertiary, padding: '40px', textAlign: 'center' }}>
