@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import CAT72ConsolePage from './CAT72Console';
+import ErrorBoundary from '../components/ErrorBoundary';
 import CertificatesPageEmbed from './CertificatesPage';
 import MonitoringPageEmbed from './MonitoringPage';
 import { Shield, Download, RefreshCw } from 'lucide-react';
@@ -782,12 +783,12 @@ function EnveloAdminView() {
 
       {/* ── CAT-72 ── */}
       {activeTab === 'cat72' && (
-        <div><CAT72ConsolePage /></div>
+        <ErrorBoundary><CAT72ConsolePage /></ErrorBoundary>
       )}
 
       {/* ── CERTIFICATES ── */}
       {activeTab === 'certificates' && (
-        <div><CertificatesPageEmbed /></div>
+        <ErrorBoundary><CertificatesPageEmbed /></ErrorBoundary>
       )}
 
       {/* ── CERTIFIED (legacy) ── */}

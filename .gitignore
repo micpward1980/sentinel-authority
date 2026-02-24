@@ -63,3 +63,9 @@ patch_*.js
 backup_*
 src-backup*
 .DS_Store
+*.bak
+*.bak2
+*.bak3
+*.colorbak
+*.retired
+*.bloom-backup
