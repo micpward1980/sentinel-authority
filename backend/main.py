@@ -305,7 +305,14 @@ class ErrorCatchMiddleware(BaseHTTPMiddleware):
             logging.getLogger("sentinel.errors").exception(f"Unhandled error: {e}")
             return JSONResponse(status_code=500, content={"detail": "Internal server error"})
 
+# Request logging (innermost — runs closest to route handlers)
+from app.middleware.request_logging import RequestLoggingMiddleware
+app.add_middleware(RequestLoggingMiddleware)
+
+# Error catch (middle — catches unhandled exceptions)
 app.add_middleware(ErrorCatchMiddleware)
+
+# CORS (outermost — added last so it always adds headers, even on 404/500)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.CORS_ORIGINS,
@@ -313,10 +320,6 @@ app.add_middleware(
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
     allow_headers=["Authorization", "Content-Type", "Accept", "Origin", "X-Requested-With"],
 )
-
-# Request logging
-from app.middleware.request_logging import RequestLoggingMiddleware
-app.add_middleware(RequestLoggingMiddleware)
 
 # API Routes
 app.include_router(chat_router)
