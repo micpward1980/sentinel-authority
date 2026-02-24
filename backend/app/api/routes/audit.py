@@ -35,13 +35,13 @@ async def get_audit_logs(
         query = query.where(AuditLog.user_email.ilike(f"%{user_email}%"))
     if date_from:
         try:
-            dt = datetime.fromisoformat(date_from.replace('Z', '+00:00'))
+            dt = datetime.fromisoformat(date_from.replace('Z', '+00:00')).replace(tzinfo=None)
             query = query.where(AuditLog.timestamp >= dt)
         except ValueError:
             pass
     if date_to:
         try:
-            dt = datetime.fromisoformat(date_to.replace('Z', '+00:00'))
+            dt = datetime.fromisoformat(date_to.replace('Z', '+00:00')).replace(tzinfo=None)
             query = query.where(AuditLog.timestamp <= dt)
         except ValueError:
             pass
