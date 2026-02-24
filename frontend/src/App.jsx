@@ -24,7 +24,6 @@ const ResourcesPage = lazy(() => import('./pages/ResourcesPage'));
 const EnveloPage = lazy(() => import('./pages/EnveloPage'));
 const MonitoringPage = lazy(() => import('./pages/MonitoringPage'));
 const UserManagementPage = lazy(() => import('./pages/UserManagementPage'));
-const LicenseesPage = lazy(() => import('./pages/LicenseesPage'));
 const ActivityPage = lazy(() => import('./pages/ActivityPage'));
 const MyActivityPage = lazy(() => import('./pages/MyActivityPage'));
 const SettingsPage = lazy(() => import('./pages/SettingsPage'));
@@ -58,7 +57,7 @@ function App() {
           <Route path="/my-activity" element={<Navigate to="/activity" />} />
           <Route path="/settings" element={<ProtectedRoute><Layout><LazyLoad><SettingsPage /></LazyLoad></Layout></ProtectedRoute>} />
           <Route path="/api-docs" element={<ProtectedRoute roles={["admin"]}><Layout><LazyLoad><ApiDocsPage /></LazyLoad></Layout></ProtectedRoute>} />
-          <Route path="/licensees" element={<ProtectedRoute roles={["admin"]}><Layout><LazyLoad><LicenseesPage /></LazyLoad></Layout></ProtectedRoute>} />
+          <Route path="/licensees" element={<Navigate to="/envelo" />} />
           <Route path="/users" element={<ProtectedRoute roles={["admin"]}><Layout><LazyLoad><UserManagementPage /></LazyLoad></Layout></ProtectedRoute>} />
           <Route path="/" element={<Navigate to="/dashboard" />} />
           <Route path="*" element={<LazyLoad><NotFoundPage /></LazyLoad>} />
