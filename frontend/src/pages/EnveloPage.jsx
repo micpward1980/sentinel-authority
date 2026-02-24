@@ -378,7 +378,7 @@ function EnveloAdminView() {
   const [certificates, setCertificates] = useState([]);
   const [selectedSession, setSelectedSession] = useState(null);
   const [selectedCert, setSelectedCert]       = useState(null);
-  const [activeTab, setActiveTab] = useState('queue'); // queue | monitoring | certified | review
+  const [activeTab, setActiveTab] = useState('queue'); // queue | monitoring | cat72 | certificates | licensees
   const [reviewComment, setReviewComment] = useState('');
   const [reviewingApp, setReviewingApp]   = useState(null);
   const [loading, setLoading] = useState(true);
@@ -793,45 +793,11 @@ function EnveloAdminView() {
         <ErrorBoundary><CertificatesPageEmbed /></ErrorBoundary>
       )}
 
+      {/* TODO: Add online/offline status + Agent Template download to CertificatesPage */}
+
       {/* ── LICENSEES ── */}
       {activeTab === 'licensees' && (
         <ErrorBoundary><LicenseesPageEmbed /></ErrorBoundary>
-      )}
-
-      {/* ── CERTIFIED (legacy) ── */}
-      {activeTab === 'certified' && (
-        <Panel>
-          <p style={{ fontFamily: styles.mono, fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '20px' }}>ODDC Conformant Systems</p>
-          {conformant.length > 0 ? conformant.map(cert => {
-            const certId = cert.certificate_number;
-            const isOnline = connectedIds.has(certId);
-            return (
-              <div key={cert.id} style={{ padding: '20px', background: styles.cardSurface, border: `1px solid ${isOnline ? styles.accentGreen : styles.borderGlass}`, borderRadius: '8px', marginBottom: '12px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
-                  <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
-                      <h3 style={{ fontWeight: 500, color: styles.textPrimary, margin: 0 }}>{cert.system_name}</h3>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                        <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: isOnline ? styles.accentGreen : styles.textDim, ...(isOnline ? { animation: 'pulse 2s infinite' } : {}) }} />
-                        <span style={{ fontFamily: styles.mono, fontSize: '9px', color: isOnline ? styles.accentGreen : styles.textDim, textTransform: 'uppercase', letterSpacing: '1px' }}>{isOnline ? 'Online' : 'Offline'}</span>
-                      </div>
-                    </div>
-                    <p style={{ fontSize: '13px', color: styles.textSecondary, marginBottom: '4px' }}>{cert.organization_name}</p>
-                    <p style={{ fontFamily: styles.mono, fontSize: '12px', color: styles.purpleBright }}>{cert.certificate_number}</p>
-                    {cert.expires_at && <p style={{ fontFamily: styles.mono, fontSize: '11px', color: styles.textTertiary, marginTop: '4px' }}>Expires: {cert.expires_at.split('T')[0]}</p>}
-                  </div>
-                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                    <button onClick={() => downloadAgentForCert(cert)} style={{ padding: '8px 14px', background: 'transparent', border: `1px solid ${styles.borderGlass}`, color: styles.textSecondary, fontFamily: styles.mono, fontSize: '10px', cursor: 'pointer', borderRadius: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <Download size={12} /> Agent Template
-                    </button>
-                  </div>
-                </div>
-              </div>
-            );
-          }) : (
-            <p style={{ color: styles.textTertiary, textAlign: 'center', padding: '40px' }}>No certified systems yet.</p>
-          )}
-        </Panel>
       )}
     </div>
   );
