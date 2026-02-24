@@ -255,6 +255,7 @@ function Dashboard() {
 
   const loadData = (manual) => {
     if (manual) { setRefreshing(true); refetch().finally(() => setTimeout(() => setRefreshing(false), 800)); }
+    else { refetch(); }
   };
 
   const pipeline = {
@@ -275,7 +276,7 @@ function Dashboard() {
     const { appId, newState, label } = justifyModal;
     setJustifyModal(null);
     try {
-      await api.patch('/api/applications/' + appId + '/state?new_state=' + newState, { note: justifyNote });
+      await api.patch('/api/applications/' + appId + '/state?new_state=' + newState + '&reason=' + encodeURIComponent(justifyNote));
       if (newState === 'approved') {
         try { await api.post('/api/apikeys/admin/provision', null, { params: { application_id: appId, send_email: true } }); toast.show('Approved — API key provisioned and emailed to applicant', 'success'); }
         catch { toast.show('Approved — applicant can generate key from their dashboard', 'success'); }
@@ -445,7 +446,7 @@ function Dashboard() {
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                     <span style={{ fontFamily: styles.mono, fontSize: '11px', color: daysLeft <= 7 ? styles.accentRed : styles.accentAmber }}>{daysLeft}d remaining</span>
                     <Link to={'/verify?cert=' + c.certificate_number} style={{ fontFamily: styles.mono, fontSize: '10px', color: styles.purpleBright, textDecoration: 'none' }}>{c.certificate_number}</Link>
-                    <button onClick={async () => { try { await api.post('/api/certificates/' + c.id + '/notify-renewal'); toast.show('Renewal notice sent to ' + c.organization_name, 'success'); } catch { toast.show('Could not send notice — contact licensee directly', 'error'); } }} style={{ background: 'transparent', border: '1px solid ' + styles.accentAmber + '40', color: styles.accentAmber, fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer', padding: '3px 8px', borderRadius: 4 }}>Notify</button>
+                    <button onClick={async () => { try { toast.show('Renewal notice for ' + c.organization_name + ' — email manually at review@sentinelauthority.org', 'info'); } catch { toast.show('Could not send notice — contact licensee directly', 'error'); } }} style={{ background: 'transparent', border: '1px solid ' + styles.accentAmber + '40', color: styles.accentAmber, fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer', padding: '3px 8px', borderRadius: 4 }}>Notify</button>
                   </div>
                 </div>
               );
