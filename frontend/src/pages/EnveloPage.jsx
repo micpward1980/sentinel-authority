@@ -418,8 +418,7 @@ function EnveloAdminView() {
   const beginCAT72 = async (app) => {
     if (!await confirm({ title: 'Begin CAT-72', message: `Start the 72-hour conformance test for ${app.system_name}? The interlock must be confirmed online.`, confirmLabel: 'Begin Test', danger: false })) return;
     try {
-      const reqId = `cat72-${app.id}-${Date.now()}`;
-      await api.post(`/api/applications/${app.id}/begin-cat72`, { request_id: reqId });
+      await api.post('/api/cat72/tests', { application_id: app.id });
       toast.show('CAT-72 test started', 'success');
       reloadEnvelo();
     } catch (e) {
@@ -430,12 +429,7 @@ function EnveloAdminView() {
   const provisionKey = async (app) => {
     if (!await confirm({ title: 'Provision API Key', message: `Generate and email API key to ${app.contact_email} for ${app.system_name}?`, confirmLabel: 'Provision Key' })) return;
     try {
-      await api.post('/api/apikeys/admin/provision', {
-        user_id:        app.user_id,
-        certificate_id: app.certificate_id,
-        name:           'deployment-' + new Date().toISOString().split('T')[0],
-        send_email:     true,
-      });
+      await api.post('/api/apikeys/admin/provision', null, { params: { user_id: app.user_id, certificate_id: app.certificate_id, name: 'deployment-' + new Date().toISOString().split('T')[0], send_email: true } });
       toast.show('Key generated and emailed to customer', 'success');
       reloadEnvelo();
     } catch (e) {
