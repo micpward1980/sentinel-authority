@@ -58,3 +58,7 @@ patch_*.js
 *.colorbak
 *.bak
 *.bak2
+.env.local
+.DS_Store
+backup_*
+src-backup*
