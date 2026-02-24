@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Download, BookOpen } from 'lucide-react';
 import { api } from '../config/api';
 import { styles } from '../config/styles';
+import SectionHeader from '../components/SectionHeader';
 import { useAuth } from '../context/AuthContext';
 
 function ResourcesPage() {

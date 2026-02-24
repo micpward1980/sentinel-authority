@@ -4,6 +4,7 @@ import { FileText, Search, Plus } from "lucide-react";
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { api } from '../config/api';
 import { styles } from '../config/styles';
+import SectionHeader from '../components/SectionHeader';
 import { useAuth } from '../context/AuthContext';
 import { useConfirm } from '../context/ConfirmContext';
 import { useToast } from '../context/ToastContext';
@@ -221,41 +222,25 @@ function ApplicationsList() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
 
       {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
-        <div>
-          <p style={{ fontFamily: styles.mono, fontSize: '10px', fontWeight: 600, letterSpacing: '0.20em', textTransform: 'uppercase', color: styles.purpleBright, margin: '0 0 8px 0' }}>
-            {isAdmin ? 'Conformance' : 'My Organization'}
-          </p>
-          <h1 style={{ fontFamily: styles.serif, fontSize: 'clamp(24px, 5vw, 36px)', fontWeight: 200, margin: 0, color: styles.textPrimary }}>
-            {isAdmin ? 'Applications' : 'Certification Status'}
-          </h1>
-        </div>
-        <Link
-          to="/applications/new"
-          className="no-underline"
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '8px',
-            padding: '10px 20px',
-            background: styles.purplePrimary,
-            borderRadius: '6px',
-            color: '#fff',
-            fontFamily: styles.mono,
-            fontSize: '10px',
-            fontWeight: 700,
-            letterSpacing: '0.15em',
-            textTransform: 'uppercase',
-            textDecoration: 'none',
-            cursor: 'pointer',
-          }}
-        >
-          <Plus size={12} />&nbsp;New Application
-        </Link>
-        {isFetching && !isLoading && (
-          <span style={{ fontFamily: styles.mono, fontSize: '10px', color: styles.textDim, alignSelf: 'center' }}>Updating…</span>
-        )}
-      </div>
+      <SectionHeader
+        label={isAdmin ? 'Conformance' : 'My Organization'}
+        title={isAdmin ? 'Applications' : 'Certification Status'}
+        action={
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            {isFetching && !isLoading && (
+              <span style={{ fontFamily: styles.mono, fontSize: '10px', color: styles.textDim }}>Updating…</span>
+            )}
+            <Link to="/applications/new" className="no-underline" style={{
+              display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '10px 20px',
+              background: styles.purplePrimary, borderRadius: '6px', color: '#fff',
+              fontFamily: styles.mono, fontSize: '10px', fontWeight: 700,
+              letterSpacing: '0.15em', textTransform: 'uppercase', textDecoration: 'none', cursor: 'pointer',
+            }}>
+              <Plus size={12} />&nbsp;New Application
+            </Link>
+          </div>
+        }
+      />
 
       {/* Search */}
       {isAdmin && (

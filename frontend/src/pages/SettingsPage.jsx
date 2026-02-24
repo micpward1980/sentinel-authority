@@ -8,6 +8,7 @@ import { Settings, User, Key, Shield, Bell, History, ChevronRight,
          Copy, Plus, Trash2, Eye, EyeOff, Info, RefreshCw, CheckCircle2 } from 'lucide-react';
 import { api } from '../config/api';
 import { styles } from '../config/styles';
+import SectionHeader from '../components/SectionHeader';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { useConfirm } from '../context/ConfirmContext';
@@ -636,12 +637,7 @@ function SettingsPage() {
 
   return (
     <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-      {/* Page heading */}
-      <div style={{ marginBottom: 20 }}>
-        <p style={{ fontFamily: styles.mono, fontSize: '10px', fontWeight: 600, letterSpacing: '0.20em', textTransform: 'uppercase', color: styles.purpleBright, margin: '0 0 8px 0' }}>Account</p>
-        <h1 style={{ fontFamily: styles.serif, fontSize: 'clamp(24px, 5vw, 36px)', fontWeight: 200, margin: 0, color: styles.textPrimary }}>Settings</h1>
-        <p style={{ color: styles.textSecondary, marginTop: 4, fontSize: 14, margin: '4px 0 0' }}>Account, security, and notification preferences</p>
-      </div>
+      <SectionHeader label="Account" title="Settings" description="Account, security, and notification preferences" />
 
       {isMobile ? (
         /* ── Mobile: horizontal tab strip + full-width workspace ── */

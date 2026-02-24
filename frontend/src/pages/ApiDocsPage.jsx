@@ -1,4 +1,5 @@
 import { styles } from '../config/styles';
+import SectionHeader from '../components/SectionHeader';
 import { useState } from 'react';
 import { API_URL } from '../config/api';
 
