@@ -16,11 +16,22 @@ function AuthProvider({ children }) {
     setLoading(false);
   }, []);
 
+  const [tempToken, setTempToken] = useState(null);
+
   const login = async (email, password, totp) => {
-    const payload = { email, password };
-    if (totp) payload.totp_code = totp;
-    const res = await api.post('/api/auth/login', payload);
+    if (totp && tempToken) {
+      // Step 2: verify TOTP with temp token
+      const res = await api.post('/api/auth/2fa/verify-login?temp_token=' + encodeURIComponent(tempToken), { code: totp });
+      setTempToken(null);
+      localStorage.setItem('token', res.data.access_token);
+      localStorage.setItem('user', JSON.stringify(res.data.user));
+      setUser(res.data.user);
+      return res.data.user;
+    }
+    // Step 1: email + password
+    const res = await api.post('/api/auth/login', { email, password });
     if (res.data.requires_2fa) {
+      setTempToken(res.data.temp_token);
       const err = new Error('2FA required');
       err.response = { data: { detail: '2FA_REQUIRED' } };
       throw err;
