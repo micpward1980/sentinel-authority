@@ -913,7 +913,7 @@ async def report_specs(
         if isinstance(env, str):
             try:
                 env = json.loads(env)
-            except:
+            except Exception:
                 env = {}
         env["boundaries"] = data.boundaries
         application.envelope_definition = env
@@ -943,7 +943,7 @@ async def report_specs(
             if isinstance(env, str):
                 try:
                     env = json.loads(env)
-                except:
+                except Exception:
                     env = {}
             env["boundaries"] = data.boundaries
             test.envelope_definition = env
@@ -954,7 +954,7 @@ async def report_specs(
             if isinstance(env, str):
                 try:
                     env = json.loads(env)
-                except:
+                except Exception:
                     env = {}
             env["odd_specification"] = data.odd_specification
             test.envelope_definition = env

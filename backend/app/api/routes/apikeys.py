@@ -378,7 +378,7 @@ class EnveloAgent:
                         headers={{"Authorization": f"Bearer {{API_KEY}}"}},
                         timeout=5
                     )
-                except:
+                except Exception:
                     pass
                 time.sleep(60)
         
@@ -435,7 +435,7 @@ class EnveloAgent:
                 }},
                 timeout=5
             )
-        except:
+        except Exception:
             pass
     
     def report_action(self, action_type, parameters, result="PASS"):
@@ -458,7 +458,7 @@ class EnveloAgent:
                 }},
                 timeout=5
             )
-        except:
+        except Exception:
             pass
     
     def stop(self):

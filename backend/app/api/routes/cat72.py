@@ -141,7 +141,7 @@ def profile_state_vector(profile: dict, state_vector: dict, prev_sv: dict = None
                         if len(positions) < 200:
                             positions.append(pos)
                         profile["_positions"] = positions
-                    except:
+                    except Exception:
                         pass
         
         elif isinstance(value, list):
@@ -1684,12 +1684,12 @@ def check_envelope(
                 pv = prev_state_vector.get(cvar)
                 if pv is not None:
                     try: met = float(sv_val) > float(pv)
-                    except: met = False
+                    except Exception: met = False
             elif cop == "trending_down" and prev_state_vector:
                 pv = prev_state_vector.get(cvar)
                 if pv is not None:
                     try: met = float(sv_val) < float(pv)
-                    except: met = False
+                    except Exception: met = False
             if not met:
                 conditions_met = False
                 break
@@ -1770,7 +1770,7 @@ def check_envelope(
                         tt = None
                     if tt and (current_timestamp - tt).total_seconds() <= float(max_response_seconds):
                         continue
-                except:
+                except Exception:
                     pass
         in_envelope = False
         violations.append({

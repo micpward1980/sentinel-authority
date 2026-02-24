@@ -250,7 +250,7 @@ class EnveloAgent:
                 "ended_at": datetime.now(timezone.utc).isoformat(),
                 "final_stats": {{"pass_count": self.stats["pass"], "block_count": self.stats["block"]}},
             }})
-        except: pass
+        except Exception: pass
         self.client.close()
         log.info(f"Done. {{self.stats['pass']}} passed, {{self.stats['block']}} blocked.")
 
@@ -262,11 +262,11 @@ class EnveloAgent:
         try:
             subprocess.run(["systemctl", "--user", "stop", "envelo.service"], capture_output=True)
             subprocess.run(["systemctl", "--user", "disable", "envelo.service"], capture_output=True)
-        except: pass
+        except Exception: pass
         plist = pathlib.Path.home() / "Library" / "LaunchAgents" / "org.sentinelauthority.envelo.plist"
         if plist.exists():
             try: subprocess.run(["launchctl", "unload", str(plist)], capture_output=True)
-            except: pass
+            except Exception: pass
         log.info("Auto-restart disabled.")
 
     def add_boundary(self, name, min_value=None, max_value=None, unit="", tolerance=0):
@@ -315,7 +315,7 @@ class EnveloAgent:
                     log.warning("API key revoked - shutting down")
                     self.running = False; self._flush_telemetry(); self._cleanup(); return
                 fail_count = 0
-            except:
+            except Exception:
                 fail_count += 1
                 if fail_count >= 10:
                     log.warning(f"Lost connection ({{fail_count}} failures) - stopping")

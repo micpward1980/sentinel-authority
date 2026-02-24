@@ -66,7 +66,7 @@ class EnveloAgent:
                 headers={{"Authorization": f"Bearer {{API_KEY}}"}},
                 json={{"session_id": self.session_id, "certificate_number": CERT,
                     "started_at": datetime.utcnow().isoformat() + "Z", "agent_version": "2.0.0"}}, timeout=10)
-        except: pass
+        except Exception: pass
         
         self._running = True
         threading.Thread(target=self._heartbeat, daemon=True).start()
@@ -79,7 +79,7 @@ class EnveloAgent:
                 requests.post(f"{{ENDPOINT}}/api/envelo/heartbeat",
                     headers={{"Authorization": f"Bearer {{API_KEY}}"}},
                     json={{"session_id": self.session_id}}, timeout=5)
-            except: pass
+            except Exception: pass
             time.sleep(60)
     
     def check(self, **params):
@@ -105,7 +105,7 @@ class EnveloAgent:
                     "records": [{{"timestamp": datetime.utcnow().isoformat()+"Z",
                         "action_type": "check", "result": "BLOCK",
                         "parameters": {{param: value}}}}]}}, timeout=5)
-        except: pass
+        except Exception: pass
     
     def enforce(self, func):
         import functools, inspect
@@ -127,7 +127,7 @@ class EnveloAgent:
                 headers={{"Authorization": f"Bearer {{API_KEY}}"}},
                 json={{"ended_at": datetime.utcnow().isoformat()+"Z",
                     "final_stats": self.stats}}, timeout=10)
-        except: pass
+        except Exception: pass
         print(f"[ENVELO] Stopped. {{self.stats['pass']}} pass, {{self.stats['block']}} blocked")
     
     @property
