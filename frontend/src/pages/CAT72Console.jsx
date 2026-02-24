@@ -188,7 +188,8 @@ function CAT72Console() {
       {completedTests.length > 0 && (
         <Panel>
           <h2 style={{fontFamily: styles.mono, fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Completed</h2>
-          <table className="w-full">
+          <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
+          <table style={{ width: "100%", minWidth: "600px", borderCollapse: "collapse" }}>
             <thead>
               <tr style={{borderBottom: `1px solid ${styles.borderGlass}`}}>
                 <th className="px-4 py-3 text-left" style={{fontFamily: styles.mono, fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400}}>System</th>
@@ -224,6 +225,7 @@ function CAT72Console() {
               ))}
             </tbody>
           </table>
+          </div>
         </Panel>
       )}
 
