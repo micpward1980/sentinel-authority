@@ -575,8 +575,7 @@ function EnveloAdminView() {
                 <button
                   onClick={async () => {
                     try {
-                      const approveReqId = `approve-${app.id}-${Date.now()}`;
-      await api.post(`/api/applications/${app.id}/approve`, { note: reviewComment || 'Approved.', request_id: approveReqId });
+                      await api.patch(`/api/applications/${app.id}/state`, null, { params: { new_state: 'approved', reason: reviewComment || 'Approved.' } });
                       toast.show('Application approved — API key generated and emailed to customer', 'success');
                       setReviewComment(''); reloadEnvelo();
                     } catch (e) { toast.show('Failed: ' + (e.response?.data?.detail || e.message), 'error'); }
@@ -589,8 +588,7 @@ function EnveloAdminView() {
                   onClick={async () => {
                     if (!reviewComment.trim()) { toast.show('Rejection requires specific feedback', 'error'); return; }
                     try {
-                      const rejectReqId = `reject-${app.id}-${Date.now()}`;
-      await api.post(`/api/applications/${app.id}/reject`, { note: reviewComment, request_id: rejectReqId });
+                      await api.patch(`/api/applications/${app.id}/state`, null, { params: { new_state: 'rejected', reason: reviewComment } });
                       toast.show('Sent back with required changes', 'success');
                       setReviewComment(''); reloadEnvelo();
                     } catch (e) { toast.show('Failed: ' + (e.response?.data?.detail || e.message), 'error'); }
