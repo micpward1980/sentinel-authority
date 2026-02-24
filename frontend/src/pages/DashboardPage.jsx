@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { Link, useNavigate } from 'react-router-dom';
 import { Wifi, FileText, Activity, Award, AlertTriangle, Plus, Shield, RefreshCw, AlertCircle } from 'lucide-react';
 import { api, API_BASE } from '../config/api';
@@ -17,26 +18,26 @@ function CustomerDashboard() {
   const toast = useToast();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
-  const [applications, setApplications] = useState([]);
-  const [certificates, setCertificates] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [monitoring, setMonitoring] = useState(null);
-  const [recentActivity, setRecentActivity] = useState([]);
-
-  useEffect(() => {
-    Promise.all([
+  const { data: appData, isLoading: loading } = useQuery({
+    queryKey: ['dashboard-applicant'],
+    queryFn: () => Promise.all([
       api.get('/api/applications/').catch(() => ({ data: [] })),
       api.get('/api/certificates/').catch(() => ({ data: [] })),
       api.get('/api/envelo/monitoring/overview').catch(() => ({ data: null })),
       api.get('/api/audit/my-logs?limit=5&offset=0').catch(() => ({ data: { logs: [] } }))
-    ]).then(([appsRes, certsRes, monRes, actRes]) => {
-      setApplications(appsRes.data.applications || appsRes.data || []);
-      setCertificates(certsRes.data || []);
-      if (monRes.data) setMonitoring(monRes.data);
-      setRecentActivity(actRes.data.logs || actRes.data || []);
-      setLoading(false);
-    });
-  }, []);
+    ]).then(([appsRes, certsRes, monRes, actRes]) => ({
+      applications: appsRes.data.applications || appsRes.data || [],
+      certificates: certsRes.data || [],
+      monitoring: monRes.data || null,
+      recentActivity: actRes.data.logs || actRes.data || [],
+    })),
+    refetchInterval: 60000,
+    retry: false,
+  });
+  const applications = appData?.applications || [];
+  const certificates = appData?.certificates || [];
+  const monitoring = appData?.monitoring || null;
+  const recentActivity = appData?.recentActivity || [];
 
   const STAGES = [
     { key: 'pending',      label: 'Submitted' },
@@ -219,30 +220,42 @@ function Dashboard() {
   const confirm = useConfirm();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
-  const [stats, setStats] = useState(null);
-  const [recentApps, setRecentApps] = useState([]);
-  const [activeTests, setActiveTests] = useState([]);
-  const [allApps, setAllApps] = useState([]);
-  const [recentCerts, setRecentCerts] = useState([]);
-  const [monitoring, setMonitoring] = useState(null);
-  const [recentActivity, setRecentActivity] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
+  const { data: adminData, refetch } = useQuery({
+    queryKey: ['dashboard-admin'],
+    queryFn: () => Promise.all([
+      api.get('/api/dashboard/stats').catch(() => ({ data: null })),
+      api.get('/api/dashboard/recent-applications').catch(() => ({ data: [] })),
+      api.get('/api/dashboard/active-tests').catch(() => ({ data: [] })),
+      api.get('/api/applications/').catch(() => ({ data: [] })),
+      api.get('/api/dashboard/recent-certificates').catch(() => ({ data: [] })),
+      api.get('/api/envelo/monitoring/overview').catch(() => ({ data: null })),
+      api.get('/api/audit/admin-logs?limit=8&offset=0').catch(() => ({ data: { logs: [] } }))
+    ]).then(([statsR, recentR, testsR, appsR, certsR, monR, actR]) => ({
+      stats: statsR.data,
+      recentApps: recentR.data,
+      activeTests: testsR.data,
+      allApps: appsR.data.applications || appsR.data || [],
+      recentCerts: certsR.data,
+      monitoring: monR.data,
+      recentActivity: actR.data.logs || actR.data || [],
+    })),
+    refetchInterval: 30000,
+    retry: false,
+  });
+  const stats = adminData?.stats || null;
+  const recentApps = adminData?.recentApps || [];
+  const activeTests = adminData?.activeTests || [];
+  const allApps = adminData?.allApps || [];
+  const recentCerts = adminData?.recentCerts || [];
+  const monitoring = adminData?.monitoring || null;
+  const recentActivity = adminData?.recentActivity || [];
   const [justifyModal, setJustifyModal] = useState(null);
   const [justifyNote, setJustifyNote] = useState('');
 
   const loadData = (manual) => {
-    if (manual) setRefreshing(true);
-    api.get('/api/dashboard/stats').then(res => setStats(res.data)).catch(console.error);
-    api.get('/api/dashboard/recent-applications').then(res => setRecentApps(res.data)).catch(console.error);
-    api.get('/api/dashboard/active-tests').then(res => setActiveTests(res.data)).catch(console.error);
-    api.get('/api/applications/').then(res => setAllApps(res.data.applications || res.data || [])).catch(console.error);
-    api.get('/api/dashboard/recent-certificates').then(res => setRecentCerts(res.data)).catch(console.error);
-    api.get('/api/envelo/monitoring/overview').then(res => setMonitoring(res.data)).catch(console.error);
-    api.get('/api/audit/admin-logs?limit=8&offset=0').then(res => setRecentActivity(res.data.logs || res.data || [])).catch(console.error);
-    if (manual) setTimeout(() => setRefreshing(false), 800);
+    if (manual) { setRefreshing(true); refetch().finally(() => setTimeout(() => setRefreshing(false), 800)); }
   };
-
-  useEffect(() => { loadData(); const interval = setInterval(loadData, 30000); return () => clearInterval(interval); }, []);
 
   const pipeline = {
     pending: allApps.filter(a => a.state === 'pending').length,
