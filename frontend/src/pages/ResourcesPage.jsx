@@ -24,7 +24,7 @@ function ResourcesPage() {
   };
 
   return (
-    <div style={{ padding: '32px', maxWidth: '900px' }}>
+    <div style={{ maxWidth: '900px' }}>
       <div style={{ marginBottom: '32px' }}>
         <p style={{ fontFamily: styles.mono, fontSize: '10px', fontWeight: 600, letterSpacing: '0.20em', textTransform: 'uppercase', color: styles.purpleBright, margin: '0 0 8px 0' }}>RESOURCES</p>
         <h1 style={{ fontFamily: styles.serif, fontSize: 'clamp(24px, 5vw, 36px)', fontWeight: 200, margin: 0, color: styles.textPrimary }}>Documents & Guides</h1>
