@@ -387,7 +387,7 @@ function ApplicationDetail() {
           initialBoundaries={app.envelope_definition || {}}
           onSave={async (boundaries) => {
             try {
-              await api.patch(`/api/applicants/${app.id}`, { envelope_definition: boundaries });
+              await api.patch(`/api/applications/${app.id}`, { envelope_definition: boundaries });
               toast.show('Boundaries saved', 'success');
               invalidate();
             } catch (e) { toast.show('Failed to save: ' + e.message, 'error'); }
