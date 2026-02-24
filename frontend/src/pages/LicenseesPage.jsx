@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../config/api';
 import { styles } from '../config/styles';
+import SectionHeader from '../components/SectionHeader';
 import Panel from '../components/Panel';
 
 function LicenseesPage() {
@@ -12,11 +13,7 @@ function LicenseesPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <p style={{ fontFamily: styles.mono, fontSize: '10px', fontWeight: 600, letterSpacing: '0.20em', textTransform: 'uppercase', color: styles.purpleBright, margin: '0 0 8px 0' }}>Partners</p>
-        <h1 style={{ fontFamily: styles.serif, fontSize: 'clamp(24px, 5vw, 36px)', fontWeight: 200, margin: 0, color: styles.textPrimary }}>Licensed Implementers</h1>
-        <p style={{color: styles.textSecondary, marginTop: '8px'}}>Authorized ENVELO integrators</p>
-      </div>
+      <SectionHeader label="Partners" title="Licensed Implementers" description="Authorized ENVELO integrators" />
 
       <Panel>
         <div style={{overflowX: "auto", WebkitOverflowScrolling: "touch"}}><table className="w-full" style={{minWidth: "500px"}}>
