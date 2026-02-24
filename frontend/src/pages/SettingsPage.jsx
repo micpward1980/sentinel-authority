@@ -529,7 +529,7 @@ function AuditLogPanel({ toast }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api.get('/api/auth/audit-log').then(r => setEvents(r.data.events || r.data || [])).catch(() => setEvents([])).finally(() => setLoading(false));
+    api.get('/api/audit/my-logs?limit=50&offset=0').then(r => setEvents(r.data.logs || r.data.events || r.data || [])).catch(() => setEvents([])).finally(() => setLoading(false));
   }, []);
 
   const EVENT_COLOR = { login: styles.accentGreen, logout: styles.textTertiary, password_change: styles.accentAmber, key_created: styles.purpleBright, key_revoked: styles.accentRed, '2fa_enabled': styles.accentGreen, '2fa_disabled': styles.accentRed };
