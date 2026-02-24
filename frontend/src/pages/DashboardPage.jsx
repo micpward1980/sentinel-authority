@@ -277,10 +277,7 @@ function Dashboard() {
     setJustifyModal(null);
     try {
       await api.patch('/api/applications/' + appId + '/state?new_state=' + newState + '&reason=' + encodeURIComponent(justifyNote));
-      if (newState === 'approved') {
-        try { await api.post('/api/apikeys/admin/provision', null, { params: { application_id: appId, send_email: true } }); toast.show('Approved — API key provisioned and emailed to applicant', 'success'); }
-        catch { toast.show('Approved — applicant can generate key from their dashboard', 'success'); }
-      } else { toast.show(label + ' recorded', newState === 'suspended' ? 'error' : 'success'); }
+      toast.show(label + (newState === 'approved' ? ' — applicant will receive access after CAT-72 certification' : ' recorded'), newState === 'suspended' ? 'error' : 'success');
       loadData();
     } catch (err) { toast.show('Failed: ' + (err.response?.data?.detail || err.message), 'error'); }
   };
