@@ -452,6 +452,26 @@ async def get_me(current_user: dict = Depends(get_current_user), db: AsyncSessio
         raise HTTPException(status_code=404, detail="User not found")
     return {"id": user.id, "email": user.email, "full_name": user.full_name, "organization": user.organization, "role": user.role, "totp_enabled": user.totp_enabled or False}
 
+
+
+@router.post("/logout", summary="Invalidate current session")
+async def logout(request: Request, db: AsyncSession = Depends(get_db), current_user: dict = Depends(get_current_user)):
+    """Revoke the current session server-side"""
+    sid = current_user.get("sid")
+    if sid:
+        from app.models.models import UserSession
+        result = await db.execute(select(UserSession).where(UserSession.session_id == sid))
+        session = result.scalar_one_or_none()
+        if session:
+            session.is_active = False
+            session.revoked_at = datetime.utcnow()
+            await db.commit()
+    await write_audit_log(db, action="user_logout", resource_type="user",
+        user_id=int(current_user.get("sub")), user_email=current_user.get("email"),
+        details={"ip": request.client.host if request.client else "unknown"})
+    await db.commit()
+    return {"message": "Logged out"}
+
 @router.post("/forgot-password", summary="Request password reset email")
 @limiter.limit("3/minute")
 async def forgot_password(request: Request, req: ForgotPasswordRequest, db: AsyncSession = Depends(get_db)):

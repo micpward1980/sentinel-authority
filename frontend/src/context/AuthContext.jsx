@@ -51,6 +51,7 @@ function AuthProvider({ children }) {
   };
 
   const logout = () => {
+    api.post('/api/auth/logout').catch(() => {});
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     setUser(null);
