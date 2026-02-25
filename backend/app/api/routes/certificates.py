@@ -234,3 +234,40 @@ async def revoke_certificate(certificate_number: str, reason: str, db: AsyncSess
     cert.history = (cert.history or []) + [{"action": "revoked", "timestamp": datetime.utcnow().isoformat(), "by": user["email"], "reason": reason}]
     await db.commit()
     return {"message": "Certificate revoked", "state": cert.state}
+
+
+@router.get("/public/revocations", summary="Public revocation history", include_in_schema=True)
+async def public_revocations(db: AsyncSession = Depends(get_db)):
+    """Public list of revoked certificates — date, cert number, reason category."""
+    result = await db.execute(
+        select(Certificate)
+        .where(Certificate.state == "revoked")
+        .order_by(Certificate.issued_at.desc())
+    )
+    certs = result.scalars().all()
+    out = []
+    for c in certs:
+        # Extract revocation event from history
+        revocation = next((h for h in (c.history or []) if h.get("action") == "revoked"), None)
+        out.append({
+            "certificate_number": c.certificate_number,
+            "organization_name": c.organization_name,
+            "system_name": c.system_name,
+            "issued_at": c.issued_at.isoformat() if c.issued_at else None,
+            "revoked_at": revocation.get("timestamp") if revocation else None,
+            "reason_category": _categorize_reason(revocation.get("reason", "") if revocation else ""),
+        })
+    return {"revocations": out, "total": len(out)}
+
+
+def _categorize_reason(reason: str) -> str:
+    reason_lower = reason.lower()
+    if any(w in reason_lower for w in ["drift", "boundary", "exceedance", "enforcement"]):
+        return "Enforcement Failure"
+    if any(w in reason_lower for w in ["telemetry", "gap", "chain", "tamper"]):
+        return "Telemetry Integrity Failure"
+    if any(w in reason_lower for w in ["report", "disclosure", "notify"]):
+        return "Non-Reporting"
+    if any(w in reason_lower for w in ["scope", "odd", "domain"]):
+        return "ODD Scope Violation"
+    return "Administrative"
