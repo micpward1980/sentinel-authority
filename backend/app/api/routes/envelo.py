@@ -64,6 +64,18 @@ async def get_api_key_from_header(
     return api_key
 
 
+def require_scope(api_key: APIKey, required: str):
+    """Check api key has required scope. full > envelo_only > read_only"""
+    scope = getattr(api_key, "scope", "full") or "full"
+    if required == "read_only":
+        return  # all scopes can read
+    if required == "envelo_only" and scope in ("full", "envelo_only"):
+        return
+    if required == "full" and scope == "full":
+        return
+    raise HTTPException(status_code=403, detail=f"API key scope '{scope}' insufficient — requires '{required}'")
+
+
 @router.post("/sessions", summary="Start new agent session")
 async def register_session(
     data: SessionCreate,
@@ -71,6 +83,7 @@ async def register_session(
     api_key: APIKey = Depends(get_api_key_from_header)
 ):
     """Register a new ENVELO agent session"""
+    require_scope(api_key, "envelo_only")
     
     # Parse certificate ID to get the certificate
     cert_result = await db.execute(

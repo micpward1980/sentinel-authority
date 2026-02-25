@@ -34,6 +34,7 @@ def hash_key(key: str) -> str:
 class APIKeyCreate(BaseModel):
     name: str
     certificate_id: Optional[int] = None
+    scope: Optional[str] = "full"  # full, envelo_only, read_only
 
 
 @router.post("/generate", summary="Generate new API key")
@@ -70,6 +71,7 @@ async def generate_new_key(
         certificate_id=data.certificate_id,
         user_id=user_id,
         name=data.name,
+        scope=scope,
         is_active=True
     )
     

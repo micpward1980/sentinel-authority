@@ -63,6 +63,7 @@ class User(Base):
     org = relationship("Organization", back_populates="users")
     role = Column(String, default="subscriber")
     is_active = Column(Boolean, default=True)
+    scope = Column(String(50), default="full")  # full, read_only, envelo_only
     created_at = Column(DateTime, default=datetime.utcnow)
     totp_secret = Column(String(32), nullable=True)
     totp_enabled = Column(Boolean, default=False)
@@ -85,6 +86,7 @@ class UserSession(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     last_active_at = Column(DateTime, default=datetime.utcnow)
     is_active = Column(Boolean, default=True)
+    scope = Column(String(50), default="full")  # full, read_only, envelo_only
     revoked_at = Column(DateTime, nullable=True)
 
 
@@ -223,6 +225,7 @@ class Licensee(Base):
     licensed_at = Column(DateTime, default=datetime.utcnow)
     expires_at = Column(DateTime)
     is_active = Column(Boolean, default=True)
+    scope = Column(String(50), default="full")  # full, read_only, envelo_only
     user_id = Column(Integer, ForeignKey("users.id"))
     api_key = Column(String(255))
     created_at = Column(DateTime, default=datetime.utcnow)
@@ -281,6 +284,7 @@ class APIKey(Base):
     last_used_at = Column(DateTime, nullable=True)
     revoked_at = Column(DateTime, nullable=True)
     is_active = Column(Boolean, default=True)
+    scope = Column(String(50), default="full")  # full, read_only, envelo_only
     
     certificate = relationship("Certificate", backref="api_keys")
     user = relationship("User", backref="api_keys")
