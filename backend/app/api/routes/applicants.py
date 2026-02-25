@@ -450,7 +450,10 @@ async def document_download(
     from app.services.email_service import send_email
     import os
     
-    data = await request.json()
+    try:
+        data = await request.json()
+    except Exception:
+        return {"success": False, "message": "Invalid request body"}
     email = data.get("email", "")
     organization = data.get("organization", "")
     role = data.get("role", "")

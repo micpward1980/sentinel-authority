@@ -3306,7 +3306,10 @@ footer{border-top:1px solid var(--hairline)!important;}
           <div class="hud-desc" style="line-height:1.9;margin-bottom:12px;">Sentinel Authority does not influence model logic, decision-making processes, or operational parameter selection. Operators define system behavior, enforcement thresholds, and operational design domains (ODD). The Pre-CAT-72 Audit Control Review does not prescribe operational parameters — it verifies that operator-declared ODD boundaries are sufficiently specified and that the ENVELO Interlock is correctly configured to enforce them. Operators retain full authority over what those boundaries are.</div>
           <div class="hud-desc" style="line-height:1.9;margin-bottom:12px;">The ENVELO Interlock operates exclusively at the execution boundary. It enforces operator-declared limits by preventing actions outside declared operational parameters. It does not modify behavior, influence strategy, or override operator-defined fail-safe mechanisms within the declared ODD.</div>
           <div class="hud-desc" style="line-height:1.9;">Decision authority remains solely with the operator. Boundary enforcement integrity is independently verified pursuant to the ODDC standard.</div>
-          <div class="hud-desc" style="line-height:1.9;margin-top:12px;">Enforcement is continuous. The ENVELO Interlock operates at all times on the operator&#x27;s infrastructure — not only during CAT-72 assessment periods. Between conformance determinations, the interlock continues to enforce boundaries, log telemetry, and trigger PAUSED state on drift detection. The tamper-evident record covers the full inter-period interval. Sentinel Authority does not monitor live telemetry — the interlock enforces independently, and SA periodically verifies that enforcement was maintained. Removal or disablement of the ENVELO Interlock automatically invalidates the associated ODDC certificate.</div>
+          <div class="hud-desc" style="line-height:1.9;margin-top:12px;">Enforcement is continuous. The ENVELO Interlock operates at all times on the operator&#x27;s infrastructure — not only during CAT-72 assessment periods. Between conformance determinations, the interlock continues to enforce boundaries, log telemetry, and trigger PAUSED state on drift detection. The tamper-evident record covers the full inter-period interval. Sentinel Authority does not monitor live telemetry — the interlock enforces independently, and SA periodically verifies that enforcement was maintained.</div>
+          <div style="margin-top:16px;padding:16px 20px;border-left:3px solid rgba(15,18,30,0.25);background:rgba(15,18,30,0.03);">
+            <div style="font-family:var(--mono);font-size:13px;font-weight:600;color:rgba(15,18,30,0.85);line-height:1.7;">Removal or disablement of the ENVELO Interlock automatically invalidates the associated ODDC certificate.</div>
+          </div>
         </div>
       </div>
     </section>
@@ -4637,41 +4640,19 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
     <section id="urgency" class="section">
       <div class="section-head reveal">
         <div>
-          <span class="section-label">MARKET CONTEXT</span>
+          <span class="section-label">THE ENFORCEMENT GAP</span>
           <h2 class="section-title">Deployment Environment</h2>
           <p class="section-lead">
-            A gap exists between autonomous system deployment and independently verifiable runtime enforcement mechanisms. ODDC defines and attests to that category of verification.
+            Autonomous systems are deployed without independently verifiable runtime enforcement. ODDC formalizes that missing category of verification.
           </p>
         </div>
       </div>
       <div class="reveal" style="max-width:700px;margin:0 auto;">
         <div class="hud-frame hud-scanline"><i></i>
-          <div class="hud-label" style="margin-bottom:16px;">MARKET DRIVERS</div>
-          <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;">
-            <span class="hud-dot hud-dot-amber" style="margin-top:5px;"></span>
-            <div><span class="hud-title">Expanding Autonomous System Deployment</span>
-            <div class="hud-desc">Autonomous systems with actuator authority are operating across transportation, finance, healthcare, and industrial automation. Many deployments rely on self-attested enforcement mechanisms.</div></div>
-          </div>
-          <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;">
-            <span class="hud-dot hud-dot-amber" style="margin-top:5px;"></span>
-            <div><span class="hud-title">Procurement Scrutiny Is Rising</span>
-            <div class="hud-desc">Enterprise and government procurement committees increasingly require independent governance evidence — not vendor self-assessment.</div></div>
-          </div>
-          <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;">
-            <span class="hud-dot hud-dot-red" style="margin-top:5px;"></span>
-            <div><span class="hud-title">Self-Attestation Limitations</span>
-            <div class="hud-desc">Publicized autonomous system incidents have increased scrutiny of self-attestation models. Procurement and governance review increasingly reference independent verification mechanisms.</div></div>
-          </div>
-          <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;">
-            <span class="hud-dot hud-dot-amber" style="margin-top:5px;"></span>
-            <div><span class="hud-title">Regulatory Framework Integration</span>
-            <div class="hud-desc">Existing regulatory frameworks may incorporate independent runtime verification mechanisms. ODDC provides a referenceable standard compatible with existing approval structures.</div></div>
-          </div>
-          <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;">
-            <span class="hud-dot hud-dot-red" style="margin-top:5px;"></span>
-            <div><span class="hud-title">Governance and Liability Considerations</span>
-            <div class="hud-desc">Deployment without independently verifiable enforcement introduces governance and liability considerations that structured conformance determination may address.</div></div>
-          </div>
+          <div class="hud-label" style="margin-bottom:16px;">PROBLEM</div>
+          <div class="hud-desc" style="line-height:1.9;">Autonomous systems with actuator authority operate across transportation, finance, healthcare, and industrial automation. Approval mechanisms rely on manufacturer self-attestation. No independent mechanism exists to verify that a deployed system enforces its declared operational boundaries at runtime. This creates a governance gap between declared operational intent and verified enforcement behavior.</div>
+          <div class="hud-label" style="margin-top:24px;margin-bottom:16px;">MECHANISM</div>
+          <div class="hud-desc" style="line-height:1.9;">ODDC defines a discrete conformance category: independent verification of runtime boundary enforcement. The standard requires a non-bypassable interlock architecture (ENVELO), a minimum cumulative enforcement verification period (CAT-72), and a tamper-evident audit chain. Conformance determinations are recorded in a public registry. The standard is compatible with existing regulatory frameworks without displacing them.</div>
         </div>
       </div>
     </section>
@@ -4890,19 +4871,19 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
         <div class="gov-safeguards">
           <div style="border-top:1px solid rgba(15,18,30,0.08);padding-top:20px;">
             <div style="font-family:var(--mono);font-size:11px;letter-spacing:1.5px;color:rgba(15,18,30,0.45);margin-bottom:10px;">AUDITOR INDEPENDENCE</div>
-            <div style="font-family:var(--mono);font-size:13px;color:rgba(15,18,30,0.65);line-height:1.7;max-width:280px;margin:0 auto;"><span style="color:rgba(15,18,30,0.78);">Conformance reviewers are structurally separated</span> from business development and applicant-facing operations. No individual involved in conformance determination has financial interest in the outcome.</div>
+            <div style="font-family:var(--mono);font-size:13px;color:rgba(15,18,30,0.65);line-height:1.7;max-width:280px;margin:0 auto;">Structural separation between conformance reviewers and business development. Zero financial interest in determination outcomes.</div>
           </div>
           <div style="border-top:1px solid rgba(15,18,30,0.08);padding-top:20px;">
             <div style="font-family:var(--mono);font-size:11px;letter-spacing:1.5px;color:rgba(15,18,30,0.45);margin-bottom:10px;">CONFLICT OF INTEREST</div>
-            <div style="font-family:var(--mono);font-size:13px;color:rgba(15,18,30,0.65);line-height:1.7;max-width:280px;margin:0 auto;"><span style="color:rgba(15,18,30,0.78);">Sentinel Authority holds no equity in,</span> advisory relationship with, or revenue-sharing arrangement with any applicant or certified operator. Fees are fixed and non-contingent on outcome.</div>
+            <div style="font-family:var(--mono);font-size:13px;color:rgba(15,18,30,0.65);line-height:1.7;max-width:280px;margin:0 auto;">No equity, advisory relationship, or revenue-sharing with any applicant or certified operator. Fees are fixed and non-contingent on outcome.</div>
           </div>
           <div style="border-top:1px solid rgba(15,18,30,0.08);padding-top:20px;">
             <div style="font-family:var(--mono);font-size:11px;letter-spacing:1.5px;color:rgba(15,18,30,0.45);margin-bottom:10px;">SUSPENSION &amp; APPEALS</div>
-            <div style="font-family:var(--mono);font-size:13px;color:rgba(15,18,30,0.65);line-height:1.7;max-width:280px;margin:0 auto;"><span style="color:rgba(15,18,30,0.78);">Certificate suspension includes written notification with findings,</span> a defined response period, independent review of submitted evidence, and a final determination recorded in the public registry.</div>
+            <div style="font-family:var(--mono);font-size:13px;color:rgba(15,18,30,0.65);line-height:1.7;max-width:280px;margin:0 auto;">Written notification with findings. Defined response period. Independent review of submitted evidence. Final determination recorded in the public registry.</div>
           </div>
           <div style="border-top:1px solid rgba(15,18,30,0.08);padding-top:20px;">
             <div style="font-family:var(--mono);font-size:11px;letter-spacing:1.5px;color:rgba(15,18,30,0.45);margin-bottom:10px;">TELEMETRY PROVENANCE</div>
-            <div style="font-family:var(--mono);font-size:13px;color:rgba(15,18,30,0.65);line-height:1.7;max-width:280px;margin:0 auto;"><span style="color:rgba(15,18,30,0.78);">ODDC verifies enforcement behavior against telemetry as received.</span> The operator bears sole responsibility for the accuracy, calibration, and integrity of sensor data entering the ENVELO Interlock.</div>
+            <div style="font-family:var(--mono);font-size:13px;color:rgba(15,18,30,0.65);line-height:1.7;max-width:280px;margin:0 auto;">Sentinel Authority verifies enforcement behavior against telemetry as received. The operator bears sole responsibility for sensor accuracy, calibration, and data integrity.</div>
           </div>
         </div>
       </div>
