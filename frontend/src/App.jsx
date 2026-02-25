@@ -1,3 +1,4 @@
+import PreCAT72Review from './pages/PreCAT72Review';
 import React, { Suspense, lazy } from 'react';
 import ErrorBoundary from './components/ErrorBoundary';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
@@ -47,7 +48,8 @@ function App() {
           <Route path="/applications" element={<ProtectedRoute><Layout><LazyLoad><ApplicationsList /></LazyLoad></Layout></ProtectedRoute>} />
           <Route path="/applications/new" element={<ProtectedRoute><Layout><LazyLoad><NewApplication /></LazyLoad></Layout></ProtectedRoute>} />
           <Route path="/applications/:id" element={<ProtectedRoute><Layout><LazyLoad><ApplicationDetail /></LazyLoad></Layout></ProtectedRoute>} />
-          <Route path="/cat72" element={<Navigate to="/envelo" />} />
+          <Route path="/applications/:id/pre-review" element={<PreCAT72Review />} />
+        <Route path="/cat72" element={<Navigate to="/envelo" />} />
           <Route path="/certificates" element={<Navigate to="/envelo" />} />
           <Route path="/pending" element={<LazyLoad><PendingPage /></LazyLoad>} />
           <Route path="/resources" element={<ProtectedRoute><Layout><LazyLoad><ResourcesPage /></LazyLoad></Layout></ProtectedRoute>} />
