@@ -167,11 +167,128 @@ function ProfilePanel({ user, toast }) {
 
       <PasswordCard toast={toast} />
       <TwoFACard toast={toast} user={user} />
+      <SessionsCard toast={toast} />
     </>
   );
 }
 
+
+// ── PANEL: Active Sessions ─────────────────────────────────────────────────────
+function SessionsCard({ toast }) {
+  const [sessions, setSessions] = React.useState([]);
+  const [loading, setLoading] = React.useState(true);
+  const [revoking, setRevoking] = React.useState(null);
+
+  const load = async () => {
+    try {
+      const r = await api.get('/api/auth/sessions');
+      setSessions(r.data.sessions || []);
+    } catch(e) {} finally { setLoading(false); }
+  };
+
+  React.useEffect(() => { load(); }, []);
+
+  const revoke = async (sid) => {
+    setRevoking(sid);
+    try {
+      await api.delete(`/api/auth/sessions/${sid}`);
+      toast.show('Session revoked', 'success');
+      load();
+    } catch(e) { toast.show('Failed to revoke session', 'error'); }
+    finally { setRevoking(null); }
+  };
+
+  const revokeAll = async () => {
+    setRevoking('all');
+    try {
+      await api.delete('/api/auth/sessions');
+      toast.show('All other sessions revoked', 'success');
+      load();
+    } catch(e) { toast.show('Failed', 'error'); }
+    finally { setRevoking(null); }
+  };
+
+  const fmt = (iso) => iso ? new Date(iso).toLocaleString() : '—';
+
+  return (
+    <Card>
+      <CardHeading>Active Sessions</CardHeading>
+      {loading ? <div style={{ color: styles.textTertiary, fontSize: 12 }}>Loading...</div> : (
+        <>
+          {sessions.map(s => (
+            <div key={s.session_id} style={{ display: 'flex', justifyContent: 'space-between',
+              alignItems: 'center', padding: '10px 0', borderBottom: `1px solid ${styles.borderGlass}` }}>
+              <div>
+                <div style={{ fontSize: 12, color: styles.textPrimary, fontFamily: styles.mono }}>
+                  {s.ip_address || 'Unknown IP'}
+                  {s.is_current && <span style={{ marginLeft: 8, fontSize: 10, color: styles.accentGreen,
+                    padding: '2px 6px', border: `1px solid ${styles.accentGreen}40`, borderRadius: 4 }}>CURRENT</span>}
+                </div>
+                <div style={{ fontSize: 10, color: styles.textTertiary, marginTop: 2 }}>
+                  Last active: {fmt(s.last_active_at)} · {s.user_agent?.slice(0,50) || 'Unknown device'}
+                </div>
+              </div>
+              {!s.is_current && (
+                <button onClick={() => revoke(s.session_id)} disabled={revoking === s.session_id}
+                  style={{ padding: '4px 12px', background: 'transparent', border: `1px solid ${styles.accentRed}40`,
+                    borderRadius: 4, color: styles.accentRed, fontSize: 11, fontFamily: styles.mono,
+                    cursor: 'pointer', opacity: revoking === s.session_id ? 0.5 : 1 }}>
+                  REVOKE
+                </button>
+              )}
+            </div>
+          ))}
+          {sessions.filter(s => !s.is_current).length > 0 && (
+            <div style={{ marginTop: 12 }}>
+              <button onClick={revokeAll} disabled={revoking === 'all'}
+                style={{ padding: '8px 16px', background: 'transparent', border: `1px solid ${styles.accentRed}`,
+                  borderRadius: 4, color: styles.accentRed, fontSize: 11, fontFamily: styles.mono,
+                  cursor: 'pointer', opacity: revoking === 'all' ? 0.5 : 1 }}>
+                REVOKE ALL OTHER SESSIONS
+              </button>
+            </div>
+          )}
+          {sessions.length === 1 && (
+            <div style={{ fontSize: 12, color: styles.textTertiary, marginTop: 8 }}>
+              No other active sessions.
+            </div>
+          )}
+        </>
+      )}
+    </Card>
+  );
+}
+
 // ── PANEL: Password ────────────────────────────────────────────────────────────
+function PasswordStrengthBar({ password }) {
+  const [strength, setStrength] = React.useState(null);
+  React.useEffect(() => {
+    if (!password) { setStrength(null); return; }
+    api.post('/api/auth/password-strength', { password })
+      .then(r => setStrength(r.data))
+      .catch(() => setStrength(null));
+  }, [password]);
+  if (!strength || !password) return null;
+  const colors = ['#D65C5C','#D6885C','#D6C35C','#5CD685','#5CD685'];
+  const color = colors[strength.score] || '#D65C5C';
+  return (
+    <div style={{ marginTop: 6 }}>
+      <div style={{ display: 'flex', gap: 4, marginBottom: 4 }}>
+        {[0,1,2,3].map(i => (
+          <div key={i} style={{ flex: 1, height: 4, borderRadius: 2,
+            background: i < strength.score ? color : 'rgba(255,255,255,0.1)' }} />
+        ))}
+      </div>
+      <div style={{ fontSize: 11, color, fontFamily: 'monospace' }}>{strength.label}</div>
+      {strength.feedback?.length > 0 && (
+        <div style={{ fontSize: 10, color: '#888', marginTop: 2 }}>
+          {strength.feedback.join(' · ')}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function PasswordCard({ toast }) {
   const [form, setForm]   = useState({ current: '', new_pw: '', confirm: '' });
   const [saving, setSaving] = useState(false);
@@ -197,6 +314,7 @@ function PasswordCard({ toast }) {
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12, maxWidth: 380 }}>
         <SLDSInput label="Current Password" type="password" value={form.current}  onChange={e => setForm({ ...form, current: e.target.value })} />
         <SLDSInput label="New Password"     type="password" value={form.new_pw}   onChange={e => setForm({ ...form, new_pw: e.target.value })} />
+        <PasswordStrengthBar password={form.new_pw} />
         <SLDSInput label="Confirm New"      type="password" value={form.confirm}  onChange={e => setForm({ ...form, confirm: e.target.value })} />
         {error && <div style={{ color: styles.accentRed, fontSize: 12 }}>{error}</div>}
         <div style={{ fontSize: 11, color: styles.textTertiary }}>Min 8 chars · 1 uppercase · 1 lowercase · 1 number</div>
