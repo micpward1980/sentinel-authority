@@ -367,8 +367,27 @@ app.include_router(ai_review.router, prefix="/api", tags=["AI Review"])
 
 
 @app.get("/health", tags=["System"], summary="Health check")
+@app.get("/api/v1/health", tags=["System"], summary="Health check v1")
 async def health_check():
-    return {"status": "healthy", "service": "sentinel-authority"}
+    from app.core.database import async_session_factory
+    from sqlalchemy import text
+    import time
+    db_ok = False
+    start = time.time()
+    try:
+        async with async_session_factory() as session:
+            await session.execute(text("SELECT 1"))
+            db_ok = True
+    except Exception:
+        pass
+    latency_ms = round((time.time() - start) * 1000)
+    return {
+        "status": "healthy" if db_ok else "degraded",
+        "service": "sentinel-authority",
+        "version": "1.0.0",
+        "database": "ok" if db_ok else "error",
+        "db_latency_ms": latency_ms,
+    }
 
 
 @app.get("/", tags=["System"], summary="Service info")
