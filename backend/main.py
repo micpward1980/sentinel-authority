@@ -27,7 +27,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import init_db, get_db
 from app.core.security import get_current_user
 from fastapi import Depends
-from app.api.routes import audit as audit_routes, auth, dashboard, applicants, cat72, certificates, verification, licensees, envelo, apikeys, envelo_boundaries, registry, users, documents, deploy, session_routes
+from app.api.routes import audit as audit_routes, auth, dashboard, applicants, cat72, certificates, verification, licensees, envelo, apikeys, envelo_boundaries, registry, users, documents, deploy, session_routes, webhooks
 
 # Logging setup
 
@@ -343,6 +343,8 @@ app.include_router(documents.router, prefix="/api/v1/documents", tags=["Document
 app.include_router(deploy.router, prefix="/api/v1", tags=["One-Command Deploy"])
 app.include_router(audit_routes.router, prefix="/api/v1/audit", tags=["Audit Log"])
 app.include_router(ai_review.router, prefix="/api/v1", tags=["AI Review"])
+app.include_router(webhooks.router, prefix="/api/v1/webhooks", tags=["Webhooks"])
+app.include_router(webhooks.router, prefix="/api/webhooks", tags=["Webhooks"])
 
 # ── Legacy unversioned routes (backward compat — deprecated) ──────────────────
 app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])

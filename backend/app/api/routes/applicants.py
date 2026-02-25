@@ -8,6 +8,7 @@ from pydantic import BaseModel, EmailStr
 from typing import Optional, Dict, Any
 
 from app.core.database import get_db
+from app.api.routes.webhooks import fire_webhook
 from app.core.security import get_current_user, require_role
 from app.models.models import Application, AuditLog, ApplicationComment, CertificationState, User
 from app.services.audit_service import write_audit_log
@@ -359,6 +360,18 @@ async def update_application_state(
         )
         await db.commit()
         
+        # Fire webhook
+        try:
+            if app.applicant_id:
+                await fire_webhook(app.applicant_id, f"application.{new_state}", {
+                    "application_id": app.id,
+                    "application_number": app.application_number,
+                    "system_name": app.system_name,
+                    "state": new_state,
+                })
+        except Exception:
+            pass
+
         result = {"message": f"State updated to {new_state}", "state": new_state}
         if api_key_raw:
             result["api_key_generated"] = True
