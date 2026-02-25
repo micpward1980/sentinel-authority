@@ -398,12 +398,12 @@ async def deprecation_header(request, call_next):
 @app.get("/health", tags=["System"], summary="Health check")
 @app.get("/api/v1/health", tags=["System"], summary="Health check v1")
 async def health_check():
-    from app.core.database import async_session_factory
+    from app.core.database import AsyncSessionLocal
     from sqlalchemy import text
     db_ok = False
     start = time.time()
     try:
-        async with async_session_factory() as session:
+        async with AsyncSessionLocal() as session:
             await session.execute(text("SELECT 1"))
             db_ok = True
     except Exception:

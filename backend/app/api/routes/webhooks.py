@@ -96,8 +96,8 @@ async def delete_webhook(webhook_id: int, db: AsyncSession = Depends(get_db), us
 
 # ── Dispatch ──────────────────────────────────────────────────────────────────
 async def fire_webhook(user_id: int, event: str, payload: dict):
-    from app.core.database import async_session_factory
-    async with async_session_factory() as db:
+    from app.core.database import AsyncSessionLocal
+    async with AsyncSessionLocal() as db:
         result = await db.execute(
             select(Webhook).where(Webhook.user_id == user_id, Webhook.active == True)
         )
