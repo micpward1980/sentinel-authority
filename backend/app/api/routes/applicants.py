@@ -824,3 +824,45 @@ async def preview_state_change_email(
         "system_name": app.system_name,
     }
 
+
+
+# ── Pre-CAT-72 Review endpoint ────────────────────────────────────────────────
+@router.post("/{application_id}/pre-review")
+async def save_pre_review(
+    application_id: int,
+    body: dict,
+    db: AsyncSession = Depends(get_db),
+    user: dict = Depends(get_current_user),
+):
+    """Save Pre-CAT-72 audit findings and optionally notify applicant."""
+    result = await db.execute(select(Application).where(Application.id == application_id))
+    app = result.scalar_one_or_none()
+    if not app:
+        raise HTTPException(status_code=404, detail="Application not found")
+
+    # Store findings on application
+    app.pre_review_results = body.get("pre_review_results")
+    app.notes = (app.notes or "") + f"\n\n[Pre-CAT-72 Review — {body.get('decision','').upper()}]\n{body.get('override_note') or ''}"
+
+    await db.commit()
+
+    # Send email if returning to applicant
+    if body.get("decision") == "reject":
+        applicant_email = app.contact_email
+        if not applicant_email and app.applicant_id:
+            from app.models.models import User
+            ur = await db.execute(select(User).where(User.id == app.applicant_id))
+            owner = ur.scalar_one_or_none()
+            if owner:
+                applicant_email = owner.email
+
+        if applicant_email:
+            return_note = body.get("override_note") or "Your application requires revisions before CAT-72 testing can be authorized."
+            await send_application_rejected(
+                applicant_email,
+                app.system_name or "Unnamed System",
+                app.application_number or f"SA-{app.id:04d}",
+                return_note,
+            )
+
+    return {"message": "Pre-review saved", "decision": body.get("decision")}

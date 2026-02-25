@@ -800,7 +800,7 @@ export default function PreCAT72Review() {
             {/* Decision buttons */}
             <div style={{ display: "flex", gap: 12, justifyContent: "flex-end" }}>
               <button
-                onClick={() => submitDecision("reject")}
+                onClick={() => { const note = window.prompt("Return notes to applicant (will be emailed):"); if (note !== null) { setOverrideNote(note); setOverrideMode(true); submitDecision("reject"); } }}
                 disabled={submitting}
                 style={{
                   padding: "11px 24px", borderRadius: 2, border: `1px solid ${S.red}40`,
