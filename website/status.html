@@ -108,7 +108,6 @@
       border-bottom:1px solid rgba(15,18,30,0.06);
       background:rgba(245,245,247,0.88);
       box-shadow:none;
-      -webkit-
       display:flex; align-items:center;
     }
     .nav-inner{ max-width:var(--max); margin:0 auto; width:100%; display:flex; align-items:center; justify-content:space-between; gap:20px; }
@@ -133,7 +132,6 @@
     .hud-frame{
       position:relative; padding:20px 16px;
       background:rgba(255,255,255,0.78);
-      -webkit-
       box-shadow:0 1px 3px rgba(15,18,30,0.03), 0 10px 40px rgba(15,18,30,0.05);
       border:none;
     }
@@ -197,7 +195,6 @@
       padding:var(--space-6) 0 var(--space-4);
       margin-top:var(--space-4);
       background:#ffffff;
-      -webkit-
       color:var(--text-tertiary);
       font-family:var(--mono); font-size:10px; letter-spacing:1px;
     }
@@ -241,7 +238,6 @@ body::before{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;
   flex-wrap:wrap!important;
   margin-bottom:24px!important;
   background:rgba(255,255,255,0.45)!important;
-  -webkit-
   border-radius:16px!important;
   padding:28px 24px!important;
   text-align:left!important;
@@ -284,7 +280,6 @@ body::before{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;
 /* ── CARDS: glass, rounded, no brackets ── */
 .doc-card,.wp-featured,.artifact-card,.cert-card,.research-card,.fee-card,.process-card,.guarantee-box{
   background:rgba(255,255,255,0.65)!important;
-  -webkit-
   border:1px solid rgba(15,18,30,0.06)!important;
   border-radius:16px!important;
   box-shadow:0 1px 2px rgba(15,18,30,0.03),0 4px 16px rgba(15,18,30,0.02)!important;
@@ -301,7 +296,6 @@ body::before{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;
   border-radius:16px!important;
   border:1px solid var(--hairline)!important;
   background:rgba(255,255,255,0.40)!important;
-  -webkit-
 }
 
 /* ── SECTIONS ── */
@@ -423,7 +417,8 @@ footer{border-top:1px solid var(--hairline)!important;}
 
   <footer>
     <div class="footer-inner">
-      <div>&#169; <span id="year"></span> SENTINEL AUTHORITY</div><div style="margin-top:8px;font-size:9px;letter-spacing:1px;"><a href="privacy.html" style="color:inherit;text-decoration:none;">Privacy Notice</a> · <a href="terms.html" style="color:inherit;text-decoration:none;">Terms of Use</a></div>
+      <div>&copy; <span id="year"></span> Sentinel Authority</div>
+      <div style="margin-top:8px;font-size:9px;letter-spacing:1px;"><a href="privacy.html" style="color:inherit;text-decoration:none;">Privacy Notice</a> &middot; <a href="terms.html" style="color:inherit;text-decoration:none;">Terms of Use</a></div>
     </div>
   </footer>
 
@@ -439,7 +434,7 @@ footer{border-top:1px solid var(--hairline)!important;}
       var r = document.getElementById('result');
       r.innerHTML = '<div class="hud-frame" style="margin-top:var(--space-4);"><i></i><div style="display:flex;align-items:center;gap:8px;"><div class="spinner"></div><span class="hud-label">QUERYING REGISTRY\u2026</span></div></div>';
       try {
-        var res = await fetch('https://sentinel-authority-production.up.railway.app/api/verify/status/' + encodeURIComponent(certId));
+        var res = await fetch('https://api.sentinelauthority.org/api/verify/status/' + encodeURIComponent(certId));
         var d = await res.json();
         if (d.status === 'not_found') {
           r.innerHTML = '<div class="hud-frame" style="margin-top:var(--space-4);"><i></i><div class="hud-row" style="display:flex;align-items:center;gap:8px;"><span class="hud-dot hud-dot-red"></span><span class="hud-label" style="color:var(--accent-red);">NOT FOUND</span></div><div class="hud-row"><div class="hud-desc">' + (d.message || 'No active test found for this Certificate ID.') + '</div><div class="hud-desc" style="margin-top:4px;">Ensure ENVELO is running with the correct Certificate ID and API key.</div></div></div>';

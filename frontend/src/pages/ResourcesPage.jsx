@@ -17,6 +17,7 @@ function ResourcesPage() {
   }, []);
 
   const handleDownload = async (docId, title) => {
+    const token = localStorage.getItem("token");
     try {
       window.open('https://api.sentinelauthority.org/api/documents/' + docId + '/download', '_blank');
     } catch (err) {

@@ -479,7 +479,7 @@ function VerifyPage() {
                   </div>
                   {result.convergence_score != null && (
                     <div style={rowStyle}>
-                      <span style={labelSt}>Convergence Score</span>
+                      <span style={labelSt}>Conformance Score</span>
                       <span style={{fontFamily: styles.mono, fontSize: '14px', color: result.convergence_score >= 0.95 ? styles.accentGreen : styles.accentAmber}}>{(result.convergence_score * 100).toFixed(1)}%</span>
                     </div>
                   )}
@@ -567,7 +567,7 @@ function VerifyPage() {
                         <div style={{fontFamily: styles.mono, fontSize: '11px', color: styles.purpleBright, wordBreak: 'break-all', marginTop: '4px'}}>{evidence.evidence_hash || '-'}</div>
                       </div>
                       <div>
-                        <span style={{fontSize: '11px', color: styles.textTertiary}}>Convergence Score</span>
+                        <span style={{fontSize: '11px', color: styles.textTertiary}}>Conformance Score</span>
                         <div style={{fontFamily: styles.mono, fontSize: '14px', color: styles.accentGreen, marginTop: '4px'}}>{evidence.convergence_score ? (evidence.convergence_score * 100).toFixed(2) + '%' : '-'}</div>
                       </div>
                       {evidence.odd_scope?.environment_type && (

@@ -18,7 +18,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Source+Serif+4:opsz,wght@8..60,300;500&display=swap" rel="stylesheet" />
   <style>
-    :root{--navy:#1d1a3b;--text:#111318;--text-2:rgba(15,18,30,.72);--text-3:rgba(15,18,30,.50);--border:rgba(15,18,30,.08);--bg:#ffffff;--green:rgba(22,163,74,1);--amber:rgba(202,138,4,1);--mono:'IBM Plex Mono',Consolas,monospace;--serif:'Source Serif 4',Georgia,serif;--sans:'Inter',system-ui,sans-serif;--nav-h:60px;--max:760px;}
+    :root{--navy:#1d1a3b;--text:#111318;--text-2:rgba(15,18,30,.72);--text-3:rgba(15,18,30,.50);--border:rgba(15,18,30,.08);--bg:#ffffff;--green:rgba(22,163,74,1);--amber:rgba(202,138,4,1);--mono:'IBM Plex Mono',Consolas,monospace;--serif:'Source Serif 4',Georgia,serif;--sans:'Inter',system-ui,sans-serif;--nav-h:60px;--max:1320px;}
     *,*::before,*::after{box-sizing:border-box;}
     @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition-duration:0.01ms!important;animation-duration:0.01ms!important;}}
     html{scroll-behavior:smooth;background:var(--bg);}
@@ -36,7 +36,7 @@
     .effective{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:10px;letter-spacing:1.5px;color:rgba(22,163,74,.8);text-transform:uppercase;margin-bottom:20px;}
     .dot{width:5px;height:5px;border-radius:50%;background:var(--green);animation:breathe 2.5s ease-in-out infinite;flex-shrink:0;}
     @keyframes breathe{0%,100%{opacity:.4;}50%{opacity:1;}}
-    .card{border:1px solid var(--border);border-radius:10px;padding:22px 20px;margin-bottom:16px;background:#fff;}
+    .card{max-width:760px;margin-left:auto;margin-right:auto;border:1px solid var(--border);border-radius:10px;padding:22px 20px;margin-bottom:16px;background:#fff;}
     .card-label{font-family:var(--mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-3);margin-bottom:14px;display:block;}
     .card-sub{font-family:var(--mono);font-size:9.5px;letter-spacing:1px;text-transform:uppercase;color:var(--text-3);margin:14px 0 8px;display:block;}
     .row{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid rgba(15,18,30,.04);font-size:13px;color:var(--text-2);line-height:1.55;}
@@ -123,10 +123,10 @@
   </main>
   <footer>
     <div class="footer-inner">
-      <div>© <span id="yr"></span> Sentinel Authority</div>
-      <div class="foot-links"><a href="privacy.html">Privacy Notice</a><a href="terms.html">Terms of Use</a></div>
+      <div>&copy; <span id="year"></span> Sentinel Authority</div>
+      <div style="margin-top:8px;font-size:9px;letter-spacing:1px;"><a href="privacy.html" style="color:inherit;text-decoration:none;">Privacy Notice</a> &middot; <a href="terms.html" style="color:inherit;text-decoration:none;">Terms of Use</a></div>
     </div>
   </footer>
-  <script>document.getElementById('yr').textContent=new Date().getFullYear();</script>
+  <script>document.getElementById('year').textContent=new Date().getFullYear();</script>
 </body>
 </html>

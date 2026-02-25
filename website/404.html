@@ -57,7 +57,7 @@
     a{color:inherit;text-decoration:none;} a:hover{text-decoration:none;filter:none;}
     ::selection { background: var(--accent); color: #fff; }
 
-    .site-header{position:fixed;top:0;width:100%;z-index:50;padding:0 24px;height:var(--nav-height);border-bottom:1px solid rgba(15,18,30,0.06);background:rgba(245,245,247,0.88);box-shadow:none;backdrop--webkit-backdrop-display:flex;align-items:center;}
+    .site-header{position:fixed;top:0;width:100%;z-index:50;padding:0 24px;height:var(--nav-height);border-bottom:1px solid rgba(15,18,30,0.06);background:rgba(245,245,247,0.88);box-shadow:none;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:flex;align-items:center;}
     .nav-inner{max-width:var(--max);margin:0 auto;width:100%;display:flex;align-items:center;justify-content:space-between;gap:20px;}
     .brand{display:flex;align-items:center;gap:14px;text-decoration:none;}
     .brand-mark { display: none; }
@@ -102,7 +102,6 @@ body::before{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;
   flex-wrap:wrap!important;
   margin-bottom:24px!important;
   background:rgba(255,255,255,0.45)!important;
-  -webkit-
   border-radius:16px!important;
   padding:28px 24px!important;
   text-align:left!important;
@@ -145,7 +144,6 @@ body::before{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;
 /* ── CARDS: glass, rounded, no brackets ── */
 .doc-card,.wp-featured,.artifact-card,.cert-card,.research-card,.fee-card,.process-card,.guarantee-box{
   background:rgba(255,255,255,0.65)!important;
-  -webkit-
   border:1px solid rgba(15,18,30,0.06)!important;
   border-radius:16px!important;
   box-shadow:0 1px 2px rgba(15,18,30,0.03),0 4px 16px rgba(15,18,30,0.02)!important;
@@ -162,7 +160,6 @@ body::before{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;
   border-radius:16px!important;
   border:1px solid var(--hairline)!important;
   background:rgba(255,255,255,0.40)!important;
-  -webkit-
 }
 
 /* ── SECTIONS ── */
@@ -254,7 +251,8 @@ footer{border-top:1px solid var(--hairline)!important;}
 
   <footer>
     <div class="footer-inner">
-      &#169; <span id="year"></span> SENTINEL AUTHORITY
+      <div>&copy; <span id="year"></span> Sentinel Authority</div>
+      <div style="margin-top:8px;font-size:9px;letter-spacing:1px;"><a href="privacy.html" style="color:inherit;text-decoration:none;">Privacy Notice</a> &middot; <a href="terms.html" style="color:inherit;text-decoration:none;">Terms of Use</a></div>
     </div>
   </footer>
   <script>document.getElementById('year').textContent=new Date().getFullYear();</script>

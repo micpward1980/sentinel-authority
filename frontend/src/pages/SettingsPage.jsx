@@ -211,7 +211,7 @@ function SessionsCard({ toast }) {
   const fmt = (iso) => iso ? new Date(iso).toLocaleString() : '—';
 
   return (
-    <Card>
+    <WsCard>
       <CardHeading>Active Sessions</CardHeading>
       {loading ? <div style={{ color: styles.textTertiary, fontSize: 12 }}>Loading...</div> : (
         <>
@@ -255,7 +255,7 @@ function SessionsCard({ toast }) {
           )}
         </>
       )}
-    </Card>
+    </WsCard>
   );
 }
 
