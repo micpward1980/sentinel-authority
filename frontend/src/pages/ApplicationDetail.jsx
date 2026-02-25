@@ -45,7 +45,7 @@ const ACTION_BTN = (color, solid = false) => ({
 const PIPELINE_STAGES = [
   { key: 'pending',      label: 'Submitted',     icon: '1' },
   { key: 'under_review', label: 'Under Review',  icon: '2' },
-  { key: 'approved',     label: 'Approved',      icon: '3' },
+  { key: 'approved',     label: 'Pre-CAT-72',     icon: '3' },
   { key: 'testing',      label: 'CAT-72 Testing', icon: '4' },
   { key: 'conformant',   label: 'Conformant',    icon: '✓' },
 ];
@@ -257,16 +257,15 @@ function ApplicationDetail() {
         {isAdmin && (
           <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
             {app.state === 'pending' && <button onClick={() => showEmailPreview('under_review', 'Begin Review')} disabled={previewLoading} style={ACTION_BTN(styles.accentAmber)}>Begin Review</button>}
-            {(app.state === 'pending' || app.state === 'under_review') && <button onClick={() => showEmailPreview('approved', 'Approve Application')} disabled={previewLoading} style={ACTION_BTN(styles.accentGreen)}>Approve</button>}
-              {(app.state === 'under_review' || app.state === 'approved') && <button onClick={() => navigate(`/applications/${id}/pre-review`)} style={ACTION_BTN(styles.purpleBright, true)}>Pre-CAT-72 Review</button>}
-            {['pending','under_review','approved','testing','conformant'].includes(app.state) && <button onClick={() => showEmailPreview('suspended', 'Suspend Application')} style={ACTION_BTN(styles.accentRed)}>Suspend</button>}
+            {app.state === 'pending' && <button onClick={() => showEmailPreview('approved', 'Skip to Approved')} disabled={previewLoading} style={{...ACTION_BTN(styles.textTertiary), fontSize: '10px', opacity: 0.6}}>Skip Review</button>}
+            {(app.state === 'under_review' || app.state === 'approved') && <button onClick={() => navigate(`/applications/${id}/pre-review`)} style={ACTION_BTN(styles.purpleBright, true)}>Pre-CAT-72 Review</button>}
+            {['under_review','approved','testing','conformant'].includes(app.state) && <button onClick={() => showEmailPreview('suspended', 'Suspend Application')} style={ACTION_BTN(styles.accentRed)}>Suspend</button>}
             {(app.state === 'suspended' || app.state === 'revoked') && <button onClick={handleReinstate} style={ACTION_BTN(styles.accentGreen)}>Reinstate</button>}
             {app.state === 'expired' && <button onClick={handleReinstate} style={ACTION_BTN(styles.purpleBright)}>Re-open</button>}
-            <button onClick={handleDelete} style={ACTION_BTN(styles.accentRed)}>Delete</button>
+            {['pending','suspended','rejected'].includes(app.state) && <button onClick={handleDelete} style={ACTION_BTN(styles.accentRed)}>Delete</button>}
           </div>
         )}
       </div>
-
       {/* Pipeline */}
       <Panel>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px', marginBottom: '20px' }}>
