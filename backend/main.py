@@ -1,3 +1,4 @@
+import time
 from app.api.routes import ai_review
 """
 Sentinel Authority Platform API
@@ -159,7 +160,6 @@ async def lifespan(app: FastAPI):
             last_row = last_anchor.first()
             need_anchor = True
             if last_row and last_row[0]:
-                from datetime import timedelta
                 if (datetime.utcnow() - last_row[0]) < timedelta(hours=24):
                     need_anchor = False
             
@@ -369,7 +369,6 @@ app.include_router(ai_review.router, prefix="/api", tags=["AI Review"])
 
 
 # ── Global API rate limit: 200 req/min per IP ─────────────────────────────────
-import time
 from collections import defaultdict
 _global_rate: dict = defaultdict(list)
 
@@ -401,7 +400,6 @@ async def deprecation_header(request, call_next):
 async def health_check():
     from app.core.database import async_session_factory
     from sqlalchemy import text
-    import time
     db_ok = False
     start = time.time()
     try:
@@ -464,7 +462,6 @@ async def get_notifications(
 ):
     from sqlalchemy import select, desc
     from app.models.models import AuditLog, Application, User
-    from datetime import timedelta
     
     user_result = await db.execute(select(User).where(User.id == int(current_user.get("sub"))))
     user_obj = user_result.scalar_one_or_none()
