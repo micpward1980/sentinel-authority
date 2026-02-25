@@ -608,9 +608,9 @@ async def send_application_rejected(to: str, system_name: str, app_number: str, 
             <div style="font-family: monospace; font-size: 10px; letter-spacing: 4px; text-transform: uppercase; color: rgba(157,140,207,0.7);">Sentinel Authority</div>
         </div>
         <div style="padding: 32px;">
-            <h2 style="color: #d65c5c; font-weight: 400; margin: 0 0 16px;">Application Not Approved</h2>
+            <h2 style="color: #d65c5c; font-weight: 400; margin: 0 0 16px;">Application Requires Revision</h2>
             <p style="color: #ccc; line-height: 1.6; margin: 0 0 20px;">
-                Your ODDC certification application for <strong style="color: #fff;">{system_name}</strong> ({app_number}) was not approved at this time.
+                Your ODDC certification application for <strong style="color: #fff;">{system_name}</strong> ({app_number}) requires revision before CAT-72 testing can be authorized. Please review the auditor notes below and resubmit.
             </p>
             {reason_block}
             <p style="color: #ccc; line-height: 1.6; margin: 0 0 24px;">
