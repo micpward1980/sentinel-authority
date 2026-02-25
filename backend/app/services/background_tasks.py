@@ -557,16 +557,7 @@ async def cat72_auto_evaluator():
 
                     elapsed_hours = (datetime.utcnow() - test.started_at).total_seconds() / 3600
 
-                    # Get session data for this test
-                    sess_result = await db.execute(
-                        select(EnveloSession).where(
-                            EnveloSession.session_type == "cat72_test",
-                            EnveloSession.organization_name != None
-                        )
-                    )
-                    sessions = sess_result.scalars().all()
-
-                    # Match sessions to this test via application
+                    # Get application
                     app_result = await db.execute(
                         select(Application).where(Application.id == test.application_id)
                     )
@@ -574,7 +565,25 @@ async def cat72_auto_evaluator():
                     if not application:
                         continue
 
-                    test_sessions = [s for s in sessions if s.organization_name == application.organization_name and s.system_name == application.system_name]
+                    # Match sessions by test_id FK (precise — avoids cross-contamination)
+                    sess_result = await db.execute(
+                        select(EnveloSession).where(
+                            EnveloSession.test_id == test.id,
+                            EnveloSession.session_type == "cat72_test",
+                        )
+                    )
+                    test_sessions = sess_result.scalars().all()
+                    
+                    # Fallback: match by org+system if test_id not set on sessions
+                    if not test_sessions:
+                        sess_result2 = await db.execute(
+                            select(EnveloSession).where(
+                                EnveloSession.session_type == "cat72_test",
+                                EnveloSession.organization_name == application.organization_name,
+                                EnveloSession.system_name == application.system_name,
+                            )
+                        )
+                        test_sessions = sess_result2.scalars().all()
 
                     total_pass = sum(s.pass_count or 0 for s in test_sessions)
                     total_block = sum(s.block_count or 0 for s in test_sessions)
