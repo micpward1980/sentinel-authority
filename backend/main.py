@@ -366,6 +366,17 @@ app.include_router(audit_routes.router, prefix="/api/audit", tags=["Audit Log"])
 app.include_router(ai_review.router, prefix="/api", tags=["AI Review"])
 
 
+
+@app.middleware("http")
+async def deprecation_header(request, call_next):
+    response = await call_next(request)
+    path = request.url.path
+    if path.startswith("/api/") and not path.startswith("/api/v1/") and not path.startswith("/api/v"):
+        response.headers["Deprecation"] = "true"
+        response.headers["Sunset"] = "Sat, 01 Jan 2027 00:00:00 GMT"
+        response.headers["Link"] = f'<{path.replace("/api/", "/api/v1/")}>; rel="successor-version"'
+    return response
+
 @app.get("/health", tags=["System"], summary="Health check")
 @app.get("/api/v1/health", tags=["System"], summary="Health check v1")
 async def health_check():
