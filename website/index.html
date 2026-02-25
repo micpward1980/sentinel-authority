@@ -4795,6 +4795,9 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
 
         <div id="revocations-mode" style="display:none;">
           <div class="hud-desc" style="margin-bottom:16px;">All certificates that have been revoked are listed here with date and reason category. This record is permanent and publicly accessible.</div>
+          <div style="display:flex;gap:8px;align-items:stretch;margin-bottom:16px;">
+            <input type="text" id="revocation-search" placeholder="Filter by certificate, company, or reason..." oninput="filterRevocations()" style="flex:1;padding:14px 0;font-family:var(--mono);font-size:15px;letter-spacing:2px;background:transparent;border:none;border-bottom:1px solid rgba(42,37,96,0.60);color:var(--text-primary);outline:none;">
+          </div>
           <div id="revocations-list"><span style="font-family:var(--mono);font-size:13px;color:rgba(15,18,30,0.4);">Loading...</span></div>
         </div>
         <div id="verify-result" style="margin-top:20px;"></div>
@@ -5204,6 +5207,7 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
             el.innerHTML = '<span style="font-family:var(--mono);font-size:13px;color:rgba(15,18,30,0.4);">No revocations on record.</span>';
             return;
           }
+          _revocationsCache = data.revocations;
           el.innerHTML = data.revocations.map(r => `
             <div style="padding:12px 0;border-bottom:1px solid rgba(0,0,0,0.07);">
               <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
@@ -5225,10 +5229,12 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
       var resultDiv = document.getElementById("verify-result");
       if (resultDiv) resultDiv.innerHTML = "";
       
+      var revocationsMode = document.getElementById("revocations-mode");
       if (verifyMode) verifyMode.style.display = mode === "verify" ? "" : "none";
       if (searchMode) searchMode.style.display = mode === "search" ? "" : "none";
+      if (revocationsMode) revocationsMode.style.display = mode === "revocations" ? "" : "none";
       
-      ["tab-verify", "tab-search"].forEach(function(id) {
+      ["tab-verify", "tab-search", "tab-revocations"].forEach(function(id) {
         var el = document.getElementById(id);
         if (!el) return;
         var active = id === "tab-" + mode;
@@ -5237,6 +5243,24 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
         el.style.background = "transparent";
       });
     }    
+    var _revocationsCache = [];
+    function filterRevocations() {
+      var q = (document.getElementById("revocation-search").value || "").toLowerCase();
+      var el = document.getElementById("revocations-list");
+      var filtered = _revocationsCache.filter(function(r) {
+        return (r.certificate_number || "").toLowerCase().indexOf(q) !== -1 ||
+               (r.organization_name || "").toLowerCase().indexOf(q) !== -1 ||
+               (r.system_name || "").toLowerCase().indexOf(q) !== -1 ||
+               (r.reason_category || "").toLowerCase().indexOf(q) !== -1;
+      });
+      if (filtered.length === 0) {
+        el.innerHTML = '<span style="font-family:var(--mono);font-size:13px;color:rgba(15,18,30,0.4);">No matching revocations.</span>';
+        return;
+      }
+      el.innerHTML = filtered.map(function(r) {
+        return '<div style="padding:12px 0;border-bottom:1px solid rgba(0,0,0,0.07);"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;"><div><div style="font-family:var(--mono);font-size:13px;font-weight:600;color:#1d1a3b;">' + r.certificate_number + '</div><div style="font-family:var(--mono);font-size:12px;color:rgba(15,18,30,0.55);margin-top:2px;">' + r.organization_name + ' \u2014 ' + r.system_name + '</div></div><span style="font-family:var(--mono);font-size:11px;color:#c0392b;white-space:nowrap;">' + r.reason_category + '</span></div><div style="font-family:var(--mono);font-size:11px;color:rgba(15,18,30,0.4);margin-top:4px;">Revoked ' + (r.revoked_at ? new Date(r.revoked_at).toLocaleDateString("en-US", {year:"numeric",month:"short",day:"numeric"}) : "unknown") + '</div></div>';
+      }).join("");
+    }
     async function searchRegistry() {
       const input = document.getElementById("search-input");
       const btn = document.getElementById("search-btn");
