@@ -4772,6 +4772,7 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
         <div style="display:flex;gap:0;margin-bottom:24px;border-bottom:1px solid rgba(0,0,0,0.09);">
           <button id="tab-verify" onclick="setVerifyMode('verify')" style="flex:1;padding:10px 0;border:none;cursor:pointer;font-family:var(--mono);font-size:14px;letter-spacing:2px;background:transparent;color:#1d1a3b;border-bottom:2px solid #1d1a3b;transition:all 0.2s;">VERIFY CERTIFICATE</button>
           <button id="tab-search" onclick="setVerifyMode('search')" style="flex:1;padding:10px 0;border:none;cursor:pointer;font-family:var(--mono);font-size:14px;letter-spacing:2px;background:transparent;color:rgba(15,18,30,0.64);border-bottom:2px solid transparent;transition:all 0.2s;">SEARCH REGISTRY</button>
+          <button id="tab-revocations" onclick="setVerifyMode('revocations')" style="flex:1;padding:10px 0;border:none;cursor:pointer;font-family:var(--mono);font-size:14px;letter-spacing:2px;background:transparent;color:rgba(15,18,30,0.64);border-bottom:2px solid transparent;transition:all 0.2s;">REVOCATION HISTORY</button>
         </div>
 
         <div id="verify-mode">
@@ -4790,6 +4791,10 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
           <div class="hud-desc" style="margin-top:8px;">Search the public conformance registry by company or system name.</div>
         </div>
 
+        <div id="revocations-mode" style="display:none;">
+          <div class="hud-desc" style="margin-bottom:16px;">All certificates that have been revoked are listed here with date and reason category. This record is permanent and publicly accessible.</div>
+          <div id="revocations-list"><span style="font-family:var(--mono);font-size:13px;color:rgba(15,18,30,0.4);">Loading...</span></div>
+        </div>
         <div id="verify-result" style="margin-top:20px;"></div>
 
         <div style="margin-top:48px;padding-top:24px;border-top:1px solid rgba(0,0,0,0.09);">
@@ -5173,6 +5178,31 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
   <script>
     // Verify widget mode switching
     function setVerifyMode(mode) {
+    if (mode === 'revocations') {
+      fetch('https://api.sentinelauthority.org/api/certificates/public/revocations')
+        .then(r => r.json())
+        .then(data => {
+          const el = document.getElementById('revocations-list');
+          if (!data.revocations || data.revocations.length === 0) {
+            el.innerHTML = '<span style="font-family:var(--mono);font-size:13px;color:rgba(15,18,30,0.4);">No revocations on record.</span>';
+            return;
+          }
+          el.innerHTML = data.revocations.map(r => `
+            <div style="padding:12px 0;border-bottom:1px solid rgba(0,0,0,0.07);">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
+                <div>
+                  <div style="font-family:var(--mono);font-size:13px;font-weight:600;color:#1d1a3b;">${r.certificate_number}</div>
+                  <div style="font-family:var(--mono);font-size:12px;color:rgba(15,18,30,0.55);margin-top:2px;">${r.organization_name} — ${r.system_name}</div>
+                </div>
+                <span style="font-family:var(--mono);font-size:11px;color:#c0392b;white-space:nowrap;">${r.reason_category}</span>
+              </div>
+              <div style="font-family:var(--mono);font-size:11px;color:rgba(15,18,30,0.4);margin-top:4px;">Revoked ${r.revoked_at ? new Date(r.revoked_at).toLocaleDateString('en-US', {year:'numeric',month:'short',day:'numeric'}) : 'unknown'}</div>
+            </div>`).join('');
+        })
+        .catch(() => {
+          document.getElementById('revocations-list').innerHTML = '<span style="font-family:var(--mono);font-size:13px;color:rgba(15,18,30,0.4);">Unable to load revocation history.</span>';
+        });
+    }
       var verifyMode = document.getElementById("verify-mode");
       var searchMode = document.getElementById("search-mode");
       var resultDiv = document.getElementById("verify-result");
