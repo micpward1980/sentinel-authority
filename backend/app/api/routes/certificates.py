@@ -106,10 +106,49 @@ async def list_certificates(db: AsyncSession = Depends(get_db), user: dict = Dep
 
 @router.get("/{certificate_number}", summary="Get certificate details")
 async def get_certificate(certificate_number: str, db: AsyncSession = Depends(get_db)):
+    from app.models.models import EnveloSession
     result = await db.execute(select(Certificate).where(Certificate.certificate_number == certificate_number))
     cert = result.scalar_one_or_none()
     if not cert: raise HTTPException(status_code=404, detail="Certificate not found")
-    return {"certificate_number": cert.certificate_number, "organization_name": cert.organization_name, "system_name": cert.system_name, "state": cert.state, "issued_at": cert.issued_at.isoformat() if cert.issued_at else None, "expires_at": cert.expires_at.isoformat() if cert.expires_at else None, "convergence_score": cert.convergence_score, "evidence_hash": cert.evidence_hash}
+
+    # Compute liveness status from active ENVELO sessions
+    liveness_status = "unknown"
+    last_heartbeat = None
+    if cert.state == "conformant":
+        sess_result = await db.execute(
+            select(EnveloSession).where(
+                EnveloSession.organization_name == cert.organization_name,
+                EnveloSession.system_name == cert.system_name,
+                EnveloSession.status == "active"
+            ).order_by(EnveloSession.last_heartbeat_at.desc()).limit(1)
+        )
+        session = sess_result.scalar_one_or_none()
+        if session and session.last_heartbeat_at:
+            last_heartbeat = session.last_heartbeat_at
+            hours_since = (datetime.utcnow() - session.last_heartbeat_at).total_seconds() / 3600
+            if hours_since <= 24:
+                liveness_status = "active"
+            elif hours_since <= 72:
+                liveness_status = "liveness_delayed"
+            else:
+                liveness_status = "suspended"
+        elif session:
+            liveness_status = "active"
+        else:
+            liveness_status = "no_active_session"
+
+    return {
+        "certificate_number": cert.certificate_number,
+        "organization_name": cert.organization_name,
+        "system_name": cert.system_name,
+        "state": cert.state,
+        "issued_at": cert.issued_at.isoformat() if cert.issued_at else None,
+        "expires_at": cert.expires_at.isoformat() if cert.expires_at else None,
+        "convergence_score": cert.convergence_score,
+        "evidence_hash": cert.evidence_hash,
+        "liveness_status": liveness_status,
+        "last_heartbeat": last_heartbeat.isoformat() if last_heartbeat else None,
+    }
 
 @router.get("/{certificate_number}/pdf", summary="Download certificate PDF")
 async def download_pdf(certificate_number: str, db: AsyncSession = Depends(get_db)):
