@@ -5300,7 +5300,17 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
         '<div style="display:flex;justify-content:space-between;padding-bottom:8px;border-bottom:1px solid rgba(0,0,0,0.09);"><span style="color:var(--text-tertiary);font-size:14px;">Organization</span><span style="color:var(--text-primary);font-size:14px;font-weight:500;">' + (data.organization_name||"—") + '</span></div>' +
         '<div style="display:flex;justify-content:space-between;padding-bottom:8px;border-bottom:1px solid rgba(0,0,0,0.09);"><span style="color:var(--text-tertiary);font-size:14px;">System</span><span style="color:var(--text-primary);font-size:14px;">' + (data.system_name||"—") + '</span></div>' +
         '<div style="display:flex;justify-content:space-between;padding-bottom:8px;border-bottom:1px solid rgba(0,0,0,0.09);"><span style="color:var(--text-tertiary);font-size:14px;">Certificate</span><span style="color:#1d1a3b;font-family:var(--mono);font-size:14px;">' + (data.certificate_number||"—") + '</span></div>' +
-        '<div style="display:flex;justify-content:space-between;"><span style="color:var(--text-tertiary);font-size:14px;">Valid Until</span><span style="color:var(--text-primary);font-size:14px;">' + expiresDate + '</span></div></div></div>';
+        '<div style="display:flex;justify-content:space-between;padding-bottom:8px;border-bottom:1px solid rgba(0,0,0,0.09);"><span style="color:var(--text-tertiary);font-size:14px;">Valid Until</span><span style="color:var(--text-primary);font-size:14px;">' + expiresDate + '</span></div>' +
+        '<div style="display:flex;justify-content:space-between;align-items:center;padding-top:4px;">' +
+        '<span style="color:var(--text-tertiary);font-size:14px;">Enforcement Liveness</span>' +
+        '<span style="font-family:var(--mono);font-size:12px;padding:3px 8px;border-radius:3px;' +
+        (data.liveness_status === "active" ? 'background:rgba(22,135,62,0.15);color:#16873e;">● ACTIVE' :
+         data.liveness_status === "liveness_delayed" ? 'background:rgba(255,165,0,0.15);color:#b8860b;">⚠ LIVENESS DELAYED' :
+         data.liveness_status === "suspended" ? 'background:rgba(192,57,43,0.15);color:#c0392b;">✕ SUSPENDED' :
+         'background:rgba(0,0,0,0.06);color:rgba(15,18,30,0.45);">— UNKNOWN') +
+        '</span></div>' +
+        (data.last_heartbeat ? '<div style="font-family:var(--mono);font-size:11px;color:rgba(15,18,30,0.4);margin-top:4px;text-align:right;">Last heartbeat: ' + new Date(data.last_heartbeat).toLocaleDateString("en-US", {year:"numeric",month:"short",day:"numeric"}) + '</div>' : '') +
+        '</div></div>';
     }
     
     function showVerifyError(message) {
