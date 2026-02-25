@@ -53,7 +53,7 @@ const PIPELINE_STAGES = [
 const NEXT_STEP = {
   pending:      'Your application is queued for review by the Sentinel Authority team.',
   under_review: 'Our team is evaluating your ODD specification and boundary definitions.',
-  approved:     'Your system is approved. The ENVELO agent is being configured for CAT-72 testing.',
+  approved:     'Pre-CAT-72 audit review required. Run the ODDC Audit Control Review to authorize CAT-72 testing.',
   testing:      'CAT-72 continuous conformance test is in progress (72-hour minimum).',
   conformant:   'Your system has achieved ODDC Conformance. Your certificate and ENVELO agent credentials are active.',
   revoked:      'This application has been suspended. Contact info@sentinelauthority.org for remediation steps.',
