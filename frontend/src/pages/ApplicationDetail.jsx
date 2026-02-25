@@ -259,7 +259,7 @@ function ApplicationDetail() {
             {app.state === 'pending' && <button onClick={() => showEmailPreview('under_review', 'Begin Review')} disabled={previewLoading} style={ACTION_BTN(styles.accentAmber)}>Begin Review</button>}
             {app.state === 'pending' && <button onClick={() => showEmailPreview('approved', 'Skip to Approved')} disabled={previewLoading} style={{...ACTION_BTN(styles.textTertiary), fontSize: '10px', opacity: 0.6}}>Skip Review</button>}
             {(app.state === 'under_review' || app.state === 'approved') && <button onClick={() => navigate(`/applications/${id}/pre-review`)} style={ACTION_BTN(styles.purpleBright, true)}>Pre-CAT-72 Review</button>}
-            {['under_review','approved','testing','conformant'].includes(app.state) && <button onClick={() => showEmailPreview('suspended', 'Suspend Application')} style={ACTION_BTN(styles.accentRed)}>Suspend</button>}
+            {['under_review','approved','testing','conformant','failed','test_failed'].includes(app.state) && <button onClick={() => showEmailPreview('suspended', 'Suspend Application')} style={ACTION_BTN(styles.accentRed)}>Suspend</button>}
             {(app.state === 'suspended' || app.state === 'revoked') && <button onClick={handleReinstate} style={ACTION_BTN(styles.accentGreen)}>Reinstate</button>}
             {app.state === 'expired' && <button onClick={handleReinstate} style={ACTION_BTN(styles.purpleBright)}>Re-open</button>}
             {['pending','suspended','rejected'].includes(app.state) && <button onClick={handleDelete} style={ACTION_BTN(styles.accentRed)}>Delete</button>}
