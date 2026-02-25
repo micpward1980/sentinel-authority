@@ -261,6 +261,7 @@ async def update_application_state(
     # Valid state transitions
     VALID_TRANSITIONS = {
         "pending": ["approved", "rejected", "suspended"],
+        "under_review": ["approved", "testing", "suspended"],
         "approved": ["testing", "suspended"],
         "testing": ["conformant", "suspended"],
         "conformant": ["suspended", "expired"],
