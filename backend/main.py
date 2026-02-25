@@ -325,6 +325,26 @@ app.add_middleware(
 # API Routes
 app.include_router(chat_router)
 app.include_router(content_router)
+# ── v1 canonical routes ───────────────────────────────────────────────────────
+app.include_router(auth.router, prefix="/api/v1/auth", tags=["Authentication"])
+app.include_router(session_routes.router, prefix="/api/v1/auth", tags=["Session Management"])
+app.include_router(dashboard.router, prefix="/api/v1/dashboard", tags=["Dashboard"])
+app.include_router(applicants.router, prefix="/api/v1/applications", tags=["Applicant Portal"])
+app.include_router(cat72.router, prefix="/api/v1/cat72", tags=["CAT-72 Console"])
+app.include_router(certificates.router, prefix="/api/v1/certificates", tags=["Certification Registry"])
+app.include_router(verification.router, prefix="/api/v1/verify", tags=["Public Verification"])
+app.include_router(licensees.router, prefix="/api/v1/licensees", tags=["Licensee Portal"])
+app.include_router(envelo.router, prefix="/api/v1/envelo", tags=["ENVELO Interlock"])
+app.include_router(envelo_boundaries.router, prefix="/api/v1/envelo/boundaries", tags=["ENVELO Boundaries"])
+app.include_router(apikeys.router, prefix="/api/v1/apikeys", tags=["API Keys"])
+app.include_router(registry.router, prefix="/api/v1/registry", tags=["Registry"])
+app.include_router(users.router, prefix="/api/v1/users", tags=["User Management"])
+app.include_router(documents.router, prefix="/api/v1/documents", tags=["Documents"])
+app.include_router(deploy.router, prefix="/api/v1", tags=["One-Command Deploy"])
+app.include_router(audit_routes.router, prefix="/api/v1/audit", tags=["Audit Log"])
+app.include_router(ai_review.router, prefix="/api/v1", tags=["AI Review"])
+
+# ── Legacy unversioned routes (backward compat — deprecated) ──────────────────
 app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
 app.include_router(session_routes.router, prefix="/api/auth", tags=["Session Management"])
 app.include_router(dashboard.router, prefix="/api/dashboard", tags=["Dashboard"])
