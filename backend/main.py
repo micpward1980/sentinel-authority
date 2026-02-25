@@ -367,6 +367,25 @@ app.include_router(ai_review.router, prefix="/api", tags=["AI Review"])
 
 
 
+
+# ── Global API rate limit: 200 req/min per IP ─────────────────────────────────
+import time
+from collections import defaultdict
+_global_rate: dict = defaultdict(list)
+
+@app.middleware("http")
+async def global_rate_limit(request, call_next):
+    if request.url.path.startswith("/api/"):
+        ip = request.client.host if request.client else "unknown"
+        now = time.time()
+        hits = [t for t in _global_rate[ip] if now - t < 60]
+        if len(hits) >= 200:
+            from fastapi.responses import JSONResponse
+            return JSONResponse(status_code=429, content={"detail": "Rate limit exceeded: 200 requests/minute"})
+        hits.append(now)
+        _global_rate[ip] = hits
+    return await call_next(request)
+
 @app.middleware("http")
 async def deprecation_header(request, call_next):
     response = await call_next(request)
