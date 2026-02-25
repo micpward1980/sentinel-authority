@@ -111,6 +111,7 @@ class Application(Base):
     facility_location = Column(String(255))
     notes = Column(Text)
     review_checklist = Column(JSON, nullable=True)
+    pre_review_results = Column(JSON, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     applicant = relationship("User", back_populates="applications")
     org = relationship("Organization", back_populates="applications")
