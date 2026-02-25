@@ -19,7 +19,7 @@ function ResourcesPage() {
   const handleDownload = async (docId, title) => {
     const token = localStorage.getItem("token");
     try {
-      window.open('https://api.sentinelauthority.org/api/documents/' + docId + '/download', '_blank');
+      api.get('/api/documents/' + docId + '/download', { responseType: 'blob' }).then(res => { const url = URL.createObjectURL(new Blob([res.data], {type: 'application/pdf'})); Object.assign(document.createElement('a'), { href: url, download: docId + '.pdf' }).click(); URL.revokeObjectURL(url); }).catch(() => toast.show('Download failed', 'error'));
     } catch (err) {
       console.error('Download error:', err);
     }
