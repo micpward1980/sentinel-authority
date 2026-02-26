@@ -194,8 +194,8 @@ async def get_boundary_config(
     application = app_result.scalar_one_or_none()
     
     # Build boundary config from stored data
-    odd_spec = cert.odd_specification or application.odd_specification or {}
-    envelope_def = cert.envelope_definition or application.envelope_definition or {}
+    odd_spec = cert.odd_specification or (application.odd_specification if application else None) or {}
+    envelope_def = cert.envelope_definition or (application.envelope_definition if application else None) or {}
     
     # Parse boundaries from envelope definition
     # The envelope_definition JSON should have structured boundary data
