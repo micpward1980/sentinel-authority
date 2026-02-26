@@ -248,11 +248,12 @@ class EnveloAgent:
         try:
             self.client.post(f"/api/envelo/sessions/{{self.session_id}}/end", json={{
                 "ended_at": datetime.now(timezone.utc).isoformat(),
-                "final_stats": {{"pass_count": self.stats["pass"], "block_count": self.stats["block"]}},
+                "final_stats": {{"pass_count": self.stats.get("pass",0), "block_count": self.stats.get("block",0)}},
             }})
         except Exception: pass
         self.client.close()
-        log.info(f"Done. {{self.stats['pass']}} passed, {{self.stats['block']}} blocked.")
+        p, b = self.stats["pass"], self.stats["block"]
+        log.info(f"Done. {{p}} passed, {{b}} blocked.")
 
     def _cleanup(self):
         """Disable auto-restart when key is revoked."""
@@ -331,7 +332,7 @@ class EnveloAgent:
         try:
             res = self.client.post("/api/envelo/telemetry", json={{
                 "certificate_id": CERTIFICATE, "session_id": self.session_id,
-                "records": batch, "stats": {{"pass_count": self.stats["pass"], "block_count": self.stats["block"]}},
+                "records": batch, "stats": {{"pass_count": self.stats.get("pass",0), "block_count": self.stats.get("block",0)}},
             }})
             if res.status_code == 401:
                 log.warning("API key revoked - shutting down")
