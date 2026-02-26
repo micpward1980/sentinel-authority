@@ -71,7 +71,7 @@ async def generate_new_key(
         certificate_id=data.certificate_id,
         user_id=user_id,
         name=data.name,
-        scope=scope,
+        scope=data.scope,
         is_active=True
     )
     
