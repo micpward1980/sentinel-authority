@@ -303,7 +303,7 @@ async def update_application_state(
                     APIKey.is_active == True
                 )
             )
-            if not existing.scalar_one_or_none():
+            if not existing.scalars().first():
                 random_part = secrets.token_hex(20)
                 api_key_raw = f"sa_live_{random_part}"
                 key_hash = hashlib.sha256(api_key_raw.encode()).hexdigest()

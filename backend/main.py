@@ -1,3 +1,4 @@
+from app.api.routes.surveillance import router as surveillance_router
 import time
 from app.api.routes import ai_review
 """
@@ -247,11 +248,26 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.warning(f"CAT-72 auto-evaluator failed to start: {e}")
 
+
+    # Start surveillance engine
+    from app.surveillance import start_surveillance
+    from app.core.database import AsyncSessionLocal
+    start_surveillance(AsyncSessionLocal)
+    logger.info("Surveillance engine started")
+
+    # Start surveillance engine
+    from app.surveillance import start_surveillance
+    from app.core.database import AsyncSessionLocal
+    start_surveillance(AsyncSessionLocal)
+    logger.info("Surveillance engine started")
+
     yield
     logger.info("Shutting down...")
 
 
 limiter = Limiter(key_func=get_remote_address)
+
+app.include_router(surveillance_router, prefix="/api/surveillance", tags=["Surveillance"])
 
 OPENAPI_TAGS = [
     {"name": "System", "description": "Health checks and service info"},
