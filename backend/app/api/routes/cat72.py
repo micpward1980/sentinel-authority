@@ -2971,6 +2971,7 @@ async def manual_evaluate(
 ):
     """Debug: manually run the auto-evaluator logic for one test."""
     from app.models.models import EnveloSession, Certificate
+    from datetime import datetime as dt
 
     result = await db.execute(select(CAT72Test).where(CAT72Test.test_id == test_id))
     test = result.scalar_one_or_none()
@@ -2980,49 +2981,73 @@ async def manual_evaluate(
     app_result = await db.execute(select(Application).where(Application.id == test.application_id))
     application = app_result.scalar_one_or_none()
 
-    # Try all three session matching strategies
     strategies = {}
+    matched_sessions = []
 
-    # 1. By test_id FK
+    # Strategy 1: By test_id FK
     r1 = await db.execute(select(EnveloSession).where(EnveloSession.test_id == test.id))
     s1 = r1.scalars().all()
-    strategies["by_test_id"] = len(s1)
+    strategies["by_test_fk"] = len(s1)
+    if s1:
+        matched_sessions = s1
 
-    # 2. By org+system
-    if application:
+    # Strategy 2: By org+system
+    if not matched_sessions and application:
         r2 = await db.execute(select(EnveloSession).where(
             EnveloSession.organization_name == application.organization_name,
             EnveloSession.system_name == application.system_name,
-            EnveloSession.status == "active",
         ))
         s2 = r2.scalars().all()
         strategies["by_org_system"] = len(s2)
+        if s2:
+            matched_sessions = s2
 
-    # 3. By certificate
-    cert_r = await db.execute(select(Certificate).where(Certificate.application_id == application.id))
-    cert = cert_r.scalar_one_or_none()
-    s3 = []
-    if cert:
+    # Strategy 3: By certificate_id
+    cert = None
+    if application:
+        cert_r = await db.execute(select(Certificate).where(Certificate.application_id == application.id))
+        cert = cert_r.scalars().first()
+    if not matched_sessions and cert:
         r3 = await db.execute(select(EnveloSession).where(
-            EnveloSession.certificate_id == cert.id,
-            EnveloSession.status == "active",
+            EnveloSession.certificate_id == str(cert.id),
         ))
         s3 = r3.scalars().all()
-        strategies["by_cert_id"] = len(s3)
+        strategies["by_cert_id_str"] = len(s3)
+        if s3:
+            matched_sessions = s3
 
-    # Use whatever matched
-    all_sessions = s1 or s2 if application else [] or s3
-    total_pass = sum(s.pass_count or 0 for s in (s1 or s3))
-    total_block = sum(s.block_count or 0 for s in (s1 or s3))
+    # Strategy 4: By cert number string match
+    if not matched_sessions and cert:
+        r4 = await db.execute(select(EnveloSession).where(
+            EnveloSession.certificate_id == cert.certificate_number,
+        ))
+        s4 = r4.scalars().all()
+        strategies["by_cert_number"] = len(s4)
+        if s4:
+            matched_sessions = s4
+
+    total_pass = sum(s.pass_count or 0 for s in matched_sessions)
+    total_block = sum(s.block_count or 0 for s in matched_sessions)
+
+    elapsed = 0.0
+    if test.started_at:
+        elapsed = (dt.utcnow() - test.started_at).total_seconds() / 3600
 
     return {
         "test_id": test.test_id,
         "test_state": test.state,
+        "test_db_id": test.id,
+        "application_id": application.id if application else None,
+        "app_org": application.organization_name if application else None,
+        "app_system": application.system_name if application else None,
         "strategies": strategies,
-        "cert_id": cert.id if cert else None,
+        "matched_sessions": len(matched_sessions),
+        "session_details": [{"sid": s.session_id[:8], "cert": s.certificate_id, "org": s.organization_name, "sys": s.system_name, "pass": s.pass_count, "block": s.block_count, "status": s.status} for s in matched_sessions],
+        "cert_db_id": cert.id if cert else None,
+        "cert_number": cert.certificate_number if cert else None,
         "cert_state": cert.state if cert else None,
         "total_pass": total_pass,
         "total_block": total_block,
         "total_actions": total_pass + total_block,
-        "elapsed_hours": (datetime.utcnow() - test.started_at).total_seconds() / 3600 if test.started_at else 0,
+        "elapsed_hours": round(elapsed, 4),
     }
