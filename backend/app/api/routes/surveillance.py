@@ -9,7 +9,7 @@ Mount in main.py:
     app.include_router(surveillance_router, prefix="/api/surveillance", tags=["Surveillance"])
 """
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends, HTTPException, Query
 from app.services.audit_service import write_audit_log
 from app.core.database import get_db
 from app.core.security import get_current_user, require_role
