@@ -260,7 +260,7 @@ function ApplicationDetail() {
               <button onClick={() => showEmailPreview('approved', 'Approve')} disabled={previewLoading} style={ACTION_BTN(styles.accentGreen, true)}>Approve & Push Key</button>
             )}
             {app.state === 'observe' && (
-              <button onClick={() => showEmailPreview('bounded', 'Approve Boundaries')} disabled={previewLoading} style={ACTION_BTN(styles.accentGreen, true)}>Approve Boundaries → Begin CAT-72</button>
+              <button onClick={() => navigate(`/applications/${id}/pre-review`)} disabled={previewLoading} style={ACTION_BTN(styles.accentGreen, true)}>Run Pre-CAT-72 Audit</button>
             )}
             {['under_review', 'approved', 'observe', 'bounded', 'conformant'].includes(app.state) && (
               <button onClick={() => showEmailPreview('suspended', 'Suspend Application')} style={ACTION_BTN(styles.accentRed)}>Suspend</button>
@@ -464,7 +464,7 @@ function ApplicationDetail() {
             {isAdmin && app.state === 'observe' && (
               <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
                 <button
-                  onClick={() => showEmailPreview('bounded', 'Approve Boundaries')}
+                  onClick={() => navigate(`/applications/${id}/pre-review`)}
                   disabled={previewLoading}
                   style={{ flex: 1, padding: '12px', background: 'transparent', border: `1px solid ${styles.accentGreen}`, color: styles.accentGreen, fontFamily: styles.mono, fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer', borderRadius: '6px' }}>
                   ✓ Approve Boundaries — Begin CAT-72

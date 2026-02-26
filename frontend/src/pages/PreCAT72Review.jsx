@@ -594,11 +594,11 @@ export default function PreCAT72Review() {
 
       // Advance state if approved
       if (decision === "approve") {
-        await fetch(`${apiBase}/api/applications/${id}/state?new_state=testing`, {
+        await fetch(`${apiBase}/api/applications/${id}/state?new_state=bounded`, {
           method: "PATCH",
           headers: { Authorization: `Bearer ${token}` },
         });
-        navigate(`/cat72`);
+        navigate(`/applications/${id}`);
       } else {
         navigate(`/applications/${id}`);
       }
