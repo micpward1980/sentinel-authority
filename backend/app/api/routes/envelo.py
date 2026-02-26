@@ -925,14 +925,28 @@ async def report_specs(
     """
     from app.models.models import Application, CAT72Test
     
-    # Find the application linked to this API key
-    app_result = await db.execute(
-        select(Application).where(
-            Application.applicant_id == api_key.user_id,
-            Application.state.in_(["approved", "bounded", "testing"])
-        ).order_by(Application.created_at.desc())
-    )
-    application = app_result.scalars().first()
+    # Find the application linked to this API key (via certificate)
+    application = None
+    if api_key.certificate_id:
+        cert_result = await db.execute(
+            select(Certificate).where(Certificate.id == api_key.certificate_id)
+        )
+        cert = cert_result.scalar_one_or_none()
+        if cert and cert.application_id:
+            app_result = await db.execute(
+                select(Application).where(Application.id == cert.application_id)
+            )
+            application = app_result.scalar_one_or_none()
+    
+    # Fallback: try user_id match
+    if not application:
+        app_result = await db.execute(
+            select(Application).where(
+                Application.applicant_id == api_key.user_id,
+                Application.state.in_(["approved", "bounded", "testing"])
+            ).order_by(Application.created_at.desc())
+        )
+        application = app_result.scalars().first()
     
     if not application:
         raise HTTPException(status_code=404, detail="No active application found for this API key")
