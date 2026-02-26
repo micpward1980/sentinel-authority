@@ -158,7 +158,7 @@ async def get_boundary_config(
             cert_result = await db.execute(
                 select(Certificate).join(Application).where(
                     Application.applicant_id == user.id,
-                    Certificate.state.in_([
+                    Certificate.state.in_(["active", 
                         "conformant",
                         "observe",
                         CertificationState.BOUNDED
