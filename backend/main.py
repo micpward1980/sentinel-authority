@@ -192,6 +192,7 @@ async def lifespan(app: FastAPI):
     schema_migrations = [
         "ALTER TABLE envelo_sessions ADD COLUMN session_type VARCHAR(20) DEFAULT 'production'",
         "ALTER TABLE envelo_sessions ADD COLUMN is_demo BOOLEAN DEFAULT FALSE",
+        "ALTER TABLE envelo_sessions ADD COLUMN metadata_json JSON DEFAULT NULL",
         "ALTER TABLE envelo_sessions ADD COLUMN organization_name VARCHAR(255)",
         "ALTER TABLE envelo_sessions ADD COLUMN system_name VARCHAR(255)",
         "ALTER TABLE certificates ADD COLUMN is_demo BOOLEAN DEFAULT FALSE",

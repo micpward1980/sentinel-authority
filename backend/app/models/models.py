@@ -194,6 +194,7 @@ class Certificate(Base):
     organization_name = Column(String(255))
     system_name = Column(String(255))
     is_demo = Column(Boolean, default=False)
+    metadata_json = Column(JSON, nullable=True, default=dict)
     system_version = Column(String(50))
     odd_specification = Column(JSON)
     envelope_definition = Column(JSON)
@@ -313,6 +314,7 @@ class EnveloSession(Base):
     organization_name = Column(String(255))
     system_name = Column(String(255))
     is_demo = Column(Boolean, default=False)
+    metadata_json = Column(JSON, nullable=True, default=dict)
     
     certificate = relationship("Certificate", backref="envelo_sessions")
     api_key = relationship("APIKey", backref="sessions")

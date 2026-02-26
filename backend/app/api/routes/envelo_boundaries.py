@@ -6,6 +6,7 @@ Serves approved boundary configurations to agents at startup
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from sqlalchemy.orm.attributes import flag_modified
 from pydantic import BaseModel
 from typing import List, Dict, Any, Optional
 from datetime import datetime
@@ -332,3 +333,55 @@ async def update_boundary_config(
     await db.commit()
     
     return {"message": "Boundary configuration updated", "certificate_number": certificate_number}
+
+
+# ============================================
+# DISCOVERED BOUNDARIES (auto-discovery upload)
+# ============================================
+
+class DiscoveredEnvelope(BaseModel):
+    session_id: str
+    envelope_definition: Dict[str, Any]
+
+
+@router.post("/discovered", summary="Upload auto-discovered envelope")
+async def upload_discovered_boundaries(
+    data: DiscoveredEnvelope,
+    db: AsyncSession = Depends(get_db),
+    api_key: APIKey = Depends(get_api_key_from_header)
+):
+    """
+    Receives the auto-discovered envelope definition from an ENVELO agent.
+    Stores it on the session record for audit and review.
+    """
+    from app.models.models import EnveloSession
+
+    result = await db.execute(
+        select(EnveloSession).where(
+            EnveloSession.session_id == data.session_id,
+            EnveloSession.api_key_id == api_key.id,
+            EnveloSession.status == "active"
+        )
+    )
+    session = result.scalar_one_or_none()
+
+    if not session:
+        raise HTTPException(status_code=404, detail="Active session not found")
+
+    # Store envelope on session metadata
+    if not session.metadata_json:
+        session.metadata_json = {}
+    session.metadata_json["discovered_envelope"] = data.envelope_definition
+    session.metadata_json["envelope_discovered_at"] = datetime.utcnow().isoformat()
+    flag_modified(session, "metadata_json")
+
+    await db.commit()
+
+    return {
+        "status": "received",
+        "session_id": data.session_id,
+        "boundaries_count": len(data.envelope_definition.get("boundaries", {}).get("numeric", []))
+            + len(data.envelope_definition.get("boundaries", {}).get("categorical", []))
+            + len(data.envelope_definition.get("boundaries", {}).get("geographic", []))
+            + len(data.envelope_definition.get("boundaries", {}).get("temporal", []))
+    }
