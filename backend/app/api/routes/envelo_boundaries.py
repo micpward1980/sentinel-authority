@@ -161,7 +161,7 @@ async def get_boundary_config(
                     Certificate.state.in_(["active", 
                         "conformant",
                         "observe",
-                        CertificationState.BOUNDED
+                        "bounded"
                     ])
                 ).order_by(Certificate.issued_at.desc())
             )
@@ -245,7 +245,7 @@ async def get_test_boundary_config(
             Application.applicant_id == user.id,
             Application.state.in_([
                 "observe",
-                CertificationState.BOUNDED,
+                "bounded",
                 "approved"  # Add if you have this state
             ])
         ).order_by(Application.submitted_at.desc())

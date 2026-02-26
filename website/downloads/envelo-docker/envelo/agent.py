@@ -533,7 +533,7 @@ class EnveloAgent:
             with open(cache_path, "w") as f:
                 json.dump({
                     "cached_at": datetime.utcnow().isoformat() + "Z",
-                    "certificate_number": self.config.certificate_number,
+                    "certificate_id": self.config.certificate_number,
                     "config": config
                 }, f)
             self.logger.debug(f"Boundaries cached to {cache_path}")
@@ -585,7 +585,7 @@ class EnveloAgent:
                 headers={"Authorization": f"Bearer {self.config.api_key}"},
                 json={
                     "session_id": self._session_id,
-                    "certificate_number": self.config.certificate_number,
+                    "certificate_id": self.config.certificate_number,
                     "started_at": datetime.utcnow().isoformat() + "Z",
                     "agent_version": "1.0.0",
                     "config_hash": self.config._config_hash,
@@ -733,7 +733,7 @@ class EnveloAgent:
                 f"{self.config.api_endpoint}/api/envelo/telemetry",
                 headers={"Authorization": f"Bearer {self.config.api_key}"},
                 json={
-                    "certificate_number": self.config.certificate_number,
+                    "certificate_id": self.config.certificate_number,
                     "session_id": self._session_id,
                     "records": batch
                 },
