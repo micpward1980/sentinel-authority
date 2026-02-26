@@ -95,7 +95,7 @@ function stateColor(state) {
   if (state === 'conformant') return styles.accentGreen;
   if (state === 'failed' || state === 'test_failed') return styles.accentRed;
   if (state === 'revoked' || state === 'suspended') return styles.accentRed;
-  if (state === 'testing' || state === 'approved') return styles.purpleBright;
+  if (state === 'testing' || state === 'approved' || state === 'observe' || state === 'bounded') return styles.purpleBright;
   return styles.accentAmber;
 }
 
@@ -129,7 +129,8 @@ const FILTERS = [
   { key: 'pending',      label: 'Pending'    },
   { key: 'under_review', label: 'Review'     },
   { key: 'approved',     label: 'Approved'   },
-  { key: 'testing',      label: 'Testing'    },
+  { key: 'observe',     label: 'Observe'    },
+  { key: 'bounded',     label: 'CAT-72'     },
   { key: 'conformant',   label: 'Conformant' },
   { key: 'failed',       label: 'Failed'     },
   { key: 'revoked',      label: 'Suspended'  },
@@ -335,11 +336,11 @@ function ApplicationsList() {
                         {app.state === 'pending' && <button onClick={() => handleQuickAdvance(app.id, 'under_review', `Begin review for ${app.system_name}`)} style={ACTION_BTN(styles.accentAmber)}>Review</button>}
                         {(app.state === 'pending' || app.state === 'under_review') && <button onClick={() => handleQuickAdvance(app.id, 'approved', `Approve ${app.system_name}`)} style={ACTION_BTN(styles.accentGreen)}>Approve</button>}
                         {app.state === 'approved' && <Link to={`/applications/${app.id}`} style={{ ...ACTION_BTN(styles.purpleBright), textDecoration: 'none' }}>Schedule Test</Link>}
-                        {app.state === 'testing' && <Link to="/cat72" style={{ ...ACTION_BTN(styles.purpleBright), textDecoration: 'none' }}>View Test</Link>}
+                        {app.state === 'bounded' && <Link to="/cat72" style={{ ...ACTION_BTN(styles.purpleBright), textDecoration: 'none' }}>View Test</Link>}
                         {app.state === 'conformant' && <span style={{ fontFamily: styles.mono, fontSize: '9px', color: styles.accentGreen }}>✓ Certified</span>}
-                        {['pending', 'under_review', 'approved', 'testing', 'conformant', 'failed', 'test_failed'].includes(app.state) && <button onClick={() => handleQuickAdvance(app.id, 'suspended', `Suspend ${app.system_name}`)} style={ACTION_BTN(styles.accentRed)}>Suspend</button>}
+                        {['pending', 'under_review', 'approved', 'observe', 'bounded', 'conformant', 'failed', 'test_failed'].includes(app.state) && <button onClick={() => handleQuickAdvance(app.id, 'suspended', `Suspend ${app.system_name}`)} style={ACTION_BTN(styles.accentRed)}>Suspend</button>}
                         {(app.state === 'suspended' || app.state === 'revoked') && <button onClick={() => handleQuickAdvance(app.id, 'pending', `Reinstate ${app.system_name}`)} style={ACTION_BTN(styles.accentGreen)}>Reinstate</button>}
-                        {(app.state === 'failed' || app.state === 'test_failed') && <button onClick={() => handleQuickAdvance(app.id, 'testing', `Retry CAT-72 for ${app.system_name}`)} style={ACTION_BTN(styles.accentAmber)}>Retry</button>}
+                        {(app.state === 'failed' || app.state === 'test_failed') && <button onClick={() => handleQuickAdvance(app.id, 'bounded', `Retry CAT-72 for ${app.system_name}`)} style={ACTION_BTN(styles.accentAmber)}>Retry</button>}
                       </div>
                     </td>
                   )}

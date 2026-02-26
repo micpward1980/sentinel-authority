@@ -8,7 +8,6 @@ import { useAuth } from '../context/AuthContext';
 import { useConfirm } from '../context/ConfirmContext';
 import { useToast } from '../context/ToastContext';
 import Panel from '../components/Panel';
-import BoundaryEditor from '../components/BoundaryEditor';
 import CopyableId from '../components/CopyableId';
 import ExportBundle from '../components/ExportBundle';
 
@@ -22,7 +21,8 @@ function fmtUTC(ts) {
 function stateColor(state) {
   if (state === 'conformant') return styles.accentGreen;
   if (state === 'revoked' || state === 'suspended') return styles.accentRed;
-  if (state === 'testing' || state === 'approved') return styles.purpleBright;
+  if (state === 'observe' || state === 'bounded' || state === 'approved') return styles.purpleBright;
+  if (state === 'under_review') return styles.accentAmber;
   return styles.accentAmber;
 }
 
@@ -42,22 +42,27 @@ const ACTION_BTN = (color, solid = false) => ({
   textTransform: 'uppercase', cursor: 'pointer',
 });
 
+// ─── Pipeline — matches backend CertificationState enum ──────────────────────
+
 const PIPELINE_STAGES = [
-  { key: 'pending',      label: 'Submitted',     icon: '1' },
-  { key: 'under_review', label: 'Under Review',  icon: '2' },
-  { key: 'approved',     label: 'Pre-CAT-72',     icon: '3' },
-  { key: 'testing',      label: 'CAT-72 Testing', icon: '4' },
-  { key: 'conformant',   label: 'Conformant',    icon: '✓' },
+  { key: 'pending',      label: 'Submitted',           icon: '1' },
+  { key: 'under_review', label: 'Under Review',        icon: '2' },
+  { key: 'approved',     label: 'Approved',             icon: '3' },
+  { key: 'observe',      label: 'Interlock Observing',  icon: '4' },
+  { key: 'bounded',      label: 'CAT-72 Testing',       icon: '5' },
+  { key: 'conformant',   label: 'Conformant',           icon: '✓' },
 ];
 
 const NEXT_STEP = {
   pending:      'Your application is queued for review by the Sentinel Authority team.',
-  under_review: 'Our team is evaluating your ODD specification and boundary definitions.',
-  approved:     'Pre-CAT-72 audit review required. Run the ODDC Audit Control Review to authorize CAT-72 testing.',
-  testing:      'CAT-72 continuous conformance test is in progress (72-hour minimum).',
-  conformant:   'Your system has achieved ODDC Conformance. Your certificate and ENVELO agent credentials are active.',
-  revoked:      'This application has been suspended. Contact info@sentinelauthority.org for remediation steps.',
-  suspended:    'This application has been suspended. Contact info@sentinelauthority.org for remediation steps.',
+  under_review: 'Our team is evaluating your system information and preparing approval.',
+  approved:     'API key provisioned and sent. Waiting for customer to deploy the ENVELO Interlock.',
+  observe:      'ENVELO Interlock is deployed and observing the system. Auto-discovering operational boundaries from live telemetry.',
+  bounded:      'Boundaries approved. CAT-72 conformance test in progress — 72 cumulative hours of enforced operation.',
+  conformant:   'Your system has achieved ODDC Conformance. Certificate and ENVELO Interlock credentials are active.',
+  suspended:    'This application has been suspended. Contact conformance@sentinelauthority.org for remediation steps.',
+  revoked:      'This application has been revoked. Contact conformance@sentinelauthority.org for remediation steps.',
+  expired:      'This certification has expired. Submit a new application or contact conformance@sentinelauthority.org.',
 };
 
 // ─── Email Preview Modal ──────────────────────────────────────────────────────
@@ -107,8 +112,6 @@ function ApplicationDetail() {
   const navigate = useNavigate();
   const qc = useQueryClient();
 
-  const [scheduling, setScheduling] = useState(false);
-  const [testCreated, setTestCreated] = useState(null);
   const [newComment, setNewComment] = useState('');
   const [isInternal, setIsInternal] = useState(false);
   const [postingComment, setPostingComment] = useState(false);
@@ -165,24 +168,15 @@ function ApplicationDetail() {
     if (!await confirm({ title: 'Change Status', message: `Change status to ${newState.toUpperCase()}?` })) return;
     try {
       await api.patch(`/api/applications/${id}/state?new_state=${newState}`);
+      // Auto-provision key on approval
       if (newState === 'approved') {
         try {
           await api.post('/api/apikeys/admin/provision', null, { params: { application_id: id, send_email: true } });
+          toast.show('Approved — API key generated and emailed to customer', 'success');
         } catch { /* non-fatal */ }
       }
       invalidate();
     } catch (err) { toast.show('Failed: ' + (err.response?.data?.detail || err.message), 'error'); }
-  };
-
-  const handleScheduleTest = async () => {
-    if (!await confirm({ title: 'Schedule Test', message: 'Schedule a CAT-72 test? It will need to be started manually.' })) return;
-    setScheduling(true);
-    try {
-      const res = await api.post('/api/cat72/tests', { application_id: parseInt(id) });
-      setTestCreated(res.data);
-      toast.show(`CAT-72 Test created: ${res.data.test_id} — Go to CAT-72 Console to start.`, 'success');
-    } catch (err) { toast.show('Failed: ' + (err.response?.data?.detail || err.message), 'error'); }
-    setScheduling(false);
   };
 
   const handleDelete = async () => {
@@ -256,16 +250,34 @@ function ApplicationDetail() {
         </Link>
         {isAdmin && (
           <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-            {app.state === 'pending' && <button onClick={() => showEmailPreview('under_review', 'Begin Review')} disabled={previewLoading} style={ACTION_BTN(styles.accentAmber)}>Begin Review</button>}
-            {app.state === 'pending' && <button onClick={() => showEmailPreview('approved', 'Skip to Approved')} disabled={previewLoading} style={{...ACTION_BTN(styles.textTertiary), fontSize: '10px', opacity: 0.6}}>Skip Review</button>}
-            {(app.state === 'under_review' || app.state === 'approved') && <button onClick={() => navigate(`/applications/${id}/pre-review`)} style={ACTION_BTN(styles.purpleBright, true)}>Pre-CAT-72 Review</button>}
-            {['under_review','approved','testing','conformant','failed','test_failed'].includes(app.state) && <button onClick={() => showEmailPreview('suspended', 'Suspend Application')} style={ACTION_BTN(styles.accentRed)}>Suspend</button>}
-            {(app.state === 'suspended' || app.state === 'revoked') && <button onClick={handleReinstate} style={ACTION_BTN(styles.accentGreen)}>Reinstate</button>}
-            {app.state === 'expired' && <button onClick={handleReinstate} style={ACTION_BTN(styles.purpleBright)}>Re-open</button>}
-            {['pending','suspended','rejected'].includes(app.state) && <button onClick={handleDelete} style={ACTION_BTN(styles.accentRed)}>Delete</button>}
+            {app.state === 'pending' && (
+              <button onClick={() => showEmailPreview('under_review', 'Begin Review')} disabled={previewLoading} style={ACTION_BTN(styles.accentAmber)}>Begin Review</button>
+            )}
+            {app.state === 'pending' && (
+              <button onClick={() => showEmailPreview('approved', 'Skip to Approved')} disabled={previewLoading} style={{ ...ACTION_BTN(styles.textTertiary), fontSize: '10px', opacity: 0.6 }}>Skip Review</button>
+            )}
+            {app.state === 'under_review' && (
+              <button onClick={() => showEmailPreview('approved', 'Approve')} disabled={previewLoading} style={ACTION_BTN(styles.accentGreen, true)}>Approve & Push Key</button>
+            )}
+            {app.state === 'observe' && (
+              <button onClick={() => showEmailPreview('bounded', 'Approve Boundaries')} disabled={previewLoading} style={ACTION_BTN(styles.accentGreen, true)}>Approve Boundaries → Begin CAT-72</button>
+            )}
+            {['under_review', 'approved', 'observe', 'bounded', 'conformant'].includes(app.state) && (
+              <button onClick={() => showEmailPreview('suspended', 'Suspend Application')} style={ACTION_BTN(styles.accentRed)}>Suspend</button>
+            )}
+            {(app.state === 'suspended' || app.state === 'revoked') && (
+              <button onClick={handleReinstate} style={ACTION_BTN(styles.accentGreen)}>Reinstate</button>
+            )}
+            {app.state === 'expired' && (
+              <button onClick={handleReinstate} style={ACTION_BTN(styles.purpleBright)}>Re-open</button>
+            )}
+            {['pending', 'suspended', 'revoked'].includes(app.state) && (
+              <button onClick={handleDelete} style={ACTION_BTN(styles.accentRed)}>Delete</button>
+            )}
           </div>
         )}
       </div>
+
       {/* Pipeline */}
       <Panel>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px', marginBottom: '20px' }}>
@@ -275,12 +287,20 @@ function ApplicationDetail() {
             const color = isComplete ? styles.accentGreen : isActive ? styles.purpleBright : styles.borderGlass;
             return (
               <React.Fragment key={stage.key}>
-                {i > 0 && <div style={{ flex: 1, height: '2px', background: isComplete ? styles.accentGreen : styles.borderGlass, margin: '0 8px' , borderRadius: 8}} />}
+                {i > 0 && <div style={{ flex: 1, height: '2px', background: isComplete ? styles.accentGreen : styles.borderGlass, margin: '0 8px', borderRadius: 8 }} />}
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', minWidth: '72px' }}>
-                  <div style={{ width: '30px', height: '30px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: styles.mono, fontSize: '11px', fontWeight: 700, background: isComplete ? 'rgba(22,135,62,0.08)' : isActive ? 'rgba(29,26,59,0.12)' : 'transparent', border: `2px solid ${color}`, color }}>
+                  <div style={{
+                    width: '30px', height: '30px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontFamily: styles.mono, fontSize: '11px', fontWeight: 700,
+                    background: isComplete ? 'rgba(22,135,62,0.08)' : isActive ? 'rgba(29,26,59,0.12)' : 'transparent',
+                    border: `2px solid ${color}`, color,
+                  }}>
                     {isComplete ? '✓' : stage.icon}
                   </div>
-                  <span style={{ fontFamily: styles.mono, fontSize: '9px', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: isActive ? styles.purpleBright : isComplete ? styles.accentGreen : styles.textDim, textAlign: 'center' }}>
+                  <span style={{
+                    fontFamily: styles.mono, fontSize: '9px', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase',
+                    color: isActive ? styles.purpleBright : isComplete ? styles.accentGreen : styles.textDim, textAlign: 'center',
+                  }}>
                     {stage.label}
                   </span>
                 </div>
@@ -288,28 +308,24 @@ function ApplicationDetail() {
             );
           })}
         </div>
+
         {isSuspended && (
           <div style={{ padding: '10px 14px', border: `1px solid ${styles.accentRed}20`, marginBottom: '10px' }}>
             <span style={{ color: styles.accentRed, fontFamily: styles.mono, fontSize: '11px', fontWeight: 600 }}>⚠ SUSPENDED — Pending review.</span>
           </div>
         )}
+
         <div style={{ padding: '12px 16px', border: `1px solid ${styles.borderGlass}` }}>
           <span style={{ color: styles.textSecondary, fontSize: '13px', lineHeight: 1.6 }}>{NEXT_STEP[app.state] || ''}</span>
         </div>
       </Panel>
 
-      {/* Test created banner */}
-      {testCreated && (
-        <div style={{ padding: '14px 16px', border: `1px solid ${styles.accentGreen}30`, background: `${styles.accentGreen}06` }}>
-          <span style={{ color: styles.accentGreen, fontFamily: styles.mono, fontSize: '12px', fontWeight: 600 }}>
-            Test Created: {testCreated.test_id} — <Link to="/cat72" style={{ color: styles.purpleBright }}>Go to CAT-72 Console →</Link>
-          </span>
-        </div>
-      )}
-
       {/* Header */}
       <div>
-        <p style={{ fontFamily: styles.mono, fontSize: '10px', fontWeight: 600, letterSpacing: '0.20em', textTransform: 'uppercase', color: styles.purpleBright, marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <p style={{
+          fontFamily: styles.mono, fontSize: '10px', fontWeight: 600, letterSpacing: '0.20em', textTransform: 'uppercase',
+          color: styles.purpleBright, marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px',
+        }}>
           <CopyableId id={app.application_number} style={{ color: styles.purpleBright, fontSize: '10px' }} />
         </p>
         <h1 style={{ fontFamily: styles.serif, fontSize: 'clamp(24px, 5vw, 36px)', fontWeight: 200, margin: 0 }}>{app.system_name}</h1>
@@ -331,8 +347,11 @@ function ApplicationDetail() {
         <Panel>
           <h2 style={PANEL_LABEL}>Status</h2>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '14px', flexWrap: 'wrap' }}>
-            <span style={{ fontFamily: styles.mono, fontSize: '11px', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', padding: '3px 10px', background: `${stateColor(app.state)}10`, color: stateColor(app.state) }}>
-              {app.state}
+            <span style={{
+              fontFamily: styles.mono, fontSize: '11px', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase',
+              padding: '3px 10px', background: `${stateColor(app.state)}10`, color: stateColor(app.state),
+            }}>
+              {app.state?.replace('_', ' ')}
             </span>
             {isAdmin && (
               <select value={app.state} onChange={e => handleStateDropdown(e.target.value)}
@@ -340,8 +359,10 @@ function ApplicationDetail() {
                 <option value="pending">Pending</option>
                 <option value="under_review">Under Review</option>
                 <option value="approved">Approved</option>
-                <option value="testing">Testing</option>
+                <option value="observe">Observe</option>
+                <option value="bounded">Bounded (CAT-72)</option>
                 <option value="conformant">Conformant</option>
+                <option value="suspended">Suspended</option>
                 <option value="revoked">Revoked</option>
               </select>
             )}
@@ -352,59 +373,119 @@ function ApplicationDetail() {
         </Panel>
       </div>
 
-      {/* System Details + ODD */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px' }}>
-        <Panel>
-          <h2 style={PANEL_LABEL}>System Details</h2>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <p style={{ color: styles.textSecondary, margin: 0 }}><strong>Version:</strong> {app.system_version || '—'}</p>
-            <p style={{ color: styles.textSecondary, margin: 0 }}><strong>Manufacturer:</strong> {app.manufacturer || '—'}</p>
-            {app.facility_location && <p style={{ color: styles.textSecondary, margin: 0 }}><strong>Facility:</strong> {app.facility_location}</p>}
-            {app.preferred_test_date && <p style={{ color: styles.textSecondary, margin: 0 }}><strong>Preferred Test Date:</strong> {fmtUTC(app.preferred_test_date).substring(0, 10)}</p>}
-          </div>
-        </Panel>
-        <Panel>
-          <h2 style={PANEL_LABEL}>Safety Boundaries & Operational Limits</h2>
-          <pre style={{ color: styles.textSecondary, lineHeight: 1.7, whiteSpace: 'pre-wrap', margin: 0, fontSize: '12px', fontFamily: styles.mono, wordBreak: 'break-word' }}>
-            {typeof app.envelope_definition === 'object' ? JSON.stringify(app.envelope_definition, null, 2) : (app.envelope_definition || 'Not specified')}
-          </pre>
-        </Panel>
-      </div>
-
-      {/* ODD Specification */}
+      {/* System Details */}
       <Panel>
-        <h2 style={PANEL_LABEL}>ODD Specification</h2>
-        <p style={{ color: styles.textSecondary, lineHeight: 1.7, whiteSpace: 'pre-wrap', margin: 0 }}>
-          {typeof app.odd_specification === 'object' ? (app.odd_specification?.description || JSON.stringify(app.odd_specification, null, 2)) : app.odd_specification}
-        </p>
+        <h2 style={PANEL_LABEL}>System Details</h2>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
+          <div>
+            <p style={{ color: styles.textTertiary, fontSize: '11px', fontFamily: styles.mono, marginBottom: '4px' }}>TYPE</p>
+            <p style={{ color: styles.textPrimary, margin: 0 }}>{app.system_type || '—'}</p>
+          </div>
+          <div>
+            <p style={{ color: styles.textTertiary, fontSize: '11px', fontFamily: styles.mono, marginBottom: '4px' }}>VERSION</p>
+            <p style={{ color: styles.textPrimary, margin: 0 }}>{app.system_version || '—'}</p>
+          </div>
+          <div>
+            <p style={{ color: styles.textTertiary, fontSize: '11px', fontFamily: styles.mono, marginBottom: '4px' }}>MANUFACTURER</p>
+            <p style={{ color: styles.textPrimary, margin: 0 }}>{app.manufacturer || '—'}</p>
+          </div>
+          {app.facility_location && (
+            <div>
+              <p style={{ color: styles.textTertiary, fontSize: '11px', fontFamily: styles.mono, marginBottom: '4px' }}>FACILITY</p>
+              <p style={{ color: styles.textPrimary, margin: 0 }}>{app.facility_location}</p>
+            </div>
+          )}
+          {app.odd_specification?.deployment_type && (
+            <div>
+              <p style={{ color: styles.textTertiary, fontSize: '11px', fontFamily: styles.mono, marginBottom: '4px' }}>DEPLOYMENT</p>
+              <p style={{ color: styles.textPrimary, margin: 0 }}>
+                {app.odd_specification.deployment_type}
+                {app.odd_specification.environment ? ` — ${app.odd_specification.environment}` : ''}
+              </p>
+            </div>
+          )}
+        </div>
       </Panel>
 
-      {/* Boundary Editor */}
-      {isAdmin && (
-        <BoundaryEditor
-          applicationId={app.id}
-          initialBoundaries={app.envelope_definition || {}}
-          onSave={async (boundaries) => {
-            try {
-              await api.patch(`/api/applications/${app.id}`, { envelope_definition: boundaries });
-              toast.show('Boundaries saved', 'success');
-              invalidate();
-            } catch (e) { toast.show('Failed to save: ' + e.message, 'error'); }
-          }}
-        />
-      )}
+      {/* Detected Boundaries — only show when interlock has discovered them */}
+      {app.envelope_definition && (app.state === 'observe' || app.state === 'bounded' || app.state === 'conformant') && (() => {
+        const env = typeof app.envelope_definition === 'string' ? JSON.parse(app.envelope_definition) : app.envelope_definition;
+        const nb = env?.numeric_boundaries || [];
+        const gb = env?.geo_boundaries || env?.geographic_boundaries || [];
+        const tb = env?.time_boundaries || [];
+        const sb = env?.state_boundaries || [];
+        const hasData = nb.length > 0 || gb.length > 0 || tb.length > 0 || sb.length > 0;
+
+        if (!hasData) return null;
+
+        return (
+          <Panel accent={app.state === 'observe' ? 'amber' : undefined}>
+            <h2 style={PANEL_LABEL}>
+              {app.state === 'observe' ? 'Auto-Detected Boundaries — Pending Review' : 'Enforced Boundaries'}
+            </h2>
+
+            {app.state === 'observe' && (
+              <div style={{ padding: '10px 14px', background: 'rgba(158,110,18,0.04)', border: '1px solid rgba(158,110,18,0.15)', borderRadius: '6px', marginBottom: '16px' }}>
+                <p style={{ color: styles.accentAmber, fontSize: '12px', margin: 0 }}>
+                  ⚠ These boundaries were auto-discovered by the ENVELO Interlock during the OBSERVE phase. Review and approve to begin CAT-72.
+                </p>
+              </div>
+            )}
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(110px,1fr))', gap: '8px', textAlign: 'center', marginBottom: '16px' }}>
+              {[
+                { label: 'Numeric', count: nb.length },
+                { label: 'Geographic', count: gb.length },
+                { label: 'Time', count: tb.length },
+                { label: 'State', count: sb.length },
+              ].map(s => (
+                <div key={s.label} style={{ padding: '10px', background: 'rgba(29,26,59,0.05)', borderRadius: '6px' }}>
+                  <div style={{ fontSize: '20px', fontWeight: 500, color: styles.purpleBright }}>{s.count}</div>
+                  <div style={{ fontFamily: styles.mono, fontSize: '9px', textTransform: 'uppercase', letterSpacing: '1px', color: styles.textTertiary, marginTop: '2px' }}>{s.label}</div>
+                </div>
+              ))}
+            </div>
+
+            {nb.length > 0 && (
+              <div>
+                <p style={{ fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '8px' }}>Numeric Boundaries</p>
+                {nb.map((b, i) => (
+                  <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: `1px solid ${styles.borderSubtle}`, fontSize: '12px' }}>
+                    <span style={{ color: styles.textPrimary }}>{b.name}</span>
+                    <span style={{ fontFamily: styles.mono, color: styles.purpleBright }}>
+                      {b.min_value ?? '—'} → {b.max_value ?? '—'} {b.unit || ''}
+                      {b.tolerance ? ` (±${b.tolerance})` : ''}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {isAdmin && app.state === 'observe' && (
+              <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
+                <button
+                  onClick={() => showEmailPreview('bounded', 'Approve Boundaries')}
+                  disabled={previewLoading}
+                  style={{ flex: 1, padding: '12px', background: 'transparent', border: `1px solid ${styles.accentGreen}`, color: styles.accentGreen, fontFamily: styles.mono, fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer', borderRadius: '6px' }}>
+                  ✓ Approve Boundaries — Begin CAT-72
+                </button>
+              </div>
+            )}
+          </Panel>
+        );
+      })()}
 
       {/* State History */}
       {history.length > 0 && (
         <Panel>
           <h2 style={PANEL_LABEL}>State Change History</h2>
           <div style={{ position: 'relative', paddingLeft: '28px' }}>
-            <div style={{ position: 'absolute', left: '8px', top: '4px', bottom: '4px', width: '1px', background: styles.borderGlass , borderRadius: 8}} />
+            <div style={{ position: 'absolute', left: '8px', top: '4px', bottom: '4px', width: '1px', background: styles.borderGlass, borderRadius: 8 }} />
             {history.map((entry, i) => {
               const ns = entry.details?.new_state;
-              const color = ns === 'conformant' || ns === 'approved' ? styles.accentGreen
+              const color = ns === 'conformant' || ns === 'approved' || ns === 'bounded' ? styles.accentGreen
                 : ns === 'suspended' || ns === 'revoked' ? styles.accentRed
-                : ns === 'under_review' || ns === 'testing' ? styles.purpleBright
+                : ns === 'under_review' || ns === 'observe' ? styles.purpleBright
                 : entry.action === 'submitted' ? styles.purpleBright
                 : styles.accentAmber;
               const label = ns?.replace('_', ' ') || entry.action?.replace('_', ' ');
@@ -452,7 +533,15 @@ function ApplicationDetail() {
               </label>
             )}
             <button onClick={handlePostComment} disabled={postingComment || !newComment.trim()}
-              style={{ ...ACTION_BTN('#fff', true), background: newComment.trim() ? styles.purplePrimary : 'transparent', borderColor: newComment.trim() ? styles.purpleBright : styles.borderGlass, color: newComment.trim() ? '#fff' : styles.textTertiary, opacity: postingComment ? 0.6 : 1, cursor: newComment.trim() ? 'pointer' : 'default' , borderRadius: 8}}>
+              style={{
+                ...ACTION_BTN('#fff', true),
+                background: newComment.trim() ? styles.purplePrimary : 'transparent',
+                borderColor: newComment.trim() ? styles.purpleBright : styles.borderGlass,
+                color: newComment.trim() ? '#fff' : styles.textTertiary,
+                opacity: postingComment ? 0.6 : 1,
+                cursor: newComment.trim() ? 'pointer' : 'default',
+                borderRadius: 8,
+              }}>
               {postingComment ? 'Posting…' : 'Post Comment'}
             </button>
           </div>

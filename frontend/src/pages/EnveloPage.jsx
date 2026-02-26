@@ -1,10 +1,4 @@
-import React, { useState, useRef } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import CAT72ConsolePage from './CAT72Console';
-import ErrorBoundary from '../components/ErrorBoundary';
-import CertificatesPageEmbed from './CertificatesPage';
-import LicenseesPageEmbed from './LicenseesPage';
-import MonitoringPageEmbed from './MonitoringPage';
+import React, { useState, useEffect, useRef } from 'react';
 import { Shield, Download, RefreshCw } from 'lucide-react';
 import { api } from '../config/api';
 import { styles } from '../config/styles';
@@ -374,29 +368,31 @@ function SessionReport({ session }) {
 function EnveloAdminView() {
   const toast = useToast();
   const confirm = useConfirm();
+  const [sessions, setSessions]     = useState([]);
+  const [applications, setApplications] = useState([]);
+  const [certificates, setCertificates] = useState([]);
   const [selectedSession, setSelectedSession] = useState(null);
   const [selectedCert, setSelectedCert]       = useState(null);
-  const [activeTab, setActiveTab] = useState('queue'); // queue | monitoring | cat72 | certificates | licensees
+  const [activeTab, setActiveTab] = useState('queue'); // queue | monitoring | certified | review
   const [reviewComment, setReviewComment] = useState('');
   const [reviewingApp, setReviewingApp]   = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const { data: enveloData, isLoading: loading, refetch: reloadEnvelo } = useQuery({
-    queryKey: ['envelo-admin'],
-    queryFn: () => Promise.all([
-      api.get('/api/envelo/admin/sessions').catch(() => ({ data: { sessions: [] } })),
-      api.get('/api/applications/').catch(() => ({ data: [] })),
-      api.get('/api/certificates/').catch(() => ({ data: [] })),
-    ]).then(([sessRes, appsRes, certsRes]) => ({
-      sessions: sessRes.data.sessions || [],
-      applications: appsRes.data.applications || appsRes.data || [],
-      certificates: certsRes.data || [],
-    })),
-    refetchInterval: 30000,
-    retry: false,
-  });
-  const sessions = enveloData?.sessions || [];
-  const applications = enveloData?.applications || [];
-  const certificates = enveloData?.certificates || [];
+  const load = async () => {
+    try {
+      const [sessRes, appsRes, certsRes] = await Promise.all([
+        api.get('/api/envelo/admin/sessions').catch(() => ({ data: { sessions: [] } })),
+        api.get('/api/applications/').catch(() => ({ data: [] })),
+        api.get('/api/certificates/').catch(() => ({ data: [] })),
+      ]);
+      setSessions(sessRes.data.sessions || []);
+      setApplications(appsRes.data.applications || appsRes.data || []);
+      setCertificates(certsRes.data || []);
+    } catch (e) { console.error(e); }
+    setLoading(false);
+  };
+
+  useEffect(() => { load(); const t = setInterval(load, 30000); return () => clearInterval(t); }, []);
 
   // ── Segmented state buckets ───────────────────────────────
   const pending     = applications.filter(a => a.state === 'pending');
@@ -415,12 +411,26 @@ function EnveloAdminView() {
   const totalViolations  = sessions.reduce((a, s) => a + (s.block_count || 0), 0);
   const needsAttention   = pending.length + underReview.length;
 
+  const downloadAgentForCert = (cert) => {
+    const code = buildProductionAgent({
+      apiKey:           'YOUR_API_KEY',
+      certificateNumber: cert.certificate_number,
+      systemName:        cert.system_name || 'Unknown',
+      organizationName:  cert.organization_name || '',
+    });
+    const a = Object.assign(document.createElement('a'), {
+      href:     URL.createObjectURL(new Blob([code], { type: 'text/plain' })),
+      download: `envelo_agent_${cert.certificate_number}.py`,
+    });
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  };
+
   const beginCAT72 = async (app) => {
     if (!await confirm({ title: 'Begin CAT-72', message: `Start the 72-hour conformance test for ${app.system_name}? The interlock must be confirmed online.`, confirmLabel: 'Begin Test', danger: false })) return;
     try {
-      await api.post('/api/cat72/tests', { application_id: app.id });
+      await api.post(`/api/applications/${app.id}/begin-cat72`);
       toast.show('CAT-72 test started', 'success');
-      reloadEnvelo();
+      load();
     } catch (e) {
       toast.show('Failed: ' + (e.response?.data?.detail || e.message), 'error');
     }
@@ -429,9 +439,14 @@ function EnveloAdminView() {
   const provisionKey = async (app) => {
     if (!await confirm({ title: 'Provision API Key', message: `Generate and email API key to ${app.contact_email} for ${app.system_name}?`, confirmLabel: 'Provision Key' })) return;
     try {
-      await api.post('/api/apikeys/admin/provision', null, { params: { user_id: app.user_id, certificate_id: app.certificate_id, name: 'deployment-' + new Date().toISOString().split('T')[0], send_email: true } });
+      await api.post('/api/apikeys/admin/provision', {
+        user_id:        app.user_id,
+        certificate_id: app.certificate_id,
+        name:           'deployment-' + new Date().toISOString().split('T')[0],
+        send_email:     true,
+      });
       toast.show('Key generated and emailed to customer', 'success');
-      reloadEnvelo();
+      load();
     } catch (e) {
       toast.show('Failed: ' + (e.response?.data?.detail || e.message), 'error');
     }
@@ -444,31 +459,46 @@ function EnveloAdminView() {
   );
 
   const tabs = [
-    { id: 'queue',        label: 'Review Queue',    badge: needsAttention },
-    { id: 'monitoring',   label: 'Monitoring',       badge: activeSessions.length },
-    { id: 'cat72',        label: 'CAT-72',           badge: testing.length },
-    { id: 'certificates', label: 'Certificates',     badge: conformant.length },
-    { id: 'licensees',    label: 'Licensees' },
+    { id: 'queue',      label: 'Review Queue',  badge: needsAttention },
+    { id: 'monitoring', label: 'Live Monitoring', badge: activeSessions.length },
+    { id: 'certified',  label: 'Certified',      badge: conformant.length },
   ];
 
   return (
-    <div style={{display:"flex",flexDirection:"column",gap:"24px"}}>
-      <SectionHeader label="Admin Console" title="ENVELO Management" />
+    <div className="space-y-6">
+      <SectionHeader label="⬡ Admin Console" title="ENVELO Management" description="Certify, monitor, and manage all customer systems" />
+
+      {/* Stats row */}
+      <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))' }}>
+        {[
+          { label: 'Awaiting Review', value: needsAttention,          color: needsAttention > 0 ? styles.accentAmber : styles.textTertiary },
+          { label: 'Approved / Deploying', value: approved.length,    color: styles.purpleBright },
+          { label: 'CAT-72 Running',   value: testing.length,         color: styles.accentAmber },
+          { label: 'Live Interlocks',  value: activeSessions.length,  color: styles.accentGreen },
+          { label: 'Certified Systems',value: conformant.length,      color: styles.purpleBright },
+          { label: 'Total Violations', value: totalViolations,        color: totalViolations > 0 ? styles.accentRed : styles.accentGreen },
+        ].map(s => (
+          <Panel key={s.label}>
+            <p style={{ fontFamily: styles.mono, fontSize: '9px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '8px' }}>{s.label}</p>
+            <p style={{ fontSize: 'clamp(22px,4vw,32px)', fontWeight: 200, color: s.color }}>{s.value}</p>
+          </Panel>
+        ))}
+      </div>
 
       {/* Tabs */}
       <div style={{ display: 'flex', gap: '8px', borderBottom: `1px solid ${styles.borderGlass}`, paddingBottom: '16px', overflowX: 'auto' }}>
         {tabs.map(tab => (
           <button key={tab.id} onClick={() => setActiveTab(tab.id)} style={{
             padding: '8px 18px', borderRadius: '6px',
-            background:  activeTab === tab.id ? 'rgba(29,26,59,0.08)' : 'transparent',
-            border:      `1px solid ${activeTab === tab.id ? 'rgba(29,26,59,0.5)' : styles.borderGlass}`,
+            background:  activeTab === tab.id ? 'rgba(74,61,117,0.08)' : 'transparent',
+            border:      `1px solid ${activeTab === tab.id ? 'rgba(74,61,117,0.5)' : styles.borderGlass}`,
             color:       activeTab === tab.id ? styles.purpleBright : styles.textSecondary,
             fontFamily:  styles.mono, fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase',
             cursor: 'pointer', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: '8px',
           }}>
             {tab.label}
             {tab.badge > 0 && (
-              <span style={{ padding: '1px 6px', borderRadius: '999px', background: 'rgba(29,26,59,0.15)', color: styles.purpleBright, fontSize: '10px' }}>{tab.badge}</span>
+              <span style={{ padding: '1px 6px', borderRadius: '999px', background: 'rgba(74,61,117,0.15)', color: styles.purpleBright, fontSize: '10px' }}>{tab.badge}</span>
             )}
           </button>
         ))}
@@ -476,7 +506,7 @@ function EnveloAdminView() {
 
       {/* ── REVIEW QUEUE ── */}
       {activeTab === 'queue' && (
-        <div style={{display:"flex",flexDirection:"column",gap:"24px"}}>
+        <div className="space-y-6">
           {/* Pending */}
           {pending.length > 0 && (
             <Panel accent="amber">
@@ -494,7 +524,7 @@ function EnveloAdminView() {
                         onClick={async () => {
                           try {
                             await api.post(`/api/applications/${app.id}/begin-review`);
-                            toast.show('Review started', 'success'); reloadEnvelo();
+                            toast.show('Review started', 'success'); load();
                           } catch (e) { toast.show('Failed: ' + e.message, 'error'); }
                         }}
                         style={{ padding: '8px 16px', background: styles.purplePrimary, border: `1px solid ${styles.purpleBright}`, color: '#fff', fontFamily: styles.mono, fontSize: '11px', cursor: 'pointer', borderRadius: '6px' }}
@@ -534,7 +564,7 @@ function EnveloAdminView() {
                         { label: 'Time', count: tb.length },
                         { label: 'State', count: sb.length },
                       ].map(s => (
-                        <div key={s.label} style={{ padding: '10px', background: 'rgba(29,26,59,0.05)', borderRadius: '6px' }}>
+                        <div key={s.label} style={{ padding: '10px', background: 'rgba(74,61,117,0.05)', borderRadius: '6px' }}>
                           <div style={{ fontSize: '20px', fontWeight: 500, color: styles.purpleBright }}>{s.count}</div>
                           <div style={{ fontFamily: styles.mono, fontSize: '9px', textTransform: 'uppercase', letterSpacing: '1px', color: styles.textTertiary, marginTop: '2px' }}>{s.label}</div>
                         </div>
@@ -569,9 +599,9 @@ function EnveloAdminView() {
                 <button
                   onClick={async () => {
                     try {
-                      await api.patch(`/api/applications/${app.id}/state`, null, { params: { new_state: 'approved', reason: reviewComment || 'Approved.' } });
+                      await api.post(`/api/applications/${app.id}/approve`, { note: reviewComment || 'Approved.' });
                       toast.show('Application approved — API key generated and emailed to customer', 'success');
-                      setReviewComment(''); reloadEnvelo();
+                      setReviewComment(''); load();
                     } catch (e) { toast.show('Failed: ' + (e.response?.data?.detail || e.message), 'error'); }
                   }}
                   style={{ flex: 1, padding: '12px', background: 'transparent', border: `1px solid ${styles.accentGreen}`, color: styles.accentGreen, fontFamily: styles.mono, fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer', borderRadius: '6px' }}
@@ -582,9 +612,9 @@ function EnveloAdminView() {
                   onClick={async () => {
                     if (!reviewComment.trim()) { toast.show('Rejection requires specific feedback', 'error'); return; }
                     try {
-                      await api.patch(`/api/applications/${app.id}/state`, null, { params: { new_state: 'rejected', reason: reviewComment } });
+                      await api.post(`/api/applications/${app.id}/reject`, { note: reviewComment });
                       toast.show('Sent back with required changes', 'success');
-                      setReviewComment(''); reloadEnvelo();
+                      setReviewComment(''); load();
                     } catch (e) { toast.show('Failed: ' + (e.response?.data?.detail || e.message), 'error'); }
                   }}
                   style={{ flex: 1, padding: '12px', background: styles.cardSurface, border: `1px solid ${styles.borderGlass}`, color: styles.accentRed, fontFamily: styles.mono, fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer', borderRadius: '6px' }}
@@ -681,7 +711,7 @@ function EnveloAdminView() {
 
       {/* ── LIVE MONITORING ── */}
       {activeTab === 'monitoring' && (
-        <div style={{display:"flex",flexDirection:"column",gap:"24px"}}>
+        <div className="space-y-6">
           <Panel glow>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '20px' }}>
               <p style={{ fontFamily: styles.mono, fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary }}>Active Sessions</p>
@@ -731,7 +761,7 @@ function EnveloAdminView() {
             )}
           </Panel>
 
-      {selectedSession && (
+          {selectedSession && (
             <Panel accent="purple">
               <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px', marginBottom: '20px' }}>
                 <p style={{ fontFamily: styles.mono, fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary }}>Session Detail</p>
@@ -739,7 +769,7 @@ function EnveloAdminView() {
                   <button
                     onClick={async () => {
                       try {
-                        const res = await api.get(`/api/envelo/admin/sessions/${selectedSession.session_id}/report`, { responseType: 'blob' });
+                        const res = await api.get(`/api/envelo/admin/sessions/${selectedSession.id}/report`, { responseType: 'blob' });
                         const url = URL.createObjectURL(new Blob([res.data]));
                         Object.assign(document.createElement('a'), { href: url, download: `CAT72-${selectedSession.session_id}.pdf` }).click();
                       } catch (e) { toast.show('Report unavailable', 'error'); }
@@ -753,28 +783,47 @@ function EnveloAdminView() {
               </div>
               <SessionReport session={selectedSession} />
               <div style={{ marginTop: '20px' }}>
-                <TelemetryLog sessionId={selectedSession.session_id} />
+                <TelemetryLog sessionId={selectedSession.id} />
               </div>
             </Panel>
           )}
         </div>
       )}
 
-      {/* ── CAT-72 ── */}
-      {activeTab === 'cat72' && (
-        <ErrorBoundary><CAT72ConsolePage /></ErrorBoundary>
-      )}
-
-      {/* ── CERTIFICATES ── */}
-      {activeTab === 'certificates' && (
-        <ErrorBoundary><CertificatesPageEmbed /></ErrorBoundary>
-      )}
-
-      {/* TODO: Add online/offline status + Agent Template download to CertificatesPage */}
-
-      {/* ── LICENSEES ── */}
-      {activeTab === 'licensees' && (
-        <ErrorBoundary><LicenseesPageEmbed /></ErrorBoundary>
+      {/* ── CERTIFIED ── */}
+      {activeTab === 'certified' && (
+        <Panel>
+          <p style={{ fontFamily: styles.mono, fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '20px' }}>ODDC Conformant Systems</p>
+          {conformant.length > 0 ? conformant.map(cert => {
+            const certId = cert.certificate_number;
+            const isOnline = connectedIds.has(certId);
+            return (
+              <div key={cert.id} style={{ padding: '20px', background: styles.cardSurface, border: `1px solid ${isOnline ? styles.accentGreen : styles.borderGlass}`, borderRadius: '8px', marginBottom: '12px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
+                      <h3 style={{ fontWeight: 500, color: styles.textPrimary, margin: 0 }}>{cert.system_name}</h3>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                        <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: isOnline ? styles.accentGreen : styles.textDim, ...(isOnline ? { animation: 'pulse 2s infinite' } : {}) }} />
+                        <span style={{ fontFamily: styles.mono, fontSize: '9px', color: isOnline ? styles.accentGreen : styles.textDim, textTransform: 'uppercase', letterSpacing: '1px' }}>{isOnline ? 'Online' : 'Offline'}</span>
+                      </div>
+                    </div>
+                    <p style={{ fontSize: '13px', color: styles.textSecondary, marginBottom: '4px' }}>{cert.organization_name}</p>
+                    <p style={{ fontFamily: styles.mono, fontSize: '12px', color: styles.purpleBright }}>{cert.certificate_number}</p>
+                    {cert.expires_at && <p style={{ fontFamily: styles.mono, fontSize: '11px', color: styles.textTertiary, marginTop: '4px' }}>Expires: {cert.expires_at.split('T')[0]}</p>}
+                  </div>
+                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                    <button onClick={() => downloadAgentForCert(cert)} style={{ padding: '8px 14px', background: 'transparent', border: `1px solid ${styles.borderGlass}`, color: styles.textSecondary, fontFamily: styles.mono, fontSize: '10px', cursor: 'pointer', borderRadius: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <Download size={12} /> Agent Template
+                    </button>
+                  </div>
+                </div>
+              </div>
+            );
+          }) : (
+            <p style={{ color: styles.textTertiary, textAlign: 'center', padding: '40px' }}>No certified systems yet.</p>
+          )}
+        </Panel>
       )}
     </div>
   );
@@ -785,29 +834,31 @@ function EnveloAdminView() {
 function EnveloCustomerView() {
   const toast  = useToast();
   const { user } = useAuth();
+  const [loading, setLoading]     = useState(true);
+  const [userApps, setUserApps]   = useState([]);
+  const [userCerts, setUserCerts] = useState([]);
+  const [sessions, setSessions]   = useState([]);
+  const [apiKeys, setApiKeys]     = useState([]);
   const [copied, setCopied]       = useState(false);
   const [showUninstall, setShowUninstall] = useState(false);
 
-  const { data: custData, isLoading: loading } = useQuery({
-    queryKey: ['envelo-customer'],
-    queryFn: () => Promise.all([
-      api.get('/api/applications/').catch(() => ({ data: [] })),
-      api.get('/api/certificates/').catch(() => ({ data: [] })),
-      api.get('/api/envelo/sessions').catch(() => ({ data: { sessions: [] } })),
-      api.get('/api/apikeys/').catch(() => ({ data: [] })),
-    ]).then(([appsRes, certsRes, sessRes, keysRes]) => ({
-      userApps: appsRes.data?.applications || appsRes.data || [],
-      userCerts: certsRes.data || [],
-      sessions: sessRes.data.sessions || [],
-      apiKeys: keysRes.data || [],
-    })),
-    refetchInterval: 15000,
-    retry: false,
-  });
-  const userApps = custData?.userApps || [];
-  const userCerts = custData?.userCerts || [];
-  const sessions = custData?.sessions || [];
-  const apiKeys = custData?.apiKeys || [];
+  const load = async () => {
+    try {
+      const [appsRes, certsRes, sessRes, keysRes] = await Promise.all([
+        api.get('/api/applications/').catch(() => ({ data: [] })),
+        api.get('/api/certificates/').catch(() => ({ data: [] })),
+        api.get('/api/envelo/sessions').catch(() => ({ data: { sessions: [] } })),
+        api.get('/api/apikeys/').catch(() => ({ data: [] })),
+      ]);
+      setUserApps(appsRes.data?.applications || appsRes.data || []);
+      setUserCerts(certsRes.data || []);
+      setSessions(sessRes.data.sessions || []);
+      setApiKeys(keysRes.data || []);
+    } catch (e) { console.error(e); }
+    setLoading(false);
+  };
+
+  useEffect(() => { load(); const t = setInterval(load, 15000); return () => clearInterval(t); }, []);
 
   if (loading) return (
     <div style={{ color: styles.textTertiary, padding: '40px', textAlign: 'center' }}>
@@ -851,7 +902,7 @@ function EnveloCustomerView() {
   // ════ STATE 1: No applications ═══════════════════════════════════════════
   if (!latestApp) {
     return (
-      <div style={{display:"flex",flexDirection:"column",gap:"24px"}}>
+      <div className="space-y-6">
         <SectionHeader label="ENVELO Interlock" title="Get Started" />
         <Panel>
           <div style={{ textAlign: 'center', padding: 'clamp(32px,6vw,72px) clamp(16px,4vw,24px)' }}>
@@ -872,7 +923,7 @@ function EnveloCustomerView() {
   // ════ STATE 2: Pending / Under Review ════════════════════════════════════
   if (latestApp.state === 'pending' || latestApp.state === 'under_review') {
     return (
-      <div style={{display:"flex",flexDirection:"column",gap:"24px"}}>
+      <div className="space-y-6">
         <SectionHeader label="ENVELO Interlock" title="Application in Review" />
         <Panel>
           <div style={{ textAlign: 'center', padding: 'clamp(32px,5vw,60px) clamp(16px,4vw,24px)' }}>
@@ -913,7 +964,7 @@ function EnveloCustomerView() {
   // ════ STATE 3: Approved — key ready, need to deploy ═══════════════════════
   if (latestApp.state === 'approved') {
     return (
-      <div style={{display:"flex",flexDirection:"column",gap:"24px"}}>
+      <div className="space-y-6">
         <SectionHeader label="ENVELO Interlock" title="Deploy Your Interlock" description="Your application is approved. Install the agent to begin the 72-hour test." />
 
         {/* API Key panel */}
@@ -1004,7 +1055,7 @@ function EnveloCustomerView() {
     const isOnline = activeSessions.length > 0;
 
     return (
-      <div style={{display:"flex",flexDirection:"column",gap:"24px"}}>
+      <div className="space-y-6">
         <SectionHeader label="ENVELO Interlock" title="CAT-72 Running" description="72-hour conformance test in progress. Keep the agent running." />
 
         <Panel glow={isOnline}>
@@ -1063,7 +1114,7 @@ function EnveloCustomerView() {
 
   // ════ STATE 5: Conformant / Certified ════════════════════════════════════
   return (
-    <div style={{display:"flex",flexDirection:"column",gap:"24px"}}>
+    <div className="space-y-6">
       <SectionHeader label="ENVELO Interlock" title="Active" description="ODDC conformant — boundaries enforced in production" />
 
       {conformantCerts.map(cert => {
