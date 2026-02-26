@@ -194,7 +194,6 @@ async def get_boundary_config(
     # The envelope_definition JSON should have structured boundary data
     boundaries = envelope_def if isinstance(envelope_def, dict) else {}
     
-    try:
         return BoundaryConfig(
         certificate_id=str(cert.id),
         certificate_number=cert.certificate_number,
