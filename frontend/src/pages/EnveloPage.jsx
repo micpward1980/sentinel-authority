@@ -961,84 +961,70 @@ function EnveloCustomerView() {
     );
   }
 
-  // ════ STATE 3: Approved — key ready, need to deploy ═══════════════════════
-  if (latestApp.state === 'approved') {
+  // ════ STATE 3: Approved — DEPLOY NOW ════════════════════════════════════════
+  if (latestApp.state === 'approved' || latestApp.state === 'bounded' || latestApp.state === 'observe') {
+    const certNum = userCerts[0]?.certificate_number || latestApp.certificate_number || 'PENDING';
+    const keyStr = firstKey?.key || firstKey?.key_prefix ? (firstKey.key || firstKey.key_prefix + '••••••••') : 'PROVISIONING...';
+    const hasFullKey = firstKey?.key && firstKey.key.startsWith('sa_live_');
+    const deployUrl = `https://sentinel-authority-production.up.railway.app/api/v1/deploy/${certNum}?key=${hasFullKey ? firstKey.key : 'YOUR_KEY'}`;
+    const curlCmd = `curl -sSL '${deployUrl}' | bash`;
+
     return (
       <div className="space-y-6">
-        <SectionHeader label="ENVELO Interlock" title="Deploy Your Interlock" description="Your application is approved. Install the agent to begin the 72-hour test." />
+        <SectionHeader label="ENVELO Interlock" title="Deploy Now" description="Your application is approved. One command to go." />
 
-        {/* API Key panel */}
+        {/* Big green approval banner */}
         <Panel glow>
-          <p style={{ fontFamily: styles.mono, fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.accentGreen, marginBottom: '16px' }}>✓ Application Approved — API Key Ready</p>
-
-          {firstKey ? (
-            <div>
-              <div style={{ padding: '16px', background: styles.cardSurface, border: `1px solid ${styles.borderGlass}`, borderRadius: '8px', marginBottom: '16px' }}>
-                <div style={{ fontFamily: styles.mono, fontSize: '13px', color: styles.textPrimary, wordBreak: 'break-all', marginBottom: '12px' }}>
-                  {firstKey.key_prefix}••••••••••••••••••••
-                </div>
-                <p style={{ fontSize: '12px', color: styles.accentAmber, marginBottom: '12px' }}>⚠ Your full key was emailed to {latestApp.contact_email}. Download the agent below to get it embedded.</p>
-                <button onClick={() => downloadAgent()} style={{ padding: '10px 20px', background: styles.purplePrimary, border: `1px solid ${styles.purpleBright}`, color: '#fff', fontFamily: styles.mono, fontSize: '11px', cursor: 'pointer', borderRadius: '6px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <Download size={14} /> Download envelo_agent.py (pre-configured)
-                </button>
-              </div>
-            </div>
-          ) : (
-            <div style={{ padding: '16px', background: 'rgba(158,110,18,0.04)', border: '1px solid rgba(158,110,18,0.2)', borderRadius: '8px' }}>
-              <p style={{ color: styles.accentAmber, fontSize: '13px' }}>Your API key is being provisioned. Check your email or refresh in a moment.</p>
-            </div>
-          )}
+          <div style={{ textAlign: 'center', padding: '24px 16px 20px' }}>
+            <div style={{ width: '56px', height: '56px', borderRadius: '50%', border: `2px solid ${styles.accentGreen}`, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', fontSize: '24px' }}>✓</div>
+            <h2 style={{ fontFamily: styles.serif, fontSize: 'clamp(20px,4vw,26px)', fontWeight: 200, marginBottom: '8px', color: styles.accentGreen }}>Application Approved</h2>
+            <p style={{ color: styles.textSecondary, fontSize: '14px' }}>{latestApp.system_name} — {latestApp.organization_name}</p>
+          </div>
         </Panel>
 
-        {/* Install instructions */}
+        {/* THE ONE COMMAND */}
         <Panel>
-          <p style={{ fontFamily: styles.mono, fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '20px' }}>Installation Steps</p>
+          <div style={{ padding: '8px 0' }}>
+            <p style={{ fontFamily: styles.mono, fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.accentGreen, marginBottom: '16px' }}>▸ PASTE THIS ON YOUR TARGET SYSTEM</p>
 
-          {[
-            {
-              num: '1', title: 'Download the agent',
-              content: <button onClick={() => downloadAgent()} style={{ padding: '9px 18px', background: 'transparent', border: `1px solid ${styles.purpleBright}`, color: styles.purpleBright, fontFamily: styles.mono, fontSize: '11px', cursor: 'pointer', borderRadius: '6px' }}>↓ envelo_agent.py</button>
-            },
-            {
-              num: '2', title: 'Install dependency',
-              content: (
-                <div style={{ background: 'rgba(0,0,0,0.04)', border: `1px solid ${styles.borderGlass}`, padding: '10px 14px', borderRadius: '6px', fontFamily: styles.mono, fontSize: '12px', color: styles.textPrimary }}>
-                  <span style={{ color: styles.accentGreen }}>$</span> pip install httpx
-                </div>
-              )
-            },
-            {
-              num: '3', title: 'Run the agent',
-              content: (
-                <div style={{ background: 'rgba(0,0,0,0.04)', border: `1px solid ${styles.borderGlass}`, padding: '10px 14px', borderRadius: '6px', fontFamily: styles.mono, fontSize: '12px', color: styles.textPrimary }}>
-                  <span style={{ color: styles.accentGreen }}>$</span> python envelo_agent.py
-                </div>
-              )
-            },
-            {
-              num: '4', title: 'Integrate (optional — agent works standalone)',
-              content: (
-                <div style={{ background: 'rgba(0,0,0,0.04)', border: `1px solid ${styles.borderGlass}`, padding: '10px 14px', borderRadius: '6px', fontFamily: styles.mono, fontSize: '12px', color: styles.textSecondary }}>
-                  <div style={{ color: styles.textTertiary, marginBottom: '4px' }}># In your code:</div>
-                  <div>from envelo_agent import agent</div>
-                  <div>agent.start()</div>
-                  <div style={{ marginTop: '8px' }}>@agent.enforce</div>
-                  <div>def my_action(speed=0): ...</div>
-                </div>
-              )
-            },
-          ].map(s => (
-            <div key={s.num} style={{ display: 'flex', gap: '16px', marginBottom: '20px' }}>
-              <div style={{ width: '28px', height: '28px', borderRadius: '50%', border: `1px solid ${styles.purpleBright}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: styles.mono, fontSize: '12px', color: styles.purpleBright, flexShrink: 0 }}>{s.num}</div>
-              <div style={{ flex: 1 }}>
-                <p style={{ color: styles.textSecondary, marginBottom: '8px', fontSize: '14px' }}>{s.title}</p>
-                {s.content}
+            <div style={{ position: 'relative', background: '#0a0a12', border: `1px solid ${styles.borderGlass}`, borderRadius: '8px', padding: '20px', marginBottom: '16px' }}>
+              <pre style={{ fontFamily: styles.mono, fontSize: '12px', color: styles.textPrimary, whiteSpace: 'pre-wrap', wordBreak: 'break-all', lineHeight: 1.7, margin: 0 }}>{curlCmd}</pre>
+              <button
+                onClick={() => { navigator.clipboard.writeText(curlCmd); setCopied(true); setTimeout(() => setCopied(false), 3000); toast.show('Deploy command copied!', 'success'); }}
+                style={{ position: 'absolute', top: '12px', right: '12px', padding: '6px 14px', background: copied ? 'rgba(22,135,62,0.15)' : 'rgba(139,92,246,0.1)', border: `1px solid ${copied ? styles.accentGreen : styles.purpleBright}`, color: copied ? styles.accentGreen : styles.purpleBright, fontFamily: styles.mono, fontSize: '10px', cursor: 'pointer', borderRadius: '4px', letterSpacing: '1px' }}>
+                {copied ? '✓ COPIED' : 'COPY'}
+              </button>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
+              <div style={{ padding: '12px 16px', background: styles.cardSurface, border: `1px solid ${styles.borderGlass}`, borderRadius: '6px' }}>
+                <p style={{ fontFamily: styles.mono, fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '4px' }}>Certificate</p>
+                <p style={{ fontFamily: styles.mono, fontSize: '13px', color: styles.purpleBright }}>{certNum}</p>
+              </div>
+              <div style={{ padding: '12px 16px', background: styles.cardSurface, border: `1px solid ${styles.borderGlass}`, borderRadius: '6px' }}>
+                <p style={{ fontFamily: styles.mono, fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '4px' }}>API Key</p>
+                <p style={{ fontFamily: styles.mono, fontSize: '13px', color: styles.purpleBright, wordBreak: 'break-all' }}>{hasFullKey ? firstKey.key.slice(0,20) + '...' : keyStr}</p>
               </div>
             </div>
-          ))}
 
-          <div style={{ padding: '12px 16px', background: 'rgba(22,135,62,0.04)', border: '1px solid rgba(22,135,62,0.1)', borderRadius: '6px', marginTop: '8px' }}>
-            <p style={{ color: styles.accentGreen, fontSize: '13px', margin: 0 }}>Once the agent is running, it will connect automatically. Your 72-hour test starts when an admin confirms the connection — this page will update.</p>
+            <div style={{ padding: '14px 16px', background: 'rgba(22,135,62,0.04)', border: '1px solid rgba(22,135,62,0.15)', borderRadius: '6px' }}>
+              <p style={{ color: styles.accentGreen, fontSize: '13px', margin: 0, lineHeight: 1.6 }}>
+                <strong>This single command</strong> installs the ENVELO Interlock, configures your boundaries, starts enforcement, and begins your 72-hour CAT-72 test. This page updates automatically.
+              </p>
+            </div>
+          </div>
+        </Panel>
+
+        {/* Alternative: download agent file */}
+        <Panel>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+            <div>
+              <p style={{ fontFamily: styles.mono, fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '4px' }}>Alternative</p>
+              <p style={{ color: styles.textSecondary, fontSize: '13px' }}>Download standalone agent file instead</p>
+            </div>
+            <button onClick={() => downloadAgent()} style={{ padding: '9px 18px', background: 'transparent', border: `1px solid ${styles.borderGlass}`, color: styles.textSecondary, fontFamily: styles.mono, fontSize: '11px', cursor: 'pointer', borderRadius: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <Download size={12} /> envelo_agent.py
+            </button>
           </div>
         </Panel>
       </div>
