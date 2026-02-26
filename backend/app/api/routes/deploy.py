@@ -363,7 +363,7 @@ if __name__ == "__main__":
 
 def _build_installer(envelo_yaml: str, agent_py: str, case_id: str, system_name: str) -> str:
     safe_yaml = envelo_yaml.replace("'", "'\\''")
-    safe_agent = agent_py.replace("'", "'\\''")
+    safe_agent = agent_py
 
     return textwrap.dedent(f'''\
 #!/bin/bash
