@@ -408,6 +408,21 @@ async def update_application_state(
         except Exception:
             pass
 
+        # Auto-activate certificate when app reaches conformant
+        if new_state == "conformant":
+            try:
+                from app.models.models import Certificate
+                cert_result = await db.execute(
+                    select(Certificate).where(Certificate.application_id == app.id)
+                )
+                cert = cert_result.scalar_one_or_none()
+                if cert:
+                    cert.state = "active"
+                    cert.issued_at = datetime.utcnow()
+                    print(f"Certificate {cert.certificate_number} activated")
+            except Exception as e:
+                print(f"Cert activation failed: {e}")
+
         result = {"message": f"State updated to {new_state}", "state": new_state}
         if api_key_raw:
             result["api_key_generated"] = True
