@@ -102,6 +102,10 @@ class EnveloAgent:
         self._telemetry_queue: Queue = Queue()
         self._running = False
         
+        # Discovery
+        self._discovery_mode = False
+        self._discovery = DiscoveryEngine()
+
         # Offline buffer
         self._offline_buffer: List[Dict] = []
         
