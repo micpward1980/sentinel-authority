@@ -319,6 +319,41 @@ async def update_application_state(
                 db.add(new_key)
         
 
+        # Auto-create Certificate on approval
+        if new_state == "approved":
+            try:
+                from app.models.models import Certificate
+                from datetime import timedelta
+                # Get next certificate number
+                last_cert = await db.execute(
+                    select(Certificate).order_by(Certificate.id.desc()).limit(1)
+                )
+                last = last_cert.scalar_one_or_none()
+                if last and last.certificate_number:
+                    seq = int(last.certificate_number.split("-")[-1]) + 1
+                else:
+                    seq = 1
+                cert_number = f"ODDC-{datetime.utcnow().year}-{seq:05d}"
+                
+                new_cert = Certificate(
+                    certificate_number=cert_number,
+                    application_id=app.id,
+                    organization_name=app.organization_name,
+                    system_name=app.system_name,
+                    system_version=app.system_version,
+                    odd_specification=app.odd_specification,
+                    envelope_definition=app.envelope_definition,
+                    state="pending",
+                    issued_by=int(user["sub"]) if user.get("sub") else None,
+                    expires_at=datetime.utcnow() + timedelta(days=365),
+                )
+                db.add(new_cert)
+                await db.flush()  # get the ID
+                app.certificate_id = new_cert.id
+                print(f"Auto-created certificate {cert_number} for {app.application_number}")
+            except Exception as e:
+                print(f"Auto-create certificate failed: {e}")
+
         # Auto-create CAT-72 test on approval
         if new_state == "approved":
             try:
