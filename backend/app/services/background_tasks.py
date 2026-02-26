@@ -565,40 +565,30 @@ async def cat72_auto_evaluator():
                     if not application:
                         continue
 
-                    # Match sessions by test_id FK (precise — avoids cross-contamination)
-                    sess_result = await db.execute(
-                        select(EnveloSession).where(
-                            EnveloSession.test_id == test.id,
-                            EnveloSession.session_type == "cat72_test",
-                        )
+                    # Match sessions by certificate linked to this application
+                    test_sessions = []
+                    cert_for_app = await db.execute(
+                        select(Certificate).where(Certificate.application_id == application.id)
                     )
-                    test_sessions = sess_result.scalars().all()
+                    app_cert = cert_for_app.scalars().first()
                     
-                    # Fallback: match by org+system (any session type)
+                    if app_cert:
+                        sess_result = await db.execute(
+                            select(EnveloSession).where(
+                                EnveloSession.certificate_id == app_cert.id,
+                            )
+                        )
+                        test_sessions = sess_result.scalars().all()
+                    
+                    # Fallback: match by org+system
                     if not test_sessions:
                         sess_result2 = await db.execute(
                             select(EnveloSession).where(
                                 EnveloSession.organization_name == application.organization_name,
                                 EnveloSession.system_name == application.system_name,
-                                EnveloSession.status == "active",
                             )
                         )
                         test_sessions = sess_result2.scalars().all()
-                    
-                    # Third fallback: match by API key's certificate
-                    if not test_sessions:
-                        cert_result3 = await db.execute(
-                            select(Certificate).where(Certificate.application_id == application.id)
-                        )
-                        cert3 = cert_result3.scalar_one_or_none()
-                        if cert3:
-                            sess_result3 = await db.execute(
-                                select(EnveloSession).where(
-                                    EnveloSession.certificate_id == cert3.id,
-                                    EnveloSession.status == "active",
-                                )
-                            )
-                            test_sessions = sess_result3.scalars().all()
 
                     total_pass = sum(s.pass_count or 0 for s in test_sessions)
                     total_block = sum(s.block_count or 0 for s in test_sessions)
