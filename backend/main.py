@@ -267,8 +267,6 @@ async def lifespan(app: FastAPI):
 
 limiter = Limiter(key_func=get_remote_address)
 
-app.include_router(surveillance_router, prefix="/api/surveillance", tags=["Surveillance"])
-
 OPENAPI_TAGS = [
     {"name": "System", "description": "Health checks and service info"},
     {"name": "Authentication", "description": "User registration, login, password reset, and token management"},
@@ -382,6 +380,7 @@ app.include_router(documents.router, prefix="/api/documents", tags=["Documents"]
 app.include_router(deploy.router, prefix="/api", tags=["One-Command Deploy"])
 app.include_router(audit_routes.router, prefix="/api/audit", tags=["Audit Log"])
 app.include_router(ai_review.router, prefix="/api", tags=["AI Review"])
+app.include_router(surveillance_router, prefix="/api/surveillance", tags=["Surveillance"])
 
 
 
