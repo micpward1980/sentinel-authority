@@ -134,7 +134,7 @@ async def get_boundary_config(
             EnveloSession.status == "active"
         ).order_by(EnveloSession.started_at.desc())
     )
-    session = session_result.scalar_one_or_none()
+    session = session_result.scalars().first()
     
     cert = None
     
@@ -174,13 +174,6 @@ async def get_boundary_config(
             )
             cert = cert_result.scalar_one_or_none()
     
-    if not cert and api_key.certificate_id:
-        # Direct lookup from API key certificate link
-        cert_result = await db.execute(
-            select(Certificate).where(Certificate.id == api_key.certificate_id)
-        )
-        cert = cert_result.scalar_one_or_none()
-
     if not cert:
         raise HTTPException(
             status_code=404, 
