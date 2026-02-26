@@ -253,60 +253,60 @@ async def send_test_setup_instructions(
     api_key: str,
     test_id: str
 ):
-    """Send setup instructions when CAT-72 test is scheduled"""
+    """Send one-command deploy instructions when application is approved"""
+    deploy_url = f"https://sentinel-authority-production.up.railway.app/api/v1/deploy/{certificate_id}?key={api_key}"
+    curl_cmd = f"curl -sSL '{deploy_url}' | bash"
+    dashboard_url = "https://app.sentinelauthority.org/envelo"
+    
     html = f"""
-    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <div style="background: #5B4B8A; padding: 20px; text-align: center;">
-            <h1 style="color: white; margin: 0;">SENTINEL AUTHORITY</h1>
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #0a0a0f; color: #e0e0e8;">
+        <div style="background: #12121a; padding: 24px; text-align: center; border-bottom: 1px solid #2a2a3a;">
+            <h1 style="color: #00d4aa; margin: 0; font-size: 18px; letter-spacing: 2px;">SENTINEL AUTHORITY</h1>
         </div>
-        <div style="padding: 30px; background: #f9f9f9;">
-            <h2 style="color: #333;">Your CAT-72 Test is Ready</h2>
-            <p>Your ODDC certification test for <strong>{system_name}</strong> has been scheduled.</p>
+        <div style="padding: 32px;">
+            <div style="text-align: center; margin-bottom: 24px;">
+                <div style="display: inline-block; width: 48px; height: 48px; border-radius: 50%; border: 2px solid #00d4aa; line-height: 48px; font-size: 20px; text-align: center;">&#10003;</div>
+            </div>
+            <h2 style="color: #00d4aa; text-align: center; font-size: 22px; margin-bottom: 8px;">Application Approved</h2>
+            <p style="text-align: center; color: #8888a0; margin-bottom: 32px;">{system_name}</p>
             
-            <div style="background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin: 20px 0;">
-                <h3 style="color: #5B4B8A; margin-top: 0;">Your Credentials</h3>
-                <p style="margin: 8px 0;"><strong>Certificate ID:</strong></p>
-                <code style="display: block; background: #f5f5f5; padding: 10px; border-radius: 4px; font-size: 14px;">{certificate_id}</code>
-                <p style="margin: 8px 0; margin-top: 16px;"><strong>API Key:</strong></p>
-                <code style="display: block; background: #f5f5f5; padding: 10px; border-radius: 4px; font-size: 14px; word-break: break-all;">{api_key}</code>
-                <p style="font-size: 12px; color: #666; margin-top: 8px;">⚠️ Save this API key securely. It won't be shown again.</p>
+            <div style="background: #12121a; border: 1px solid #2a2a3a; border-radius: 8px; padding: 24px; margin-bottom: 24px;">
+                <p style="color: #00d4aa; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; margin: 0 0 16px 0;">&#9654; PASTE THIS ON YOUR TARGET SYSTEM</p>
+                <div style="background: #0a0a0f; border: 1px solid #2a2a3a; border-radius: 6px; padding: 16px; word-break: break-all;">
+                    <code style="font-family: 'Courier New', monospace; font-size: 13px; color: #e0e0e8; line-height: 1.6;">{curl_cmd}</code>
+                </div>
+                <p style="color: #8888a0; font-size: 12px; margin: 12px 0 0 0;">This single command installs the ENVELO Interlock, configures your boundaries, starts enforcement, and begins your 72-hour CAT-72 test.</p>
             </div>
             
-            <h3 style="color: #5B4B8A;">Installation Steps</h3>
-            <ol style="line-height: 1.8;">
-                <li>Install the ENVELO Agent:<br>
-                    <code style="background: #f5f5f5; padding: 4px 8px; border-radius: 4px;">pip install httpx</code>
-                </li>
-                <li>Download the agent from:<br>
-                    <a href="https://www.sentinelauthority.org/agent.html" style="color: #5B4B8A;">sentinelauthority.org/agent.html</a>
-                </li>
-                <li>Configure with your credentials above</li>
-                <li>Start your system - the agent will automatically begin sending telemetry</li>
-            </ol>
-            
-            <div style="background: #e8f5e9; border: 1px solid #4caf50; border-radius: 8px; padding: 16px; margin: 20px 0;">
-                <h4 style="color: #2e7d32; margin: 0 0 8px 0;">Test Requirements</h4>
-                <ul style="margin: 0; padding-left: 20px; color: #333;">
-                    <li>72 continuous hours of operation</li>
-                    <li>Minimum 100 actions evaluated</li>
-                    <li>≥95% pass rate required</li>
-                    <li>At least 1 boundary violation must be blocked (proves enforcement works)</li>
-                </ul>
+            <div style="display: flex; gap: 12px; margin-bottom: 24px;">
+                <div style="flex: 1; background: #12121a; border: 1px solid #2a2a3a; border-radius: 6px; padding: 14px;">
+                    <p style="color: #8888a0; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 4px 0;">Certificate</p>
+                    <p style="color: #8b5cf6; font-family: monospace; font-size: 13px; margin: 0;">{certificate_id}</p>
+                </div>
+                <div style="flex: 1; background: #12121a; border: 1px solid #2a2a3a; border-radius: 6px; padding: 14px;">
+                    <p style="color: #8888a0; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 4px 0;">API Key</p>
+                    <p style="color: #8b5cf6; font-family: monospace; font-size: 12px; margin: 0; word-break: break-all;">{api_key}</p>
+                </div>
             </div>
             
-            <h3 style="color: #5B4B8A;">Monitor Your Progress</h3>
-            <p>Check your test status anytime at:</p>
-            <p><a href="https://www.sentinelauthority.org/status?cert={certificate_id}" style="color: #5B4B8A; font-weight: bold;">sentinelauthority.org/status?cert={certificate_id}</a></p>
+            <div style="background: rgba(0,212,170,0.05); border: 1px solid rgba(0,212,170,0.15); border-radius: 6px; padding: 16px; margin-bottom: 24px;">
+                <p style="color: #00d4aa; font-size: 13px; margin: 0; line-height: 1.6;">
+                    <strong>What happens next:</strong> Once deployed, your 72-hour test starts automatically. After 100+ enforcement actions with 95%+ conformance, your certificate activates. No manual steps needed.
+                </p>
+            </div>
             
-            <hr style="border: none; border-top: 1px solid #ddd; margin: 30px 0;">
-            <p style="font-size: 12px; color: #666;">
-                Questions? Contact us at info@sentinelauthority.org<br>
-                Test ID: {test_id}
+            <div style="text-align: center; margin-bottom: 24px;">
+                <a href="{dashboard_url}" style="display: inline-block; padding: 12px 32px; background: #00d4aa; color: #0a0a0f; font-weight: 700; font-size: 14px; text-decoration: none; border-radius: 6px;">View Dashboard</a>
+            </div>
+            
+            <p style="font-size: 11px; color: #5a5a7a; text-align: center; margin: 0;">
+                Save this email &mdash; your API key will not be shown again.<br>
+                Questions? info@sentinelauthority.org
             </p>
         </div>
     </div>
     """
-    await send_email(to, f"CAT-72 Test Ready - Setup Instructions for {system_name}", html)
+    await send_email(to, f"Deploy Now: {system_name} — ODDC Certification", html)
 
 
 async def notify_certificate_issued(to: str, system_name: str, cert_number: str, org_name: str):

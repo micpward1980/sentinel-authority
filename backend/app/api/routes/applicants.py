@@ -446,12 +446,16 @@ async def update_application_state(
             if applicant_email:
                 if new_state == "approved":
                     await send_application_approved(applicant_email, system_name, app_number)
-                    # If API key was generated, send setup instructions too
+                    # If API key was generated, send deploy command email
                     if api_key_raw:
                         from app.services.email_service import send_test_setup_instructions
+                        from app.models.models import Certificate
+                        cert_r = await db.execute(select(Certificate).where(Certificate.application_id == app.id))
+                        cert_obj = cert_r.scalars().first()
+                        cert_num = cert_obj.certificate_number if cert_obj else app_number
                         await send_test_setup_instructions(
                             applicant_email, system_name,
-                            app_number, api_key_raw, "Pending"
+                            cert_num, api_key_raw, "Pending"
                         )
                 elif new_state == "rejected":
                     await send_application_rejected(applicant_email, system_name, app_number, reason)
