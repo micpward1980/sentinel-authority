@@ -197,7 +197,12 @@ async def lifespan(app: FastAPI):
         "ALTER TABLE envelo_sessions ADD COLUMN organization_name VARCHAR(255)",
         "ALTER TABLE envelo_sessions ADD COLUMN system_name VARCHAR(255)",
         "ALTER TABLE certificates ADD COLUMN is_demo BOOLEAN DEFAULT FALSE",
-        "ALTER TABLE certificates ADD COLUMN metadata_json JSON DEFAULT NULL",
+        "ALTER TABLE certificates ADD COLUMN metadata_json JSON DEFAULT NULL",,
+        "ALTER TABLE certificates ADD COLUMN suspended_at TIMESTAMP",
+        "ALTER TABLE certificates ADD COLUMN suspension_reason TEXT",
+        "ALTER TABLE certificates ADD COLUMN suspended_by VARCHAR(100)",
+        "ALTER TABLE certificates ADD COLUMN reinstated_at TIMESTAMP",
+        "ALTER TABLE certificates ADD COLUMN reinstatement_reason TEXT",
     ]
     for mig in schema_migrations:
         async with engine.begin() as mig_conn:
@@ -206,6 +211,37 @@ async def lifespan(app: FastAPI):
                 logger.info(f"Migration OK: {mig[:60]}")
             except Exception:
                 pass  # column already exists
+
+
+    # Create surveillance_alerts table
+    async with engine.begin() as surv_conn:
+        try:
+            await surv_conn.execute(raw_text("""
+                CREATE TABLE IF NOT EXISTS surveillance_alerts (
+                    id SERIAL PRIMARY KEY,
+                    alert_id VARCHAR(50) UNIQUE NOT NULL,
+                    alert_type VARCHAR(50) NOT NULL,
+                    severity VARCHAR(20) NOT NULL,
+                    certificate_id VARCHAR(100),
+                    session_id VARCHAR(100),
+                    message TEXT,
+                    details JSON DEFAULT '{}',
+                    created_at TIMESTAMP DEFAULT NOW(),
+                    acknowledged BOOLEAN DEFAULT FALSE,
+                    acknowledged_at TIMESTAMP,
+                    acknowledged_by VARCHAR(100)
+                )
+            """))
+            await surv_conn.execute(raw_text("""
+                CREATE INDEX IF NOT EXISTS idx_surv_alerts_cert ON surveillance_alerts(certificate_id)
+            """))
+            await surv_conn.execute(raw_text("""
+                CREATE INDEX IF NOT EXISTS idx_surv_alerts_sev ON surveillance_alerts(severity)
+            """))
+            await surv_conn.commit()
+            logger.info("Surveillance alerts table ready")
+        except Exception as e:
+            logger.warning(f"Surveillance alerts table: {e}")
 
     # Start background tasks
     import asyncio
@@ -254,6 +290,64 @@ async def lifespan(app: FastAPI):
     from app.core.database import AsyncSessionLocal
     start_surveillance(AsyncSessionLocal)
     logger.info("Surveillance engine started")
+    # Reload surveillance state from DB (persist across restarts)
+    try:
+        from app.surveillance import get_surveillance_state
+        surv_state = get_surveillance_state()
+        async with AsyncSessionLocal() as reload_db:
+            from sqlalchemy import select as sel, text as raw_t
+            from app.models.models import EnveloSession, Certificate
+            # Reload active sessions
+            active = await reload_db.execute(
+                sel(EnveloSession).where(EnveloSession.status == "active")
+            )
+            reloaded = 0
+            for session in active.scalars().all():
+                cert_num = None
+                if session.certificate_id:
+                    cert_r = await reload_db.execute(
+                        sel(Certificate).where(Certificate.id == session.certificate_id)
+                    )
+                    cert = cert_r.scalar_one_or_none()
+                    cert_num = cert.certificate_number if cert else None
+                if cert_num and session.last_heartbeat_at:
+                    surv_state.record_heartbeat(
+                        session_id=session.session_id,
+                        certificate_id=cert_num,
+                        stats={"pass": session.pass_count or 0, "block": session.block_count or 0},
+                    )
+                    reloaded += 1
+            # Reload suspended certs
+            suspended = await reload_db.execute(
+                sel(Certificate).where(Certificate.state == "suspended")
+            )
+            for cert in suspended.scalars().all():
+                if cert.certificate_number:
+                    surv_state.suspended_certs.add(cert.certificate_number)
+            # Reload unacknowledged alerts
+            try:
+                alert_rows = await reload_db.execute(raw_t(
+                    "SELECT alert_id, alert_type, severity, certificate_id, session_id, message, details, created_at, acknowledged, acknowledged_at, acknowledged_by FROM surveillance_alerts ORDER BY id DESC LIMIT 200"
+                ))
+                from app.surveillance import SurveillanceAlert, AlertType, AlertSeverity
+                for row in alert_rows:
+                    try:
+                        alert = SurveillanceAlert(
+                            id=row[0], alert_type=AlertType(row[1]), severity=AlertSeverity(row[2]),
+                            certificate_id=row[3], session_id=row[4], message=row[5],
+                            details=row[6] or {}, created_at=row[7],
+                            acknowledged=row[8] or False, acknowledged_at=row[9], acknowledged_by=row[10],
+                        )
+                        surv_state.alerts.append(alert)
+                    except Exception:
+                        pass
+            except Exception:
+                pass  # Table may not have data yet
+        logger.info(f"Surveillance state reloaded: {reloaded} sessions, {len(surv_state.suspended_certs)} suspended certs, {len(surv_state.alerts)} alerts")
+    except Exception as e:
+        logger.warning(f"Surveillance reload: {e}")
+    reload_surveillance_from_db = True
+
 
     yield
     logger.info("Shutting down...")

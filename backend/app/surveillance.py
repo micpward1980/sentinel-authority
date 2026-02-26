@@ -226,8 +226,44 @@ class SurveillanceState:
                 alert.acknowledged = True
                 alert.acknowledged_at = datetime.now(timezone.utc)
                 alert.acknowledged_by = acknowledged_by
+                # Persist to DB
+                try:
+                    import asyncio as _aio
+                    async def _persist_ack():
+                        from app.core.database import AsyncSessionLocal
+                        from sqlalchemy import text as raw_t
+                        async with AsyncSessionLocal() as db:
+                            await db.execute(raw_t(
+                                "UPDATE surveillance_alerts SET acknowledged=TRUE, acknowledged_at=:aat, acknowledged_by=:aby WHERE alert_id=:aid"
+                            ), {"aat": alert.acknowledged_at, "aby": acknowledged_by, "aid": alert_id})
+                            await db.commit()
+                    loop = _aio.get_event_loop()
+                    if loop.is_running():
+                        _aio.ensure_future(_persist_ack())
+                except Exception:
+                    pass
                 return True
         return False
+
+
+    async def persist_alert_to_db(self, alert: 'SurveillanceAlert'):
+        """Write alert to DB for persistence across restarts."""
+        try:
+            from app.core.database import AsyncSessionLocal
+            from sqlalchemy import text as raw_t
+            async with AsyncSessionLocal() as db:
+                await db.execute(raw_t(
+                    "INSERT INTO surveillance_alerts (alert_id, alert_type, severity, certificate_id, session_id, message, details, created_at, acknowledged) "
+                    "VALUES (:aid, :atype, :sev, :cert, :sess, :msg, :det, :cat, :ack) "
+                    "ON CONFLICT (alert_id) DO NOTHING"
+                ), {
+                    "aid": alert.id, "atype": alert.alert_type.value, "sev": alert.severity.value,
+                    "cert": alert.certificate_id, "sess": alert.session_id, "msg": alert.message,
+                    "det": __import__('json').dumps(alert.details), "cat": alert.created_at, "ack": False,
+                })
+                await db.commit()
+        except Exception as e:
+            log.warning(f"[SURVEILLANCE] Alert DB persist failed (non-fatal): {e}")
 
     def _fire_alert(self, alert_type: AlertType, severity: AlertSeverity,
                     certificate_id: str, session_id: Optional[str], message: str,
@@ -254,6 +290,15 @@ class SurveillanceState:
         )
         self.alerts.append(alert)
         log.warning(f"[SURVEILLANCE] {severity.value.upper()}: {message}")
+
+        # Persist to DB
+        import asyncio as _aio
+        try:
+            loop = _aio.get_event_loop()
+            if loop.is_running():
+                _aio.ensure_future(self.persist_alert_to_db(alert))
+        except Exception:
+            pass
 
         # Trim old alerts (keep last 500)
         if len(self.alerts) > 500:

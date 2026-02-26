@@ -209,6 +209,11 @@ class Certificate(Base):
     audit_log_ref = Column(String(50))  # Audit trail reference e.g., SA-LOG-2026-0001
     certificate_pdf = Column(LargeBinary)
     verification_url = Column(String(255))
+    suspended_at = Column(DateTime, nullable=True)
+    suspension_reason = Column(Text, nullable=True)
+    suspended_by = Column(String(100), nullable=True)
+    reinstated_at = Column(DateTime, nullable=True)
+    reinstatement_reason = Column(Text, nullable=True)
     history = Column(JSON)
     created_at = Column(DateTime, default=datetime.utcnow)
     application = relationship("Application", back_populates="certificate")
