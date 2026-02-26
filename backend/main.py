@@ -565,3 +565,8 @@ async def mark_notifications_read(
     return {"message": "Notifications marked as read"}
 
 
+
+
+@app.api_route("/health", methods=["GET", "HEAD"])
+async def health_check():
+    return {"status": "healthy"}
