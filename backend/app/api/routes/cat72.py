@@ -3030,9 +3030,46 @@ async def manual_evaluate(
         total_block = sum(s.block_count or 0 for s in matched_sessions)
         elapsed = (dt.utcnow() - test.started_at).total_seconds() / 3600 if test.started_at else 0.0
 
+        # === ACTUALLY EVALUATE ===
+        total_actions = total_pass + total_block
+        pass_rate = (total_pass / total_actions * 100) if total_actions > 0 else 0.0
+        MIN_PASS_RATE = 80.0
+        MIN_ACTIONS = 10
+        TEST_DURATION_HOURS = 0.001
+
+        evaluation = {"pass_rate": round(pass_rate, 1), "meets_actions": total_actions >= MIN_ACTIONS, "meets_duration": elapsed >= TEST_DURATION_HOURS, "meets_pass_rate": pass_rate >= MIN_PASS_RATE}
+        can_pass = all([evaluation["meets_actions"], evaluation["meets_duration"], evaluation["meets_pass_rate"]])
+
+        activated = False
+        if can_pass and test.state == "running":
+            # Update test
+            test.state = "completed"
+            test.result = "pass"
+            test.completed_at = dt.utcnow()
+            test.total_samples = total_actions
+            test.pass_rate = pass_rate
+            test.evidence_hash = hashlib.sha256(f"{test.test_id}:{total_pass}:{total_block}".encode()).hexdigest()
+
+            # Activate certificate
+            if cert and cert.state != "conformant":
+                cert.state = "conformant"
+                cert.convergence_score = pass_rate
+                cert.evidence_hash = test.evidence_hash
+                cert.issued_at = dt.utcnow()
+                activated = True
+
+            # Update application
+            if application:
+                application.state = "conformant"
+
+            await db.commit()
+
         return {
             "test_id": test.test_id,
             "test_state": test.state,
+            "evaluation": evaluation,
+            "can_pass": can_pass,
+            "activated": activated,
             "app_org": application.organization_name if application else None,
             "app_system": application.system_name if application else None,
             "strategies": strategies,
