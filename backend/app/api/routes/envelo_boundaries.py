@@ -193,8 +193,8 @@ async def get_boundary_config(
     # Parse boundaries from envelope definition
     # The envelope_definition JSON should have structured boundary data
     boundaries = envelope_def if isinstance(envelope_def, dict) else {}
-    
-        return BoundaryConfig(
+
+    return BoundaryConfig(
         certificate_id=str(cert.id),
         certificate_number=cert.certificate_number,
         organization_name=cert.organization_name,
@@ -202,26 +202,18 @@ async def get_boundary_config(
         system_version=cert.system_version or "",
         approved_at=cert.issued_at.isoformat() if cert.issued_at else "",
         expires_at=cert.expires_at.isoformat() if cert.expires_at else "",
-        
         odd_description=odd_spec.get("description", "") if isinstance(odd_spec, dict) else str(odd_spec),
         environment_type=odd_spec.get("environment_type", "") if isinstance(odd_spec, dict) else "",
         operational_context=odd_spec.get("operational_context", "") if isinstance(odd_spec, dict) else "",
-        
         numeric_boundaries=boundaries.get("numeric_boundaries", []),
         geo_boundaries=boundaries.get("geo_boundaries", []),
         time_boundaries=boundaries.get("time_boundaries", []),
         state_boundaries=boundaries.get("state_boundaries", []),
         rate_boundaries=boundaries.get("rate_boundaries", []),
-        
-        safe_state=boundaries.get("safe_state", {
-            "action": "stop",
-            "notify": True,
-            "log": True
-        }),
-        
+        safe_state=boundaries.get("safe_state", {"action": "stop", "notify": True, "log": True}),
         fail_closed=boundaries.get("fail_closed", True),
         telemetry_interval_seconds=boundaries.get("telemetry_interval", 1.0),
-        heartbeat_interval_seconds=boundaries.get("heartbeat_interval", 60.0)
+        heartbeat_interval_seconds=boundaries.get("heartbeat_interval", 60.0),
     )
 
 
