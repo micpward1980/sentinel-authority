@@ -99,7 +99,9 @@ async def register_session(
         started_at=datetime.fromisoformat(data.started_at.replace('Z', '').replace('+00:00', '')),
         agent_version=data.agent_version,
         session_type=getattr(data, 'session_type', 'production'),
-        status="active"
+        status="active",
+        organization_name=certificate.organization_name if certificate else None,
+        system_name=certificate.system_name if certificate else None,
     )
     
     try:
