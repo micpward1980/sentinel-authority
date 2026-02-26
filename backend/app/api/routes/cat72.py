@@ -2128,7 +2128,7 @@ async def start_test(
     
     # CRITICAL: Refuse to start without envelope boundaries
     envelope = test.envelope_definition or {}
-    boundaries = envelope.get("boundaries", [])
+    boundaries = envelope.get("boundaries", []) or envelope.get("numeric_boundaries", [])
     if not boundaries:
         raise HTTPException(
             status_code=400,
