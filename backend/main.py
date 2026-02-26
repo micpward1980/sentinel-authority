@@ -126,7 +126,7 @@ async def lifespan(app: FastAPI):
             await tpconn.execute(raw_text("""
                 CREATE TABLE IF NOT EXISTS audit_anchors (
                     id SERIAL PRIMARY KEY,
-                    created_at TIMESTAMP DEFAULT NOW(),
+                    created_at TIMESTAMPTZ DEFAULT NOW(),
                     last_audit_id INTEGER NOT NULL,
                     chain_hash VARCHAR(64) NOT NULL,
                     entry_count INTEGER NOT NULL,
@@ -226,9 +226,9 @@ async def lifespan(app: FastAPI):
                     session_id VARCHAR(100),
                     message TEXT,
                     details JSON DEFAULT '{}',
-                    created_at TIMESTAMP DEFAULT NOW(),
+                    created_at TIMESTAMPTZ DEFAULT NOW(),
                     acknowledged BOOLEAN DEFAULT FALSE,
-                    acknowledged_at TIMESTAMP,
+                    acknowledged_at TIMESTAMPTZ,
                     acknowledged_by VARCHAR(100)
                 )
             """))
@@ -239,6 +239,12 @@ async def lifespan(app: FastAPI):
                 CREATE INDEX IF NOT EXISTS idx_surv_alerts_sev ON surveillance_alerts(severity)
             """))
             await surv_conn.commit()
+            # Migrate to TIMESTAMPTZ if needed
+            try:
+                await surv_conn.execute(raw_text("ALTER TABLE surveillance_alerts ALTER COLUMN created_at TYPE TIMESTAMPTZ USING created_at AT TIME ZONE 'UTC'"))
+                await surv_conn.execute(raw_text("ALTER TABLE surveillance_alerts ALTER COLUMN acknowledged_at TYPE TIMESTAMPTZ USING acknowledged_at AT TIME ZONE 'UTC'"))
+            except Exception:
+                pass  # Already migrated
             logger.info("Surveillance alerts table ready")
         except Exception as e:
             logger.warning(f"Surveillance alerts table: {e}")

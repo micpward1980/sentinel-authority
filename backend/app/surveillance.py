@@ -143,6 +143,8 @@ class SurveillanceAlert:
 # ── In-memory state (backed by DB on write) ──────────────────
 
 class SurveillanceState:
+    _engine_started_at = None
+
     """
     Live state tracking for all monitored sessions.
     Kept in memory for speed, persisted to DB on state changes.
@@ -259,7 +261,7 @@ class SurveillanceState:
                 ), {
                     "aid": alert.id, "atype": alert.alert_type.value, "sev": alert.severity.value,
                     "cert": alert.certificate_id, "sess": alert.session_id, "msg": alert.message,
-                    "det": __import__('json').dumps(alert.details), "cat": alert.created_at, "ack": False,
+                    "det": __import__('json').dumps(alert.details), "cat": alert.created_at.replace(tzinfo=None), "ack": False,
                 })
                 await db.commit()
         except Exception as e:
@@ -568,6 +570,7 @@ async def _reinstate_certificate_in_db(certificate_id: str, get_db_session, reas
 # ── Engine startup ────────────────────────────────────────────
 
 async def _surveillance_loop(get_db_session):
+    _state._engine_started_at = datetime.now(timezone.utc)
     """Main loop — runs continuously in background."""
     log.info("[SURVEILLANCE] Engine started — scanning every %ds", _config.SCAN_INTERVAL_SECONDS)
     while True:

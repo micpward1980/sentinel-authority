@@ -3290,11 +3290,15 @@ footer{border-top:1px solid var(--hairline)!important;}
           </div>
           <div class="hud-row" style="display:flex;align-items:flex-start;">
             <span class="hud-num">04</span><span class="hud-dot" style="margin-top:6px;"></span>
-            <div><div class="hud-title">Tamper-Evident</div><div class="hud-desc">Enforcement telemetry is recorded in a tamper-evident, cryptographically linked audit chain. Any gap, reorder, or modification breaks the chain and is flagged.</div></div>
+            <div><div class="hud-title">Tamper-Evident Audit Chain</div><div class="hud-desc">Every enforcement event, human decision, and system action is recorded in a SHA-256 hash-chained audit log. Database triggers prevent modification or deletion. HMAC-signed anchors are generated daily for independent chain verification. 19 distinct action types are captured across the full certification lifecycle.</div></div>
           </div>
           <div class="hud-row" style="display:flex;align-items:flex-start;">
             <span class="hud-num">05</span><span class="hud-dot" style="margin-top:6px;"></span>
             <div><div class="hud-title">Standardized Boundary Event Determination</div><div class="hud-desc">The ENVELO enforcement layer records boundary enforcement events pursuant to telemetry definitions established under the ODDC specification. Boundary exceedance conditions, enforcement activations, and drift indicators are determined and categorized by the enforcement architecture and are not operator-configurable. Telemetry integrity is verified with the operator prior to initiation of the CAT-72 verification period.</div></div>
+          </div>
+          <div class="hud-row" style="display:flex;align-items:flex-start;">
+            <span class="hud-num">06</span><span class="hud-dot" style="margin-top:6px;"></span>
+            <div><div class="hud-title">Universal Auto-Discovery</div><div class="hud-desc">The ENVELO discovery engine is domain-agnostic: it observes any autonomous system's normal operation and auto-generates enforceable boundaries. Numeric parameters are bounded by 99th-percentile ranges with configurable safety margins. Geographic positions generate radius or convex-hull polygon geofences. Temporal patterns produce operating-hour windows. Cross-parameter correlations are detected via Pearson analysis and converted to compound conditional rules. Multi-modal operating profiles are identified through histogram valley detection. Operational sequences are inferred from state transition patterns. No domain-specific code is required — the engine works identically for autonomous vehicles, surgical robots, industrial controllers, maritime vessels, or any system that emits key-value telemetry.</div></div>
           </div>
         </div>
       </div>
@@ -3622,6 +3626,30 @@ footer{border-top:1px solid var(--hairline)!important;}
             <div style="width:5px;height:5px;border-radius:50%;background:var(--accent);transition:all 0.4s var(--ease);flex-shrink:0;margin-top:6px;" id="cat72-dot3"></div>
             <span class="hud-num" style="margin-top:2px;">04</span>
             <div><div class="hud-title">Conformance Determination</div><div class="hud-desc">Upon completion of the cumulative verification period, Sentinel Authority independently reviews telemetry records, validates audit chain integrity, and issues an ODDC conformance determination recorded in the public registry. Review is conducted pursuant to the ODDC specification.</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CONTINUOUS SURVEILLANCE -->
+      <div class="reveal" style="max-width:880px;margin:0 auto var(--space-4);">
+        <div class="hud-frame"><i></i>
+          <div class="hud-label" style="margin-bottom:16px;">POST-CERTIFICATION CONTINUOUS SURVEILLANCE</div>
+          <div class="hud-desc" style="line-height:1.9;margin-bottom:20px;">Conformance determination is not the end of oversight. Every certified system is monitored continuously by the Sentinel Authority surveillance engine. Certificates can be suspended automatically — no human delay, no discretion required.</div>
+          <div class="hud-row" style="display:flex;align-items:flex-start;gap:12px;">
+            <span class="hud-num" style="margin-top:2px;">01</span>
+            <div><div class="hud-title">Real-Time Conformance Scoring</div><div class="hud-desc">Each certified system maintains a conformance score (0–100) computed from heartbeat telemetry, violation rates, and enforcement consistency. Scores are updated every 30 seconds. Status levels — healthy, degraded, critical, offline, suspended — are determined automatically from configurable thresholds.</div></div>
+          </div>
+          <div class="hud-row" style="display:flex;align-items:flex-start;gap:12px;">
+            <span class="hud-num" style="margin-top:2px;">02</span>
+            <div><div class="hud-title">Automatic Suspension</div><div class="hud-desc">Certificates are auto-suspended when heartbeat telemetry is lost for more than 15 minutes or when the violation rate exceeds 10% of enforcement decisions. Suspension is immediate, requires no human approval, and is recorded in the tamper-evident audit chain. Suspended systems cannot operate under ODDC conformance until reinstated.</div></div>
+          </div>
+          <div class="hud-row" style="display:flex;align-items:flex-start;gap:12px;">
+            <span class="hud-num" style="margin-top:2px;">03</span>
+            <div><div class="hud-title">Mandatory Human Reinstatement</div><div class="hud-desc">Auto-suspension can only be reversed by authorized personnel through an explicit reinstatement action. The reinstatement, including the authorizing individual and stated reason, is permanently recorded in the audit chain. There is no automated reinstatement pathway.</div></div>
+          </div>
+          <div class="hud-row" style="display:flex;align-items:flex-start;gap:12px;">
+            <span class="hud-num" style="margin-top:2px;">04</span>
+            <div><div class="hud-title">Persistent State</div><div class="hud-desc">Surveillance state is persisted to the database. Server restarts do not reset monitoring. All active sessions, suspended certificates, and unacknowledged alerts are reloaded from persistent storage on startup.</div></div>
           </div>
         </div>
       </div>
