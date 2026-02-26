@@ -245,6 +245,217 @@ class StateObservation:
         return set(self.values)
 
 
+
+
+@dataclass
+class DeltaObservation:
+    """Tracks rate-of-change between consecutive samples for a numeric parameter."""
+    prev_value: Optional[float] = None
+    prev_time: Optional[float] = None
+    deltas: List[float] = field(default_factory=list)
+    rates: List[float] = field(default_factory=list)
+    max_delta: float = 0.0
+    max_rate: float = 0.0
+
+    def record(self, value: float):
+        now = time.time()
+        if self.prev_value is not None and self.prev_time is not None:
+            dt = now - self.prev_time
+            if dt > 0:
+                delta = abs(value - self.prev_value)
+                rate = delta / dt
+                self.deltas.append(delta)
+                self.rates.append(rate)
+                if delta > self.max_delta:
+                    self.max_delta = delta
+                if rate > self.max_rate:
+                    self.max_rate = rate
+        self.prev_value = value
+        self.prev_time = now
+
+    @property
+    def count(self) -> int:
+        return len(self.deltas)
+
+    @property
+    def mean_rate(self) -> float:
+        return statistics.mean(self.rates) if self.rates else 0.0
+
+    @property
+    def stdev_rate(self) -> float:
+        return statistics.stdev(self.rates) if len(self.rates) > 1 else 0.0
+
+    def percentile_rate(self, p: float) -> float:
+        if not self.rates:
+            return 0.0
+        s = sorted(self.rates)
+        k = (len(s) - 1) * (p / 100.0)
+        f_idx = math.floor(k)
+        c_idx = math.ceil(k)
+        if f_idx == c_idx:
+            return s[int(k)]
+        return s[f_idx] * (c_idx - k) + s[c_idx] * (k - f_idx)
+
+
+@dataclass
+class CorrelationObservation:
+    """Tracks paired observations between two parameters for correlation detection."""
+    param_a: str = ""
+    param_b: str = ""
+    pairs: List[Tuple[float, float]] = field(default_factory=list)
+
+    def record(self, a: float, b: float):
+        self.pairs.append((a, b))
+
+    @property
+    def count(self) -> int:
+        return len(self.pairs)
+
+    def correlation(self) -> float:
+        """Pearson correlation coefficient."""
+        if len(self.pairs) < 10:
+            return 0.0
+        a_vals = [p[0] for p in self.pairs]
+        b_vals = [p[1] for p in self.pairs]
+        n = len(self.pairs)
+        mean_a = sum(a_vals) / n
+        mean_b = sum(b_vals) / n
+        cov = sum((a - mean_a) * (b - mean_b) for a, b in self.pairs) / n
+        std_a = (sum((a - mean_a) ** 2 for a in a_vals) / n) ** 0.5
+        std_b = (sum((b - mean_b) ** 2 for b in b_vals) / n) ** 0.5
+        if std_a < 1e-10 or std_b < 1e-10:
+            return 0.0
+        return cov / (std_a * std_b)
+
+    def conditional_ranges(self, a_bins: int = 5) -> List[Dict]:
+        """Split param_a into bins and compute param_b range per bin."""
+        if len(self.pairs) < 20:
+            return []
+        a_vals = sorted(set(p[0] for p in self.pairs))
+        if len(a_vals) < a_bins:
+            a_bins = max(2, len(a_vals))
+        bin_size = len(a_vals) // a_bins
+        result = []
+        for i in range(a_bins):
+            start_idx = i * bin_size
+            end_idx = start_idx + bin_size if i < a_bins - 1 else len(a_vals)
+            a_low = a_vals[start_idx]
+            a_high = a_vals[min(end_idx, len(a_vals) - 1)]
+            b_in_bin = [p[1] for p in self.pairs if a_low <= p[0] <= a_high]
+            if b_in_bin:
+                result.append({
+                    "a_min": a_low, "a_max": a_high,
+                    "b_min": min(b_in_bin), "b_max": max(b_in_bin),
+                    "b_mean": statistics.mean(b_in_bin),
+                    "count": len(b_in_bin),
+                })
+        return result
+
+
+@dataclass
+class ModalObservation:
+    """Detects multi-modal distributions (e.g., 2mph in warehouse, 15mph in corridor)."""
+    values: List[float] = field(default_factory=list)
+
+    def record(self, value: float):
+        self.values.append(value)
+
+    @property
+    def count(self) -> int:
+        return len(self.values)
+
+    def detect_modes(self, min_gap_ratio: float = 0.3) -> List[Dict]:
+        """Detect clusters/modes using valley detection on histogram."""
+        if len(self.values) < 30:
+            return [{"center": statistics.mean(self.values), "min": min(self.values), "max": max(self.values), "count": len(self.values)}]
+        sorted_vals = sorted(self.values)
+        data_range = sorted_vals[-1] - sorted_vals[0]
+        if data_range < 1e-10:
+            return [{"center": sorted_vals[0], "min": sorted_vals[0], "max": sorted_vals[0], "count": len(self.values)}]
+        n_bins = min(50, max(10, len(self.values) // 20))
+        bin_width = data_range / n_bins
+        bins = [0] * n_bins
+        for v in sorted_vals:
+            idx = min(int((v - sorted_vals[0]) / bin_width), n_bins - 1)
+            bins[idx] += 1
+        peaks = []
+        for i in range(1, n_bins - 1):
+            if bins[i] >= bins[i-1] and bins[i] >= bins[i+1] and bins[i] > len(self.values) * 0.02:
+                peaks.append(i)
+        if not peaks:
+            peaks = [bins.index(max(bins))]
+        merged = [peaks[0]]
+        for p in peaks[1:]:
+            if p - merged[-1] > n_bins * min_gap_ratio:
+                merged.append(p)
+        modes = []
+        for peak_idx in merged:
+            center = sorted_vals[0] + (peak_idx + 0.5) * bin_width
+            mode_vals = [v for v in sorted_vals if abs(v - center) < data_range / (len(merged) + 1)]
+            if mode_vals:
+                modes.append({
+                    "center": round(statistics.mean(mode_vals), 6),
+                    "min": round(min(mode_vals), 6),
+                    "max": round(max(mode_vals), 6),
+                    "count": len(mode_vals),
+                })
+        return modes if modes else [{"center": statistics.mean(self.values), "min": min(self.values), "max": max(self.values), "count": len(self.values)}]
+
+    @property
+    def is_multimodal(self) -> bool:
+        return len(self.detect_modes()) > 1
+
+
+@dataclass
+class SequenceObservation:
+    """Tracks state transitions to detect operational sequences and prerequisites."""
+    transitions: List[Tuple[str, str, float]] = field(default_factory=list)
+    state_history: List[Tuple[str, float]] = field(default_factory=list)
+    _prev_states: Dict[str, Any] = field(default_factory=dict)
+
+    def record_states(self, current_states: Dict[str, Any]):
+        now = time.time()
+        for key, value in current_states.items():
+            str_val = str(value).lower()
+            prev = self._prev_states.get(key)
+            if prev is not None and prev != str_val:
+                self.transitions.append((f"{key}={prev}", f"{key}={str_val}", now))
+                self.state_history.append((f"{key}={str_val}", now))
+            self._prev_states[key] = str_val
+
+    @property
+    def count(self) -> int:
+        return len(self.transitions)
+
+    def detect_prerequisites(self, min_confidence: float = 0.8) -> List[Dict]:
+        """Detect state transitions that always follow another state."""
+        if len(self.transitions) < 20:
+            return []
+        follows = defaultdict(lambda: defaultdict(int))
+        total_to = defaultdict(int)
+        for i, (_, to_state, ts) in enumerate(self.transitions):
+            total_to[to_state] += 1
+            for j in range(max(0, i - 5), i):
+                _, prev_to, prev_ts = self.transitions[j]
+                if ts - prev_ts < 60:
+                    follows[to_state][prev_to] += 1
+        prereqs = []
+        for target, predecessors in follows.items():
+            for prereq, count in predecessors.items():
+                if prereq == target:
+                    continue
+                confidence = count / total_to[target] if total_to[target] > 0 else 0
+                if confidence >= min_confidence and count >= 5:
+                    prereqs.append({
+                        "action": target,
+                        "prerequisite": prereq,
+                        "confidence": round(confidence, 3),
+                        "occurrences": count,
+                    })
+        return prereqs
+
+
+
 # ---------------------------------------------------------------------------
 # Discovery Engine
 # ---------------------------------------------------------------------------
@@ -326,6 +537,13 @@ class DiscoveryEngine:
         self._lat_buffer: Dict[str, float] = {}
         self._lon_buffer: Dict[str, float] = {}
 
+        # Enhanced discovery stores
+        self._deltas: Dict[str, DeltaObservation] = {}
+        self._correlations: Dict[str, CorrelationObservation] = {}
+        self._modals: Dict[str, ModalObservation] = {}
+        self._sequences: SequenceObservation = SequenceObservation()
+        self._prev_numeric_snapshot: Dict[str, float] = {}
+
         # Generated boundaries
         self._boundaries: List[Boundary] = []
         self._envelope_definition: Dict[str, Any] = {}
@@ -394,6 +612,9 @@ class DiscoveryEngine:
 
             # Check for paired lat/lon
             self._check_paired_geo(params)
+
+            # Feed enhanced observation stores
+            self._feed_enhanced_observations(params)
 
         # Check if discovery is complete
         if self.auto_transition and self._should_transition():
@@ -465,11 +686,88 @@ class DiscoveryEngine:
                 "unique_values": list(obs.unique_values),
             }
 
+        
+        # Enhanced discovery stats
+        stats["delta_parameters"] = {}
+        for name, obs in self._deltas.items():
+            if obs.count > 0:
+                stats["delta_parameters"][name] = {
+                    "observations": obs.count,
+                    "max_rate": round(obs.max_rate, 4),
+                    "mean_rate": round(obs.mean_rate, 4),
+                }
+        stats["correlations"] = {}
+        for name, obs in self._correlations.items():
+            if obs.count > 10:
+                corr = obs.correlation()
+                if abs(corr) > 0.3:
+                    stats["correlations"][name] = {
+                        "observations": obs.count,
+                        "correlation": round(corr, 4),
+                    }
+        stats["multimodal_parameters"] = {}
+        for name, obs in self._modals.items():
+            if obs.count > 30 and obs.is_multimodal:
+                modes = obs.detect_modes()
+                stats["multimodal_parameters"][name] = {
+                    "modes": len(modes),
+                    "centers": [round(m["center"], 2) for m in modes],
+                }
+        stats["sequence_prerequisites"] = self._sequences.detect_prerequisites()
+
         return stats
 
     # -----------------------------------------------------------------------
     # Classification
     # -----------------------------------------------------------------------
+
+
+    def _feed_enhanced_observations(self, params: Dict[str, Any]):
+        """Feed parameters into enhanced discovery stores."""
+        numeric_snapshot = {}
+
+        for param, value in params.items():
+            param_lower = param.lower()
+            if param_lower in GEO_PARAMS or param_lower in LAT_PARAMS or param_lower in LON_PARAMS:
+                continue
+
+            if isinstance(value, (int, float)) and not isinstance(value, bool):
+                fval = float(value)
+                numeric_snapshot[param_lower] = fval
+
+                if param_lower not in self._deltas:
+                    self._deltas[param_lower] = DeltaObservation()
+                self._deltas[param_lower].record(fval)
+
+                if param_lower not in self._modals:
+                    self._modals[param_lower] = ModalObservation()
+                self._modals[param_lower].record(fval)
+
+        # Cross-parameter correlation (all numeric pairs)
+        numeric_keys = sorted(numeric_snapshot.keys())
+        for i in range(len(numeric_keys)):
+            for j in range(i + 1, len(numeric_keys)):
+                pair_key = f"{numeric_keys[i]}__x__{numeric_keys[j]}"
+                if pair_key not in self._correlations:
+                    self._correlations[pair_key] = CorrelationObservation(
+                        param_a=numeric_keys[i], param_b=numeric_keys[j]
+                    )
+                self._correlations[pair_key].record(
+                    numeric_snapshot[numeric_keys[i]],
+                    numeric_snapshot[numeric_keys[j]]
+                )
+
+        # Sequence tracking for categorical/state params
+        state_snapshot = {}
+        for param, value in params.items():
+            if isinstance(value, str):
+                state_snapshot[param.lower()] = value
+            elif isinstance(value, bool):
+                state_snapshot[param.lower()] = str(value)
+        if state_snapshot:
+            self._sequences.record_states(state_snapshot)
+
+        self._prev_numeric_snapshot = numeric_snapshot
 
     def _classify_and_record(self, param: str, value: Any):
         """Classify a parameter by type and record observation."""
@@ -657,6 +955,36 @@ class DiscoveryEngine:
                 continue
             boundary, spec = self._generate_state_boundary(param, obs)
             self._boundaries.append(boundary)
+            envelope["boundaries"].append(spec)
+
+        # Rate-of-change boundaries
+        for param, obs in self._deltas.items():
+            if obs.count < 20:
+                continue
+            spec = self._generate_delta_boundary(param, obs)
+            if spec:
+                envelope["boundaries"].append(spec)
+
+        # Compound/conditional boundaries from correlations
+        for pair_key, obs in self._correlations.items():
+            if obs.count < 30:
+                continue
+            specs = self._generate_correlation_boundaries(obs)
+            for spec in specs:
+                envelope["boundaries"].append(spec)
+
+        # Multi-modal boundaries
+        for param, obs in self._modals.items():
+            if obs.count < 50 or not obs.is_multimodal:
+                continue
+            spec = self._generate_modal_boundary(param, obs)
+            if spec:
+                envelope["boundaries"].append(spec)
+
+        # Sequence/prerequisite boundaries
+        prereqs = self._sequences.detect_prerequisites()
+        for prereq in prereqs:
+            spec = self._generate_sequence_boundary(prereq)
             envelope["boundaries"].append(spec)
 
         envelope["total_boundaries"] = len(self._boundaries)
@@ -910,3 +1238,8 @@ class DiscoveryEngine:
             self._lon_buffer.clear()
             self._boundaries.clear()
             self._envelope_definition.clear()
+            self._deltas.clear()
+            self._correlations.clear()
+            self._modals.clear()
+            self._sequences = SequenceObservation()
+            self._prev_numeric_snapshot.clear()
