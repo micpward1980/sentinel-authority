@@ -2961,3 +2961,68 @@ async def get_test_telemetry(
         "logs": logs,
     }
 
+
+
+@router.post("/tests/{test_id}/evaluate", summary="Manually trigger test evaluation")
+async def manual_evaluate(
+    test_id: str,
+    db: AsyncSession = Depends(get_db),
+    user: dict = Depends(require_role(["admin"]))
+):
+    """Debug: manually run the auto-evaluator logic for one test."""
+    from app.models.models import EnveloSession, Certificate
+
+    result = await db.execute(select(CAT72Test).where(CAT72Test.test_id == test_id))
+    test = result.scalar_one_or_none()
+    if not test:
+        raise HTTPException(status_code=404, detail="Test not found")
+
+    app_result = await db.execute(select(Application).where(Application.id == test.application_id))
+    application = app_result.scalar_one_or_none()
+
+    # Try all three session matching strategies
+    strategies = {}
+
+    # 1. By test_id FK
+    r1 = await db.execute(select(EnveloSession).where(EnveloSession.test_id == test.id))
+    s1 = r1.scalars().all()
+    strategies["by_test_id"] = len(s1)
+
+    # 2. By org+system
+    if application:
+        r2 = await db.execute(select(EnveloSession).where(
+            EnveloSession.organization_name == application.organization_name,
+            EnveloSession.system_name == application.system_name,
+            EnveloSession.status == "active",
+        ))
+        s2 = r2.scalars().all()
+        strategies["by_org_system"] = len(s2)
+
+    # 3. By certificate
+    cert_r = await db.execute(select(Certificate).where(Certificate.application_id == application.id))
+    cert = cert_r.scalar_one_or_none()
+    s3 = []
+    if cert:
+        r3 = await db.execute(select(EnveloSession).where(
+            EnveloSession.certificate_id == cert.id,
+            EnveloSession.status == "active",
+        ))
+        s3 = r3.scalars().all()
+        strategies["by_cert_id"] = len(s3)
+
+    # Use whatever matched
+    all_sessions = s1 or s2 if application else [] or s3
+    total_pass = sum(s.pass_count or 0 for s in (s1 or s3))
+    total_block = sum(s.block_count or 0 for s in (s1 or s3))
+
+    return {
+        "test_id": test.test_id,
+        "test_state": test.state,
+        "strategies": strategies,
+        "cert_id": cert.id if cert else None,
+        "cert_state": cert.state if cert else None,
+        "total_pass": total_pass,
+        "total_block": total_block,
+        "total_actions": total_pass + total_block,
+        "elapsed_hours": (datetime.utcnow() - test.started_at).total_seconds() / 3600 if test.started_at else 0,
+    }
