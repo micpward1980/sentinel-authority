@@ -145,6 +145,13 @@ async def get_boundary_config(
         )
         cert = cert_result.scalar_one_or_none()
     
+    if not cert and api_key.certificate_id:
+        # Direct lookup from API key certificate link
+        cert_result = await db.execute(
+            select(Certificate).where(Certificate.id == api_key.certificate_id)
+        )
+        cert = cert_result.scalar_one_or_none()
+
     if not cert:
         # Try to find certificate by user's applications
         from app.models.models import User
@@ -167,6 +174,13 @@ async def get_boundary_config(
             )
             cert = cert_result.scalar_one_or_none()
     
+    if not cert and api_key.certificate_id:
+        # Direct lookup from API key certificate link
+        cert_result = await db.execute(
+            select(Certificate).where(Certificate.id == api_key.certificate_id)
+        )
+        cert = cert_result.scalar_one_or_none()
+
     if not cert:
         raise HTTPException(
             status_code=404, 
@@ -312,6 +326,13 @@ async def update_boundary_config(
     )
     cert = cert_result.scalar_one_or_none()
     
+    if not cert and api_key.certificate_id:
+        # Direct lookup from API key certificate link
+        cert_result = await db.execute(
+            select(Certificate).where(Certificate.id == api_key.certificate_id)
+        )
+        cert = cert_result.scalar_one_or_none()
+
     if not cert:
         raise HTTPException(status_code=404, detail="Certificate not found")
     
