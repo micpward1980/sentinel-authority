@@ -349,7 +349,6 @@ async def update_application_state(
                 )
                 db.add(new_cert)
                 await db.flush()  # get the ID
-                app.certificate_id = new_cert.id
                 print(f"Auto-created certificate {cert_number} for {app.application_number}")
             except Exception as e:
                 print(f"Auto-create certificate failed: {e}")

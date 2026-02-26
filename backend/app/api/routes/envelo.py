@@ -118,16 +118,12 @@ async def register_session(
         raise HTTPException(status_code=500, detail=f"Session register failed: {str(e)}")
 
     # Auto-transition: approved → observe when interlock first connects
-    if certificate:
+    if certificate and certificate.application_id:
         from app.models.models import Application
         app_result = await db.execute(
-            select(Application).where(Application.certificate_id == certificate.id)
+            select(Application).where(Application.id == certificate.application_id)
         )
-        if not app_result:
-            app_result = await db.execute(
-                select(Application).where(Application.certificate_number == data.certificate_id)
-            )
-        application = app_result.scalar_one_or_none() if app_result else None
+        application = app_result.scalar_one_or_none()
         if application and application.state == "approved":
             application.state = "observe"
             await db.commit()
