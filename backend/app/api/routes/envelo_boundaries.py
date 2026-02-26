@@ -112,7 +112,7 @@ class BoundaryConfig(BaseModel):
 # API ENDPOINTS
 # ============================================
 
-@router.get("/config", response_model=BoundaryConfig)
+@router.get("/config")
 async def get_boundary_config(
     db: AsyncSession = Depends(get_db),
     api_key: APIKey = Depends(get_api_key_from_header)
@@ -194,7 +194,8 @@ async def get_boundary_config(
     # The envelope_definition JSON should have structured boundary data
     boundaries = envelope_def if isinstance(envelope_def, dict) else {}
     
-    return BoundaryConfig(
+    try:
+        return BoundaryConfig(
         certificate_id=str(cert.id),
         certificate_number=cert.certificate_number,
         organization_name=cert.organization_name,
@@ -398,4 +399,33 @@ async def upload_discovered_boundaries(
             + len(data.envelope_definition.get("boundaries", {}).get("categorical", []))
             + len(data.envelope_definition.get("boundaries", {}).get("geographic", []))
             + len(data.envelope_definition.get("boundaries", {}).get("temporal", []))
+    }
+
+
+@router.get("/debug")
+async def debug_boundary_config(
+    db: AsyncSession = Depends(get_db),
+    api_key: APIKey = Depends(get_api_key_from_header)
+):
+    """Debug: show raw cert data"""
+    cert = None
+    if api_key.certificate_id:
+        cert_result = await db.execute(
+            select(Certificate).where(Certificate.id == api_key.certificate_id)
+        )
+        cert = cert_result.scalar_one_or_none()
+    
+    if not cert:
+        return {"error": "no cert found", "api_key_id": api_key.id, "cert_id": api_key.certificate_id}
+    
+    return {
+        "cert_id": cert.id,
+        "cert_number": cert.certificate_number,
+        "state": cert.state,
+        "system_version": cert.system_version,
+        "application_id": cert.application_id,
+        "odd_spec_type": str(type(cert.odd_specification)),
+        "odd_spec": cert.odd_specification,
+        "envelope_type": str(type(cert.envelope_definition)),
+        "envelope": cert.envelope_definition,
     }
