@@ -2538,7 +2538,7 @@ footer{border-top:1px solid var(--hairline)!important;}
         <div style="width:72px;height:1px;background:rgba(15,18,30,0.22);margin:0 0 32px;"></div>
         
         <p style="font-size:17px;color:rgba(15,18,30,0.75);max-width:480px;margin:0 0 14px;line-height:1.75;">
-          Independent conformance certification that autonomous systems operate within defined limits — enforced at runtime, verified independently, recorded immutably.
+          Independent certification of runtime boundary enforcement for autonomous systems.
         </p>
         
         </div>
@@ -3095,8 +3095,8 @@ footer{border-top:1px solid var(--hairline)!important;}
     <section class="section" style="padding:24px 0 16px;">
       <div class="reveal" style="max-width:700px;margin:0 auto;text-align:center;">
         <p style="font-family:var(--serif);font-size:clamp(18px,2.5vw,24px);font-weight:300;color:rgba(15,18,30,0.88);line-height:1.55;letter-spacing:-0.01em;">
-          Autonomous systems operate across transportation, finance, robotics, healthcare, and industrial automation without independently verified runtime boundary enforcement.<br><br>
-          ODDC defines and attests a discrete category of independent runtime boundary enforcement verification. Historically, this category has not been formalized as a recognized conformance domain.
+          Autonomous systems are deployed based on manufacturer self-attestation. No independent mechanism verifies that runtime boundary enforcement is architectural and active.<br><br>
+          ODDC formalizes that missing category.
         </p>
       </div>
     </section>
@@ -3117,23 +3117,23 @@ footer{border-top:1px solid var(--hairline)!important;}
           <div class="hud-label" style="margin-bottom:16px;">AUTONOMOUS SYSTEM DEFINITION</div>
           <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;">
             <span class="hud-dot" style="margin-top:5px;"></span>
-            <div><span class="hud-title">Decision-Making Without Real-Time Human Approval</span>
-            <div class="hud-desc">System initiates actions based on environmental inputs without requiring contemporaneous human approval for each execution event.</div></div>
+            <div><span class="hud-title">Autonomous Decision Authority</span>
+            <div class="hud-desc">Executes decisions without contemporaneous human approval.</div></div>
           </div>
           <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;">
             <span class="hud-dot" style="margin-top:5px;"></span>
-            <div><span class="hud-title">Direct or Indirect Actuator Authority</span>
-            <div class="hud-desc">System controls physical actuators, financial instruments, network resources, or other execution endpoints.</div></div>
+            <div><span class="hud-title">Actuator Authority</span>
+            <div class="hud-desc">Controls actuators, financial instruments, or execution endpoints.</div></div>
           </div>
           <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;">
             <span class="hud-dot" style="margin-top:5px;"></span>
-            <div><span class="hud-title">Environmental Input and Execution Authority</span>
-            <div class="hud-desc">System ingests sensor, market, or environmental data and translates it into operational action.</div></div>
+            <div><span class="hud-title">Environmental Input Processing</span>
+            <div class="hud-desc">Translates environmental inputs into operational action.</div></div>
           </div>
           <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;">
             <span class="hud-dot" style="margin-top:5px;"></span>
             <div><span class="hud-title">Direct Operational Effect</span>
-            <div class="hud-desc">System outputs directly alter operational state and are not limited to advisory or informational functions.</div></div>
+            <div class="hud-desc">Outputs alter operational state, not limited to advisory functions.</div></div>
           </div>
         </div>
       </div>
@@ -3290,7 +3290,7 @@ footer{border-top:1px solid var(--hairline)!important;}
           </div>
           <div class="hud-row" style="display:flex;align-items:flex-start;">
             <span class="hud-num">04</span><span class="hud-dot" style="margin-top:6px;"></span>
-            <div><div class="hud-title">Tamper-Evident Audit Chain</div><div class="hud-desc">Every enforcement event, human decision, and system action is recorded in a SHA-256 hash-chained audit log. Database triggers prevent modification or deletion. HMAC-signed anchors are generated daily for independent chain verification. 19 distinct action types are captured across the full certification lifecycle.</div></div>
+            <div><div class="hud-title">Tamper-Evident Audit Chain</div><div class="hud-desc">Every enforcement event, human decision, and system action is recorded in a SHA-256 hash-chained audit log. Database triggers prevent modification or deletion. HMAC-signed anchors are generated daily for independent chain verification. 19 distinct action types are captured across the full certification lifecycle. <a href="/conformance.html" style="color:var(--accent);text-decoration:underline;">Full audit specification →</a></div></div>
           </div>
           <div class="hud-row" style="display:flex;align-items:flex-start;">
             <span class="hud-num">05</span><span class="hud-dot" style="margin-top:6px;"></span>
@@ -3298,7 +3298,7 @@ footer{border-top:1px solid var(--hairline)!important;}
           </div>
           <div class="hud-row" style="display:flex;align-items:flex-start;">
             <span class="hud-num">06</span><span class="hud-dot" style="margin-top:6px;"></span>
-            <div><div class="hud-title">Universal Auto-Discovery</div><div class="hud-desc">The ENVELO discovery engine is domain-agnostic: it observes any autonomous system's normal operation and auto-generates enforceable boundaries. Numeric parameters are bounded by 99th-percentile ranges with configurable safety margins. Geographic positions generate radius or convex-hull polygon geofences. Temporal patterns produce operating-hour windows. Cross-parameter correlations are detected via Pearson analysis and converted to compound conditional rules. Multi-modal operating profiles are identified through histogram valley detection. Operational sequences are inferred from state transition patterns. No domain-specific code is required — the engine works identically for autonomous vehicles, surgical robots, industrial controllers, maritime vessels, or any system that emits key-value telemetry.</div></div>
+            <div><div class="hud-title">Universal Auto-Discovery</div><div class="hud-desc">The ENVELO discovery engine is domain-agnostic. It observes system telemetry during normal operation and automatically generates enforceable boundaries — including numeric thresholds, geographic geofences, temporal windows, rate-of-change limits, cross-parameter correlations, and operational sequence prerequisites. No domain-specific code is required. <a href="/conformance.html" style="color:var(--accent);text-decoration:underline;">Full boundary type specification →</a></div></div>
           </div>
         </div>
       </div>
@@ -3307,10 +3307,8 @@ footer{border-top:1px solid var(--hairline)!important;}
       <div class="reveal" style="max-width:700px;margin:var(--space-2) auto 0;">
         <div class="hud-frame"><i></i>
           <div class="hud-label" style="margin-bottom:16px;">DECISION AUTHORITY AND EXECUTION CONSTRAINT</div>
-          <div class="hud-desc" style="line-height:1.9;margin-bottom:12px;">Sentinel Authority does not influence model logic, decision-making processes, or operational parameter selection. Operators define system behavior, enforcement thresholds, and operational design domains (ODD). The Pre-CAT-72 Audit Control Review does not prescribe operational parameters — it verifies that operator-declared ODD boundaries are sufficiently specified and that the ENVELO Interlock is correctly configured to enforce them. Operators retain full authority over what those boundaries are.</div>
-          <div class="hud-desc" style="line-height:1.9;margin-bottom:12px;">The ENVELO Interlock operates exclusively at the execution boundary. It enforces operator-declared limits by preventing actions outside declared operational parameters. It does not modify behavior, influence strategy, or override operator-defined fail-safe mechanisms within the declared ODD.</div>
-          <div class="hud-desc" style="line-height:1.9;">Decision authority remains solely with the operator. Boundary enforcement integrity is independently verified pursuant to the ODDC standard.</div>
-          <div class="hud-desc" style="line-height:1.9;margin-top:12px;">Enforcement is continuous. The ENVELO Interlock operates at all times on the operator&#x27;s infrastructure — not only during CAT-72 assessment periods. Between conformance determinations, the interlock continues to enforce boundaries, log telemetry, and trigger PAUSED state on drift detection. The tamper-evident record covers the full inter-period interval. Sentinel Authority does not monitor live telemetry — the interlock enforces independently, and SA periodically verifies that enforcement was maintained.</div>
+          <div class="hud-desc" style="line-height:1.9;margin-bottom:12px;">Decision authority remains solely with the operator. Sentinel Authority does not influence system logic, model behavior, or operational thresholds. The ENVELO Interlock enforces operator-declared boundaries at the execution layer and does not override behavior within the declared ODD.</div>
+          <div class="hud-desc" style="line-height:1.9;margin-bottom:12px;">Enforcement is continuous — not limited to CAT-72 assessment periods. The interlock operates at all times on the operator's infrastructure. Removal or disablement invalidates certification.</div>
           <div style="margin-top:16px;padding:16px 20px;border-left:3px solid rgba(15,18,30,0.25);background:rgba(15,18,30,0.03);">
             <div style="font-family:var(--mono);font-size:13px;font-weight:600;color:rgba(15,18,30,0.85);line-height:1.7;">Removal or disablement of the ENVELO Interlock automatically invalidates the associated ODDC certificate.</div>
           </div>
@@ -3634,22 +3632,18 @@ footer{border-top:1px solid var(--hairline)!important;}
       <div class="reveal" style="max-width:880px;margin:0 auto var(--space-4);">
         <div class="hud-frame"><i></i>
           <div class="hud-label" style="margin-bottom:16px;">POST-CERTIFICATION CONTINUOUS SURVEILLANCE</div>
-          <div class="hud-desc" style="line-height:1.9;margin-bottom:20px;">Conformance determination is not the end of oversight. Every certified system is monitored continuously by the Sentinel Authority surveillance engine. Certificates can be suspended automatically — no human delay, no discretion required.</div>
+          <div class="hud-desc" style="line-height:1.9;margin-bottom:20px;">Certification remains valid only while enforcement remains active. Certified systems are subject to continuous conformance surveillance.</div>
           <div class="hud-row" style="display:flex;align-items:flex-start;gap:12px;">
             <span class="hud-num" style="margin-top:2px;">01</span>
-            <div><div class="hud-title">Real-Time Conformance Scoring</div><div class="hud-desc">Each certified system maintains a conformance score (0–100) computed from heartbeat telemetry, violation rates, and enforcement consistency. Scores are updated every 30 seconds. Status levels — healthy, degraded, critical, offline, suspended — are determined automatically from configurable thresholds.</div></div>
+            <div><div class="hud-title">Continuous Conformance Scoring</div><div class="hud-desc">Each certified system maintains a real-time conformance score computed from enforcement telemetry. Status levels are determined automatically from verified thresholds.</div></div>
           </div>
           <div class="hud-row" style="display:flex;align-items:flex-start;gap:12px;">
             <span class="hud-num" style="margin-top:2px;">02</span>
-            <div><div class="hud-title">Automatic Suspension</div><div class="hud-desc">Certificates are auto-suspended when heartbeat telemetry is lost for more than 15 minutes or when the violation rate exceeds 10% of enforcement decisions. Suspension is immediate, requires no human approval, and is recorded in the tamper-evident audit chain. Suspended systems cannot operate under ODDC conformance until reinstated.</div></div>
+            <div><div class="hud-title">Automatic Suspension</div><div class="hud-desc">Certificates are auto-suspended upon verified enforcement failure or telemetry loss. Suspension is immediate and requires no human approval.</div></div>
           </div>
           <div class="hud-row" style="display:flex;align-items:flex-start;gap:12px;">
             <span class="hud-num" style="margin-top:2px;">03</span>
-            <div><div class="hud-title">Mandatory Human Reinstatement</div><div class="hud-desc">Auto-suspension can only be reversed by authorized personnel through an explicit reinstatement action. The reinstatement, including the authorizing individual and stated reason, is permanently recorded in the audit chain. There is no automated reinstatement pathway.</div></div>
-          </div>
-          <div class="hud-row" style="display:flex;align-items:flex-start;gap:12px;">
-            <span class="hud-num" style="margin-top:2px;">04</span>
-            <div><div class="hud-title">Persistent State</div><div class="hud-desc">Surveillance state is persisted to the database. Server restarts do not reset monitoring. All active sessions, suspended certificates, and unacknowledged alerts are reloaded from persistent storage on startup.</div></div>
+            <div><div class="hud-title">Mandatory Human Reinstatement</div><div class="hud-desc">Reinstatement requires documented human authorization. All state transitions are recorded in the tamper-evident audit chain and the public registry.</div></div>
           </div>
         </div>
       </div>
@@ -4622,12 +4616,12 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
 
       <div class="reveal" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:var(--space-3);margin-top:var(--space-2);">
         <div class="hud-frame"><i></i>
-          <div class="hud-title" style="margin-bottom:12px;color:rgba(180,52,52,1.00);">Current Evaluation Context</div>
-          <div class="hud-desc" style="line-height:1.8;">Organizations deploying autonomous systems that make operational decisions require independently verifiable enforcement evidence. Vendor self-assessments describe intentions, not enforcement architecture.</div>
+          <div class="hud-title" style="margin-bottom:12px;color:rgba(180,52,52,1.00);">Current State</div>
+          <div class="hud-desc" style="line-height:1.8;">Vendor self-assessments describe intentions, not enforcement architecture.</div>
         </div>
         <div class="hud-frame"><i></i>
           <div class="hud-title" style="margin-bottom:12px;color:rgba(22,135,62,1.00);">Available Mechanism</div>
-          <div class="hud-desc" style="line-height:1.8;">ODDC certification independently verifies that an autonomous system has enforceable runtime boundary controls. ODDC certification may be incorporated into procurement evaluation criteria. Certified systems are listed in the public Sentinel registry.</div>
+          <div class="hud-desc" style="line-height:1.8;">ODDC independently verifies runtime boundary enforcement. Certified systems are listed in the public registry.</div>
         </div>
       </div>
       <div class="reveal" style="text-align:center;margin-top:var(--space-2);">
@@ -4650,12 +4644,12 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
 
       <div class="reveal" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:var(--space-3);margin-top:var(--space-2);">
         <div class="hud-frame"><i></i>
-          <div class="hud-title" style="margin-bottom:12px;color:rgba(180,52,52,1.00);">Current Evaluation Context</div>
-          <div class="hud-desc" style="line-height:1.8;">Jurisdictions that approve autonomous systems based on manufacturer self-assessment may lack an independent mechanism to verify that deployed systems operate within declared operational parameters.</div>
+          <div class="hud-title" style="margin-bottom:12px;color:rgba(180,52,52,1.00);">Current State</div>
+          <div class="hud-desc" style="line-height:1.8;">Approval mechanisms rely on manufacturer self-assessment without independent enforcement verification.</div>
         </div>
         <div class="hud-frame"><i></i>
           <div class="hud-title" style="margin-bottom:12px;color:rgba(22,135,62,1.00);">Available Mechanism</div>
-          <div class="hud-desc" style="line-height:1.8;">ODDC provides an independent mechanism for verifying runtime boundary enforcement without displacing existing regulatory frameworks. Specifications are versioned and publicly documented. Revisions follow structured governance review.</div>
+          <div class="hud-desc" style="line-height:1.8;">ODDC provides independent enforcement verification compatible with existing regulatory frameworks.</div>
         </div>
       </div>
       <div class="reveal" style="text-align:center;margin-top:var(--space-2);">
@@ -4677,10 +4671,8 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
       </div>
       <div class="reveal" style="max-width:700px;margin:0 auto;">
         <div class="hud-frame hud-scanline"><i></i>
-          <div class="hud-label" style="margin-bottom:16px;">PROBLEM</div>
-          <div class="hud-desc" style="line-height:1.9;">Autonomous systems with actuator authority operate across transportation, finance, healthcare, and industrial automation. Approval mechanisms rely on manufacturer self-attestation. No independent mechanism exists to verify that a deployed system enforces its declared operational boundaries at runtime. This creates a governance gap between declared operational intent and verified enforcement behavior.</div>
-          <div class="hud-label" style="margin-top:24px;margin-bottom:16px;">MECHANISM</div>
-          <div class="hud-desc" style="line-height:1.9;">ODDC defines a discrete conformance category: independent verification of runtime boundary enforcement. The standard requires a non-bypassable interlock architecture (ENVELO), a minimum cumulative enforcement verification period (CAT-72), and a tamper-evident audit chain. Conformance determinations are recorded in a public registry. The standard is compatible with existing regulatory frameworks without displacing them.</div>
+          <div class="hud-desc" style="line-height:1.9;margin-bottom:16px;">Autonomous systems are commonly deployed based on manufacturer self-attestation. No independent mechanism verifies that runtime boundary enforcement is architectural and active.</div>
+          <div class="hud-desc" style="line-height:1.9;">ODDC formalizes independent verification of runtime boundary enforcement through non-bypassable interlock architecture (ENVELO), cumulative enforcement verification (CAT-72), and tamper-evident audit records. Compatible with existing regulatory frameworks without displacing them.</div>
         </div>
       </div>
     </section>
@@ -4872,10 +4864,7 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
         <span style="font-family:var(--mono);font-size:14px;letter-spacing:2.5px;color:rgba(15,18,30,0.55);text-transform:uppercase;">Governance</span>
         <h2 style="font-family:var(--serif);font-size:28px;font-weight:300;color:rgba(15,18,30,0.88);margin:16px 0 12px;letter-spacing:-0.03em;">Standards Governance</h2>
         <p style="font-family:var(--mono);font-size:14px;color:rgba(15,18,30,0.55);line-height:1.8;margin-bottom:24px;">
-          ODDC is a published conformance standard. Sentinel Authority is an independent conformity assessment body that certifies against that standard — it does not own, control, or define conformance outcomes. The standard and the certifier are structurally distinct.
-        </p>
-        <p style="font-family:var(--mono);font-size:14px;color:rgba(15,18,30,0.55);line-height:1.8;margin-bottom:40px;">
-          ODDC specifications are subject to structured governance review. Revisions are versioned, publicly documented, and subject to independent technical review prior to adoption. Governing documents are available in the publications registry.
+          ODDC is a published conformance specification. Sentinel Authority is an independent conformity assessment body certifying against that specification. The standard and the certifier are structurally distinct. Revisions are versioned, publicly documented, and subject to independent review.
         </p>
         <div class="gov-3col">
           <div>
