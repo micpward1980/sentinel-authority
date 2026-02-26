@@ -3033,9 +3033,9 @@ async def manual_evaluate(
         # === ACTUALLY EVALUATE ===
         total_actions = total_pass + total_block
         pass_rate = (total_pass / total_actions * 100) if total_actions > 0 else 0.0
-        MIN_PASS_RATE = 80.0
-        MIN_ACTIONS = 10
-        TEST_DURATION_HOURS = 0.001
+        MIN_PASS_RATE = 95.0
+        MIN_ACTIONS = 100
+        TEST_DURATION_HOURS = 72
 
         evaluation = {"pass_rate": round(pass_rate, 1), "meets_actions": total_actions >= MIN_ACTIONS, "meets_duration": elapsed >= TEST_DURATION_HOURS, "meets_pass_rate": pass_rate >= MIN_PASS_RATE}
         can_pass = all([evaluation["meets_actions"], evaluation["meets_duration"], evaluation["meets_pass_rate"]])
