@@ -255,12 +255,6 @@ async def lifespan(app: FastAPI):
     start_surveillance(AsyncSessionLocal)
     logger.info("Surveillance engine started")
 
-    # Start surveillance engine
-    from app.surveillance import start_surveillance
-    from app.core.database import AsyncSessionLocal
-    start_surveillance(AsyncSessionLocal)
-    logger.info("Surveillance engine started")
-
     yield
     logger.info("Shutting down...")
 
