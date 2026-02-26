@@ -197,7 +197,7 @@ async def lifespan(app: FastAPI):
         "ALTER TABLE envelo_sessions ADD COLUMN organization_name VARCHAR(255)",
         "ALTER TABLE envelo_sessions ADD COLUMN system_name VARCHAR(255)",
         "ALTER TABLE certificates ADD COLUMN is_demo BOOLEAN DEFAULT FALSE",
-        "ALTER TABLE certificates ADD COLUMN metadata_json JSON DEFAULT NULL",,
+        "ALTER TABLE certificates ADD COLUMN metadata_json JSON DEFAULT NULL",
         "ALTER TABLE certificates ADD COLUMN suspended_at TIMESTAMP",
         "ALTER TABLE certificates ADD COLUMN suspension_reason TEXT",
         "ALTER TABLE certificates ADD COLUMN suspended_by VARCHAR(100)",
