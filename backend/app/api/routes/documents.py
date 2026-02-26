@@ -9,7 +9,7 @@ DOCS_DIR = Path(__file__).resolve().parent.parent.parent.parent / "static" / "do
 
 AVAILABLE_DOCS = {
     "oddc-certification-guide": {
-        "filename": "ODDC_Certification_Guide_v5.pdf",
+        "filename": "ODDC_Certification_Guide_v5.0.pdf",
         "title": "ODDC Certification Guide",
         "description": "Complete applicant roadmap for ODDC certification — Phase 1 through Continued Monitoring, post-certification compliance policy, ENVELO CLI reference, three-tier enforcement model",
         "version": "5.0",
