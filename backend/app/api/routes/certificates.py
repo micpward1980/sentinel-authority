@@ -2,7 +2,7 @@
 from app.services.audit_service import write_audit_log
 from app.services.email_service import notify_certificate_issued
 from datetime import datetime, timedelta
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import Response
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
@@ -310,3 +310,21 @@ def _categorize_reason(reason: str) -> str:
     if any(w in reason_lower for w in ["scope", "odd", "domain"]):
         return "ODD Scope Violation"
     return "Administrative"
+
+
+@router.patch("/{certificate_number}/envelope", summary="Update certificate envelope definition")
+async def update_envelope(
+    certificate_number: str,
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+    user: dict = Depends(require_role(["admin"]))
+):
+    """Admin: update envelope definition on a certificate."""
+    result = await db.execute(select(Certificate).where(Certificate.certificate_number == certificate_number))
+    cert = result.scalar_one_or_none()
+    if not cert:
+        raise HTTPException(status_code=404, detail="Certificate not found")
+    data = await request.json()
+    cert.envelope_definition = data.get("envelope_definition", cert.envelope_definition)
+    await db.commit()
+    return {"message": "Envelope updated", "certificate_number": certificate_number}
