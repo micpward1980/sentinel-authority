@@ -927,26 +927,35 @@ async def report_specs(
     
     # Find the application linked to this API key (via certificate)
     application = None
-    if api_key.certificate_id:
+    print(f"[REPORT-SPECS] api_key.id={api_key.id} certificate_id={getattr(api_key, 'certificate_id', 'MISSING')} user_id={getattr(api_key, 'user_id', 'MISSING')}")
+    
+    cert_id = getattr(api_key, 'certificate_id', None)
+    if cert_id:
         cert_result = await db.execute(
-            select(Certificate).where(Certificate.id == api_key.certificate_id)
+            select(Certificate).where(Certificate.id == cert_id)
         )
         cert = cert_result.scalar_one_or_none()
+        print(f"[REPORT-SPECS] cert lookup: cert_id={cert_id} found={'yes' if cert else 'no'} app_id={getattr(cert, 'application_id', None) if cert else None}")
         if cert and cert.application_id:
             app_result = await db.execute(
                 select(Application).where(Application.id == cert.application_id)
             )
             application = app_result.scalar_one_or_none()
+            print(f"[REPORT-SPECS] app lookup: found={'yes' if application else 'no'}")
     
-    # Fallback: try user_id match
+    # Fallback: try user_id match  
     if not application:
-        app_result = await db.execute(
-            select(Application).where(
-                Application.applicant_id == api_key.user_id,
-                Application.state.in_(["approved", "bounded", "testing"])
-            ).order_by(Application.created_at.desc())
-        )
-        application = app_result.scalars().first()
+        user_id = getattr(api_key, 'user_id', None)
+        print(f"[REPORT-SPECS] fallback: user_id={user_id}")
+        if user_id:
+            app_result = await db.execute(
+                select(Application).where(
+                    Application.applicant_id == user_id,
+                    Application.state.in_(["approved", "bounded", "testing", "conformant"])
+                ).order_by(Application.created_at.desc())
+            )
+            application = app_result.scalars().first()
+            print(f"[REPORT-SPECS] fallback result: found={'yes' if application else 'no'}")
     
     if not application:
         raise HTTPException(status_code=404, detail="No active application found for this API key")
