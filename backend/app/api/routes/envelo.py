@@ -5,6 +5,7 @@ Now with database persistence
 
 import json
 from datetime import datetime, timezone
+from app.services.audit_service import write_audit_log
 from fastapi import APIRouter, Depends, HTTPException, Header
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
@@ -1026,6 +1027,15 @@ async def report_specs(
         f"Interlock reported specs for {application.organization_name}/{application.system_name}: {updated_fields}"
     )
     
+    
+    # Audit: boundary report
+    try:
+        await write_audit_log(db, action="boundaries_reported", resource_type="application",
+            resource_id=application.id, user_email=api_key.name if hasattr(api_key, "name") else "interlock",
+            details={"application_number": application.application_number, "boundary_count": len(specs.boundaries)})
+    except Exception:
+        pass
+
     return {
         "status": "ok",
         "application_id": application.id,

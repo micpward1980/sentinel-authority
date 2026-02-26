@@ -511,6 +511,10 @@ async def learn_complete(
     
     # Transition to running
     test.state = "running"
+
+    await write_audit_log(db, action="test_started", resource_type="cat72_test",
+        resource_id=test.id, user_id=int(user.get("sub", 0)), user_email=user.get("email", "system"),
+        details={"test_id": test.test_id, "duration_hours": test.duration_hours})
     test.started_at = datetime.utcnow()  # Reset timer for 72-hour enforcement
     
     # Generate genesis hash
@@ -2286,6 +2290,13 @@ async def ingest_telemetry(
     max_seconds = test.duration_hours * 3600
     if elapsed >= max_seconds:
         test.state = "completed"
+
+        await write_audit_log(db, action="test_completed", resource_type="cat72_test",
+            resource_id=test.id, user_email="system",
+            details={"test_id": test.test_id, "result": getattr(test, "result", "unknown"),
+                     "convergence_score": getattr(test, "convergence_score", None),
+                     "pass_count": getattr(test, "pass_count", 0),
+                     "block_count": getattr(test, "block_count", 0)})
         test.ended_at = timestamp
         
         # Compute final metrics (same as stop_test)

@@ -9,7 +9,11 @@ Mount in main.py:
     app.include_router(surveillance_router, prefix="/api/surveillance", tags=["Surveillance"])
 """
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter
+from app.services.audit_service import write_audit_log
+from app.core.database import get_db
+from app.core.security import get_current_user, require_role
+from sqlalchemy.ext.asyncio import AsyncSession, Depends, HTTPException, Query
 from typing import Optional
 from datetime import datetime, timezone
 
@@ -151,6 +155,17 @@ async def reinstate_certificate(certificate_id: str, reason: str = "Manual reins
     #   from app.database import async_session_factory
     #   await _reinstate_certificate_in_db(certificate_id, async_session_factory, reason)
 
+    # Audit: reinstatement
+    try:
+        from app.core.database import async_session_factory
+        async with async_session_factory() as audit_db:
+            await write_audit_log(audit_db, action="certificate_reinstated",
+                resource_type="certificate", user_email="admin",
+                details={"certificate_id": certificate_id, "reason": reason})
+            await audit_db.commit()
+    except Exception as e:
+        print(f"[SURVEILLANCE] Audit log error (non-fatal): {e}")
+
     return {"status": "reinstated", "certificate_id": certificate_id, "reason": reason}
 
 
@@ -225,6 +240,21 @@ async def update_config(
         if scan_interval_seconds < 10:
             raise HTTPException(status_code=400, detail="Scan interval must be >= 10s")
         config.SCAN_INTERVAL_SECONDS = scan_interval_seconds
+
+    # Audit: config change
+    try:
+        from app.core.database import async_session_factory
+        async with async_session_factory() as audit_db:
+            await write_audit_log(audit_db, action="surveillance_config_changed",
+                resource_type="surveillance", user_email="admin",
+                details={"heartbeat_suspend": config.HEARTBEAT_SUSPEND_SECONDS,
+                         "violation_warn": config.VIOLATION_WARN_RATE,
+                         "violation_critical": config.VIOLATION_CRITICAL_RATE,
+                         "violation_suspend": config.VIOLATION_SUSPEND_RATE,
+                         "scan_interval": config.SCAN_INTERVAL_SECONDS})
+            await audit_db.commit()
+    except Exception as e:
+        print(f"[SURVEILLANCE] Audit log error (non-fatal): {e}")
 
     return {
         "status": "updated",

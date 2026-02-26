@@ -478,6 +478,14 @@ async def _suspend_certificate_in_db(certificate_id: str, get_db_session, reason
                 cert.suspended_by = "surveillance_engine"
                 await db.commit()
                 log.warning(f"[SURVEILLANCE] DB: Certificate {certificate_id} suspended — {reason}")
+                # Audit trail
+                try:
+                    from app.services.audit_service import write_audit_log
+                    await write_audit_log(db, action="certificate_auto_suspended",
+                        resource_type="certificate", user_email="surveillance_engine",
+                        details={"certificate_id": certificate_id, "reason": reason})
+                except Exception:
+                    pass
     except Exception as e:
         log.error(f"[SURVEILLANCE] Failed to suspend {certificate_id} in DB: {e}")
 

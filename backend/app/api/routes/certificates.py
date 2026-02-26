@@ -53,6 +53,17 @@ async def issue_certificate(test_id: str, db: AsyncSession = Depends(get_db), us
         print(f"Session promotion note: {e}")
     await db.commit()
     await db.refresh(certificate)
+
+    # Audit: certificate issuance
+    await write_audit_log(db, action="certificate_issued", resource_type="certificate",
+        resource_id=certificate.id, user_id=int(user["sub"]), user_email=user["email"],
+        details={"certificate_number": certificate.certificate_number,
+                 "organization": certificate.organization_name,
+                 "system": certificate.system_name,
+                 "test_id": test_id,
+                 "convergence_score": test.convergence_score,
+                 "evidence_hash": test.evidence_hash})
+    await db.commit()
     # Generate and store PDF
     try:
         odd_spec = certificate.odd_specification or {}
