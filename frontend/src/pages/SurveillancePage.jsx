@@ -139,7 +139,7 @@ export default function SurveillancePage() {
 
   return (
     <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 24px 60px' }}>
-      <SectionHeader label="Enforcement" title="Continuous Surveillance" />
+      <SectionHeader label="ENVELO Interlock" title="Continuous Enforcement" />
 
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24, flexWrap: 'wrap', gap: 12 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>

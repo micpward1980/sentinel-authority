@@ -41,10 +41,10 @@ function Layout({ children }) {
     { name: 'Applications',    href: '/applications',  icon: FileText,     roles: ['admin', 'applicant'] },
     { name: 'ENVELO',          href: '/envelo',        icon: 'brand',      roles: ['admin', 'applicant'] },
     { name: 'Monitoring',      href: '/monitoring',    icon: Activity,     roles: ['admin', 'applicant'] },
-    { name: 'Resources',       href: '/resources',     icon: BookOpen,     roles: ['admin', 'applicant'] },
+    { name: 'Enforcement',     href: '/surveillance',  icon: Shield,       roles: ['admin'] },
     { name: 'Activity',        href: '/activity',      icon: Activity,     roles: ['admin', 'applicant'] },
-    { name: 'Surveillance',   href: '/surveillance', icon: Shield,      roles: ['admin'] },
-    { name: 'User Management', href: '/users',         icon: Users,        roles: ['admin'] },
+    { name: 'Resources',       href: '/resources',     icon: BookOpen,     roles: ['admin', 'applicant'] },
+    { name: 'Users',           href: '/users',         icon: Users,        roles: ['admin'] },
     { name: 'Settings',        href: '/settings',      icon: Settings,     roles: ['admin', 'applicant'] },
     { name: 'API Docs',        href: '/api-docs',      icon: ExternalLink, roles: ['admin'] },
   ];
