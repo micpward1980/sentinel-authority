@@ -2973,81 +2973,86 @@ async def manual_evaluate(
     from app.models.models import EnveloSession, Certificate
     from datetime import datetime as dt
 
-    result = await db.execute(select(CAT72Test).where(CAT72Test.test_id == test_id))
-    test = result.scalar_one_or_none()
-    if not test:
-        raise HTTPException(status_code=404, detail="Test not found")
+    try:
+        result = await db.execute(select(CAT72Test).where(CAT72Test.test_id == test_id))
+        test = result.scalar_one_or_none()
+        if not test:
+            raise HTTPException(status_code=404, detail="Test not found")
 
-    app_result = await db.execute(select(Application).where(Application.id == test.application_id))
-    application = app_result.scalar_one_or_none()
+        app_result = await db.execute(select(Application).where(Application.id == test.application_id))
+        application = app_result.scalar_one_or_none()
 
-    strategies = {}
-    matched_sessions = []
+        strategies = {}
+        matched_sessions = []
 
-    # Strategy 1: By test_id FK
-    r1 = await db.execute(select(EnveloSession).where(EnveloSession.test_id == test.id))
-    s1 = r1.scalars().all()
-    strategies["by_test_fk"] = len(s1)
-    if s1:
-        matched_sessions = s1
+        # Strategy 1: By cert integer ID
+        cert = None
+        if application:
+            cert_r = await db.execute(select(Certificate).where(Certificate.application_id == application.id))
+            cert = cert_r.scalars().first()
 
-    # Strategy 2: By org+system
-    if not matched_sessions and application:
-        r2 = await db.execute(select(EnveloSession).where(
-            EnveloSession.organization_name == application.organization_name,
-            EnveloSession.system_name == application.system_name,
-        ))
-        s2 = r2.scalars().all()
-        strategies["by_org_system"] = len(s2)
-        if s2:
-            matched_sessions = s2
+        if cert:
+            r1 = await db.execute(select(EnveloSession).where(
+                EnveloSession.certificate_id == cert.id,
+            ))
+            s1 = r1.scalars().all()
+            strategies["by_cert_int_id"] = {"query": cert.id, "found": len(s1)}
+            if s1:
+                matched_sessions = s1
 
-    # Strategy 3: By certificate_id
-    cert = None
-    if application:
-        cert_r = await db.execute(select(Certificate).where(Certificate.application_id == application.id))
-        cert = cert_r.scalars().first()
-    if not matched_sessions and cert:
-        r3 = await db.execute(select(EnveloSession).where(
-            EnveloSession.certificate_id == str(cert.id),
-        ))
-        s3 = r3.scalars().all()
-        strategies["by_cert_id_str"] = len(s3)
-        if s3:
-            matched_sessions = s3
+        # Strategy 2: By cert number string
+        if not matched_sessions and cert:
+            r2 = await db.execute(select(EnveloSession).where(
+                EnveloSession.certificate_id == cert.certificate_number,
+            ))
+            s2 = r2.scalars().all()
+            strategies["by_cert_number"] = {"query": cert.certificate_number, "found": len(s2)}
+            if s2:
+                matched_sessions = s2
 
-    # Strategy 4: By cert number string match
-    if not matched_sessions and cert:
-        r4 = await db.execute(select(EnveloSession).where(
-            EnveloSession.certificate_id == cert.certificate_number,
-        ))
-        s4 = r4.scalars().all()
-        strategies["by_cert_number"] = len(s4)
-        if s4:
-            matched_sessions = s4
+        # Strategy 3: By org+system
+        if not matched_sessions and application:
+            r3 = await db.execute(select(EnveloSession).where(
+                EnveloSession.organization_name == application.organization_name,
+                EnveloSession.system_name == application.system_name,
+            ))
+            s3 = r3.scalars().all()
+            strategies["by_org_system"] = {"query": f"{application.organization_name}/{application.system_name}", "found": len(s3)}
+            if s3:
+                matched_sessions = s3
 
-    total_pass = sum(s.pass_count or 0 for s in matched_sessions)
-    total_block = sum(s.block_count or 0 for s in matched_sessions)
+        # Strategy 4: Just get ALL active sessions and show them
+        r4 = await db.execute(select(EnveloSession).where(EnveloSession.status == "active"))
+        all_active = r4.scalars().all()
+        strategies["all_active_sessions"] = len(all_active)
 
-    elapsed = 0.0
-    if test.started_at:
-        elapsed = (dt.utcnow() - test.started_at).total_seconds() / 3600
+        total_pass = sum(s.pass_count or 0 for s in matched_sessions)
+        total_block = sum(s.block_count or 0 for s in matched_sessions)
+        elapsed = (dt.utcnow() - test.started_at).total_seconds() / 3600 if test.started_at else 0.0
 
-    return {
-        "test_id": test.test_id,
-        "test_state": test.state,
-        "test_db_id": test.id,
-        "application_id": application.id if application else None,
-        "app_org": application.organization_name if application else None,
-        "app_system": application.system_name if application else None,
-        "strategies": strategies,
-        "matched_sessions": len(matched_sessions),
-        "session_details": [{"sid": s.session_id[:8], "cert": s.certificate_id, "org": s.organization_name, "sys": s.system_name, "pass": s.pass_count, "block": s.block_count, "status": s.status} for s in matched_sessions],
-        "cert_db_id": cert.id if cert else None,
-        "cert_number": cert.certificate_number if cert else None,
-        "cert_state": cert.state if cert else None,
-        "total_pass": total_pass,
-        "total_block": total_block,
-        "total_actions": total_pass + total_block,
-        "elapsed_hours": round(elapsed, 4),
-    }
+        return {
+            "test_id": test.test_id,
+            "test_state": test.state,
+            "app_org": application.organization_name if application else None,
+            "app_system": application.system_name if application else None,
+            "strategies": strategies,
+            "matched_count": len(matched_sessions),
+            "session_details": [
+                {"sid": s.session_id[:8], "cert_id_raw": s.certificate_id, "org": s.organization_name, "sys": s.system_name, "pass": s.pass_count, "block": s.block_count, "status": s.status}
+                for s in matched_sessions[:10]
+            ],
+            "all_active_sample": [
+                {"sid": s.session_id[:8], "cert_id_raw": s.certificate_id, "org": s.organization_name, "sys": s.system_name}
+                for s in all_active[:10]
+            ],
+            "cert_db_id": cert.id if cert else None,
+            "cert_number": cert.certificate_number if cert else None,
+            "cert_state": cert.state if cert else None,
+            "total_pass": total_pass,
+            "total_block": total_block,
+            "elapsed_hours": round(elapsed, 4),
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        return {"error": str(e), "type": type(e).__name__}
