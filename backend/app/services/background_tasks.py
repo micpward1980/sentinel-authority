@@ -574,16 +574,31 @@ async def cat72_auto_evaluator():
                     )
                     test_sessions = sess_result.scalars().all()
                     
-                    # Fallback: match by org+system if test_id not set on sessions
+                    # Fallback: match by org+system (any session type)
                     if not test_sessions:
                         sess_result2 = await db.execute(
                             select(EnveloSession).where(
-                                EnveloSession.session_type == "cat72_test",
                                 EnveloSession.organization_name == application.organization_name,
                                 EnveloSession.system_name == application.system_name,
+                                EnveloSession.status == "active",
                             )
                         )
                         test_sessions = sess_result2.scalars().all()
+                    
+                    # Third fallback: match by API key's certificate
+                    if not test_sessions:
+                        cert_result3 = await db.execute(
+                            select(Certificate).where(Certificate.application_id == application.id)
+                        )
+                        cert3 = cert_result3.scalar_one_or_none()
+                        if cert3:
+                            sess_result3 = await db.execute(
+                                select(EnveloSession).where(
+                                    EnveloSession.certificate_id == cert3.id,
+                                    EnveloSession.status == "active",
+                                )
+                            )
+                            test_sessions = sess_result3.scalars().all()
 
                     total_pass = sum(s.pass_count or 0 for s in test_sessions)
                     total_block = sum(s.block_count or 0 for s in test_sessions)
@@ -637,11 +652,18 @@ async def cat72_auto_evaluator():
                         test.evidence_hash = hashlib.sha256(evidence.encode()).hexdigest()
 
                         # Check if certificate already exists
-                        existing_cert = await db.execute(
+                        existing_cert_r = await db.execute(
                             select(Certificate).where(Certificate.application_id == application.id)
                         )
-                        if existing_cert.scalar_one_or_none():
-                            cat72_logger.info(f"Certificate already exists for application {application.id}, skipping issuance")
+                        existing_cert = existing_cert_r.scalar_one_or_none()
+                        if existing_cert:
+                            # Activate existing cert instead of creating new one
+                            existing_cert.state = "conformant"
+                            existing_cert.convergence_score = pass_rate
+                            existing_cert.evidence_hash = test.evidence_hash
+                            existing_cert.issued_at = datetime.utcnow()
+                            cat72_logger.info(f"Certificate {existing_cert.certificate_number} activated for application {application.id}")
+                            application.state = CertificationState.CONFORMANT
                             await db.commit()
                             continue
 

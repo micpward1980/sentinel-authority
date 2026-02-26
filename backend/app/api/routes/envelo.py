@@ -213,8 +213,18 @@ async def receive_telemetry(
     
     # Update session stats
     session.last_telemetry_at = datetime.utcnow()
-    session.pass_count = (session.pass_count or 0) + data.stats.get('pass_count', 0)
-    session.block_count = (session.block_count or 0) + data.stats.get('block_count', 0)
+    # Use stats if provided, otherwise count from records
+    stat_pass = data.stats.get('pass_count', 0)
+    stat_block = data.stats.get('block_count', 0)
+    if stat_pass == 0 and stat_block == 0 and data.records:
+        for rec in data.records:
+            r_val = rec.get('result', rec.get('decision', '')).upper()
+            if r_val in ('PASS', 'ALLOW', 'ALLOW_DISCOVERY'):
+                stat_pass += 1
+            elif r_val == 'BLOCK':
+                stat_block += 1
+    session.pass_count = (session.pass_count or 0) + stat_pass
+    session.block_count = (session.block_count or 0) + stat_block
     
     await db.commit()
 

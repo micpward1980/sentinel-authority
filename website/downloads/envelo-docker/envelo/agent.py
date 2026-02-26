@@ -735,7 +735,8 @@ class EnveloAgent:
                 json={
                     "certificate_id": self.config.certificate_number,
                     "session_id": self._session_id,
-                    "records": batch
+                    "records": batch,
+                    "stats": {"pass_count": self._stats["pass_count"], "block_count": self._stats["block_count"]}
                 },
                 timeout=10
             )
