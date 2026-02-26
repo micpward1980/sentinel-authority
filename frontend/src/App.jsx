@@ -24,6 +24,7 @@ const PendingPage = lazy(() => import('./pages/PendingPage'));
 const ResourcesPage = lazy(() => import('./pages/ResourcesPage'));
 const EnveloPage = lazy(() => import('./pages/EnveloPage'));
 const MonitoringPage = lazy(() => import('./pages/MonitoringPage'));
+const SurveillancePage = lazy(() => import('./pages/SurveillancePage'));
 const UserManagementPage = lazy(() => import('./pages/UserManagementPage'));
 const ActivityPage = lazy(() => import('./pages/ActivityPage'));
 const MyActivityPage = lazy(() => import('./pages/MyActivityPage'));

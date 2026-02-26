@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Bell, Settings, FileText, Activity, Users, Home, LogOut, Menu, X, ExternalLink, BookOpen } from 'lucide-react';
+import { Bell, Settings, FileText, Activity, Users, Home, LogOut, Menu, X, ExternalLink, BookOpen, Shield} from 'lucide-react';
 import { api } from '../config/api';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { styles } from '../config/styles';
@@ -42,6 +42,7 @@ function Layout({ children }) {
     { name: 'ENVELO',          href: '/envelo',        icon: 'brand',      roles: ['admin', 'applicant'] },
     { name: 'Resources',       href: '/resources',     icon: BookOpen,     roles: ['admin', 'applicant'] },
     { name: 'Activity',        href: '/activity',      icon: Activity,     roles: ['admin', 'applicant'] },
+    { name: 'Surveillance',   href: '/surveillance', icon: Shield,      roles: ['admin'] },
     { name: 'User Management', href: '/users',         icon: Users,        roles: ['admin'] },
     { name: 'Settings',        href: '/settings',      icon: Settings,     roles: ['admin', 'applicant'] },
     { name: 'API Docs',        href: '/api-docs',      icon: ExternalLink, roles: ['admin'] },
