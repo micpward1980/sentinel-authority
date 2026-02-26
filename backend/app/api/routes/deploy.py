@@ -64,7 +64,7 @@ def _build_yaml(app, cert, api_key: str) -> str:
 
     config = {
         "sentinel_authority": {
-            "api_endpoint": "https://api.sentinelauthority.org",
+            "api_endpoint": "https://sentinel-authority-production.up.railway.app",
             "api_key": api_key,
             "certificate": getattr(cert, 'certificate_number', None) or app.application_number,
             "system_name": app.system_name or "Autonomous System",
@@ -74,7 +74,7 @@ def _build_yaml(app, cert, api_key: str) -> str:
             "numeric": [
                 {"name": b.get("name",""), "parameter": b.get("parameter", b.get("name","")),
                  "min": b.get("min_value"), "max": b.get("max_value"),
-                 "hard_limit": b.get("hard_limit"), "unit": b.get("unit",""), "tolerance": b.get("tolerance",0)}
+                 "hard_limit": b.get("hard_limit"), "unit": b.get("unit","").replace("%","pct"), "tolerance": b.get("tolerance",0)}
                 for b in envelope.get("numeric_boundaries", [])
             ],
             "geographic": [
