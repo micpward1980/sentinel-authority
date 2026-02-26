@@ -54,7 +54,7 @@ function App() {
           <Route path="/certificates" element={<Navigate to="/envelo" />} />
           <Route path="/pending" element={<LazyLoad><PendingPage /></LazyLoad>} />
           <Route path="/resources" element={<ProtectedRoute><Layout><LazyLoad><ResourcesPage /></LazyLoad></Layout></ProtectedRoute>} />
-          <Route path="/monitoring" element={<Navigate to="/envelo" />} />
+          <Route path="/monitoring" element={<ProtectedRoute><Layout><LazyLoad><MonitoringPage /></LazyLoad></Layout></ProtectedRoute>} />
           <Route path="/envelo" element={<ProtectedRoute><Layout><LazyLoad><EnveloPage /></LazyLoad></Layout></ProtectedRoute>} />
           <Route path="/surveillance" element={<ProtectedRoute roles={["admin"]}><Layout><LazyLoad><SurveillancePage /></LazyLoad></Layout></ProtectedRoute>} />
           <Route path="/activity" element={<ProtectedRoute roles={["admin"]}><Layout><LazyLoad><ActivityPage /></LazyLoad></Layout></ProtectedRoute>} />

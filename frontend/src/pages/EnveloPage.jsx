@@ -373,7 +373,7 @@ function EnveloAdminView() {
   const [certificates, setCertificates] = useState([]);
   const [selectedSession, setSelectedSession] = useState(null);
   const [selectedCert, setSelectedCert]       = useState(null);
-  const [activeTab, setActiveTab] = useState('queue'); // queue | monitoring | certified | review
+  const [activeTab, setActiveTab] = useState('queue'); // queue | certified
   const [reviewComment, setReviewComment] = useState('');
   const [reviewingApp, setReviewingApp]   = useState(null);
   const [loading, setLoading] = useState(true);
@@ -460,13 +460,12 @@ function EnveloAdminView() {
 
   const tabs = [
     { id: 'queue',      label: 'Review Queue',  badge: needsAttention },
-    { id: 'monitoring', label: 'Live Monitoring', badge: activeSessions.length },
     { id: 'certified',  label: 'Certified',      badge: conformant.length },
   ];
 
   return (
     <div className="space-y-6">
-      <SectionHeader label="⬡ Admin Console" title="ENVELO Management" description="Certify, monitor, and manage all customer systems" />
+      <SectionHeader label="⬡ Admin Console" title="ENVELO Management" description="Certify and manage all customer systems" />
 
       {/* Stats row */}
       <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))' }}>
@@ -710,86 +709,6 @@ function EnveloAdminView() {
       )}
 
       {/* ── LIVE MONITORING ── */}
-      {activeTab === 'monitoring' && (
-        <div className="space-y-6">
-          <Panel glow>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '20px' }}>
-              <p style={{ fontFamily: styles.mono, fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary }}>Active Sessions</p>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '4px 12px' }}>
-                <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: styles.accentGreen, animation: 'pulse 2s infinite' }} />
-                <span style={{ fontFamily: styles.mono, fontSize: '10px', color: styles.accentGreen, textTransform: 'uppercase', letterSpacing: '1px' }}>Live</span>
-              </div>
-            </div>
-
-            {sessions.length > 0 ? (
-              <div style={{ overflowX: 'auto' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                  <thead>
-                    <tr style={{ borderBottom: `1px solid ${styles.borderGlass}` }}>
-                      {['Certificate', 'System', 'Status', 'Pass', 'Block', ''].map(h => (
-                        <th key={h} style={{ padding: '10px 16px', textAlign: 'left', fontFamily: styles.mono, fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, fontWeight: 400 }}>{h}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {sessions.map((s, i) => {
-                      const la = s.last_heartbeat_at || s.last_telemetry_at || s.started_at;
-                      const online = la && (Date.now() - new Date(la).getTime()) < 120_000;
-                      return (
-                        <tr key={i} style={{ borderBottom: `1px solid ${styles.borderSubtle}` }}>
-                          <td style={{ padding: '14px 16px', fontFamily: styles.mono, fontSize: '12px', color: styles.purpleBright }}>{s.certificate_id || 'N/A'}</td>
-                          <td style={{ padding: '14px 16px', color: styles.textPrimary, fontSize: '13px' }}>{s.system_name || '—'}</td>
-                          <td style={{ padding: '14px 16px' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                              <div style={{ width: '7px', height: '7px', borderRadius: '50%', background: online ? styles.accentGreen : styles.textDim }} />
-                              <span style={{ fontFamily: styles.mono, fontSize: '10px', color: online ? styles.accentGreen : styles.textDim, textTransform: 'uppercase', letterSpacing: '1px' }}>{online ? 'Online' : 'Offline'}</span>
-                            </div>
-                          </td>
-                          <td style={{ padding: '14px 16px', color: styles.accentGreen, fontFamily: styles.mono }}>{s.pass_count || 0}</td>
-                          <td style={{ padding: '14px 16px', color: (s.block_count || 0) > 0 ? styles.accentRed : styles.textTertiary, fontFamily: styles.mono }}>{s.block_count || 0}</td>
-                          <td style={{ padding: '14px 16px' }}>
-                            <button onClick={() => setSelectedSession(s)} style={{ padding: '5px 12px', background: 'transparent', border: `1px solid ${styles.purpleBright}`, color: styles.purpleBright, fontFamily: styles.mono, fontSize: '10px', cursor: 'pointer', borderRadius: '4px' }}>Details</button>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            ) : (
-              <p style={{ color: styles.textTertiary, textAlign: 'center', padding: '40px' }}>No sessions yet. Sessions appear when customers deploy the interlock.</p>
-            )}
-          </Panel>
-
-          {selectedSession && (
-            <Panel accent="purple">
-              <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px', marginBottom: '20px' }}>
-                <p style={{ fontFamily: styles.mono, fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary }}>Session Detail</p>
-                <div style={{ display: 'flex', gap: '10px' }}>
-                  <button
-                    onClick={async () => {
-                      try {
-                        const res = await api.get(`/api/envelo/admin/sessions/${selectedSession.id}/report`, { responseType: 'blob' });
-                        const url = URL.createObjectURL(new Blob([res.data]));
-                        Object.assign(document.createElement('a'), { href: url, download: `CAT72-${selectedSession.session_id}.pdf` }).click();
-                      } catch (e) { toast.show('Report unavailable', 'error'); }
-                    }}
-                    style={{ padding: '7px 14px', background: 'transparent', border: 'none', color: styles.purpleBright, fontSize: '11px', cursor: 'pointer', fontFamily: styles.mono }}
-                  >
-                    ↓ Download Report
-                  </button>
-                  <button onClick={() => setSelectedSession(null)} style={{ padding: '7px 14px', background: styles.cardSurface, border: `1px solid ${styles.borderGlass}`, color: styles.textTertiary, cursor: 'pointer', fontSize: '11px', borderRadius: '6px' }}>✕</button>
-                </div>
-              </div>
-              <SessionReport session={selectedSession} />
-              <div style={{ marginTop: '20px' }}>
-                <TelemetryLog sessionId={selectedSession.id} />
-              </div>
-            </Panel>
-          )}
-        </div>
-      )}
-
       {/* ── CERTIFIED ── */}
       {activeTab === 'certified' && (
         <Panel>

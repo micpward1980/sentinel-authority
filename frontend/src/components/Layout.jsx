@@ -40,6 +40,7 @@ function Layout({ children }) {
     { name: 'Dashboard',       href: '/dashboard',     icon: Home,         roles: ['admin', 'applicant'] },
     { name: 'Applications',    href: '/applications',  icon: FileText,     roles: ['admin', 'applicant'] },
     { name: 'ENVELO',          href: '/envelo',        icon: 'brand',      roles: ['admin', 'applicant'] },
+    { name: 'Monitoring',      href: '/monitoring',    icon: Activity,     roles: ['admin', 'applicant'] },
     { name: 'Resources',       href: '/resources',     icon: BookOpen,     roles: ['admin', 'applicant'] },
     { name: 'Activity',        href: '/activity',      icon: Activity,     roles: ['admin', 'applicant'] },
     { name: 'Surveillance',   href: '/surveillance', icon: Shield,      roles: ['admin'] },
