@@ -64,13 +64,13 @@ async def auth_headers(client):
     """Register a test user and return auth headers."""
     import uuid
     email = f"test_{uuid.uuid4().hex[:8]}@test.example.com"
-    await client.post("/api/auth/register", json={
+    await client.post("/api/v1/auth/register", json={
         "email": email,
         "password": "Zx93kLm_Qwerty7841!",
         "full_name": "Test User",
         "organization": "Test Org"
     })
-    resp = await client.post("/api/auth/login", json={
+    resp = await client.post("/api/v1/auth/login", json={
         "email": email,
         "password": "Zx93kLm_Qwerty7841!"
     })
