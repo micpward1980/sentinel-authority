@@ -58,7 +58,7 @@ function App() {
           <Route path="/envelo" element={<ProtectedRoute><Layout><LazyLoad><EnveloPage /></LazyLoad></Layout></ProtectedRoute>} />
           <Route path="/surveillance" element={<ProtectedRoute roles={["admin"]}><Layout><LazyLoad><SurveillancePage /></LazyLoad></Layout></ProtectedRoute>} />
           <Route path="/activity" element={<ProtectedRoute roles={["admin"]}><Layout><LazyLoad><ActivityPage /></LazyLoad></Layout></ProtectedRoute>} />
-          <Route path="/my-activity" element={<Navigate to="/activity" />} />
+          <Route path="/my-activity" element={<ProtectedRoute><Layout><LazyLoad><MyActivityPage /></LazyLoad></Layout></ProtectedRoute>} />
           <Route path="/settings" element={<ProtectedRoute><Layout><LazyLoad><SettingsPage /></LazyLoad></Layout></ProtectedRoute>} />
           <Route path="/api-docs" element={<ProtectedRoute roles={["admin"]}><Layout><LazyLoad><ApiDocsPage /></LazyLoad></Layout></ProtectedRoute>} />
           <Route path="/licensees" element={<Navigate to="/envelo" />} />
