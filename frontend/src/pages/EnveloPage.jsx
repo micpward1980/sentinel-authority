@@ -760,6 +760,8 @@ function EnveloCustomerView() {
   const [apiKeys, setApiKeys]     = useState([]);
   const [copied, setCopied]       = useState(false);
   const [showUninstall, setShowUninstall] = useState(false);
+  const [agreementChecked, setAgreementChecked] = useState(false);
+  const [acceptingAgreement, setAcceptingAgreement] = useState(false);
 
   const load = async () => {
     try {
@@ -880,7 +882,94 @@ function EnveloCustomerView() {
     );
   }
 
-  // ════ STATE 3: Approved — DEPLOY NOW ════════════════════════════════════════
+  // ════ STATE 3a: Approved but agreement not yet accepted ═══════════════════
+  const needsAgreement = (latestApp.state === 'approved' || latestApp.state === 'bounded' || latestApp.state === 'observe') && !latestApp.agreement_accepted_at;
+
+  const handleAcceptAgreement = async () => {
+    setAcceptingAgreement(true);
+    try {
+      await api.post(`/api/applications/${latestApp.id}/accept-agreement`);
+      toast.show('Conformance Agreement executed — deploy when ready', 'success');
+      load();
+    } catch (e) {
+      toast.show(e.response?.data?.detail || 'Failed to record agreement', 'error');
+    }
+    setAcceptingAgreement(false);
+  };
+
+  if (needsAgreement) {
+    return (
+      <div className="space-y-6">
+        <SectionHeader label="ENVELO Interlock" title="Conformance Agreement" description="Review and execute the agreement before deployment." />
+
+        <Panel glow>
+          <div style={{ textAlign: 'center', padding: '24px 16px 20px' }}>
+            <div style={{ width: '56px', height: '56px', borderRadius: '50%', border: `2px solid ${styles.accentGreen}`, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', fontSize: '24px' }}>✓</div>
+            <h2 style={{ fontFamily: styles.serif, fontSize: 'clamp(20px,4vw,26px)', fontWeight: 200, marginBottom: '8px', color: styles.accentGreen }}>Application Approved</h2>
+            <p style={{ color: styles.textSecondary, fontSize: '14px' }}>{latestApp.system_name} — {latestApp.organization_name}</p>
+          </div>
+        </Panel>
+
+        <Panel>
+          <p style={{ fontFamily: styles.mono, fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '20px' }}>Conformance Agreement</p>
+          <div style={{ maxHeight: '400px', overflowY: 'auto', padding: '20px', background: styles.cardSurface, border: `1px solid ${styles.borderGlass}`, borderRadius: '8px', marginBottom: '20px', fontSize: '13px', color: styles.textSecondary, lineHeight: 1.7 }}>
+            <p style={{ fontWeight: 600, color: styles.textPrimary, marginBottom: '16px' }}>ODDC Conformance Agreement</p>
+            <p style={{ marginBottom: '12px' }}>This Conformance Agreement ("Agreement") is entered into between Sentinel Authority ("SA") and the undersigned applicant ("Applicant") in connection with ODDC certification services.</p>
+            <p style={{ fontWeight: 600, color: styles.textPrimary, margin: '16px 0 8px' }}>1. Scope of Certification</p>
+            <p style={{ marginBottom: '12px' }}>SA will evaluate Applicant's autonomous system for Operational Design Domain Conformance ("ODDC") using the ENVELO Interlock enforcement framework and the CAT-72 assessment protocol. Certification applies solely to the system version, configuration, and operational domain tested.</p>
+            <p style={{ fontWeight: 600, color: styles.textPrimary, margin: '16px 0 8px' }}>2. Applicant Obligations</p>
+            <p style={{ marginBottom: '8px' }}>Applicant agrees to: (a) deploy and maintain the ENVELO Interlock agent on all certified systems; (b) maintain minimum 99% monthly uptime for the Interlock agent; (c) not modify, disable, or circumvent ENVELO enforcement mechanisms; (d) promptly notify SA of any material changes to the certified system; (e) submit to continuous post-certification enforcement.</p>
+            <p style={{ fontWeight: 600, color: styles.textPrimary, margin: '16px 0 8px' }}>3. Continuous Enforcement</p>
+            <p style={{ marginBottom: '8px' }}>Certified systems are subject to continuous enforcement. SA computes a real-time conformance score for each system. Certificates are automatically suspended if agent heartbeat is lost for more than 15 minutes or boundary violation rate exceeds the enforcement threshold. Reinstatement requires human authorization.</p>
+            <p style={{ fontWeight: 600, color: styles.textPrimary, margin: '16px 0 8px' }}>4. Revocation & Suspension</p>
+            <p style={{ marginBottom: '8px' }}>SA reserves the right to suspend or revoke certification for: (a) failure to maintain Interlock connectivity; (b) material modification of the certified system without re-assessment; (c) repeated boundary violations; (d) non-payment of renewal fees; (e) conduct that endangers public safety.</p>
+            <p style={{ fontWeight: 600, color: styles.textPrimary, margin: '16px 0 8px' }}>5. Intellectual Property</p>
+            <p style={{ marginBottom: '8px' }}>The ENVELO Interlock transmits only operational telemetry. Applicant's proprietary system internals, algorithms, and trade secrets are not accessed, transmitted, or stored by SA.</p>
+            <p style={{ fontWeight: 600, color: styles.textPrimary, margin: '16px 0 8px' }}>6. Limitation of Liability</p>
+            <p style={{ marginBottom: '8px' }}>ODDC certification does not constitute a warranty of safety. SA's liability is limited to the certification fees paid. SA is not liable for damages arising from system operation, regardless of certification status.</p>
+            <p style={{ fontWeight: 600, color: styles.textPrimary, margin: '16px 0 8px' }}>7. Term & Renewal</p>
+            <p style={{ marginBottom: '8px' }}>Certification is valid for one year from issuance. Renewal requires demonstration of continued conformance and payment of applicable fees. Lapsed certifications require a new CAT-72 assessment.</p>
+            <p style={{ fontWeight: 600, color: styles.textPrimary, margin: '16px 0 8px' }}>8. Governing Law</p>
+            <p>This Agreement is governed by the laws of the State of Texas, USA. Disputes shall be resolved in the courts of Travis County, Texas.</p>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', padding: '16px', background: 'rgba(74,61,117,0.04)', border: `1px solid rgba(74,61,117,0.15)`, borderRadius: '6px', marginBottom: '20px' }}>
+            <input type="checkbox" id="agreement-check" checked={agreementChecked} onChange={(e) => setAgreementChecked(e.target.checked)} style={{ marginTop: '2px', accentColor: styles.purpleBright, width: '18px', height: '18px', cursor: 'pointer', flexShrink: 0 }} />
+            <label htmlFor="agreement-check" style={{ fontSize: '13px', color: styles.textPrimary, lineHeight: 1.6, cursor: 'pointer' }}>
+              I have read and agree to the ODDC Conformance Agreement on behalf of <strong>{latestApp.organization_name}</strong>. I understand that certification is subject to continuous enforcement and may be suspended or revoked under the conditions described above.
+            </label>
+          </div>
+
+          <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+            <button onClick={handleAcceptAgreement} disabled={!agreementChecked || acceptingAgreement} style={{ padding: '13px 36px', background: agreementChecked ? styles.purplePrimary : styles.cardSurface, border: `1px solid ${agreementChecked ? styles.purpleBright : styles.borderGlass}`, color: agreementChecked ? '#fff' : styles.textTertiary, fontFamily: styles.mono, fontSize: '12px', letterSpacing: '1.5px', textTransform: 'uppercase', borderRadius: '6px', cursor: agreementChecked ? 'pointer' : 'not-allowed', opacity: acceptingAgreement ? 0.6 : 1 }}>
+              {acceptingAgreement ? 'Recording...' : 'Execute Agreement'}
+            </button>
+            <a href="https://www.sentinelauthority.org/conformance-agreement.html" target="_blank" rel="noopener" style={{ fontFamily: styles.mono, fontSize: '11px', color: styles.purpleBright, textDecoration: 'none' }}>View full agreement ↗</a>
+          </div>
+        </Panel>
+
+        <Panel>
+          <p style={{ fontFamily: styles.mono, fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '12px' }}>What happens next</p>
+          {[
+            { step: '1', text: 'Application approved', done: true },
+            { step: '2', text: 'Execute Conformance Agreement', done: false, active: true },
+            { step: '3', text: 'Deploy the ENVELO Interlock', done: false },
+            { step: '4', text: '72-hour conformance test runs', done: false },
+            { step: '5', text: 'Certificate issued', done: false },
+          ].map(s => (
+            <div key={s.step} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 0', borderBottom: `1px solid ${styles.borderSubtle}` }}>
+              <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: s.done ? 'rgba(22,135,62,0.1)' : s.active ? 'rgba(74,61,117,0.1)' : styles.cardSurface, border: `1px solid ${s.done ? styles.accentGreen : s.active ? styles.purpleBright : styles.borderGlass}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', color: s.done ? styles.accentGreen : s.active ? styles.purpleBright : styles.textTertiary, fontFamily: styles.mono, flexShrink: 0 }}>
+                {s.done ? '✓' : s.step}
+              </div>
+              <span style={{ fontSize: '13px', color: s.done ? styles.textPrimary : s.active ? styles.purpleBright : styles.textSecondary, fontWeight: s.active ? 500 : 400 }}>{s.text}</span>
+            </div>
+          ))}
+        </Panel>
+      </div>
+    );
+  }
+
+  // ════ STATE 3b: Approved + agreement accepted — DEPLOY NOW ════════════════
   if (latestApp.state === 'approved' || latestApp.state === 'bounded' || latestApp.state === 'observe') {
     const certNum = userCerts[0]?.certificate_number || latestApp.certificate_number || 'PENDING';
     const keyStr = firstKey?.key || firstKey?.key_prefix ? (firstKey.key || firstKey.key_prefix + '••••••••') : 'PROVISIONING...';

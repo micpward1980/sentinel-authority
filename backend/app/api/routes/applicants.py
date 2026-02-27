@@ -12,6 +12,7 @@ from app.api.routes.webhooks import fire_webhook
 from app.core.security import get_current_user, require_role
 from app.models.models import Application, AuditLog, ApplicationComment, CertificationState, User
 from app.services.audit_service import write_audit_log
+from datetime import timezone
 from app.services.email_service import (
     notify_admin_new_application, send_application_received,
     send_application_approved, send_application_rejected, send_application_under_review,
@@ -937,3 +938,56 @@ async def save_pre_review(
             )
 
     return {"message": "Pre-review saved", "decision": body.get("decision")}
+
+
+@router.post("/{application_id}/accept-agreement")
+async def accept_agreement(
+    application_id: int,
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+    user: dict = Depends(get_current_user),
+):
+    """Record applicant acceptance of the Conformance Agreement. Gates interlock deployment."""
+    result = await db.execute(select(Application).where(Application.id == application_id))
+    app = result.scalar_one_or_none()
+    if not app:
+        raise HTTPException(status_code=404, detail="Application not found")
+
+    # Only the applicant (or admin) can accept
+    if app.applicant_id != int(user["sub"]) and user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Only the applicant can accept the agreement")
+
+    # Must be in approved state
+    if app.state not in ("approved", "bounded", "observe"):
+        raise HTTPException(status_code=400, detail=f"Application must be approved before agreement can be accepted. Current state: {app.state}")
+
+    # Already accepted
+    if app.agreement_accepted_at:
+        return {"status": "already_accepted", "accepted_at": app.agreement_accepted_at.isoformat()}
+
+    from datetime import datetime, timezone
+    app.agreement_accepted_at = datetime.now(timezone.utc)
+    app.agreement_accepted_by = user.get("email", str(user.get("sub", "unknown")))
+
+    await write_audit_log(
+        db,
+        action="agreement_accepted",
+        resource_type="application",
+        resource_id=app.id,
+        user_id=int(user["sub"]),
+        user_email=user.get("email"),
+        details={
+            "application_number": app.application_number,
+            "system_name": app.system_name,
+            "organization": app.organization_name,
+            "ip_address": request.client.host if request.client else None,
+        }
+    )
+
+    await db.commit()
+    return {
+        "status": "accepted",
+        "accepted_at": app.agreement_accepted_at.isoformat(),
+        "accepted_by": app.agreement_accepted_by,
+    }
+

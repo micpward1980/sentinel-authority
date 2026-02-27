@@ -246,6 +246,15 @@ async def lifespan(app: FastAPI):
             except Exception:
                 pass  # Already migrated
             logger.info("Surveillance alerts table ready")
+
+    # Add agreement columns if missing
+    async with engine.begin() as agr_conn:
+        try:
+            await agr_conn.execute(raw_text("ALTER TABLE applications ADD COLUMN IF NOT EXISTS agreement_accepted_at TIMESTAMPTZ"))
+            await agr_conn.execute(raw_text("ALTER TABLE applications ADD COLUMN IF NOT EXISTS agreement_accepted_by VARCHAR(255)"))
+            logger.info("Agreement columns ready")
+        except Exception:
+            pass
         except Exception as e:
             logger.warning(f"Surveillance alerts table: {e}")
 

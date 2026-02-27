@@ -113,6 +113,8 @@ class Application(Base):
     facility_location = Column(String(255))
     notes = Column(Text)
     review_checklist = Column(JSON, nullable=True)
+    agreement_accepted_at = Column(DateTime, nullable=True)
+    agreement_accepted_by = Column(String(255), nullable=True)
     pre_review_results = Column(JSON, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     applicant = relationship("User", back_populates="applications")
