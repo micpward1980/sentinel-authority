@@ -19,5 +19,5 @@ async def test_certificate_list_no_auth(client):
 @pytest.mark.asyncio
 async def test_certificate_registry_public(client):
     """Registry should be publicly accessible without auth."""
-    resp = await client.get("/api/v1/registry/")
+    resp = await client.get("/api/v1/registry/stats")
     assert resp.status_code in (200, 307)
