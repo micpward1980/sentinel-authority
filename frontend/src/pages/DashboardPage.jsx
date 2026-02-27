@@ -245,9 +245,9 @@ function Dashboard() {
     retry: false,
   });
   const summary = adminData?.summary || null;
-  const recentApps = adminData?.recentApps || [];
+  const recentApps = Array.isArray(adminData?.recentApps) ? adminData.recentApps : (adminData?.recentApps?.applications || adminData?.recentApps?.data || []);
   const activeTests = adminData?.activeTests || [];
-  const recentCerts = adminData?.recentCerts || [];
+  const recentCerts = Array.isArray(adminData?.recentCerts) ? adminData.recentCerts : (adminData?.recentCerts?.certificates || adminData?.recentCerts?.data || []);
   const monitoring = adminData?.monitoring || null;
   const recentActivity = adminData?.recentActivity || [];
   const allApps = recentApps;
