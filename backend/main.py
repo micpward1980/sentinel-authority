@@ -12,7 +12,7 @@ import os
 from datetime import datetime
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from chat import router as chat_router
 from app.api.routes.content import router as content_router
 from app.services.content_scraper import scraper_loop
