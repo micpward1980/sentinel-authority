@@ -2,7 +2,7 @@
 
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
 from sqlalchemy.orm import declarative_base
-from sqlalchemy.pool import NullPool
+from sqlalchemy.pool import AsyncAdaptedQueuePool
 from sqlalchemy.exc import NotSupportedError
 from app.core.config import settings
 
@@ -11,10 +11,15 @@ if DATABASE_URL.startswith("postgresql://"):
     DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+asyncpg://", 1)
 
 engine = create_async_engine(
-    DATABASE_URL, 
-    echo=settings.DEBUG, 
+    DATABASE_URL,
+    echo=settings.DEBUG,
     future=True,
-    poolclass=NullPool, connect_args={"statement_cache_size": 0},
+    pool_size=20,
+    max_overflow=30,
+    pool_timeout=30,
+    pool_recycle=1800,
+    pool_pre_ping=True,
+    connect_args={"statement_cache_size": 0},
 )
 AsyncSessionLocal = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 Base = declarative_base()
