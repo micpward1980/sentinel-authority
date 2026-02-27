@@ -41,7 +41,7 @@ function Layout({ children }) {
     { name: 'Applications',    href: '/applications',  icon: FileText,     roles: ['admin'] },
     { name: 'ENVELO',          href: '/envelo',        icon: 'brand',      roles: ['admin'] },
     { name: 'Certification',   href: '/envelo',        icon: 'brand',      roles: ['applicant'] },
-    { name: 'Monitoring',      href: '/monitoring',    icon: Activity,     roles: ['admin'] },
+    { name: 'Monitoring',      href: '/monitoring',    icon: Activity,     roles: ['admin', 'applicant'], requiresCert: true },
     { name: 'Enforcement',     href: '/surveillance',  icon: Shield,       roles: ['admin'] },
     { name: 'Activity',        href: '/activity',      icon: Activity,     roles: ['admin'] },
     ,
