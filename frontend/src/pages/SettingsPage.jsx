@@ -592,7 +592,7 @@ function NotificationsPanel({ toast }) {
     { key: 'application_updates',  label: 'Application Updates',      desc: 'Submission confirmations, review status changes, approval notifications' },
     { key: 'test_notifications',   label: 'CAT-72 Test Notifications', desc: 'Test scheduled, started, passed, and failed alerts' },
     { key: 'certificate_alerts',   label: 'Certificate Alerts',        desc: 'Certificate issued, expiry warnings (30-day / 7-day), expiration notices' },
-    { key: 'agent_alerts',         label: 'ENVELO Interlock Alerts',   desc: 'Agent offline warnings, high violation rate, suspension alerts' },
+    { key: 'agent_alerts',         label: 'ENVELO Interlock Alerts',   desc: 'Interlock offline warnings, high violation rate, suspension alerts' },
     { key: 'marketing',            label: 'Product Updates',           desc: 'New features, platform updates, and industry news from Sentinel Authority' },
   ];
 
