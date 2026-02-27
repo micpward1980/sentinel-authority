@@ -40,14 +40,14 @@ function Layout({ children }) {
   const navigation = [
     { name: 'Dashboard', href: '/dashboard', icon: Home, roles: ['admin', 'applicant'] },
     { name: 'Applications', href: '/applications', icon: FileText, roles: ['admin', 'applicant'] },
-    { name: 'ENVELO Interlock', href: '/envelo', icon: 'brand', roles: ['admin', 'applicant'], requiresCert: true },
-    { name: 'CAT-72 Console', href: '/cat72', icon: Clock, roles: ['admin', 'applicant'] },
-    { name: 'Certificates', href: '/certificates', icon: Award, roles: ['admin', 'applicant'] },
-    { name: 'Monitoring', href: '/monitoring', icon: BarChart2, roles: ['admin', 'applicant'] },
+    { name: 'ENVELO Interlock', href: '/envelo', icon: 'brand', roles: ['admin'] },
+    { name: 'Certification', href: '/envelo', icon: 'brand', roles: ['applicant'], requiresCert: true },
+    { name: 'CAT-72 Console', href: '/cat72', icon: Clock, roles: ['admin'] },
+    { name: 'Certificates', href: '/certificates', icon: Award, roles: ['admin'] },
+    { name: 'Monitoring', href: '/monitoring', icon: BarChart2, roles: ['admin', 'applicant'], requiresCert: true },
     { name: 'Enforcement', href: '/surveillance', icon: Shield, roles: ['admin'] },
     { name: 'User Management', href: '/users', icon: Users, roles: ['admin'] },
-    { name: 'Resources', href: '/resources', icon: BookOpen, roles: ['admin', 'applicant'] },
-    { name: 'My Activity', href: '/my-activity', icon: Activity, roles: ['applicant'] },
+    { name: 'Resources', href: '/resources', icon: BookOpen, roles: ['admin'] },
     { name: 'Settings', href: '/settings', icon: Settings, roles: ['admin', 'applicant'] },
   ];
 
