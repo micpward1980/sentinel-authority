@@ -1046,7 +1046,7 @@ function EnveloCustomerView() {
 
     return (
       <div className="space-y-6">
-        <SectionHeader label="ENVELO Interlock" title="CAT-72 Running" description="72-hour conformance test in progress. Keep the agent running." />
+        <SectionHeader label="CERTIFICATION" title="CAT-72 Running" description="Minimum 72-hour conformance assessment in progress. Keep the agent running." />
 
         <Panel glow={isOnline}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px', marginBottom: '24px' }}>
@@ -1105,7 +1105,7 @@ function EnveloCustomerView() {
   // ════ STATE 5: Conformant / Certified ════════════════════════════════════
   return (
     <div className="space-y-6">
-      <SectionHeader label="ENVELO Interlock" title="Active" description="ODDC conformant — boundaries enforced in production" />
+      <SectionHeader label="CERTIFICATION" title="Active" description="ODDC conformant — boundaries enforced in production" />
 
       {conformantCerts.map(cert => {
         const session = sessions.find(s => s.certificate_id === cert.certificate_number);
@@ -1120,6 +1120,7 @@ function EnveloCustomerView() {
                 </div>
                 <p style={{ fontFamily: styles.mono, fontSize: '12px', color: styles.purpleBright, marginBottom: '4px' }}>{cert.certificate_number}</p>
                 {cert.expires_at && <p style={{ fontFamily: styles.mono, fontSize: '11px', color: styles.textTertiary }}>Expires {cert.expires_at.split('T')[0]}</p>}
+                <a href={API_BASE + '/api/certificates/' + cert.certificate_number + '/pdf'} target="_blank" rel="noreferrer noopener" style={{ display: 'inline-block', marginTop: '8px', padding: '6px 14px', background: 'rgba(22,135,62,0.08)', border: '1px solid rgba(22,135,62,0.2)', color: styles.accentGreen, fontFamily: styles.mono, fontSize: '10px', textDecoration: 'none', borderRadius: '4px', letterSpacing: '1px' }}>Download Certificate PDF</a>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px' }}>
                 <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: isOnline ? styles.accentGreen : styles.textDim, ...(isOnline ? { animation: 'pulse 2s infinite' } : {}) }} />
@@ -1153,19 +1154,9 @@ function EnveloCustomerView() {
             <p style={{ fontWeight: 500, color: styles.purpleBright, marginBottom: '4px', fontSize: '14px' }}>↓ Re-download Agent</p>
             <p style={{ color: styles.textTertiary, fontSize: '11px', margin: 0 }}>Get the current pre-configured script</p>
           </button>
-          <button onClick={() => setShowUninstall(!showUninstall)} style={{ padding: '14px', background: styles.cardSurface, border: `1px solid ${styles.borderGlass}`, cursor: 'pointer', textAlign: 'left', borderRadius: '8px' }}>
-            <p style={{ fontWeight: 500, color: styles.textSecondary, marginBottom: '4px', fontSize: '14px' }}>⊘ Uninstall</p>
-            <p style={{ color: styles.textTertiary, fontSize: '11px', margin: 0 }}>Remove agent and auto-restart service</p>
-          </button>
+
         </div>
-        {showUninstall && (
-          <div style={{ marginTop: '14px', padding: '14px', background: styles.cardSurface, border: `1px solid ${styles.borderGlass}`, borderRadius: '8px' }}>
-            <p style={{ fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', color: styles.accentAmber, marginBottom: '8px' }}>Paste in terminal to fully remove</p>
-            <div style={{ fontFamily: styles.mono, fontSize: '12px', color: styles.textSecondary, whiteSpace: 'pre', lineHeight: 1.8, overflowX: 'auto' }}>
-              {`kill $(cat ~/.envelo/envelo.pid) 2>/dev/null\nsystemctl --user stop envelo.service 2>/dev/null\nsystemctl --user disable envelo.service 2>/dev/null\nrm -f ~/.config/systemd/user/envelo.service\nrm -rf ~/.envelo\necho "✓ ENVELO uninstalled"`}
-            </div>
-          </div>
-        )}
+
       </Panel>
     </div>
   );
