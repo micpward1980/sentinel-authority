@@ -3294,7 +3294,7 @@ footer{border-top:1px solid var(--hairline)!important;}
           </div>
           <div class="hud-row" style="display:flex;align-items:flex-start;">
             <span class="hud-num">05</span><span class="hud-dot" style="margin-top:6px;"></span>
-            <div><div class="hud-title">Standardized Boundary Event Determination</div><div class="hud-desc">The ENVELO enforcement layer records boundary enforcement events pursuant to telemetry definitions established under the ODDC specification. Boundary exceedance conditions, enforcement activations, and drift indicators are determined and categorized by the enforcement architecture and are not operator-configurable. Telemetry integrity is verified with the operator prior to initiation of the CAT-72 verification period.</div></div>
+            <div><div class="hud-title">Standardized Boundary Event Determination</div><div class="hud-desc">ENVELO records boundary events per the ODDC specification. Exceedance conditions, enforcement activations, and drift indicators are categorized by the enforcement architecture and are not operator-configurable. Telemetry integrity is verified before CAT-72 begins.</div></div>
           </div>
           <div class="hud-row" style="display:flex;align-items:flex-start;">
             <span class="hud-num">06</span><span class="hud-dot" style="margin-top:6px;"></span>
@@ -3515,7 +3515,7 @@ footer{border-top:1px solid var(--hairline)!important;}
         <div class="hud-frame hud-frame-amber"><i></i>
           <div class="hud-label" style="color:rgba(158,110,18,1.00);margin-bottom:8px;">BOUNDARY EXCEEDANCE</div>
           <p style="font-size:14px;color:#111318;line-height:1.6;margin:0;">
-            Any system state or enforcement failure exceeding attested tolerances constitutes a boundary exceedance and initiates conformance review pursuant to established protocol.
+            Any enforcement failure exceeding attested tolerances constitutes a boundary exceedance and initiates conformance review.
           </p>
         </div>
       </div>
@@ -3623,7 +3623,7 @@ footer{border-top:1px solid var(--hairline)!important;}
           <div id="cat72-pc3" class="hud-row" style="cursor:pointer;display:flex;align-items:flex-start;gap:12px;transition:opacity 0.4s var(--ease);">
             <div style="width:5px;height:5px;border-radius:50%;background:var(--accent);transition:all 0.4s var(--ease);flex-shrink:0;margin-top:6px;" id="cat72-dot3"></div>
             <span class="hud-num" style="margin-top:2px;">04</span>
-            <div><div class="hud-title">Conformance Determination</div><div class="hud-desc">Upon completion of the cumulative verification period, Sentinel Authority independently reviews telemetry records, validates audit chain integrity, and issues an ODDC conformance determination recorded in the public registry. Review is conducted pursuant to the ODDC specification.</div></div>
+            <div><div class="hud-title">Conformance Determination</div><div class="hud-desc">Upon completion of the verification period, Sentinel Authority reviews telemetry records, validates audit chain integrity, and issues a conformance determination recorded in the public registry.</div></div>
           </div>
         </div>
       </div>
@@ -4185,7 +4185,7 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
           <span class="section-label">ASSESSMENT PROCEDURE</span>
           <h2 class="section-title">Conformance Process</h2>
           <p class="section-lead">
-            The ENVELO Interlock records and enforces system operation within the declared ODD, verifies boundary adherence pursuant to the CAT-72 procedure, and accumulates not less than seventy-two (72) cumulative enforcement hours across active operational intervals.
+            The ENVELO Interlock records and enforces system operation within the declared ODD, verifies boundary adherence per the CAT-72 procedure, and accumulates not less than seventy-two (72) cumulative enforcement hours.
           </p>
         </div>
       </div>
@@ -4522,7 +4522,7 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
           <span class="section-label">DATA AND RECORDS</span>
           <h2 class="section-title">Conformance Data Outputs</h2>
           <p class="section-lead">
-            Conformance cycles generate structured enforcement data indicating boundary adherence and exceedance conditions across active operational intervals.
+            Conformance cycles generate structured enforcement data indicating boundary adherence and exceedance conditions.
           </p>
         </div>
       </div>
@@ -4557,7 +4557,7 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
           <span class="section-label">GOVERNANCE IMPLICATIONS</span>
           <h2 class="section-title">Implications of Non-Conformance</h2>
           <p class="section-lead">
-            ODDC provides independently verifiable evidence of runtime boundary enforcement.
+            ODDC provides verified evidence of runtime boundary enforcement.
           </p>
         </div>
       </div>
@@ -4568,7 +4568,7 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
             <span class="hud-num">01</span><span class="hud-dot" style="margin-top:6px;"></span>
             <div>
               <div class="hud-title">Procurement Review Efficiency</div>
-              <div class="hud-desc">Independently verifiable enforcement evidence reduces procurement uncertainty and supports structured vendor risk evaluation.</div>
+              <div class="hud-desc">Verified enforcement evidence reduces procurement uncertainty and supports structured vendor risk evaluation.</div>
             </div>
           </div>
         </div>
@@ -4577,7 +4577,7 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
             <span class="hud-num">02</span><span class="hud-dot" style="margin-top:6px;"></span>
             <div>
               <div class="hud-title">Independent Risk Differentiation</div>
-              <div class="hud-desc">Certification provides independently verifiable enforcement evidence for procurement and risk evaluation. Registry records are publicly accessible.</div>
+              <div class="hud-desc">Certification provides auditable enforcement evidence for procurement and risk evaluation. Registry records are publicly accessible.</div>
             </div>
           </div>
         </div>
@@ -4595,7 +4595,7 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
             <span class="hud-num">04</span><span class="hud-dot" style="margin-top:6px;"></span>
             <div>
               <div class="hud-title">Insurance &amp; Liability</div>
-              <div class="hud-desc">ODDC produces structured, auditable runtime enforcement evidence suitable for autonomous system risk evaluation. Enforcement data supplements vendor self-attestation with independently verifiable records.</div>
+              <div class="hud-desc">ODDC produces structured, auditable runtime enforcement evidence suitable for autonomous system risk evaluation. Enforcement data supplements vendor self-attestation with auditable records.</div>
             </div>
           </div>
         </div>
@@ -4665,7 +4665,7 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
           <span class="section-label">THE ENFORCEMENT GAP</span>
           <h2 class="section-title">Deployment Environment</h2>
           <p class="section-lead">
-            Autonomous systems are deployed without independently verifiable runtime enforcement. ODDC formalizes that missing category of verification.
+            Autonomous systems are deployed without verified runtime enforcement. ODDC formalizes that missing category of verification.
           </p>
         </div>
       </div>
