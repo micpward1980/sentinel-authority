@@ -100,7 +100,7 @@ function CustomerDashboard() {
 
       {(() => {
         const cards = [];
-        cards.push(<StatCard key="apps" onClick={() => navigate('/applications')} label="Applications" value={summary?.applications?.total || applications.length} color={styles.purpleBright} icon={<FileText fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{ color: styles.purpleBright }} />} subtitle={summary?.applications ? ((summary.applications.pending || 0) + (summary.applications.under_review || 0) > 0 ? (summary.applications.pending || 0) + (summary.applications.under_review || 0) + ' in review' : null) : null} />);
+        if (applications.length > 0) cards.push(<StatCard key="apps" onClick={() => navigate('/applications')} label="Applications" value={summary?.applications?.total || applications.length} color={styles.purpleBright} icon={<FileText fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{ color: styles.purpleBright }} />} subtitle={summary?.applications ? ((summary.applications.pending || 0) + (summary.applications.under_review || 0) > 0 ? (summary.applications.pending || 0) + (summary.applications.under_review || 0) + ' in review' : null) : null} />);
         if ((summary?.certificates?.total || certificates.length) > 0) cards.push(<StatCard key="certs" onClick={() => navigate('/certificates')} label="Certificates" value={summary?.certificates?.total || certificates.length} color={styles.accentGreen} icon={<Award fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{ color: styles.accentGreen }} />} subtitle={summary?.certificates?.active > 0 ? summary.certificates.active + ' active' : null} />);
         if ((summary?.applications?.testing || 0) > 0) cards.push(<StatCard key="tests" onClick={() => navigate('/envelo')} label="Active Tests" value={summary?.applications?.testing} color={styles.accentAmber} icon={<Activity fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{ color: styles.accentAmber }} />} />);
         const sessions = monitoring?.sessions || [];
@@ -183,7 +183,7 @@ function CustomerDashboard() {
         </Panel>
       )}
 
-      <Panel>
+      {(applications.length > 0 || recentActivity.length > 0) && <Panel>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '16px' }}>
           <h2 style={{ fontFamily: styles.mono, fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, margin: 0 }}>Recent Activity</h2>
           <Link to="/my-activity" style={{ fontFamily: styles.mono, fontSize: '10px', color: styles.purpleBright, textDecoration: 'none', letterSpacing: '1px' }}>View All →</Link>
@@ -211,7 +211,7 @@ function CustomerDashboard() {
             })}
           </div>
         )}
-      </Panel>
+      </Panel>}
     </div>
   );
 }
