@@ -807,10 +807,10 @@ function EnveloCustomerView() {
     });
     const a = Object.assign(document.createElement('a'), {
       href:     URL.createObjectURL(new Blob([code], { type: 'text/plain' })),
-      download: 'envelo_agent.py',
+      download: 'envelo_interlock.py',
     });
     document.body.appendChild(a); a.click(); document.body.removeChild(a);
-    toast.show('envelo_agent.py downloaded', 'success');
+    toast.show('envelo_interlock.py downloaded', 'success');
   };
 
   const copyKey = (key) => {
@@ -1024,10 +1024,10 @@ function EnveloCustomerView() {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
             <div>
               <p style={{ fontFamily: styles.mono, fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '4px' }}>Alternative</p>
-              <p style={{ color: styles.textSecondary, fontSize: '13px' }}>Download standalone agent file instead</p>
+              <p style={{ color: styles.textSecondary, fontSize: '13px' }}>Download standalone interlock file instead</p>
             </div>
             <button onClick={() => downloadAgent()} style={{ padding: '9px 18px', background: 'transparent', border: `1px solid ${styles.borderGlass}`, color: styles.textSecondary, fontFamily: styles.mono, fontSize: '11px', cursor: 'pointer', borderRadius: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <Download size={12} /> envelo_agent.py
+              <Download size={12} /> envelo_interlock.py
             </button>
           </div>
         </Panel>
@@ -1046,7 +1046,7 @@ function EnveloCustomerView() {
 
     return (
       <div className="space-y-6">
-        <SectionHeader label="CERTIFICATION" title="CAT-72 Running" description="Minimum 72-hour conformance assessment in progress. Keep the agent running." />
+        <SectionHeader label="CERTIFICATION" title="CAT-72 Running" description="Minimum 72-hour conformance assessment in progress. Keep the interlock running." />
 
         <Panel glow={isOnline}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px', marginBottom: '24px' }}>
@@ -1090,12 +1090,12 @@ function EnveloCustomerView() {
 
         {!isOnline && (
           <Panel accent="amber">
-            <p style={{ fontFamily: styles.mono, fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.accentAmber, marginBottom: '12px' }}>Agent Offline — Action Required</p>
+            <p style={{ fontFamily: styles.mono, fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.accentAmber, marginBottom: '12px' }}>Interlock Offline — Action Required</p>
             <p style={{ color: styles.textSecondary, fontSize: '14px', marginBottom: '16px' }}>The ENVELO Interlock hasn't sent a heartbeat in the last 2 minutes. Check that it's running:</p>
             <div style={{ background: 'rgba(0,0,0,0.04)', border: `1px solid ${styles.borderGlass}`, padding: '10px 14px', borderRadius: '6px', fontFamily: styles.mono, fontSize: '12px', color: styles.textPrimary, marginBottom: '16px' }}>
-              <span style={{ color: styles.accentGreen }}>$</span> python envelo_agent.py
+              <span style={{ color: styles.accentGreen }}>$</span> python envelo_interlock.py
             </div>
-            <p style={{ fontSize: '12px', color: styles.textTertiary }}>If the test was interrupted for more than 5 minutes, contact admin — the test window may need to be restarted.</p>
+            <p style={{ fontSize: '12px', color: styles.textTertiary }}>If the test was interrupted for more than 5 minutes, contact admin — the assessment window may need to be restarted.</p>
           </Panel>
         )}
       </div>
@@ -1148,11 +1148,11 @@ function EnveloCustomerView() {
 
       {/* Agent control */}
       <Panel>
-        <p style={{ fontFamily: styles.mono, fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px' }}>Agent Control</p>
+        <p style={{ fontFamily: styles.mono, fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px' }}>Interlock Control</p>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(180px,1fr))', gap: '10px' }}>
           <button onClick={() => downloadAgent()} style={{ padding: '14px', background: 'transparent', border: `1px solid ${styles.purpleBright}`, cursor: 'pointer', textAlign: 'left', borderRadius: '8px' }}>
-            <p style={{ fontWeight: 500, color: styles.purpleBright, marginBottom: '4px', fontSize: '14px' }}>↓ Re-download Agent</p>
-            <p style={{ color: styles.textTertiary, fontSize: '11px', margin: 0 }}>Get the current pre-configured script</p>
+            <p style={{ fontWeight: 500, color: styles.purpleBright, marginBottom: '4px', fontSize: '14px' }}>↓ Re-download Interlock</p>
+            <p style={{ color: styles.textTertiary, fontSize: '11px', margin: 0 }}>Get the current pre-configured interlock script</p>
           </button>
 
         </div>

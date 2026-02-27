@@ -740,15 +740,16 @@ function SettingsPage() {
 
   const isMobile = winW < 768;
 
+  const isAdmin = user?.role === 'admin';
   const NAV = [
     { group: 'Personal',     items: [
       { id: 'profile',       label: 'My Profile',         icon: <User size={15} />    },
       { id: 'notifications', label: 'Notifications',      icon: <Bell size={15} />    },
     ]},
-    { group: 'Security',     items: [
+    ...(isAdmin ? [{ group: 'Security',     items: [
       { id: 'apikeys',       label: 'API Access Keys',    icon: <Key size={15} />     },
       { id: 'audit',         label: 'Security Audit Log', icon: <History size={15} /> },
-    ]},
+    ]}] : []),
   ];
 
   const allNavItems = NAV.flatMap(g => g.items);
