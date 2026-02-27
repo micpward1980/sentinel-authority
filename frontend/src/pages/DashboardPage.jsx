@@ -250,6 +250,7 @@ function Dashboard() {
   const recentCerts = adminData?.recentCerts || [];
   const monitoring = adminData?.monitoring || null;
   const recentActivity = adminData?.recentActivity || [];
+  const allApps = recentApps;
   const [justifyModal, setJustifyModal] = useState(null);
   const [justifyNote, setJustifyNote] = useState('');
 
