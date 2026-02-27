@@ -22,6 +22,28 @@ class DashboardStats(BaseModel):
     certificates_active: int
 
 
+
+
+@router.get("/summary", summary="Dashboard summary counts")
+async def dashboard_summary(
+    db: AsyncSession = Depends(get_db),
+    user: dict = Depends(get_current_user)
+):
+    from app.models.models import Application, Certificate, EnveloSession
+    from datetime import datetime, timedelta
+    app_result = await db.execute(select(Application.state, func.count(Application.id)).group_by(Application.state))
+    app_counts = dict(app_result.all())
+    cert_result = await db.execute(select(Certificate.state, func.count(Certificate.id)).group_by(Certificate.state))
+    cert_counts = dict(cert_result.all())
+    thirty_days = datetime.utcnow() + timedelta(days=30)
+    expiring = (await db.execute(select(func.count(Certificate.id)).where(Certificate.state.in_(["conformant","active"]), Certificate.expires_at != None, Certificate.expires_at <= thirty_days))).scalar() or 0
+    two_min_ago = datetime.utcnow() - timedelta(minutes=2)
+    try:
+        online = (await db.execute(select(func.count(EnveloSession.id)).where(EnveloSession.status == "active", EnveloSession.last_heartbeat_at >= two_min_ago))).scalar() or 0
+        total_sess = (await db.execute(select(func.count(EnveloSession.id)).where(EnveloSession.status == "active"))).scalar() or 0
+    except Exception:
+        online = 0; total_sess = 0
+    return {"applications": {"total": sum(app_counts.values()), "pending": app_counts.get("pending",0), "under_review": app_counts.get("under_review",0), "approved": app_counts.get("approved",0), "testing": app_counts.get("testing",0), "conformant": app_counts.get("conformant",0), "suspended": app_counts.get("suspended",0), "revoked": app_counts.get("revoked",0)}, "certificates": {"total": sum(cert_counts.values()), "active": cert_counts.get("conformant",0)+cert_counts.get("active",0), "suspended": cert_counts.get("suspended",0), "revoked": cert_counts.get("revoked",0), "expiring_30d": expiring}, "envelo": {"online_agents": online, "total_sessions": total_sess}}
 @router.get("/stats", summary="Dashboard statistics")
 async def get_stats(db: AsyncSession = Depends(get_db), user: dict = Depends(get_current_user)):
     if user.get("role") == "applicant":

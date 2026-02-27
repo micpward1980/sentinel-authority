@@ -122,7 +122,7 @@ async def list_applications(
     user: dict = Depends(get_current_user),
     search: Optional[str] = None,
     state: Optional[str] = None,
-    limit: int = 200,
+    limit: int = 25,
     offset: int = 0,
 ):
     from sqlalchemy import or_

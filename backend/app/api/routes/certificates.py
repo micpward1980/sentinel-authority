@@ -2,7 +2,7 @@
 from app.services.audit_service import write_audit_log
 from app.services.email_service import notify_certificate_issued
 from datetime import datetime, timedelta
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import Query,  APIRouter, Depends, HTTPException, Request
 from fastapi.responses import Response
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
@@ -339,3 +339,52 @@ async def update_envelope(
     cert.envelope_definition = data.get("envelope_definition", cert.envelope_definition)
     await db.commit()
     return {"message": "Envelope updated", "certificate_number": certificate_number}
+
+
+@router.get("/list", summary="List certificates with pagination")
+async def list_certificates_paginated(
+    db: AsyncSession = Depends(get_db),
+    user: dict = Depends(get_current_user),
+    limit: int = Query(25, ge=1, le=100),
+    offset: int = Query(0, ge=0),
+    sort_by: str = Query("created_at"),
+    sort_order: str = Query("desc"),
+    state: str = Query(None),
+    search: str = Query(None),
+):
+    from app.models.models import Certificate
+    from sqlalchemy import func
+    from datetime import datetime
+
+    query = select(Certificate)
+    role = user.get("role", "applicant")
+    if role != "admin":
+        query = query.where(Certificate.organization_name == user.get("organization"))
+    if state:
+        query = query.where(Certificate.state == state)
+    if search:
+        term = f"%{search}%"
+        query = query.where(
+            (Certificate.organization_name.ilike(term)) |
+            (Certificate.system_name.ilike(term)) |
+            (Certificate.certificate_number.ilike(term))
+        )
+    total = (await db.execute(select(func.count()).select_from(query.subquery()))).scalar() or 0
+    sort_col = getattr(Certificate, sort_by, Certificate.created_at)
+    query = query.order_by(sort_col.asc() if sort_order == "asc" else sort_col.desc())
+    query = query.limit(limit).offset(offset)
+    result = await db.execute(query)
+    certs = result.scalars().all()
+    return {
+        "items": [{
+            "id": c.id, "certificate_number": c.certificate_number,
+            "organization_name": c.organization_name, "system_name": c.system_name,
+            "system_version": getattr(c, "system_version", None), "state": c.state,
+            "issued_at": str(c.issued_at) if hasattr(c, "issued_at") and c.issued_at else None,
+            "expires_at": str(c.expires_at) if c.expires_at else None,
+            "created_at": str(c.created_at) if hasattr(c, "created_at") and c.created_at else None,
+            "application_id": c.application_id,
+            "days_until_expiry": (c.expires_at - datetime.utcnow()).days if c.expires_at else None,
+        } for c in certs],
+        "total": total, "limit": limit, "offset": offset,
+    }

@@ -1,0 +1,16 @@
+CREATE INDEX IF NOT EXISTS idx_app_state ON applications(state);
+CREATE INDEX IF NOT EXISTS idx_app_submitted ON applications(submitted_at DESC);
+CREATE INDEX IF NOT EXISTS idx_app_org ON applications(organization_name);
+CREATE INDEX IF NOT EXISTS idx_app_applicant ON applications(applicant_id);
+CREATE INDEX IF NOT EXISTS idx_cert_state ON certificates(state);
+CREATE INDEX IF NOT EXISTS idx_cert_expires ON certificates(expires_at);
+CREATE INDEX IF NOT EXISTS idx_cert_org ON certificates(organization_name);
+CREATE INDEX IF NOT EXISTS idx_cert_number ON certificates(certificate_number);
+CREATE INDEX IF NOT EXISTS idx_user_role ON users(role);
+CREATE INDEX IF NOT EXISTS idx_user_created ON users(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_user_org ON users(organization);
+CREATE INDEX IF NOT EXISTS idx_audit_created ON audit_log(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_audit_user ON audit_log(user_id);
+CREATE INDEX IF NOT EXISTS idx_envelo_status ON envelo_sessions(status);
+CREATE INDEX IF NOT EXISTS idx_envelo_heartbeat ON envelo_sessions(last_heartbeat_at DESC);
+CREATE INDEX IF NOT EXISTS idx_envelo_cert ON envelo_sessions(certificate_id);

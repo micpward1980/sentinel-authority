@@ -1,6 +1,6 @@
 """User Management routes (Admin only)."""
 
-from fastapi import APIRouter, Depends, HTTPException, status, Response
+from fastapi import Query,  APIRouter, Depends, HTTPException, status, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, text
 from pydantic import BaseModel, EmailStr
@@ -328,3 +328,45 @@ async def reject_user(user_id: int, db: AsyncSession = Depends(get_db), admin: d
     await db.commit()
     return {"message": "User rejected", "id": user.id, "email": user.email}
 
+
+
+@router.get("/list", summary="List users with pagination")
+async def list_users_paginated(
+    db: AsyncSession = Depends(get_db),
+    user: dict = Depends(get_current_user),
+    limit: int = Query(25, ge=1, le=100),
+    offset: int = Query(0, ge=0),
+    sort_by: str = Query("created_at"),
+    sort_order: str = Query("desc"),
+    role: str = Query(None),
+    search: str = Query(None),
+):
+    from app.models.models import User
+    from sqlalchemy import func
+    if user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Admin access required")
+    query = select(User)
+    if role:
+        query = query.where(User.role == role)
+    if search:
+        term = f"%{search}%"
+        query = query.where(
+            (User.email.ilike(term)) | (User.full_name.ilike(term)) | (User.organization.ilike(term))
+        )
+    total = (await db.execute(select(func.count()).select_from(query.subquery()))).scalar() or 0
+    sort_col = getattr(User, sort_by, User.created_at)
+    query = query.order_by(sort_col.asc() if sort_order == "asc" else sort_col.desc())
+    query = query.limit(limit).offset(offset)
+    result = await db.execute(query)
+    users = result.scalars().all()
+    return {
+        "items": [{
+            "id": u.id, "email": u.email, "full_name": u.full_name,
+            "role": u.role, "organization": u.organization,
+            "organization_id": getattr(u, "organization_id", None),
+            "is_active": u.is_active,
+            "created_at": str(u.created_at) if u.created_at else None,
+            "last_login_at": str(u.last_login_at) if hasattr(u, "last_login_at") and u.last_login_at else None,
+        } for u in users],
+        "total": total, "limit": limit, "offset": offset,
+    }
