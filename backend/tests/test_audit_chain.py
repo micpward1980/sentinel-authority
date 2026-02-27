@@ -6,7 +6,7 @@ import hashlib
 @pytest.mark.asyncio
 async def test_audit_log_creation(client, auth_headers):
     """Verify that actions create audit log entries."""
-    resp = await client.get("/api/audit", headers=auth_headers)
+    resp = await client.get("/api/v1/audit", headers=auth_headers)
     assert resp.status_code == 200
     data = resp.json()
     assert isinstance(data, (list, dict))

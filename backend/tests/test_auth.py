@@ -7,7 +7,7 @@ import uuid
 async def test_register_and_login(client):
     email = f"test_{uuid.uuid4().hex[:8]}@sentinel.test"
     # Register
-    resp = await client.post("/api/auth/register", json={
+    resp = await client.post("/api/v1/auth/register", json={
         "email": email,
         "password": "SecurePass123!",
         "full_name": "Auth Test",
@@ -16,7 +16,7 @@ async def test_register_and_login(client):
     assert resp.status_code in (200, 201), f"Register failed: {resp.text}"
     
     # Login
-    resp = await client.post("/api/auth/login", json={
+    resp = await client.post("/api/v1/auth/login", json={
         "email": email,
         "password": "SecurePass123!"
     })
@@ -28,7 +28,7 @@ async def test_register_and_login(client):
 
 @pytest.mark.asyncio
 async def test_invalid_login(client):
-    resp = await client.post("/api/auth/login", json={
+    resp = await client.post("/api/v1/auth/login", json={
         "email": "nonexistent@sentinel.test",
         "password": "WrongPass123!"
     })
