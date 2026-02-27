@@ -9,7 +9,7 @@ async def test_register_and_login(client):
     # Register
     resp = await client.post("/api/v1/auth/register", json={
         "email": email,
-        "password": "SecurePass123!",
+        "password": "Zx93kLm_Qwerty7841!",
         "full_name": "Auth Test",
         "organization": "Test Corp"
     })
@@ -18,7 +18,7 @@ async def test_register_and_login(client):
     # Login
     resp = await client.post("/api/v1/auth/login", json={
         "email": email,
-        "password": "SecurePass123!"
+        "password": "Zx93kLm_Qwerty7841!"
     })
     assert resp.status_code == 200
     data = resp.json()
