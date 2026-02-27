@@ -56,6 +56,7 @@
     .btn-primary:hover{opacity:.85;}
     .btn-secondary{font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--navy);border:1px solid rgba(29,26,59,.25);padding:11px 24px;border-radius:6px;transition:border-color .15s;}
     .btn-secondary:hover{border-color:rgba(29,26,59,.6);}
+    .page-header{max-width:1100px;padding:0 24px 0 max(24px,6vw);margin:0 0 56px;}
     footer{border-top:1px solid var(--border);padding:32px 0 24px;background:#fff;font-family:var(--mono);font-size:11px;letter-spacing:1px;color:var(--text-3);}
     .footer-inner{max-width:var(--max);margin:0 auto;padding:0 24px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
     .foot-links{display:flex;gap:20px;}
@@ -67,10 +68,12 @@
     <a href="/" class="back-link" aria-label="Back to home">← Sentinel Authority</a>
   </header>
   <main id="main">
-    <div class="inner">
+    <div class="page-header">
       <span class="page-label">Standard</span>
       <h1 class="page-title">Conformance Requirements</h1>
       <p class="page-lead">ODDC certification requires a system to satisfy five gates: a declared or auto-discovered operational domain, demonstrated operational stability, runtime-enforced boundaries via ENVELO Interlock, a tamper-evident evidence record, and a clear revocation pathway.</p>
+    </div>
+    <div class="inner">
       <div class="gates-grid">
         <div class="gate-card"><span class="gate-num">01</span><div class="gate-title">ODD Declaration</div><p class="gate-desc">The operational design domain must be formally declared or auto-discovered through ENVELO's adaptive learning engine. Fifteen boundary types are supported. No domain-specific configuration is required. See R-01b.</p></div>
         <div class="gate-card"><span class="gate-num">02</span><div class="gate-title">Stability</div><p class="gate-desc">The system must demonstrate 72+ cumulative hours of stable operation within its declared ODD under monitored conditions.</p></div>
