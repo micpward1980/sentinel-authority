@@ -37,6 +37,26 @@ def decode_token(token: str) -> dict:
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
 
+
+
+def create_refresh_token(data: dict) -> str:
+    """Create a longer-lived refresh token (7 days)."""
+    to_encode = data.copy()
+    expire = datetime.utcnow() + timedelta(days=7)
+    to_encode.update({"exp": expire, "type": "refresh"})
+    return jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+
+
+def decode_refresh_token(token: str) -> dict:
+    """Decode and validate a refresh token."""
+    try:
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+        if payload.get("type") != "refresh":
+            raise HTTPException(status_code=401, detail="Invalid token type")
+        return payload
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Invalid refresh token")
+
 async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security), db: AsyncSession = Depends(get_db)) -> dict:
     payload = decode_token(credentials.credentials)
     if not payload.get("sub"):

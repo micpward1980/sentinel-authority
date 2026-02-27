@@ -432,6 +432,30 @@ app.add_middleware(
     allow_headers=["Authorization", "Content-Type", "Accept", "Origin", "X-Requested-With"],
 )
 
+
+# ── Backup Cron Endpoint ──
+@app.post("/internal/backup", include_in_schema=False)
+async def trigger_backup(request: Request):
+    """Triggered by Railway cron or external scheduler."""
+    import os
+    cron_secret = os.environ.get("CRON_SECRET", "")
+    auth = request.headers.get("Authorization", "")
+    if not cron_secret or auth != f"Bearer {cron_secret}":
+        return JSONResponse(status_code=403, content={"error": "forbidden"})
+    
+    import subprocess
+    result = subprocess.run(
+        ["python", "scripts/backup_db.py"],
+        capture_output=True, text=True, timeout=600,
+        env={**os.environ}
+    )
+    if result.returncode == 0:
+        logger.info("[BACKUP] Scheduled backup completed successfully")
+        return {"status": "ok", "output": result.stdout[-500:]}
+    else:
+        logger.error(f"[BACKUP] Scheduled backup failed: {result.stderr[-500:]}")
+        return JSONResponse(status_code=500, content={"status": "failed", "error": result.stderr[-500:]})
+
 # API Routes
 app.include_router(chat_router)
 app.include_router(content_router)

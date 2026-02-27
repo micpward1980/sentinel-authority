@@ -373,6 +373,29 @@ async def login(request: Request, credentials: UserLogin, db: AsyncSession = Dep
 
 
 
+
+
+class RefreshRequest(BaseModel):
+    refresh_token: str
+
+@router.post("/refresh", summary="Exchange refresh token for new access token")
+async def refresh_access_token(data: RefreshRequest, request: Request, db: AsyncSession = Depends(get_db)):
+    from app.core.security import decode_refresh_token, create_access_token
+    payload = decode_refresh_token(data.refresh_token)
+    user_id = payload.get("sub")
+    if not user_id:
+        raise HTTPException(status_code=401, detail="Invalid refresh token")
+    
+    # Verify user still exists and is active
+    result = await db.execute(select(User).where(User.id == user_id))
+    user = result.scalar_one_or_none()
+    if not user or not user.is_active:
+        raise HTTPException(status_code=401, detail="User not found or inactive")
+    
+    new_token = create_access_token({"sub": str(user.id), "email": user.email, "role": user.role})
+    return {"access_token": new_token, "token_type": "bearer"}
+
+
 @router.post("/2fa/backup-codes", summary="Regenerate 2FA backup codes")
 async def regenerate_backup_codes(
     request: Request,
