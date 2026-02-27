@@ -368,7 +368,7 @@ function ApplicationsList() {
         )}
 
         {!isLoading && applications.length === 0 && (
-          <EmptyState icon={FileText} title="No Applications Found" description={!data ? 'You haven\'t submitted any certification applications yet.' : 'No applications match your current filter.'} />
+          <EmptyState icon={FileText} title="No Applications Yet" description={!data ? 'You haven\'t submitted any certification applications yet.' : 'Submit your first application to begin the certification process.'} />
         )}
       </Panel>
     </div>

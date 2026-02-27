@@ -824,17 +824,15 @@ function EnveloCustomerView() {
   if (!latestApp) {
     return (
       <div className="space-y-6">
-        <SectionHeader label="CERTIFICATION" title="Get Started" />
+        <SectionHeader label="CERTIFICATION" title="Getting Started" />
         <Panel>
-          <div style={{ textAlign: 'center', padding: 'clamp(32px,6vw,72px) clamp(16px,4vw,24px)' }}>
-            <Shield fill="currentColor" fillOpacity={0.08} strokeWidth={1.5} size={56} style={{ color: styles.purpleBright, margin: '0 auto 20px' }} />
-            <h2 style={{ fontFamily: styles.serif, fontSize: 'clamp(20px,4vw,28px)', fontWeight: 200, marginBottom: '12px' }}>Start Your Certification</h2>
-            <p style={{ color: styles.textSecondary, maxWidth: '400px', margin: '0 auto 32px', lineHeight: 1.6 }}>
-              Submit an application to begin the ODDC certification process for your autonomous system.
+          <div style={{ textAlign: 'center', padding: 'clamp(32px,6vw,56px) clamp(16px,4vw,24px)' }}>
+            <p style={{ color: styles.textSecondary, maxWidth: '400px', margin: '0 auto', lineHeight: 1.6, fontSize: '14px' }}>
+              This page tracks your certification progress once you've submitted an application.
             </p>
-            <a href="/applications/new" style={{ display: 'inline-block', padding: '13px 36px', background: styles.purplePrimary, border: `1px solid ${styles.purpleBright}`, color: '#fff', fontFamily: styles.mono, fontSize: '12px', letterSpacing: '1.5px', textTransform: 'uppercase', textDecoration: 'none', borderRadius: '6px' }}>
-              New Application →
-            </a>
+            <p style={{ marginTop: '16px' }}>
+              <a href="/applications/new" style={{ color: styles.purpleBright, fontFamily: styles.mono, fontSize: '12px', textDecoration: 'none', letterSpacing: '1px' }}>Submit an application →</a>
+            </p>
           </div>
         </Panel>
       </div>
