@@ -830,9 +830,7 @@ function EnveloCustomerView() {
             <p style={{ color: styles.textSecondary, maxWidth: '400px', margin: '0 auto', lineHeight: 1.6, fontSize: '14px' }}>
               This page tracks your certification progress once you've submitted an application.
             </p>
-            <p style={{ marginTop: '16px' }}>
-              <a href="/applications/new" style={{ color: styles.purpleBright, fontFamily: styles.mono, fontSize: '12px', textDecoration: 'none', letterSpacing: '1px' }}>Submit an application →</a>
-            </p>
+
           </div>
         </Panel>
       </div>

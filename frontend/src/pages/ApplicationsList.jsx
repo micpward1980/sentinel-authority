@@ -233,14 +233,14 @@ function ApplicationsList() {
             {isFetching && !isLoading && (
               <span style={{ fontFamily: styles.mono, fontSize: '10px', color: styles.textDim }}>Updating…</span>
             )}
-            <Link to="/applications/new" className="no-underline" style={{
+{(applications?.length > 0 || isAdmin) && <Link to="/applications/new" className="no-underline" style={{
               display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '10px 20px',
               background: styles.purplePrimary, borderRadius: '6px', color: '#fff',
               fontFamily: styles.mono, fontSize: '10px', fontWeight: 700,
               letterSpacing: '0.15em', textTransform: 'uppercase', textDecoration: 'none', cursor: 'pointer',
             }}>
               <Plus size={12} />&nbsp;New Application
-            </Link>
+            </Link>}
           </div>
         }
       />
