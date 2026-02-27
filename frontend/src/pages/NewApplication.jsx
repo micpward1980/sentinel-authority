@@ -420,9 +420,23 @@ function NewApplication() {
                     <option value="indoor">Indoor</option>
                     <option value="outdoor">Outdoor</option>
                     <option value="hybrid">Indoor + Outdoor</option>
+                    <option value="aerial">Aerial</option>
+                    <option value="underwater">Underwater / Subsea</option>
+                    <option value="subterranean">Subterranean</option>
+                    <option value="multi_domain">Multi-Domain</option>
                     <option value="virtual">Virtual / Cloud</option>
+                    <option value="other_deploy">Other (describe below)</option>
                   </select>
                 </div>
+                {sys.deployment_type === 'other_deploy' && (
+                  <div>
+                    {fieldLabel('Describe Deployment Type', true)}
+                    <input type="text" value={sys.deployment_custom || ''}
+                      onChange={e => setSys({ ...sys, deployment_custom: e.target.value })}
+                      className="w-full px-4 py-3 outline-none" style={inputStyle}
+                      placeholder="e.g., Deep ocean floor, low Earth orbit, underground cave network" />
+                  </div>
+                )}
                 <div>
                   {fieldLabel('Operating Environment')}
                   <select value={sys.environment}
