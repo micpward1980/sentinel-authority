@@ -189,7 +189,7 @@ function CustomerDashboard() {
           <Link to="/my-activity" style={{ fontFamily: styles.mono, fontSize: '10px', color: styles.purpleBright, textDecoration: 'none', letterSpacing: '1px' }}>View All →</Link>
         </div>
         {recentActivity.length === 0 ? (
-          <p style={{ color: styles.textTertiary, fontSize: '13px', textAlign: 'center', padding: '20px 0' }}>No activity yet</p>
+          <p style={{ color: styles.textTertiary, fontSize: '13px', textAlign: 'center', padding: '20px 0' }}>Activity will appear here as your certification progresses.</p>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
             {recentActivity.map((log, i) => {
