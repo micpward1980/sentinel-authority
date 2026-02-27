@@ -5,7 +5,7 @@ import uuid
 
 @pytest.mark.asyncio
 async def test_register_and_login(client):
-    email = f"test_{uuid.uuid4().hex[:8]}@sentinel.test"
+    email = f"test_{uuid.uuid4().hex[:8]}@test.example.com"
     # Register
     resp = await client.post("/api/v1/auth/register", json={
         "email": email,
@@ -29,7 +29,7 @@ async def test_register_and_login(client):
 @pytest.mark.asyncio
 async def test_invalid_login(client):
     resp = await client.post("/api/v1/auth/login", json={
-        "email": "nonexistent@sentinel.test",
+        "email": "nonexistent@test.example.com",
         "password": "WrongPass123!"
     })
     assert resp.status_code in (401, 400, 422)

@@ -63,7 +63,7 @@ async def client(setup_db):
 async def auth_headers(client):
     """Register a test user and return auth headers."""
     import uuid
-    email = f"test_{uuid.uuid4().hex[:8]}@sentinel.test"
+    email = f"test_{uuid.uuid4().hex[:8]}@test.example.com"
     await client.post("/api/auth/register", json={
         "email": email,
         "password": "TestPass123!",
