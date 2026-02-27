@@ -512,7 +512,7 @@ async def _suspend_certificate_in_db(certificate_id: str, get_db_session, reason
     try:
         async with get_db_session() as db:
             # Import here to avoid circular imports
-            from app.models import Certificate
+            from app.models.models import Certificate
 
             result = await db.execute(
                 select(Certificate).where(Certificate.certificate_number == certificate_id)
@@ -541,7 +541,7 @@ async def _reinstate_certificate_in_db(certificate_id: str, get_db_session, reas
     """Reinstate a suspended certificate (admin action, not automatic)."""
     try:
         async with get_db_session() as db:
-            from app.models import Certificate
+            from app.models.models import Certificate
 
             result = await db.execute(
                 select(Certificate).where(Certificate.certificate_number == certificate_id)
