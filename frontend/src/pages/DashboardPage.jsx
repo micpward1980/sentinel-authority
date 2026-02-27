@@ -261,7 +261,7 @@ function Dashboard() {
 
   const pipeline = summary?.applications || { pending: 0, under_review: 0, approved: 0, testing: 0, conformant: 0, suspended: 0, revoked: 0 };
 
-  const needsAction = { length: (pipeline.pending || 0) + (pipeline.under_review || 0) };
+  const needsAction = allApps.filter(a => ['pending', 'under_review'].includes(a.state));
 
   const openJustify = (appId, newState, label) => { setJustifyNote(''); setJustifyModal({ appId, newState, label }); };
 
