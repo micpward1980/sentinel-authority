@@ -4,7 +4,7 @@ import pytest
 
 @pytest.mark.asyncio
 async def test_certificate_list(client, auth_headers):
-    resp = await client.get("/api/v1/certificates", headers=auth_headers)
+    resp = await client.get("/api/v1/certificates/", headers=auth_headers)
     assert resp.status_code == 200
 
 
