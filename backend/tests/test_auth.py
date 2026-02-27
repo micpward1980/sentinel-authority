@@ -37,13 +37,13 @@ async def test_invalid_login(client):
 
 @pytest.mark.asyncio
 async def test_protected_route_without_token(client):
-    resp = await client.get("/api/v1/dashboard")
+    resp = await client.get("/api/v1/dashboard/stats")
     assert resp.status_code in (401, 403)
 
 
 @pytest.mark.asyncio
 async def test_protected_route_with_bad_token(client):
-    resp = await client.get("/api/v1/dashboard", headers={
+    resp = await client.get("/api/v1/dashboard/stats", headers={
         "Authorization": "Bearer invalid.token.here"
     })
     assert resp.status_code in (401, 403)
@@ -51,5 +51,5 @@ async def test_protected_route_with_bad_token(client):
 
 @pytest.mark.asyncio
 async def test_protected_route_with_valid_token(client, auth_headers):
-    resp = await client.get("/api/v1/dashboard", headers=auth_headers)
+    resp = await client.get("/api/v1/dashboard/stats", headers=auth_headers)
     assert resp.status_code == 200
