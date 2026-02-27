@@ -12,8 +12,6 @@ import os
 from datetime import datetime
 from contextlib import asynccontextmanager
 
-from apscheduler.schedulers.background import BackgroundScheduler
-
 from fastapi import FastAPI
 from chat import router as chat_router
 from app.api.routes.content import router as content_router
@@ -458,6 +456,7 @@ def _run_scheduled_backup():
 async def start_backup_scheduler():
     import os
     if os.environ.get("ENVIRONMENT", "development") == "production":
+        from apscheduler.schedulers.background import BackgroundScheduler
         scheduler = BackgroundScheduler()
         scheduler.add_job(_run_scheduled_backup, "interval", hours=6, id="db_backup")
         scheduler.start()
