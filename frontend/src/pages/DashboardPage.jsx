@@ -183,7 +183,7 @@ function CustomerDashboard() {
         </Panel>
       )}
 
-      {(applications.length > 0 || recentActivity.length > 0) && <Panel>
+      {<Panel>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '16px' }}>
           <h2 style={{ fontFamily: styles.mono, fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, margin: 0 }}>Recent Activity</h2>
           <Link to="/my-activity" style={{ fontFamily: styles.mono, fontSize: '10px', color: styles.purpleBright, textDecoration: 'none', letterSpacing: '1px' }}>View All →</Link>
