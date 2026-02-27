@@ -12,7 +12,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s [BACKUP] %(message)s
 logger = logging.getLogger(__name__)
 
 DATABASE_URL = os.environ.get("DATABASE_URL", "")
-BACKUP_DIR = os.environ.get("BACKUP_DIR", "/tmp/backups")
+BACKUP_DIR = os.environ.get("BACKUP_DIR", "/data/backups")
 S3_BUCKET = os.environ.get("BACKUP_S3_BUCKET", "")
 RETENTION_DAYS = int(os.environ.get("BACKUP_RETENTION_DAYS", "30"))
 

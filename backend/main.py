@@ -12,6 +12,8 @@ import os
 from datetime import datetime
 from contextlib import asynccontextmanager
 
+from apscheduler.schedulers.background import BackgroundScheduler
+
 from fastapi import FastAPI
 from chat import router as chat_router
 from app.api.routes.content import router as content_router
@@ -432,6 +434,34 @@ app.add_middleware(
     allow_headers=["Authorization", "Content-Type", "Accept", "Origin", "X-Requested-With"],
 )
 
+
+
+# ── Automated Backup Scheduler ──
+def _run_scheduled_backup():
+    import subprocess, os, logging
+    logger = logging.getLogger("sentinel")
+    logger.info("[BACKUP] Running scheduled backup...")
+    try:
+        result = subprocess.run(
+            ["python", "scripts/backup_db.py"],
+            capture_output=True, text=True, timeout=600,
+            env={**os.environ}
+        )
+        if result.returncode == 0:
+            logger.info("[BACKUP] Scheduled backup completed")
+        else:
+            logger.error(f"[BACKUP] Failed: {result.stderr[-300:]}")
+    except Exception as e:
+        logger.error(f"[BACKUP] Exception: {e}")
+
+@app.on_event("startup")
+async def start_backup_scheduler():
+    import os
+    if os.environ.get("ENVIRONMENT", "development") == "production":
+        scheduler = BackgroundScheduler()
+        scheduler.add_job(_run_scheduled_backup, "interval", hours=6, id="db_backup")
+        scheduler.start()
+        logger.info("[BACKUP] Scheduler started — every 6 hours")
 
 # ── Backup Cron Endpoint ──
 @app.post("/internal/backup", include_in_schema=False)
