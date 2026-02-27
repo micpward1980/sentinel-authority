@@ -76,7 +76,7 @@ async def simulate_system(client: httpx.AsyncClient, system_id: int, base_url: s
             start = time.monotonic()
             resp = await client.post(
                 f"{base_url}/api/envelo/heartbeat",
-                headers={"X-API-Key": api_key, "Content-Type": "application/json"},
+                headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
                 json={
                     "session_id": session_id,
                     "timestamp": time.time(),
@@ -120,7 +120,8 @@ async def run_load_test(num_systems: int, duration: int, base_url: str, api_key:
     logger.info(f"Starting load test: {num_systems} systems, {duration}s duration")
     logger.info(f"Target: {base_url}")
 
-    async with httpx.AsyncClient() as client:
+    limits = httpx.Limits(max_connections=600, max_keepalive_connections=200)
+    async with httpx.AsyncClient(limits=limits, timeout=httpx.Timeout(30.0)) as client:
         tasks = [
             simulate_system(client, i, base_url, duration, stats, api_key)
             for i in range(num_systems)
