@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Platform Status — Sentinel Authority</title>
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+    <style>
+        :root { --bg: #0d0d12; --surface: #14141c; --border: rgba(255,255,255,0.06); --text: #e8e4df; --muted: #9a958e; --accent: #D6A05C; --purple: #5B4B8A; --green: #4ade80; --red: #f87171; --yellow: #fbbf24; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+        .nav { background: var(--surface); border-bottom: 1px solid var(--border); padding: 12px 20px; display: flex; align-items: center; gap: 12px; }
+        .nav a { color: var(--muted); font-size: 0.9rem; text-decoration: none; }
+        .nav a:hover { color: var(--text); }
+        .hero { padding: 60px 20px; text-align: center; }
+        .hero h1 { font-family: 'Cormorant Garamond', serif; font-weight: 300; font-size: 2.4rem; color: white; }
+        .status-banner { margin: 20px auto; max-width: 600px; padding: 16px 24px; border-radius: 8px; text-align: center; font-weight: 500; font-size: 1.1rem; }
+        .status-operational { background: rgba(74,222,128,0.1); border: 1px solid rgba(74,222,128,0.3); color: var(--green); }
+        .status-degraded { background: rgba(251,191,36,0.1); border: 1px solid rgba(251,191,36,0.3); color: var(--yellow); }
+        .status-down { background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.3); color: var(--red); }
+        .container { max-width: 700px; margin: 0 auto; padding: 40px 20px; }
+        .service { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 20px; margin: 12px 0; display: flex; justify-content: space-between; align-items: center; }
+        .service-name { font-weight: 500; }
+        .service-desc { color: var(--muted); font-size: 0.85rem; margin-top: 2px; }
+        .indicator { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; }
+        .dot { width: 10px; height: 10px; border-radius: 50%; }
+        .dot-green { background: var(--green); box-shadow: 0 0 8px rgba(74,222,128,0.4); }
+        .dot-red { background: var(--red); box-shadow: 0 0 8px rgba(248,113,113,0.4); }
+        .dot-yellow { background: var(--yellow); box-shadow: 0 0 8px rgba(251,191,36,0.4); }
+        .dot-gray { background: #666; }
+        .latency { color: var(--muted); font-size: 0.8rem; }
+        .updated { text-align: center; color: var(--muted); font-size: 0.85rem; margin-top: 30px; }
+        h2 { font-family: 'Cormorant Garamond', serif; font-weight: 300; font-size: 1.5rem; color: var(--accent); margin: 30px 0 12px; }
+        .loading { color: var(--muted); }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="nav">
+        <a href="/">← Home</a>
+        <a href="/research.html">Research</a>
+        <a href="/integration.html">Integration</a>
+        <a href="/platform-status.html" style="color: var(--accent);">Status</a>
+    </nav>
+
+    <div class="hero">
+        <h1>Platform Status</h1>
+        <div id="overall-status" class="status-banner" style="background:var(--surface);border:1px solid var(--border);color:var(--muted);">
+            Checking services...
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>Core Services</h2>
+        <div id="services">
+            <div class="service">
+                <div><div class="service-name">API Server</div><div class="service-desc">Backend API and ENVELO telemetry ingestion</div></div>
+                <div class="indicator" id="svc-api"><span class="dot dot-gray"></span> <span class="loading">Checking...</span></div>
+            </div>
+            <div class="service">
+                <div><div class="service-name">Dashboard</div><div class="service-desc">Customer portal and admin interface</div></div>
+                <div class="indicator" id="svc-dash"><span class="dot dot-gray"></span> <span class="loading">Checking...</span></div>
+            </div>
+            <div class="service">
+                <div><div class="service-name">Public Website</div><div class="service-desc">Documentation, registry, and information</div></div>
+                <div class="indicator" id="svc-web"><span class="dot dot-gray"></span> <span class="loading">Checking...</span></div>
+            </div>
+            <div class="service">
+                <div><div class="service-name">Certificate Registry</div><div class="service-desc">Public verification of ODDC certificates</div></div>
+                <div class="indicator" id="svc-registry"><span class="dot dot-gray"></span> <span class="loading">Checking...</span></div>
+            </div>
+            <div class="service">
+                <div><div class="service-name">Surveillance Engine</div><div class="service-desc">Real-time monitoring and enforcement</div></div>
+                <div class="indicator" id="svc-surv"><span class="dot dot-gray"></span> <span class="loading">Checking...</span></div>
+            </div>
+        </div>
+
+        <p class="updated" id="last-updated"></p>
+    </div>
+
+    <script>
+        const API = 'https://sentinel-authority-production.up.railway.app';
+        const DASH = 'https://app.sentinelauthority.org';
+        const WEB = 'https://www.sentinelauthority.org';
+
+        function setStatus(id, ok, latency) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            const dot = el.querySelector('.dot');
+            const label = el.querySelector('span:last-child');
+            if (ok) {
+                dot.className = 'dot dot-green';
+                label.className = '';
+                label.innerHTML = 'Operational' + (latency ? ' <span class="latency">' + latency + 'ms</span>' : '');
+            } else {
+                dot.className = 'dot dot-red';
+                label.className = '';
+                label.textContent = 'Unreachable';
+            }
+        }
+
+        async function check(url, id) {
+            try {
+                const start = performance.now();
+                const res = await fetch(url, { mode: 'cors', cache: 'no-store', signal: AbortSignal.timeout(10000) });
+                const ms = Math.round(performance.now() - start);
+                setStatus(id, res.ok || res.status === 401 || res.status === 403, ms);
+                return res.ok || res.status === 401 || res.status === 403;
+            } catch (e) {
+                // Try no-cors for websites (opaque response = reachable)
+                try {
+                    await fetch(url, { mode: 'no-cors', cache: 'no-store', signal: AbortSignal.timeout(10000) });
+                    setStatus(id, true, null);
+                    return true;
+                } catch (e2) {
+                    setStatus(id, false);
+                    return false;
+                }
+            }
+        }
+
+        async function checkAll() {
+            const results = await Promise.all([
+                check(API + '/health', 'svc-api'),
+                check(DASH, 'svc-dash'),
+                check(WEB, 'svc-web'),
+                check(API + '/api/registry', 'svc-registry'),
+                check(API + '/api/surveillance/status', 'svc-surv'),
+            ]);
+
+            const allUp = results.every(r => r);
+            const someUp = results.some(r => r);
+            const banner = document.getElementById('overall-status');
+
+            if (allUp) {
+                banner.className = 'status-banner status-operational';
+                banner.textContent = '✓ All Systems Operational';
+            } else if (someUp) {
+                banner.className = 'status-banner status-degraded';
+                banner.textContent = '⚠ Partial Degradation';
+            } else {
+                banner.className = 'status-banner status-down';
+                banner.textContent = '✕ Service Disruption';
+            }
+
+            document.getElementById('last-updated').textContent =
+                'Last checked: ' + new Date().toLocaleString() + ' · Auto-refreshes every 60s';
+        }
+
+        checkAll();
+        setInterval(checkAll, 60000);
+    </script>
+</body>
+</html>
