@@ -23,11 +23,13 @@ function CustomerDashboard() {
     queryFn: () => Promise.all([
       api.get('/api/v1/dashboard/summary').catch(() => ({ data: null })),
       api.get('/api/applications/').catch(() => ({ data: [] })),
+      api.get('/api/certificates/').catch(() => ({ data: [] })),
       api.get('/api/envelo/monitoring/overview').catch(() => ({ data: null })),
       api.get('/api/audit/my-logs?limit=5&offset=0').catch(() => ({ data: { logs: [] } }))
     ]).then(([sumRes, appsRes, monRes, actRes]) => ({
       summary: sumRes.data,
       applications: appsRes.data.applications || appsRes.data || [],
+      certificates: certsRes.data || [],
       monitoring: monRes.data || null,
       recentActivity: actRes.data.logs || actRes.data || [],
     })),
@@ -38,6 +40,7 @@ function CustomerDashboard() {
   const summary = appData?.summary || null;
   const monitoring = appData?.monitoring || null;
   const recentActivity = appData?.recentActivity || [];
+  const certificates = appData?.certificates || [];
 
   const STAGES = [
     { key: 'pending',      label: 'Submitted' },
@@ -228,6 +231,7 @@ function Dashboard() {
       api.get('/api/dashboard/recent-applications').catch(() => ({ data: [] })),
       api.get('/api/dashboard/active-tests').catch(() => ({ data: [] })),
       api.get('/api/dashboard/recent-certificates').catch(() => ({ data: [] })),
+      api.get('/api/certificates/').catch(() => ({ data: [] })),
       api.get('/api/envelo/monitoring/overview').catch(() => ({ data: null })),
       api.get('/api/audit/admin-logs?limit=8&offset=0').catch(() => ({ data: { logs: [] } }))
     ]).then(([sumR, recentR, testsR, certsR, monR, actR]) => ({
