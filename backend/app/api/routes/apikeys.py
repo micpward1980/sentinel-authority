@@ -82,7 +82,7 @@ async def generate_new_key(
     
     await write_audit_log(db, action="api_key_generated", resource_type="api_key",
         resource_id=api_key.id if hasattr(api_key, "id") else None,
-        user_id=int(user["sub"]), user_email=user["email"],
+        user_id=int(current_user["sub"]), user_email=current_user.get("email", ""),
         details={"key_prefix": raw_key[:12]})
     await db.commit()
 
@@ -158,7 +158,7 @@ async def revoke_key(
     api_key.revoked_at = datetime.utcnow()
 
     await write_audit_log(db, action="api_key_revoked", resource_type="api_key",
-        resource_id=api_key.id, user_id=int(user["sub"]), user_email=user["email"],
+        resource_id=api_key.id, user_id=int(current_user["sub"]), user_email=current_user.get("email", ""),
         details={"key_prefix": api_key.key_hash[:12] if api_key.key_hash else "unknown"})
     
     await db.commit()
