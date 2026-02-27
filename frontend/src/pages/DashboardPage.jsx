@@ -21,13 +21,13 @@ function CustomerDashboard() {
   const { data: appData, isLoading: loading } = useQuery({
     queryKey: ['dashboard-applicant'],
     queryFn: () => Promise.all([
+      api.get('/api/v1/dashboard/summary').catch(() => ({ data: null })),
       api.get('/api/applications/').catch(() => ({ data: [] })),
-      api.get('/api/certificates/').catch(() => ({ data: [] })),
       api.get('/api/envelo/monitoring/overview').catch(() => ({ data: null })),
       api.get('/api/audit/my-logs?limit=5&offset=0').catch(() => ({ data: { logs: [] } }))
-    ]).then(([appsRes, certsRes, monRes, actRes]) => ({
+    ]).then(([sumRes, appsRes, monRes, actRes]) => ({
+      summary: sumRes.data,
       applications: appsRes.data.applications || appsRes.data || [],
-      certificates: certsRes.data || [],
       monitoring: monRes.data || null,
       recentActivity: actRes.data.logs || actRes.data || [],
     })),
@@ -35,7 +35,7 @@ function CustomerDashboard() {
     retry: false,
   });
   const applications = appData?.applications || [];
-  const certificates = appData?.certificates || [];
+  const summary = appData?.summary || null;
   const monitoring = appData?.monitoring || null;
   const recentActivity = appData?.recentActivity || [];
 
@@ -96,9 +96,9 @@ function CustomerDashboard() {
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: `repeat(auto-fit, minmax(${isMobile ? '140px' : '200px'}, 1fr))`, gap: isMobile ? '10px' : '16px' }}>
-        <StatCard onClick={() => navigate('/applications')} label="Applications" value={applications.length} color={styles.purpleBright} icon={<FileText fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{ color: styles.purpleBright }} />} subtitle={applications.filter(a => a.state === 'pending' || a.state === 'under_review').length > 0 ? applications.filter(a => a.state === 'pending' || a.state === 'under_review').length + ' in review' : null} />
-        <StatCard onClick={() => navigate('/certificates')} label="Certificates" value={certificates.length} color={styles.accentGreen} icon={<Award fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{ color: styles.accentGreen }} />} subtitle={certificates.filter(c => c.state === 'conformant').length > 0 ? certificates.filter(c => c.state === 'conformant').length + ' active' : null} />
-        <StatCard onClick={() => navigate('/cat72')} label="Active Tests" value={applications.filter(a => a.state === 'testing').length} color={styles.accentAmber} icon={<Activity fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{ color: styles.accentAmber }} />} />
+        <StatCard onClick={() => navigate('/applications')} label="Applications" value={summary?.applications?.total || applications.length} color={styles.purpleBright} icon={<FileText fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{ color: styles.purpleBright }} />} subtitle={summary?.applications ? ((summary.applications.pending || 0) + (summary.applications.under_review || 0) > 0 ? (summary.applications.pending || 0) + (summary.applications.under_review || 0) + ' in review' : null) : null} />
+        <StatCard onClick={() => navigate('/certificates')} label="Certificates" value={summary?.certificates?.total || 0} color={styles.accentGreen} icon={<Award fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{ color: styles.accentGreen }} />} subtitle={summary?.certificates?.active > 0 ? summary.certificates.active + ' active' : null} />
+        <StatCard onClick={() => navigate('/cat72')} label="Active Tests" value={summary?.applications?.testing || 0} color={styles.accentAmber} icon={<Activity fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{ color: styles.accentAmber }} />} />
         {(() => {
           const sessions = monitoring?.sessions || [];
           const online = sessions.filter(s => { const la = s.last_heartbeat_at || s.last_telemetry_at || s.last_activity || s.started_at; return s.status === 'active' && la && (Date.now() - new Date(la).getTime()) < 120000; }).length;
@@ -224,18 +224,16 @@ function Dashboard() {
   const { data: adminData, refetch } = useQuery({
     queryKey: ['dashboard-admin'],
     queryFn: () => Promise.all([
-      api.get('/api/dashboard/stats').catch(() => ({ data: null })),
+      api.get('/api/v1/dashboard/summary').catch(() => ({ data: null })),
       api.get('/api/dashboard/recent-applications').catch(() => ({ data: [] })),
       api.get('/api/dashboard/active-tests').catch(() => ({ data: [] })),
-      api.get('/api/applications/').catch(() => ({ data: [] })),
       api.get('/api/dashboard/recent-certificates').catch(() => ({ data: [] })),
       api.get('/api/envelo/monitoring/overview').catch(() => ({ data: null })),
       api.get('/api/audit/admin-logs?limit=8&offset=0').catch(() => ({ data: { logs: [] } }))
-    ]).then(([statsR, recentR, testsR, appsR, certsR, monR, actR]) => ({
-      stats: statsR.data,
+    ]).then(([sumR, recentR, testsR, certsR, monR, actR]) => ({
+      summary: sumR.data,
       recentApps: recentR.data,
       activeTests: testsR.data,
-      allApps: appsR.data.applications || appsR.data || [],
       recentCerts: certsR.data,
       monitoring: monR.data,
       recentActivity: actR.data.logs || actR.data || [],
@@ -243,10 +241,9 @@ function Dashboard() {
     refetchInterval: 30000,
     retry: false,
   });
-  const stats = adminData?.stats || null;
+  const summary = adminData?.summary || null;
   const recentApps = adminData?.recentApps || [];
   const activeTests = adminData?.activeTests || [];
-  const allApps = adminData?.allApps || [];
   const recentCerts = adminData?.recentCerts || [];
   const monitoring = adminData?.monitoring || null;
   const recentActivity = adminData?.recentActivity || [];
@@ -258,16 +255,9 @@ function Dashboard() {
     else { refetch(); }
   };
 
-  const pipeline = {
-    pending: allApps.filter(a => a.state === 'pending').length,
-    under_review: allApps.filter(a => a.state === 'under_review').length,
-    approved: allApps.filter(a => a.state === 'approved').length,
-    testing: allApps.filter(a => a.state === 'testing').length,
-    conformant: allApps.filter(a => a.state === 'conformant').length,
-    revoked: allApps.filter(a => a.state === 'revoked' || a.state === 'suspended').length,
-  };
+  const pipeline = summary?.applications || { pending: 0, under_review: 0, approved: 0, testing: 0, conformant: 0, suspended: 0, revoked: 0 };
 
-  const needsAction = allApps.filter(a => a.state === 'pending' || a.state === 'under_review');
+  const needsAction = { length: (pipeline.pending || 0) + (pipeline.under_review || 0) };
 
   const openJustify = (appId, newState, label) => { setJustifyNote(''); setJustifyModal({ appId, newState, label }); };
 
@@ -315,9 +305,9 @@ function Dashboard() {
         return (
           <div style={{ display: 'grid', gridTemplateColumns: `repeat(auto-fit, minmax(${isMobile ? '140px' : '220px'}, 1fr))`, gap: isMobile ? '10px' : '16px' }}>
             <StatCard onClick={() => navigate('/applications')} label="Needs Action" value={actionCount} color={actionCount > 0 ? styles.accentAmber : styles.textTertiary} icon={<AlertCircle fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{ color: actionCount > 0 ? styles.accentAmber : styles.textTertiary }} />} subtitle={actionCount > 0 ? needsAction.length + ' pending · ' + expiringCount + ' expiring' : 'All clear'} />
-            <StatCard onClick={() => navigate('/cat72')} label="Active Tests" value={stats?.active_tests || 0} color={styles.accentAmber} icon={<Activity fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{ color: styles.accentAmber }} />} />
-            <StatCard onClick={() => navigate('/certificates')} label="Active Certificates" value={stats?.certificates_active || 0} color={styles.accentGreen} icon={<BrandMark size={20} />} />
-            <StatCard onClick={() => navigate('/monitoring')} label="Online Interlocks" value={onlineInterlocks} color={onlineInterlocks > 0 ? styles.accentGreen : styles.textTertiary} icon={<Wifi fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{ color: onlineInterlocks > 0 ? styles.accentGreen : styles.textTertiary }} />} subtitle={monitoring?.summary?.total ? 'of ' + monitoring.summary.total + ' registered' : null} />
+            <StatCard onClick={() => navigate('/cat72')} label="Active Tests" value={summary?.applications?.testing || 0} color={styles.accentAmber} icon={<Activity fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{ color: styles.accentAmber }} />} />
+            <StatCard onClick={() => navigate('/certificates')} label="Active Certificates" value={summary?.certificates?.active || 0} color={styles.accentGreen} icon={<BrandMark size={20} />} />
+            <StatCard onClick={() => navigate('/monitoring')} label="Online Interlocks" value={onlineInterlocks} color={onlineInterlocks > 0 ? styles.accentGreen : styles.textTertiary} icon={<Wifi fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{ color: onlineInterlocks > 0 ? styles.accentGreen : styles.textTertiary }} />} subtitle={monitoring?.summary?.total ? 'of ' + monitoring.summary.total + ' registered' : (summary?.envelo?.total_sessions ? 'of ' + summary.envelo.total_sessions + ' registered' : null)} />
           </div>
         );
       })()}
