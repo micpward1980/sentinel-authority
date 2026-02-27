@@ -18,20 +18,20 @@ function CustomerDashboard() {
   const [applications, setApplications] = useState([]);
   const [appTotal, setAppTotal] = useState(0);
   const [stateCounts, setStateCounts] = useState({});
-  const [certificates, setCertificates] = useState([]);
+  const [summary, setSummary] = useState(null);
   const [loading, setLoading] = useState(true);
   const [monitoring, setMonitoring] = useState(null);
   const [recentActivity, setRecentActivity] = useState([]);
 
   useEffect(() => {
     Promise.all([
+      api.get('/api/v1/dashboard/summary').catch(() => ({ data: null })),
       api.get('/api/applications/').catch(() => ({ data: [] })),
-      api.get('/api/certificates/').catch(() => ({ data: [] })),
       api.get('/api/envelo/monitoring/overview').catch(() => ({ data: null })),
       api.get('/api/audit/my-logs?limit=5&offset=0').catch(() => ({ data: { logs: [] } }))
-    ]).then(([appsRes, certsRes, monRes, actRes]) => {
+    ]).then(([sumRes, appsRes, monRes, actRes]) => {
+      setSummary(sumRes.data);
       setApplications(appsRes.data.applications || appsRes.data || []);
-      setCertificates(certsRes.data || []);
       if (monRes.data) setMonitoring(monRes.data);
       setRecentActivity(actRes.data.logs || actRes.data || []);
       setLoading(false);
@@ -83,8 +83,8 @@ function CustomerDashboard() {
       {/* Quick Stats */}
       <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px'}}>
         <StatCard onClick={() => navigate("/applications")} label="Applications" value={applications.length} color={styles.purpleBright} icon={<FileText fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{color: styles.purpleBright}} />} subtitle={applications.filter(a => a.state === 'pending' || a.state === 'under_review').length > 0 ? `${applications.filter(a => a.state === 'pending' || a.state === 'under_review').length} in review` : null} />
-        <StatCard onClick={() => navigate("/certificates")} label="Certificates" value={certificates.length} color={styles.accentGreen} icon={<Award fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{color: styles.accentGreen}} />} subtitle={certificates.filter(c => c.state === 'conformant').length > 0 ? `${certificates.filter(c => c.state === 'conformant').length} active` : null} />
-        <StatCard onClick={() => navigate("/cat72")} label="Active Tests" value={applications.filter(a => a.state === 'testing').length} color={styles.accentAmber} icon={<Activity fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{color: styles.accentAmber}} />} />
+        <StatCard onClick={() => navigate("/certificates")} label="Certificates" value={summary?.certificates?.total || 0} color={styles.accentGreen} icon={<Award fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{color: styles.accentGreen}} />} subtitle={(summary?.certificates?.active || 0) > 0 ? `${(summary?.certificates?.active || 0)} active` : null} />
+        <StatCard onClick={() => navigate("/cat72")} label="Active Tests" value={summary?.applications?.testing || applications.filter(a => a.state === 'testing').length} color={styles.accentAmber} icon={<Activity fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{color: styles.accentAmber}} />} />
         {(() => {
           const sessions = monitoring?.sessions || [];
           const online = sessions.filter(s => {
@@ -154,10 +154,10 @@ function CustomerDashboard() {
       </Panel>
 
       {/* Certificates */}
-      {certificates.length === 0 && (
+      {summary?.certificates?.total || 0 === 0 && (
         <EmptyState icon={Award} title="No Certificates Yet" description="Certificates are issued after your system passes the 72-hour CAT-72 conformance test. Submit an application to begin." />
       )}
-      {certificates.length > 0 && (
+      {summary?.certificates?.total || 0 > 0 && (
         <Panel>
           <h2 style={{fontFamily: styles.mono, fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Your Certificates</h2>
           <div className="space-y-3">
@@ -248,20 +248,18 @@ function Dashboard() {
   const toast = useToast();
   const confirm = useConfirm();
   const navigate = useNavigate();
-  const [stats, setStats] = useState(null);
+  const [summary, setSummary] = useState(null);
   const [recentApps, setRecentApps] = useState([]);
   const [activeTests, setActiveTests] = useState([]);
-  const [allApps, setAllApps] = useState([]);
   const [recentCerts, setRecentCerts] = useState([]);
   const [monitoring, setMonitoring] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
 
   const loadData = (manual) => {
     if (manual) setRefreshing(true);
-    api.get('/api/dashboard/stats').then(res => setStats(res.data)).catch(console.error);
+    api.get('/api/v1/dashboard/summary').then(res => setSummary(res.data)).catch(console.error);
     api.get('/api/dashboard/recent-applications').then(res => setRecentApps(res.data)).catch(console.error);
     api.get('/api/dashboard/active-tests').then(res => setActiveTests(res.data)).catch(console.error);
-    api.get('/api/applications/').then(res => setAllApps(res.data.applications || res.data || [])).catch(console.error);
     api.get('/api/dashboard/recent-certificates').then(res => setRecentCerts(res.data)).catch(console.error);
     api.get('/api/envelo/monitoring/overview').then(res => setMonitoring(res.data)).catch(console.error);
     if (manual) setTimeout(() => setRefreshing(false), 800);
@@ -269,16 +267,9 @@ function Dashboard() {
 
   useEffect(() => { loadData(); const interval = setInterval(loadData, 30000); return () => clearInterval(interval); }, []);
 
-  const pipeline = {
-    pending: allApps.filter(a => a.state === 'pending').length,
-    under_review: allApps.filter(a => a.state === 'under_review').length,
-    approved: allApps.filter(a => a.state === 'approved').length,
-    testing: allApps.filter(a => a.state === 'testing').length,
-    conformant: allApps.filter(a => a.state === 'conformant').length,
-    revoked: allApps.filter(a => a.state === 'revoked' || a.state === 'suspended').length
-  };
+  const pipeline = summary?.applications || { pending: 0, under_review: 0, approved: 0, testing: 0, conformant: 0, suspended: 0, revoked: 0 };
 
-  const needsAction = allApps.filter(a => a.state === 'pending' || a.state === 'under_review');
+  const needsAction = { length: (pipeline.pending || 0) + (pipeline.under_review || 0) };
 
   const handleQuickAdvance = async (appId, newState, label) => {
     if (!await confirm({title: 'Confirm', message: label + '?'})) return;
@@ -326,8 +317,8 @@ function Dashboard() {
         return (
           <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px'}}>
             <StatCard label="Total Applications" value={stats?.total_applications || 0} color={styles.purpleBright} icon={<FileText fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{color: styles.purpleBright}} />} />
-            <StatCard onClick={() => navigate("/cat72")} label="Active Tests" value={stats?.active_tests || 0} color={styles.accentAmber} icon={<Activity fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{color: styles.accentAmber}} />} />
-            <StatCard label="Active Certificates" value={stats?.certificates_active || 0} color={styles.accentGreen} icon={<Shield fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{color: styles.accentGreen}} />} />
+            <StatCard onClick={() => navigate("/cat72")} label="Active Tests" value={summary?.applications?.testing || 0} color={styles.accentAmber} icon={<Activity fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{color: styles.accentAmber}} />} />
+            <StatCard label="Active Certificates" value={summary?.certificates?.active || 0} color={styles.accentGreen} icon={<Shield fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{color: styles.accentGreen}} />} />
             <StatCard label="Online Interlocks" value={onlineAgents} color={onlineAgents > 0 ? styles.accentGreen : styles.textTertiary} icon={<Wifi fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{color: onlineAgents > 0 ? styles.accentGreen : styles.textTertiary}} />} />
             <StatCard label="Certificates Issued" value={stats?.certificates_issued || 0} color={styles.purpleBright} icon={<Award fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{color: styles.purpleBright}} />} />
             <StatCard label="Needs Action" value={actionCount} color={actionCount > 0 ? styles.accentAmber : styles.textTertiary} icon={<AlertCircle fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{color: actionCount > 0 ? styles.accentAmber : styles.textTertiary}} />} />
@@ -339,7 +330,7 @@ function Dashboard() {
       <Panel>
         <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '16px'}}>
           <h2 style={{fontFamily: styles.mono, fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, margin: 0}}>Certification Pipeline</h2>
-          <span style={{fontFamily: styles.mono, fontSize: '11px', color: styles.textTertiary}}>{allApps.length} total</span>
+          <span style={{fontFamily: styles.mono, fontSize: '11px', color: styles.textTertiary}}>{(summary?.applications?.total || 0)} total</span>
         </div>
         <div style={{display: 'flex', gap: '4px', height: '32px', overflow: 'hidden'}}>
           {[
