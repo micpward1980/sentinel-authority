@@ -8,7 +8,7 @@ import { useConfirm } from '../context/ConfirmContext';
 import Panel from '../components/Panel';
 import SectionHeader from '../components/SectionHeader';
 
-const API_BASE = 'https://sentinel-authority-production.up.railway.app';
+const API_BASE = 'https://api.sentinelauthority.org';
 
 // ─── ENVELO Agent code generator ──────────────────────────────────────────────
 
@@ -824,7 +824,7 @@ function EnveloCustomerView() {
   if (!latestApp) {
     return (
       <div className="space-y-6">
-        <SectionHeader label="ENVELO Interlock" title="Get Started" />
+        <SectionHeader label="CERTIFICATION" title="Get Started" />
         <Panel>
           <div style={{ textAlign: 'center', padding: 'clamp(32px,6vw,72px) clamp(16px,4vw,24px)' }}>
             <Shield fill="currentColor" fillOpacity={0.08} strokeWidth={1.5} size={56} style={{ color: styles.purpleBright, margin: '0 auto 20px' }} />
@@ -845,7 +845,7 @@ function EnveloCustomerView() {
   if (latestApp.state === 'pending' || latestApp.state === 'under_review') {
     return (
       <div className="space-y-6">
-        <SectionHeader label="ENVELO Interlock" title="Application in Review" />
+        <SectionHeader label="CERTIFICATION" title="Application in Review" />
         <Panel>
           <div style={{ textAlign: 'center', padding: 'clamp(32px,5vw,60px) clamp(16px,4vw,24px)' }}>
             <div style={{ width: '56px', height: '56px', borderRadius: '50%', border: `2px solid rgba(158,110,18,0.3)`, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', fontSize: '24px' }}>⏳</div>
@@ -856,7 +856,7 @@ function EnveloCustomerView() {
             <p style={{ fontFamily: styles.mono, fontSize: '12px', color: styles.textTertiary, marginBottom: '24px' }}>{latestApp.application_number}</p>
             <p style={{ color: styles.textSecondary, maxWidth: '380px', margin: '0 auto', lineHeight: 1.6, fontSize: '14px' }}>
               {latestApp.state === 'under_review'
-                ? 'Our team is reviewing your boundaries. You\'ll receive an email when approved.'
+                ? 'Our team is reviewing your application. You\'ll receive an email when approved.'
                 : 'Your application is in the queue. Our team will begin review shortly.'}
             </p>
           </div>
@@ -864,7 +864,7 @@ function EnveloCustomerView() {
         <Panel>
           <p style={{ fontFamily: styles.mono, fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '12px' }}>What happens next</p>
           {[
-            { step: '1', text: 'Admin reviews your boundary definitions', done: true },
+            { step: '1', text: 'Application reviewed by Sentinel Authority', done: true },
             { step: '2', text: 'Approval email sent with API key', done: false },
             { step: '3', text: 'You deploy the ENVELO Interlock', done: false },
             { step: '4', text: '72-hour conformance test runs', done: false },
@@ -900,7 +900,7 @@ function EnveloCustomerView() {
   if (needsAgreement) {
     return (
       <div className="space-y-6">
-        <SectionHeader label="ENVELO Interlock" title="Conformance Agreement" description="Review and execute the agreement before deployment." />
+        <SectionHeader label="CERTIFICATION" title="Conformance Agreement" description="Review and execute the agreement before deployment." />
 
         <Panel glow>
           <div style={{ textAlign: 'center', padding: '24px 16px 20px' }}>
@@ -974,12 +974,12 @@ function EnveloCustomerView() {
     const certNum = userCerts[0]?.certificate_number || latestApp.certificate_number || 'PENDING';
     const keyStr = firstKey?.key || firstKey?.key_prefix ? (firstKey.key || firstKey.key_prefix + '••••••••') : 'PROVISIONING...';
     const hasFullKey = firstKey?.key && firstKey.key.startsWith('sa_live_');
-    const deployUrl = `https://sentinel-authority-production.up.railway.app/api/v1/deploy/${certNum}?key=${hasFullKey ? firstKey.key : 'YOUR_KEY'}`;
+    const deployUrl = `https://api.sentinelauthority.org/api/v1/deploy/${certNum}?key=${hasFullKey ? firstKey.key : 'YOUR_KEY'}`;
     const curlCmd = `curl -sSL '${deployUrl}' | bash`;
 
     return (
       <div className="space-y-6">
-        <SectionHeader label="ENVELO Interlock" title="Deploy Now" description="Your application is approved. One command to go." />
+        <SectionHeader label="CERTIFICATION" title="Deploy Now" description="Your application is approved. Deploy the interlock to begin your 72-hour test." />
 
         {/* Big green approval banner */}
         <Panel glow>

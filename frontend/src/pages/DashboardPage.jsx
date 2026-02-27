@@ -98,20 +98,21 @@ function CustomerDashboard() {
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: `repeat(auto-fit, minmax(${isMobile ? '140px' : '200px'}, 1fr))`, gap: isMobile ? '10px' : '16px' }}>
-        <StatCard onClick={() => navigate('/applications')} label="Applications" value={summary?.applications?.total || applications.length} color={styles.purpleBright} icon={<FileText fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{ color: styles.purpleBright }} />} subtitle={summary?.applications ? ((summary.applications.pending || 0) + (summary.applications.under_review || 0) > 0 ? (summary.applications.pending || 0) + (summary.applications.under_review || 0) + ' in review' : null) : null} />
-        <StatCard onClick={() => navigate('/certificates')} label="Certificates" value={summary?.certificates?.total || 0} color={styles.accentGreen} icon={<Award fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{ color: styles.accentGreen }} />} subtitle={summary?.certificates?.active > 0 ? summary.certificates.active + ' active' : null} />
-        <StatCard onClick={() => navigate('/cat72')} label="Active Tests" value={summary?.applications?.testing || 0} color={styles.accentAmber} icon={<Activity fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{ color: styles.accentAmber }} />} />
-        {(() => {
-          const sessions = monitoring?.sessions || [];
-          const online = sessions.filter(s => { const la = s.last_heartbeat_at || s.last_telemetry_at || s.last_activity || s.started_at; return s.status === 'active' && la && (Date.now() - new Date(la).getTime()) < 120000; }).length;
-          const total = monitoring?.summary?.total || 0;
-          const hasInterlocks = total > 0;
-          const statusColor = hasInterlocks ? (online > 0 ? styles.accentGreen : styles.accentAmber) : styles.textTertiary;
-          const statusText = hasInterlocks ? (online > 0 ? online + ' of ' + total + ' online' : 'All interlocks offline') : 'No active interlocks';
-          return <StatCard onClick={() => navigate('/monitoring')} label="Live Interlocks" value={hasInterlocks ? online : '—'} color={statusColor} icon={<Wifi fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{ color: statusColor }} />} subtitle={statusText} />;
-        })()}
-      </div>
+      {(() => {
+        const cards = [];
+        cards.push(<StatCard key="apps" onClick={() => navigate('/applications')} label="Applications" value={summary?.applications?.total || applications.length} color={styles.purpleBright} icon={<FileText fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{ color: styles.purpleBright }} />} subtitle={summary?.applications ? ((summary.applications.pending || 0) + (summary.applications.under_review || 0) > 0 ? (summary.applications.pending || 0) + (summary.applications.under_review || 0) + ' in review' : null) : null} />);
+        if ((summary?.certificates?.total || certificates.length) > 0) cards.push(<StatCard key="certs" onClick={() => navigate('/certificates')} label="Certificates" value={summary?.certificates?.total || certificates.length} color={styles.accentGreen} icon={<Award fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{ color: styles.accentGreen }} />} subtitle={summary?.certificates?.active > 0 ? summary.certificates.active + ' active' : null} />);
+        if ((summary?.applications?.testing || 0) > 0) cards.push(<StatCard key="tests" onClick={() => navigate('/envelo')} label="Active Tests" value={summary?.applications?.testing} color={styles.accentAmber} icon={<Activity fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{ color: styles.accentAmber }} />} />);
+        const sessions = monitoring?.sessions || [];
+        const online = sessions.filter(s => { const la = s.last_heartbeat_at || s.last_telemetry_at || s.last_activity || s.started_at; return s.status === 'active' && la && (Date.now() - new Date(la).getTime()) < 120000; }).length;
+        const total = monitoring?.summary?.total || 0;
+        if (total > 0) {
+          const statusColor = online > 0 ? styles.accentGreen : styles.accentAmber;
+          const statusText = online > 0 ? online + ' of ' + total + ' online' : 'All offline';
+          cards.push(<StatCard key="interlocks" onClick={() => navigate('/envelo')} label="Live Interlocks" value={online} color={statusColor} icon={<Wifi fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{ color: statusColor }} />} subtitle={statusText} />);
+        }
+        return cards.length > 0 ? <div style={{ display: 'grid', gridTemplateColumns: `repeat(auto-fit, minmax(${isMobile ? '140px' : '200px'}, 1fr))`, gap: isMobile ? '10px' : '16px' }}>{cards}</div> : null;
+      })()}
 
       <Panel>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '16px' }}>
@@ -165,9 +166,7 @@ function CustomerDashboard() {
         )}
       </Panel>
 
-      {certificates.length === 0 ? (
-        <EmptyState icon={Award} title="No Certificates Yet" description="Certificates are issued after your system passes the 72-hour CAT-72 ENVELO Interlock conformance test. Submit an application to begin." />
-      ) : (
+      {certificates.length === 0 ? null : (
         <Panel>
           <h2 style={{ fontFamily: styles.mono, fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px' }}>Your Certificates</h2>
           <div className="space-y-3">
