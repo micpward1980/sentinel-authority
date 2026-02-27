@@ -4,12 +4,17 @@ import hashlib
 
 
 @pytest.mark.asyncio
-async def test_audit_log_creation(client, auth_headers):
-    """Verify that actions create audit log entries."""
+async def test_audit_log_requires_admin(client, auth_headers):
+    """Verify that audit logs require admin role."""
     resp = await client.get("/api/v1/audit/logs", headers=auth_headers)
-    assert resp.status_code == 200
-    data = resp.json()
-    assert isinstance(data, (list, dict))
+    assert resp.status_code == 403, "Non-admin users should not access audit logs"
+
+
+@pytest.mark.asyncio
+async def test_audit_log_endpoint_exists(client):
+    """Verify audit endpoint exists (returns 401 without auth, not 404)."""
+    resp = await client.get("/api/v1/audit/logs")
+    assert resp.status_code in [401, 403, 422]
 
 
 @pytest.mark.asyncio
