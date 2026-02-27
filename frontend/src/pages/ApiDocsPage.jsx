@@ -3,7 +3,7 @@ import SectionHeader from '../components/SectionHeader';
 import { useState } from 'react';
 import { API_URL } from '../config/api';
 
-const DOCS_PASSWORD = 'goldenticket';
+const DOCS_PASSWORD = import.meta.env.VITE_DOCS_PASSWORD || 'goldenticket';
 
 export default function ApiDocsPage() {
   const [unlocked, setUnlocked] = useState(false);
