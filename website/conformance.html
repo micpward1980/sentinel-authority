@@ -45,7 +45,7 @@
     .req-list li{display:flex;align-items:flex-start;gap:12px;padding:14px 0;border-bottom:1px solid rgba(15,18,30,.05);font-size:14px;color:var(--text-2);line-height:1.55;}
     .req-list li:last-child{border-bottom:none;}
     .req-list .num{font-family:var(--mono);font-size:10px;letter-spacing:1px;color:rgba(42,37,96,.4);padding-top:2px;flex-shrink:0;min-width:28px;}
-    .process-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:20px;}
+    .process-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin-top:20px;}
     @media(max-width:700px){.process-grid{grid-template-columns:1fr;}}
     .process-card{border:1px solid var(--border);border-radius:10px;padding:20px;}
     .process-step{font-family:var(--mono);font-size:10px;letter-spacing:1px;color:var(--text-3);display:block;margin-bottom:8px;}
@@ -72,23 +72,60 @@
       <h1 class="page-title">Conformance Requirements</h1>
       <p class="page-lead">ODDC certification requires a system to satisfy five gates: a declared or auto-discovered operational domain, demonstrated operational stability, runtime-enforced boundaries via ENVELO Interlock, a tamper-evident evidence record, and a clear revocation pathway.</p>
       <div class="gates-grid">
-        <div class="gate-card"><span class="gate-num">01</span><div class="gate-title">ODD Declaration</div><p class="gate-desc">The operational design domain must be formally declared by the operator or auto-discovered through ENVELO's adaptive learning engine. Auto-discovery observes normal system operation and generates enforceable boundaries across all parameter types: numeric ranges, geographic geofences, temporal operating windows, rate-of-change limits, cross-parameter correlations, categorical constraints, multi-modal operating profiles, and operational sequence prerequisites. No domain-specific configuration is required.</p></div>
+        <div class="gate-card"><span class="gate-num">01</span><div class="gate-title">ODD Declaration</div><p class="gate-desc">The operational design domain must be formally declared or auto-discovered through ENVELO's adaptive learning engine. Fifteen boundary types are supported. No domain-specific configuration is required. See R-01b.</p></div>
         <div class="gate-card"><span class="gate-num">02</span><div class="gate-title">Stability</div><p class="gate-desc">The system must demonstrate 72+ cumulative hours of stable operation within its declared ODD under monitored conditions.</p></div>
         <div class="gate-card"><span class="gate-num">03</span><div class="gate-title">Interlock</div><p class="gate-desc">All three ENVELO Interlock enforcement tiers must be present and verified: Tier 1 self-correction, Tier 2 Minimum Risk Condition, Tier 3 hard halt.</p></div>
-        <div class="gate-card"><span class="gate-num">04</span><div class="gate-title">Evidence</div><p class="gate-desc">A tamper-evident, cryptographically-anchored audit record must be generated for all enforcement events, tier transitions, human decisions, and system enforcement actions. Each entry is SHA-256 hash-chained to its predecessor. Database triggers prevent modification or deletion. HMAC-signed anchors are generated daily for independent verification.</p></div>
+        <div class="gate-card"><span class="gate-num">04</span><div class="gate-title">Evidence</div><p class="gate-desc">A tamper-evident, SHA-256 hash-chained audit record must be generated for all enforcement events and human decisions. Database triggers prevent modification. See R-06, R-06a.</p></div>
         <div class="gate-card"><span class="gate-num">05</span><div class="gate-title">Revocation</div><p class="gate-desc">The applicant must execute a Conformance Agreement that specifies conditions under which the attestation may be revoked or suspended.</p></div>
       </div>
       <span class="section-label-sm">Detailed Requirements</span>
       <ul class="req-list">
         <li><span class="num">R-01</span><span>ODD boundaries must be defined in machine-readable format compatible with ENVELO Interlock's enforcement engine, or auto-discovered and operator-approved prior to enforcement activation. Declared boundaries must include at minimum: (a) at least one quantitative operational parameter with defined limit values, (b) a defined geographic, environmental, or operational scope, and (c) explicit identification of conditions under which enforcement activates. Boundaries defined solely by time window, administrative classification, or other non-operational criteria do not satisfy this requirement.</span></li>
         <li><span class="num">R-01a</span><span>ODD declarations are subject to Pre-CAT-72 Audit Control Review. Sentinel Authority will return declarations that are insufficiently specified, internally inconsistent, or that define boundaries so narrow as to render the verification period non-representative of actual operational conditions. Revision history of ODD declarations is retained and published in the certificate registry.</span></li>
-        <li><span class="num">R-01b</span><span>The ENVELO discovery engine supports the following boundary types, each of which may be auto-discovered from observed system behavior or manually declared: (a) numeric range constraints with configurable min/max and safety margins, (b) categorical value sets for discrete operational states, (c) geographic geofences via radius or convex-hull polygon, (d) temporal operating windows with day-of-week restrictions, (e) rate-of-change limits derived from observed parameter deltas, (f) compound conditional rules linking correlated parameters, (g) multi-modal distribution boundaries for systems with distinct operational profiles, (h) sequence and prerequisite enforcement for operational state machines, (i) boolean sensor health requirements, (j) connectivity and heartbeat gap limits, (k) cumulative threshold monitoring, (l) statistical rolling-window constraints, (m) frequency and event-count limits, (n) baseline drift detection, and (o) multi-variable logical conditions with AND/OR operators. The enforcement engine evaluates all declared boundary types synchronously at execution time.</span></li>
+        <li style="flex-direction:column;gap:8px;"><span class="num">R-01b</span><span>The ENVELO discovery engine supports the following boundary types, each of which may be auto-discovered from observed system behavior or manually declared:</span>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 24px;margin:8px 0 4px 40px;font-size:13px;color:var(--text-2);line-height:1.6;">
+            <span>(a) Numeric range constraints</span>
+            <span>(b) Categorical value sets</span>
+            <span>(c) Geographic geofences</span>
+            <span>(d) Temporal operating windows</span>
+            <span>(e) Rate-of-change limits</span>
+            <span>(f) Compound conditional rules</span>
+            <span>(g) Multi-modal distributions</span>
+            <span>(h) Sequence / prerequisite enforcement</span>
+            <span>(i) Boolean sensor health</span>
+            <span>(j) Connectivity / heartbeat gap limits</span>
+            <span>(k) Cumulative threshold monitoring</span>
+            <span>(l) Statistical rolling-window constraints</span>
+            <span>(m) Frequency / event-count limits</span>
+            <span>(n) Baseline drift detection</span>
+            <span>(o) Multi-variable logical conditions</span>
+          </div>
+          <span style="font-size:13px;color:var(--text-2);margin-left:40px;">All boundary types are evaluated synchronously at execution time.</span>
+        </li>
         <li><span class="num">R-02</span><span>The system must complete a minimum of 72 cumulative hours of monitored operation without boundary violation during the CAT-72 assessment period.</span></li>
         <li><span class="num">R-03</span><span>ENVELO Tier 1 (self-correction) must engage automatically on ODD approach with no human intervention required.</span></li>
         <li><span class="num">R-04</span><span>ENVELO Tier 2 (Minimum Risk Condition) must activate on ODD boundary breach and bring the system to a defined safe state.</span></li>
         <li><span class="num">R-05</span><span>ENVELO Tier 3 (hard halt at the ENVELO wall) must function as an absolute override that cannot be disabled by operator or software command.</span></li>
         <li><span class="num">R-06</span><span>All enforcement events must be logged with timestamps, positional context where applicable, and cryptographic hash chains linking each event to the prior record.</span></li>
-        <li><span class="num">R-06a</span><span>The following actions are independently logged in the tamper-evident audit chain: application submission, application approval or rejection, reviewer assignment, test creation, test start, specification confirmation, test completion with result, certificate issuance, certificate auto-suspension by the surveillance engine, certificate reinstatement by authorized personnel, API key generation and revocation, boundary report submission, surveillance configuration changes, user authentication events, and profile modifications. Each entry records the acting user, timestamp, resource identifier, and action-specific details. Database-level triggers prevent UPDATE or DELETE operations on the audit log table.</span></li>
+        <li style="flex-direction:column;gap:8px;"><span class="num">R-06a</span><span>The following actions are independently logged in the tamper-evident audit chain:</span>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 24px;margin:8px 0 4px 40px;font-size:13px;color:var(--text-2);line-height:1.6;">
+            <span>Application submission</span>
+            <span>Application approval / rejection</span>
+            <span>Reviewer assignment</span>
+            <span>Test creation &amp; start</span>
+            <span>Specification confirmation</span>
+            <span>Test completion with result</span>
+            <span>Certificate issuance</span>
+            <span>Certificate auto-suspension</span>
+            <span>Certificate reinstatement</span>
+            <span>API key generation / revocation</span>
+            <span>Boundary report submission</span>
+            <span>Surveillance config changes</span>
+            <span>User authentication events</span>
+            <span>Profile modifications</span>
+          </div>
+          <span style="font-size:13px;color:var(--text-2);margin-left:40px;">Each entry records the acting user, timestamp, resource identifier, and action-specific details. Database-level triggers prevent UPDATE or DELETE on the audit log table.</span>
+        </li>
         <li><span class="num">R-07</span><span>Audit logs must be transmitted to Sentinel Authority servers in real time or near-real time during the CAT-72 period. Gaps exceeding 15 minutes require justification.</span></li>
         <li><span class="num">R-08</span><span>System must maintain IP protection: the ENVELO Interlock transmits only operational telemetry. Proprietary system internals are not accessed or transmitted.</span></li>
         <li><span class="num">R-09</span><span>ODD scope changes after certification initiation require a new scope assessment and may require a new CAT-72 test run.</span></li>
@@ -101,7 +138,7 @@
         <div class="process-card"><span class="process-step">Phase 3</span><div class="process-title">Pre-CAT-72 Audit Review</div><p class="process-desc">Sentinel Authority conducts an ODDC Audit Control Review — a structured evaluation of ODD boundary definition, ENVELO Interlock enforcement configuration, and telemetry readiness. CAT-72 testing is authorized only upon successful completion.</p></div>
         <div class="process-card"><span class="process-step">Phase 4</span><div class="process-title">CAT-72 Testing</div><p class="process-desc">72+ hour monitored assessment. Adaptive path begins with learning mode; prescriptive path enforces from the start. All three tiers verified.</p></div>
         <div class="process-card"><span class="process-step">Phase 5</span><div class="process-title">Determination</div><p class="process-desc">Conformance determination issued with certificate hash and publication to the public registry.</p></div>
-        <div class="process-card"><span class="process-step">Phase 6</span><div class="process-title">Continuous Surveillance</div><p class="process-desc">Post-certification, the surveillance engine monitors all certified systems in real time. Conformance scores are computed from heartbeat telemetry. Certificates are auto-suspended on heartbeat loss exceeding 15 minutes or violation rates exceeding 10%. Reinstatement requires authorized human action. Annual renewal testing is required prior to attestation expiration.</p></div>
+        <div class="process-card"><span class="process-step">Phase 6</span><div class="process-title">Continuous Surveillance</div><p class="process-desc">Certified systems are monitored continuously. Certificates are auto-suspended upon enforcement failure or telemetry loss. Reinstatement requires human authorization. Annual renewal required.</p></div>
         <div class="process-card" style="background:rgba(29,26,59,.03);"><span class="process-step">Documents</span><div class="process-title">Reference Library</div><p class="process-desc">ENVELO Requirements, CAT-72 Procedure, ODDC Scenarios, and Certification Guide available in the <a href="/#docs" style="color:var(--navy);text-decoration:underline;">document library</a>.</p></div>
       </div>
       <div class="cta-row">
