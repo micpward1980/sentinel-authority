@@ -143,8 +143,8 @@ function CustomerDashboard() {
             </div>
             <p style={{color: styles.textPrimary, fontSize: '17px', fontWeight: 500, marginBottom: '8px', fontFamily: "Georgia, 'Source Serif 4', serif"}}>Begin Your Certification</p>
             <p style={{color: styles.textTertiary, fontSize: '13px', marginBottom: '28px', maxWidth: '360px', margin: '0 auto 28px', lineHeight: '1.6'}}>Submit your autonomous system for ODDC certification. Our CAT-72 test validates real-time boundary enforcement over 72 hours.</p>
-            <Link to="/applications/new" className="inline-flex items-center gap-2 px-6 py-3 no-underline" style={{background: styles.purplePrimary, border: 'none', color: '#fff', fontFamily: styles.mono, fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase' }}>
-              <Plus className="w-4 h-4" />
+            <Link to="/applications/new" style={{display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '12px 24px', background: styles.purplePrimary, border: 'none', color: '#fff', fontFamily: styles.mono, fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', textDecoration: 'none'}}>
+              <Plus size={16} />
               New Application
             </Link>
           </div>
