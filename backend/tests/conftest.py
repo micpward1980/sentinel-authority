@@ -1,6 +1,7 @@
 """Test configuration and fixtures."""
 import os
 import pytest
+import pytest_asyncio
 import asyncio
 from httpx import AsyncClient, ASGITransport
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
@@ -29,7 +30,7 @@ def event_loop():
     loop.close()
 
 
-@pytest.fixture(scope="session")
+@pytest_asyncio.fixture(scope="session")
 async def setup_db():
     async with test_engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
@@ -38,14 +39,14 @@ async def setup_db():
         await conn.run_sync(Base.metadata.drop_all)
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def db_session(setup_db):
     async with TestSession() as session:
         yield session
         await session.rollback()
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def client(setup_db):
     async def override_get_db():
         async with TestSession() as session:
@@ -58,7 +59,7 @@ async def client(setup_db):
     app.dependency_overrides.clear()
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def auth_headers(client):
     """Register a test user and return auth headers."""
     import uuid
