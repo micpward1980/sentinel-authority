@@ -38,13 +38,13 @@ function Layout({ children }) {
 
   const navigation = [
     { name: 'Dashboard',       href: '/dashboard',     icon: Home,         roles: ['admin', 'applicant'] },
-    { name: 'Applications',    href: '/applications',  icon: FileText,     roles: ['admin', 'applicant'] },
+    { name: 'Applications',    href: '/applications',  icon: FileText,     roles: ['admin'] },
     { name: 'ENVELO',          href: '/envelo',        icon: 'brand',      roles: ['admin'] },
     { name: 'Certification',   href: '/envelo',        icon: 'brand',      roles: ['applicant'] },
     { name: 'Monitoring',      href: '/monitoring',    icon: Activity,     roles: ['admin'] },
     { name: 'Enforcement',     href: '/surveillance',  icon: Shield,       roles: ['admin'] },
     { name: 'Activity',        href: '/activity',      icon: Activity,     roles: ['admin'] },
-    { name: 'Activity',        href: '/my-activity',   icon: Activity,     roles: ['applicant'] },
+    ,
     { name: 'Resources',       href: '/resources',     icon: BookOpen,     roles: ['admin'] },
     { name: 'Users',           href: '/users',         icon: Users,        roles: ['admin'] },
     { name: 'Settings',        href: '/settings',      icon: Settings,     roles: ['admin', 'applicant'] },
