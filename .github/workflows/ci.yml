@@ -54,6 +54,14 @@ jobs:
           python -m py_compile app/core/database.py
           python -m py_compile app/core/security.py
           python -m py_compile app/surveillance.py
+          python -m py_compile app/api/routes/auth.py
+          python -m py_compile app/api/routes/envelo.py
+          python -m py_compile app/api/routes/apikeys.py
+          python -m py_compile app/api/routes/applicants.py
+          python -m py_compile app/api/routes/certificates.py
+          python -m py_compile app/api/routes/audit.py
+          python -m py_compile app/api/routes/users.py
+          python -c "import main" 2>&1 || echo "WARN: full import check failed (expected without DB)"
 
       - name: Run tests
         run: |
