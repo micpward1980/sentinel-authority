@@ -167,7 +167,7 @@ function ProfilePanel({ user, toast }) {
 
       <PasswordCard toast={toast} />
       <TwoFACard toast={toast} user={user} />
-      <SessionsCard toast={toast} />
+      {user?.role === "admin" && <SessionsCard toast={toast} />}
     </>
   );
 }
