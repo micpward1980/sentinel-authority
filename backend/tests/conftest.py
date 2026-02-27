@@ -66,13 +66,13 @@ async def auth_headers(client):
     email = f"test_{uuid.uuid4().hex[:8]}@test.example.com"
     await client.post("/api/auth/register", json={
         "email": email,
-        "password": "SentinelCI_xK9m2$vQ",
+        "password": "Zx93kLm_Qwerty7841!",
         "full_name": "Test User",
         "organization": "Test Org"
     })
     resp = await client.post("/api/auth/login", json={
         "email": email,
-        "password": "SentinelCI_xK9m2$vQ"
+        "password": "Zx93kLm_Qwerty7841!"
     })
     token = resp.json().get("access_token", "")
     return {"Authorization": f"Bearer {token}"}
