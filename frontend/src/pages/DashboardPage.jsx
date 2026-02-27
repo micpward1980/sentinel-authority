@@ -125,7 +125,7 @@ function CustomerDashboard() {
               <BrandMark size={72} />
             </div>
             <p style={{ color: styles.textPrimary, fontSize: '17px', fontWeight: 500, marginBottom: '8px', fontFamily: "Georgia, 'Source Serif 4', serif" }}>Begin Your Certification</p>
-            <p style={{ color: styles.textTertiary, fontSize: '13px', maxWidth: '380px', margin: '0 auto 28px', lineHeight: '1.6' }}>Submit your autonomous system for ODDC certification. The CAT-72 test verifies your system's ENVELO Interlock is enforcing ODD boundaries in real time across a continuous 72-hour window.</p>
+            <p style={{ color: styles.textTertiary, fontSize: '13px', maxWidth: '380px', margin: '0 auto 28px', lineHeight: '1.6' }}>Submit your autonomous system for ODDC certification. The CAT-72 test verifies your system's ENVELO Interlock is enforcing ODD boundaries in real time over a minimum 72-hour assessment period.</p>
             <Link to="/applications/new" style={{ display: 'inline-block', background: styles.purplePrimary, color: '#fff', fontFamily: styles.mono, fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', padding: '12px 28px', borderRadius: '6px', textDecoration: 'none', border: 'none' }}>
               + New Application
             </Link>
