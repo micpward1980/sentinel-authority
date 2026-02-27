@@ -45,11 +45,54 @@ const SYSTEM_TYPE_OPTIONS = [
     'Process Control System',
     'Predictive Maintenance System',
   ]},
+  { group: 'Transportation Infrastructure', types: [
+    'Traffic Management System',
+    'Rail / Metro Automation',
+    'Smart Highway System',
+    'Autonomous Port Crane / Terminal',
+  ]},
   { group: 'Energy & Utilities', types: [
     'Grid Management System',
     'Power Plant Automation',
     'Pipeline Inspection System',
     'Renewable Energy Controller',
+  ]},
+  { group: 'Space & Satellite', types: [
+    'Autonomous Orbital System',
+    'Satellite Constellation Management',
+    'Launch Vehicle Guidance',
+  ]},
+  { group: 'Smart Building & Facility', types: [
+    'Building Management System',
+    'HVAC Optimization System',
+    'Autonomous Elevator / Conveyance',
+    'Smart Campus / Facility Controller',
+  ]},
+  { group: 'Telecommunications', types: [
+    'Network Optimization AI',
+    'Autonomous Capacity Management',
+    'Infrastructure Self-Healing System',
+  ]},
+  { group: 'Retail & Hospitality', types: [
+    'Autonomous Checkout System',
+    'Service / Hospitality Robot',
+    'Inventory Management System',
+  ]},
+  { group: 'Environmental & Monitoring', types: [
+    'Wildfire Detection System',
+    'Pollution Monitoring System',
+    'Weather Prediction / Response System',
+    'Natural Disaster Early Warning',
+  ]},
+  { group: 'Cybersecurity', types: [
+    'Autonomous Threat Response',
+    'Intrusion Detection System',
+    'Automated Incident Response',
+  ]},
+  { group: 'Supply Chain & Logistics', types: [
+    'Demand Forecasting System',
+    'Autonomous Routing / Dispatch',
+    'Inventory Optimization Engine',
   ]},
   { group: 'Financial & Trading', types: [
     'Algorithmic Trading System',
@@ -89,6 +132,7 @@ function NewApplication() {
     system_description: '',
     deployment_type: '',
     environment: '',
+    environment_custom: '',
   });
 
   // Dirty check — warn before leaving with unsaved form data
@@ -388,16 +432,34 @@ function NewApplication() {
                     <option value="warehouse">Warehouse / Logistics</option>
                     <option value="manufacturing">Manufacturing Floor</option>
                     <option value="road">Public Road</option>
+                    <option value="rail">Rail Corridor</option>
                     <option value="airspace">Airspace</option>
                     <option value="clinical">Clinical / Hospital</option>
                     <option value="data_center">Data Center</option>
                     <option value="agriculture">Agriculture / Field</option>
                     <option value="construction">Construction Site</option>
                     <option value="marine">Marine / Waterway</option>
-                    <option value="other">Other</option>
+                    <option value="underground">Underground / Tunnel</option>
+                    <option value="residential">Residential</option>
+                    <option value="retail">Retail / Commercial</option>
+                    <option value="arctic">Arctic / Extreme Weather</option>
+                    <option value="space">Space / Orbital</option>
+                    <option value="mining">Mining (Underground)</option>
+                    <option value="office">Office / Smart Building</option>
+                    <option value="other">Other (describe below)</option>
                   </select>
                 </div>
               </div>
+
+              {sys.environment === 'other' && (
+                <div>
+                  {fieldLabel('Describe Operating Environment', true)}
+                  <input type="text" value={sys.environment_custom}
+                    onChange={e => setSys({ ...sys, environment_custom: e.target.value })}
+                    className="w-full px-4 py-3 outline-none" style={inputStyle}
+                    placeholder="e.g., Deep-sea oil platform, orbital space station, underground mine shaft" />
+                </div>
+              )}
             </div>
           )}
 
