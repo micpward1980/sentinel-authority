@@ -747,7 +747,6 @@ function SettingsPage() {
       { id: 'notifications', label: 'Notifications',      icon: <Bell size={15} />    },
     ]},
     ...(isAdmin ? [{ group: 'Security',     items: [
-      { id: 'apikeys',       label: 'API Access Keys',    icon: <Key size={15} />     },
       { id: 'audit',         label: 'Security Audit Log', icon: <History size={15} /> },
     ]}] : []),
   ];
