@@ -20,7 +20,7 @@ from pydantic import BaseModel, EmailStr
 
 from app.core.database import get_db
 
-from app.core.security import get_password_hash, verify_password, create_access_token, get_current_user
+from app.core.security import get_password_hash, verify_password, create_access_token, create_refresh_token, get_current_user
 from app.models.models import User, Organization, UserRole, UserSession
 
 router = APIRouter()
@@ -229,6 +229,7 @@ async def verify_2fa_login(
     
     return {
         "access_token": token,
+        "refresh_token": create_refresh_token({"sub": str(user.id), "email": user.email, "role": user.role}),
         "token_type": "bearer",
         "user": {"id": user.id, "email": user.email, "full_name": user.full_name, "role": user.role, "organization": user.organization, "organization_id": user.organization_id}
     }
@@ -312,6 +313,7 @@ async def register(request: Request, user_data: UserCreate, db: AsyncSession = D
     
     return {
         "access_token": token,
+        "refresh_token": create_refresh_token({"sub": str(user.id), "email": user.email, "role": user.role}),
         "token_type": "bearer",
         "user": {"id": user.id, "email": user.email, "full_name": user.full_name, "role": user.role, "organization": user.organization, "organization_id": user.organization_id}
     }
@@ -366,6 +368,7 @@ async def login(request: Request, credentials: UserLogin, db: AsyncSession = Dep
     
     return {
         "access_token": token,
+        "refresh_token": create_refresh_token({"sub": str(user.id), "email": user.email, "role": user.role}),
         "token_type": "bearer",
         "user": {"id": user.id, "email": user.email, "full_name": user.full_name, "role": user.role, "organization": user.organization, "organization_id": user.organization_id}
     }

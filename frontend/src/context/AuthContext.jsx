@@ -24,6 +24,7 @@ function AuthProvider({ children }) {
       const res = await api.post('/api/auth/2fa/verify-login?temp_token=' + encodeURIComponent(tempToken), { code: totp });
       setTempToken(null);
       localStorage.setItem('token', res.data.access_token);
+      if (res.data.refresh_token) localStorage.setItem('refresh_token', res.data.refresh_token);
       localStorage.setItem('user', JSON.stringify(res.data.user));
       setUser(res.data.user);
       return res.data.user;
@@ -37,6 +38,7 @@ function AuthProvider({ children }) {
       throw err;
     }
     localStorage.setItem('token', res.data.access_token);
+      if (res.data.refresh_token) localStorage.setItem('refresh_token', res.data.refresh_token);
     localStorage.setItem('user', JSON.stringify(res.data.user));
     setUser(res.data.user);
     return res.data.user;
@@ -45,6 +47,7 @@ function AuthProvider({ children }) {
   const register = async (data) => {
     const res = await api.post('/api/auth/register', data);
     localStorage.setItem('token', res.data.access_token);
+      if (res.data.refresh_token) localStorage.setItem('refresh_token', res.data.refresh_token);
     localStorage.setItem('user', JSON.stringify(res.data.user));
     setUser(res.data.user);
     return res.data.user;
