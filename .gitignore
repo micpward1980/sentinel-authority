@@ -69,3 +69,4 @@ src-backup*
 *.colorbak
 *.retired
 *.bloom-backup
+frontend/.env.check
