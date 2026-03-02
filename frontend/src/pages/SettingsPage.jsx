@@ -686,7 +686,7 @@ function AuditLogPanel({ toast }) {
                       </span>
                     </td>
                     <td style={{ padding: '11px 14px', fontFamily: styles.mono, fontSize: 11, color: styles.textTertiary }}>{ev.ip_address || '—'}</td>
-                    <td style={{ padding: '11px 14px', fontSize: 12, color: styles.textSecondary }}>{ev.details || '—'}</td>
+                    <td style={{ padding: '11px 14px', fontSize: 12, color: styles.textSecondary }}>{typeof ev.details === 'object' ? JSON.stringify(ev.details) : (ev.details || '—')}</td>
                   </tr>
                 ))}
               </tbody>

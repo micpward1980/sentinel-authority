@@ -232,7 +232,7 @@ function CustomerDashboard() {
               };
               const label = actionLabels[log.action] || log.action?.replace(/_/g, ' ') || 'Activity';
               const color = actionColors[log.action] || styles.textSecondary;
-              const detail = log.details?.system_name || log.details?.application_number || log.details?.certificate_number || '';
+              const detail = typeof log.details === 'string' ? log.details : (log.details?.system_name || log.details?.application_number || log.details?.certificate_number || '');
               return (
                 <div key={log.id || i} style={{display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 0', borderBottom: i < recentActivity.length - 1 ? '1px solid ' + styles.borderSubtle : 'none'}}>
                   <div style={{width: '6px', height: '6px', borderRadius: '50%', background: color, flexShrink: 0}} />
@@ -697,7 +697,7 @@ function Dashboard() {
               const label = actionLabels[log.action] || log.action?.replace(/_/g, ' ') || 'Activity';
               const color = actionColors[log.action] || styles.textDim;
               const who = log.user_email || log.details?.user_email || '';
-              const detail = log.details?.system_name || log.details?.application_number || log.details?.certificate_number || '';
+              const detail = typeof log.details === 'string' ? log.details : (log.details?.system_name || log.details?.application_number || log.details?.certificate_number || '');
               return (
                 <div key={log.id || i} style={{display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 0', borderBottom: i < Math.min(auditLogs.length, 10) - 1 ? '1px solid ' + styles.borderSubtle : 'none'}}>
                   <div style={{width: '5px', height: '5px', borderRadius: '50%', background: color, flexShrink: 0}} />
