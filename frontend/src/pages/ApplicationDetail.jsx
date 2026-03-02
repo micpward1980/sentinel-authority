@@ -633,21 +633,42 @@ function ApplicationDetail() {
                       {c} Boundaries
                     </p>
                     {grouped[c].map((d, i) => (
-                      <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '7px 0', borderBottom: `1px solid ${styles.borderSubtle}`, fontSize: '12px', flexWrap: 'wrap', gap: 4, alignItems: 'center' }}>
-                        <span style={{ color: styles.textPrimary, display: 'flex', alignItems: 'center', gap: 6 }}>
-                          {d.desc.exclusion && <span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: '50%', background: styles.accentRed + '33', border: '1px solid ' + styles.accentRed, flexShrink: 0 }} />}
-                          {d.desc.alert && <span style={{ color: styles.accentRed, fontSize: '11px', marginRight: 2 }}>⚠</span>}
-                          {d.desc.label}
-                          <span style={{ fontFamily: styles.mono, fontSize: '9px', color: styles.textDim, padding: '1px 5px', background: styles.textDim + '08', borderRadius: 2 }}>{d.type || d.b?.type}</span>
-                        </span>
-                        {d.desc.chips ? (
-                          <span style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
-                            {d.desc.chips.map((s, j) => (
-                              <span key={j} style={{ fontFamily: styles.mono, fontSize: '10px', padding: '2px 6px', borderRadius: 3, background: styles.accentGreen + '10', color: styles.accentGreen, border: '1px solid ' + styles.accentGreen + '22' }}>{s}</span>
-                            ))}
+                      <div key={i} style={{ padding: '7px 0', borderBottom: `1px solid ${styles.borderSubtle}`, fontSize: '12px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 4, alignItems: 'center' }}>
+                          <span style={{ color: styles.textPrimary, display: 'flex', alignItems: 'center', gap: 6 }}>
+                            {d.desc.exclusion && <span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: '50%', background: styles.accentRed + '33', border: '1px solid ' + styles.accentRed, flexShrink: 0 }} />}
+                            {d.desc.alert && <span style={{ color: styles.accentRed, fontSize: '11px', marginRight: 2 }}>⚠</span>}
+                            {d.desc.label}
+                            <span style={{ fontFamily: styles.mono, fontSize: '9px', color: styles.textDim, padding: '1px 5px', background: styles.textDim + '08', borderRadius: 2 }}>{d.type || d.b?.type}</span>
                           </span>
-                        ) : (
-                          <span style={{ fontFamily: styles.mono, color: styles.purpleBright, fontSize: '11px' }}>{d.desc.detail}</span>
+                          {d.desc.chips ? (
+                            <span style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+                              {d.desc.chips.map((s, j) => (
+                                <span key={j} style={{ fontFamily: styles.mono, fontSize: '10px', padding: '2px 6px', borderRadius: 3, background: styles.accentGreen + '10', color: styles.accentGreen, border: '1px solid ' + styles.accentGreen + '22' }}>{s}</span>
+                              ))}
+                            </span>
+                          ) : (
+                            <span style={{ fontFamily: styles.mono, color: styles.purpleBright, fontSize: '11px' }}>{d.desc.detail}</span>
+                          )}
+                        </div>
+                        {(d.observed_min != null || d.observed_max != null || d.sample_count || d.observed_max_rate != null) && (
+                          <div style={{ display: 'flex', gap: 12, marginTop: 3, paddingLeft: 14 }}>
+                            {d.observed_min != null && d.observed_max != null && (
+                              <span style={{ fontFamily: styles.mono, fontSize: '10px', color: styles.textTertiary }}>
+                                Observed: {d.observed_min} – {d.observed_max} {d.unit || ''}
+                              </span>
+                            )}
+                            {d.observed_max_rate != null && (
+                              <span style={{ fontFamily: styles.mono, fontSize: '10px', color: styles.textTertiary }}>
+                                Observed max rate: {d.observed_max_rate} {d.unit || ''}/s
+                              </span>
+                            )}
+                            {d.sample_count && (
+                              <span style={{ fontFamily: styles.mono, fontSize: '10px', color: styles.textDim }}>
+                                {d.sample_count} samples
+                              </span>
+                            )}
+                          </div>
                         )}
                       </div>
                     ))}
