@@ -10,7 +10,7 @@ from typing import Optional, Dict, Any
 from app.core.database import get_db
 from app.api.routes.webhooks import fire_webhook
 from app.core.security import get_current_user, require_role
-from app.models.models import Application, AuditLog, ApplicationComment, ApplicationCorrespondence, CertificationState, User
+from app.models.models import Application, AuditLog, ApplicationComment, ApplicationCorrespondence, CertificationState, User, Certificate
 from app.services.audit_service import write_audit_log
 from datetime import timezone
 from app.services.email_service import (
@@ -200,7 +200,7 @@ async def get_application(
     if user.get("role") not in ["admin", "operator"] and app.applicant_id != int(user["sub"]):
         raise HTTPException(status_code=403, detail="Access denied")
     
-    return {
+    response = {
         "id": app.id,
         "application_number": app.application_number,
         "organization_name": app.organization_name,
@@ -221,6 +221,21 @@ async def get_application(
         "boundaries_acknowledged": app.boundaries_acknowledged or False,
         "boundaries_acknowledged_at": app.boundaries_acknowledged_at.isoformat() + "Z" if app.boundaries_acknowledged_at else None,
     }
+    
+    # Attach certificate if exists
+    cert_result = await db.execute(
+        select(Certificate).where(Certificate.application_id == app.id).order_by(Certificate.issued_at.desc()).limit(1)
+    )
+    cert = cert_result.scalar_one_or_none()
+    if cert:
+        response = {**response, "certificate": {
+            "certificate_number": cert.certificate_number,
+            "state": cert.state.value if hasattr(cert.state, 'value') else cert.state,
+            "issued_at": cert.issued_at.isoformat() + "Z" if cert.issued_at else None,
+            "expires_at": cert.expires_at.isoformat() + "Z" if cert.expires_at else None,
+        }}
+    
+    return response
 
 
 
