@@ -286,3 +286,115 @@ async def update_config(
             "scan_interval_seconds": config.SCAN_INTERVAL_SECONDS,
         },
     }
+
+
+# ── Paginated systems list ────────────────────────────────────
+
+@router.get("/systems")
+async def list_monitored_systems(
+    limit: int = Query(25, ge=1, le=100),
+    offset: int = Query(0, ge=0),
+    sort_by: str = Query("system_name"),
+    sort_order: str = Query("asc"),
+    status: Optional[str] = Query(None),
+    search: Optional[str] = Query(None),
+    db: AsyncSession = Depends(get_db),
+    current_user: dict = Depends(get_current_user),
+):
+    """Paginated list of monitored systems with conformance data."""
+    from sqlalchemy import func, or_
+    from app.models.models import EnveloSession, Certificate
+    from datetime import timezone as tz
+
+    base = (
+        select(
+            EnveloSession.session_id,
+            EnveloSession.system_name.label("session_system"),
+            EnveloSession.organization_name.label("session_org"),
+            EnveloSession.status.label("session_status"),
+            EnveloSession.pass_count,
+            EnveloSession.block_count,
+            EnveloSession.last_heartbeat_at,
+            EnveloSession.last_telemetry_at,
+            EnveloSession.created_at.label("session_created"),
+            EnveloSession.certificate_id,
+            EnveloSession.is_demo,
+            Certificate.certificate_number,
+            Certificate.system_name,
+            Certificate.organization_name,
+            Certificate.state.label("cert_state"),
+            Certificate.expires_at,
+            Certificate.application_id,
+        )
+        .outerjoin(Certificate, EnveloSession.certificate_id == Certificate.id)
+        .where(EnveloSession.status.in_(["active", "healthy", "degraded"]))
+    )
+
+    if status == "conformant":
+        base = base.where(EnveloSession.status == "healthy")
+    elif status == "non_conformant":
+        base = base.where(EnveloSession.status.in_(["degraded", "critical", "offline"]))
+
+    if search:
+        term = f"%{search}%"
+        base = base.where(or_(
+            Certificate.system_name.ilike(term),
+            Certificate.organization_name.ilike(term),
+            Certificate.certificate_number.ilike(term),
+            EnveloSession.system_name.ilike(term),
+            EnveloSession.organization_name.ilike(term),
+        ))
+
+    count_q = select(func.count()).select_from(base.subquery())
+    total = (await db.execute(count_q)).scalar() or 0
+
+    sort_map = {
+        "system_name": Certificate.system_name,
+        "organization_name": Certificate.organization_name,
+        "certificate_number": Certificate.certificate_number,
+        "status": EnveloSession.status,
+        "score": EnveloSession.pass_count,
+        "block_rate": EnveloSession.block_count,
+        "last_seen": EnveloSession.last_heartbeat_at,
+    }
+    sort_col = sort_map.get(sort_by, Certificate.system_name)
+    base = base.order_by(sort_col.asc() if sort_order == "asc" else sort_col.desc())
+    base = base.limit(limit).offset(offset)
+
+    result = await db.execute(base)
+    rows = result.all()
+
+    now = datetime.now(tz.utc)
+    systems = []
+    for r in rows:
+        pc = r.pass_count or 0
+        bc = r.block_count or 0
+        ta = pc + bc
+        block_rate = (bc / ta * 100) if ta > 0 else 0.0
+        score = (pc / ta * 100) if ta > 0 else 100.0
+
+        last_seen = r.last_heartbeat_at or r.last_telemetry_at
+        last_seen_seconds = None
+        if last_seen:
+            if last_seen.tzinfo is None:
+                last_seen = last_seen.replace(tzinfo=tz.utc)
+            last_seen_seconds = int((now - last_seen).total_seconds())
+
+        ss = r.session_status or "unknown"
+        conformance = "conformant" if ss in ("healthy", "active") else "degraded" if ss == "degraded" else "non_conformant"
+
+        systems.append({
+            "session_id": r.session_id,
+            "certificate_number": r.certificate_number or "N/A",
+            "system_name": r.system_name or r.session_system or "Unknown",
+            "organization_name": r.organization_name or r.session_org or "Unknown",
+            "status": conformance,
+            "score": round(score, 1),
+            "total_actions": ta,
+            "block_rate": round(block_rate, 2),
+            "last_seen_seconds": last_seen_seconds,
+            "application_id": r.application_id,
+            "cert_state": r.cert_state,
+        })
+
+    return {"systems": systems, "total": total, "limit": limit, "offset": offset}
