@@ -433,11 +433,11 @@ def _already_warned(cert, threshold_days):
 
 async def _get_certificate_owner(db, cert):
     """Find the user who owns this certificate"""
-    if not cert.applicant_id:
+    if not cert.user_id:
         return None
     try:
         result = await db.execute(
-            select(User).where(User.id == cert.applicant_id)
+            select(User).where(User.id == cert.user_id)
         )
         return result.scalar_one_or_none()
     except Exception:
