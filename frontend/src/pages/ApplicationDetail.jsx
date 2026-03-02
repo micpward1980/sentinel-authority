@@ -600,6 +600,48 @@ function ApplicationDetail() {
               </div>
             )}
 
+            {/* ── Plain-English Summary ── */}
+            {(() => {
+              const lines = [];
+              const numByName = {};
+              nb.forEach(b => { numByName[b.name] = b; });
+              if (numByName.speed) {
+                const s = numByName.speed;
+                lines.push(`Your system was observed operating at speeds up to ${s.observed_max ?? s.max_value} ${s.unit || 'km/h'}. The enforced limit is set at ${s.max_value} ${s.unit || 'km/h'}.`);
+              }
+              if (numByName.altitude) {
+                const a = numByName.altitude;
+                lines.push(`Maximum observed altitude was ${a.observed_max ?? a.max_value} ${a.unit || 'm'}. The enforced ceiling is ${a.max_value} ${a.unit || 'm'}.`);
+              }
+              if (numByName.payload_weight || numByName.payload) {
+                const p = numByName.payload_weight || numByName.payload;
+                lines.push(`Payload capacity observed up to ${p.observed_max ?? p.max_value} ${p.unit || 'kg'}. Enforced limit: ${p.max_value} ${p.unit || 'kg'}.`);
+              }
+              if (gb.length > 0) {
+                const zones = gb.filter(b => b.type !== 'exclusion_zone' && b.type !== 'exclusion');
+                const excl = gb.filter(b => b.type === 'exclusion_zone' || b.type === 'exclusion');
+                if (zones.length > 0) lines.push(`Your system operates within ${zones.length === 1 ? 'a' : zones.length} defined geographic zone${zones.length > 1 ? 's' : ''} (${zones.map(z => z.radius_m ? (z.radius_m/1000).toFixed(1) + 'km radius' : 'custom area').join(', ')}).`);
+                if (excl.length > 0) lines.push(`${excl.length} exclusion zone${excl.length > 1 ? 's' : ''} (no-go area${excl.length > 1 ? 's' : ''}) ${excl.length > 1 ? 'are' : 'is'} enforced.`);
+              }
+              const opHours = tb.find(b => b.name?.toLowerCase().includes('operating') || b.name?.toLowerCase().includes('hours'));
+              if (opHours) lines.push(`Operating hours: ${opHours.start} to ${opHours.end}${opHours.timezone ? ' (' + opHours.timezone.split('/').pop().replace('_',' ') + ')' : ''}. The system will be interlocked outside these hours.`);
+              const weather = sb.find(b => b.name?.toLowerCase().includes('weather'));
+              if (weather) lines.push(`Approved weather conditions: ${(weather.allowed_states || []).join(', ')}. Operations in other conditions will be blocked.`);
+              const allFlat = [...nb, ...gb, ...tb, ...sb].concat(Object.values(env || {}).filter(Array.isArray).flat());
+              const conn = allFlat.find(b => b.type === 'connectivity');
+              if (conn) lines.push(`Your system must maintain a communication link. If no signal is received for ${conn.max_gap_seconds || conn.timeout || '?'} seconds, the Interlock activates.`);
+              const maxSamples = Math.max(...allFlat.map(b => b.sample_count || 0).filter(Boolean), 0);
+              if (maxSamples > 0) lines.push(`These boundaries were auto-discovered from ${maxSamples.toLocaleString()} telemetry samples collected during the observation period.`);
+              if (lines.length === 0) return null;
+              return (
+                <div style={{ padding: '16px', background: 'rgba(29,26,59,0.03)', borderRadius: '8px', marginBottom: '20px', lineHeight: 1.8 }}>
+                  <p style={{ fontFamily: styles.mono, fontSize: '9px', letterSpacing: '1px', textTransform: 'uppercase', color: styles.purpleBright, marginBottom: '8px' }}>What We Observed</p>
+                  <p style={{ fontSize: '13px', color: styles.textPrimary, margin: 0 }}>{lines.join(' ')}</p>
+                  <p style={{ fontSize: '11px', color: styles.textTertiary, marginTop: '10px', marginBottom: 0, fontStyle: 'italic' }}>Review the details below. If anything does not match your system's expected behavior, use the correspondence form to let us know.</p>
+                </div>
+              );
+            })()}
+
             {(() => {
               const allBoundaries = [...nb, ...gb.map(b => ({...b, type: b.type || 'geographic'})), ...tb.map(b => ({...b, type: b.type || 'temporal'})), ...sb.map(b => ({...b, type: b.type || 'categorical'}))];
               const extraKeys = Object.keys(env || {}).filter(k => !['numeric_boundaries','geo_boundaries','geographic_boundaries','time_boundaries','state_boundaries'].includes(k));
