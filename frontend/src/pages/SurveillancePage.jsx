@@ -101,7 +101,7 @@ export default function SurveillancePage() {
   });
   const { data: appsData } = useQuery({
     queryKey: ['surveillance-apps'],
-    queryFn: () => api.get('/api/applications').then(r => r.data),
+    queryFn: () => api.get('/api/applications/').then(r => r.data),
     staleTime: 60000,
   });
   const certLookup = (() => {
