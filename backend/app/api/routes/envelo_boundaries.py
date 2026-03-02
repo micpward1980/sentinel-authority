@@ -291,9 +291,15 @@ async def update_boundary_config(
     api_key: APIKey = Depends(get_api_key_from_header)
 ):
     """
-    Admin endpoint to update boundary configuration for a certificate.
-    Used during application review to set structured boundaries.
+    LOCKED: Manual boundary editing is prohibited.
+    Boundaries are derived from observed telemetry only.
+    To update boundaries, extend or reset the observation period.
     """
+    raise HTTPException(
+        status_code=403,
+        detail="Manual boundary editing is prohibited. Boundaries are mathematically derived from observed telemetry. To update boundaries, extend or reset the observation period."
+    )
+    # Original code preserved below but unreachable
     
     # Verify admin
     from app.models.models import User

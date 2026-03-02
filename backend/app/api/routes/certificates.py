@@ -336,9 +336,13 @@ async def update_envelope(
     if not cert:
         raise HTTPException(status_code=404, detail="Certificate not found")
     data = await request.json()
-    cert.envelope_definition = data.get("envelope_definition", cert.envelope_definition)
-    await db.commit()
-    return {"message": "Envelope updated", "certificate_number": certificate_number}
+    # LOCKED: Manual boundary editing is prohibited
+    # cert.envelope_definition = data.get("envelope_definition", cert.envelope_definition)
+    # Boundaries are derived from observed telemetry only
+    raise HTTPException(
+        status_code=403,
+        detail="Manual boundary editing is prohibited. Boundaries are mathematically derived from observed telemetry. To update boundaries, extend or reset the observation period."
+    )
 
 
 @router.get("/list", summary="List certificates with pagination")
