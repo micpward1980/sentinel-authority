@@ -658,8 +658,8 @@ function Dashboard() {
             {complianceAlerts.slice(0, 8).map((alert, i) => (
               <div key={alert.id || i} onClick={() => navigate('/surveillance')} style={{padding: '12px 20px', background: styles.cardSurface, border: '1px solid ' + (alert.severity === 'critical' ? styles.accentRed + '40' : alert.severity === 'info' ? styles.purpleBright + '30' : styles.accentAmber + '30'), display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', cursor: 'pointer', transition: 'border-color 0.15s'}} onMouseEnter={e => e.currentTarget.style.borderColor = styles.purpleBright} onMouseLeave={e => e.currentTarget.style.borderColor = alert.severity === 'critical' ? styles.accentRed + '40' : alert.severity === 'info' ? styles.purpleBright + '30' : styles.accentAmber + '30'}>
                 <div style={{display: 'flex', alignItems: 'center', gap: '12px'}}>
-                  <AlertTriangle size={14} style={{color: alert.severity === 'critical' ? styles.accentRed : alert.severity === 'info' ? styles.purpleBright : styles.accentAmber}} />
-                  <span style={{fontFamily: styles.mono, fontSize: '10px', color: alert.severity === 'critical' ? styles.accentRed : alert.severity === 'info' ? styles.purpleBright : styles.accentAmber, letterSpacing: '1px', textTransform: 'uppercase'}}>{alert.severity || 'warning'}</span>
+                  <AlertTriangle size={14} style={{color: alert.severity === 'critical' ? styles.accentRed : alert.severity === 'info' ? styles.accentBlue : styles.accentAmber}} />
+                  <span style={{fontFamily: styles.mono, fontSize: '10px', color: alert.severity === 'critical' ? styles.accentRed : alert.severity === 'info' ? styles.accentBlue : styles.accentAmber, letterSpacing: '1px', textTransform: 'uppercase'}}>{alert.severity || 'warning'}</span>
                   <span style={{fontSize: '13px', color: styles.textPrimary}}>{alert.message || alert.description || 'System alert'}</span>
                 </div>
                 <span style={{fontFamily: styles.mono, fontSize: '10px', color: styles.textDim}}>{timeAgo(alert.timestamp || alert.created_at)}</span>
