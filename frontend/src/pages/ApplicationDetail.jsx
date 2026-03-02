@@ -598,24 +598,6 @@ function ApplicationDetail() {
               </>);
             })()}
 
-            {nb.length > 0 && (
-              <div>
-                <p style={{ fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '8px' }}>Numeric Boundaries</p>
-                {nb.map((b, i) => (
-                  <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: `1px solid ${styles.borderSubtle}`, fontSize: '12px' }}>
-                    <span style={{ color: styles.textPrimary }}>{b.name}</span>
-                    <span style={{ fontFamily: styles.mono, color: styles.purpleBright }}>
-                      {b.min_value ?? '—'} → {b.max_value ?? '—'} {b.unit || ''}
-                      {b.tolerance ? ` (±${b.tolerance})` : ''}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            )}
-
-
-            ))}
-
 
             {isAdmin && (app.state === 'observe' || app.state === 'bounded') && (
               <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
