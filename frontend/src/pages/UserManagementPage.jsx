@@ -101,6 +101,12 @@ function UserManagementPage() {
     catch (err) { toast.show('Failed: ' + (err.response?.data?.detail || err.message), 'error'); }
   };
 
+  const handlePurgeTest = async () => {
+    if (!await confirm({ title: 'Purge Test Users', message: 'Delete ALL pipeline test and soft-deleted users? This cannot be undone.', danger: true, confirmLabel: 'Purge' })) return;
+    try { const res = await api.delete('/api/users/bulk/test-users'); toast.success(res.data.message || 'Purged'); fetchUsers(); }
+    catch (e) { toast.error('Purge failed'); }
+  };
+
   const handleDelete = async (userId, email) => {
     if (!await confirm({ title: 'Delete', message: 'DELETE ' + email + '? Cannot be undone.', danger: true, confirmLabel: 'Delete' })) return;
     try { await api.delete('/api/users/' + userId); fetchUsers(); setExpandedId(null); }

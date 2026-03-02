@@ -57,7 +57,7 @@ async def list_users(
     current_user: dict = Depends(require_admin)
 ):
     """List all users (admin only)."""
-    result = await db.execute(select(User).order_by(User.id.desc()))
+    result = await db.execute(select(User).where(User.is_active != False, ~User.email.like("deleted_%")).order_by(User.id.desc()))
     users = result.scalars().all()
     return [
         UserResponse(
@@ -370,3 +370,42 @@ async def list_users_paginated(
         } for u in users],
         "total": total, "limit": limit, "offset": offset,
     }
+
+
+@router.delete("/bulk/test-users", summary="Purge pipeline test users")
+async def purge_test_users(
+    db: AsyncSession = Depends(get_db),
+    current_user: dict = Depends(require_admin)
+):
+    """Delete all soft-deleted and pipeline test users (admin only)."""
+    from sqlalchemy import or_
+    result = await db.execute(
+        select(User).where(
+            or_(
+                User.email.like("deleted_%"),
+                User.email.like("validator_%@test.sentinelauthority.org"),
+                User.full_name == "Pipeline Validator"
+            )
+        )
+    )
+    test_users = result.scalars().all()
+    count = 0
+    for user in test_users:
+        uid = user.id
+        try:
+            await db.execute(text("DELETE FROM application_comments WHERE user_id = :uid"), {"uid": uid})
+            await db.execute(text("DELETE FROM violations WHERE session_id IN (SELECT id FROM envelo_sessions WHERE api_key_id IN (SELECT id FROM api_keys WHERE user_id = :uid))"), {"uid": uid})
+            await db.execute(text("DELETE FROM telemetry_records WHERE session_id IN (SELECT id FROM envelo_sessions WHERE api_key_id IN (SELECT id FROM api_keys WHERE user_id = :uid))"), {"uid": uid})
+            await db.execute(text("DELETE FROM envelo_sessions WHERE api_key_id IN (SELECT id FROM api_keys WHERE user_id = :uid)"), {"uid": uid})
+            await db.execute(text("DELETE FROM api_keys WHERE user_id = :uid"), {"uid": uid})
+            await db.execute(text("DELETE FROM user_sessions WHERE user_id = :uid"), {"uid": uid})
+            await db.execute(text("UPDATE applications SET applicant_id = NULL WHERE applicant_id = :uid"), {"uid": uid})
+            await db.execute(text("UPDATE cat72_tests SET operator_id = NULL WHERE operator_id = :uid"), {"uid": uid})
+            await db.execute(text("UPDATE certificates SET issued_by = NULL WHERE issued_by = :uid"), {"uid": uid})
+            await db.execute(text("DELETE FROM audit_log WHERE user_id = :uid"), {"uid": uid})
+            await db.delete(user)
+            count += 1
+        except Exception as e:
+            continue
+    await db.commit()
+    return {"message": f"Purged {count} test users", "count": count}
