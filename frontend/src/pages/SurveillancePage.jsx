@@ -205,7 +205,7 @@ export default function SurveillancePage() {
             <StatBlock label="CONFORMANT" value={(bd.healthy ?? 0) || allSystems.filter(s => s.status === 'conformant').length} color={styles.accentGreen} active={systemFilter === 'conformant'} onClick={() => handleSystemFilter('conformant')} />
             <StatBlock label="DEGRADED" value={(bd.degraded ?? 0) || allSystems.filter(s => s.status === 'degraded').length} color={styles.accentAmber} active={systemFilter === 'degraded'} onClick={() => handleSystemFilter('degraded')} />
             <StatBlock label="NON-CONFORMANT" value={nonConformantCount || allSystems.filter(s => s.status === 'non_conformant' || s.status === 'critical').length} color={nonConformantCount > 0 ? styles.accentRed : styles.textDim} active={systemFilter === 'non_conformant'} onClick={() => handleSystemFilter('non_conformant')} />
-            <StatBlock label="ALERTS" value={alerts.length} color={alerts.length > 0 ? styles.accentAmber : styles.textDim} active={false} onClick={() => { setAlertFilter('all');  }} />
+            <StatBlock label="ALERTS" value={alerts.length} active={systemFilter === 'alerts'} onClick={() => handleSystemFilter('alerts')} color={alerts.length > 0 ? styles.accentAmber : styles.textDim} active={false} onClick={() => { setAlertFilter('all');  }} />
           </div>
         )}
       </Panel>
@@ -307,7 +307,7 @@ export default function SurveillancePage() {
             ))}
           </div>
         )}
-      </Panel>
+      </Panel>}
 
       <style>{'\
         @keyframes sa-pulse { 0%, 100% { opacity: 0.8; } 50% { opacity: 1; } }\
