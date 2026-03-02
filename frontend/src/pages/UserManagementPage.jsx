@@ -180,7 +180,9 @@ function UserManagementPage() {
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={6} style={{ padding: '40px', textAlign: 'center', color: styles.textTertiary, fontFamily: styles.mono, fontSize: '11px' }}>Loading...</td></tr>
+              [1,2,3,4,5].map(i => (
+                <tr key={i}><td colSpan={6} style={{padding: '6px 16px'}}><div className="skeleton" style={{height: 36, borderRadius: 3}}></div></td></tr>
+              ))
             ) : users.length === 0 ? (
               <tr><td colSpan={6} style={{ padding: '40px', textAlign: 'center', color: styles.textTertiary, fontSize: '14px' }}>
                 {search ? 'No users match "' + search + '"' : 'No users found'}

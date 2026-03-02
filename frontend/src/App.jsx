@@ -1,5 +1,5 @@
 import PreCAT72Review from './pages/PreCAT72Review';
-import React, { Suspense, lazy } from 'react';
+import React from 'react';
 import ErrorBoundary from './components/ErrorBoundary';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
@@ -7,34 +7,32 @@ import { ToastProvider } from './context/ToastContext';
 import { ConfirmProvider } from './context/ConfirmContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Layout from './components/Layout';
-import { DashboardSkeleton } from './components/LoadingSkeleton';
 
 // Eager load — always needed
 import LoginPage from './pages/LoginPage';
 
 // Lazy load — only when navigated to
-const DashboardPage = lazy(() => import('./pages/DashboardPage').then(m => ({ default: m.RoleBasedDashboard })));
-const ApplicationsList = lazy(() => import('./pages/ApplicationsList'));
-const NewApplication = lazy(() => import('./pages/NewApplication'));
-const ApplicationDetail = lazy(() => import('./pages/ApplicationDetail'));
-const CAT72Console = lazy(() => import('./pages/CAT72Console'));
-const CertificatesPage = lazy(() => import('./pages/CertificatesPage'));
-const VerifyPage = lazy(() => import('./pages/VerifyPage'));
-const PendingPage = lazy(() => import('./pages/PendingPage'));
-const ResourcesPage = lazy(() => import('./pages/ResourcesPage'));
-const EnveloPage = lazy(() => import('./pages/EnveloPage'));
-const MonitoringPage = lazy(() => import('./pages/MonitoringPage'));
-const SurveillancePage = lazy(() => import('./pages/SurveillancePage'));
-const UserManagementPage = lazy(() => import('./pages/UserManagementPage'));
-const ActivityPage = lazy(() => import('./pages/ActivityPage'));
-const MyActivityPage = lazy(() => import('./pages/MyActivityPage'));
-const SettingsPage = lazy(() => import('./pages/SettingsPage'));
-const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
-const ApiDocsPage = lazy(() => import('./pages/ApiDocsPage'));
-const ResetPasswordPage = lazy(() => import('./pages/ResetPasswordPage'));
+import { RoleBasedDashboard as DashboardPage } from './pages/DashboardPage';
+import ApplicationsList from './pages/ApplicationsList';
+import NewApplication from './pages/NewApplication';
+import ApplicationDetail from './pages/ApplicationDetail';
+import CAT72Console from './pages/CAT72Console';
+import CertificatesPage from './pages/CertificatesPage';
+import VerifyPage from './pages/VerifyPage';
+import PendingPage from './pages/PendingPage';
+import ResourcesPage from './pages/ResourcesPage';
+import EnveloPage from './pages/EnveloPage';
+import SurveillancePage from './pages/SurveillancePage';
+import UserManagementPage from './pages/UserManagementPage';
+import ActivityPage from './pages/ActivityPage';
+import MyActivityPage from './pages/MyActivityPage';
+import SettingsPage from './pages/SettingsPage';
+import NotFoundPage from './pages/NotFoundPage';
+import ApiDocsPage from './pages/ApiDocsPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
 
 function LazyLoad({ children }) {
-  return <Suspense fallback={<DashboardSkeleton />}>{children}</Suspense>;
+  return <>{children}</>;
 }
 
 function App() {
@@ -54,7 +52,7 @@ function App() {
           <Route path="/certificates" element={<ProtectedRoute><Layout><LazyLoad><CertificatesPage /></LazyLoad></Layout></ProtectedRoute>} />
           <Route path="/pending" element={<LazyLoad><PendingPage /></LazyLoad>} />
           <Route path="/resources" element={<ProtectedRoute><Layout><LazyLoad><ResourcesPage /></LazyLoad></Layout></ProtectedRoute>} />
-          <Route path="/monitoring" element={<ProtectedRoute><Layout><LazyLoad><MonitoringPage /></LazyLoad></Layout></ProtectedRoute>} />
+          <Route path="/monitoring" element={<Navigate to="/surveillance" replace />} />
           <Route path="/envelo" element={<ProtectedRoute><Layout><LazyLoad><EnveloPage /></LazyLoad></Layout></ProtectedRoute>} />
           <Route path="/surveillance" element={<ProtectedRoute roles={["admin"]}><Layout><LazyLoad><SurveillancePage /></LazyLoad></Layout></ProtectedRoute>} />
           <Route path="/activity" element={<ProtectedRoute roles={["admin"]}><Layout><LazyLoad><ActivityPage /></LazyLoad></Layout></ProtectedRoute>} />

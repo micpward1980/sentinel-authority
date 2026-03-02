@@ -13,26 +13,22 @@ function certVariant(state) {
   if (state === 'conformant' || state === 'active' || state === 'issued') return 'green';
   if (state === 'suspended') return 'amber';
   if (state === 'revoked') return 'red';
-  if (state === 'pending') return 'amber';
   return 'dim';
 }
 
 function isActiveState(state) {
   return state === 'conformant' || state === 'active' || state === 'issued';
 }
-function isPending(state) {
-  return state === 'pending';
-}
 
 const TABS = [
   { key: 'conformant', label: 'Conformant' },
-  { key: 'pending', label: 'Pending' },
   { key: 'nonconformant', label: 'Non-Conformant' },
   { key: 'all', label: 'All' },
 ];
 
 function CertificatesPage() {
   const navigate = useNavigate();
+  const [rawCerts, setRawCerts] = useState([]);
   const [certs, setCerts] = useState([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -42,63 +38,43 @@ function CertificatesPage() {
   const [search, setSearch] = useState('');
   const [searchInput, setSearchInput] = useState('');
   const [stateFilter, setStateFilter] = useState('conformant');
-  const [counts, setCounts] = useState({ all: 0, conformant: 0, pending: 0, nonconformant: 0 });
+  const [counts, setCounts] = useState({ all: 0, conformant: 0, nonconformant: 0 });
 
   const fetchCerts = useCallback(async () => {
     setLoading(true);
     try {
-      const params = new URLSearchParams({
-        limit: LIMIT, offset, sort_by: sortBy, sort_order: sortOrder,
-      });
-      if (search) params.append('search', search);
-      if (stateFilter === 'conformant') {
-          params.append('state', 'conformant');
-        } else if (stateFilter === 'pending') {
-          params.append('state', 'pending');
-        } else if (stateFilter === 'nonconformant') {
-          // handled client-side
-        } else if (stateFilter !== 'all') {
-          params.append('state', stateFilter);
-        }
-      const res = await api.get('/api/v1/certificates/list?' + params.toString());
-      setCerts(res.data.certificates || res.data.items || []);
-      setTotal(res.data.total || 0);
-      if (res.data.counts) setCounts(res.data.counts);
-    } catch {
-      // Fallback to old endpoint
-      try {
-        const res = await api.get('/api/certificates/');
-        const raw = res.data || [];
-        setCounts({
-          all: raw.length,
-          conformant: raw.filter(c => isActiveState(c.state)).length,
-          pending: raw.filter(c => c.state === 'pending').length,
-          nonconformant: raw.filter(c => c.state === 'suspended' || c.state === 'revoked' || c.state === 'expired').length,
-        });
-        let all = [...raw];
-        // Client-side filter
-        if (stateFilter === 'conformant') all = all.filter(c => isActiveState(c.state));
-        else if (stateFilter === 'pending') all = all.filter(c => c.state === 'pending');
-        else if (stateFilter === 'nonconformant') all = all.filter(c => c.state === 'suspended' || c.state === 'revoked' || c.state === 'expired');
-        else if (stateFilter !== 'all') all = all.filter(c => c.state === stateFilter);
-        // Client-side search
-        if (search) {
-          const q = search.toLowerCase();
-          all = all.filter(c => (c.system_name||'').toLowerCase().includes(q) || (c.organization_name||'').toLowerCase().includes(q) || (c.certificate_number||'').toLowerCase().includes(q));
-        }
-        // Client-side sort
-        all.sort((a, b) => {
-          const av = a[sortBy] || '', bv = b[sortBy] || '';
-          return sortOrder === 'asc' ? (av > bv ? 1 : -1) : (av < bv ? 1 : -1);
-        });
-        setCerts(all);
-        setTotal(all.length);
-      } catch { setCerts([]); setTotal(0); }
-    }
+      const res = await api.get('/api/certificates/');
+      const raw = res.data || [];
+      setRawCerts(raw);
+    } catch { setCerts([]); setTotal(0); }
     setLoading(false);
-  }, [offset, sortBy, sortOrder, search, stateFilter]);
+  }, [offset, sortBy, sortOrder, search]);
 
   useEffect(() => { fetchCerts(); }, [fetchCerts]);
+
+  // Client-side filter/search/sort — runs instantly on tab switch
+  useEffect(() => {
+    if (rawCerts.length === 0) return;
+    setCounts({
+      all: rawCerts.length,
+      conformant: rawCerts.filter(c => isActiveState(c.state)).length,
+      nonconformant: rawCerts.filter(c => c.state === 'suspended' || c.state === 'revoked' || c.state === 'expired').length,
+    });
+    let all = [...rawCerts];
+    if (stateFilter === 'conformant') all = all.filter(c => isActiveState(c.state));
+    else if (stateFilter === 'nonconformant') all = all.filter(c => c.state === 'suspended' || c.state === 'revoked' || c.state === 'expired');
+    else if (stateFilter !== 'all') all = all.filter(c => c.state === stateFilter);
+    if (search) {
+      const q = search.toLowerCase();
+      all = all.filter(c => (c.system_name||'').toLowerCase().includes(q) || (c.organization_name||'').toLowerCase().includes(q) || (c.certificate_number||'').toLowerCase().includes(q));
+    }
+    all.sort((a, b) => {
+      const av = a[sortBy] || '', bv = b[sortBy] || '';
+      return sortOrder === 'asc' ? (av > bv ? 1 : -1) : (av < bv ? 1 : -1);
+    });
+    setCerts(all);
+    setTotal(all.length);
+  }, [rawCerts, stateFilter, search, sortBy, sortOrder]);
 
   // Debounced search
   useEffect(() => {
@@ -158,7 +134,9 @@ function CertificatesPage() {
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={6} style={{ padding: '40px', textAlign: 'center', color: styles.textTertiary, fontFamily: styles.mono, fontSize: '11px' }}>Loading...</td></tr>
+              [1,2,3,4,5,6,7,8].map(i => (
+                <tr key={i}><td colSpan={6} style={{padding: '6px 16px'}}><div className="skeleton" style={{height: 36, borderRadius: 3}}></div></td></tr>
+              ))
             ) : certs.length === 0 ? (
               <tr><td colSpan={6} style={{ padding: '40px', textAlign: 'center', color: styles.textTertiary, fontSize: '14px' }}>
                 {search ? 'No certificates match "' + search + '"' : 'No ' + (stateFilter === 'all' ? '' : stateFilter + ' ') + 'certificates'}

@@ -16,6 +16,9 @@ function Layout({ children }) {
   const [userCerts, setUserCerts] = useState([]);
   const [userApps, setUserApps] = useState([]);
   const location = useLocation();
+
+  // Scroll to top on route change
+  React.useEffect(() => { const el = document.querySelector('.sa-main-content'); if (el) el.scrollTo(0, 0); }, [location.pathname]);
   const [notifs, setNotifs] = useState([]);
   const [notifOpen, setNotifOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -87,14 +90,14 @@ function Layout({ children }) {
     fontSize: '9px',
     letterSpacing: '1.5px',
     textTransform: 'uppercase',
-    color: active ? styles.textPrimary : styles.textTertiary,
+    color: active ? styles.textPrimary : styles.textSecondary,
     borderLeft: active ? '2px solid ' + styles.purpleBright : '2px solid transparent',
     background: active ? 'rgba(74,61,117,.06)' : 'transparent',
     transition: 'color 0.25s ease, background 0.15s'
   });
 
   return (
-    <div style={{minHeight: '100vh', color: styles.textPrimary, fontFamily: styles.sans, background: styles.bgDeep}}>
+    <div style={{height: '100vh', overflow: 'hidden', color: styles.textPrimary, fontFamily: styles.sans, background: styles.bgDeep}}>
       {/* Grid overlay — matches main site (opacity:0 = hidden by default) */}
       <div className="sa-grid-overlay" />
 
@@ -140,9 +143,9 @@ function Layout({ children }) {
             return (
               <Link key={item.name} to={item.href} style={navLinkStyle(active)}
                 onMouseEnter={e => { if (!active) { e.currentTarget.style.color = styles.textPrimary; e.currentTarget.style.background = 'rgba(0,0,0,.025)'; }}}
-                onMouseLeave={e => { if (!active) { e.currentTarget.style.color = styles.textTertiary; e.currentTarget.style.background = 'transparent'; }}}
+                onMouseLeave={e => { if (!active) { e.currentTarget.style.color = styles.textSecondary; e.currentTarget.style.background = 'transparent'; }}}
               >
-                {item.icon === 'brand' ? <BrandMark size={14} /> : <item.icon size={14} style={{opacity: active ? 0.9 : 0.45}} />}
+                {item.icon === 'brand' ? <BrandMark size={14} /> : <item.icon size={14} style={{opacity: active ? 0.9 : 0.65}} />}
                 {item.name}
               </Link>
             );
@@ -193,7 +196,7 @@ function Layout({ children }) {
       </div>
 
       {/* Main */}
-      <div style={{marginLeft: isMobile ? 0 : '240px', position: 'relative', zIndex: 10}}>
+      <div style={{marginLeft: isMobile ? 0 : '240px', position: 'relative', zIndex: 10, height: '100vh', display: 'flex', flexDirection: 'column'}}>
         {/* Header — frosted glass matching main site */}
         <header style={{
           height: '72px',
@@ -257,7 +260,7 @@ function Layout({ children }) {
           </div>
         </header>
 
-        <main className="sa-main-content" style={{padding: 'clamp(16px, 3vw, 32px)', position: 'relative', zIndex: 1}}>
+        <main className="sa-main-content" style={{padding: 'clamp(16px, 3vw, 32px)', position: 'relative', zIndex: 1, flex: 1, overflowY: 'auto', overflowX: 'hidden', scrollbarGutter: 'stable'}}>
           {subTabs && (
             <div style={{display: 'flex', gap: '0', borderBottom: '1px solid ' + styles.borderSubtle, marginBottom: '24px', marginTop: '-8px'}}>
               {subTabs.map(tab => {

@@ -66,7 +66,10 @@ function MyActivityPage() {
         </div>
 
         {loading ? (
-          <div style={{padding: 'clamp(16px, 4vw, 40px)', textAlign: 'center', color: styles.textTertiary}}>Loading...</div>
+          <div className="page-enter" style={{padding: 'clamp(16px, 4vw, 40px)'}}>
+          <div className="skeleton" style={{width: 180, height: 14, marginBottom: 16}}></div>
+          {[1,2,3,4,5].map(i => <div key={i} className="skeleton" style={{height: 48, borderRadius: 4, marginBottom: 8}}></div>)}
+        </div>
         ) : logs.length === 0 ? (
           <div style={{padding: 'clamp(16px, 4vw, 40px)', textAlign: 'center', color: styles.textTertiary}}>No activity yet</div>
         ) : (

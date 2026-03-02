@@ -210,7 +210,9 @@ function ApplicationsList() {
           </thead>
           <tbody>
             {isLoading ? (
-              <tr><td colSpan={isAdmin ? 6 : 3} style={{ padding: '40px', textAlign: 'center', fontFamily: styles.mono, fontSize: '11px', color: styles.textDim }}>Loading...</td></tr>
+              [1,2,3,4,5,6].map(i => (
+                <tr key={i}><td colSpan={isAdmin ? 6 : 3} style={{padding: '6px 16px'}}><div className="skeleton" style={{height: 36, borderRadius: 3}}></div></td></tr>
+              ))
             ) : filtered.length === 0 ? (
               <tr><td colSpan={isAdmin ? 6 : 3} style={{ padding: '40px', textAlign: 'center' }}>
                 <EmptyState

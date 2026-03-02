@@ -5,7 +5,7 @@
    ─────────────────────────────────────────────────────────────────────────── */
 
 /* Google Fonts — loaded here so it works without editing index.html */
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap');
+/* fonts loaded in index.html */
 
 :root {
   color-scheme: light;
@@ -74,6 +74,8 @@
 
 /* ─── Base ───────────────────────────────────────────────────────────────── */
 
+
+
 body {
   margin: 0;
   font-family: var(--sans);
@@ -81,7 +83,7 @@ body {
   line-height: 1.5;
   color: var(--text-primary);
   background: var(--bg-deep);
-  min-height: 100vh;
+  height: 100%;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -451,3 +453,72 @@ input.mono-input {
   inset: 0;
   z-index: 0;
 }
+
+
+/* ─── Page transition smoothness ─────────────────────────────────────────── */
+
+/* Fade-in for page content */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.page-enter {
+  /* animation disabled — instant render feels smoother than delayed fade */
+}
+
+/* Smooth content reveal when data loads */
+@keyframes contentReveal {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.content-reveal {
+  animation: contentReveal 0.15s ease both;
+}
+
+/* Tab content transitions */
+.tab-content {
+  transition: opacity 0.12s ease;
+}
+
+/* Prevent layout shifts — minimum heights for data sections */
+.data-section {
+  min-height: 200px;
+}
+
+/* Table rows render instantly */
+.data-table tbody tr {
+}
+
+/* Stagger rows slightly for premium feel */
+.data-table tbody tr:nth-child(1) { animation-delay: 0.00s; }
+.data-table tbody tr:nth-child(2) { animation-delay: 0.02s; }
+.data-table tbody tr:nth-child(3) { animation-delay: 0.04s; }
+.data-table tbody tr:nth-child(4) { animation-delay: 0.06s; }
+.data-table tbody tr:nth-child(5) { animation-delay: 0.08s; }
+.data-table tbody tr:nth-child(6) { animation-delay: 0.10s; }
+.data-table tbody tr:nth-child(7) { animation-delay: 0.12s; }
+.data-table tbody tr:nth-child(8) { animation-delay: 0.14s; }
+.data-table tbody tr:nth-child(9) { animation-delay: 0.16s; }
+.data-table tbody tr:nth-child(10) { animation-delay: 0.18s; }
+
+/* Skeleton rows */
+.skeleton-row {
+  height: 48px;
+  margin-bottom: 1px;
+  border-radius: 0;
+}
+
+/* ─── Contained scroll — Salesforce pattern ─────────────────────────────── */
+html, body, #root {
+  height: 100%;
+  overflow: hidden;
+  margin: 0;
+}
+
+/* Main content scrollbar styling */
+.sa-main-content::-webkit-scrollbar { width: 6px; }
+.sa-main-content::-webkit-scrollbar-track { background: transparent; }
+.sa-main-content::-webkit-scrollbar-thumb { background: var(--hairline-2); border-radius: 3px; }
+.sa-main-content::-webkit-scrollbar-thumb:hover { background: rgba(29,26,59,0.30); }
