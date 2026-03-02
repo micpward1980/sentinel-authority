@@ -32,6 +32,19 @@ const PANEL_LABEL = {
   color: styles.textTertiary, marginBottom: '16px',
 };
 
+const STATE_LABEL = {
+  pending: "Submitted",
+  approved: "Accepted",
+  observe: "Interlock Deploy",
+  bounded: "Boundaries Review",
+  testing: "CAT-72 Testing",
+  conformant: "Conformant",
+  suspended: "Non-Conformant",
+  revoked: "Revoked",
+  expired: "Expired",
+  rejected: "Rejected",
+};
+
 const ACTION_BTN = (color, solid = false) => ({
   padding: '8px 16px',
   background: solid ? color : 'transparent',
@@ -386,7 +399,7 @@ function ApplicationDetail() {
               fontFamily: styles.mono, fontSize: '11px', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase',
               padding: '3px 10px', background: `${stateColor(app.state)}10`, color: stateColor(app.state),
             }}>
-              {app.state?.replace('_', ' ')}
+              {STATE_LABEL[app.state] || app.state?.replace('_', ' ')}
             </span>
 
           </div>
