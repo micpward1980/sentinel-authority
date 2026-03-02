@@ -16,7 +16,9 @@ from datetime import timezone
 from app.services.email_service import (
     notify_admin_new_application, send_application_received,
     send_application_approved, send_application_rejected, send_application_under_review,
-    send_test_scheduled, send_email, ADMIN_EMAIL
+    send_test_scheduled, send_email, ADMIN_EMAIL,
+    send_application_under_review, send_learning_started, send_learning_complete,
+    send_test_started, send_test_failed, send_certificate_issued
 )
 
 router = APIRouter()
@@ -461,6 +463,27 @@ async def update_application_state(
                         )
                 elif new_state == "rejected":
                     await send_application_rejected(applicant_email, system_name, app_number, reason)
+                elif new_state == "under_review":
+                    await send_application_under_review(applicant_email, system_name, app_number)
+                elif new_state == "observe":
+                    await send_learning_started(applicant_email, system_name, app_number)
+                elif new_state == "bounded":
+                    await send_learning_complete(applicant_email, system_name, app_number, 0, 0)
+                elif new_state == "testing":
+                    await send_test_started(applicant_email, system_name, app_number)
+                elif new_state == "failed" or new_state == "test_failed":
+                    await send_test_failed(applicant_email, system_name, "Boundary violations detected during CAT-72 test", 0.0)
+                elif new_state == "conformant":
+                    cert_num = app_number
+                    try:
+                        from app.models.models import Certificate
+                        cert_r = await db.execute(select(Certificate).where(Certificate.application_id == app.id))
+                        cert_obj = cert_r.scalars().first()
+                        if cert_obj:
+                            cert_num = cert_obj.certificate_number
+                    except Exception:
+                        pass
+                    await send_certificate_issued(applicant_email, system_name, cert_num, "")
                 elif new_state == "suspended":
                     await send_email(
                         applicant_email,
