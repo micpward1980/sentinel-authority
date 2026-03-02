@@ -581,8 +581,13 @@ async def list_sessions(
     user_id = int(current_user.get("sub", 0))
     current_sid = current_user.get("sid", "")
     result = await db.execute(
-        select(UserSession).where(UserSession.user_id == user_id, UserSession.is_active == True)
-        .order_by(UserSession.last_active_at.desc())
+        select(UserSession).where(
+            UserSession.user_id == user_id,
+            UserSession.is_active == True,
+            ~UserSession.user_agent.ilike("%curl%"),
+            ~UserSession.user_agent.ilike("%python%"),
+            ~UserSession.user_agent.ilike("%httpx%"),
+        ).order_by(UserSession.last_active_at.desc()).limit(20)
     )
     sessions = result.scalars().all()
     return {
