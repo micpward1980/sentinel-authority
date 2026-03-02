@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Wifi, FileText, Activity, Award, AlertTriangle, Plus, Shield, Download, RefreshCw, AlertCircle, Clock } from 'lucide-react';
+import { Wifi, FileText, Activity, Award, AlertTriangle, Plus, Shield, Download, RefreshCw, AlertCircle, Clock, CheckCircle } from 'lucide-react';
 import { api, API_BASE } from '../config/api';
 import { styles } from '../config/styles';
 import { useAuth } from '../context/AuthContext';
@@ -155,8 +155,8 @@ function CustomerDashboard() {
         </div>
         {!hasApps ? (
           <div style={{textAlign: 'center', padding: '56px 20px'}}>
-            <div style={{width: '72px', height: '72px', background: 'transparent', border: '1px solid ' + styles.borderSubtle, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px'}}>
-              <Shield fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} size={32} style={{color: styles.purpleBright, opacity: 0.7}} />
+            <div style={{width: '72px', height: '72px', borderRadius: '50%', background: 'transparent', border: '1px solid ' + styles.borderSubtle, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px'}}>
+              <CheckCircle size={32} style={{color: styles.purpleBright, opacity: 0.5}} />
             </div>
             <p style={{color: styles.textPrimary, fontSize: '17px', fontWeight: 500, marginBottom: '8px', fontFamily: styles.serif}}>Begin Your Certification</p>
             <p style={{color: styles.textTertiary, fontSize: '13px', marginBottom: '28px', maxWidth: '360px', margin: '0 auto 28px', lineHeight: '1.6'}}>Submit your autonomous system for ODDC certification. Our CAT-72 test validates real-time boundary enforcement over 72 hours.</p>
