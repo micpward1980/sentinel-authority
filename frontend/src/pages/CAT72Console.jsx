@@ -4,6 +4,7 @@ import { styles } from '../config/styles';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { useConfirm } from '../context/ConfirmContext';
+import { useNavigate } from 'react-router-dom';
 import Panel from '../components/Panel';
 import Pagination from '../components/Pagination';
 import AuditTrailView from '../components/AuditTrailView';
@@ -12,6 +13,7 @@ import ConformanceReport from '../components/ConformanceReport';
 function CAT72Console() {
   const confirm = useConfirm();
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [tests, setTests] = useState([]);
   const toast = useToast();
   const [loading, setLoading] = useState({});
@@ -84,7 +86,7 @@ function CAT72Console() {
   };
 
   const formatDate = (d) => {
-    if (!d) return '\u2014';
+    if (!d) return '—';
     const dt = new Date(d);
     return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   };
@@ -113,10 +115,10 @@ function CAT72Console() {
       <div>
         <p style={{ fontFamily: styles.mono, fontSize: '10px', fontWeight: 600, letterSpacing: '0.20em', textTransform: 'uppercase', color: styles.purpleBright, margin: '0 0 8px 0' }}>Testing</p>
         <h1 style={{ fontFamily: styles.serif, fontSize: 'clamp(24px, 5vw, 36px)', fontWeight: 200, margin: 0, color: styles.textPrimary }}>CAT-72 Console</h1>
-        <p style={{color: styles.textSecondary, marginTop: '8px'}}>{isAdmin ? '72-hour Conformance Authorization Tests \u00b7 Auto-refreshes every 15s' : 'Monitor your 72-hour conformance test in real time'}</p>
+        <p style={{color: styles.textSecondary, marginTop: '8px'}}>{isAdmin ? '72-hour Conformance Authorization Tests · Auto-refreshes every 15s' : 'Monitor your 72-hour conformance test in real time'}</p>
       </div>
 
-      {/* \u2500\u2500 Stat Blocks \u2500\u2500 */}
+      {/* ── Stat Blocks ── */}
       <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '12px'}}>
         {statBlock(runningTests.length, 'Running', runningTests.length > 0 ? styles.accentAmber : styles.textDim)}
         {statBlock(awaitingTests.length, 'Awaiting Interlock', awaitingTests.length > 0 ? styles.purpleBright : styles.textDim)}
@@ -124,10 +126,10 @@ function CAT72Console() {
         {statBlock(unresolvedFails.length, 'Failed', unresolvedFails.length > 0 ? styles.accentRed : styles.textDim)}
       </div>
 
-      {/* \u2500\u2500 Live Tests \u2500\u2500 */}
+      {/* ── Live Tests ── */}
       {runningTests.length > 0 && (
         <div>
-          <h2 style={{fontFamily: styles.mono, fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.accentAmber, marginBottom: '12px'}}>\u25cf Live Tests</h2>
+          <h2 style={{fontFamily: styles.mono, fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.accentAmber, marginBottom: '12px'}}>● Live Tests</h2>
           <div className="space-y-4">
             {runningTests.map(test => {
               const totalSec = test.duration_hours * 3600;
@@ -138,8 +140,8 @@ function CAT72Console() {
                 <Panel>
                   <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px', marginBottom: '16px'}}>
                     <div>
-                      <div style={{fontWeight: 500, fontSize: '16px', color: styles.textPrimary, marginBottom: '4px'}}>{test.organization_name} \u2014 {test.system_name}</div>
-                      <div style={{fontFamily: styles.mono, fontSize: '11px', color: styles.textTertiary}}>Test ID: {test.test_id} \u00b7 Duration: {test.duration_hours}h</div>
+                      <div style={{fontWeight: 500, fontSize: '16px', color: styles.textPrimary, marginBottom: '4px'}}>{test.organization_name} — {test.system_name}</div>
+                      <div style={{fontFamily: styles.mono, fontSize: '11px', color: styles.textTertiary}}>Test ID: {test.test_id} · Duration: {test.duration_hours}h</div>
                     </div>
                     {isAdmin && <button onClick={() => handleStop(test.test_id)} disabled={loading[test.test_id]} style={{background: styles.cardSurface, border: '1px solid ' + styles.borderSubtle, color: styles.accentAmber, fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer', borderRadius: 3, padding: '6px 14px'}}>
                       {loading[test.test_id] === 'stopping' ? '...' : 'Stop & Evaluate'}
@@ -168,7 +170,7 @@ function CAT72Console() {
         </div>
       )}
 
-      {/* \u2500\u2500 Awaiting Interlock \u2500\u2500 */}
+      {/* ── Awaiting Interlock ── */}
       {awaitingTests.length > 0 && (
         <Panel>
           <h2 style={{fontFamily: styles.mono, fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.purpleBright, marginBottom: '16px'}}>Awaiting Interlock Deployment</h2>
@@ -176,8 +178,8 @@ function CAT72Console() {
             {awaitingTests.map(test => (
               <div key={test.id} style={{padding: '14px 16px', background: styles.cardSurface, border: '1px solid ' + styles.borderGlass, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px'}}>
                 <div>
-                  <div style={{fontWeight: 500, color: styles.textPrimary, marginBottom: '2px'}}>{test.organization_name} \u2014 {test.system_name}</div>
-                  <div style={{fontFamily: styles.mono, fontSize: '11px', color: styles.textTertiary}}>{test.test_id} \u00b7 {test.duration_hours}h test</div>
+                  <div style={{fontWeight: 500, color: styles.textPrimary, marginBottom: '2px', cursor: 'pointer'}} onClick={() => navigate('/applications/' + test.application_id)}>{test.organization_name} — {test.system_name}</div>
+                  <div style={{fontFamily: styles.mono, fontSize: '11px', color: styles.textTertiary}}>{test.test_id} · {test.duration_hours}h test</div>
                 </div>
                 <div style={{display: 'flex', alignItems: 'center', gap: '12px'}}>
                   <span style={{fontFamily: styles.mono, fontSize: '10px', color: styles.textDim, padding: '3px 8px', border: '1px solid ' + styles.borderSubtle, borderRadius: 3}}>Waiting for customer</span>
@@ -191,16 +193,16 @@ function CAT72Console() {
         </Panel>
       )}
 
-      {/* \u2500\u2500 Needs Attention (unresolved failures) \u2500\u2500 */}
+      {/* ── Needs Attention (unresolved failures) ── */}
       {unresolvedFails.length > 0 && (
         <Panel>
           <h2 style={{fontFamily: styles.mono, fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.accentRed, marginBottom: '16px'}}>Needs Attention</h2>
           <div style={{display: 'flex', flexDirection: 'column', gap: '2px'}}>
             {unresolvedFails.map(test => (
-              <div key={test.id} style={{padding: '14px 16px', background: styles.cardSurface, border: '1px solid ' + styles.accentRed + '30', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px'}}>
+              <div key={test.id} style={{padding: '14px 16px', background: styles.cardSurface, border: '1px solid ' + styles.accentRed + '30', display: 'flex', cursor: 'pointer', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px'}} onClick={() => navigate('/applications/' + test.application_id)}>
                 <div>
-                  <div style={{fontWeight: 500, color: styles.textPrimary, marginBottom: '2px'}}>{test.organization_name} \u2014 {test.system_name}</div>
-                  <div style={{fontFamily: styles.mono, fontSize: '11px', color: styles.textTertiary}}>{test.test_id} \u00b7 Failed {formatDate(test.ended_at)}</div>
+                  <div style={{fontWeight: 500, color: styles.textPrimary, marginBottom: '2px', cursor: 'pointer'}} onClick={() => navigate('/applications/' + test.application_id)}>{test.organization_name} — {test.system_name}</div>
+                  <div style={{fontFamily: styles.mono, fontSize: '11px', color: styles.textTertiary}}>{test.test_id} · Failed {formatDate(test.ended_at)}</div>
                   {test.result_notes && <div style={{fontFamily: styles.mono, fontSize: '10px', color: styles.accentRed, marginTop: '4px'}}>{test.result_notes}</div>}
                 </div>
                 <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
@@ -212,7 +214,7 @@ function CAT72Console() {
         </Panel>
       )}
 
-      {/* \u2500\u2500 Completed History \u2500\u2500 */}
+      {/* ── Completed History ── */}
       {completedTests.length > 0 && (
         <Panel>
           <h2 style={{fontFamily: styles.mono, fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px'}}>Completed History</h2>
@@ -230,9 +232,9 @@ function CAT72Console() {
               </thead>
               <tbody>
                 {paginatedHistory.map(test => (
-                  <tr key={test.id} style={{borderBottom: '1px solid ' + styles.borderGlass}}>
+                  <tr key={test.id} onClick={() => navigate('/applications/' + test.application_id)} style={{borderBottom: '1px solid ' + styles.borderGlass, cursor: 'pointer', transition: 'background 0.15s'}} onMouseEnter={e => e.currentTarget.style.background = styles.surfaceAlt || '#fafafa'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
                     <td style={{padding: '12px 16px'}}>
-                      <div style={{fontWeight: 500, color: styles.textPrimary}}>{test.organization_name} \u2014 {test.system_name}</div>
+                      <div style={{fontWeight: 500, color: styles.textPrimary}}>{test.organization_name} — {test.system_name}</div>
                       <div style={{fontFamily: styles.mono, fontSize: '10px', color: styles.textTertiary, marginTop: '2px'}}>{test.test_id}</div>
                     </td>
                     <td style={{padding: '12px 16px'}}>
@@ -240,7 +242,7 @@ function CAT72Console() {
                     </td>
                     <td style={{padding: '12px 16px', fontFamily: styles.mono, fontSize: '12px', color: styles.textSecondary}}>{formatTime(test.elapsed_seconds)}</td>
                     <td style={{padding: '12px 16px', fontFamily: styles.mono, fontSize: '11px', color: styles.textTertiary}}>{formatDate(test.ended_at)}</td>
-                    <td style={{padding: '12px 16px', fontFamily: styles.mono, fontSize: '12px', color: styles.textSecondary}}>{test.convergence_score ? test.convergence_score.toFixed(1) + '%' : '\u2014'}</td>
+                    <td style={{padding: '12px 16px', fontFamily: styles.mono, fontSize: '12px', color: styles.textSecondary}}>{test.convergence_score ? test.convergence_score.toFixed(1) + '%' : '—'}</td>
                     <td style={{padding: '12px 16px'}}>
                       <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
                         {isAdmin && test.result === 'PASS' && !test.certificate_issued && (
@@ -250,7 +252,7 @@ function CAT72Console() {
                         )}
                         {test.certificate_issued && (
                           <>
-                            <span style={{color: styles.accentGreen, fontFamily: styles.mono, fontSize: '10px'}}>\u2713 Certified</span>
+                            <span style={{color: styles.accentGreen, fontFamily: styles.mono, fontSize: '10px'}}>✓ Certified</span>
                             <a href={`${API_BASE}/api/certificates/${test.certificate_number || test.test_id}/pdf`} target="_blank" rel="noreferrer noopener" style={{padding: '2px 0', background: 'transparent', borderBottom: '1px solid ' + styles.purpleBright, color: styles.purpleBright, fontFamily: styles.mono, fontSize: '9px', textDecoration: 'none'}}>PDF</a>
                           </>
                         )}
@@ -265,7 +267,7 @@ function CAT72Console() {
         </Panel>
       )}
 
-      {/* \u2500\u2500 Empty State \u2500\u2500 */}
+      {/* ── Empty State ── */}
       {tests.length === 0 && (
         <Panel>
           <div style={{textAlign: 'center', padding: '48px 20px', color: styles.textTertiary}}>
