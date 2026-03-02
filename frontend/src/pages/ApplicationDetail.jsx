@@ -572,7 +572,7 @@ function ApplicationDetail() {
             ))}
 
 
-            {isAdmin && app.state === 'observe' && (
+            {isAdmin && (app.state === 'observe' || app.state === 'bounded') && (
               <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
                 <button
                   onClick={() => navigate(`/applications/${id}/pre-review`)}
@@ -580,6 +580,38 @@ function ApplicationDetail() {
                   style={{ flex: 1, padding: '12px', background: 'transparent', border: `1px solid ${styles.accentGreen}`, color: styles.accentGreen, fontFamily: styles.mono, fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer', borderRadius: '6px' }}>
                   ✓ Approve Boundaries — Begin CAT-72
                 </button>
+              </div>
+            )}
+
+            {!isAdmin && (app.state === 'observe' || app.state === 'bounded') && (
+              <div style={{ marginTop: '16px' }}>
+                {app.boundaries_acknowledged ? (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '12px 16px', background: styles.accentGreen + '08', border: '1px solid ' + styles.accentGreen + '33', borderRadius: '6px' }}>
+                    <span style={{ color: styles.accentGreen, fontSize: '14px' }}>✓</span>
+                    <span style={{ fontFamily: styles.mono, fontSize: '11px', color: styles.accentGreen }}>BOUNDARIES ACKNOWLEDGED</span>
+                    <span style={{ fontFamily: styles.mono, fontSize: '10px', color: styles.textTertiary, marginLeft: 'auto' }}>{app.boundaries_acknowledged_at ? new Date(app.boundaries_acknowledged_at).toLocaleDateString() : ''}</span>
+                  </div>
+                ) : (
+                  <div>
+                    <p style={{ fontSize: '12px', color: styles.textSecondary, marginBottom: '8px' }}>
+                      Review the boundaries above. If they accurately represent your system's operational parameters, acknowledge them to proceed.
+                    </p>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <button onClick={async () => {
+                        try {
+                          await api.post('/api/applications/' + app.id + '/acknowledge-boundaries');
+                          toast.show('Boundaries acknowledged', 'success');
+                          window.location.reload();
+                        } catch (e) { toast.show('Failed: ' + (e.response?.data?.detail || e.message), 'error'); }
+                      }} style={{ flex: 1, padding: '12px', background: 'transparent', border: '1px solid ' + styles.accentGreen, color: styles.accentGreen, fontFamily: styles.mono, fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer', borderRadius: '6px' }}>
+                        ✓ I Confirm These Boundaries Are Correct
+                      </button>
+                      <button onClick={() => { setShowCorForm(true); setCorType('response'); }} style={{ padding: '12px 20px', background: 'transparent', border: '1px solid ' + styles.accentAmber, color: styles.accentAmber, fontFamily: styles.mono, fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer', borderRadius: '6px' }}>
+                        ? I Have Questions
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </Panel>
@@ -648,34 +680,33 @@ function ApplicationDetail() {
       )}
 
       {/* ═══ Formal Correspondence ═══ */}
-      {isAdmin && (
-        <Panel style={{ marginTop: '24px' }}>
+      <Panel style={{ marginTop: '24px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
             <p style={{ fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', color: styles.textTertiary, margin: 0 }}>Official Correspondence</p>
             <button onClick={() => setShowCorForm(!showCorForm)} style={{
               fontFamily: styles.mono, fontSize: '10px', letterSpacing: '0.5px',
               padding: '5px 12px', border: '1px solid ' + styles.purpleBright, color: styles.purpleBright,
               background: 'transparent', cursor: 'pointer',
-            }}>{showCorForm ? '✕ Cancel' : '+ New Correspondence'}</button>
+            }}>{showCorForm ? '✕ Cancel' : isAdmin ? '+ New Correspondence' : '+ Reply'}</button>
           </div>
           
           {showCorForm && (
             <div style={{ background: styles.surfaceAlt || '#fafafa', border: '1px solid ' + (styles.border || '#e5e5e5'), borderRadius: '4px', padding: '16px', marginBottom: '16px' }}>
               <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
-                {['rfi', 'deficiency', 'remediation', 'general'].map(t => (
+                {(isAdmin ? ['rfi', 'deficiency', 'remediation', 'general'] : ['response', 'general']).map(t => (
                   <button key={t} onClick={() => setCorType(t)} style={{
                     fontFamily: styles.mono, fontSize: '10px', letterSpacing: '0.5px',
                     padding: '5px 12px', cursor: 'pointer',
                     background: corType === t ? styles.purpleBright : 'transparent',
                     color: corType === t ? '#fff' : styles.textSecondary,
                     border: '1px solid ' + (corType === t ? styles.purpleBright : (styles.border || '#ddd')),
-                  }}>{({rfi:'Request for Info', deficiency:'Deficiency Notice', remediation:'Remediation', general:'General'})[t]}</button>
+                  }}>{({rfi:'Request for Info', deficiency:'Deficiency Notice', remediation:'Remediation', general:'General', response:'Response'})[t]}</button>
                 ))}
               </div>
               <textarea
                 value={corDetails}
                 onChange={e => setCorDetails(e.target.value)}
-                placeholder={corType === 'rfi' ? 'What information do you need from the applicant?' : corType === 'deficiency' ? 'Describe the deficiencies identified...' : corType === 'remediation' ? 'Describe the recommended remediation steps...' : 'Enter your message...'}
+                placeholder={corType === 'rfi' ? 'What information do you need from the applicant?' : corType === 'deficiency' ? 'Describe the deficiencies identified...' : corType === 'remediation' ? 'Describe the recommended remediation steps...' : corType === 'response' ? 'Enter your response...' : 'Enter your message...'}
                 style={{
                   width: '100%', minHeight: '120px', padding: '12px', fontFamily: 'inherit', fontSize: '13px',
                   border: '1px solid ' + (styles.border || '#ddd'), borderRadius: '4px', resize: 'vertical',
@@ -683,10 +714,10 @@ function ApplicationDetail() {
                 }}
               />
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '12px' }}>
-                <label style={{ fontSize: '12px', color: styles.textSecondary }}>
+                {isAdmin && <label style={{ fontSize: '12px', color: styles.textSecondary }}>
                   <input type="checkbox" checked={corResponseReq} onChange={e => setCorResponseReq(e.target.checked)} style={{ marginRight: '6px' }} />
                   Response required (10 business days)
-                </label>
+                </label>}
                 <button onClick={async () => {
                   if (!corDetails.trim()) return;
                   try {
@@ -712,7 +743,7 @@ function ApplicationDetail() {
               padding: '12px 16px', marginBottom: '8px', background: styles.surfaceAlt || '#fafafa',
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-                <span style={{ fontFamily: styles.mono, fontSize: '10px', color: styles.textTertiary }}>{c.reference_number} · {({rfi:'REQUEST FOR INFORMATION', deficiency:'DEFICIENCY NOTICE', remediation:'REMEDIATION GUIDANCE', general:'GENERAL'})[c.type]}</span>
+                <span style={{ fontFamily: styles.mono, fontSize: '10px', color: styles.textTertiary }}>{c.reference_number} · {({rfi:'REQUEST FOR INFORMATION', deficiency:'DEFICIENCY NOTICE', remediation:'REMEDIATION GUIDANCE', general:'GENERAL', response:'RESPONSE'})[c.type]}</span>
                 <span style={{ fontFamily: styles.mono, fontSize: '10px', color: styles.textDim }}>{c.sent_at ? new Date(c.sent_at).toLocaleDateString() : ''}</span>
               </div>
               <p style={{ fontSize: '13px', fontWeight: 500, color: styles.textPrimary, margin: '4px 0' }}>{c.subject}</p>
@@ -729,7 +760,6 @@ function ApplicationDetail() {
             <p style={{ fontSize: '12px', color: styles.textDim, fontStyle: 'italic' }}>No formal correspondence sent.</p>
           )}
         </Panel>
-      )}
 
       {/* Comments */}
       <Panel>

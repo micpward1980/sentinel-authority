@@ -76,9 +76,10 @@ function CustomerDashboard() {
 
   const STAGES = [
     { key: 'pending', label: 'Submitted' },
-    { key: 'under_review', label: 'In Review' },
-    { key: 'approved', label: 'Approved' },
-    { key: 'testing', label: 'Testing' },
+    { key: 'approved', label: 'Accepted' },
+    { key: 'observe', label: 'Interlock Deploy' },
+    { key: 'bounded', label: 'Boundaries Review' },
+    { key: 'testing', label: 'CAT-72 Testing' },
     { key: 'conformant', label: 'Conformant' },
   ];
 
@@ -86,12 +87,13 @@ function CustomerDashboard() {
 
   const nextAction = (state) => {
     switch(state) {
-      case 'pending': return 'Awaiting review';
-      case 'under_review': return 'Under evaluation';
-      case 'approved': return 'Preparing CAT-72';
-      case 'testing': return 'Test in progress';
+      case 'pending': return 'Awaiting accept/reject decision';
+      case 'approved': return 'Deploy your ENVELO Interlock';
+      case 'observe': return 'Interlock observing — auto-discovering boundaries';
+      case 'bounded': return 'Review and acknowledge your boundaries';
+      case 'testing': return 'CAT-72 test in progress';
       case 'conformant': return 'Certificate issued';
-      case 'revoked': return 'Suspended';
+      case 'suspended': return 'Non-conformant — contact support';
       default: return 'Pending';
     }
   };
