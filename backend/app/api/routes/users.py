@@ -57,7 +57,7 @@ async def list_users(
     current_user: dict = Depends(require_admin)
 ):
     """List all users (admin only)."""
-    result = await db.execute(select(User).where(User.is_active != False, ~User.email.like("deleted_%")).order_by(User.id.desc()))
+    result = await db.execute(select(User).where(User.is_active != False, ~User.email.like("deleted_%"), ~User.email.like("%@test.com"), ~User.email.like("e2e-%@%"), ~User.email.like("deltest-%@%"), ~User.email.like("dep-%@%"), ~User.email.like("diag-%@%"), ~User.email.like("stress-%@%")).order_by(User.id.desc()))
     users = result.scalars().all()
     return [
         UserResponse(
@@ -384,7 +384,20 @@ async def purge_test_users(
             or_(
                 User.email.like("deleted_%"),
                 User.email.like("validator_%@test.sentinelauthority.org"),
-                User.full_name == "Pipeline Validator"
+                User.email.like("%@test.com"),
+                User.email.like("e2e-%@%"),
+                User.email.like("deltest-%@%"),
+                User.email.like("dep-%@%"),
+                User.email.like("diag-%@%"),
+                User.email.like("stress-%@%"),
+                User.email.like("e2e-test-%@%"),
+                User.full_name == "Pipeline Validator",
+                User.full_name == "Stress Test",
+                User.full_name == "Diag Test",
+                User.full_name == "E2E Test",
+                User.full_name == "Delete Test",
+                User.full_name == "Dep",
+                User.full_name == "E2E Test Applicant",
             )
         )
     )
