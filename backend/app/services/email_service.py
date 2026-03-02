@@ -756,3 +756,91 @@ async def send_first_interlock(to: str, system_name: str, test_id: str, violatio
       </p>
     </div>"""
     await send_email(to, f"⬡ Interlock Activated — {system_name}", html)
+
+
+async def notify_customer_degraded(to: str, system_name: str, org_name: str, score: float, block_rate: float, cert_number: str):
+    """Notify customer their system conformance is degrading."""
+    subject = f"⚠ Conformance Alert: {system_name} — Score Degraded"
+    html = f"""
+    <div style="font-family: -apple-system, system-ui, sans-serif; max-width: 600px; margin: 0 auto;">
+      <div style="background: #1D1A3B; padding: 24px; border-radius: 8px 8px 0 0;">
+        <h1 style="color: #fff; margin: 0; font-size: 18px;">Sentinel Authority</h1>
+        <p style="color: #A89EC9; margin: 4px 0 0; font-size: 12px;">Conformance Surveillance</p>
+      </div>
+      <div style="padding: 24px; border: 1px solid #e5e5e5; border-top: none; border-radius: 0 0 8px 8px;">
+        <div style="background: #FFF3CD; border: 1px solid #FFEAA7; border-radius: 6px; padding: 16px; margin-bottom: 20px;">
+          <h2 style="color: #856404; margin: 0 0 8px; font-size: 16px;">⚠ System Degraded</h2>
+          <p style="color: #856404; margin: 0; font-size: 14px;">Your system <strong>{system_name}</strong> is operating outside normal parameters.</p>
+        </div>
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+          <tr><td style="padding: 8px 0; color: #666; font-size: 13px;">System</td><td style="padding: 8px 0; font-weight: 600;">{system_name}</td></tr>
+          <tr><td style="padding: 8px 0; color: #666; font-size: 13px;">Organization</td><td style="padding: 8px 0;">{org_name}</td></tr>
+          <tr><td style="padding: 8px 0; color: #666; font-size: 13px;">Certificate</td><td style="padding: 8px 0; font-family: monospace;">{cert_number}</td></tr>
+          <tr><td style="padding: 8px 0; color: #666; font-size: 13px;">Conformance Score</td><td style="padding: 8px 0; color: #E67E22; font-weight: 700;">{score:.1f} / 100</td></tr>
+          <tr><td style="padding: 8px 0; color: #666; font-size: 13px;">Block Rate</td><td style="padding: 8px 0; color: #E67E22; font-weight: 700;">{block_rate:.2%}</td></tr>
+        </table>
+        <h3 style="font-size: 14px; margin: 16px 0 8px;">What This Means</h3>
+        <p style="font-size: 13px; line-height: 1.6; color: #333;">Your ENVELO Interlock is blocking actions more frequently than expected. This means your system is attempting operations outside its certified boundaries. Your certificate remains valid, but continued degradation may result in non-conformance.</p>
+        <h3 style="font-size: 14px; margin: 16px 0 8px;">What To Do</h3>
+        <p style="font-size: 13px; line-height: 1.6; color: #333;">1. Review your system's recent operations for any changes in operating conditions.<br>2. Check your boundaries in the <a href="https://app.sentinelauthority.org">Sentinel Authority Portal</a>.<br>3. If you believe the boundaries need updating, use the correspondence form on your application to request an extended observation period.</p>
+        <p style="font-size: 11px; color: #999; margin-top: 24px;">This is an automated notification from Sentinel Authority Conformance Surveillance.</p>
+      </div>
+    </div>"""
+    await send_email(to, subject, html)
+
+
+async def notify_customer_non_conformant(to: str, system_name: str, org_name: str, cert_number: str, reason: str):
+    """Notify customer their certificate has been suspended for non-conformance."""
+    subject = f"🔴 Certificate Suspended: {system_name} — Non-Conformant"
+    html = f"""
+    <div style="font-family: -apple-system, system-ui, sans-serif; max-width: 600px; margin: 0 auto;">
+      <div style="background: #1D1A3B; padding: 24px; border-radius: 8px 8px 0 0;">
+        <h1 style="color: #fff; margin: 0; font-size: 18px;">Sentinel Authority</h1>
+        <p style="color: #A89EC9; margin: 4px 0 0; font-size: 12px;">Conformance Surveillance</p>
+      </div>
+      <div style="padding: 24px; border: 1px solid #e5e5e5; border-top: none; border-radius: 0 0 8px 8px;">
+        <div style="background: #F8D7DA; border: 1px solid #F5C6CB; border-radius: 6px; padding: 16px; margin-bottom: 20px;">
+          <h2 style="color: #721C24; margin: 0 0 8px; font-size: 16px;">🔴 Certificate Suspended</h2>
+          <p style="color: #721C24; margin: 0; font-size: 14px;">Your ODDC certificate for <strong>{system_name}</strong> has been automatically suspended.</p>
+        </div>
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+          <tr><td style="padding: 8px 0; color: #666; font-size: 13px;">System</td><td style="padding: 8px 0; font-weight: 600;">{system_name}</td></tr>
+          <tr><td style="padding: 8px 0; color: #666; font-size: 13px;">Organization</td><td style="padding: 8px 0;">{org_name}</td></tr>
+          <tr><td style="padding: 8px 0; color: #666; font-size: 13px;">Certificate</td><td style="padding: 8px 0; font-family: monospace;">{cert_number}</td></tr>
+          <tr><td style="padding: 8px 0; color: #666; font-size: 13px;">Reason</td><td style="padding: 8px 0; color: #C0392B; font-weight: 700;">{reason}</td></tr>
+        </table>
+        <h3 style="font-size: 14px; margin: 16px 0 8px;">What This Means</h3>
+        <p style="font-size: 13px; line-height: 1.6; color: #333;">Your system's ENVELO Interlock enforcement data shows it is operating outside its certified Operational Design Domain. The certificate has been suspended and your system is no longer ODDC conformant.</p>
+        <h3 style="font-size: 14px; margin: 16px 0 8px;">Next Steps</h3>
+        <p style="font-size: 13px; line-height: 1.6; color: #333;">1. Immediately review your system's operating conditions.<br>2. Log in to the <a href="https://app.sentinelauthority.org">Sentinel Authority Portal</a> to view detailed conformance data.<br>3. Contact <a href="mailto:conformance@sentinelauthority.org">conformance@sentinelauthority.org</a> to begin the remediation process.<br>4. Reinstatement requires demonstrating your system can operate within its certified boundaries.</p>
+        <p style="font-size: 11px; color: #999; margin-top: 24px;">This is an automated notification from Sentinel Authority Conformance Surveillance.</p>
+      </div>
+    </div>"""
+    await send_email(to, subject, html)
+
+
+async def notify_customer_critical(to: str, system_name: str, org_name: str, cert_number: str, block_rate: float):
+    """Notify customer their system is approaching non-conformance."""
+    subject = f"🟠 Critical Alert: {system_name} — Approaching Non-Conformance"
+    html = f"""
+    <div style="font-family: -apple-system, system-ui, sans-serif; max-width: 600px; margin: 0 auto;">
+      <div style="background: #1D1A3B; padding: 24px; border-radius: 8px 8px 0 0;">
+        <h1 style="color: #fff; margin: 0; font-size: 18px;">Sentinel Authority</h1>
+        <p style="color: #A89EC9; margin: 4px 0 0; font-size: 12px;">Conformance Surveillance</p>
+      </div>
+      <div style="padding: 24px; border: 1px solid #e5e5e5; border-top: none; border-radius: 0 0 8px 8px;">
+        <div style="background: #FFE0B2; border: 1px solid #FFB74D; border-radius: 6px; padding: 16px; margin-bottom: 20px;">
+          <h2 style="color: #E65100; margin: 0 0 8px; font-size: 16px;">🟠 Approaching Non-Conformance</h2>
+          <p style="color: #E65100; margin: 0; font-size: 14px;"><strong>{system_name}</strong> is at critical violation levels. Immediate action recommended.</p>
+        </div>
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+          <tr><td style="padding: 8px 0; color: #666; font-size: 13px;">System</td><td style="padding: 8px 0; font-weight: 600;">{system_name}</td></tr>
+          <tr><td style="padding: 8px 0; color: #666; font-size: 13px;">Certificate</td><td style="padding: 8px 0; font-family: monospace;">{cert_number}</td></tr>
+          <tr><td style="padding: 8px 0; color: #666; font-size: 13px;">Block Rate</td><td style="padding: 8px 0; color: #E65100; font-weight: 700;">{block_rate:.2%}</td></tr>
+          <tr><td style="padding: 8px 0; color: #666; font-size: 13px;">Suspend Threshold</td><td style="padding: 8px 0; font-family: monospace;">10%</td></tr>
+        </table>
+        <p style="font-size: 13px; line-height: 1.6; color: #333;">If the block rate reaches 10%, your certificate will be automatically suspended. Take immediate steps to bring your system within its certified boundaries.</p>
+        <p style="font-size: 11px; color: #999; margin-top: 24px;">This is an automated notification from Sentinel Authority Conformance Surveillance.</p>
+      </div>
+    </div>"""
+    await send_email(to, subject, html)

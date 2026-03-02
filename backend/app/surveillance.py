@@ -441,6 +441,16 @@ async def _surveillance_scan(get_db_session):
                     await _suspend_certificate_in_db(cert_id, get_db_session,
                         reason=f"Surveillance auto-suspend: no heartbeat for {int(staleness)}s")
                     score.status = "suspended"
+                    # Email customer
+                    try:
+                        from app.services.email_service import notify_customer_non_conformant
+                        customer_email = await _get_customer_email(cert_id, get_db_session)
+                        system_name = score.system_name or cert_id
+                        org_name = score.org_name or ""
+                        if customer_email:
+                            await notify_customer_non_conformant(customer_email, system_name, org_name, cert_id, f"No heartbeat for {int(staleness)} seconds")
+                    except Exception as e:
+                        print(f"[SURVEILLANCE] Failed to email customer on suspend: {e}")
 
             elif staleness > _config.HEARTBEAT_OFFLINE_SECONDS:
                 _state._fire_alert(
@@ -481,6 +491,16 @@ async def _surveillance_scan(get_db_session):
                     await _suspend_certificate_in_db(cert_id, get_db_session,
                         reason=f"Surveillance auto-suspend: block rate {block_rate:.1%}")
                     score.status = "suspended"
+                    # Email customer
+                    try:
+                        from app.services.email_service import notify_customer_non_conformant
+                        customer_email = await _get_customer_email(cert_id, get_db_session)
+                        system_name = score.system_name or cert_id
+                        org_name = score.org_name or ""
+                        if customer_email:
+                            await notify_customer_non_conformant(customer_email, system_name, org_name, cert_id, f"Block rate {block_rate:.1%} exceeds threshold")
+                    except Exception as e:
+                        print(f"[SURVEILLANCE] Failed to email customer on suspend: {e}")
 
             elif block_rate >= _config.VIOLATION_CRITICAL_RATE:
                 _state._fire_alert(
@@ -510,6 +530,44 @@ async def _surveillance_scan(get_db_session):
                 details={"score": new_score, "block_rate": score.block_rate},
                 dedup_minutes=15,
             )
+            # Email customer
+            try:
+                from app.services.email_service import notify_customer_degraded
+                customer_email = await _get_customer_email(cert_id, get_db_session)
+                system_name = score.system_name or cert_id
+                org_name = score.org_name or ""
+                if customer_email:
+                    await notify_customer_degraded(customer_email, system_name, org_name, new_score, score.block_rate, cert_id)
+            except Exception as e:
+                print(f"[SURVEILLANCE] Failed to email customer on degradation: {e}")
+
+
+async def _get_customer_email(certificate_id: str, get_db_session) -> str:
+    """Look up the customer email for a certificate."""
+    try:
+        async with get_db_session() as db:
+            from app.models.models import Certificate, Application, User
+            from sqlalchemy import select
+            result = await db.execute(
+                select(Certificate).where(Certificate.certificate_number == certificate_id)
+            )
+            cert = result.scalar_one_or_none()
+            if not cert or not cert.application_id:
+                return None
+            app_result = await db.execute(
+                select(Application).where(Application.id == cert.application_id)
+            )
+            app = app_result.scalar_one_or_none()
+            if not app or not app.applicant_id:
+                return None
+            user_result = await db.execute(
+                select(User).where(User.id == app.applicant_id)
+            )
+            user = user_result.scalar_one_or_none()
+            return user.email if user else None
+    except Exception as e:
+        print(f"[SURVEILLANCE] Failed to look up customer email: {e}")
+        return None
 
 
 async def _suspend_certificate_in_db(certificate_id: str, get_db_session, reason: str = ""):
