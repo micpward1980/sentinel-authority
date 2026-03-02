@@ -399,6 +399,7 @@ function EnveloAdminView() {
   const underReview = applications.filter(a => a.state === 'under_review');
   const approved    = applications.filter(a => a.state === 'approved');   // key sent, waiting for interlock
   const testing     = applications.filter(a => a.state === 'testing');    // CAT-72 running
+  const failed      = applications.filter(a => a.state === 'failed' || a.state === 'test_failed');
   const conformant  = certificates.filter(c => c.state === 'conformant' || c.state === 'active' || c.state === 'issued');
 
   // Check which approved apps have an active interlock session
@@ -473,6 +474,7 @@ function EnveloAdminView() {
           { label: 'Awaiting Review', value: needsAttention,          color: needsAttention > 0 ? styles.accentAmber : styles.textTertiary },
           { label: 'Approved / Deploying', value: approved.length,    color: styles.purpleBright },
           { label: 'CAT-72 Running',   value: testing.length,         color: styles.accentAmber },
+          { label: 'Failed',           value: failed.length,          color: styles.accentRed },
           { label: 'Live Interlocks',  value: activeSessions.length,  color: styles.accentGreen },
           { label: 'Certified Systems',value: conformant.length,      color: styles.purpleBright },
           { label: 'Total Violations', value: totalViolations,        color: totalViolations > 0 ? styles.accentRed : styles.accentGreen },

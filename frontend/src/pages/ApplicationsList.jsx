@@ -51,11 +51,16 @@ function daysAgo(iso) {
 
 const NEW_APPS = ['pending'];
 const UNDER_REVIEW = ['under_review'];
+const APPROVED = ['approved', 'observe'];
+const BOUNDARIES = ['bounded'];
 const REJECTED = ['rejected', 'suspended'];
 
+
 const TABS = [
-  { key: 'new',       label: 'New',          states: NEW_APPS,     icon: AlertTriangle, color: styles.accentAmber },
-  { key: 'review',    label: 'Under Review', states: UNDER_REVIEW, icon: Clock,         color: styles.purpleBright },
+  { key: 'new',       label: 'New',          states: NEW_APPS,     icon: FileText,      color: styles.accentGreen },
+  { key: 'review',    label: 'Under Review', states: UNDER_REVIEW, icon: Clock,         color: styles.accentAmber },
+  { key: 'approved',  label: 'Approved',     states: APPROVED,     icon: CheckCircle,   color: styles.accentGreen },
+  { key: 'boundaries', label: 'Boundaries Review', states: BOUNDARIES, icon: AlertTriangle, color: styles.purpleBright },
   { key: 'rejected',  label: 'Rejected',     states: REJECTED,     icon: AlertTriangle, color: styles.accentRed },
   { key: 'all',       label: 'All',          states: null,         icon: null,          color: styles.textTertiary },
 ];
@@ -97,7 +102,8 @@ function ApplicationsList() {
     keepPreviousData: true,
   });
 
-  const allApps = data?.applications ?? data ?? [];
+  const CAT72_STATES = ['testing', 'failed', 'test_failed', 'conformant'];
+  const allApps = (data?.applications ?? data ?? []).filter(a => !CAT72_STATES.includes(a.state));
   const stateCounts = data?.state_counts ?? {};
   const isAdmin = user?.role === 'admin';
 
@@ -111,6 +117,8 @@ function ApplicationsList() {
   const tabCounts = {
     new: allApps.filter(a => NEW_APPS.includes(a.state)).length,
     review: allApps.filter(a => UNDER_REVIEW.includes(a.state)).length,
+    approved: allApps.filter(a => APPROVED.includes(a.state)).length,
+    boundaries: allApps.filter(a => BOUNDARIES.includes(a.state)).length,
     rejected: allApps.filter(a => REJECTED.includes(a.state)).length,
     all: allApps.length,
   };
