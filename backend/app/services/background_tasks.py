@@ -501,21 +501,14 @@ async def demo_session_ticker():
     from app.core.database import AsyncSessionLocal
     from app.models.models import EnveloSession
 
-    DEMO_IDS = [
-        '88dd4e8c18cc46d6b71c0440a99b71cd',
-        '316e05b066474399bc085497da10cf5d',
-        '32af8699f65e45a189a0f1163125d73c',
-        '4f9a9ea698dc4fe59f12b97d3d48d692',
-        '26346890eef9442ca4c868a40afda40f',
-        '78700dbda0ed4573b47ede666850b253',
-        '81c7db2674ad4727ac9b8aba99bc5b07',
-    ]
-
     while True:
         try:
             async with AsyncSessionLocal() as db:
                 result = await db.execute(
-                    select(EnveloSession).where(EnveloSession.session_id.in_(DEMO_IDS))
+                    select(EnveloSession).where(
+                        EnveloSession.is_demo == True,
+                        EnveloSession.status == "active"
+                    )
                 )
                 sessions = result.scalars().all()
                 for s in sessions:
