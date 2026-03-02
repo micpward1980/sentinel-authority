@@ -12,6 +12,7 @@ import SectionHeader from '../components/SectionHeader';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { useConfirm } from '../context/ConfirmContext';
+import Pagination from '../components/Pagination';
 
 // ── Design tokens ──────────────────────────────────────────────────────────────
 const SB_BG     = '#f5f5f7';
@@ -574,6 +575,7 @@ function APIKeysPanel({ toast }) {
                 {keys.map(k => <ApiKeyRow key={k.id} k={k} onDelete={deleteKey} toast={toast} />)}
               </tbody>
             </table>
+            <Pagination total={auditTotal} limit={AUDIT_LIMIT} offset={auditOffset} onChange={setAuditOffset} />
           </div>
         )}
       </WsCard>
@@ -694,6 +696,7 @@ function AuditLogPanel({ toast }) {
                 ))}
               </tbody>
             </table>
+            <Pagination total={auditTotal} limit={AUDIT_LIMIT} offset={auditOffset} onChange={setAuditOffset} />
           </div>
         )}
       </WsCard>
