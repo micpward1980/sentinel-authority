@@ -10,6 +10,7 @@ import { useToast } from '../context/ToastContext';
 import Panel from '../components/Panel';
 import CopyableId from '../components/CopyableId';
 import ExportBundle from '../components/ExportBundle';
+import { formatSystemType } from '../utils/formatSystemType';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -545,7 +546,7 @@ function ApplicationDetail() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
           <div>
             <p style={{ color: styles.textTertiary, fontSize: '11px', fontFamily: styles.mono, marginBottom: '4px' }}>TYPE</p>
-            <p style={{ color: styles.textPrimary, margin: 0 }}>{app.system_type || '—'}</p>
+            <p style={{ color: styles.textPrimary, margin: 0 }}>{formatSystemType(app.system_type)}</p>
           </div>
           <div>
             <p style={{ color: styles.textTertiary, fontSize: '11px', fontFamily: styles.mono, marginBottom: '4px' }}>VERSION</p>

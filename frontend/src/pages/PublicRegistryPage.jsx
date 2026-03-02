@@ -3,6 +3,7 @@ import { Search, Shield, CheckCircle, XCircle, Clock, ExternalLink, ChevronRight
 import { api, API_BASE } from '../config/api';
 import { styles } from '../config/styles';
 import BrandMark from '../components/BrandMark';
+import { formatSystemType } from '../utils/formatSystemType';
 
 // ─── Design tokens for public portal ────────────────────────────────────────
 const T = {
@@ -140,7 +141,7 @@ function CertDetail({ cert, onClose }) {
           {[
             ['System', cert.system_name],
             ['Organization', cert.organization_name],
-            ['System Type', cert.system_type],
+            ['System Type', formatSystemType(cert.system_type)],
             ['Version', cert.system_version],
             ['Issued', cert.issued_at ? new Date(cert.issued_at).toISOString().slice(0, 10) : '—'],
             ['Expires', cert.expires_at ? new Date(cert.expires_at).toISOString().slice(0, 10) : '—'],

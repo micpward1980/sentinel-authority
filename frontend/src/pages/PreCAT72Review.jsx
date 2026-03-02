@@ -16,6 +16,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { formatSystemType } from '../utils/formatSystemType';
 
 // ─── Palette — matches dashboard styles.js ──────────────────────────────────
 const S = {
@@ -56,7 +57,7 @@ const CONTROLS = [
 
 APPLICATION:
 System Name: ${app.system_name || "Unknown"}
-System Type: ${app.system_type || "Not declared"}
+System Type: ${formatSystemType(app.system_type)}
 ENVELO Boundaries: ${JSON.stringify(app.envelope_definition || app.odd_specification || "Interlock auto-configured")}
 Enforcement Settings: ${JSON.stringify(app.enforcement_settings || "Auto-configured by Interlock")}
 
@@ -91,7 +92,7 @@ Respond in this exact JSON format:
 
 APPLICATION:
 System Name: ${app.system_name || "Unknown"}
-System Type: ${app.system_type || "Not declared"}
+System Type: ${formatSystemType(app.system_type)}
 Fail Mode Configuration: ${JSON.stringify(app.envelope_definition?.fail_closed !== undefined ? (app.envelope_definition.fail_closed ? "Fail Closed (Block)" : "Fail Open") : "Interlock configured")}
 On Violation Setting: ${JSON.stringify(app.envelope_definition?.safe_state?.action || "stop")}
 Notes: ${app.notes || "None"}
@@ -195,7 +196,7 @@ Respond in this exact JSON format:
 
 APPLICATION:
 System Name: ${app.system_name || "Unknown"}
-System Type: ${app.system_type || "Not declared"}
+System Type: ${formatSystemType(app.system_type)}
 Interlock Boundaries: ${JSON.stringify(app.envelope_definition || app.enforcement_thresholds || "Interlock auto-configured")}
 Telemetry Interval: ${app.envelope_definition?.telemetry_interval || "Default"}
 
@@ -230,7 +231,7 @@ Respond in this exact JSON format:
 
 APPLICATION:
 System Name: ${app.system_name || "Unknown"}
-System Type: ${app.system_type || "Not declared"}
+System Type: ${formatSystemType(app.system_type)}
 Decision Architecture: ${app.decision_architecture || app.architecture || "Not provided"}
 Enforcement Scope Declaration: ${app.enforcement_scope || "Not declared"}
 ODD Specification: ${JSON.stringify(app.odd_specification || "Not provided")}
@@ -670,7 +671,7 @@ export default function PreCAT72Review() {
         }}>
           {[
             ["System", app.system_name],
-            ["Type", app.system_type || "—"],
+            ["Type", formatSystemType(app.system_type)],
             ["Applicant", app.company_name || app.applicant_name || "—"],
             ["Status", app.state?.toUpperCase() || "—"],
           ].map(([label, value]) => (

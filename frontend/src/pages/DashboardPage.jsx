@@ -9,6 +9,7 @@ import { useConfirm } from '../context/ConfirmContext';
 import Panel from '../components/Panel';
 import StatCard from '../components/StatCard';
 import EmptyState from '../components/EmptyState';
+import { formatSystemType } from '../utils/formatSystemType';
 
 /* ── Shared helpers ───────────────────────────────────────────────────────── */
 
@@ -178,7 +179,7 @@ function CustomerDashboard() {
                     <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '16px'}}>
                       <div>
                         <div style={{fontWeight: 500, color: styles.textPrimary, fontSize: '15px', marginBottom: '4px'}}>{app.system_name}</div>
-                        <div style={{fontSize: '11px', color: styles.textTertiary, fontFamily: styles.mono}}>{app.application_number} · {app.system_type?.replace(/_/g, ' ')}</div>
+                        <div style={{fontSize: '11px', color: styles.textTertiary, fontFamily: styles.mono}}>{app.application_number} · {formatSystemType(app.system_type)}</div>
                       </div>
                       <div style={{display: 'flex', alignItems: 'center', gap: '12px'}}>
                         <span style={{fontSize: '12px', color: styles.textTertiary}}>{nextAction(app.state)}</span>
@@ -602,7 +603,7 @@ function Dashboard() {
                     <div style={{display: 'flex', alignItems: 'center', gap: '12px', marginTop: '4px'}}>
                       <span style={{fontFamily: styles.mono, fontSize: '10px', color: stateColor(app.state), letterSpacing: '1px', textTransform: 'uppercase'}}>{app.state?.replace('_', ' ')}</span>
                       <span style={{fontFamily: styles.mono, fontSize: '10px', color: isStale ? styles.accentAmber : styles.textDim}}>{daysWaiting === 0 ? 'today' : daysWaiting + 'd ago'}</span>
-                      <span style={{fontFamily: styles.mono, fontSize: '10px', color: styles.textDim}}>{app.system_type?.replace(/_/g, ' ')}</span>
+                      <span style={{fontFamily: styles.mono, fontSize: '10px', color: styles.textDim}}>{formatSystemType(app.system_type)}</span>
                     </div>
                   </div>
                   <div style={{display: 'flex', gap: '8px'}} onClick={e => e.stopPropagation()}>
