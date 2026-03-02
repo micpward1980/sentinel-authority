@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 import { Shield, AlertTriangle, RefreshCw, CheckCircle, XCircle, Activity, Clock } from 'lucide-react';
 import { api } from '../config/api';
 import { useToast } from '../context/ToastContext';
@@ -81,6 +82,7 @@ export default function SurveillancePage() {
   
   
   const qc = useQueryClient();
+  const navigate = useNavigate();
   const toast = useToast();
   const confirm = useConfirm();
 
@@ -208,7 +210,7 @@ export default function SurveillancePage() {
         : (
           <div style={{ maxHeight: 400, overflowY: 'auto' }}>
             {filteredAlerts.slice().reverse().map((a, i) => (
-              <div key={a.id || i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '10px 0', borderBottom: '1px solid ' + styles.textDim + '11', opacity: 1 }}>
+              <div key={a.id || i} onClick={() => { const cert = (certsData || []).find(c => c.certificate_number === a.certificate_id); if (cert?.application_id) navigate(`/applications/${cert.application_id}`); else navigate('/certificates'); }} style={{ cursor: 'pointer', display: 'flex', alignItems: 'flex-start', gap: 10, padding: '10px 0', borderBottom: '1px solid ' + styles.textDim + '11', opacity: 1 }}>
                 <div style={{ width: 4, minHeight: 32, borderRadius: 2, flexShrink: 0, marginTop: 2, background: severityColor(a.severity) }} />
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 3 }}>
