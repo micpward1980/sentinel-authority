@@ -292,6 +292,41 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.warning(f"Demo ticker failed to start: {e}")
 
+
+    # Backfill system_type for legacy apps
+    try:
+        from app.core.database import AsyncSessionLocal
+        from app.models.models import Application
+        from sqlalchemy import select
+        async with AsyncSessionLocal() as db:
+            result = await db.execute(select(Application).where(Application.system_type == None))
+            apps = result.scalars().all()
+            type_map = {
+                'nav': 'autonomous_vehicle', 'fleet': 'autonomous_vehicle', 'vehicle': 'autonomous_vehicle',
+                'drone': 'commercial_delivery_drone', 'aerial': 'commercial_delivery_drone', 'cargo': 'commercial_delivery_drone',
+                'sea': 'autonomous_cargo_vessel', 'marine': 'autonomous_cargo_vessel', 'patrol': 'autonomous_cargo_vessel',
+                'harvest': 'precision_agriculture_drone', 'agri': 'precision_agriculture_drone', 'farm': 'precision_agriculture_drone',
+                'pack': 'warehouse_amr_indoor', 'sort': 'warehouse_amr_indoor', 'warehouse': 'warehouse_amr_indoor',
+                'dock': 'port_cargo_handler', 'port': 'port_cargo_handler',
+                'robot': 'warehouse_amr_indoor', 'bot': 'warehouse_amr_indoor',
+                'surg': 'surgical_robot', 'medical': 'surgical_robot',
+                'trad': 'algorithmic_trading_system', 'financial': 'algorithmic_trading_system',
+            }
+            for app in apps:
+                name_lower = (app.system_name or '').lower()
+                matched = 'custom_system'
+                for keyword, sys_type in type_map.items():
+                    if keyword in name_lower:
+                        matched = sys_type
+                        break
+                app.system_type = matched
+                logger.info(f"Backfilled system_type for {app.system_name}: {matched}")
+            await db.commit()
+            if apps:
+                logger.info(f"Backfilled system_type for {len(apps)} applications")
+    except Exception as e:
+        logger.warning(f"System type backfill failed: {e}")
+
     try:
         from app.services.background_tasks import cat72_auto_evaluator
         asyncio.create_task(cat72_auto_evaluator())
