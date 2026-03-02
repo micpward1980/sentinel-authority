@@ -1654,3 +1654,26 @@ async def check_and_notify_violations(session: EnveloSession, api_key: APIKey, d
         print(f"[ENVELO] Sent violation alert for {org_name} - {system_name}")
     except Exception as e:
         print(f"[ENVELO] Failed to send violation alert: {e}")
+
+
+@router.post("/admin/sessions/refresh-heartbeats", summary="Admin: refresh all active session heartbeats to now")
+async def refresh_heartbeats(
+    db: AsyncSession = Depends(get_db),
+    current_user = Depends(get_current_user)
+):
+    """Bump all active session heartbeats to current time — for demo/testing"""
+    if current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Admin only")
+    now = datetime.utcnow()
+    result = await db.execute(
+        select(EnveloSession).where(EnveloSession.status == "active")
+    )
+    sessions = result.scalars().all()
+    count = 0
+    for s in sessions:
+        s.last_heartbeat_at = now
+        s.last_telemetry_at = now
+        s.offline_reason = None
+        count += 1
+    await db.commit()
+    return {"refreshed": count, "timestamp": now.isoformat()}
