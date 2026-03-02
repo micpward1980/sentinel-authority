@@ -685,8 +685,8 @@ function AuditLogPanel({ toast }) {
                         {(ev.event_type || 'EVENT').replace(/_/g, ' ')}
                       </span>
                     </td>
-                    <td style={{ padding: '11px 14px', fontFamily: styles.mono, fontSize: 11, color: styles.textTertiary }}>{ev.ip_address || '—'}</td>
-                    <td style={{ padding: '11px 14px', fontSize: 12, color: styles.textSecondary }}>{typeof ev.details === 'object' ? JSON.stringify(ev.details) : (ev.details || '—')}</td>
+                    <td style={{ padding: '11px 14px', fontFamily: styles.mono, fontSize: 11, color: styles.textTertiary }}>{ev.ip_address || (typeof ev.details === 'object' && ev.details?.ip) || '—'}</td>
+                    <td style={{ padding: '11px 14px', fontSize: 12, color: styles.textSecondary }}>{typeof ev.details === 'object' ? [ev.details?.['2fa'] ? '2FA: ' + String(ev.details['2fa']) : '', ev.details?.old_state ? ev.details.old_state + ' → ' + ev.details.new_state : '', ev.details?.system_name || ''].filter(Boolean).join(' · ') || '—' : (ev.details || '—')}</td>
                   </tr>
                 ))}
               </tbody>
