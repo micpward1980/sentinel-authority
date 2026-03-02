@@ -218,6 +218,8 @@ async def get_application(
         "preferred_test_date": app.preferred_test_date.isoformat() + "Z" if app.preferred_test_date else None,
         "facility_location": app.facility_location,
         "notes": app.notes,
+        "boundaries_acknowledged": app.boundaries_acknowledged or False,
+        "boundaries_acknowledged_at": app.boundaries_acknowledged_at.isoformat() + "Z" if app.boundaries_acknowledged_at else None,
     }
 
 
