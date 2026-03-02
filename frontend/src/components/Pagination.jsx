@@ -14,17 +14,18 @@ export default function Pagination({ total, limit, offset, onChange }) {
   };
 
   const btn = (active, disabled) => ({
-    padding: '6px 12px', fontSize: '13px', borderRadius: 6, cursor: disabled ? 'not-allowed' : 'pointer',
-    border: `1px solid ${styles.borderGlass}`, fontFamily: 'inherit', transition: 'all 0.15s',
-    background: active ? styles.accentBlue || '#3b82f6' : disabled ? 'transparent' : styles.cardSurface,
-    color: active ? '#fff' : disabled ? styles.textTertiary : styles.textPrimary,
+    padding: '6px 12px', fontSize: '11px', cursor: disabled ? 'not-allowed' : 'pointer',
+    border: '1px solid ' + styles.borderGlass, fontFamily: styles.mono,
+    letterSpacing: '0.5px', transition: 'all 0.15s',
+    background: active ? styles.purplePrimary : disabled ? 'transparent' : styles.cardSurface,
+    color: active ? '#fff' : disabled ? styles.textDim : styles.textPrimary,
     opacity: disabled ? 0.5 : 1,
   });
 
   return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 0', flexWrap: 'wrap', gap: 16 }}>
-      <span style={{ fontSize: '13px', color: styles.textTertiary }}>
-        Showing {Math.min(offset+1, total)}–{Math.min(offset+limit, total)} of {total.toLocaleString()}
+      <span style={{ fontSize: '12px', color: styles.textTertiary, fontFamily: styles.mono }}>
+        {Math.min(offset+1, total)}–{Math.min(offset+limit, total)} of {total.toLocaleString()}
       </span>
       <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
         <button onClick={() => onChange(Math.max(0, offset-limit))} disabled={offset===0} style={btn(false, offset===0)}>← Prev</button>

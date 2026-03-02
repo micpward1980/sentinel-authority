@@ -71,7 +71,7 @@ async def send_application_received(to: str, app_name: str, app_id: int):
     """Send application received notification"""
     html = f"""
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <div style="background: #5B4B8A; padding: 20px; text-align: center;">
+        <div style="background: #1d1a3b; padding: 20px; text-align: center;">
             <h1 style="color: white; margin: 0;">SENTINEL AUTHORITY</h1>
         </div>
         <div style="padding: 30px; background: #f9f9f9;">
@@ -97,7 +97,7 @@ async def send_test_scheduled(to: str, app_name: str, test_start: str):
     """Send test scheduled notification"""
     html = f"""
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <div style="background: #5B4B8A; padding: 20px; text-align: center;">
+        <div style="background: #1d1a3b; padding: 20px; text-align: center;">
             <h1 style="color: white; margin: 0;">SENTINEL AUTHORITY</h1>
         </div>
         <div style="padding: 30px; background: #f9f9f9;">
@@ -105,7 +105,7 @@ async def send_test_scheduled(to: str, app_name: str, test_start: str):
             <p>Your CAT-72 conformance test has been scheduled.</p>
             <p><strong>System:</strong> {app_name}<br>
             <strong>Test Start:</strong> {test_start}</p>
-            <h3 style="color: #5B4B8A;">Before the test begins:</h3>
+            <h3 style="color: #1d1a3b;">Before the test begins:</h3>
             <ol>
                 <li>Install the ENVELO Agent in your system</li>
                 <li>Configure your API key and certificate ID</li>
@@ -126,7 +126,7 @@ async def send_test_started(to: str, app_name: str, test_id: str):
     """Send test started notification"""
     html = f"""
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <div style="background: #5B4B8A; padding: 20px; text-align: center;">
+        <div style="background: #1d1a3b; padding: 20px; text-align: center;">
             <h1 style="color: white; margin: 0;">SENTINEL AUTHORITY</h1>
         </div>
         <div style="padding: 30px; background: #f9f9f9;">
@@ -151,7 +151,7 @@ async def send_certificate_issued(to: str, app_name: str, cert_number: str, expi
     """Send certificate issued notification"""
     html = f"""
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <div style="background: #5B4B8A; padding: 20px; text-align: center;">
+        <div style="background: #1d1a3b; padding: 20px; text-align: center;">
             <h1 style="color: white; margin: 0;">SENTINEL AUTHORITY</h1>
         </div>
         <div style="padding: 30px; background: #f9f9f9;">
@@ -163,7 +163,7 @@ async def send_certificate_issued(to: str, app_name: str, cert_number: str, expi
             <p>Your certificate is available for download in your dashboard.</p>
             <div style="text-align: center; margin: 30px 0;">
                 <a href="https://app.sentinelauthority.org/certificates" 
-                   style="background: #5B4B8A; color: white; padding: 12px 30px; 
+                   style="background: #1d1a3b; color: white; padding: 12px 30px; 
                           text-decoration: none; border-radius: 6px; font-weight: bold;">
                     View Certificate
                 </a>
@@ -183,7 +183,7 @@ async def send_test_failed(to: str, app_name: str, reason: str, pass_rate: float
     """Send test failed notification"""
     html = f"""
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <div style="background: #5B4B8A; padding: 20px; text-align: center;">
+        <div style="background: #1d1a3b; padding: 20px; text-align: center;">
             <h1 style="color: white; margin: 0;">SENTINEL AUTHORITY</h1>
         </div>
         <div style="padding: 30px; background: #f9f9f9;">
@@ -211,7 +211,7 @@ async def notify_admin_new_registration(email: str, name: str = None):
     """Notify admin of new user registration"""
     html = f"""
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <div style="background: #5B4B8A; padding: 20px; text-align: center;">
+        <div style="background: #1d1a3b; padding: 20px; text-align: center;">
             <h1 style="color: white; margin: 0;">SENTINEL AUTHORITY</h1>
         </div>
         <div style="padding: 30px; background: #f9f9f9;">
@@ -219,7 +219,7 @@ async def notify_admin_new_registration(email: str, name: str = None):
             <p>A new user has registered and is <strong>awaiting your approval</strong>:</p>
             <p><strong>Email:</strong> {email}<br>
             <strong>Name:</strong> {name or 'Not provided'}</p>
-            <p style="margin-top: 20px;"><a href="https://app.sentinelauthority.org/users" style="background: #5B4B8A; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">Review &amp; Approve</a></p>
+            <p style="margin-top: 20px;"><a href="https://app.sentinelauthority.org/users" style="background: #1d1a3b; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">Review &amp; Approve</a></p>
         </div>
     </div>
     """
@@ -230,7 +230,7 @@ async def notify_admin_new_application(app_name: str, org: str, email: str):
     """Notify admin of new application"""
     html = f"""
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <div style="background: #5B4B8A; padding: 20px; text-align: center;">
+        <div style="background: #1d1a3b; padding: 20px; text-align: center;">
             <h1 style="color: white; margin: 0;">SENTINEL AUTHORITY</h1>
         </div>
         <div style="padding: 30px; background: #f9f9f9;">
@@ -313,7 +313,7 @@ async def notify_certificate_issued(to: str, system_name: str, cert_number: str,
     """Notify applicant that their certificate has been issued"""
     html = f"""
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <div style="background: #5B4B8A; padding: 20px; text-align: center;">
+        <div style="background: #1d1a3b; padding: 20px; text-align: center;">
             <h1 style="color: white; margin: 0;">SENTINEL AUTHORITY</h1>
         </div>
         <div style="padding: 30px; background: #f9f9f9;">
@@ -328,9 +328,9 @@ async def notify_certificate_issued(to: str, system_name: str, cert_number: str,
             
             <p><strong>Next Steps:</strong></p>
             <ul style="line-height: 1.8;">
-                <li>Download your certificate from the <a href="https://app.sentinelauthority.org" style="color: #5B4B8A;">portal</a></li>
+                <li>Download your certificate from the <a href="https://app.sentinelauthority.org" style="color: #1d1a3b;">portal</a></li>
                 <li>Your ENVELO Agent is now authorized for production use</li>
-                <li>Verify your certificate anytime at <a href="https://sentinelauthority.org/verify.html?cert={cert_number}" style="color: #5B4B8A;">sentinelauthority.org/verify</a></li>
+                <li>Verify your certificate anytime at <a href="https://sentinelauthority.org/verify.html?cert={cert_number}" style="color: #1d1a3b;">sentinelauthority.org/verify</a></li>
             </ul>
             
             <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
@@ -354,7 +354,7 @@ async def notify_agent_offline(to: str, system_name: str, session_id: str, org_n
     html = f"""
     <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 20px;">
         <div style="text-align: center; margin-bottom: 32px;">
-            <div style="display: inline-block; width: 40px; height: 40px; background: #5B4B8A; border-radius: 8px; margin-bottom: 16px;"></div>
+            <div style="display: inline-block; width: 40px; height: 40px; background: #1d1a3b; border-radius: 8px; margin-bottom: 16px;"></div>
             <h1 style="font-size: 24px; font-weight: 300; color: #1a1a2e; margin: 0;">Agent Offline Alert</h1>
         </div>
         
@@ -417,7 +417,7 @@ async def notify_high_violation_rate(to: str, system_name: str, org_name: str, b
     html = f"""
     <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 20px;">
         <div style="text-align: center; margin-bottom: 32px;">
-            <div style="display: inline-block; width: 40px; height: 40px; background: #5B4B8A; border-radius: 8px; margin-bottom: 16px;"></div>
+            <div style="display: inline-block; width: 40px; height: 40px; background: #1d1a3b; border-radius: 8px; margin-bottom: 16px;"></div>
             <h1 style="font-size: 24px; font-weight: 300; color: #1a1a2e; margin: 0;">Violation Rate Alert</h1>
         </div>
         
@@ -478,7 +478,7 @@ async def send_provisioned_agent_email(to: str, customer_name: str, system_name:
     
     html = f"""
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #f9f9f9;">
-        <div style="background: linear-gradient(135deg, #5B4B8A 0%, #6B5B9A 100%); padding: 30px; text-align: center;">
+        <div style="background: linear-gradient(135deg, #1d1a3b 0%, #6B5B9A 100%); padding: 30px; text-align: center;">
             <h1 style="color: white; margin: 0; font-size: 24px;">SENTINEL AUTHORITY</h1>
             <p style="color: rgba(255,255,255,0.8); margin: 10px 0 0 0; font-size: 12px; letter-spacing: 2px;">OPERATIONAL DESIGN DOMAIN CONFORMANCE</p>
         </div>
@@ -490,7 +490,7 @@ async def send_provisioned_agent_email(to: str, customer_name: str, system_name:
             
             <p>Your ENVELO enforcement agent has been configured and is ready to deploy. This agent is pre-configured for your system and requires no additional setup.</p>
             
-            <div style="background: #f4f4f8; border-left: 4px solid #5B4B8A; padding: 15px; margin: 20px 0;">
+            <div style="background: #f4f4f8; border-left: 4px solid #1d1a3b; padding: 15px; margin: 20px 0;">
                 <p style="margin: 0 0 10px 0;"><strong>System:</strong> {system_name}</p>
                 <p style="margin: 0;"><strong>Certificate:</strong> {certificate_number}</p>
             </div>
@@ -509,11 +509,11 @@ async def send_provisioned_agent_email(to: str, customer_name: str, system_name:
             </div>
             
             <p>You can monitor your agent status at:<br>
-            <a href="https://app.sentinelauthority.org/envelo" style="color: #5B4B8A;">https://app.sentinelauthority.org/envelo</a></p>
+            <a href="https://app.sentinelauthority.org/envelo" style="color: #1d1a3b;">https://app.sentinelauthority.org/envelo</a></p>
         </div>
         
         <div style="padding: 20px; background: #f4f4f8; text-align: center; font-size: 12px; color: #666;">
-            <p style="margin: 0;">Questions? Contact us at <a href="mailto:support@sentinelauthority.org" style="color: #5B4B8A;">support@sentinelauthority.org</a></p>
+            <p style="margin: 0;">Questions? Contact us at <a href="mailto:support@sentinelauthority.org" style="color: #1d1a3b;">support@sentinelauthority.org</a></p>
             <p style="margin: 10px 0 0 0;">Sentinel Authority • Autonomous System Conformance</p>
         </div>
     </div>
@@ -533,8 +533,8 @@ async def send_password_reset_email(to: str, name: str, token: str):
     
     html = f"""
     <div style="font-family: 'IBM Plex Mono', Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #2a2f3d; color: #fff;">
-        <div style="background: linear-gradient(135deg, #5B4B8A 0%, #7B6BAA 100%); padding: 30px; text-align: center;">
-            <div style="display: inline-block; width: 48px; height: 48px; background: #5B4B8A; border: 2px solid #9d8ccf; border-radius: 12px; margin-bottom: 16px;"></div>
+        <div style="background: linear-gradient(135deg, #1d1a3b 0%, #2d2856 100%); padding: 30px; text-align: center;">
+            <div style="display: inline-block; width: 48px; height: 48px; background: #1d1a3b; border: 2px solid #9d8ccf; border-radius: 12px; margin-bottom: 16px;"></div>
             <h1 style="color: white; margin: 0; font-size: 24px; font-weight: 300;">SENTINEL AUTHORITY</h1>
         </div>
         <div style="padding: 40px 30px;">
@@ -546,7 +546,7 @@ async def send_password_reset_email(to: str, name: str, token: str):
                 We received a request to reset your password. Click the button below to create a new password:
             </p>
             <div style="text-align: center; margin: 32px 0;">
-                <a href="{reset_url}" style="display: inline-block; background: linear-gradient(135deg, #5B4B8A 0%, #7B6BAA 100%); color: #fff; text-decoration: none; padding: 14px 32px; border-radius: 10px; font-size: 12px; letter-spacing: 2px; text-transform: uppercase;">
+                <a href="{reset_url}" style="display: inline-block; background: linear-gradient(135deg, #1d1a3b 0%, #2d2856 100%); color: #fff; text-decoration: none; padding: 14px 32px; border-radius: 10px; font-size: 12px; letter-spacing: 2px; text-transform: uppercase;">
                     Reset Password
                 </a>
             </div>
@@ -632,11 +632,11 @@ async def send_application_under_review(to: str, system_name: str, app_number: s
     """Notify applicant their application is under review"""
     html = f"""
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <div style="background: #5B4B8A; padding: 20px; text-align: center;">
+        <div style="background: #1d1a3b; padding: 20px; text-align: center;">
             <h1 style="color: white; margin: 0;">SENTINEL AUTHORITY</h1>
         </div>
         <div style="padding: 30px; background: #f9f9f9;">
-            <h2 style="color: #5B4B8A;">Application Under Review</h2>
+            <h2 style="color: #1d1a3b;">Application Under Review</h2>
             <p>Your ODDC certification application is now being reviewed by our team.</p>
             <p><strong>System:</strong> {system_name}<br>
             <strong>Application:</strong> {app_number}</p>
@@ -657,7 +657,7 @@ async def send_certificate_expiry_warning(to: str, system_name: str, cert_number
     color = "#D65C5C" if days_remaining <= 7 else "#D6A05C"
     html = f"""
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <div style="background: #5B4B8A; padding: 20px; text-align: center;">
+        <div style="background: #1d1a3b; padding: 20px; text-align: center;">
             <h1 style="color: white; margin: 0;">SENTINEL AUTHORITY</h1>
         </div>
         <div style="padding: 30px; background: #f9f9f9;">
@@ -669,7 +669,7 @@ async def send_certificate_expiry_warning(to: str, system_name: str, cert_number
             <p>To maintain your certification, please contact us to schedule a renewal CAT-72 test.</p>
             <div style="text-align: center; margin: 30px 0;">
                 <a href="https://app.sentinelauthority.org/certificates"
-                   style="background: #5B4B8A; color: white; padding: 12px 30px;
+                   style="background: #1d1a3b; color: white; padding: 12px 30px;
                           text-decoration: none; border-radius: 6px; font-weight: bold;">
                     View Certificate
                 </a>

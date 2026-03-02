@@ -1,239 +1,266 @@
-import React, { useState, useEffect } from 'react';
-import { Settings, Activity, Users, X, CheckCircle, Search, Plus, RefreshCw } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Search, Plus, RefreshCw, X, CheckCircle } from 'lucide-react';
 import { api } from '../config/api';
 import { styles } from '../config/styles';
 import { useConfirm } from '../context/ConfirmContext';
 import { useToast } from '../context/ToastContext';
-import Panel from '../components/Panel';
-import SectionHeader from '../components/SectionHeader';
-import StatCard from '../components/StatCard';
+import Pagination from '../components/Pagination';
+import SortHeader from '../components/SortHeader';
+
+const LIMIT = 25;
+
+const TABS = [
+  { key: 'all', label: 'All' },
+  { key: 'admin', label: 'Admins' },
+  { key: 'applicant', label: 'Applicants' },
+  { key: 'pending', label: 'Pending' },
+];
 
 function UserManagementPage() {
   const confirm = useConfirm();
   const toast = useToast();
   const [users, setUsers] = useState([]);
+  const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [activeFilter, setActiveFilter] = useState(null);
+  const [offset, setOffset] = useState(0);
+  const [sortBy, setSortBy] = useState('created_at');
+  const [sortOrder, setSortOrder] = useState('desc');
   const [search, setSearch] = useState('');
-  const [showInviteModal, setShowInviteModal] = useState(false);
-  const [expandedUserId, setExpandedUserId] = useState(null);
-  const [selectedUser, setSelectedUser] = useState(null);
+  const [searchInput, setSearchInput] = useState('');
+  const [roleFilter, setRoleFilter] = useState('all');
+  const [counts, setCounts] = useState({ all: 0, admin: 0, applicant: 0, pending: 0 });
+  const [expandedId, setExpandedId] = useState(null);
+  const [showInvite, setShowInvite] = useState(false);
   const [inviteForm, setInviteForm] = useState({ email: '', full_name: '', company: '', role: 'applicant' });
   const [inviteLoading, setInviteLoading] = useState(false);
 
-  useEffect(() => { loadUsers(); }, []);
-
-  const loadUsers = async () => {
+  const fetchUsers = useCallback(async () => {
+    setLoading(true);
     try {
-      const res = await api.get('/api/users/');
-      setUsers(res.data || []);
-    } catch (err) {
-      console.log('Users API not available:', err);
-      setUsers([]);
+      const params = new URLSearchParams({
+        limit: LIMIT, offset, sort_by: sortBy, sort_order: sortOrder,
+      });
+      if (search) params.append('search', search);
+      if (roleFilter !== 'all') params.append('role', roleFilter);
+      const res = await api.get('/api/v1/users/list?' + params.toString());
+      setUsers(res.data.users || res.data.items || []);
+      setTotal(res.data.total || 0);
+      if (res.data.counts) setCounts(res.data.counts);
+    } catch {
+      // Fallback to old endpoint
+      try {
+        const res = await api.get('/api/users/');
+        const all = res.data || [];
+        setUsers(all);
+        setTotal(all.length);
+        setCounts({
+          all: all.length,
+          admin: all.filter(u => u.role === 'admin').length,
+          applicant: all.filter(u => u.role === 'applicant').length,
+          pending: all.filter(u => u.role === 'pending').length,
+        });
+      } catch { setUsers([]); setTotal(0); }
     }
     setLoading(false);
+  }, [offset, sortBy, sortOrder, search, roleFilter]);
+
+  useEffect(() => { fetchUsers(); }, [fetchUsers]);
+
+  useEffect(() => {
+    const t = setTimeout(() => { setSearch(searchInput); setOffset(0); }, 300);
+    return () => clearTimeout(t);
+  }, [searchInput]);
+
+  const handleSort = (field, order) => { setSortBy(field); setSortOrder(order); setOffset(0); };
+  const handleFilter = (key) => { setRoleFilter(key); setOffset(0); };
+
+  /* ── Actions ─────────────────────────────────────────────────────────── */
+
+  const handleUpdateRole = async (userId, newRole) => {
+    if (!await confirm({ title: 'Change Role', message: 'Change role to ' + newRole.toUpperCase() + '?' })) return;
+    try { await api.patch('/api/users/' + userId, { role: newRole }); fetchUsers(); setExpandedId(null); }
+    catch (err) { toast.show('Failed: ' + (err.response?.data?.detail || err.message), 'error'); }
   };
 
-  const filteredUsers = users.filter(u => {
-    if (activeFilter === "admins") return u.role === "admin";
-    if (activeFilter === "applicants") return u.role === "applicant";
-    if (activeFilter === "pending") return u.role === "pending";
-    if (activeFilter === "inactive") return u.is_active === false;
-    return true;
-  }).filter(u => 
-    u.email?.toLowerCase().includes(search.toLowerCase()) ||
-    u.full_name?.toLowerCase().includes(search.toLowerCase()) ||
-    u.company?.toLowerCase().includes(search.toLowerCase())
-  );
+  const handleToggleActive = async (userId, currentActive) => {
+    const action = currentActive ? 'Deactivate' : 'Activate';
+    if (!await confirm({ title: action, message: action + ' this user?' })) return;
+    try { await api.patch('/api/users/' + userId, { is_active: !currentActive }); fetchUsers(); setExpandedId(null); }
+    catch (err) { toast.show('Failed: ' + (err.response?.data?.detail || err.message), 'error'); }
+  };
 
-  const stats = {
-    total: users.length,
-    admins: users.filter(u => u.role === 'admin').length,
-    applicants: users.filter(u => u.role === 'applicant').length,
-    pending: users.filter(u => u.role === 'pending').length,
-    inactive: users.filter(u => u.is_active === false).length
+  const handleApprove = async (userId, email) => {
+    if (!await confirm({ title: 'Approve', message: 'Approve ' + email + '?' })) return;
+    try { await api.post('/api/users/' + userId + '/approve'); fetchUsers(); setExpandedId(null); }
+    catch (err) { toast.show('Failed: ' + (err.response?.data?.detail || err.message), 'error'); }
+  };
+
+  const handleReject = async (userId, email) => {
+    if (!await confirm({ title: 'Reject', message: 'Reject ' + email + '?', danger: true })) return;
+    try { await api.post('/api/users/' + userId + '/reject'); fetchUsers(); setExpandedId(null); }
+    catch (err) { toast.show('Failed: ' + (err.response?.data?.detail || err.message), 'error'); }
+  };
+
+  const handleDelete = async (userId, email) => {
+    if (!await confirm({ title: 'Delete', message: 'DELETE ' + email + '? Cannot be undone.', danger: true, confirmLabel: 'Delete' })) return;
+    try { await api.delete('/api/users/' + userId); fetchUsers(); setExpandedId(null); }
+    catch (err) { toast.show('Failed: ' + (err.response?.data?.detail || err.message), 'error'); }
   };
 
   const handleInvite = async () => {
-    if (!inviteForm.email || !inviteForm.full_name) { toast.show('Email and full name are required', 'warning'); return; }
+    if (!inviteForm.email || !inviteForm.full_name) { toast.show('Email and name required', 'warning'); return; }
     setInviteLoading(true);
     try {
       const tempPassword = Math.random().toString(36).slice(-8) + 'A1!';
       await api.post('/api/users/', { ...inviteForm, password: tempPassword });
-      toast.show('User created — share credentials securely','success');
-      setShowInviteModal(false);
+      toast.show('User created — share credentials securely', 'success');
+      setShowInvite(false);
       setInviteForm({ email: '', full_name: '', company: '', role: 'applicant' });
-      loadUsers();
-    } catch (err) {
-      toast.show('Failed to create user: ' + (err.response?.data?.detail || err.message), 'error');
-    }
+      fetchUsers();
+    } catch (err) { toast.show('Failed: ' + (err.response?.data?.detail || err.message), 'error'); }
     setInviteLoading(false);
   };
 
-  const handleUpdateRole = async (userId, newRole) => {
-    if (!await confirm({title: 'Change Role', message: 'Change user role to ' + newRole.toUpperCase() + '?'})) return;
-    try {
-      await api.patch('/api/users/' + userId, { role: newRole });
-      loadUsers();
-      setExpandedUserId(null);
-    } catch (err) {
-      toast.show('Failed to update role: ' + (err.response?.data?.detail || err.message), 'error');
-    }
-  };
-
-  const handleToggleActive = async (userId, currentActive) => {
-    const action = currentActive ? 'deactivate' : 'activate';
-    if (!await confirm({title: action.charAt(0).toUpperCase() + action.slice(1), message: action.charAt(0).toUpperCase() + action.slice(1) + ' this user?'})) return;
-    try {
-      await api.patch('/api/users/' + userId, { is_active: !currentActive });
-      loadUsers();
-      setExpandedUserId(null);
-    } catch (err) {
-      toast.show('Failed to update user: ' + (err.response?.data?.detail || err.message), 'error');
-    }
-  };
-
-  const handleResetPassword = async (userId, email) => {
-    if (!await confirm({title: 'Reset Password', message: 'Reset password for ' + email + '?'})) return;
-    try {
-      const newPassword = Math.random().toString(36).slice(-8) + 'A1!';
-      await api.post('/api/users/' + userId + '/reset-password');
-      toast.show('Password reset — share credentials securely','success');
-    } catch (err) {
-      toast.show('Failed to reset password: ' + (err.response?.data?.detail || err.message), 'error');
-    }
-  };
-
-  const handleApproveUser = async (userId, email) => {
-    if (!await confirm({title: 'Approve User', message: 'Approve ' + email + ' as an applicant?'})) return;
-    try {
-      await api.post('/api/users/' + userId + '/approve');
-      loadUsers();
-      setExpandedUserId(null);
-    } catch (err) {
-      toast.show('Failed to approve: ' + (err.response?.data?.detail || err.message), 'error');
-    }
-  };
-
-  const handleRejectUser = async (userId, email) => {
-    if (!await confirm({title: 'Reject User', message: 'Reject ' + email + '? Their account will be deactivated.', danger: true})) return;
-    try {
-      await api.post('/api/users/' + userId + '/reject');
-      loadUsers();
-      setExpandedUserId(null);
-    } catch (err) {
-      toast.show('Failed to reject: ' + (err.response?.data?.detail || err.message), 'error');
-    }
-  };
-
-  const handleDeleteUser = async (userId, email) => {
-    if (!await confirm({title: 'Delete User', message: 'DELETE ' + email + '? This cannot be undone.', danger: true, confirmLabel: 'Delete'})) return;
-    try {
-      await api.delete('/api/users/' + userId);
-      loadUsers();
-      setExpandedUserId(null);
-    } catch (err) {
-      toast.show('Failed to delete user: ' + (err.response?.data?.detail || err.message), 'error');
-    }
-  };
+  const roleBadge = (role) => ({
+    padding: '3px 8px', fontFamily: styles.mono, fontSize: '9px', letterSpacing: '1px', textTransform: 'uppercase',
+    color: role === 'admin' ? styles.purpleBright : role === 'pending' ? styles.accentAmber : styles.textTertiary,
+    background: role === 'admin' ? 'rgba(29,26,59,0.08)' : role === 'pending' ? 'rgba(221,122,1,0.08)' : 'rgba(0,0,0,0.03)',
+  });
 
   return (
-    <div className="space-y-6" style={{ maxWidth: '1000px' }}>
-      <SectionHeader label="Administration" title="User Management" description="Manage admin and applicant accounts"
-        action={<button onClick={() => setShowInviteModal(true)} className="px-4 py-2 flex items-center gap-2" style={{background: 'transparent', border: 'none', borderBottom: '1px solid ' + styles.purpleBright, color: styles.purpleBright, fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer'}}><Plus className="w-4 h-4" /> Invite User</button>}
-      />
-      <div className="grid gap-4" style={{gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))"}}>
-        <StatCard label="Total Users" value={stats.total} color={activeFilter === null ? styles.purpleBright : styles.textPrimary} onClick={() => setActiveFilter(null)} />
-        <StatCard label="Admins" value={stats.admins} color={styles.purpleBright} onClick={() => setActiveFilter(activeFilter === "admins" ? null : "admins")} />
-        <StatCard label="Applicants" value={stats.applicants} color={styles.accentGreen} onClick={() => setActiveFilter(activeFilter === "applicants" ? null : "applicants")} />
-        <StatCard label="Pending" value={stats.pending} color={styles.accentAmber} onClick={() => setActiveFilter(activeFilter === "pending" ? null : "pending")} />
-        <StatCard label="Inactive" value={stats.inactive} color={styles.accentRed} onClick={() => setActiveFilter(activeFilter === "inactive" ? null : "inactive")} />
-      </div>
-      <Panel>
-        <div className="flex items-center gap-3">
-          <Search className="w-5 h-5" style={{color: styles.textTertiary}} />
-          <input type="text" placeholder="Search by name, email, or company..." value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1 px-4 py-3" style={{background: styles.cardSurface, border: '1px solid ' + styles.borderGlass, color: styles.textPrimary, outline: 'none', borderRadius: 8}} />
+    <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
+
+      {/* Search + Invite */}
+      <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap', marginBottom: '16px' }}>
+        <div style={{ flex: 1, minWidth: '200px', position: 'relative' }}>
+          <Search size={14} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: styles.textDim }} />
+          <input type="text" placeholder="Search by name, email, or company..."
+            value={searchInput} onChange={e => setSearchInput(e.target.value)}
+            style={{ width: '100%', padding: '10px 12px 10px 34px', border: '1px solid ' + styles.borderGlass, background: styles.cardSurface, color: styles.textPrimary, fontFamily: styles.mono, fontSize: '12px', outline: 'none' }}
+          />
         </div>
-      </Panel>
-      <Panel>
-        {loading ? (<div style={{color: styles.textTertiary, textAlign: 'center', padding: 'clamp(16px, 4vw, 40px)'}}>Loading users...</div>
-        ) : filteredUsers.length === 0 ? (
-          <div style={{textAlign: 'center', padding: 'clamp(24px, 5vw, 60px)'}}>
-            <Users fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-12 h-12 mx-auto mb-4" style={{color: styles.textTertiary}} />
-            <p style={{color: styles.textSecondary, marginBottom: '8px'}}>No users found</p>
-            <p style={{color: styles.textTertiary, fontSize: '14px'}}>{users.length === 0 ? 'The /api/users/ endpoint may not be configured.' : 'Try adjusting your search.'}</p>
-          </div>
-        ) : (
-          <div className="space-y-2">
-            {filteredUsers.map(user => (
-              <div key={user.id || user.email} style={{borderRadius: 8, overflow: 'hidden', border: '1px solid ' + (expandedUserId === (user.id || user.email) ? styles.purpleBright : styles.borderGlass), transition: 'border-color 0.2s'}}>
-              <div onClick={() => { if (expandedUserId === (user.id || user.email)) { setExpandedUserId(null); setSelectedUser(null); } else { setExpandedUserId(user.id || user.email); setSelectedUser(user); } }} className="flex items-center gap-4 p-4 cursor-pointer transition-all" style={{background: styles.cardSurface}}>
-                <div className="w-10 h-10 flex items-center justify-center flex-shrink-0" style={{background: 'transparent', color: styles.purpleBright, fontWeight: '400'}}>{user.full_name?.[0] || user.email?.[0] || '?'}</div>
-                <div className="flex-1 min-w-0">
-                  <p style={{color: styles.textPrimary, fontWeight: '500'}}>{user.full_name || 'No Name'}</p>
-                  <p style={{color: styles.textTertiary, fontSize: '13px'}}>{user.email}</p>
-                  {user.company && <p style={{color: styles.textTertiary, fontSize: '12px'}}>{user.company}</p>}
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="px-2 py-1 text-xs" style={{background: user.role === 'admin' ? 'rgba(29,26,59,0.10)' : user.role === 'pending' ? 'rgba(158,110,18,0.10)' : 'rgba(0,0,0,0.04)', color: user.role === 'admin' ? styles.purpleBright : user.role === 'pending' ? styles.accentAmber : styles.textTertiary, fontFamily: styles.mono, textTransform: 'uppercase'}}>{user.role}</span>
-                  {user.role === 'pending' && (
-                    <div className="flex gap-1" onClick={e => e.stopPropagation()}>
-                      <button onClick={() => handleApproveUser(user.id, user.email)} className="px-2 py-1 text-xs" style={{background: 'rgba(22,135,62,0.10)', color: styles.accentGreen, border: '1px solid rgba(22,135,62,0.3)', cursor: 'pointer'}}>Approve</button>
-                      <button onClick={() => handleRejectUser(user.id, user.email)} className="px-2 py-1 text-xs" style={{background: styles.cardSurface, color: styles.accentRed, border: '1px solid ' + styles.borderSubtle, cursor: 'pointer', borderRadius: 8}}>Reject</button>
+        <button onClick={() => setShowInvite(true)} style={{
+          display: 'flex', alignItems: 'center', gap: '6px', padding: '10px 16px',
+          background: styles.purplePrimary, border: '1px solid ' + styles.purplePrimary, color: '#fff',
+          fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1.5px', textTransform: 'uppercase', cursor: 'pointer',
+        }}><Plus size={12} /> Invite User</button>
+      </div>
+
+      {/* Tabs */}
+      <div style={{ display: 'flex', gap: '0', borderBottom: '1px solid ' + styles.borderSubtle, marginBottom: '16px' }}>
+        {TABS.map(tab => {
+          const active = roleFilter === tab.key;
+          const count = counts[tab.key] || 0;
+          return (
+            <button key={tab.key} onClick={() => handleFilter(tab.key)} style={{
+              padding: '10px 20px', border: 'none', cursor: 'pointer', background: 'transparent',
+              fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1.5px', textTransform: 'uppercase',
+              color: active ? styles.purpleBright : styles.textTertiary,
+              borderBottom: active ? '2px solid ' + styles.purpleBright : '2px solid transparent',
+              transition: 'color 0.2s',
+            }}>
+              {tab.label}{count > 0 ? ` (${count})` : ''}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Table */}
+      <div style={{ background: styles.cardSurface, border: '1px solid ' + styles.borderGlass, overflow: 'auto' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <thead>
+            <tr>
+              <SortHeader label="Name" field="full_name" currentSort={sortBy} currentOrder={sortOrder} onChange={handleSort} />
+              <SortHeader label="Email" field="email" currentSort={sortBy} currentOrder={sortOrder} onChange={handleSort} />
+              <th style={{ padding: '10px 12px', textAlign: 'left', fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1px', fontFamily: styles.mono, color: styles.textTertiary, borderBottom: '1px solid ' + styles.borderGlass }}>Company</th>
+              <SortHeader label="Role" field="role" currentSort={sortBy} currentOrder={sortOrder} onChange={handleSort} />
+              <SortHeader label="Joined" field="created_at" currentSort={sortBy} currentOrder={sortOrder} onChange={handleSort} />
+              <th style={{ padding: '10px 12px', textAlign: 'left', fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1px', fontFamily: styles.mono, color: styles.textTertiary, borderBottom: '1px solid ' + styles.borderGlass }}>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {loading ? (
+              <tr><td colSpan={6} style={{ padding: '40px', textAlign: 'center', color: styles.textTertiary, fontFamily: styles.mono, fontSize: '11px' }}>Loading...</td></tr>
+            ) : users.length === 0 ? (
+              <tr><td colSpan={6} style={{ padding: '40px', textAlign: 'center', color: styles.textTertiary, fontSize: '14px' }}>
+                {search ? 'No users match "' + search + '"' : 'No users found'}
+              </td></tr>
+            ) : users.map(u => (
+              <React.Fragment key={u.id || u.email}>
+                <tr style={{ borderBottom: '1px solid ' + styles.borderSubtle, transition: 'background 0.15s', cursor: 'pointer' }}
+                  onClick={() => setExpandedId(expandedId === u.id ? null : u.id)}
+                  onMouseEnter={e => e.currentTarget.style.background = 'rgba(0,0,0,0.015)'}
+                  onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+                  <td style={{ padding: '12px', fontWeight: 500, color: styles.textPrimary, fontSize: '13px' }}>{u.full_name || '—'}</td>
+                  <td style={{ padding: '12px', fontFamily: styles.mono, fontSize: '12px', color: styles.textSecondary }}>{u.email}</td>
+                  <td style={{ padding: '12px', color: styles.textSecondary, fontSize: '13px' }}>{u.company || '—'}</td>
+                  <td style={{ padding: '12px' }}><span style={roleBadge(u.role)}>{u.role}</span>{u.is_active === false && <span style={{ marginLeft: '8px', fontFamily: styles.mono, fontSize: '9px', color: styles.accentRed }}>INACTIVE</span>}</td>
+                  <td style={{ padding: '12px', fontFamily: styles.mono, fontSize: '12px', color: styles.textTertiary }}>{u.created_at ? new Date(u.created_at).toISOString().substring(0,10) : '—'}</td>
+                  <td style={{ padding: '12px' }} onClick={e => e.stopPropagation()}>
+                    <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                      {u.role === 'pending' && (<>
+                        <button onClick={() => handleApprove(u.id, u.email)} style={{ padding: '4px 10px', border: '1px solid ' + styles.borderGlass, background: 'transparent', color: styles.accentGreen, fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer' }}>Approve</button>
+                        <button onClick={() => handleReject(u.id, u.email)} style={{ padding: '4px 10px', border: '1px solid ' + styles.borderGlass, background: 'transparent', color: styles.accentRed, fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer' }}>Reject</button>
+                      </>)}
                     </div>
-                  )}
-                  {user.is_active === false && <span className="px-2 py-1 text-xs" style={{background: 'transparent', color: styles.accentRed}}>Inactive</span>}
-                </div>
-              </div>
-              {expandedUserId === (user.id || user.email) && selectedUser && (
-                <div onClick={e => e.stopPropagation()} style={{background: 'rgba(29,26,59,0.03)', borderTop: '1px solid ' + styles.borderGlass, padding: '20px 24px'}}>
-                  <div style={{display: 'flex', gap: '12px', marginBottom: '16px'}}>
-                    <button onClick={() => handleUpdateRole(selectedUser.id, 'applicant')} style={{flex: 1, padding: '10px', background: selectedUser.role === 'applicant' ? 'rgba(29,26,59,0.10)' : 'transparent', border: '1px solid ' + (selectedUser.role === 'applicant' ? styles.purpleBright : styles.borderGlass), color: selectedUser.role === 'applicant' ? styles.purpleBright : styles.textTertiary, borderRadius: 6, cursor: 'pointer', fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase'}}>Applicant</button>
-                    <button onClick={() => handleUpdateRole(selectedUser.id, 'admin')} style={{flex: 1, padding: '10px', background: selectedUser.role === 'admin' ? 'rgba(29,26,59,0.10)' : 'transparent', border: '1px solid ' + (selectedUser.role === 'admin' ? styles.purpleBright : styles.borderGlass), color: selectedUser.role === 'admin' ? styles.purpleBright : styles.textTertiary, borderRadius: 6, cursor: 'pointer', fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase'}}>Admin</button>
-                  </div>
-                  <div style={{display: 'flex', flexDirection: 'column', gap: '8px'}}>
-                    <button onClick={() => handleResetPassword(selectedUser.id, selectedUser.email)} style={{width: '100%', padding: '10px 16px', display: 'flex', alignItems: 'center', gap: '8px', background: styles.cardSurface, border: '1px solid ' + styles.borderGlass, color: styles.textSecondary, textAlign: 'left', borderRadius: 6, cursor: 'pointer'}}><RefreshCw className="w-4 h-4" style={{color: styles.purpleBright}} />Reset Password</button>
-                    <button onClick={() => handleToggleActive(selectedUser.id, selectedUser.is_active !== false)} style={{width: '100%', padding: '10px 16px', display: 'flex', alignItems: 'center', gap: '8px', background: styles.cardSurface, border: '1px solid ' + styles.borderGlass, color: selectedUser.is_active === false ? styles.accentGreen : styles.accentRed, textAlign: 'left', borderRadius: 6, cursor: 'pointer'}}>{selectedUser.is_active === false ? <><CheckCircle className="w-4 h-4" /> Activate Account</> : <><X className="w-4 h-4" /> Deactivate Account</>}</button>
-                    <button onClick={() => handleDeleteUser(selectedUser.id, selectedUser.email)} style={{width: '100%', padding: '10px 16px', display: 'flex', alignItems: 'center', gap: '8px', background: styles.cardSurface, border: '1px solid ' + styles.borderSubtle, color: styles.accentRed, textAlign: 'left', borderRadius: 6, cursor: 'pointer'}}><X className="w-4 h-4" /> Delete User</button>
-                  </div>
-                </div>
-              )}
-              </div>
+                  </td>
+                </tr>
+                {expandedId === u.id && (
+                  <tr><td colSpan={6} style={{ padding: '16px 20px', background: 'rgba(29,26,59,0.02)', borderBottom: '1px solid ' + styles.borderGlass }}>
+                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                      <button onClick={() => handleUpdateRole(u.id, u.role === 'admin' ? 'applicant' : 'admin')} style={{ padding: '6px 14px', border: '1px solid ' + styles.borderGlass, background: 'transparent', color: styles.purpleBright, fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer' }}>
+                        Make {u.role === 'admin' ? 'Applicant' : 'Admin'}
+                      </button>
+                      <button onClick={() => handleToggleActive(u.id, u.is_active !== false)} style={{ padding: '6px 14px', border: '1px solid ' + styles.borderGlass, background: 'transparent', color: u.is_active === false ? styles.accentGreen : styles.accentAmber, fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer' }}>
+                        {u.is_active === false ? 'Activate' : 'Deactivate'}
+                      </button>
+                      <button onClick={() => handleDelete(u.id, u.email)} style={{ padding: '6px 14px', border: '1px solid ' + styles.borderGlass, background: 'transparent', color: styles.accentRed, fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer' }}>
+                        Delete
+                      </button>
+                    </div>
+                  </td></tr>
+                )}
+              </React.Fragment>
             ))}
-          </div>
-        )}
-      </Panel>
-      {showInviteModal && (
-        <div className="fixed inset-0 flex items-center justify-center z-50" style={{background: 'rgba(0,0,0,0.4)'}}>
-          <div className="w-full max-w-md mx-4 p-6" style={{background: 'rgba(255,255,255,0.96)', backdropFilter: styles.frostModal, WebkitBackdropFilter: styles.frostModal, border: '1px solid ' + styles.borderGlass, borderRadius: 8}}>
-            <h2 style={{fontFamily: styles.serif, color: styles.textPrimary, fontSize: '20px', fontWeight: 200, marginBottom: '24px', textAlign: 'center'}}>Invite New User</h2>
-            <div className="space-y-4">
-              <div><label style={{color: styles.textSecondary, fontSize: '12px', display: 'block', marginBottom: '6px'}}>Email *</label><input type="email" value={inviteForm.email} onChange={(e) => setInviteForm({...inviteForm, email: e.target.value})} placeholder="user@company.com" className="w-full px-4 py-3" style={{background: styles.cardSurface, border: '1px solid ' + styles.borderGlass, color: styles.textPrimary, outline: 'none', borderRadius: 8}} /></div>
-              <div><label style={{color: styles.textSecondary, fontSize: '12px', display: 'block', marginBottom: '6px'}}>Full Name *</label><input type="text" value={inviteForm.full_name} onChange={(e) => setInviteForm({...inviteForm, full_name: e.target.value})} placeholder="John Smith" className="w-full px-4 py-3" style={{background: styles.cardSurface, border: '1px solid ' + styles.borderGlass, color: styles.textPrimary, outline: 'none', borderRadius: 8}} /></div>
-              <div><label style={{color: styles.textSecondary, fontSize: '12px', display: 'block', marginBottom: '6px'}}>Company</label><input type="text" value={inviteForm.company} onChange={(e) => setInviteForm({...inviteForm, company: e.target.value})} placeholder="Company name" className="w-full px-4 py-3" style={{background: styles.cardSurface, border: '1px solid ' + styles.borderGlass, color: styles.textPrimary, outline: 'none', borderRadius: 8}} /></div>
-              <div><label style={{color: styles.textSecondary, fontSize: '12px', display: 'block', marginBottom: '6px'}}>Role</label>
-                <div className="flex gap-3">
-                  <button onClick={() => setInviteForm({...inviteForm, role: 'applicant'})} className="flex-1 px-4 py-3" style={{background: inviteForm.role === 'applicant' ? 'rgba(29,26,59,0.10)' : 'rgba(0,0,0,0.025)', border: '1px solid ' + (inviteForm.role === 'applicant' ? styles.purpleBright : styles.borderGlass), color: inviteForm.role === 'applicant' ? styles.purpleBright : styles.textTertiary, borderRadius: 8}}>Applicant</button>
-                  <button onClick={() => setInviteForm({...inviteForm, role: 'admin'})} className="flex-1 px-4 py-3" style={{background: inviteForm.role === 'admin' ? 'rgba(29,26,59,0.10)' : 'rgba(0,0,0,0.025)', border: '1px solid ' + (inviteForm.role === 'admin' ? styles.purpleBright : styles.borderGlass), color: inviteForm.role === 'admin' ? styles.purpleBright : styles.textTertiary, borderRadius: 8}}>Admin</button>
-                </div>
+          </tbody>
+        </table>
+        <Pagination total={total} limit={LIMIT} offset={offset} onChange={setOffset} />
+      </div>
+
+      {/* Invite Modal */}
+      {showInvite && (
+        <div style={{ position: 'fixed', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100, background: 'rgba(0,0,0,0.3)' }}>
+          <div style={{ width: '100%', maxWidth: '420px', margin: '0 16px', padding: '28px', background: 'rgba(255,255,255,0.96)', backdropFilter: styles.frostModal, border: '1px solid ' + styles.borderGlass }}>
+            <h2 style={{ fontFamily: styles.serif, fontSize: '20px', fontWeight: 200, margin: '0 0 24px', color: styles.textPrimary, textAlign: 'center' }}>Invite User</h2>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <input type="email" placeholder="Email *" value={inviteForm.email} onChange={e => setInviteForm({...inviteForm, email: e.target.value})}
+                style={{ padding: '10px 12px', border: '1px solid ' + styles.borderGlass, background: styles.cardSurface, color: styles.textPrimary, fontFamily: styles.mono, fontSize: '12px', outline: 'none' }} />
+              <input type="text" placeholder="Full Name *" value={inviteForm.full_name} onChange={e => setInviteForm({...inviteForm, full_name: e.target.value})}
+                style={{ padding: '10px 12px', border: '1px solid ' + styles.borderGlass, background: styles.cardSurface, color: styles.textPrimary, fontFamily: styles.mono, fontSize: '12px', outline: 'none' }} />
+              <input type="text" placeholder="Company" value={inviteForm.company} onChange={e => setInviteForm({...inviteForm, company: e.target.value})}
+                style={{ padding: '10px 12px', border: '1px solid ' + styles.borderGlass, background: styles.cardSurface, color: styles.textPrimary, fontFamily: styles.mono, fontSize: '12px', outline: 'none' }} />
+              <div style={{ display: 'flex', gap: '8px' }}>
+                {['applicant', 'admin'].map(r => (
+                  <button key={r} onClick={() => setInviteForm({...inviteForm, role: r})} style={{
+                    flex: 1, padding: '10px', border: '1px solid ' + (inviteForm.role === r ? styles.purpleBright : styles.borderGlass),
+                    background: inviteForm.role === r ? 'rgba(29,26,59,0.06)' : 'transparent',
+                    color: inviteForm.role === r ? styles.purpleBright : styles.textTertiary,
+                    fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer',
+                  }}>{r}</button>
+                ))}
               </div>
             </div>
-            <div className="mt-6 space-y-3">
-              <button onClick={handleInvite} disabled={inviteLoading} className="w-full px-4 py-3" style={{background: 'transparent', border: 'none', borderBottom: '1px solid ' + styles.purpleBright, color: styles.purpleBright, fontFamily: styles.mono, fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer', opacity: inviteLoading ? 0.5 : 1}}>{inviteLoading ? 'Creating...' : 'Create Account'}</button>
-              <button onClick={() => { setShowInviteModal(false); setInviteForm({ email: '', full_name: '', company: '', role: 'applicant' }); }} className="w-full px-4 py-3" style={{background: 'transparent', border: 'none', color: styles.textTertiary}}>Cancel</button>
+            <div style={{ display: 'flex', gap: '8px', marginTop: '24px' }}>
+              <button onClick={() => { setShowInvite(false); setInviteForm({ email: '', full_name: '', company: '', role: 'applicant' }); }}
+                style={{ flex: 1, padding: '10px', border: '1px solid ' + styles.borderGlass, background: 'transparent', color: styles.textTertiary, fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer' }}>Cancel</button>
+              <button onClick={handleInvite} disabled={inviteLoading}
+                style={{ flex: 1, padding: '10px', border: '1px solid ' + styles.purplePrimary, background: styles.purplePrimary, color: '#fff', fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer', opacity: inviteLoading ? 0.5 : 1 }}>{inviteLoading ? 'Creating...' : 'Create User'}</button>
             </div>
           </div>
         </div>
       )}
-
     </div>
   );
 }
 
-
-// ═══ Settings Page ═══
-
-// ═══ Activity History / Audit Log ═══
-
 export default UserManagementPage;
-

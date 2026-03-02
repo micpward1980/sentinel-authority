@@ -6,6 +6,7 @@ import { styles } from '../config/styles';
 import { useAuth } from '../context/AuthContext';
 import useIsMobile from '../hooks/useIsMobile';
 import BrandMark from './BrandMark';
+import Logo from './Logo';
 import SentinelChatbot from './SentinelChatbot';
 
 function Layout({ children }) {
@@ -40,16 +41,11 @@ function Layout({ children }) {
 
   const navigation = [
     { name: 'Dashboard', href: '/dashboard', icon: Home, roles: ['admin', 'applicant'] },
-    { name: 'Applications', href: '/applications', icon: FileText, roles: ['admin', 'applicant'] },
-    { name: 'ENVELO Interlock', href: '/envelo', icon: 'brand', roles: ['admin'] },
-    { name: 'Certification', href: '/envelo', icon: 'brand', roles: ['applicant'], requiresCert: true },
-    { name: 'CAT-72 Console', href: '/cat72', icon: Clock, roles: ['admin'] },
-    { name: 'Certificates', href: '/certificates', icon: Award, roles: ['admin'] },
-    { name: 'Monitoring', href: '/monitoring', icon: BarChart2, roles: ['admin', 'applicant'], requiresCert: true },
-    { name: 'Enforcement', href: '/surveillance', icon: Shield, roles: ['admin'] },
-    { name: 'User Management', href: '/users', icon: Users, roles: ['admin'] },
-    { name: 'Resources', href: '/resources', icon: BookOpen, roles: ['admin'] },
-    { name: 'Settings', href: '/settings', icon: Settings, roles: ['admin', 'applicant'] },
+    { name: 'Applications', href: '/applications', icon: FileText, roles: ['admin'] },
+    { name: 'My Application', href: '/applications', icon: FileText, roles: ['applicant'] },
+    { name: 'Testing', href: '/cat72', icon: Activity, roles: ['admin'] },
+    { name: 'Registry', href: '/certificates', icon: Award, roles: ['admin'] },
+    { name: 'Compliance', href: '/surveillance', icon: Shield, roles: ['admin'] },
   ];
 
   const hasCert = Array.isArray(userCerts) && userCerts.some(c => c.state === 'conformant' || c.state === 'active' || c.state === 'issued');
@@ -61,7 +57,27 @@ function Layout({ children }) {
     return true;
   });
 
-  const isActive = (href) => location.pathname === href || (href !== '/dashboard' && location.pathname.startsWith(href));
+  const isActive = (item) => {
+    if (item.group) return item.group.some(p => location.pathname.startsWith(p));
+    return location.pathname === item.href || (item.href !== '/dashboard' && location.pathname.startsWith(item.href));
+  };
+
+  // Sub-tabs for grouped pages — workflow-driven
+  const subTabs = (() => {
+    const p = location.pathname;
+    if (user?.role === 'admin') {
+
+
+      // Settings (accessed from footer gear)
+      if (['/settings', '/users', '/resources'].some(r => p.startsWith(r)))
+        return [
+          { label: 'Account', href: '/settings' },
+          { label: 'Users', href: '/users' },
+          { label: 'Resources', href: '/resources' },
+        ];
+    }
+    return null;
+  })();
 
   const navLinkStyle = (active) => ({
     display: 'flex', alignItems: 'center', gap: '10px',
@@ -110,15 +126,7 @@ function Layout({ children }) {
           borderBottom: '1px solid rgba(15,18,30,0.06)'
         }}>
           <Link to="/dashboard" style={{display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none'}}>
-            <BrandMark size={24} />
-            <span style={{
-              fontFamily: styles.mono,
-              fontSize: '10px',
-              letterSpacing: '3px',
-              textTransform: 'uppercase',
-              color: styles.textPrimary,
-              whiteSpace: 'nowrap'
-            }}>SENTINEL AUTHORITY</span>
+            <Logo height={52} />
           </Link>
           <button onClick={() => setSidebarOpen(false)} style={{color: styles.textTertiary, background: 'none', border: 'none', cursor: 'pointer', padding: '4px', display: isMobile ? 'block' : 'none'}}>
             <X size={18} />
@@ -128,7 +136,7 @@ function Layout({ children }) {
         {/* Nav */}
         <nav style={{padding: '12px 0'}}>
           {filteredNav.map((item) => {
-            const active = isActive(item.href);
+            const active = isActive(item);
             return (
               <Link key={item.name} to={item.href} style={navLinkStyle(active)}
                 onMouseEnter={e => { if (!active) { e.currentTarget.style.color = styles.textPrimary; e.currentTarget.style.background = 'rgba(0,0,0,.025)'; }}}
@@ -141,8 +149,26 @@ function Layout({ children }) {
           })}
         </nav>
 
-        {/* User */}
-        <div style={{position: 'absolute', bottom: 0, left: 0, right: 0, padding: '16px', borderTop: '1px solid rgba(15,18,30,0.06)'}}>
+        {/* Settings + User */}
+        <div style={{position: 'absolute', bottom: 0, left: 0, right: 0, borderTop: '1px solid rgba(15,18,30,0.06)'}}>
+          <Link to="/settings" style={{
+            display: 'flex', alignItems: 'center', gap: '10px',
+            padding: '12px 16px',
+            textDecoration: 'none',
+            fontFamily: styles.mono,
+            fontSize: '9px',
+            letterSpacing: '1.5px',
+            textTransform: 'uppercase',
+            color: ['/settings', '/users', '/resources'].some(r => location.pathname.startsWith(r)) ? styles.textPrimary : styles.textTertiary,
+            borderLeft: ['/settings', '/users', '/resources'].some(r => location.pathname.startsWith(r)) ? '2px solid ' + styles.purpleBright : '2px solid transparent',
+            background: ['/settings', '/users', '/resources'].some(r => location.pathname.startsWith(r)) ? 'rgba(74,61,117,.06)' : 'transparent',
+            borderBottom: '1px solid rgba(15,18,30,0.04)',
+            transition: 'color 0.25s ease',
+          }}>
+            <Settings size={14} style={{opacity: ['/settings', '/users', '/resources'].some(r => location.pathname.startsWith(r)) ? 0.9 : 0.45}} />
+            Settings
+          </Link>
+          <div style={{padding: '12px 16px'}}>
           <div style={{display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px'}}>
             <div data-avatar="true" style={{width: '28px', height: '28px', background: styles.purplePrimary, border: '1px solid rgba(107,90,158,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
               <span style={{color: '#fff', fontSize: '11px', fontWeight: 500}}>{user?.full_name?.[0] || 'U'}</span>
@@ -162,6 +188,7 @@ function Layout({ children }) {
             <LogOut size={12} />
             Sign Out
           </button>
+          </div>
         </div>
       </div>
 
@@ -231,6 +258,26 @@ function Layout({ children }) {
         </header>
 
         <main className="sa-main-content" style={{padding: 'clamp(16px, 3vw, 32px)', position: 'relative', zIndex: 1}}>
+          {subTabs && (
+            <div style={{display: 'flex', gap: '0', borderBottom: '1px solid ' + styles.borderSubtle, marginBottom: '24px', marginTop: '-8px'}}>
+              {subTabs.map(tab => {
+                const tabActive = location.pathname === tab.href || location.pathname.startsWith(tab.href + '/');
+                return (
+                  <Link key={tab.href} to={tab.href} style={{
+                    padding: '10px 20px',
+                    fontFamily: styles.mono,
+                    fontSize: '10px',
+                    letterSpacing: '1.5px',
+                    textTransform: 'uppercase',
+                    color: tabActive ? styles.purpleBright : styles.textTertiary,
+                    textDecoration: 'none',
+                    borderBottom: tabActive ? '2px solid ' + styles.purpleBright : '2px solid transparent',
+                    transition: 'color 0.2s',
+                  }}>{tab.label}</Link>
+                );
+              })}
+            </div>
+          )}
           {children}
         </main>
       </div>

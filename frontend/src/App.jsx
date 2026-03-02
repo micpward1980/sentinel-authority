@@ -50,8 +50,8 @@ function App() {
           <Route path="/applications/new" element={<ProtectedRoute><Layout><LazyLoad><NewApplication /></LazyLoad></Layout></ProtectedRoute>} />
           <Route path="/applications/:id" element={<ProtectedRoute><Layout><LazyLoad><ApplicationDetail /></LazyLoad></Layout></ProtectedRoute>} />
           <Route path="/applications/:id/pre-review" element={<PreCAT72Review />} />
-        <Route path="/cat72" element={<Navigate to="/envelo" />} />
-          <Route path="/certificates" element={<Navigate to="/envelo" />} />
+        <Route path="/cat72" element={<ProtectedRoute><Layout><LazyLoad><CAT72Console /></LazyLoad></Layout></ProtectedRoute>} />
+          <Route path="/certificates" element={<ProtectedRoute><Layout><LazyLoad><CertificatesPage /></LazyLoad></Layout></ProtectedRoute>} />
           <Route path="/pending" element={<LazyLoad><PendingPage /></LazyLoad>} />
           <Route path="/resources" element={<ProtectedRoute><Layout><LazyLoad><ResourcesPage /></LazyLoad></Layout></ProtectedRoute>} />
           <Route path="/monitoring" element={<ProtectedRoute><Layout><LazyLoad><MonitoringPage /></LazyLoad></Layout></ProtectedRoute>} />

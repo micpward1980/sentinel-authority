@@ -1,141 +1,182 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import { Search, Download } from 'lucide-react';
 import { api, API_BASE } from '../config/api';
 import { styles } from '../config/styles';
-import Panel from '../components/Panel';
-import DataTable from '../components/DataTable';
 import Badge from '../components/Badge';
-import CopyableId from '../components/CopyableId';
+import Pagination from '../components/Pagination';
+import SortHeader from '../components/SortHeader';
 
-function fmtUTC(ts) {
-  if (!ts) return '—';
-  return new Date(ts).toISOString().substring(0, 10);
-}
+const LIMIT = 25;
 
 function certVariant(state) {
   if (state === 'conformant' || state === 'active' || state === 'issued') return 'green';
   if (state === 'suspended') return 'amber';
-  if (state === 'revoked')   return 'red';
+  if (state === 'revoked') return 'red';
   return 'dim';
 }
 
-function isActive(state) {
+function isActiveState(state) {
   return state === 'conformant' || state === 'active' || state === 'issued';
 }
 
 const TABS = [
-  { key: 'active',    label: 'Active'    },
+  { key: 'active', label: 'Active' },
   { key: 'suspended', label: 'Suspended' },
-  { key: 'revoked',   label: 'Revoked'   },
-  { key: 'all',       label: 'All'       },
+  { key: 'revoked', label: 'Revoked' },
+  { key: 'all', label: 'All' },
 ];
 
 function CertificatesPage() {
-  const [statusFilter, setStatusFilter] = useState('active');
+  const [certs, setCerts] = useState([]);
+  const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [offset, setOffset] = useState(0);
+  const [sortBy, setSortBy] = useState('issued_at');
+  const [sortOrder, setSortOrder] = useState('desc');
+  const [search, setSearch] = useState('');
+  const [searchInput, setSearchInput] = useState('');
+  const [stateFilter, setStateFilter] = useState('active');
+  const [counts, setCounts] = useState({ all: 0, active: 0, suspended: 0, revoked: 0 });
 
-  const { data: certificates = [], isLoading } = useQuery({
-    queryKey: ['certificates'],
-    queryFn: () => api.get('/api/certificates/').then(r => r.data),
-  });
+  const fetchCerts = useCallback(async () => {
+    setLoading(true);
+    try {
+      const params = new URLSearchParams({
+        limit: LIMIT, offset, sort_by: sortBy, sort_order: sortOrder,
+      });
+      if (search) params.append('search', search);
+      if (stateFilter !== 'all') {
+        if (stateFilter === 'active') {
+          params.append('state', 'conformant');
+        } else {
+          params.append('state', stateFilter);
+        }
+      }
+      const res = await api.get('/api/v1/certificates/list?' + params.toString());
+      setCerts(res.data.certificates || res.data.items || []);
+      setTotal(res.data.total || 0);
+      if (res.data.counts) setCounts(res.data.counts);
+    } catch {
+      // Fallback to old endpoint
+      try {
+        const res = await api.get('/api/certificates/');
+        const all = res.data || [];
+        setCerts(all);
+        setTotal(all.length);
+        setCounts({
+          all: all.length,
+          active: all.filter(c => isActiveState(c.state)).length,
+          suspended: all.filter(c => c.state === 'suspended').length,
+          revoked: all.filter(c => c.state === 'revoked').length,
+        });
+      } catch { setCerts([]); setTotal(0); }
+    }
+    setLoading(false);
+  }, [offset, sortBy, sortOrder, search, stateFilter]);
 
-  const counts = useMemo(() => ({
-    all:       certificates.length,
-    active:    certificates.filter(c => isActive(c.state)).length,
-    suspended: certificates.filter(c => c.state === 'suspended').length,
-    revoked:   certificates.filter(c => c.state === 'revoked').length,
-  }), [certificates]);
+  useEffect(() => { fetchCerts(); }, [fetchCerts]);
 
-  const filtered = useMemo(() => certificates.filter(c => {
-    if (statusFilter === 'all')    return true;
-    if (statusFilter === 'active') return isActive(c.state);
-    return c.state === statusFilter;
-  }), [certificates, statusFilter]);
+  // Debounced search
+  useEffect(() => {
+    const t = setTimeout(() => { setSearch(searchInput); setOffset(0); }, 300);
+    return () => clearTimeout(t);
+  }, [searchInput]);
 
-  const COLUMNS = [
-    {
-      key: 'certificate_number',
-      label: 'Certificate #',
-      render: c => <CopyableId id={c.certificate_number} href={"/verify?cert=" + c.certificate_number} />,
-    },
-    {
-      key: 'system_name',
-      label: 'System',
-      render: c => <span style={{ color: styles.textPrimary, fontWeight: 500 }}>{c.system_name}</span>,
-    },
-    { key: 'organization_name', label: 'Organization', style: { color: styles.textSecondary } },
-    {
-      key: 'state',
-      label: 'Status',
-      render: c => <Badge variant={certVariant(c.state)}>{c.state}</Badge>,
-    },
-    {
-      key: 'expires_at',
-      label: 'Expires (UTC)',
-      style: { fontFamily: styles.mono, fontSize: '12px', color: styles.textTertiary },
-      render: c => fmtUTC(c.expires_at),
-    },
-    {
-      key: 'actions',
-      label: 'Actions',
-      render: c => (
-        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-          {isActive(c.state) ? (
-            <a
-              href={API_BASE + "/api/certificates/" + c.certificate_number + "/pdf"}
-              target="_blank"
-              rel="noreferrer noopener"
-              style={{ padding: '3px 10px', background: 'transparent', border: 'none', borderBottom: `1px solid ${styles.purpleBright}`, color: styles.purpleBright, fontFamily: styles.mono, fontSize: '10px', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', textDecoration: 'none' }}
-            >
-              PDF
-            </a>
-          ) : (
-            <span style={{ fontFamily: styles.mono, fontSize: '10px', color: styles.textDim, textTransform: 'uppercase' }}>{c.state}</span>
-          )}
-          <Link
-            to={"/verify?cert=" + c.certificate_number}
-            style={{ padding: '3px 8px', background: styles.cardSurface, border: `1px solid ${styles.borderGlass}`, color: styles.textTertiary, fontFamily: styles.mono, fontSize: '9px', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', textDecoration: 'none' }}
-          >
-            Verify
-          </Link>
-        </div>
-      ),
-    },
-  ];
+  const handleSort = (field, order) => { setSortBy(field); setSortOrder(order); setOffset(0); };
+  const handleFilter = (key) => { setStateFilter(key); setOffset(0); };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-      <div>
-        <p style={{ fontFamily: styles.mono, fontSize: '10px', fontWeight: 600, letterSpacing: '0.20em', textTransform: 'uppercase', color: styles.purpleBright, margin: '0 0 8px 0' }}>Records</p>
-        <h1 style={{ fontFamily: styles.serif, fontSize: 'clamp(24px, 5vw, 36px)', fontWeight: 200, margin: 0, color: styles.textPrimary }}>Certificates</h1>
-        <p style={{ color: styles.textSecondary, marginTop: '8px', marginBottom: 0 }}>Issued ODDC conformance determinations</p>
+    <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
+
+      {/* Search + Filter */}
+      <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap', marginBottom: '16px' }}>
+        <div style={{ flex: 1, minWidth: '200px', position: 'relative' }}>
+          <Search size={14} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: styles.textDim }} />
+          <input
+            type="text" placeholder="Search by name, org, or certificate #..."
+            value={searchInput} onChange={e => setSearchInput(e.target.value)}
+            style={{ width: '100%', padding: '10px 12px 10px 34px', border: '1px solid ' + styles.borderGlass, background: styles.cardSurface, color: styles.textPrimary, fontFamily: styles.mono, fontSize: '12px', outline: 'none' }}
+          />
+        </div>
       </div>
 
-      <div style={{ display: 'flex', gap: '4px', border: `1px solid ${styles.borderGlass}`, padding: '4px' }}>
+      {/* Tabs */}
+      <div style={{ display: 'flex', gap: '0', borderBottom: '1px solid ' + styles.borderSubtle, marginBottom: '16px' }}>
         {TABS.map(tab => {
-          const active = statusFilter === tab.key;
+          const active = stateFilter === tab.key;
+          const count = counts[tab.key] || 0;
           return (
-            <button key={tab.key} onClick={() => setStatusFilter(tab.key)} style={{
-              flex: 1, padding: '7px 12px', border: 'none', cursor: 'pointer',
-              fontFamily: styles.mono, fontSize: '10px', fontWeight: active ? 600 : 400,
-              letterSpacing: '0.08em', textTransform: 'uppercase',
-              background: active ? 'rgba(29,26,59,0.08)' : 'transparent',
+            <button key={tab.key} onClick={() => handleFilter(tab.key)} style={{
+              padding: '10px 20px', border: 'none', cursor: 'pointer', background: 'transparent',
+              fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1.5px', textTransform: 'uppercase',
               color: active ? styles.purpleBright : styles.textTertiary,
+              borderBottom: active ? '2px solid ' + styles.purpleBright : '2px solid transparent',
+              transition: 'color 0.2s',
             }}>
-              {tab.label}{counts[tab.key] > 0 ? ` (${counts[tab.key]})` : ''}
+              {tab.label}{count > 0 ? ` (${count})` : ''}
             </button>
           );
         })}
       </div>
 
-      <Panel>
-        <DataTable
-          columns={COLUMNS}
-          rows={filtered}
-          loading={isLoading}
-          emptyMessage={certificates.length === 0 ? 'No certificates issued' : `No ${statusFilter === 'all' ? '' : statusFilter + ' '}certificates`}
-        />
-      </Panel>
+      {/* Table */}
+      <div style={{ background: styles.cardSurface, border: '1px solid ' + styles.borderGlass, overflow: 'auto' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <thead>
+            <tr>
+              <SortHeader label="Certificate #" field="certificate_number" currentSort={sortBy} currentOrder={sortOrder} onChange={handleSort} />
+              <SortHeader label="System" field="system_name" currentSort={sortBy} currentOrder={sortOrder} onChange={handleSort} />
+              <th style={{ padding: '10px 12px', textAlign: 'left', fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1px', fontFamily: styles.mono, color: styles.textTertiary, borderBottom: '1px solid ' + styles.borderGlass }}>Organization</th>
+              <SortHeader label="Status" field="state" currentSort={sortBy} currentOrder={sortOrder} onChange={handleSort} />
+              <SortHeader label="Expires" field="expires_at" currentSort={sortBy} currentOrder={sortOrder} onChange={handleSort} />
+              <th style={{ padding: '10px 12px', textAlign: 'left', fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1px', fontFamily: styles.mono, color: styles.textTertiary, borderBottom: '1px solid ' + styles.borderGlass }}>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {loading ? (
+              <tr><td colSpan={6} style={{ padding: '40px', textAlign: 'center', color: styles.textTertiary, fontFamily: styles.mono, fontSize: '11px' }}>Loading...</td></tr>
+            ) : certs.length === 0 ? (
+              <tr><td colSpan={6} style={{ padding: '40px', textAlign: 'center', color: styles.textTertiary, fontSize: '14px' }}>
+                {search ? 'No certificates match "' + search + '"' : 'No ' + (stateFilter === 'all' ? '' : stateFilter + ' ') + 'certificates'}
+              </td></tr>
+            ) : certs.map(c => {
+              const daysLeft = c.expires_at ? Math.ceil((new Date(c.expires_at) - Date.now()) / (1000*60*60*24)) : null;
+              return (
+                <tr key={c.id} style={{ borderBottom: '1px solid ' + styles.borderSubtle, transition: 'background 0.15s' }}
+                  onMouseEnter={e => e.currentTarget.style.background = 'rgba(0,0,0,0.015)'}
+                  onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+                  <td style={{ padding: '12px', fontFamily: styles.mono, fontSize: '12px' }}>
+                    <Link to={'/verify?cert=' + c.certificate_number} style={{ color: styles.purpleBright, textDecoration: 'none' }}>{c.certificate_number}</Link>
+                  </td>
+                  <td style={{ padding: '12px', fontWeight: 500, color: styles.textPrimary, fontSize: '13px' }}>{c.system_name}</td>
+                  <td style={{ padding: '12px', color: styles.textSecondary, fontSize: '13px' }}>{c.organization_name}</td>
+                  <td style={{ padding: '12px' }}><Badge variant={certVariant(c.state)}>{c.state}</Badge></td>
+                  <td style={{ padding: '12px', fontFamily: styles.mono, fontSize: '12px', color: daysLeft !== null && daysLeft <= 30 ? (daysLeft <= 7 ? styles.accentRed : styles.accentAmber) : styles.textTertiary }}>
+                    {c.expires_at ? new Date(c.expires_at).toISOString().substring(0,10) : '—'}
+                    {daysLeft !== null && daysLeft <= 30 && <span style={{ marginLeft: '6px', fontSize: '10px' }}>({daysLeft}d)</span>}
+                  </td>
+                  <td style={{ padding: '12px' }}>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      {isActiveState(c.state) && (
+                        <a href={API_BASE + '/api/certificates/' + c.certificate_number + '/pdf'} target="_blank" rel="noopener noreferrer"
+                          style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '4px 10px', border: '1px solid ' + styles.borderGlass, background: 'transparent', color: styles.purpleBright, fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', textDecoration: 'none' }}>
+                          <Download size={10} /> PDF
+                        </a>
+                      )}
+                      <Link to={'/verify?cert=' + c.certificate_number}
+                        style={{ padding: '4px 10px', border: '1px solid ' + styles.borderGlass, background: 'transparent', color: styles.textTertiary, fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', textDecoration: 'none' }}>
+                        Verify
+                      </Link>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+        <Pagination total={total} limit={LIMIT} offset={offset} onChange={setOffset} />
+      </div>
     </div>
   );
 }

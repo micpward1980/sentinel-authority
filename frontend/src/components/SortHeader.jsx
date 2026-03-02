@@ -7,11 +7,13 @@ export default function SortHeader({ label, field, currentSort, currentOrder, on
     <th onClick={() => onChange(field, active && currentOrder === 'asc' ? 'desc' : 'asc')}
       style={{
         cursor: 'pointer', userSelect: 'none', padding: '10px 12px', textAlign: 'left',
-        fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em',
-        color: active ? (styles.accentBlue || '#3b82f6') : styles.textTertiary,
-        borderBottom: `1px solid ${styles.borderGlass}`, whiteSpace: 'nowrap',
+        fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1px',
+        fontFamily: styles.mono,
+        color: active ? styles.purpleBright : styles.textTertiary,
+        borderBottom: '1px solid ' + styles.borderGlass, whiteSpace: 'nowrap',
+        transition: 'color 0.2s',
       }}>
-      {label}{active && <span style={{ marginLeft: 4, fontSize: '10px' }}>{currentOrder === 'asc' ? '↑' : '↓'}</span>}
+      {label}{active && <span style={{ marginLeft: 4, fontSize: '9px' }}>{currentOrder === 'asc' ? '↑' : '↓'}</span>}
     </th>
   );
 }

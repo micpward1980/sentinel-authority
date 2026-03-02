@@ -77,6 +77,9 @@ export default function SurveillancePage() {
   const [autoRefresh, setAutoRefresh] = useState(true);
   const [alertFilter, setAlertFilter] = useState('all');
   const [refreshing, setRefreshing] = useState(false);
+  const [scoreView, setScoreView] = useState('problems');
+  const [scoreSearch, setScoreSearch] = useState('');
+  const [scorePage, setScorePage] = useState(1);
   const qc = useQueryClient();
   const toast = useToast();
   const confirm = useConfirm();
@@ -107,6 +110,15 @@ export default function SurveillancePage() {
   const alerts = alertsData?.alerts ?? [];
   const suspensions = suspensionsData?.suspended_certificates ?? [];
   const bd = status?.status_breakdown ?? {};
+
+  const problemStatuses = ['degraded', 'stale', 'critical', 'failing', 'offline', 'suspended'];
+  const displayScores = scores.filter(s => {
+    const matchesView = scoreView === 'all' || problemStatuses.includes(s.status);
+    const matchesSearch = !scoreSearch || 
+      (s.session_id || '').toLowerCase().includes(scoreSearch.toLowerCase()) ||
+      (s.certificate_id || '').toLowerCase().includes(scoreSearch.toLowerCase());
+    return matchesView && matchesSearch;
+  });
 
   const ackMutation = useMutation({
     mutationFn: (alertId) => api.post('/api/surveillance/alerts/' + alertId + '/acknowledge'),
@@ -139,7 +151,7 @@ export default function SurveillancePage() {
 
   return (
     <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 24px 60px' }}>
-      <SectionHeader label="ENVELO Interlock" title="Continuous Enforcement" />
+      <SectionHeader label="Post-Certification" title="Conformance Surveillance" />
 
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24, flexWrap: 'wrap', gap: 12 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -176,9 +188,22 @@ export default function SurveillancePage() {
       </Panel>
 
       <Panel style={{ marginBottom: 20, padding: '20px 24px' }}>
-        <div style={Object.assign({}, label9, { marginBottom: 14 })}>CONFORMANCE SCORES</div>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+          <div style={label9}>SYSTEMS REQUIRING ATTENTION</div>
+          <div style={{ display: 'flex', gap: 4 }}>
+            {['problems','all'].map(f => (
+              <button key={f} onClick={() => setScoreView(f)} style={{ padding: '3px 8px', borderRadius: 3, border: '1px solid ' + (scoreView === f ? styles.purplePrimary : styles.textDim) + '33', background: scoreView === f ? styles.purplePrimary + '0c' : 'transparent', color: scoreView === f ? styles.purplePrimary : styles.textDim, fontFamily: styles.mono, fontSize: '9px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer' }}>
+                {f}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div style={{ marginBottom: 12 }}>
+          <input type="text" placeholder="Search by session ID or certificate..." value={scoreSearch} onChange={e => setScoreSearch(e.target.value)}
+            style={{ width: '100%', maxWidth: 400, padding: '8px 12px', border: '1px solid ' + styles.textDim + '33', background: 'transparent', color: styles.textPrimary, fontFamily: styles.mono, fontSize: '11px', outline: 'none' }} />
+        </div>
         {scoresLoading ? <div style={{ ...mono, fontSize: '12px', color: styles.textDim }}>Loading...</div>
-        : scores.length === 0 ? <div style={{ ...mono, fontSize: '12px', color: styles.textDim, padding: '12px 0' }}>No active sessions being monitored</div>
+        : displayScores.length === 0 ? <div style={{ ...mono, fontSize: '12px', color: styles.textDim, padding: '12px 0' }}>{scoreView === 'problems' ? 'All systems nominal' : 'No sessions found'}</div>
         : (
           <div style={{ overflowX: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
@@ -188,8 +213,8 @@ export default function SurveillancePage() {
                 ))}
               </tr></thead>
               <tbody>
-                {scores.map((s, i) => (
-                  <tr key={s.session_id} style={{ borderBottom: i < scores.length - 1 ? '1px solid ' + styles.textDim + '11' : 'none' }}>
+                {displayScores.slice(0, scorePage * 25).map((s, i) => (
+                  <tr key={s.session_id} style={{ borderBottom: i < displayScores.length - 1 ? '1px solid ' + styles.textDim + '11' : 'none' }}>
                     <td style={{ padding: '10px' }}><div style={{ display: 'flex', alignItems: 'center', gap: 6 }}><StatusDot status={s.status} /><span style={{ ...mono, fontSize: '10px', textTransform: 'uppercase', color: statusColor(s.status) }}>{s.status}</span></div></td>
                     <td style={{ ...mono, fontSize: '11px', padding: '10px', color: styles.textPrimary }}>{(s.session_id || '').substring(0, 16)}</td>
                     <td style={{ ...mono, fontSize: '11px', padding: '10px', color: styles.textSecondary }}>{s.certificate_id || '\u2014'}</td>
@@ -202,23 +227,18 @@ export default function SurveillancePage() {
                 ))}
               </tbody>
             </table>
+            {displayScores.length > scorePage * 25 && (
+              <div style={{ textAlign: 'center', padding: '12px' }}>
+                <button onClick={() => setScorePage(p => p + 1)} style={{ padding: '6px 16px', border: '1px solid ' + styles.textDim + '33', background: 'transparent', color: styles.purplePrimary, fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', cursor: 'pointer' }}>
+                  Load more ({displayScores.length - scorePage * 25} remaining)
+                </button>
+              </div>
+            )}
           </div>
         )}
       </Panel>
 
-      {suspensions.length > 0 && (
-        <Panel style={{ marginBottom: 20, padding: '20px 24px', border: '1px solid ' + styles.accentRed + '33' }}>
-          <div style={Object.assign({}, label9, { marginBottom: 14, color: styles.accentRed })}>AUTO-SUSPENDED CERTIFICATES</div>
-          {suspensions.map(certId => (
-            <div key={certId} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid ' + styles.textDim + '11' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}><StatusDot status="suspended" /><span style={{ ...mono, fontSize: '12px', color: styles.textPrimary }}>{certId}</span></div>
-              <button onClick={() => handleReinstate(certId)} disabled={reinstateMutation.isLoading} style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '4px 12px', borderRadius: 4, border: '1px solid ' + styles.accentGreen + '55', background: styles.accentGreen + '0a', color: styles.accentGreen, fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', cursor: 'pointer' }}>
-                <CheckCircle size={11} /> REINSTATE
-              </button>
-            </div>
-          ))}
-        </Panel>
-      )}
+
 
       <Panel style={{ padding: '20px 24px' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>

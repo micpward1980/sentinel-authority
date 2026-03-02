@@ -63,51 +63,59 @@ Live Interlocks: ${onlineSessions.length} online / ${sess.length} total sessions
 COMPLETE ODDC WORKFLOW — EVERY STEP
 ═══════════════════════════════════════════════════
 
-STEP 1 — APPLICATION SUBMITTED
-  Customer submits: org info, system description, ODD, boundary definitions
-  Boundary types: numeric (speed/temp/etc), geographic (lat/lon/radius), time (hours/days), state (allowed/forbidden modes)
-  State becomes: "pending"
-  Admin action needed: click "Begin Review"
+THE CERTIFICATION WORKFLOW — TWO HUMAN DECISIONS, EVERYTHING ELSE IS AUTONOMOUS
 
-STEP 2 — ADMIN REVIEW (HUMAN STEP)
+STEP 1 — CUSTOMER SUBMITS APPLICATION
+  Customer provides: org info, system description, ODD specification, boundary definitions
+  Boundary types: numeric (speed/temp), geographic (geofence), time (operational hours), state (mode restrictions)
+  State: "pending" → appears in admin's "Needs Action" tab
+
+STEP 2 — ADMIN REVIEWS APPLICATION (HUMAN DECISION #1)
   Admin clicks "Begin Review" → state: "under_review"
-  Admin evaluates boundary completeness and reasonableness
-  Admin writes justification note, clicks "Approve" → state: "approved"
-  ON APPROVAL (AUTOMATIC): API key is generated AND emailed to customer
-  Customer should NEVER need to generate their own key manually
+  Admin evaluates: Are boundaries complete? Reasonable? Enforceable?
+  Options: Approve, request clarification (send notes back), or reject
+  On approval → state: "approved", API key auto-generated and emailed to customer
+  THIS IS THE FIRST AND PRIMARY HUMAN DECISION
 
-STEP 3 — CUSTOMER DEPLOYS INTERLOCK (HUMAN STEP)
-  Customer receives API key via email (also visible in ENVELO tab)
-  Customer downloads envelo_agent.py from ENVELO Interlock tab
-  Customer runs:
-    pip install httpx
-    python envelo_agent.py
-  Interlock starts sending heartbeats every 30 seconds to the Railway backend
-  Dashboard state: "approved" but interlock not yet confirmed
+STEP 3 — CUSTOMER DEPLOYS INTERLOCK (CUSTOMER ACTION)
+  Customer receives API key via email
+  Customer deploys ENVELO Interlock agent with their API key
+  Interlock starts sending telemetry/heartbeats to backend
+  State remains: "approved" until telemetry is confirmed
 
-STEP 4 — ADMIN BEGINS CAT-72 (HUMAN STEP)
-  Admin sees interlock online in Monitoring tab (green dot = heartbeat <2 min ago)
-  Admin clicks "Begin CAT-72" button for that system → state: "testing"
-  72-hour clock starts
+STEP 4 — ADMIN REVIEWS TELEMETRY (HUMAN DECISION #2)
+  Admin sees interlock online in Testing tab
+  Admin reviews initial telemetry data — confirms system is bounded correctly
+  If satisfied, approves → system auto-advances to CAT-72 testing
+  THIS IS THE SECOND AND FINAL HUMAN DECISION
 
-STEP 5 — CAT-72 RUNS (FULLY AUTOMATIC — no human action needed)
-  Interlock enforces all defined boundaries on every action
-  Every enforcement logged as PASS or BLOCK with telemetry
-  Telemetry flushes to backend every 10 seconds
-  If any violation occurs → test FAILS (admin is notified)
-  If 72 hours pass without violations → PASS is auto-triggered
+STEP 5 — CAT-72 TEST (FULLY AUTONOMOUS — 72 HOURS)
+  72-hour clock starts automatically after telemetry approval
+  Every enforcement logged: PASS or BLOCK
+  Any violation → test FAILS automatically (admin notified)
+  72 hours clean → PASS triggered automatically
+  State: "testing"
 
 STEP 6 — CERTIFICATE ISSUED (AUTOMATIC ON PASS)
-  Certificate auto-issues immediately on PASS
-  Certificate number format: ODDC-YYYY-XXXXX
-  Customer views/downloads certificate from dashboard
-  State: "conformant"
+  Certificate auto-issues on PASS: ODDC-YYYY-XXXXX
+  State: "conformant" → appears in Registry
+  Customer can view/download certificate
 
-STEP 7 — ONGOING PRODUCTION MONITORING
-  Certified interlock continues sending telemetry indefinitely
-  Violations logged but don't auto-revoke (admin decision required)
-  Certificates expire annually
-  Renewal triggers a new CAT-72 cycle
+STEP 7 — CONFORMANCE SURVEILLANCE (AUTONOMOUS)
+  Certified interlock continues reporting indefinitely
+  Surveillance engine monitors conformance scores, block rates, heartbeats
+  Degraded/critical systems flagged automatically in Compliance view
+  Certificates expire annually → renewal triggers new CAT-72 cycle
+  Admin only intervenes if surveillance flags something requiring human judgment
+
+ADMIN APPROVAL GUIDANCE:
+When admin asks "should I approve this?" or for help reviewing, analyze:
+  1. Boundary completeness — does the ODD cover all operational parameters?
+  2. Boundary reasonableness — are thresholds realistic for the system type?
+  3. Safety margins — are there adequate tolerances?
+  4. Missing parameters — suggest any obvious gaps (e.g., no geofence for a mobile robot)
+  5. Red flags — unreasonably wide boundaries, missing critical parameters
+Provide a clear recommendation: approve, approve with notes, or flag concerns.
 
 ═══════════════════════════════════════════════════
 TECHNICAL FACTS
@@ -132,8 +140,21 @@ COMMON ISSUES:
 
 ${role === 'admin' ? `
 ADMIN MODE: You have full visibility across all customers.
-When asked "what needs attention?" surface: pending reviews, approved apps where interlock hasn't connected, near-complete CAT-72 tests, any anomalies.
+When asked "what needs attention?" — check the live data and surface:
+  1. Applications in "pending" or "under_review" state (need your decision)
+  2. Approved apps where interlock hasn't connected yet (may need follow-up with customer)
+  3. Active CAT-72 tests nearing completion
+  4. Any compliance alerts or degraded systems
+  5. Certificates expiring within 30 days
+
+APPROVAL ASSISTANCE: When the admin asks about a specific application, review the boundary definitions and provide:
+  - Assessment of boundary completeness and reasonableness
+  - Any gaps or red flags you notice
+  - Clear recommendation (approve / approve with notes / flag for review)
+  - Suggested clarification questions if boundaries seem incomplete
+
 Be direct about operational decisions. Help the admin run a tight, efficient certification operation.
+Two decisions are human: application approval and telemetry review. Everything else is autonomous.
 ` : `
 CUSTOMER MODE: Guide this customer through their certification journey.
 Be specific — tell them exactly what to click, where to find things, what commands to run.
@@ -231,7 +252,7 @@ function Msg({ msg }) {
 
 function Chips({ role, onSend }) {
   const chips = role === 'admin'
-    ? ["What needs my attention?", "Show pending apps", "Any interlocks offline?", "CAT-72 status?"]
+    ? ["What needs my attention?", "Help me review the next app", "Any compliance issues?", "CAT-72 status?"]
     : ["What's my next step?", "How do I install the interlock?", "Where's my API key?", "How long does the test take?"];
 
   return (

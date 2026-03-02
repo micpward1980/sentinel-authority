@@ -86,14 +86,24 @@ function EmailPreviewModal({ preview, onCancel, onConfirm }) {
           <div style={{ fontSize: '14px', color: styles.textPrimary, fontWeight: 500 }}>{preview.subject}</div>
         </div>
         <div style={{ flex: 1, overflow: 'auto', padding: '20px 24px' }}>
-          <div dangerouslySetInnerHTML={{ __html: preview.html }} />
+          <div dangerouslySetInnerHTML={{ __html: preview.html }} className="sa-email-preview" />
+          <style>{`
+.sa-email-preview td[style*="background"] { background: #1d1a3b !important; }
+.sa-email-preview td[bgcolor] { background: #1d1a3b !important; }
+.sa-email-preview table[style*="background"] { background: #1d1a3b !important; }
+.sa-email-preview h1, .sa-email-preview h2 { font-family: ${styles.serif} !important; }
+          `}</style>
         </div>
         <div style={{ padding: '16px 24px', borderTop: `1px solid ${styles.borderGlass}`, display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
           <button onClick={onCancel} style={ACTION_BTN(styles.textSecondary)}>Cancel</button>
-          <button onClick={onConfirm} style={ACTION_BTN(
-            preview.newState === 'suspended' ? styles.accentRed : '#fff',
-            preview.newState !== 'suspended'
-          )}>
+          <button onClick={onConfirm} style={{
+            padding: '8px 16px',
+            background: preview.newState === 'suspended' ? 'transparent' : styles.accentGreen,
+            border: '1px solid ' + (preview.newState === 'suspended' ? styles.accentRed : styles.accentGreen),
+            color: preview.newState === 'suspended' ? styles.accentRed : '#fff',
+            fontFamily: styles.mono, fontSize: '11px', fontWeight: 600,
+            letterSpacing: '0.08em', textTransform: 'uppercase', cursor: 'pointer',
+          }}>
             {preview.label} + Send Email
           </button>
         </div>
@@ -253,26 +263,24 @@ function ApplicationDetail() {
             {app.state === 'pending' && (
               <button onClick={() => showEmailPreview('under_review', 'Begin Review')} disabled={previewLoading} style={ACTION_BTN(styles.accentAmber)}>Begin Review</button>
             )}
-            {app.state === 'pending' && (
-              <button onClick={() => showEmailPreview('approved', 'Skip to Approved')} disabled={previewLoading} style={{ ...ACTION_BTN(styles.textTertiary), fontSize: '10px', opacity: 0.6 }}>Skip Review</button>
+            {app.state === 'under_review' && (<>
+              <button onClick={() => showEmailPreview('approved', 'Approve')} disabled={previewLoading} style={ACTION_BTN(styles.accentGreen, true)}>Approve</button>
+              <button onClick={() => showEmailPreview('suspended', 'Reject')} disabled={previewLoading} style={ACTION_BTN(styles.accentRed)}>Reject</button>
+            </>)}
+            {app.state === 'approved' && (
+              <span style={{ fontFamily: styles.mono, fontSize: '10px', color: styles.textDim, padding: '8px 0' }}>Awaiting customer interlock deployment</span>
             )}
-            {app.state === 'under_review' && (
-              <button onClick={() => showEmailPreview('approved', 'Approve')} disabled={previewLoading} style={ACTION_BTN(styles.accentGreen, true)}>Approve & Push Key</button>
+            {app.state === 'testing' && (
+              <Link to="/cat72" style={{ ...ACTION_BTN(styles.purpleBright), textDecoration: 'none' }}>View CAT-72 Console</Link>
             )}
-            {app.state === 'observe' && (
-              <button onClick={() => navigate(`/applications/${id}/pre-review`)} disabled={previewLoading} style={ACTION_BTN(styles.accentGreen, true)}>Run Pre-CAT-72 Audit</button>
-            )}
-            {['under_review', 'approved', 'observe', 'bounded', 'conformant'].includes(app.state) && (
-              <button onClick={() => showEmailPreview('suspended', 'Suspend Application')} style={ACTION_BTN(styles.accentRed)}>Suspend</button>
+            {app.state === 'conformant' && (
+              <button onClick={() => showEmailPreview('suspended', 'Suspend')} style={ACTION_BTN(styles.accentRed)}>Suspend</button>
             )}
             {(app.state === 'suspended' || app.state === 'revoked') && (
               <button onClick={handleReinstate} style={ACTION_BTN(styles.accentGreen)}>Reinstate</button>
             )}
-            {app.state === 'expired' && (
-              <button onClick={handleReinstate} style={ACTION_BTN(styles.purpleBright)}>Re-open</button>
-            )}
-            {['pending', 'suspended', 'revoked'].includes(app.state) && (
-              <button onClick={handleDelete} style={ACTION_BTN(styles.accentRed)}>Delete</button>
+            {(app.state === 'failed' || app.state === 'test_failed') && (
+              <button onClick={() => showEmailPreview('testing', 'Retry Test')} disabled={previewLoading} style={ACTION_BTN(styles.accentAmber)}>Retry Test</button>
             )}
           </div>
         )}
@@ -353,19 +361,7 @@ function ApplicationDetail() {
             }}>
               {app.state?.replace('_', ' ')}
             </span>
-            {isAdmin && (
-              <select value={app.state} onChange={e => handleStateDropdown(e.target.value)}
-                style={{ background: styles.cardSurface, border: `1px solid ${styles.borderGlass}`, color: styles.textPrimary, fontFamily: styles.mono, fontSize: '11px', padding: '4px 8px', cursor: 'pointer' }}>
-                <option value="pending">Pending</option>
-                <option value="under_review">Under Review</option>
-                <option value="approved">Approved</option>
-                <option value="observe">Observe</option>
-                <option value="bounded">Bounded (CAT-72)</option>
-                <option value="conformant">Conformant</option>
-                <option value="suspended">Suspended</option>
-                <option value="revoked">Revoked</option>
-              </select>
-            )}
+
           </div>
           <p style={{ color: styles.textSecondary, margin: 0, fontFamily: styles.mono, fontSize: '12px' }}>
             Submitted: {fmtUTC(app.submitted_at)}
