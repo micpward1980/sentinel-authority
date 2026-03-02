@@ -116,6 +116,8 @@ function CustomerDashboard() {
   const certActive = summary?.certificates?.active || 0;
   const hasCerts = certTotal > 0;
   const sessions = monitoring?.sessions || [];
+  const conformantCount = certActive;
+  const totalCerts = certTotal;
   const onlineCount = sessions.filter(isOnline).length;
   const totalSessions = monitoring?.summary?.total || 0;
   const hasAgents = totalSessions > 0;
@@ -142,7 +144,7 @@ function CustomerDashboard() {
         {hasAgents && (() => {
           const statusColor = onlineCount > 0 ? styles.accentGreen : styles.accentAmber;
           const statusText = onlineCount > 0 ? `${onlineCount} of ${totalSessions} online` : 'All systems offline';
-          return <StatCard onClick={() => navigate('/monitoring')} label="Live Status" value={onlineCount} color={statusColor} icon={<Wifi fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{color: statusColor}} />} subtitle={statusText} />;
+          return <StatCard onClick={() => navigate('/surveillance')} label="Live Status" value={onlineCount} color={statusColor} icon={<Wifi fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{color: statusColor}} />} subtitle={statusText} />;
         })()}
       </div>
 
@@ -340,15 +342,15 @@ function Dashboard() {
   const portfolio = useMemo(() => {
     const now = Date.now();
     const d30 = 30 * 24 * 60 * 60 * 1000;
-    let conformant = 0, expiringSoon = 0, suspended = 0, expired = 0;
+    let conformant = 0, expiringSoon = 0, nonConformant = 0, expired = 0;
     allCerts.forEach(c => {
       const isActive = c.state === 'conformant' || c.state === 'active' || c.state === 'issued';
-      if (c.state === 'suspended' || c.state === 'revoked') { suspended++; return; }
+      if (c.state === 'non_conformant' || c.state === 'suspended' || c.state === 'revoked') { nonConformant++; return; }
       if (c.state === 'expired' || (c.expires_at && new Date(c.expires_at) < now)) { expired++; return; }
       if (isActive && c.expires_at && new Date(c.expires_at) < new Date(now + d30)) { expiringSoon++; return; }
       if (isActive) { conformant++; return; }
     });
-    return { conformant, expiringSoon, suspended, expired, total: allCerts.length };
+    return { conformant, expiringSoon, nonConformant, expired, total: allCerts.length };
   }, [allCerts]);
 
   // Pipeline counts per stage
@@ -369,6 +371,8 @@ function Dashboard() {
 
   const onlineCount = monitoring?.sessions?.filter(isOnline).length || monitoring?.summary?.active || 0;
   const totalSessions = monitoring?.summary?.total || monitoring?.sessions?.length || 0;
+  const conformantCount = portfolio.conformant + portfolio.expiringSoon;
+  const totalCerts = portfolio.total;
   const alertCount = complianceAlerts.length + activeTests.filter(t => t.status === 'failed').length;
 
   /* ── Actions ──────────────────────────────────────────────────────────── */
@@ -478,14 +482,14 @@ function Dashboard() {
             <DonutChart data={[
               { label: 'Conformant', value: portfolio.conformant, color: styles.accentGreen },
               { label: 'Expiring 30d', value: portfolio.expiringSoon, color: styles.accentAmber },
-              { label: 'Suspended', value: portfolio.suspended, color: styles.accentRed },
+              { label: 'Non-Conformant', value: portfolio.nonConformant, color: styles.accentRed },
               { label: 'Expired', value: portfolio.expired, color: styles.textDim },
             ]} />
             <div style={{display: 'flex', flexDirection: 'column', gap: '10px', flex: 1}}>
               {[
                 { label: 'Conformant', value: portfolio.conformant, color: styles.accentGreen },
                 { label: 'Expiring < 30d', value: portfolio.expiringSoon, color: styles.accentAmber },
-                { label: 'Suspended', value: portfolio.suspended, color: styles.accentRed },
+                { label: 'Non-Conformant', value: portfolio.nonConformant, color: styles.accentRed },
                 { label: 'Expired', value: portfolio.expired, color: styles.textDim },
               ].map(row => (
                 <div key={row.label} style={{display: 'flex', alignItems: 'center', gap: '10px'}}>
@@ -561,9 +565,9 @@ function Dashboard() {
       {/* ── Row 2: Live Status Strip ─────────────────────────────────────── */}
       <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '12px', marginBottom: '24px'}}>
         {[
-          { label: 'Pending Review', value: needsAction.length, color: needsAction.length > 0 ? styles.accentAmber : styles.textDim, onClick: () => {} },
+          { label: 'Pending Review', value: needsAction.length, color: needsAction.length > 0 ? styles.accentAmber : styles.textDim, onClick: () => navigate('/applications') },
           { label: 'Active Tests', value: activeTests.length, color: activeTests.length > 0 ? styles.purpleBright : styles.textDim, onClick: () => navigate('/cat72') },
-          { label: 'Systems Online', value: `${onlineCount}/${totalSessions}`, color: onlineCount > 0 ? styles.accentGreen : styles.textDim, onClick: () => navigate('/monitoring') },
+          { label: 'Systems Online', value: `${conformantCount}/${totalCerts}`, color: conformantCount > 0 ? styles.accentGreen : styles.textDim, onClick: () => navigate('/surveillance') },
           { label: 'Alerts', value: complianceAlerts.length, color: complianceAlerts.length > 0 ? styles.accentAmber : styles.accentGreen, onClick: () => navigate('/surveillance') },
         ].map(item => (
           <div key={item.label} onClick={item.onClick} style={{background: styles.cardSurface, border: '1px solid ' + styles.borderGlass, padding: '16px 20px', cursor: 'pointer', transition: 'border-color 0.15s'}} onMouseEnter={e => e.currentTarget.style.borderColor = styles.purpleBright} onMouseLeave={e => e.currentTarget.style.borderColor = styles.borderGlass}>

@@ -198,7 +198,7 @@ function NewApplication() {
   // ── Validation ──
   const canNext = () => {
     if (step === 1) return org.organization_name.trim() && org.contact_email.trim();
-    if (step === 2) return sys.system_name.trim() && sys.system_type;
+    if (step === 2) return sys.system_name.trim() && sys.system_type && sys.system_version.trim() && sys.manufacturer.trim();
     return true;
   };
 

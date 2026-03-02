@@ -159,10 +159,12 @@ export default function SurveillancePage() {
   });
   const monSummary = monitoringData?.summary || {};
   const monSessions = monitoringData?.sessions || [];
-  const onlineSessions = monSessions.filter(s => s.is_online);
-  const offlineSessions = monSessions.filter(s => !s.is_online && s.status !== 'ended');
-  const totalFleet = onlineSessions.length + offlineSessions.length;
-  const healthPct = totalFleet > 0 ? (onlineSessions.length / totalFleet * 100) : 0;
+  const conformantSystems = allSystems.filter(s => s.status === 'conformant');
+  const degradedSystems = allSystems.filter(s => s.status === 'degraded');
+  const offlineSystems = allSystems.filter(s => s.status === 'non_conformant' || s.status === 'critical' || s.status === 'offline');
+  const totalFleet = allSystems.length;
+  const healthyCount = conformantSystems.length + degradedSystems.length;
+  const healthPct = totalFleet > 0 ? (healthyCount / totalFleet * 100) : 0;
 
   const status = statusData ?? null;
   const bd = status?.status_breakdown ?? {};
@@ -252,18 +254,19 @@ export default function SurveillancePage() {
         <Panel style={{ marginBottom: 16, padding: '16px 24px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
             <div style={label9}>Fleet Health</div>
-            <div style={{ ...mono, fontSize: '12px', color: healthPct >= 90 ? styles.accentGreen : healthPct >= 70 ? styles.accentAmber : styles.accentRed, fontWeight: 500 }}>{healthPct.toFixed(0)}% Online</div>
+            <div style={{ ...mono, fontSize: '12px', color: healthPct >= 90 ? styles.accentGreen : healthPct >= 70 ? styles.accentAmber : styles.accentRed, fontWeight: 500 }}>{healthPct.toFixed(0)}% Healthy</div>
           </div>
           <div style={{ height: 6, background: 'transparent', overflow: 'hidden', display: 'flex', borderRadius: 3 }}>
-            {onlineSessions.length > 0 && <div style={{ width: (onlineSessions.length / totalFleet * 100) + '%', background: styles.accentGreen, transition: 'width 0.5s' }} />}
-            {offlineSessions.length > 0 && <div style={{ width: (offlineSessions.length / totalFleet * 100) + '%', background: styles.accentRed, transition: 'width 0.5s' }} />}
+            {conformantSystems.length > 0 && <div style={{ width: (conformantSystems.length / totalFleet * 100) + '%', background: styles.accentGreen, transition: 'width 0.5s' }} />}
+            {degradedSystems.length > 0 && <div style={{ width: (degradedSystems.length / totalFleet * 100) + '%', background: styles.accentAmber, transition: 'width 0.5s' }} />}
+            {offlineSystems.length > 0 && <div style={{ width: (offlineSystems.length / totalFleet * 100) + '%', background: styles.accentRed, transition: 'width 0.5s' }} />}
           </div>
           <div style={{ display: 'flex', gap: 20, marginTop: 8 }}>
             <span style={{ fontSize: '10px', color: styles.accentGreen, display: 'flex', alignItems: 'center', gap: 4 }}>
-              <span style={{ width: 6, height: 6, borderRadius: '50%', background: styles.accentGreen, display: 'inline-block' }} /> {onlineSessions.length} online
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: styles.accentGreen, display: 'inline-block' }} /> {conformantSystems.length} conformant
             </span>
             <span style={{ fontSize: '10px', color: styles.accentRed, display: 'flex', alignItems: 'center', gap: 4 }}>
-              <span style={{ width: 6, height: 6, borderRadius: '50%', background: styles.accentRed, display: 'inline-block' }} /> {offlineSessions.length} offline
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: styles.accentRed, display: 'inline-block' }} /> {degradedSystems.length} degraded
             </span>
             {monSummary.pass_rate > 0 && <span style={{ fontSize: '10px', color: monSummary.pass_rate >= 99 ? styles.accentGreen : styles.accentAmber, display: 'flex', alignItems: 'center', gap: 4, marginLeft: 'auto' }}>
               Pass Rate: {monSummary.pass_rate?.toFixed(1)}%
@@ -368,7 +371,7 @@ export default function SurveillancePage() {
                     <button onClick={async (e) => { e.stopPropagation(); try { const base = user?.role === 'admin' ? '/api/envelo/admin/sessions/' : '/api/envelo/my/sessions/'; const res = await api.get(base + sessionDetail.session_id + '/telemetry'); const recs = res.data.records || []; if (recs.length === 0) { toast.show('No telemetry data', 'info'); return; } const h = ['timestamp','action_type','result','execution_time_ms']; const csv = [h.join(','), ...recs.map(r => h.map(k => JSON.stringify(r[k] ?? '')).join(','))].join('\n'); const b = new Blob([csv], {type:'text/csv'}); const l = document.createElement('a'); l.href = URL.createObjectURL(b); l.download = 'telemetry-' + sessionDetail.session_id + '.csv'; l.click(); } catch { toast.show('Failed', 'error'); }}} style={{ padding: '4px 10px', border: '1px solid ' + styles.purplePrimary + '33', background: 'transparent', color: styles.purplePrimary, fontFamily: styles.mono, fontSize: '9px', letterSpacing: '0.5px', cursor: 'pointer', borderRadius: 3, textTransform: 'uppercase' }}>Telemetry CSV</button>
                     <button onClick={async (e) => { e.stopPropagation(); try { const base = user?.role === 'admin' ? '/api/envelo/admin/sessions/' : '/api/envelo/my/sessions/'; const res = await api.get(base + sessionDetail.session_id + '/violations'); const v = res.data.violations || []; if (v.length === 0) { toast.show('No violations', 'info'); return; } const h = ['timestamp','boundary_name','violation_message']; const csv = [h.join(','), ...v.map(r => h.map(k => JSON.stringify(r[k] ?? '')).join(','))].join('\n'); const b = new Blob([csv], {type:'text/csv'}); const l = document.createElement('a'); l.href = URL.createObjectURL(b); l.download = 'violations-' + sessionDetail.session_id + '.csv'; l.click(); } catch { toast.show('Failed', 'error'); }}} style={{ padding: '4px 10px', border: '1px solid ' + styles.accentRed + '33', background: 'transparent', color: styles.accentRed, fontFamily: styles.mono, fontSize: '9px', letterSpacing: '0.5px', cursor: 'pointer', borderRadius: 3, textTransform: 'uppercase' }}>Violations CSV</button>
                     <button onClick={async (e) => { e.stopPropagation(); try { const base = user?.role === 'admin' ? '/api/envelo/admin/sessions/' : '/api/envelo/my/sessions/'; const res = await api.get(base + sessionDetail.session_id + '/report', { responseType: 'blob' }); const b = new Blob([res.data], {type:'application/pdf'}); const l = document.createElement('a'); l.href = URL.createObjectURL(b); l.download = 'CAT72-Report-' + sessionDetail.session_id + '.pdf'; l.click(); } catch { toast.show('Failed', 'error'); }}} style={{ padding: '4px 10px', border: '1px solid ' + styles.accentGreen + '33', background: 'transparent', color: styles.accentGreen, fontFamily: styles.mono, fontSize: '9px', letterSpacing: '0.5px', cursor: 'pointer', borderRadius: 3, textTransform: 'uppercase' }}>CAT-72 Report</button>
-                    {s.application_id && <button onClick={(e) => { e.stopPropagation(); navigate('/applications/' + s.application_id); }} style={{ padding: '4px 10px', border: '1px solid ' + styles.textDim + '33', background: 'transparent', color: styles.textSecondary, fontFamily: styles.mono, fontSize: '9px', letterSpacing: '0.5px', cursor: 'pointer', borderRadius: 3, textTransform: 'uppercase' }}>Application →</button>}
+                    {s.application_id && <button onClick={(e) => { e.stopPropagation(); navigate('/applications/' + s.application_id); }} style={{ padding: '4px 10px', border: '1px solid ' + styles.textDim + '33', background: 'transparent', color: styles.textSecondary, fontFamily: styles.mono, fontSize: '9px', letterSpacing: '0.5px', cursor: 'pointer', borderRadius: 3, textTransform: 'uppercase' }}>Details →</button>}
                   </div>
                 </div>
               )}
