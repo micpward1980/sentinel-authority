@@ -112,8 +112,66 @@ function describeBoundary(b) {
     case 'jurisdiction': case 'scope': case 'authorization':
       return { label: b.name || b.role_key, detail: `${b.role_key || 'Role'} restricted from: ${b.prohibited_actions ? Object.values(b.prohibited_actions).flat().join(', ') : '—'}`, cat: 'Process', alert: true };
 
-    default:
-      return { label: b.name || t, detail: JSON.stringify(b).substring(0, 100), cat: 'Other' };
+    default: {
+      // Smart fallback: inspect fields and generate human-readable description
+      let detail = '';
+      let cat = 'Other';
+      if (b.min_value != null && b.max_value != null) {
+        detail = `${b.min_value} → ${b.max_value} ${b.unit || ''}${b.tolerance ? ` (±${b.tolerance})` : ''}`;
+        cat = 'Physical';
+      } else if (b.allowed_values || b.allowed_states) {
+        detail = `Allowed: ${(b.allowed_values || b.allowed_states || []).join(', ')}`;
+        cat = 'Physical';
+        return { label: b.name || t, detail, cat, chips: b.allowed_values || b.allowed_states };
+      } else if (b.forbidden_states || b.prohibited_actions) {
+        const items = b.forbidden_states || Object.values(b.prohibited_actions || {}).flat();
+        detail = `Prohibited: ${items.join(', ')}`;
+        cat = 'Process';
+        return { label: b.name || t, detail, cat, alert: true };
+      } else if (b.max_rate != null || b.max_delta != null) {
+        detail = `Max change: ${b.max_rate ?? b.max_delta} ${b.unit || ''}/s`;
+        cat = 'Physical';
+      } else if (b.start && b.end) {
+        detail = `${b.start} → ${b.end}${b.timezone ? ` (${b.timezone})` : ''}`;
+        cat = 'Physical';
+      } else if (b.center_lat != null && b.center_lng != null) {
+        detail = `${b.radius_m ? (b.radius_m/1000).toFixed(1) + 'km from' : 'At'} ${b.center_lat.toFixed(4)}, ${b.center_lng.toFixed(4)}`;
+        cat = 'Physical';
+        return { label: b.name || t, detail, cat, geo: true };
+      } else if (b.max_gap_seconds != null || b.timeout != null) {
+        detail = `Max gap: ${b.max_gap_seconds ?? b.timeout}s between signals`;
+        cat = 'Physical';
+      } else if (b.min_operational != null || b.min_count != null) {
+        detail = `Min ${b.min_operational ?? b.min_count} of ${b.total ?? '?'} ${b.component || 'units'} operational`;
+        cat = 'Aviation';
+      } else if (b.min_reserve_pct != null || b.min_level != null) {
+        detail = `Min ${b.min_reserve_pct ?? b.min_level}% ${b.resource || 'reserve'} required`;
+        cat = 'Aviation';
+      } else if (b.max_count != null || b.threshold != null) {
+        detail = `Max ${b.max_count ?? b.threshold} occurrences per ${b.period || b.window || '?'}`;
+        cat = 'Analytical';
+      } else if (b.max_drift != null) {
+        detail = `Max ${b.max_drift}% drift over ${b.window_samples || '?'} samples`;
+        cat = 'Analytical';
+      } else if (b.required_sequence || b.steps) {
+        detail = `Required: ${(b.required_sequence || b.steps || []).join(' → ')}`;
+        cat = 'Analytical';
+      } else if (b.required_value != null || b.expected != null) {
+        detail = `Must be ${b.required_value ?? b.expected} during operation`;
+        cat = 'Physical';
+      } else if (b.conditions) {
+        detail = `${(b.conditions || []).length} conditions must all be met`;
+        cat = 'Analytical';
+      } else if (b.description) {
+        detail = b.description;
+      } else {
+        // Last resort: show key-value pairs, skip metadata
+        const skip = new Set(['name','type','id','created_at','updated_at']);
+        const pairs = Object.entries(b).filter(([k]) => !skip.has(k)).slice(0, 4);
+        detail = pairs.map(([k, v]) => `${k.replace(/_/g,' ')}: ${typeof v === 'object' ? JSON.stringify(v).substring(0,30) : v}`).join(' · ');
+      }
+      return { label: b.name || t, detail, cat };
+    }
   }
 }
 
