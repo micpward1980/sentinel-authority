@@ -14,6 +14,7 @@ from app.services.audit_service import write_audit_log
 from app.core.database import get_db
 from app.core.security import get_current_user, require_role
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
 from typing import Optional
 from datetime import datetime, timezone
 
