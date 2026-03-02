@@ -61,6 +61,7 @@ function CertificatesPage() {
       nonconformant: rawCerts.filter(c => c.state === 'suspended' || c.state === 'revoked' || c.state === 'expired').length,
     });
     let all = [...rawCerts];
+    all = all.filter(c => c.state !== 'pending');
     if (stateFilter === 'conformant') all = all.filter(c => isActiveState(c.state));
     else if (stateFilter === 'nonconformant') all = all.filter(c => c.state === 'suspended' || c.state === 'revoked' || c.state === 'expired');
     else if (stateFilter !== 'all') all = all.filter(c => c.state === stateFilter);
