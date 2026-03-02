@@ -49,6 +49,7 @@ function Layout({ children }) {
     { name: 'Testing', href: '/cat72', icon: Activity, roles: ['admin'] },
     { name: 'Conformance', href: '/surveillance', icon: CheckCircle, roles: ['admin'] },
     { name: 'Registry', href: '/certificates', icon: Award, roles: ['admin'] },
+    { name: 'Users', href: '/users', icon: Users, roles: ['admin'] },
   ];
 
   const hasCert = Array.isArray(userCerts) && userCerts.some(c => c.state === 'conformant' || c.state === 'active' || c.state === 'issued');

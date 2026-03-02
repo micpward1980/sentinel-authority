@@ -57,6 +57,7 @@ function CustomerDashboard() {
   const [loading, setLoading] = useState(true);
   const [monitoring, setMonitoring] = useState(null);
   const [recentActivity, setRecentActivity] = useState([]);
+  const [complianceAlerts, setComplianceAlerts] = useState([]);
 
   useEffect(() => {
     Promise.all([
@@ -65,7 +66,7 @@ function CustomerDashboard() {
       api.get('/api/envelo/monitoring/overview').catch(() => ({ data: null })),
       api.get('/api/surveillance/alerts?limit=100').catch(() => ({ data: { alerts: [] } })),
       api.get('/api/audit/my-logs?limit=5&offset=0').catch(() => ({ data: { logs: [] } }))
-    ]).then(([sumRes, appsRes, monRes, actRes]) => {
+    ]).then(([sumRes, appsRes, monRes, alertsRes, actRes]) => {
       setSummary(sumRes.data);
       setApplications(appsRes.data.applications || appsRes.data || []);
       if (monRes.data) setMonitoring(monRes.data);
