@@ -22,7 +22,7 @@ function CAT72Console() {
 
   const loadTests = () => {
     api.get('/api/cat72/tests').then(res => {
-      const list = Array.isArray(res.data) ? res.data : [];
+      const list = Array.isArray(res.data) ? res.data : (res.data?.tests || []);
       setTests(list);
       list.filter(t => t.state === 'running').forEach(t => {
         api.get(`/api/cat72/tests/${t.test_id}/telemetry?limit=50`)
