@@ -332,9 +332,11 @@ async def list_monitored_systems(
     )
 
     if status == "conformant":
-        base = base.where(EnveloSession.status == "healthy")
+        base = base.where(EnveloSession.status.in_(["healthy", "active"]))
+    elif status == "degraded":
+        base = base.where(EnveloSession.status == "degraded")
     elif status == "non_conformant":
-        base = base.where(EnveloSession.status.in_(["degraded", "critical", "offline"]))
+        base = base.where(EnveloSession.status.in_(["critical", "offline", "suspended"]))
 
     if search:
         term = f"%{search}%"
