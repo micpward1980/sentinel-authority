@@ -44,7 +44,7 @@ function App() {
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/reset-password" element={<LazyLoad><ResetPasswordPage /></LazyLoad>} />
-          <Route path="/verify" element={<LazyLoad><VerifyPage /></LazyLoad>} />
+          <Route path="/verify" element={<ProtectedRoute><Layout><LazyLoad><VerifyPage /></LazyLoad></Layout></ProtectedRoute>} />
           <Route path="/dashboard" element={<ProtectedRoute><Layout><LazyLoad><DashboardPage /></LazyLoad></Layout></ProtectedRoute>} />
           <Route path="/applications" element={<ProtectedRoute><Layout><LazyLoad><ApplicationsList /></LazyLoad></Layout></ProtectedRoute>} />
           <Route path="/applications/new" element={<ProtectedRoute><Layout><LazyLoad><NewApplication /></LazyLoad></Layout></ProtectedRoute>} />

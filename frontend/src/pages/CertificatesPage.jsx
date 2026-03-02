@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Search, Download } from 'lucide-react';
 import { api, API_BASE } from '../config/api';
 import { styles } from '../config/styles';
@@ -13,21 +13,26 @@ function certVariant(state) {
   if (state === 'conformant' || state === 'active' || state === 'issued') return 'green';
   if (state === 'suspended') return 'amber';
   if (state === 'revoked') return 'red';
+  if (state === 'pending') return 'amber';
   return 'dim';
 }
 
 function isActiveState(state) {
   return state === 'conformant' || state === 'active' || state === 'issued';
 }
+function isPending(state) {
+  return state === 'pending';
+}
 
 const TABS = [
-  { key: 'active', label: 'Active' },
-  { key: 'suspended', label: 'Suspended' },
-  { key: 'revoked', label: 'Revoked' },
+  { key: 'conformant', label: 'Conformant' },
+  { key: 'pending', label: 'Pending' },
+  { key: 'nonconformant', label: 'Non-Conformant' },
   { key: 'all', label: 'All' },
 ];
 
 function CertificatesPage() {
+  const navigate = useNavigate();
   const [certs, setCerts] = useState([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -36,8 +41,8 @@ function CertificatesPage() {
   const [sortOrder, setSortOrder] = useState('desc');
   const [search, setSearch] = useState('');
   const [searchInput, setSearchInput] = useState('');
-  const [stateFilter, setStateFilter] = useState('active');
-  const [counts, setCounts] = useState({ all: 0, active: 0, suspended: 0, revoked: 0 });
+  const [stateFilter, setStateFilter] = useState('conformant');
+  const [counts, setCounts] = useState({ all: 0, conformant: 0, pending: 0, nonconformant: 0 });
 
   const fetchCerts = useCallback(async () => {
     setLoading(true);
@@ -46,13 +51,15 @@ function CertificatesPage() {
         limit: LIMIT, offset, sort_by: sortBy, sort_order: sortOrder,
       });
       if (search) params.append('search', search);
-      if (stateFilter !== 'all') {
-        if (stateFilter === 'active') {
+      if (stateFilter === 'conformant') {
           params.append('state', 'conformant');
-        } else {
+        } else if (stateFilter === 'pending') {
+          params.append('state', 'pending');
+        } else if (stateFilter === 'nonconformant') {
+          // handled client-side
+        } else if (stateFilter !== 'all') {
           params.append('state', stateFilter);
         }
-      }
       const res = await api.get('/api/v1/certificates/list?' + params.toString());
       setCerts(res.data.certificates || res.data.items || []);
       setTotal(res.data.total || 0);
@@ -61,15 +68,31 @@ function CertificatesPage() {
       // Fallback to old endpoint
       try {
         const res = await api.get('/api/certificates/');
-        const all = res.data || [];
+        const raw = res.data || [];
+        setCounts({
+          all: raw.length,
+          conformant: raw.filter(c => isActiveState(c.state)).length,
+          pending: raw.filter(c => c.state === 'pending').length,
+          nonconformant: raw.filter(c => c.state === 'suspended' || c.state === 'revoked' || c.state === 'expired').length,
+        });
+        let all = [...raw];
+        // Client-side filter
+        if (stateFilter === 'conformant') all = all.filter(c => isActiveState(c.state));
+        else if (stateFilter === 'pending') all = all.filter(c => c.state === 'pending');
+        else if (stateFilter === 'nonconformant') all = all.filter(c => c.state === 'suspended' || c.state === 'revoked' || c.state === 'expired');
+        else if (stateFilter !== 'all') all = all.filter(c => c.state === stateFilter);
+        // Client-side search
+        if (search) {
+          const q = search.toLowerCase();
+          all = all.filter(c => (c.system_name||'').toLowerCase().includes(q) || (c.organization_name||'').toLowerCase().includes(q) || (c.certificate_number||'').toLowerCase().includes(q));
+        }
+        // Client-side sort
+        all.sort((a, b) => {
+          const av = a[sortBy] || '', bv = b[sortBy] || '';
+          return sortOrder === 'asc' ? (av > bv ? 1 : -1) : (av < bv ? 1 : -1);
+        });
         setCerts(all);
         setTotal(all.length);
-        setCounts({
-          all: all.length,
-          active: all.filter(c => isActiveState(c.state)).length,
-          suspended: all.filter(c => c.state === 'suspended').length,
-          revoked: all.filter(c => c.state === 'revoked').length,
-        });
       } catch { setCerts([]); setTotal(0); }
     }
     setLoading(false);
@@ -125,9 +148,9 @@ function CertificatesPage() {
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
             <tr>
-              <SortHeader label="Certificate #" field="certificate_number" currentSort={sortBy} currentOrder={sortOrder} onChange={handleSort} />
+              <SortHeader label="Organization" field="organization_name" currentSort={sortBy} currentOrder={sortOrder} onChange={handleSort} />
               <SortHeader label="System" field="system_name" currentSort={sortBy} currentOrder={sortOrder} onChange={handleSort} />
-              <th style={{ padding: '10px 12px', textAlign: 'left', fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1px', fontFamily: styles.mono, color: styles.textTertiary, borderBottom: '1px solid ' + styles.borderGlass }}>Organization</th>
+              <SortHeader label="Certificate #" field="certificate_number" currentSort={sortBy} currentOrder={sortOrder} onChange={handleSort} />
               <SortHeader label="Status" field="state" currentSort={sortBy} currentOrder={sortOrder} onChange={handleSort} />
               <SortHeader label="Expires" field="expires_at" currentSort={sortBy} currentOrder={sortOrder} onChange={handleSort} />
               <th style={{ padding: '10px 12px', textAlign: 'left', fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1px', fontFamily: styles.mono, color: styles.textTertiary, borderBottom: '1px solid ' + styles.borderGlass }}>Actions</th>
@@ -146,20 +169,20 @@ function CertificatesPage() {
                 <tr key={c.id} style={{ borderBottom: '1px solid ' + styles.borderSubtle, transition: 'background 0.15s' }}
                   onMouseEnter={e => e.currentTarget.style.background = 'rgba(0,0,0,0.015)'}
                   onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+                  <td style={{ padding: '12px', fontWeight: 500, fontSize: '13px' }}>{c.application_id ? <Link to={'/applications/' + c.application_id} style={{ color: styles.textPrimary, textDecoration: 'none' }} onMouseEnter={e => e.target.style.color = styles.purpleBright} onMouseLeave={e => e.target.style.color = styles.textPrimary}>{c.organization_name}</Link> : c.organization_name}</td>
+                  <td style={{ padding: '12px', color: styles.textSecondary, fontSize: '13px' }}>{c.system_name}</td>
                   <td style={{ padding: '12px', fontFamily: styles.mono, fontSize: '12px' }}>
                     <Link to={'/verify?cert=' + c.certificate_number} style={{ color: styles.purpleBright, textDecoration: 'none' }}>{c.certificate_number}</Link>
                   </td>
-                  <td style={{ padding: '12px', fontWeight: 500, color: styles.textPrimary, fontSize: '13px' }}>{c.system_name}</td>
-                  <td style={{ padding: '12px', color: styles.textSecondary, fontSize: '13px' }}>{c.organization_name}</td>
                   <td style={{ padding: '12px' }}><Badge variant={certVariant(c.state)}>{c.state}</Badge></td>
                   <td style={{ padding: '12px', fontFamily: styles.mono, fontSize: '12px', color: daysLeft !== null && daysLeft <= 30 ? (daysLeft <= 7 ? styles.accentRed : styles.accentAmber) : styles.textTertiary }}>
                     {c.expires_at ? new Date(c.expires_at).toISOString().substring(0,10) : '—'}
                     {daysLeft !== null && daysLeft <= 30 && <span style={{ marginLeft: '6px', fontSize: '10px' }}>({daysLeft}d)</span>}
                   </td>
-                  <td style={{ padding: '12px' }}>
+                  <td style={{ padding: '12px' }} onClick={e => e.stopPropagation()}>
                     <div style={{ display: 'flex', gap: '8px' }}>
                       {isActiveState(c.state) && (
-                        <a href={API_BASE + '/api/certificates/' + c.certificate_number + '/pdf'} target="_blank" rel="noopener noreferrer"
+                        <a href={API_BASE + '/api/v1/certificates/' + c.certificate_number + '/pdf'} target="_blank" rel="noopener noreferrer"
                           style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '4px 10px', border: '1px solid ' + styles.borderGlass, background: 'transparent', color: styles.purpleBright, fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', textDecoration: 'none' }}>
                           <Download size={10} /> PDF
                         </a>

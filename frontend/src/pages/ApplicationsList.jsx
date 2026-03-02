@@ -49,16 +49,14 @@ function daysAgo(iso) {
 
 /* ── Workflow tab definitions ───────────────────────────────────────────────── */
 
-const NEEDS_ACTION = ['pending', 'under_review'];
-const IN_PROGRESS = ['approved', 'testing'];
-const CERTIFIED = ['conformant'];
-const ISSUES = ['suspended', 'revoked', 'failed', 'test_failed'];
+const NEW_APPS = ['pending'];
+const UNDER_REVIEW = ['under_review'];
+const REJECTED = ['rejected', 'suspended'];
 
 const TABS = [
-  { key: 'action',    label: 'Needs Action', states: NEEDS_ACTION, icon: AlertTriangle, color: styles.accentAmber },
-  { key: 'progress',  label: 'In Progress',  states: IN_PROGRESS,  icon: Clock,         color: styles.purpleBright },
-  { key: 'certified', label: 'Certified',    states: CERTIFIED,    icon: CheckCircle,   color: styles.accentGreen },
-  { key: 'issues',    label: 'Issues',       states: ISSUES,       icon: AlertTriangle, color: styles.accentRed },
+  { key: 'new',       label: 'New',          states: NEW_APPS,     icon: AlertTriangle, color: styles.accentAmber },
+  { key: 'review',    label: 'Under Review', states: UNDER_REVIEW, icon: Clock,         color: styles.purpleBright },
+  { key: 'rejected',  label: 'Rejected',     states: REJECTED,     icon: AlertTriangle, color: styles.accentRed },
   { key: 'all',       label: 'All',          states: null,         icon: null,          color: styles.textTertiary },
 ];
 
@@ -111,10 +109,9 @@ function ApplicationsList() {
 
   // Count per tab
   const tabCounts = {
-    action: allApps.filter(a => NEEDS_ACTION.includes(a.state)).length,
-    progress: allApps.filter(a => IN_PROGRESS.includes(a.state)).length,
-    certified: allApps.filter(a => CERTIFIED.includes(a.state)).length,
-    issues: allApps.filter(a => ISSUES.includes(a.state)).length,
+    new: allApps.filter(a => NEW_APPS.includes(a.state)).length,
+    review: allApps.filter(a => UNDER_REVIEW.includes(a.state)).length,
+    rejected: allApps.filter(a => REJECTED.includes(a.state)).length,
     all: allApps.length,
   };
 
@@ -201,8 +198,8 @@ function ApplicationsList() {
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
             <tr>
-              <th style={TH}>System Name</th>
               {isAdmin && <th style={TH}>Organization</th>}
+              <th style={TH}>System Name</th>
               <th style={TH}>State</th>
               <th style={TH}>Submitted</th>
               {isAdmin && <th style={TH}>Age</th>}
@@ -222,7 +219,7 @@ function ApplicationsList() {
               </td></tr>
             ) : filtered.map(app => {
               const age = daysAgo(app.submitted_at);
-              const stale = age !== null && age > 7 && NEEDS_ACTION.includes(app.state);
+              const stale = age !== null && age > 7 && NEW_APPS.includes(app.state) || UNDER_REVIEW.includes(app.state);
               return (
                 <tr key={app.id} style={{
                   borderBottom: '1px solid ' + styles.borderSubtle,
@@ -232,11 +229,11 @@ function ApplicationsList() {
                   onClick={() => navigate('/applications/' + app.id)}
                   onMouseEnter={e => e.currentTarget.style.background = 'rgba(0,0,0,0.015)'}
                   onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+                  {isAdmin && <td style={{ padding: '12px 16px', fontWeight: 500, color: styles.textPrimary, fontSize: '13px' }}>{app.organization_name}</td>}
                   <td style={{ padding: '12px 16px' }}>
-                    <div style={{ fontWeight: 500, color: styles.textPrimary, fontSize: '13px' }}>{app.system_name}</div>
+                    <div style={{ color: styles.textSecondary, fontSize: '13px' }}>{app.system_name}</div>
                     <div style={{ fontFamily: styles.mono, fontSize: '10px', color: styles.textDim, marginTop: '2px' }}>{app.application_number}</div>
                   </td>
-                  {isAdmin && <td style={{ padding: '12px 16px', color: styles.textSecondary, fontSize: '13px' }}>{app.organization_name}</td>}
                   <td style={{ padding: '12px 16px' }}>
                     <span style={{
                       fontFamily: styles.mono, fontSize: '10px', fontWeight: 600, letterSpacing: '0.5px',
@@ -281,7 +278,7 @@ function ApplicationsList() {
                           </Link>
                         )}
 
-                        {/* CERTIFIED — just a checkmark */}
+                        {/* No actions for approved+ states */}
                         {app.state === 'conformant' && (
                           <span style={{ fontFamily: styles.mono, fontSize: '10px', color: styles.accentGreen }}>✓ Active</span>
                         )}
