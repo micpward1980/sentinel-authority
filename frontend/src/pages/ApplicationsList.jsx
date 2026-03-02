@@ -50,19 +50,15 @@ function daysAgo(iso) {
 /* ── Workflow tab definitions ───────────────────────────────────────────────── */
 
 const NEW_APPS = ['pending'];
-const UNDER_REVIEW = ['under_review'];
-const APPROVED = ['approved', 'observe'];
-const BOUNDARIES = ['bounded'];
+const ACTIVE = ['under_review', 'approved', 'observe', 'bounded'];
 const REJECTED = ['rejected', 'suspended'];
 
 
 const TABS = [
-  { key: 'new',       label: 'New',          states: NEW_APPS,     icon: FileText,      color: styles.accentGreen },
-  { key: 'review',    label: 'Under Review', states: UNDER_REVIEW, icon: Clock,         color: styles.accentAmber },
-  { key: 'approved',  label: 'Accepted',     states: APPROVED,     icon: CheckCircle,   color: styles.accentGreen },
-  { key: 'boundaries', label: 'Boundaries Review', states: BOUNDARIES, icon: AlertTriangle, color: styles.accentAmber },
-  { key: 'rejected',  label: 'Rejected',     states: REJECTED,     icon: AlertTriangle, color: styles.accentRed },
-  { key: 'all',       label: 'All',          states: null,         icon: null,          color: styles.textTertiary },
+  { key: 'new',       label: 'New',      states: NEW_APPS,  icon: FileText,      color: styles.accentGreen },
+  { key: 'active',    label: 'Active',   states: ACTIVE,    icon: Clock,         color: styles.accentAmber },
+  { key: 'rejected',  label: 'Rejected', states: REJECTED,  icon: AlertTriangle, color: styles.accentRed },
+  { key: 'all',       label: 'All',      states: null,      icon: null,          color: styles.textTertiary },
 ];
 
 const TH = {
@@ -116,9 +112,7 @@ function ApplicationsList() {
   // Count per tab
   const tabCounts = {
     new: allApps.filter(a => NEW_APPS.includes(a.state)).length,
-    review: allApps.filter(a => UNDER_REVIEW.includes(a.state)).length,
-    approved: allApps.filter(a => APPROVED.includes(a.state)).length,
-    boundaries: allApps.filter(a => BOUNDARIES.includes(a.state)).length,
+    active: allApps.filter(a => ACTIVE.includes(a.state)).length,
     rejected: allApps.filter(a => REJECTED.includes(a.state)).length,
     all: allApps.length,
   };
