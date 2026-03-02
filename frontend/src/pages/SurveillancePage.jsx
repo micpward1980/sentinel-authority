@@ -52,9 +52,9 @@ function StatusDot({ status, size = 8 }) {
   );
 }
 
-function StatBlock({ label, value, color }) {
+function StatBlock({ label, value, color, onClick }) {
   return (
-    <div style={{ textAlign: 'center', minWidth: 80 }}>
+    <div onClick={onClick} style={{ textAlign: 'center', minWidth: 80, cursor: onClick ? 'pointer' : 'default', transition: 'opacity 0.15s', ':hover': { opacity: 0.7 } }}>
       <div style={{ ...mono, fontSize: '28px', fontWeight: 300, color: color || styles.textPrimary, lineHeight: 1.1 }}>{value}</div>
       <div style={{ ...label9, marginTop: 4 }}>{label}</div>
     </div>
@@ -183,8 +183,8 @@ export default function SurveillancePage() {
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 24, justifyContent: 'flex-start' }}>
             <StatBlock label="TOTAL" value={status?.monitored_sessions ?? 0} />
             <StatBlock label="CONFORMANT" value={bd.healthy ?? 0} color={(bd.healthy ?? 0) > 0 ? styles.accentGreen : styles.textDim} />
-            <StatBlock label="NON-CONFORMANT" value={(bd.degraded ?? 0) + (bd.critical ?? 0) + (bd.offline ?? 0) + (bd.non_conformant ?? 0)} color={((bd.degraded ?? 0) + (bd.critical ?? 0) + (bd.offline ?? 0) + (bd.non_conformant ?? 0)) > 0 ? styles.accentRed : styles.textDim} />
-            <StatBlock label="ALERTS" value={alerts.length} color={(alerts.length) > 0 ? styles.accentAmber : styles.textDim} />
+            <StatBlock label="NON-CONFORMANT" value={(bd.degraded ?? 0) + (bd.critical ?? 0) + (bd.offline ?? 0) + (bd.non_conformant ?? 0)} color={((bd.degraded ?? 0) + (bd.critical ?? 0) + (bd.offline ?? 0) + (bd.non_conformant ?? 0)) > 0 ? styles.accentRed : styles.textDim} onClick={() => { setAlertFilter('critical'); document.getElementById('alerts-panel')?.scrollIntoView({ behavior: 'smooth' }); }} />
+            <StatBlock label="ALERTS" value={alerts.length} color={(alerts.length) > 0 ? styles.accentAmber : styles.textDim} onClick={() => { setAlertFilter('all'); document.getElementById('alerts-panel')?.scrollIntoView({ behavior: 'smooth' }); }} />
           </div>
         )}
       </Panel>
@@ -192,7 +192,7 @@ export default function SurveillancePage() {
 
 
 
-      <Panel style={{ padding: '20px 24px' }}>
+      <Panel id="alerts-panel" style={{ padding: '20px 24px' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
           <div style={label9}>ALERTS</div>
           <div style={{ display: 'flex', gap: 4 }}>
