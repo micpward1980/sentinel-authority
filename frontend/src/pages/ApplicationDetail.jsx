@@ -45,6 +45,78 @@ const STATE_LABEL = {
   rejected: "Rejected",
 };
 
+
+function describeBoundary(b) {
+  const t = b.type || 'unknown';
+  switch (t) {
+    // ── Physical ──
+    case 'numeric':
+      return { label: b.name, detail: `${b.min_value ?? '—'} → ${b.max_value ?? '—'} ${b.unit || ''}${b.tolerance ? ` (±${b.tolerance})` : ''}`, cat: 'Physical' };
+    case 'categorical':
+      return { label: b.name, detail: `Allowed: ${(b.allowed_values || b.allowed_states || []).join(', ')}`, cat: 'Physical', chips: b.allowed_values || b.allowed_states };
+    case 'geographic':
+    case 'radius':
+      return { label: b.name, detail: `${b.radius_m ? (b.radius_m/1000).toFixed(1) + 'km radius' : '—'} from ${b.center_lat?.toFixed(4) ?? '?'}, ${b.center_lng?.toFixed(4) ?? '?'}`, cat: 'Physical', geo: true };
+    case 'polygon':
+      return { label: b.name, detail: `${(b.vertices || b.points || []).length}-point geofence boundary`, cat: 'Physical', geo: true };
+    case 'temporal':
+      return { label: b.name, detail: `${b.start || '—'} → ${b.end || '—'}${b.timezone ? ` (${b.timezone})` : ''}${b.days ? ` · ${b.days.join(', ')}` : ''}`, cat: 'Physical' };
+    case 'rate_of_change':
+      return { label: b.name || b.variable, detail: `Max change: ${b.max_rate ?? b.max_delta ?? '—'} ${b.unit || ''}/s${b.window ? ` over ${b.window}s` : ''}`, cat: 'Physical' };
+    case 'compound': case 'conditional':
+      return { label: b.name, detail: `${b.condition || b.when || '—'} → limit ${b.then_max ?? b.limit ?? '—'} ${b.unit || ''}`, cat: 'Physical' };
+    case 'boolean':
+      return { label: b.name || b.variable, detail: `Must be ${b.required_value ?? b.expected ?? 'true'} during operation`, cat: 'Physical' };
+    case 'connectivity':
+      return { label: b.name || 'Heartbeat', detail: `Max gap: ${b.max_gap_seconds ?? b.timeout ?? '—'}s between signals`, cat: 'Physical' };
+
+    // ── Analytical ──
+    case 'cumulative':
+      return { label: b.name || b.variable, detail: `Running total must stay below ${b.max_cumulative ?? b.threshold ?? '—'} ${b.unit || ''}${b.reset_period ? ` (resets ${b.reset_period})` : ''}`, cat: 'Analytical' };
+    case 'statistical': case 'rolling_window':
+      return { label: b.name || b.variable, detail: `Rolling ${b.window_samples || b.window || '—'}-sample ${b.metric || 'avg'} must stay within ${b.min ?? '—'} → ${b.max ?? '—'}`, cat: 'Analytical' };
+    case 'frequency': case 'count':
+      return { label: b.name || b.event, detail: `Max ${b.max_count ?? b.threshold ?? '—'} occurrences per ${b.period || b.window || '—'}`, cat: 'Analytical' };
+    case 'sequence': case 'state_machine':
+      return { label: b.name, detail: `Required order: ${(b.required_sequence || b.steps || []).join(' → ')}`, cat: 'Analytical' };
+    case 'drift': case 'baseline':
+      return { label: b.name || b.variable, detail: `Must not drift more than ${b.max_drift ?? b.threshold ?? '—'}% from baseline over ${b.window_samples || '—'} samples`, cat: 'Analytical' };
+    case 'multi_condition': case 'multi_variable':
+      return { label: b.name, detail: `${(b.conditions || []).length || '—'} conditions must all be met simultaneously`, cat: 'Analytical' };
+
+    // ── Aviation / Spatial ──
+    case 'exclusion_zone': case 'no_fly': case 'restricted_area':
+      return { label: b.name, detail: `Exclusion zone — ${b.radius_m ? (b.radius_m/1000).toFixed(1) + 'km' : '—'} around ${b.center_lat?.toFixed(4) ?? '?'}, ${b.center_lng?.toFixed(4) ?? '?'}`, cat: 'Aviation', geo: true, exclusion: true };
+    case 'proximity': case 'separation': case 'daa':
+      return { label: b.name || 'Separation', detail: `Min ${b.min_distance ?? b.separation ?? '—'}${b.unit || 'm'} from ${b.target || 'other objects'}`, cat: 'Aviation' };
+    case 'redundancy': case 'min_count':
+      return { label: b.name || b.system, detail: `Min ${b.min_operational ?? b.min_count ?? '—'} of ${b.total ?? '—'} ${b.component || 'units'} must be operational`, cat: 'Aviation' };
+    case 'energy_reserve': case 'fuel_reserve': case 'battery_reserve':
+      return { label: b.name || 'Energy reserve', detail: `Min ${b.min_reserve_pct ?? b.min_level ?? '—'}% ${b.resource || 'charge'} required`, cat: 'Aviation' };
+    case 'dynamic': case 'notam': case 'live_boundary':
+      return { label: b.name, detail: 'Live-updated boundary from external feed', cat: 'Aviation' };
+    case 'envelope_curve': case 'function_boundary': case 'lookup_table':
+      return { label: b.name, detail: `${b.curve_type || 'Curve'}: ${b.x_variable || '—'} vs ${b.y_variable || '—'} (${(b.points || []).length || '—'} control points)`, cat: 'Aviation' };
+
+    // ── Healthcare / Process ──
+    case 'calculated': case 'formula': case 'composite_score':
+      return { label: b.name, detail: `Computed score must stay within ${b.result_min ?? '—'} → ${b.result_max ?? '—'}${b.inputs ? ` (${b.inputs.length} inputs)` : ''}`, cat: 'Process' };
+    case 'contraindication': case 'prohibition': case 'never':
+      return { label: b.name, detail: `PROHIBITED: ${b.description || (b.prohibited_actions ? Object.entries(b.prohibited_actions).map(([k,v]) => `${k}: ${v.join(', ')}`).join('; ') : '—')}`, cat: 'Process', alert: true };
+    case 'escalation': case 'response_time': case 'time_to_action':
+      return { label: b.name || b.trigger, detail: `Must respond within ${b.max_seconds ?? b.max_time ?? '—'}s of ${b.trigger || 'event'}`, cat: 'Process' };
+    case 'protocol': case 'checklist': case 'care_bundle':
+      return { label: b.name, detail: `${(b.required_steps || b.steps || []).length || '—'} required steps must be completed${b.max_time ? ` within ${b.max_time}` : ''}`, cat: 'Process' };
+    case 'ratio': case 'proportion': case 'staffing':
+      return { label: b.name, detail: `${b.numerator || '—'} : ${b.denominator || '—'} ratio must be ≥ ${b.min_ratio ?? '—'}`, cat: 'Process' };
+    case 'jurisdiction': case 'scope': case 'authorization':
+      return { label: b.name || b.role_key, detail: `${b.role_key || 'Role'} restricted from: ${b.prohibited_actions ? Object.values(b.prohibited_actions).flat().join(', ') : '—'}`, cat: 'Process', alert: true };
+
+    default:
+      return { label: b.name || t, detail: JSON.stringify(b).substring(0, 100), cat: 'Other' };
+  }
+}
+
 const ACTION_BTN = (color, solid = false) => ({
   padding: '8px 16px',
   background: solid ? color : 'transparent',
@@ -470,19 +542,61 @@ function ApplicationDetail() {
               </div>
             )}
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(110px,1fr))', gap: '8px', textAlign: 'center', marginBottom: '16px' }}>
-              {[
-                { label: 'Numeric', count: nb.length },
-                { label: 'Geographic', count: gb.length },
-                { label: 'Time', count: tb.length },
-                { label: 'State', count: sb.length },
-              ].map(s => (
-                <div key={s.label} style={{ padding: '10px', background: 'rgba(29,26,59,0.05)', borderRadius: '6px' }}>
-                  <div style={{ fontSize: '20px', fontWeight: 500, color: styles.purpleBright }}>{s.count}</div>
-                  <div style={{ fontFamily: styles.mono, fontSize: '9px', textTransform: 'uppercase', letterSpacing: '1px', color: styles.textTertiary, marginTop: '2px' }}>{s.label}</div>
+            {(() => {
+              const allBoundaries = [...nb, ...gb.map(b => ({...b, type: b.type || 'geographic'})), ...tb.map(b => ({...b, type: b.type || 'temporal'})), ...sb.map(b => ({...b, type: b.type || 'categorical'}))];
+              const extraKeys = Object.keys(env || {}).filter(k => !['numeric_boundaries','geo_boundaries','geographic_boundaries','time_boundaries','state_boundaries'].includes(k));
+              extraKeys.forEach(k => { if (Array.isArray(env[k])) env[k].forEach(b => allBoundaries.push({...b, type: b.type || k.replace('_boundaries','')})); });
+
+              const described = allBoundaries.map(b => ({ ...b, desc: describeBoundary(b) }));
+              const cats = ['Physical', 'Analytical', 'Aviation', 'Process', 'Other'];
+              const grouped = {};
+              described.forEach(d => { const c = d.desc.cat; if (!grouped[c]) grouped[c] = []; grouped[c].push(d); });
+
+              const catColors = { Physical: styles.purpleBright, Analytical: styles.accentBlue || '#4A90D9', Aviation: styles.accentAmber, Process: styles.accentGreen, Other: styles.textTertiary };
+
+              return (<>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(100px,1fr))', gap: '8px', textAlign: 'center', marginBottom: '16px' }}>
+                  {cats.filter(c => grouped[c]?.length > 0).map(c => (
+                    <div key={c} style={{ padding: '10px', background: 'rgba(29,26,59,0.05)', borderRadius: '6px' }}>
+                      <div style={{ fontSize: '20px', fontWeight: 500, color: catColors[c] }}>{grouped[c].length}</div>
+                      <div style={{ fontFamily: styles.mono, fontSize: '9px', textTransform: 'uppercase', letterSpacing: '1px', color: styles.textTertiary, marginTop: '2px' }}>{c}</div>
+                    </div>
+                  ))}
+                  <div style={{ padding: '10px', background: 'rgba(29,26,59,0.05)', borderRadius: '6px' }}>
+                    <div style={{ fontSize: '20px', fontWeight: 500, color: styles.textPrimary }}>{allBoundaries.length}</div>
+                    <div style={{ fontFamily: styles.mono, fontSize: '9px', textTransform: 'uppercase', letterSpacing: '1px', color: styles.textTertiary, marginTop: '2px' }}>Total</div>
+                  </div>
                 </div>
-              ))}
-            </div>
+
+                {cats.filter(c => grouped[c]?.length > 0).map(c => (
+                  <div key={c} style={{ marginTop: '16px' }}>
+                    <p style={{ fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', color: catColors[c], marginBottom: '8px', display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <span style={{ width: 8, height: 8, borderRadius: '50%', background: catColors[c], display: 'inline-block' }} />
+                      {c} Boundaries
+                    </p>
+                    {grouped[c].map((d, i) => (
+                      <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '7px 0', borderBottom: `1px solid ${styles.borderSubtle}`, fontSize: '12px', flexWrap: 'wrap', gap: 4, alignItems: 'center' }}>
+                        <span style={{ color: styles.textPrimary, display: 'flex', alignItems: 'center', gap: 6 }}>
+                          {d.desc.exclusion && <span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: '50%', background: styles.accentRed + '33', border: '1px solid ' + styles.accentRed, flexShrink: 0 }} />}
+                          {d.desc.alert && <span style={{ color: styles.accentRed, fontSize: '11px', marginRight: 2 }}>⚠</span>}
+                          {d.desc.label}
+                          <span style={{ fontFamily: styles.mono, fontSize: '9px', color: styles.textDim, padding: '1px 5px', background: styles.textDim + '08', borderRadius: 2 }}>{d.type || d.b?.type}</span>
+                        </span>
+                        {d.desc.chips ? (
+                          <span style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+                            {d.desc.chips.map((s, j) => (
+                              <span key={j} style={{ fontFamily: styles.mono, fontSize: '10px', padding: '2px 6px', borderRadius: 3, background: styles.accentGreen + '10', color: styles.accentGreen, border: '1px solid ' + styles.accentGreen + '22' }}>{s}</span>
+                            ))}
+                          </span>
+                        ) : (
+                          <span style={{ fontFamily: styles.mono, color: styles.purpleBright, fontSize: '11px' }}>{d.desc.detail}</span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                ))}
+              </>);
+            })()}
 
             {nb.length > 0 && (
               <div>
@@ -499,76 +613,7 @@ function ApplicationDetail() {
               </div>
             )}
 
-            {gb.length > 0 && (
-              <div style={{ marginTop: '16px' }}>
-                <p style={{ fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '8px' }}>Geographic Boundaries</p>
-                {gb.map((b, i) => (
-                  <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: `1px solid ${styles.borderSubtle}`, fontSize: '12px', flexWrap: 'wrap', gap: 4 }}>
-                    <span style={{ color: styles.textPrimary, display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: '50%', background: b.type === 'exclusion' ? styles.accentRed + '33' : styles.accentGreen + '33', border: '1px solid ' + (b.type === 'exclusion' ? styles.accentRed : styles.accentGreen), flexShrink: 0 }} />
-                      {b.name}{b.type === 'exclusion' ? ' (exclusion)' : ''}
-                    </span>
-                    <span style={{ fontFamily: styles.mono, color: styles.purpleBright, fontSize: '11px' }}>
-                      {(b.type === 'radius' || b.type === 'exclusion') && `${b.radius_m ? (b.radius_m / 1000).toFixed(1) : '?'}km @ ${b.center_lat?.toFixed(4) ?? '?'}, ${b.center_lng?.toFixed(4) ?? '?'}`}
-                      {b.type === 'polygon' && `${(b.vertices || b.points || []).length} vertices`}
-                      {b.type === 'corridor' && `${b.width_m || '\u2014'}m wide`}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            )}
 
-            {tb.length > 0 && (
-              <div style={{ marginTop: '16px' }}>
-                <p style={{ fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '8px' }}>Time Boundaries</p>
-                {tb.map((b, i) => (
-                  <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: `1px solid ${styles.borderSubtle}`, fontSize: '12px' }}>
-                    <span style={{ color: styles.textPrimary }}>{b.name}</span>
-                    <span style={{ fontFamily: styles.mono, color: styles.purpleBright, fontSize: '11px' }}>
-                      {b.start || '\u2014'} \u2192 {b.end || '\u2014'}{b.timezone ? ` (${b.timezone})` : ''}{b.days ? ` \u00b7 ${b.days.join(', ')}` : ''}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {sb.length > 0 && (
-              <div style={{ marginTop: '16px' }}>
-                <p style={{ fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '8px' }}>State Boundaries</p>
-                {sb.map((b, i) => (
-                  <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: `1px solid ${styles.borderSubtle}`, fontSize: '12px', flexWrap: 'wrap', gap: 4 }}>
-                    <span style={{ color: styles.textPrimary }}>{b.name}</span>
-                    <span style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
-                      {(b.allowed_states || []).map((s, j) => (
-                        <span key={j} style={{ fontFamily: styles.mono, fontSize: '10px', padding: '2px 6px', borderRadius: 3, background: styles.accentGreen + '10', color: styles.accentGreen, border: '1px solid ' + styles.accentGreen + '22' }}>{s}</span>
-                      ))}
-                      {(b.forbidden_states || []).map((s, j) => (
-                        <span key={'f' + j} style={{ fontFamily: styles.mono, fontSize: '10px', padding: '2px 6px', borderRadius: 3, background: styles.accentRed + '10', color: styles.accentRed, border: '1px solid ' + styles.accentRed + '22', textDecoration: 'line-through' }}>{s}</span>
-                      ))}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* Catch-all: render any unknown boundary types the Interlock discovers */}
-            {Object.entries(env || {}).filter(([k]) => !['numeric_boundaries','geo_boundaries','geographic_boundaries','time_boundaries','state_boundaries'].includes(k)).map(([key, val]) => (
-              Array.isArray(val) && val.length > 0 && (
-                <div key={key} style={{ marginTop: '16px' }}>
-                  <p style={{ fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '8px' }}>{key.replace(/_/g, ' ')}</p>
-                  {val.map((b, i) => (
-                    <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: `1px solid ${styles.borderSubtle}`, fontSize: '12px' }}>
-                      <span style={{ color: styles.textPrimary }}>{b.name || key}</span>
-                      <span style={{ fontFamily: styles.mono, color: styles.purpleBright, fontSize: '11px' }}>
-                        {b.min_value != null && b.max_value != null ? `${b.min_value} \u2192 ${b.max_value} ${b.unit || ''}` : ''}
-                        {b.allowed_states ? b.allowed_states.join(', ') : ''}
-                        {b.start && b.end ? `${b.start} \u2192 ${b.end}` : ''}
-                        {!b.min_value && !b.allowed_states && !b.start ? JSON.stringify(b).substring(0, 80) : ''}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              )
             ))}
 
 
