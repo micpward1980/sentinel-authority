@@ -280,8 +280,8 @@ footer{border-top:1px solid var(--hairline)!important;}
         <div class="hud-row" style="display:flex;align-items:center;gap:12px;"><span class="hud-num">02</span><a href="#obligations" class="hud-link" style="font-size:10px;">APPLICANT OBLIGATIONS</a></div>
         <div class="hud-row" style="display:flex;align-items:center;gap:12px;"><span class="hud-num">03</span><a href="#sa-obligations" class="hud-link" style="font-size:10px;">SA OBLIGATIONS</a></div>
         <div class="hud-row" style="display:flex;align-items:center;gap:12px;"><span class="hud-num">04</span><a href="#terms" class="hud-link" style="font-size:10px;">CONFORMANCE TERMS</a></div>
-        <div class="hud-row" style="display:flex;align-items:center;gap:12px;"><span class="hud-num">05</span><a href="#revocation" class="hud-link" style="font-size:10px;">REVOCATION</a></div>
-        <div class="hud-row" style="display:flex;align-items:center;gap:12px;"><span class="hud-num">06</span><a href="#suspension" class="hud-link" style="font-size:10px;">SUSPENSION &amp; REINSTATEMENT</a></div>
+        <div class="hud-row" style="display:flex;align-items:center;gap:12px;"><span class="hud-num">05</span><a href="#nonconformance" class="hud-link" style="font-size:10px;">NON-CONFORMANCE</a></div>
+        <div class="hud-row" style="display:flex;align-items:center;gap:12px;"><span class="hud-num">06</span><a href="#nonconformance-reinstatement" class="hud-link" style="font-size:10px;">NON-CONFORMANCE &amp; REINSTATEMENT</a></div>
         <div class="hud-row" style="display:flex;align-items:center;gap:12px;"><span class="hud-num">07</span><a href="#liability" class="hud-link" style="font-size:10px;">LIABILITY &amp; INDEMNIFICATION</a></div>
         <div class="hud-row" style="display:flex;align-items:center;gap:12px;"><span class="hud-num">08</span><a href="#confidentiality" class="hud-link" style="font-size:10px;">CONFIDENTIALITY</a></div>
         <div class="hud-row" style="display:flex;align-items:center;gap:12px;"><span class="hud-num">09</span><a href="#ip" class="hud-link" style="font-size:10px;">INTELLECTUAL PROPERTY</a></div>
@@ -314,7 +314,7 @@ footer{border-top:1px solid var(--hairline)!important;}
       </div>
       <div class="hud-frame hud-frame-amber" style="margin-top:var(--space-2);"><i></i>
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;"><span class="hud-label">2.3 POST-CONFORMANCE — UPTIME REQUIREMENTS</span><span class="hud-dot hud-dot-amber"></span></div>
-        <div class="hud-desc">Minimum 99% monthly uptime required. Outages under 1 hour require no action. Extended outages exceeding 1 hour trigger automated notification. Cumulative downtime exceeding 24 hours per calendar month may result in attestation suspension.</div>
+        <div class="hud-desc">Minimum 99% monthly uptime required. Outages under 1 hour require no action. Extended outages exceeding 1 hour trigger automated notification. Cumulative downtime exceeding 24 hours per calendar month may result in non-conformance determination.</div>
       </div>
       <div class="hud-frame" style="margin-top:var(--space-2);"><i></i>
         <div class="hud-label" style="margin-bottom:8px;color:var(--text-tertiary);">2.4 POST-CONFORMANCE REQUIREMENTS</div>
@@ -356,21 +356,21 @@ footer{border-top:1px solid var(--hairline)!important;}
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Potential re-assessment if modification affects conformance basis</span></div>
       </div>
 
-      <!-- 5 Revocation -->
-      <div id="revocation" class="section hud-frame hud-frame-red" style="margin-top:var(--space-3);"><i></i>
-        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;"><span class="hud-num">05</span><span class="hud-label">REVOCATION</span><span class="hud-dot hud-dot-red" style="margin-left:auto;"></span></div>
+      <!-- 5 Non-Conformance -->
+      <div id="nonconformance" class="section hud-frame hud-frame-red" style="margin-top:var(--space-3);"><i></i>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;"><span class="hud-num">05</span><span class="hud-label">NON-CONFORMANCE</span><span class="hud-dot hud-dot-red" style="margin-left:auto;"></span></div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-red" style="margin-top:5px;"></span><span class="hud-desc">Material misrepresentation in application materials</span></div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-red" style="margin-top:5px;"></span><span class="hud-desc">Unauthorized modification to attested system</span></div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-red" style="margin-top:5px;"></span><span class="hud-desc">Disabling, bypassing, or tampering with ENVELO enforcement</span></div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-red" style="margin-top:5px;"></span><span class="hud-desc">Failure to maintain ENVELO Interlock operation</span></div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-red" style="margin-top:5px;"></span><span class="hud-desc">Non-payment of fees or violation of this Agreement</span></div>
-        <div class="hud-desc" style="margin-top:12px;">Revocation is recorded in the SA registry and reflected in verification results.</div>
+        <div class="hud-desc" style="margin-top:12px;">Non-conformance is recorded in the SA registry and reflected in verification results.</div>
       </div>
 
-      <!-- 6 Suspension -->
-      <div id="suspension" class="section hud-frame hud-frame-amber" style="margin-top:var(--space-3);"><i></i>
-        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;"><span class="hud-num">06</span><span class="hud-label">SUSPENSION &amp; REINSTATEMENT</span><span class="hud-dot hud-dot-amber" style="margin-left:auto;"></span></div>
-        <div class="hud-label" style="margin-bottom:8px;color:var(--text-tertiary);">6.1 AUTOMATIC SUSPENSION TRIGGERS</div>
+      <!-- 6 Non-Conformance & Reinstatement -->
+      <div id="nonconformance-reinstatement" class="section hud-frame hud-frame-amber" style="margin-top:var(--space-3);"><i></i>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;"><span class="hud-num">06</span><span class="hud-label">NON-CONFORMANCE &amp; REINSTATEMENT</span><span class="hud-dot hud-dot-amber" style="margin-left:auto;"></span></div>
+        <div class="hud-label" style="margin-bottom:8px;color:var(--text-tertiary);">6.1 AUTOMATIC NON-CONFORMANCE TRIGGERS</div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-amber" style="margin-top:5px;"></span><span class="hud-desc">ENVELO Interlock downtime exceeds 24 cumulative hours per calendar month</span></div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-amber" style="margin-top:5px;"></span><span class="hud-desc">Violation metrics exceed thresholds defined in the applicable conformance determination</span></div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-amber" style="margin-top:5px;"></span><span class="hud-desc">Interlock unreachable for more than 72 consecutive hours</span></div>
@@ -378,7 +378,7 @@ footer{border-top:1px solid var(--hairline)!important;}
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-num">1st</span><span class="hud-desc">Restore interlock operation and pass 24-hour verification check</span></div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-num">2nd</span><span class="hud-desc">Above plus written remediation plan</span></div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-num">3rd</span><span class="hud-desc">Full CAT-72 re-assessment required</span></div>
-        <div class="hud-desc" style="margin-top:12px;">Reinstatement fee of $500 applies after first suspension. Conformance fees are non-refundable during suspension periods.</div>
+        <div class="hud-desc" style="margin-top:12px;">Reinstatement fee of $500 applies after first non-conformance event. Conformance fees are non-refundable during non-conformance periods.</div>
       </div>
 
       <!-- 7 Liability -->
