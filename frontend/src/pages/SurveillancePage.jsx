@@ -141,7 +141,7 @@ export default function SurveillancePage() {
   const systemsTotal = systemsData?.total ?? 0;
   const alerts = alertsData?.alerts ?? [];
   const filteredAlerts = alertFilter === 'all' ? alerts : alerts.filter(a => a.severity === alertFilter);
-  const nonConformantCount = (bd.degraded ?? 0) + (bd.critical ?? 0) + (bd.offline ?? 0) + (bd.non_conformant ?? 0);
+  const nonConformantCount = (bd.critical ?? 0) + (bd.non_conformant ?? 0);
 
   const handleRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -193,9 +193,10 @@ export default function SurveillancePage() {
       <Panel style={{ marginBottom: 20, padding: '20px 24px' }}>
         {statusLoading ? <div style={{ ...mono, fontSize: '12px', color: styles.textDim }}>Loading...</div> : (
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, justifyContent: 'flex-start' }}>
-            <StatBlock label="TOTAL" value={status?.monitored_sessions ?? 0} active={systemFilter === 'all'} onClick={() => handleSystemFilter('all')} />
-            <StatBlock label="CONFORMANT" value={bd.healthy ?? 0} color={(bd.healthy ?? 0) > 0 ? styles.accentGreen : styles.textDim} active={systemFilter === 'conformant'} onClick={() => handleSystemFilter('conformant')} />
-            <StatBlock label="NON-CONFORMANT" value={nonConformantCount} color={nonConformantCount > 0 ? styles.accentRed : styles.textDim} active={systemFilter === 'non_conformant'} onClick={() => handleSystemFilter('non_conformant')} />
+            <StatBlock label="TOTAL" value={status?.monitored_sessions || systemsTotal || 0} active={systemFilter === 'all'} onClick={() => handleSystemFilter('all')} />
+            <StatBlock label="CONFORMANT" value={(bd.healthy ?? 0) || (systems ? systems.filter(s => s.status === 'conformant').length : 0)} color={styles.accentGreen} active={systemFilter === 'conformant'} onClick={() => handleSystemFilter('conformant')} />
+            <StatBlock label="DEGRADED" value={(bd.degraded ?? 0) || (systems ? systems.filter(s => s.status === 'degraded').length : 0)} color={styles.accentAmber} active={systemFilter === 'degraded'} onClick={() => handleSystemFilter('degraded')} />
+            <StatBlock label="NON-CONFORMANT" value={nonConformantCount || (systems ? systems.filter(s => s.status === 'non_conformant' || s.status === 'critical').length : 0)} color={nonConformantCount > 0 ? styles.accentRed : styles.textDim} active={systemFilter === 'non_conformant'} onClick={() => handleSystemFilter('non_conformant')} />
             <StatBlock label="ALERTS" value={alerts.length} color={alerts.length > 0 ? styles.accentAmber : styles.textDim} active={false} onClick={() => { setAlertFilter('all');  }} />
           </div>
         )}
