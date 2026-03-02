@@ -165,7 +165,7 @@ async def reinstate_certificate(certificate_id: str, reason: str = "Manual reins
     # Fire reinstatement alert
     from app.surveillance import AlertType, AlertSeverity
     state._fire_alert(
-        AlertType.CERTIFICATE_REINSTATED,
+        AlertType.CERTIFICATE_CONFORMANT_RESTORED,
         AlertSeverity.INFO,
         certificate_id, None,
         f"Certificate {certificate_id} reinstated: {reason}",

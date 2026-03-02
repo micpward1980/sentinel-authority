@@ -59,17 +59,17 @@ class AlertSeverity(str, Enum):
     INFO = "info"
     WARN = "warn"
     CRITICAL = "critical"
-    SUSPENSION = "suspension"
-    REVOCATION = "revocation"
+    NON_CONFORMANT = "non_conformant"
+
 
 
 class AlertType(str, Enum):
     HEARTBEAT_STALE = "heartbeat_stale"
     HEARTBEAT_OFFLINE = "heartbeat_offline"
-    HEARTBEAT_SUSPEND = "heartbeat_suspend"
+    HEARTBEAT_NON_CONFORMANT = "heartbeat_non_conformant"
     VIOLATION_WARN = "violation_warn"
     VIOLATION_CRITICAL = "violation_critical"
-    VIOLATION_SUSPEND = "violation_suspend"
+    VIOLATION_NON_CONFORMANT = "violation_non_conformant"
     INTERLOCK_RECONNECT = "interlock_reconnect"
     BLOCK_RATE_ELEVATED = "block_rate_elevated"
     CERT_EXPIRING_SOON = "cert_expiring_soon"
@@ -77,8 +77,8 @@ class AlertType(str, Enum):
     SCORE_RECOVERED = "score_recovered"
     LATENCY_SPIKE = "latency_spike"
     SCORE_DEGRADED = "score_degraded"
-    CERTIFICATE_SUSPENDED = "certificate_suspended"
-    CERTIFICATE_REINSTATED = "certificate_reinstated"
+    CERTIFICATE_NON_CONFORMANT = "certificate_non_conformant"
+    CERTIFICATE_CONFORMANT_RESTORED = "certificate_conformant_restored"
 
 
 @dataclass
@@ -426,15 +426,15 @@ async def _surveillance_scan(get_db_session):
             staleness = (now - last_hb).total_seconds()
 
             if staleness > _config.HEARTBEAT_SUSPEND_SECONDS:
-                # AUTO-SUSPEND: Interlock has been dark too long
+                # NON-CONFORMANT: Interlock has been dark too long
                 if cert_id not in _state.suspended_certs:
                     _state.suspended_certs.add(cert_id)
                     _state._fire_alert(
-                        AlertType.HEARTBEAT_SUSPEND,
-                        AlertSeverity.SUSPENSION,
+                        AlertType.HEARTBEAT_NON_CONFORMANT,
+                        AlertSeverity.NON_CONFORMANT,
                         cert_id, session_id,
-                        f"Certificate {cert_id} AUTO-SUSPENDED: no heartbeat for {int(staleness)}s",
-                        details={"staleness_seconds": int(staleness), "action": "auto_suspend"},
+                        f"Certificate {cert_id} NON-CONFORMANT: no heartbeat for {int(staleness)}s",
+                        details={"staleness_seconds": int(staleness), "action": "non_conformant"},
                         dedup_minutes=30,
                     )
                     # Persist to DB
@@ -467,15 +467,15 @@ async def _surveillance_scan(get_db_session):
             block_rate = score.block_rate
 
             if block_rate >= _config.VIOLATION_SUSPEND_RATE:
-                # AUTO-SUSPEND: Too many violations
+                # NON-CONFORMANT: Too many violations
                 if cert_id not in _state.suspended_certs:
                     _state.suspended_certs.add(cert_id)
                     _state._fire_alert(
-                        AlertType.VIOLATION_SUSPEND,
-                        AlertSeverity.SUSPENSION,
+                        AlertType.VIOLATION_NON_CONFORMANT,
+                        AlertSeverity.NON_CONFORMANT,
                         cert_id, session_id,
-                        f"Certificate {cert_id} AUTO-SUSPENDED: block rate {block_rate:.1%} exceeds {_config.VIOLATION_SUSPEND_RATE:.0%} threshold",
-                        details={"block_rate": block_rate, "threshold": _config.VIOLATION_SUSPEND_RATE, "action": "auto_suspend"},
+                        f"Certificate {cert_id} NON-CONFORMANT: block rate {block_rate:.1%} exceeds {_config.VIOLATION_SUSPEND_RATE:.0%} threshold",
+                        details={"block_rate": block_rate, "threshold": _config.VIOLATION_SUSPEND_RATE, "action": "non_conformant"},
                         dedup_minutes=30,
                     )
                     await _suspend_certificate_in_db(cert_id, get_db_session,
@@ -533,7 +533,7 @@ async def _suspend_certificate_in_db(certificate_id: str, get_db_session, reason
                 # Audit trail
                 try:
                     from app.services.audit_service import write_audit_log
-                    await write_audit_log(db, action="certificate_auto_suspended",
+                    await write_audit_log(db, action="certificate_non_conformanted",
                         resource_type="certificate", user_email="surveillance_engine",
                         details={"certificate_id": certificate_id, "reason": reason})
                 except Exception:
@@ -561,7 +561,7 @@ async def _reinstate_certificate_in_db(certificate_id: str, get_db_session, reas
 
                 _state.suspended_certs.discard(certificate_id)
                 _state._fire_alert(
-                    AlertType.CERTIFICATE_REINSTATED,
+                    AlertType.CERTIFICATE_CONFORMANT_RESTORED,
                     AlertSeverity.INFO,
                     certificate_id, None,
                     f"Certificate {certificate_id} reinstated: {reason}",
