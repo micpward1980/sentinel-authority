@@ -221,7 +221,7 @@ function ApplicationsList() {
               </td></tr>
             ) : filtered.map(app => {
               const age = daysAgo(app.submitted_at);
-              const stale = age !== null && age > 7 && NEW_APPS.includes(app.state) || UNDER_REVIEW.includes(app.state);
+              const stale = age !== null && age > 7 && NEW_APPS.includes(app.state) || ACTIVE.includes(app.state);
               return (
                 <tr key={app.id} style={{
                   borderBottom: '1px solid ' + styles.borderSubtle,
