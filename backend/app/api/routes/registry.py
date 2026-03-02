@@ -16,6 +16,8 @@ async def search_registry(
     status: Optional[str] = Query(None, description="Filter by status: conformant, expired, suspended"),
     days: Optional[int] = Query(None, description="Certificates issued in last N days"),
     group: bool = Query(False, description="Group results by organization"),
+    limit: int = Query(25, ge=1, le=100),
+    offset: int = Query(0, ge=0),
     db: AsyncSession = Depends(get_db)
 ):
     """
@@ -51,7 +53,10 @@ async def search_registry(
         cutoff = datetime.utcnow() - timedelta(days=days)
         query = query.where(Certificate.issued_at >= cutoff)
     
-    query = query.order_by(Certificate.organization_name, Certificate.issued_at.desc()).limit(100)
+    count_q = select(func.count()).select_from(query.subquery())
+    count_result = await db.execute(count_q)
+    total = count_result.scalar()
+    query = query.order_by(Certificate.organization_name, Certificate.issued_at.desc()).limit(limit).offset(offset)
     
     result = await db.execute(query)
     certificates = result.scalars().all()
@@ -86,13 +91,13 @@ async def search_registry(
                 "expires_at": cert["expires_at"],
             })
         return {
-            "total": len(cert_list),
+            "total": total,
             "organizations": len(grouped),
             "results": list(grouped.values())
         }
     
     return {
-        "total": len(cert_list),
+        "total": total,
         "results": cert_list
     }
 

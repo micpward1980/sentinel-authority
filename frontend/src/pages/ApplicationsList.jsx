@@ -11,6 +11,7 @@ import { useToast } from '../context/ToastContext';
 import Panel from '../components/Panel';
 import CopyableId from '../components/CopyableId';
 import EmptyState from '../components/EmptyState';
+import Pagination from '../components/Pagination';
 
 /* ── State helpers ──────────────────────────────────────────────────────────── */
 
@@ -77,21 +78,25 @@ function ApplicationsList() {
   const qc = useQueryClient();
   const navigate = useNavigate();
 
-  const [tab, setTab] = useState('action');
+  const [rawTab, setRawTab] = useState('action');
+  const setTab = (t) => { setRawTab(t); setOffset(0); };
+  const tab = rawTab;
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
+  const [offset, setOffset] = useState(0);
+  const PAGE_LIMIT = 25;
 
   const searchTimer = React.useRef(null);
   const handleSearch = (val) => {
     setSearchQuery(val);
     clearTimeout(searchTimer.current);
-    searchTimer.current = setTimeout(() => setDebouncedSearch(val), 200);
+    searchTimer.current = setTimeout(() => { setDebouncedSearch(val); setOffset(0); }, 200);
   };
 
   const { data, isLoading, isFetching } = useQuery({
-    queryKey: ['applications', debouncedSearch],
+    queryKey: ['applications', debouncedSearch, offset],
     queryFn: () => {
-      const params = {};
+      const params = { limit: PAGE_LIMIT, offset };
       if (debouncedSearch) params.search = debouncedSearch;
       return api.get('/api/applications/', { params }).then(r => r.data);
     },
@@ -309,6 +314,7 @@ function ApplicationsList() {
           </tbody>
         </table>
       </div>
+      <Pagination total={data?.total || filtered.length} limit={PAGE_LIMIT} offset={offset} onChange={setOffset} />
     </div>
   );
 }

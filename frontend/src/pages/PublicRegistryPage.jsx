@@ -3,6 +3,7 @@ import { Search, Shield, CheckCircle, XCircle, Clock, ExternalLink, ChevronRight
 import { api, API_BASE } from '../config/api';
 import { styles } from '../config/styles';
 import BrandMark from '../components/BrandMark';
+import Pagination from '../components/Pagination';
 import { formatSystemType } from '../utils/formatSystemType';
 
 // ─── Design tokens for public portal ────────────────────────────────────────
@@ -197,15 +198,19 @@ export default function PublicRegistryPage() {
   const [statusFilter, setStatusFilter] = useState('conformant');
   const [selected, setSelected] = useState(null);
   const [error, setError] = useState('');
+  const [offset, setOffset] = useState(0);
+  const [total, setTotal] = useState(0);
+  const PAGE_LIMIT = 25;
   const searchTimer = useRef(null);
 
   useEffect(() => {
     Promise.all([
       api.get('/api/registry/stats').catch(() => ({ data: null })),
-      api.get('/api/registry/search?status=conformant').catch(() => ({ data: { results: [] } })),
+      api.get('/api/registry/search?status=conformant&limit=25&offset=0').catch(() => ({ data: { results: [] } })),
     ]).then(([statsRes, searchRes]) => {
       setStats(statsRes.data);
       setResults(searchRes.data?.results || []);
+      setTotal(searchRes.data?.total || 0);
       setLoading(false);
     });
   }, []);
@@ -217,8 +222,11 @@ export default function PublicRegistryPage() {
       const params = new URLSearchParams();
       if (q?.trim()) params.set('q', q.trim());
       if (status) params.set('status', status);
+      params.set('limit', PAGE_LIMIT);
+      params.set('offset', offset);
       const res = await api.get(`/api/registry/search?${params.toString()}`);
       setResults(res.data?.results || []);
+      setTotal(res.data?.total || 0);
       if (!res.data?.results?.length) setError('No certificates found');
     } catch {
       setError('Unable to connect to registry node');
@@ -226,14 +234,18 @@ export default function PublicRegistryPage() {
     setSearchLoading(false);
   };
 
+  // Re-fetch when offset changes
+  useEffect(() => { if (!loading) runSearch(query, statusFilter); }, [offset]);
+
   const handleSearchInput = (val) => {
     setQuery(val);
     clearTimeout(searchTimer.current);
-    searchTimer.current = setTimeout(() => runSearch(val, statusFilter), 300);
+    searchTimer.current = setTimeout(() => { setOffset(0); runSearch(val, statusFilter); }, 300);
   };
 
   const handleStatusFilter = (status) => {
     setStatusFilter(status);
+    setOffset(0);
     runSearch(query, status);
   };
 
@@ -381,6 +393,8 @@ export default function PublicRegistryPage() {
             </table>
           )}
         </div>
+
+        <Pagination total={total} limit={PAGE_LIMIT} offset={offset} onChange={(o) => { setOffset(o); }} />
 
         {/* Footer note */}
         <div style={{ marginTop: 20, display: 'flex', alignItems: 'center', gap: 8 }}>
