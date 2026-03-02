@@ -278,6 +278,28 @@ class ApplicationComment(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
 
 
+
+
+class ApplicationCorrespondence(Base):
+    """Formal correspondence sent to applicants — auditable, templated, referenced."""
+    __tablename__ = "application_correspondence"
+    id = Column(Integer, primary_key=True, index=True)
+    application_id = Column(Integer, ForeignKey("applications.id"), index=True)
+    reference_number = Column(String(50), unique=True, index=True)  # SA-COR-2026-00001
+    correspondence_type = Column(String(50), nullable=False)  # rfi, deficiency, remediation, general
+    subject = Column(String(500), nullable=False)
+    body = Column(Text, nullable=False)
+    sent_to = Column(String(255), nullable=False)
+    sent_by_id = Column(Integer, ForeignKey("users.id"))
+    sent_by_email = Column(String(255))
+    sent_at = Column(DateTime, default=datetime.utcnow)
+    response_required = Column(Boolean, default=False)
+    response_deadline = Column(DateTime, nullable=True)
+    response_received_at = Column(DateTime, nullable=True)
+    status = Column(String(50), default="sent")  # sent, awaiting_response, responded, closed
+
+    application = relationship("Application", backref="correspondence")
+
 class APIKey(Base):
     __tablename__ = "api_keys"
     

@@ -10,7 +10,7 @@ from typing import Optional, Dict, Any
 from app.core.database import get_db
 from app.api.routes.webhooks import fire_webhook
 from app.core.security import get_current_user, require_role
-from app.models.models import Application, AuditLog, ApplicationComment, CertificationState, User
+from app.models.models import Application, AuditLog, ApplicationComment, ApplicationCorrespondence, CertificationState, User
 from app.services.audit_service import write_audit_log
 from datetime import timezone
 from app.services.email_service import (
@@ -1027,5 +1027,179 @@ async def accept_agreement(
         "status": "accepted",
         "accepted_at": app.agreement_accepted_at.isoformat(),
         "accepted_by": app.agreement_accepted_by,
+    }
+
+
+# ═══ Formal Correspondence ═══
+
+CORRESPONDENCE_TEMPLATES = {
+    "rfi": {
+        "label": "Request for Information",
+        "subject_prefix": "Request for Information",
+        "default_body": "Sentinel Authority requires additional information regarding your application for {system_name} ({app_number}).\n\nPlease provide the following:\n\n{details}\n\nPlease respond within {deadline_days} business days. Failure to respond may result in your application being placed on hold.",
+    },
+    "deficiency": {
+        "label": "Deficiency Notice",
+        "subject_prefix": "Deficiency Notice",
+        "default_body": "During our review of your application for {system_name} ({app_number}), the following deficiencies were identified:\n\n{details}\n\nThese items must be addressed before your application can proceed to the next stage of the certification process.",
+    },
+    "remediation": {
+        "label": "Remediation Guidance",
+        "subject_prefix": "Remediation Guidance",
+        "default_body": "Regarding your application for {system_name} ({app_number}), Sentinel Authority recommends the following remediation steps:\n\n{details}\n\nOnce these steps are completed, please notify us so we can resume processing your application.",
+    },
+    "general": {
+        "label": "General Correspondence",
+        "subject_prefix": "Re: ODDC Application",
+        "default_body": "{details}",
+    },
+}
+
+
+@router.get("/{application_id}/correspondence", summary="List formal correspondence")
+async def list_correspondence(
+    application_id: int,
+    db: AsyncSession = Depends(get_db),
+    user: dict = Depends(get_current_user)
+):
+    result = await db.execute(select(Application).where(Application.id == application_id))
+    app = result.scalar_one_or_none()
+    if not app:
+        raise HTTPException(status_code=404, detail="Application not found")
+    
+    result = await db.execute(
+        select(ApplicationCorrespondence)
+        .where(ApplicationCorrespondence.application_id == application_id)
+        .order_by(ApplicationCorrespondence.sent_at.desc())
+    )
+    items = result.scalars().all()
+    return [{
+        "id": c.id,
+        "reference_number": c.reference_number,
+        "type": c.correspondence_type,
+        "subject": c.subject,
+        "body": c.body,
+        "sent_to": c.sent_to,
+        "sent_by": c.sent_by_email,
+        "sent_at": c.sent_at.isoformat() if c.sent_at else None,
+        "response_required": c.response_required,
+        "response_deadline": c.response_deadline.isoformat() if c.response_deadline else None,
+        "status": c.status,
+    } for c in items]
+
+
+@router.post("/{application_id}/correspondence", summary="Send formal correspondence")
+async def send_correspondence(
+    application_id: int,
+    body: dict,
+    db: AsyncSession = Depends(get_db),
+    user: dict = Depends(get_current_user)
+):
+    if user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Only admins can send formal correspondence")
+    
+    result = await db.execute(select(Application).where(Application.id == application_id))
+    app = result.scalar_one_or_none()
+    if not app:
+        raise HTTPException(status_code=404, detail="Application not found")
+    
+    cor_type = body.get("type", "general")
+    if cor_type not in CORRESPONDENCE_TEMPLATES:
+        raise HTTPException(status_code=400, detail=f"Invalid type. Must be: {list(CORRESPONDENCE_TEMPLATES.keys())}")
+    
+    template = CORRESPONDENCE_TEMPLATES[cor_type]
+    details = body.get("details", "").strip()
+    if not details:
+        raise HTTPException(status_code=400, detail="Details are required")
+    
+    subject = body.get("subject") or f"{template['subject_prefix']} — {app.system_name} ({app.application_number})"
+    
+    response_required = body.get("response_required", cor_type in ("rfi", "deficiency"))
+    deadline_days = body.get("deadline_days", 10)
+    
+    from datetime import timedelta
+    deadline = None
+    if response_required:
+        deadline = datetime.utcnow() + timedelta(days=deadline_days)
+    
+    # Generate reference number
+    from sqlalchemy import func
+    count_result = await db.execute(select(func.count(ApplicationCorrespondence.id)))
+    count = count_result.scalar() or 0
+    ref = f"SA-COR-{datetime.utcnow().year}-{count + 1:05d}"
+    
+    formatted_body = template["default_body"].format(
+        system_name=app.system_name or "your system",
+        app_number=app.application_number or f"SA-{app.id}",
+        details=details,
+        deadline_days=deadline_days,
+    )
+    
+    record = ApplicationCorrespondence(
+        application_id=application_id,
+        reference_number=ref,
+        correspondence_type=cor_type,
+        subject=subject,
+        body=formatted_body,
+        sent_to=app.contact_email or "",
+        sent_by_id=int(user.get("sub", 0)),
+        sent_by_email=user.get("email", "admin"),
+        response_required=response_required,
+        response_deadline=deadline,
+        status="awaiting_response" if response_required else "sent",
+    )
+    db.add(record)
+    await db.commit()
+    await db.refresh(record)
+    
+    # Send email
+    if app.contact_email:
+        deadline_line = ""
+        if response_required and deadline:
+            deadline_line = f'<p style="color:#B45309;font-weight:600;">Response required by {deadline.strftime("%B %d, %Y")}</p>'
+        
+        type_colors = {"rfi": "#5B4B8A", "deficiency": "#B45309", "remediation": "#047857", "general": "#5B4B8A"}
+        color = type_colors.get(cor_type, "#5B4B8A")
+        
+        html = f"""<div style="font-family:Arial,sans-serif;max-width:640px;margin:0 auto;">
+            <div style="background:{color};padding:20px;text-align:center;">
+                <h1 style="color:#fff;margin:0;font-size:18px;letter-spacing:2px;">SENTINEL AUTHORITY</h1>
+            </div>
+            <div style="padding:30px;background:#f9f9f9;">
+                <p style="font-family:monospace;font-size:11px;color:#888;">Ref: {ref}</p>
+                <h2 style="color:#1a1a2e;margin-top:0;">{subject}</h2>
+                <div style="background:#fff;border:1px solid #e5e5e5;border-radius:4px;padding:20px;white-space:pre-wrap;line-height:1.6;">{formatted_body}</div>
+                {deadline_line}
+                <hr style="border:none;border-top:1px solid #e5e5e5;margin:24px 0;">
+                <p style="font-size:12px;color:#666;">View your application: <a href="https://app.sentinelauthority.org/applications/{application_id}">app.sentinelauthority.org</a></p>
+                <p style="font-size:11px;color:#999;">This is an official communication from Sentinel Authority, an independent certification body for autonomous systems.</p>
+            </div>
+        </div>"""
+        
+        try:
+            await send_email(app.contact_email, subject, html)
+        except Exception:
+            pass
+    
+    # Auto-post as non-internal comment for audit trail
+    comment = ApplicationComment(
+        application_id=application_id,
+        user_id=int(user.get("sub", 0)),
+        user_email=user.get("email", "admin"),
+        user_role="admin",
+        content=f"[{template['label']}] Ref: {ref}\n\n{formatted_body}",
+        is_internal=False,
+    )
+    db.add(comment)
+    await db.commit()
+    
+    return {
+        "id": record.id,
+        "reference_number": ref,
+        "type": cor_type,
+        "subject": subject,
+        "status": record.status,
+        "sent_to": record.sent_to,
+        "sent_at": record.sent_at.isoformat() if record.sent_at else None,
     }
 
