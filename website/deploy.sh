@@ -1,6 +1,6 @@
 #!/bin/bash
 cd ~/Downloads/sentinel-authority/website
-OUTPUT=$(npx vercel deploy --prod --yes 2>&1)
+OUTPUT=$(npx vercel deploy --prod --yes --force 2>&1)
 echo "$OUTPUT"
 URL=$(echo "$OUTPUT" | grep "Production:" | grep -o 'https://[^ ]*\.vercel\.app' | head -1)
 if [ -z "$URL" ]; then

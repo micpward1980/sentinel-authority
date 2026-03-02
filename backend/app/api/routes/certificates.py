@@ -171,7 +171,19 @@ async def download_pdf(certificate_number: str, db: AsyncSession = Depends(get_d
     test = test_result.scalar_one_or_none()
     odd_spec = cert.odd_specification or {}
     odd_string = odd_spec.get("environment_type", "General") if isinstance(odd_spec, dict) else str(odd_spec)
-    pdf_bytes = generate_certificate_pdf({"certificate_number": cert.certificate_number, "organization_name": cert.organization_name, "system_name": cert.system_name, "system_version": cert.system_version if hasattr(cert, "system_version") else "", "odd_specification": cert.odd_specification, "issued_at": cert.issued_at, "expires_at": cert.expires_at, "convergence_score": cert.convergence_score or 0.95, "evidence_hash": cert.evidence_hash or "N/A", "signature": cert.evidence_hash[:16] if cert.evidence_hash else "N/A", "audit_log_ref": test.test_id if test else "N/A", "verification_url": f"https://app.sentinelauthority.org/verify?cert={cert.certificate_number}"})
+    pdf_bytes = generate_certificate_pdf(
+        certificate_number=cert.certificate_number,
+        organization_name=cert.organization_name,
+        system_name=cert.system_name,
+        odd_specification=odd_string,
+        issued_date=cert.issued_at,
+        expiry_date=cert.expires_at,
+        test_id=test.test_id if test else "N/A",
+        convergence_score=cert.convergence_score or 0.95,
+        stability_index=0.95,
+        drift_rate=0.01,
+        evidence_hash=cert.evidence_hash or "N/A"
+    )
     return Response(content=pdf_bytes, media_type="application/pdf", headers={"Content-Disposition": f"attachment; filename=ODDC-{cert.certificate_number}.pdf"})
 
 

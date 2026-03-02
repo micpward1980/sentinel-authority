@@ -21,9 +21,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <style>
-    /* ═══════════════════════════════════════════════════
-       INSTITUTIONAL TOKEN SYSTEM — Supreme Court × ISO
-       ═══════════════════════════════════════════════════ */
     :root {
       --ink:          #0f1021;
       --accent:       #2a2560;
@@ -34,8 +31,6 @@
       --muted:        #5c6270;
       --ease:         150ms ease;
       --radius:       6px;
-
-      /* Legacy aliases — keep for backward compat */
       --text-primary:   #0f1021;
       --text-secondary: #5c6270;
     }
@@ -43,7 +38,7 @@
     @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:0.01ms !important;animation-iteration-count:1 !important;transition-duration:0.01ms !important;}}
     :root{
       color-scheme:light;
-      --purple-primary:#2a2560;--purple-bright:#2a2560;--purple-glow:transparent /* deprecated */;
+      --purple-primary:#2a2560;--purple-bright:#2a2560;--purple-glow:transparent;
       --bg-deep:#ffffff;--accent-green:rgba(22,163,74,1.00);--accent-amber:rgba(202,138,4,1.00);--accent-red:rgba(220,53,69,1.00);
       --text-primary:#111318;--text-secondary:rgba(15,18,30,.74);--text-tertiary:rgba(15,18,30,.56);
       --border-glass:rgba(0,0,0,.09);--border-subtle:rgba(0,0,0,.05);
@@ -63,25 +58,20 @@
     a{color:inherit;text-decoration:none;} a:hover{text-decoration:none;}
     ::selection { background: var(--accent); color: #fff; }
 
-    /* NAV */
     .site-header{position:fixed;top:0;width:100%;z-index:50;padding:0 24px;height:var(--nav-height);border-bottom:1px solid rgba(15,18,30,0.06);background:rgba(255,255,255,0.92);box-shadow:none;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:flex;align-items:center;}
     .nav-inner{max-width:var(--max);margin:0 auto;width:100%;display:flex;align-items:center;justify-content:space-between;gap:20px;}
     .brand{display:flex;align-items:center;gap:14px;text-decoration:none;} .brand:hover{text-decoration:none;}
     .brand-mark { display: none; }
-    
-    @keyframes eye-pulse{0%,100%{opacity:.75;transform:scale(.98);}50%{opacity:1;transform:scale(1.02);}}
     .brand-name { display: none; }
     .back-link{font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--text-tertiary);transition:color .2s;text-decoration:none;font-weight:500;}
     .back-link:hover{color:var(--text-primary);text-decoration:none;}
 
-    /* LAYOUT */
     main{position:relative;z-index:1;max-width:var(--max);margin:0 auto;padding:0 20px 80px;}
     .section{position:relative;padding:var(--space-6) 0;scroll-margin-top:calc(var(--nav-height) + 24px);}
     .section-label{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--purple-bright);display:block;margin-bottom:12px;font-weight:600;}
     .section-title{font-family:var(--serif);font-size:clamp(30px,4vw,50px);font-weight:500;line-height:1.1;margin:0;letter-spacing:-0.02em;color:#1d1a3b;}
     .section-lead{max-width:65ch;color:var(--text-secondary);font-weight:400;line-height:1.55;margin:var(--space-2) 0 0;font-size:16px;}
 
-    /* GLASS FRAMES */
     .hud-frame{position:relative;padding:20px 16px;background:rgba(255,255,255,0.78);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 1px 2px rgba(15,18,30,0.03),0 10px 40px rgba(15,18,30,0.05);border:1px solid rgba(15,18,30,0.06);overflow:hidden;}
     .hud-frame::before,.hud-frame::after,.hud-frame>i::before,.hud-frame>i::after{content:'';position:absolute;width:12px;height:12px;border-color:rgba(15,18,30,0.08);border-style:solid;pointer-events:none;animation:corner-breathe 4s ease-in-out infinite;}
     .hud-frame::before{top:0;left:0;border-width:1px 0 0 1px;}
@@ -91,7 +81,6 @@
     .hud-frame>i{position:absolute;inset:0;pointer-events:none;}
     @keyframes corner-breathe{0%,100%{border-color:rgba(15,18,30,0.08);}50%{border-color:rgba(42,37,96,0.20);}}
 
-    /* Colored frames */
     .hud-frame-green::before,.hud-frame-green::after,.hud-frame-green>i::before,.hud-frame-green>i::after{animation:corner-breathe-green 4s ease-in-out infinite !important;}
     @keyframes corner-breathe-green{0%,100%{border-color:rgba(22,163,74,0.08);}50%{border-color:rgba(22,163,74,0.25);}}
     .hud-frame-amber::before,.hud-frame-amber::after,.hud-frame-amber>i::before,.hud-frame-amber>i::after{animation:corner-breathe-amber 4s ease-in-out infinite !important;}
@@ -100,7 +89,6 @@
     @keyframes corner-breathe-red{0%,100%{border-color:rgba(220,53,69,0.08);}50%{border-color:rgba(220,53,69,0.25);}}
     .hud-scanline{border-bottom:1px solid rgba(15,18,30,0.04);}
 
-    /* HUD ELEMENTS */
     .hud-dot{display:inline-block;width:4px;height:4px;border-radius:50%;background:rgba(42,37,96,0.35);margin-right:8px;flex-shrink:0;}
     .hud-dot-green{background:rgba(22,163,74,0.6);animation:hud-breathe 3s ease-in-out infinite;}
     .hud-dot-amber{background:rgba(202,138,4,0.6);animation:hud-breathe 3s ease-in-out infinite;}
@@ -115,137 +103,55 @@
     .hud-link{font-family:var(--mono);font-size:11px;letter-spacing:2px;color:rgba(42,37,96,1.00);text-decoration:none !important;padding-bottom:2px;transition:all 0.2s;}
     .hud-link:hover{color:rgba(42,37,96,1.00);}
 
-    /* FOOTER */
     footer{border-top:1px solid rgba(0,0,0,.05);padding:var(--space-6) 0 var(--space-4);margin-top:var(--space-4);background:#ffffff;color:var(--text-tertiary);font-family:var(--mono);font-size:12px;letter-spacing:1px;}
     .footer-inner{max-width:var(--max);margin:0 auto;padding:0 20px;display:flex;justify-content:space-between;align-items:flex-start;gap:20px;flex-wrap:wrap;}
 
-    /* MOBILE */
     @media(max-width:768px){.site-header{height:56px;padding:0 12px;}:root{--nav-height:56px;}.brand-name { display: none; }.hud-frame{backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);}.section-title{font-size:24px !important;}}
     @media(max-width:480px){.section-title{font-size:21px !important;}}
-/* ── ROOT TOKENS ── */
-:root{
-  --hairline:rgba(15,18,30,0.08);
-  --glass-bg:rgba(255,255,255,0.58);
-  --glass-border:rgba(255,255,255,0.45);
-}
 
-/* ── BODY ── */
-body{background: #ffffff!important;}
-body::before{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;
-  background:var(--bg);}
+    :root{--hairline:rgba(15,18,30,0.08);--glass-bg:rgba(255,255,255,0.58);--glass-border:rgba(255,255,255,0.45);}
+    body{background: #ffffff!important;}
+    body::before{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;background:var(--bg);}
+    .site-header,header,.nav-bar{background:rgba(255,255,255,0.92)!important;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--hairline)!important;}
+    .brand-name { display: none; }
+    .section-head{display:flex!important;align-items:flex-end!important;justify-content:space-between!important;gap:16px!important;flex-wrap:wrap!important;margin-bottom:24px!important;background:rgba(255,255,255,0.45)!important;border-radius:16px!important;padding:28px 24px!important;text-align:left!important;}
+    .section-label{font-family:var(--mono,Consolas,'IBM Plex Mono',monospace)!important;font-size:10px!important;letter-spacing:5px!important;text-transform:uppercase!important;color:rgba(15,18,30,0.44)!important;display:block!important;margin-bottom:12px!important;}
+    .section-title,h1.section-title{font-family:var(--serif,Georgia,'Source Serif 4',serif)!important;font-size:clamp(30px,4vw,50px)!important;font-weight:300!important;line-height:1.1!important;margin:0!important;letter-spacing:-0.03em!important;color:#1d1a3b!important;}
+    .section-lead{max-width:580px!important;color:rgba(15,18,30,0.64)!important;font-weight:300!important;line-height:1.75!important;margin:16px 0 0!important;margin-left:0!important;margin-right:auto!important;font-size:16px!important;}
+    .doc-card,.wp-featured,.artifact-card,.cert-card,.research-card,.fee-card,.process-card,.guarantee-box{background:rgba(255,255,255,0.65)!important;border:1px solid rgba(15,18,30,0.06)!important;border-radius:16px!important;box-shadow:0 1px 2px rgba(15,18,30,0.03),0 4px 16px rgba(15,18,30,0.02)!important;overflow:hidden;}
+    .doc-card::before,.doc-card::after,.wp-featured::before,.wp-featured::after,.hud-frame::before,.hud-frame::after,.hud-frame>i::before,.hud-frame>i::after{display:none!important;}
+    .hud-frame{border-radius:16px!important;border:1px solid var(--hairline)!important;background:rgba(255,255,255,0.40)!important;}
+    .section{border-top:1px solid var(--hairline)!important;padding-top:80px!important;padding-bottom:80px!important;}
+    .reveal{opacity:1;transform:none;}
+    .reveal.active{opacity:1!important;transform:none!important;}
+    @media(prefers-reduced-motion:reduce){.reveal{opacity:1!important;transform:none!important;transition:none!important;}}
+    a:hover{filter:none!important;}
+    ::selection { background: var(--accent); color: #fff; }
+    .hud-scanline::before,.hud-scanline::after{display:none!important;}
+    .sa-particles,.sa-noise,.sa-vignette,.hud-shimmer{display:none!important;}
+    .section-title,.section-label,.hud-title,.hud-label,.hud-desc,.hud-link,h1,h2,h3,p,span,a,div{text-shadow:none!important;}
+    footer{border-top:1px solid var(--hairline)!important;}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+    .reveal.active{animation:fadeUp .7s cubic-bezier(0.16,1,0.3,1) both;}
+    .r1{animation-delay:.1s;}.r2{animation-delay:.15s;}.r3{animation-delay:.2s;}.r4{animation-delay:.25s;}.r5{animation-delay:.3s;}.r6{animation-delay:.35s;}.r7{animation-delay:.4s;}.r8{animation-delay:.45s;}.r9{animation-delay:.5s;}.r10{animation-delay:.55s;}
 
-/* ── HEADER ── */
-.site-header,header,.nav-bar{background:rgba(255,255,255,0.92)!important;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--hairline)!important;}
-.brand-name { display: none; }
-
-/* ── SECTION HEAD (glass box) ── */
-.section-head{
-  display:flex!important;
-  align-items:flex-end!important;
-  justify-content:space-between!important;
-  gap:16px!important;
-  flex-wrap:wrap!important;
-  margin-bottom:24px!important;
-  background:rgba(255,255,255,0.45)!important;
-  border-radius:16px!important;
-  padding:28px 24px!important;
-  text-align:left!important;
-}
-
-/* ── SECTION LABEL ── */
-.section-label{
-  font-family:var(--mono,Consolas,'IBM Plex Mono',monospace)!important;
-  font-size:10px!important;
-  letter-spacing:5px!important;
-  text-transform:uppercase!important;
-  color:rgba(15,18,30,0.44)!important;
-  display:block!important;
-  margin-bottom:12px!important;
-}
-
-/* ── SECTION TITLE ── */
-.section-title,h1.section-title{
-  font-family:var(--serif,Georgia,'Source Serif 4',serif)!important;
-  font-size:clamp(30px,4vw,50px)!important;
-  font-weight:300!important;
-  line-height:1.1!important;
-  margin:0!important;
-  letter-spacing:-0.03em!important;
-  color:#1d1a3b!important;
-}
-
-/* ── SECTION LEAD ── */
-.section-lead{
-  max-width:580px!important;
-  color:rgba(15,18,30,0.64)!important;
-  font-weight:300!important;
-  line-height:1.75!important;
-  margin:16px 0 0!important;
-  margin-left:0!important;
-  margin-right:auto!important;
-  font-size:16px!important;
-}
-
-/* ── CARDS: glass, rounded, no brackets ── */
-.doc-card,.wp-featured,.artifact-card,.cert-card,.research-card,.fee-card,.process-card,.guarantee-box{
-  background:rgba(255,255,255,0.65)!important;
-  border:1px solid rgba(15,18,30,0.06)!important;
-  border-radius:16px!important;
-  box-shadow:0 1px 2px rgba(15,18,30,0.03),0 4px 16px rgba(15,18,30,0.02)!important;
-  overflow:hidden;
-}
-/* Kill bracket corners */
-.doc-card::before,.doc-card::after,
-.wp-featured::before,.wp-featured::after,
-.hud-frame::before,.hud-frame::after,
-.hud-frame>i::before,.hud-frame>i::after{display:none!important;}
-
-/* ── HUD FRAMES ── */
-.hud-frame{
-  border-radius:16px!important;
-  border:1px solid var(--hairline)!important;
-  background:rgba(255,255,255,0.40)!important;
-}
-
-/* ── SECTIONS ── */
-.section{border-top:1px solid var(--hairline)!important;padding-top:80px!important;padding-bottom:80px!important;}
-
-/* ── REVEALS ── */
-.reveal{opacity:1;transform:none;}
-.reveal.active{opacity:1!important;transform:none!important;}
-@media(prefers-reduced-motion:reduce){.reveal{opacity:1!important;transform:none!important;transition:none!important;}}
-
-/* ── MISC ── */
-a:hover{filter:none!important;}
-::selection { background: var(--accent); color: #fff; }
-.hud-scanline::before,.hud-scanline::after{display:none!important;}
-.sa-particles,.sa-noise,.sa-vignette,.hud-shimmer{display:none!important;}
-.section-title,.section-label,.hud-title,.hud-label,.hud-desc,.hud-link,h1,h2,h3,p,span,a,div{text-shadow:none!important;}
-footer{border-top:1px solid var(--hairline)!important;}
-
-/* Stagger cascade animation */
-@keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
-.reveal.active{animation:fadeUp .7s cubic-bezier(0.16,1,0.3,1) both;}
-.r1{animation-delay:.1s;}.r2{animation-delay:.15s;}.r3{animation-delay:.2s;}.r4{animation-delay:.25s;}.r5{animation-delay:.3s;}.r6{animation-delay:.35s;}.r7{animation-delay:.4s;}.r8{animation-delay:.45s;}.r9{animation-delay:.5s;}.r10{animation-delay:.55s;}
-
-    /* ── Header ── */
     .site-header{position:fixed;top:0;left:0;right:0;z-index:50;height:var(--nav-height,72px);background:rgba(255,255,255,0.92);border-bottom:1px solid rgba(15,18,30,0.08);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:flex;align-items:center;padding:0 24px;}
     .nav-inner{max-width:var(--max,1320px);margin:0 auto;width:100%;display:flex;align-items:center;}
     .back-link{font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--text-tertiary,rgba(15,18,30,.50));transition:color .15s;font-weight:500;text-decoration:none;}
     .back-link:hover{color:var(--text-primary,#111318);}
-    </style>
+  </style>
   <link rel="stylesheet" href="global.css">
   <link rel="stylesheet" href="mobile.css">
 </head>
 <body>
   <a href="#main" class="skip-link">Skip to content</a>
-    <header class="site-header">
+  <header class="site-header">
     <div class="nav-inner">
-      <a href="/" class="back-link" aria-label="Back to home">← Sentinel Authority</a>
+      <a href="/" class="back-link" aria-label="Back to home">&larr; Sentinel Authority</a>
     </div>
   </header>
 
-  <main role="main" aria-label="Page content" id="main" role="main">
+  <main role="main" aria-label="Page content" id="main">
     <div style="padding-top:calc(var(--nav-height) + 48px);max-width:var(--max);margin:0 auto;">
       <div class="section-head reveal">
         <div>
@@ -286,6 +192,8 @@ footer{border-top:1px solid var(--hairline)!important;}
         <div class="hud-row" style="display:flex;align-items:center;gap:12px;"><span class="hud-num">08</span><a href="#confidentiality" class="hud-link" style="font-size:10px;">CONFIDENTIALITY</a></div>
         <div class="hud-row" style="display:flex;align-items:center;gap:12px;"><span class="hud-num">09</span><a href="#ip" class="hud-link" style="font-size:10px;">INTELLECTUAL PROPERTY</a></div>
         <div class="hud-row" style="display:flex;align-items:center;gap:12px;"><span class="hud-num">10</span><a href="#general" class="hud-link" style="font-size:10px;">GENERAL PROVISIONS</a></div>
+        <div class="hud-row" style="display:flex;align-items:center;gap:12px;"><span class="hud-num">11</span><a href="#nonpayment" class="hud-link" style="font-size:10px;">FEE NON-PAYMENT PROCEDURES</a></div>
+        <div class="hud-row" style="display:flex;align-items:center;gap:12px;"><span class="hud-num">12</span><a href="#enforcement" class="hud-link" style="font-size:10px;">SA ENFORCEMENT POWERS</a></div>
       </div>
 
       <!-- 1 Scope -->
@@ -313,7 +221,7 @@ footer{border-top:1px solid var(--hairline)!important;}
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Report any test interruptions, violations, or anomalies</span></div>
       </div>
       <div class="hud-frame hud-frame-amber" style="margin-top:var(--space-2);"><i></i>
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;"><span class="hud-label">2.3 POST-CONFORMANCE — UPTIME REQUIREMENTS</span><span class="hud-dot hud-dot-amber"></span></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;"><span class="hud-label">2.3 POST-CONFORMANCE &mdash; UPTIME REQUIREMENTS</span><span class="hud-dot hud-dot-amber"></span></div>
         <div class="hud-desc">Minimum 99% monthly uptime required. Outages under 1 hour require no action. Extended outages exceeding 1 hour trigger automated notification. Cumulative downtime exceeding 24 hours per calendar month may result in non-conformance determination.</div>
       </div>
       <div class="hud-frame" style="margin-top:var(--space-2);"><i></i>
@@ -363,7 +271,8 @@ footer{border-top:1px solid var(--hairline)!important;}
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-red" style="margin-top:5px;"></span><span class="hud-desc">Unauthorized modification to attested system</span></div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-red" style="margin-top:5px;"></span><span class="hud-desc">Disabling, bypassing, or tampering with ENVELO enforcement</span></div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-red" style="margin-top:5px;"></span><span class="hud-desc">Failure to maintain ENVELO Interlock operation</span></div>
-        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-red" style="margin-top:5px;"></span><span class="hud-desc">Non-payment of fees or violation of this Agreement</span></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-red" style="margin-top:5px;"></span><span class="hud-desc">Non-payment of fees &mdash; see Section 11 for phased procedures</span></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-red" style="margin-top:5px;"></span><span class="hud-desc">Violation of this Agreement</span></div>
         <div class="hud-desc" style="margin-top:12px;">Non-conformance is recorded in the SA registry and reflected in verification results.</div>
       </div>
 
@@ -384,9 +293,9 @@ footer{border-top:1px solid var(--hairline)!important;}
       <!-- 7 Liability -->
       <div id="liability" class="section hud-frame" style="margin-top:var(--space-3);"><i></i>
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;"><span class="hud-num">07</span><span class="hud-label">LIABILITY &amp; INDEMNIFICATION</span></div>
-        <div class="hud-desc" style="margin-bottom:12px;">SA&#39;s total liability shall not exceed fees paid for the specific attestation at issue. SA is not liable for indirect, incidental, consequential, special, or punitive damages.</div>
+        <div class="hud-desc" style="margin-bottom:12px;">SA&rsquo;s total liability shall not exceed fees paid for the specific attestation at issue. SA is not liable for indirect, incidental, consequential, special, or punitive damages.</div>
         <div class="hud-desc" style="margin-bottom:12px;">SA has no liability for the behavior, performance, or consequences of operation of any system, whether attested or not.</div>
-        <div class="hud-desc">Applicant shall indemnify, defend, and hold harmless SA from any claims, damages, losses, or expenses arising from operation of Applicant&#39;s systems or violation of this Agreement.</div>
+        <div class="hud-desc">Applicant shall indemnify, defend, and hold harmless SA from any claims, damages, losses, or expenses arising from operation of Applicant&rsquo;s systems or violation of this Agreement.</div>
       </div>
 
       <!-- 8 Confidentiality -->
@@ -401,7 +310,7 @@ footer{border-top:1px solid var(--hairline)!important;}
       <!-- 9 IP -->
       <div id="ip" class="section hud-frame" style="margin-top:var(--space-3);"><i></i>
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;"><span class="hud-num">09</span><span class="hud-label">INTELLECTUAL PROPERTY</span></div>
-        <div class="hud-desc">Applicant retains all rights to its systems, documentation, and intellectual property. SA retains all rights to ODDC methodology, ENVELO specifications, CAT-72 procedures, and related IP. Nothing in this Agreement grants either party rights to the other&#39;s intellectual property except as expressly stated.</div>
+        <div class="hud-desc">Applicant retains all rights to its systems, documentation, and intellectual property. SA retains all rights to ODDC methodology, ENVELO specifications, CAT-72 procedures, and related IP. Nothing in this Agreement grants either party rights to the other&rsquo;s intellectual property except as expressly stated.</div>
       </div>
 
       <!-- 10 General -->
@@ -416,13 +325,123 @@ footer{border-top:1px solid var(--hairline)!important;}
         <div class="hud-label" style="margin-bottom:8px;color:var(--text-tertiary);">10.4 SEVERABILITY</div>
         <div class="hud-desc" style="margin-bottom:16px;">If any provision is found unenforceable, the remaining provisions remain in effect.</div>
         <div class="hud-label" style="margin-bottom:8px;color:var(--text-tertiary);">10.5 SURVIVAL</div>
-        <div class="hud-desc" style="margin-bottom:16px;">Sections 7 (Liability and Indemnification), 8 (Confidentiality), 9 (Intellectual Property), and 10.1 (Governing Law) survive termination or expiration of this Agreement.</div>
+        <div class="hud-desc" style="margin-bottom:16px;">Sections 7 (Liability and Indemnification), 8 (Confidentiality), 9 (Intellectual Property), 10.1 (Governing Law), and 12.6 (Interlock Safety Commitment) survive termination or expiration of this Agreement.</div>
         <div class="hud-label" style="margin-bottom:8px;color:var(--text-tertiary);">10.6 FORCE MAJEURE</div>
         <div class="hud-desc" style="margin-bottom:16px;">Neither party shall be liable for delays or failures in performance resulting from causes beyond its reasonable control, including acts of God, governmental action, natural disaster, or failure of third-party infrastructure.</div>
         <div class="hud-label" style="margin-bottom:8px;color:var(--text-tertiary);">10.7 ASSIGNMENT</div>
-        <div class="hud-desc" style="margin-bottom:16px;">Applicant may not assign this Agreement without SA's prior written consent. SA may assign this Agreement in connection with a merger, acquisition, or reorganization, provided the successor assumes all obligations herein.</div>
+        <div class="hud-desc" style="margin-bottom:16px;">Applicant may not assign this Agreement without SA&rsquo;s prior written consent. SA may assign this Agreement in connection with a merger, acquisition, or reorganization, provided the successor assumes all obligations herein.</div>
         <div class="hud-label" style="margin-bottom:8px;color:var(--text-tertiary);">10.8 DISPUTE RESOLUTION</div>
         <div class="hud-desc">The parties submit to the exclusive jurisdiction of the courts of Ontario, Canada. Each party waives any objection to venue in such courts. The prevailing party in any dispute shall be entitled to recover reasonable legal fees and costs.</div>
+      </div>
+
+      <!-- 11 Fee Non-Payment -->
+      <div id="nonpayment" class="section hud-frame hud-frame-amber" style="margin-top:var(--space-3);"><i></i>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;"><span class="hud-num">11</span><span class="hud-label">FEE NON-PAYMENT PROCEDURES</span><span class="hud-dot hud-dot-amber" style="margin-left:auto;"></span></div>
+
+        <div class="hud-label" style="margin-bottom:8px;color:var(--text-tertiary);">11.1 GUIDING PRINCIPLES</div>
+        <div class="hud-desc" style="margin-bottom:12px;">SA&rsquo;s non-payment procedures are governed by three principles: (a) <strong>Safety Independence</strong> &mdash; the ENVELO Interlock is a safety enforcement mechanism and SA will not disable, degrade, or override it as a billing enforcement tool; (b) <strong>Registry Integrity</strong> &mdash; the public registry is SA&rsquo;s primary enforcement instrument and will be updated accurately at each escalation stage; (c) <strong>Proportionality</strong> &mdash; consequences escalate in stages, providing reasonable opportunity to cure before more serious consequences follow.</div>
+
+        <div class="hud-label" style="margin:16px 0 8px;color:var(--text-tertiary);">11.2 FEE OBLIGATIONS</div>
+        <div class="hud-desc" style="margin-bottom:8px;">Fees are due on the date specified in the applicable invoice or, where no date is specified, thirty (30) days following invoice date. If Applicant disputes an invoice in good faith, written notice specifying the amount and basis of dispute must be provided within fifteen (15) days of the invoice date. Undisputed amounts remain due on the original due date. SA will not initiate escalation with respect to a bona fide disputed amount while the dispute is under review.</div>
+
+        <div class="hud-label" style="margin:16px 0 8px;color:var(--text-tertiary);">11.3 ESCALATION PHASES</div>
+
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;">
+          <span class="hud-dot hud-dot-green" style="margin-top:5px;flex-shrink:0;"></span>
+          <div>
+            <div class="hud-title" style="font-size:12px;">Phase 1 &mdash; Grace Period (Days 1&ndash;30)</div>
+            <div class="hud-desc">Certificate status active and unchanged. Registry unaffected. ENVELO Interlock continues normal operation. SA issues written notice on Day 1 and reminder on Day 15.</div>
+          </div>
+        </div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;">
+          <span class="hud-dot hud-dot-amber" style="margin-top:5px;flex-shrink:0;"></span>
+          <div>
+            <div class="hud-title" style="font-size:12px;">Phase 2 &mdash; Conditional Status (Days 31&ndash;60)</div>
+            <div class="hud-desc">Certificate downgraded to Conditional. Registry updated to &ldquo;Payment Delinquent&rdquo; &mdash; publicly visible to regulators, fleet operators, and the public. ENVELO Interlock continues enforcing ODD limits unchanged. Applicant must immediately cease representing the system as unconditionally attested and update all public-facing materials.</div>
+          </div>
+        </div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;">
+          <span class="hud-dot hud-dot-red" style="margin-top:5px;flex-shrink:0;"></span>
+          <div>
+            <div class="hud-title" style="font-size:12px;">Phase 3 &mdash; Suspension (Days 61&ndash;90)</div>
+            <div class="hud-desc">Certificate suspended &mdash; temporarily invalid. Registry updated to &ldquo;Conformance Suspended.&rdquo; ENVELO Interlock locked to its last-validated ODD configuration; SA does not alter, disable, or interfere with the Interlock. Applicant must cease all use of the ODDC mark and notify regulators and principal customers within five (5) business days.</div>
+          </div>
+        </div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;">
+          <span class="hud-dot hud-dot-red" style="margin-top:5px;flex-shrink:0;"></span>
+          <div>
+            <div class="hud-title" style="font-size:12px;">Phase 4 &mdash; Withdrawal (Day 91+)</div>
+            <div class="hud-desc">Certificate permanently revoked for the current term. Registry updated to &ldquo;Conformance Withdrawn.&rdquo; Re-engagement requires a new application and full CAT-72 re-assessment. SA reserves all rights to pursue outstanding fees by legal means.</div>
+          </div>
+        </div>
+
+        <div class="hud-label" style="margin:16px 0 8px;color:var(--text-tertiary);">11.4 CURE AND REINSTATEMENT</div>
+        <div class="hud-desc" style="margin-bottom:8px;">Payment in full during Phase 1 or 2 immediately restores Active status with no re-assessment required. Payment in full during Phase 3, plus any applicable reinstatement fee, lifts the Suspension; SA will update the registry within two (2) business days of confirmed receipt. The original conformance term is not extended by the suspension period. There is no reinstatement following Withdrawal &mdash; a new application is required.</div>
+
+        <div class="hud-label" style="margin:16px 0 8px;color:var(--text-tertiary);">11.5 REGISTRY TRANSPARENCY</div>
+        <div class="hud-desc">SA maintains an accurate, publicly accessible registry and will not suppress or delay registry updates for commercial or relational reasons. SA&rsquo;s obligation to maintain registry accuracy is independent of and not subject to any commercial arrangement with Applicant.</div>
+      </div>
+
+      <!-- 12 SA Enforcement Powers -->
+      <div id="enforcement" class="section hud-frame" style="margin-top:var(--space-3);"><i></i>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;"><span class="hud-num">12</span><span class="hud-label">SA ENFORCEMENT POWERS</span></div>
+
+        <div class="hud-frame hud-frame-red" style="margin-bottom:16px;"><i></i>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;"><span class="hud-label" style="color:rgba(220,53,69,0.7);">DESIGN PRINCIPLE</span><span class="hud-dot hud-dot-red"></span></div>
+          <div class="hud-desc">SA will never disable, deactivate, or bypass the ENVELO Interlock&rsquo;s ODD enforcement functions. All SA enforcement actions operate through certificate status, registry transparency, and ODD configuration &mdash; not through removal of safety constraints. SA&rsquo;s enforcement actions will never introduce a safety hazard into a certified system.</div>
+        </div>
+
+        <div class="hud-label" style="margin-bottom:8px;color:var(--text-tertiary);">12.1 ENFORCEMENT INSTRUMENTS</div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;">
+          <span class="hud-dot hud-dot-green" style="margin-top:5px;flex-shrink:0;"></span>
+          <div>
+            <div class="hud-title" style="font-size:12px;">Certificate Revocation and Registry Action</div>
+            <div class="hud-desc">SA may revoke, suspend, or downgrade conformance status and update the public registry accordingly. This is SA&rsquo;s primary enforcement instrument, available in all triggering circumstances. Registry updates take effect immediately upon SA&rsquo;s determination.</div>
+          </div>
+        </div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;">
+          <span class="hud-dot hud-dot-amber" style="margin-top:5px;flex-shrink:0;"></span>
+          <div>
+            <div class="hud-title" style="font-size:12px;">ODD Configuration Authority</div>
+            <div class="hud-desc">SA retains the right to push ODD configuration updates through the ENVELO Interlock update channel, including a null ODD configuration that restricts the system to a zero-boundary operating domain. A null ODD does not disable the Interlock &mdash; the Interlock continues enforcing; the boundaries are set to zero. SA exercises this authority only upon the triggering conditions in 12.2. All configuration actions move in one direction only: toward more restrictive operation.</div>
+          </div>
+        </div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;">
+          <span class="hud-dot hud-dot-amber" style="margin-top:5px;flex-shrink:0;"></span>
+          <div>
+            <div class="hud-title" style="font-size:12px;">Mandatory Offline Directive (MOD)</div>
+            <div class="hud-desc">SA may issue a MOD requiring Applicant to take the certified system offline pending re-assessment or resolution of a triggering condition. A MOD does not alter the Interlock configuration but creates a binding contractual obligation. Continued operation following a MOD constitutes material breach and entitles SA to immediate withdrawal and regulatory referral.</div>
+          </div>
+        </div>
+
+        <div class="hud-label" style="margin:16px 0 8px;color:var(--text-tertiary);">12.2 TRIGGERING CONDITIONS FOR ODD CONFIGURATION AUTHORITY</div>
+        <div class="hud-desc" style="margin-bottom:12px;">SA may exercise ODD Configuration Authority only upon one or more of the following. SA shall document the specific triggering condition(s) in a written Enforcement Notice issued concurrently with or prior to any configuration action.</div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-red" style="margin-top:5px;"></span><div><span class="hud-title" style="font-size:12px;">Material Fraud</span><div class="hud-desc">SA has reasonable grounds to conclude that Applicant made a material misrepresentation in application materials, ODD declaration, or simulation data.</div></div></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-red" style="margin-top:5px;"></span><div><span class="hud-title" style="font-size:12px;">Unauthorized ODD Modification</span><div class="hud-desc">Applicant has modified the certified system&rsquo;s ODD specification, enforcement architecture, or underlying simulation in a material way without SA&rsquo;s prior written approval.</div></div></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-amber" style="margin-top:5px;"></span><div><span class="hud-title" style="font-size:12px;">Interlock Malfunction</span><div class="hud-desc">The ENVELO Interlock is malfunctioning in a manner that SA reasonably determines creates a risk that the system will operate outside its certified ODD without enforcement.</div></div></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-amber" style="margin-top:5px;"></span><div><span class="hud-title" style="font-size:12px;">Regulatory Direction</span><div class="hud-desc">A government authority or regulator with jurisdiction has directed SA in writing to take action with respect to the certified system.</div></div></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-amber" style="margin-top:5px;"></span><div><span class="hud-title" style="font-size:12px;">Illegal Operation</span><div class="hud-desc">SA has reasonable grounds to conclude the system is being operated in a jurisdiction, domain, or manner that is expressly excluded from the certified ODD or that constitutes a violation of applicable law.</div></div></div>
+
+        <div class="hud-label" style="margin:16px 0 8px;color:var(--text-tertiary);">12.3 ENFORCEMENT PROCEDURE</div>
+        <div class="hud-desc" style="margin-bottom:8px;"><strong>Notice:</strong> SA shall provide twenty-four (24) hours written Enforcement Notice specifying the triggering condition(s), proposed action, and Applicant&rsquo;s right to respond, except where SA reasonably determines immediate action is necessary to prevent imminent harm, in which case SA may act immediately and provide notice concurrently.</div>
+        <div class="hud-desc" style="margin-bottom:8px;"><strong>Applicant Response:</strong> Within the notice period, Applicant may provide written evidence that the triggering condition does not exist or has been remedied. SA will consider such evidence in good faith. Provision of false or misleading evidence constitutes independent grounds for immediate withdrawal.</div>
+        <div class="hud-desc" style="margin-bottom:8px;"><strong>Reversal:</strong> SA will reverse any ODD configuration action and restore Applicant&rsquo;s certified configuration within two (2) business days of: (a) Applicant demonstrating the triggering condition no longer exists; (b) completion of any required re-assessment; and (c) payment of any applicable reinstatement fees.</div>
+
+        <div class="hud-label" style="margin:16px 0 8px;color:var(--text-tertiary);">12.4 APPLICANT OBLIGATIONS UPON ENFORCEMENT ACTION</div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Immediately notify operations team and any third parties with operational authority over the certified system</span></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Cooperate fully with SA&rsquo;s investigation, including providing system logs, ODD telemetry, and operational records within 48 hours of request</span></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Refrain from any action intended to interfere with, circumvent, or reverse the configuration action taken by SA</span></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Notify regulators and principal customers of the enforcement action within five (5) business days, unless SA directs otherwise in writing</span></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Comply with any Mandatory Offline Directive for its full duration</span></div>
+
+        <div class="hud-label" style="margin:16px 0 8px;color:var(--text-tertiary);">12.5 SA LIABILITY FOR ENFORCEMENT ACTIONS</div>
+        <div class="hud-desc" style="margin-bottom:8px;">SA&rsquo;s exercise of enforcement powers in good faith in accordance with the procedures herein shall not give rise to liability for loss of revenue, operational downtime, contractual penalties, or consequential loss. SA&rsquo;s liability in connection with any enforcement action is limited to direct damages arising from SA&rsquo;s gross negligence or wilful misconduct, and shall not exceed the fees paid for the specific conformance at issue.</div>
+
+        <div class="hud-label" style="margin:16px 0 8px;color:var(--text-tertiary);">12.6 INTERLOCK SAFETY COMMITMENT (SURVIVES TERMINATION)</div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-green" style="margin-top:5px;"></span><span class="hud-desc">SA will never disable, deactivate, or interfere with the Interlock&rsquo;s ODD enforcement functions as a consequence of non-payment or any commercial dispute</span></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-green" style="margin-top:5px;"></span><span class="hud-desc">SA will never modify the Interlock&rsquo;s enforcement behaviour in a manner that expands or relaxes ODD limits during any enforcement event</span></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-green" style="margin-top:5px;"></span><span class="hud-desc">In Suspension or Withdrawal, the Interlock is locked to the last-validated configuration &mdash; the system continues to operate within its most recently verified ODD boundaries</span></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-green" style="margin-top:5px;"></span><span class="hud-desc">These obligations survive the termination or withdrawal of conformance and are binding on SA&rsquo;s successors and assigns</span></div>
       </div>
 
       <!-- Contact -->
@@ -457,15 +476,12 @@ footer{border-top:1px solid var(--hairline)!important;}
       });
     });
   </script>
-<script>
-(function(){
-  /* Green status dot on brand */
-  var b=document.querySelector(".brand");
-  // dot removed
-  /* Reveal observer */
-  var obs=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add("active");obs.unobserve(e.target);}});},{threshold:0.1});
-  document.querySelectorAll(".reveal,.section-head").forEach(function(el){obs.observe(el);});
-})();
-</script>
+  <script>
+  (function(){
+    var obs=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add("active");obs.unobserve(e.target);}});},{threshold:0.1});
+    document.querySelectorAll(".reveal,.section-head").forEach(function(el){obs.observe(el);});
+  })();
+  </script>
 </body>
 </html>
+
