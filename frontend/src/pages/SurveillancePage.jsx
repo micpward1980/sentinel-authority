@@ -69,7 +69,7 @@ function StatBlock({ label, value, color, active, onClick }) {
       border: active ? '1px solid ' + (color || styles.purplePrimary) + '33' : '1px solid transparent',
     }}>
       <div style={{ ...mono, fontSize: '28px', fontWeight: 300, color: color || styles.textPrimary, lineHeight: 1.1 }}>{value}</div>
-      <div style={{ ...label9, marginTop: 4 }}>{label}</div>
+      <div style={{ ...label9, marginTop: 4, color: active && color ? color : undefined }}>{label}</div>
     </div>
   );
 }
@@ -266,7 +266,7 @@ export default function SurveillancePage() {
               <span style={{ width: 6, height: 6, borderRadius: '50%', background: styles.accentGreen, display: 'inline-block' }} /> {conformantSystems.length} conformant
             </span>
             <span style={{ fontSize: '10px', color: styles.accentRed, display: 'flex', alignItems: 'center', gap: 4 }}>
-              <span style={{ width: 6, height: 6, borderRadius: '50%', background: styles.accentRed, display: 'inline-block' }} /> {degradedSystems.length} degraded
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: styles.accentAmber, display: 'inline-block' }} /> {degradedSystems.length} degraded
             </span>
             {monSummary.pass_rate > 0 && <span style={{ fontSize: '10px', color: monSummary.pass_rate >= 99 ? styles.accentGreen : styles.accentAmber, display: 'flex', alignItems: 'center', gap: 4, marginLeft: 'auto' }}>
               Pass Rate: {monSummary.pass_rate?.toFixed(1)}%
