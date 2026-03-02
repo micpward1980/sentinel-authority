@@ -156,7 +156,7 @@ export default function SurveillancePage() {
   const handleSystemFilter = (filter) => {
     setSystemFilter(filter);
     setSystemOffset(0);
-    document.getElementById('systems-panel')?.scrollIntoView({ behavior: 'smooth' });
+    
   };
 
   const handleSystemSort = (field, order) => {
@@ -196,7 +196,7 @@ export default function SurveillancePage() {
             <StatBlock label="TOTAL" value={status?.monitored_sessions ?? 0} active={systemFilter === 'all'} onClick={() => handleSystemFilter('all')} />
             <StatBlock label="CONFORMANT" value={bd.healthy ?? 0} color={(bd.healthy ?? 0) > 0 ? styles.accentGreen : styles.textDim} active={systemFilter === 'conformant'} onClick={() => handleSystemFilter('conformant')} />
             <StatBlock label="NON-CONFORMANT" value={nonConformantCount} color={nonConformantCount > 0 ? styles.accentRed : styles.textDim} active={systemFilter === 'non_conformant'} onClick={() => handleSystemFilter('non_conformant')} />
-            <StatBlock label="ALERTS" value={alerts.length} color={alerts.length > 0 ? styles.accentAmber : styles.textDim} active={false} onClick={() => { setAlertFilter('all'); document.getElementById('alerts-panel')?.scrollIntoView({ behavior: 'smooth' }); }} />
+            <StatBlock label="ALERTS" value={alerts.length} color={alerts.length > 0 ? styles.accentAmber : styles.textDim} active={false} onClick={() => { setAlertFilter('all');  }} />
           </div>
         )}
       </Panel>
