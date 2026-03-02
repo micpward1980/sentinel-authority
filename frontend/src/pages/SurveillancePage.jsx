@@ -265,7 +265,7 @@ export default function SurveillancePage() {
             <span style={{ fontSize: '10px', color: styles.accentGreen, display: 'flex', alignItems: 'center', gap: 4 }}>
               <span style={{ width: 6, height: 6, borderRadius: '50%', background: styles.accentGreen, display: 'inline-block' }} /> {conformantSystems.length} conformant
             </span>
-            <span style={{ fontSize: '10px', color: styles.accentRed, display: 'flex', alignItems: 'center', gap: 4 }}>
+            <span style={{ fontSize: '10px', color: styles.accentAmber, display: 'flex', alignItems: 'center', gap: 4 }}>
               <span style={{ width: 6, height: 6, borderRadius: '50%', background: styles.accentAmber, display: 'inline-block' }} /> {degradedSystems.length} degraded
             </span>
             {monSummary.pass_rate > 0 && <span style={{ fontSize: '10px', color: monSummary.pass_rate >= 99 ? styles.accentGreen : styles.accentAmber, display: 'flex', alignItems: 'center', gap: 4, marginLeft: 'auto' }}>
