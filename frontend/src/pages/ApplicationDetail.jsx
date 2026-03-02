@@ -270,6 +270,7 @@ function ApplicationDetail() {
   const [corResponseReq, setCorResponseReq] = useState(true);
   const [correspondence, setCorrespondence] = useState([]);
   const [conformanceEvents, setConformanceEvents] = useState([]);
+  const [testResults, setTestResults] = useState([]);
   
   const fetchCorrespondence = useCallback(async () => {
     try {
@@ -290,6 +291,13 @@ function ApplicationDetail() {
           const relevant = alertRes.data?.alerts ?? [];
           setConformanceEvents(relevant);
         }
+      } catch {}
+      // Fetch CAT-72 test results
+      try {
+        const testRes = await api.get('/api/cat72/tests?search=' + encodeURIComponent(id));
+        const tests = testRes.data?.tests || [];
+        const appTests = tests.filter(t => String(t.application_id) === String(id));
+        setTestResults(appTests);
       } catch {}
     })();
   }, [id]);

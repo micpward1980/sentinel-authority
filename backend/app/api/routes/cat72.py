@@ -2064,6 +2064,10 @@ async def list_tests(
                 "started_at": t.started_at.isoformat() if t.started_at else None,
                 "ended_at": t.ended_at.isoformat() if t.ended_at else None,
                 "result": t.result,
+                "result_notes": t.result_notes,
+                "stability_index": t.stability_index,
+                "drift_rate": t.drift_rate,
+                "envelope_margin": t.envelope_margin,
                 "certificate_issued": t.result == "PASS",
                 "envelope_definition": t.envelope_definition,
             }
