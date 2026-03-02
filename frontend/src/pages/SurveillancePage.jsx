@@ -229,11 +229,7 @@ export default function SurveillancePage() {
       {/* Controls */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24, flexWrap: 'wrap', gap: 12 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 10px', borderRadius: 4, background: (status?.engine === 'running' ? styles.accentGreen : styles.accentRed) + '12', border: '1px solid ' + (status?.engine === 'running' ? styles.accentGreen : styles.accentRed) + '33' }}>
-            <StatusDot status={status?.engine === 'running' ? 'healthy' : 'offline'} size={6} />
-            <span style={{ ...mono, fontSize: '10px', color: status?.engine === 'running' ? styles.accentGreen : styles.accentRed }}>ENGINE {status?.engine === 'running' ? 'ACTIVE' : 'STOPPED'}</span>
-          </div>
-          <span style={{ ...mono, fontSize: '10px', color: styles.textDim }}>scan every {status?.scan_interval_seconds ?? '\u2014'}s</span>
+          <span style={{ ...mono, fontSize: '10px', color: styles.textDim }}>Updated {status?.timestamp ? new Date(status.timestamp).toLocaleTimeString() : '—'}</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <label style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer' }}>
