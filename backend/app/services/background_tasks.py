@@ -104,7 +104,7 @@ async def enforce_session_compliance(db: AsyncSession, session: EnveloSession, n
         if cert.state != "revoked":
             await auto_revoke_certificate(
                 db, cert, session, user,
-                f"ENVELO Agent offline for {int(offline_hours)} hours (threshold: {OFFLINE_REVOKE_HOURS}h)"
+                f"ENVELO Interlock offline for {int(offline_hours)} hours (threshold: {OFFLINE_REVOKE_HOURS}h)"
             )
             return
     
@@ -113,7 +113,7 @@ async def enforce_session_compliance(db: AsyncSession, session: EnveloSession, n
         if cert.state == "conformant":
             await auto_suspend_certificate(
                 db, cert, session, user,
-                f"ENVELO Agent offline for {int(offline_hours)} hours (threshold: {OFFLINE_SUSPEND_HOURS}h)"
+                f"ENVELO Interlock offline for {int(offline_hours)} hours (threshold: {OFFLINE_SUSPEND_HOURS}h)"
             )
             return
     

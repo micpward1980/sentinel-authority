@@ -892,7 +892,7 @@ async def preview_state_change_email(
                 <strong>Application:</strong> {app_number}</p>
                 <h3 style="color: #5B4B8A;">Next Steps</h3>
                 <ol>
-                    <li>Deploy the ENVELO Agent from your dashboard</li>
+                    <li>Deploy the ENVELO Interlock from your dashboard</li>
                     <li>Your CAT-72 conformance test will be scheduled</li>
                     <li>The test runs for 72 continuous hours</li>
                 </ol>

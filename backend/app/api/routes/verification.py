@@ -180,7 +180,7 @@ async def get_test_status(
         
         return {
             "status": "not_found",
-            "message": "No test data found for this certificate ID. Make sure your ENVELO Agent is configured and running."
+            "message": "No test data found for this certificate ID. Make sure your ENVELO Interlock is configured and running."
         }
     
     # Calculate totals

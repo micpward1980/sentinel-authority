@@ -1,5 +1,5 @@
 """
-ENVELO Agent Generator
+ENVELO Interlock Generator
 Creates pre-configured agents for customers
 """
 
@@ -15,7 +15,7 @@ def generate_provisioned_agent(cert, api_key: str) -> str:
     
     return f'''#!/usr/bin/env python3
 """
-ENVELO Agent - Sentinel Authority
+ENVELO Interlock - Sentinel Authority
 System: {system_name}
 Certificate: {cert_num}
 Organization: {org_name}
@@ -145,14 +145,14 @@ if __name__ == "__main__":
     signal.signal(signal.SIGTERM, _shutdown)
     
     print("=" * 60)
-    print(f"  ENVELO Agent - Sentinel Authority")
+    print(f"  ENVELO Interlock - Sentinel Authority")
     print(f"  System: {{SYSTEM}}")
     print(f"  Certificate: {{CERT}}")
     print("=" * 60)
     
     if agent.start():
         print()
-        print("Agent running. Press Ctrl+C to stop.")
+        print("Interlock running. Press Ctrl+C to stop.")
         print()
         print("Usage in your code:")
         print(f"  from envelo_agent_{cert_num} import agent")

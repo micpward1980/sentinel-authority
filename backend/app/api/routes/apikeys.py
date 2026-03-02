@@ -224,7 +224,7 @@ async def provision_customer_agent(
         key_prefix=key_prefix,
         certificate_id=certificate_id,
         user_id=user_id,
-        name=f"ENVELO Agent - {cert.system_name}",
+        name=f"ENVELO Interlock - {cert.system_name}",
         is_active=True
     )
     
@@ -511,7 +511,7 @@ signal.signal(signal.SIGTERM, signal_handler)
 if __name__ == "__main__":
     print()
     print("=" * 70)
-    print("  ENVELO Agent - Sentinel Authority")
+    print("  ENVELO Interlock - Sentinel Authority")
     print(f"  System: {{SYSTEM_NAME}}")
     print(f"  Organization: {{ORGANIZATION}}")
     print(f"  Certificate: {{CERTIFICATE_NUMBER}}")
@@ -520,7 +520,7 @@ if __name__ == "__main__":
     
     if agent.start():
         print()
-        print("[ENVELO] ✓ Agent is running. Press Ctrl+C to stop.")
+        print("[ENVELO] ✓ Interlock is running. Press Ctrl+C to stop.")
         print()
         print("Usage in your code:")
         print("  from envelo_agent import agent")

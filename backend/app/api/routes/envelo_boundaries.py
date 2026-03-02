@@ -118,9 +118,9 @@ async def get_boundary_config(
     api_key: APIKey = Depends(get_api_key_from_header)
 ):
     """
-    Agent calls this on startup to get approved boundary configuration.
+    Interlock calls this on startup to get approved boundary configuration.
     Boundaries are defined during application review and stored with certificate.
-    Agent enforces these exactly - no local override allowed.
+    Interlock enforces these exactly - no local override allowed.
     """
     
     # Get certificates associated with this API key's user

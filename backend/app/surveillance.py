@@ -193,7 +193,7 @@ class SurveillanceState:
                 AlertSeverity.INFO,
                 certificate_id,
                 session_id,
-                f"Agent reconnected for {certificate_id} (certificate still suspended — manual review required)",
+                f"Interlock reconnected for {certificate_id} (certificate still suspended — manual review required)",
             )
 
     def record_telemetry(self, session_id: str, certificate_id: str, pass_count: int, block_count: int):
@@ -421,7 +421,7 @@ async def _surveillance_scan(get_db_session):
             staleness = (now - last_hb).total_seconds()
 
             if staleness > _config.HEARTBEAT_SUSPEND_SECONDS:
-                # AUTO-SUSPEND: Agent has been dark too long
+                # AUTO-SUSPEND: Interlock has been dark too long
                 if cert_id not in _state.suspended_certs:
                     _state.suspended_certs.add(cert_id)
                     _state._fire_alert(
@@ -442,7 +442,7 @@ async def _surveillance_scan(get_db_session):
                     AlertType.HEARTBEAT_OFFLINE,
                     AlertSeverity.CRITICAL,
                     cert_id, session_id,
-                    f"Agent offline for {cert_id}: no heartbeat for {int(staleness)}s",
+                    f"Interlock offline for {cert_id}: no heartbeat for {int(staleness)}s",
                     details={"staleness_seconds": int(staleness)},
                     dedup_minutes=5,
                 )
@@ -452,7 +452,7 @@ async def _surveillance_scan(get_db_session):
                     AlertType.HEARTBEAT_STALE,
                     AlertSeverity.WARN,
                     cert_id, session_id,
-                    f"Agent stale for {cert_id}: no heartbeat for {int(staleness)}s",
+                    f"Interlock stale for {cert_id}: no heartbeat for {int(staleness)}s",
                     details={"staleness_seconds": int(staleness)},
                     dedup_minutes=5,
                 )

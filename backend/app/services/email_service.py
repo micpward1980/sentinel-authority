@@ -107,7 +107,7 @@ async def send_test_scheduled(to: str, app_name: str, test_start: str):
             <strong>Test Start:</strong> {test_start}</p>
             <h3 style="color: #1d1a3b;">Before the test begins:</h3>
             <ol>
-                <li>Install the ENVELO Agent in your system</li>
+                <li>Install the ENVELO Interlock in your system</li>
                 <li>Configure your API key and certificate ID</li>
                 <li>Define your ODD boundaries</li>
                 <li>Ensure continuous network connectivity</li>
@@ -136,7 +136,7 @@ async def send_test_started(to: str, app_name: str, test_id: str):
             <strong>Test ID:</strong> {test_id}</p>
             <p>The test will run for 72 hours. You can monitor progress in your dashboard.</p>
             <p style="background: #fff3cd; padding: 12px; border-radius: 4px;">
-                <strong>Important:</strong> Maintain continuous ENVELO Agent operation. 
+                <strong>Important:</strong> Maintain continuous ENVELO Interlock operation. 
                 Extended disconnection may require test restart.
             </p>
         </div>
@@ -329,7 +329,7 @@ async def notify_certificate_issued(to: str, system_name: str, cert_number: str,
             <p><strong>Next Steps:</strong></p>
             <ul style="line-height: 1.8;">
                 <li>Download your certificate from the <a href="https://app.sentinelauthority.org" style="color: #1d1a3b;">portal</a></li>
-                <li>Your ENVELO Agent is now authorized for production use</li>
+                <li>Your ENVELO Interlock is now authorized for production use</li>
                 <li>Verify your certificate anytime at <a href="https://sentinelauthority.org/verify.html?cert={cert_number}" style="color: #1d1a3b;">sentinelauthority.org/verify</a></li>
             </ul>
             
@@ -349,13 +349,13 @@ async def notify_agent_offline(to: str, system_name: str, session_id: str, org_n
     if not await should_send_email(to, "agent_alerts"):
         return False
     """Notify customer that their ENVELO agent has gone offline"""
-    subject = f"⚠️ ENVELO Agent Offline: {system_name}"
+    subject = f"⚠️ ENVELO Interlock Offline: {system_name}"
     
     html = f"""
     <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 20px;">
         <div style="text-align: center; margin-bottom: 32px;">
             <div style="display: inline-block; width: 40px; height: 40px; background: #1d1a3b; border-radius: 8px; margin-bottom: 16px;"></div>
-            <h1 style="font-size: 24px; font-weight: 300; color: #1a1a2e; margin: 0;">Agent Offline Alert</h1>
+            <h1 style="font-size: 24px; font-weight: 300; color: #1a1a2e; margin: 0;">Interlock Offline Alert</h1>
         </div>
         
         <div style="background: #FFF3CD; border: 1px solid #FFECB5; border-radius: 8px; padding: 16px; margin-bottom: 24px;">
@@ -387,11 +387,11 @@ async def notify_agent_offline(to: str, system_name: str, session_id: str, org_n
 
 async def notify_admin_agent_offline(system_name: str, org_name: str, session_id: str, minutes_offline: int, customer_email: str):
     """Notify admin that a customer's agent has gone offline"""
-    subject = f"⚠️ Customer Agent Offline: {org_name} - {system_name}"
+    subject = f"⚠️ Customer Interlock Offline: {org_name} - {system_name}"
     
     html = f"""
     <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 20px;">
-        <h2 style="color: #1a1a2e;">Agent Offline Alert</h2>
+        <h2 style="color: #1a1a2e;">Interlock Offline Alert</h2>
         
         <div style="background: #f8f9fa; border-radius: 8px; padding: 24px; margin-bottom: 24px;">
             <p style="margin: 0 0 12px 0;"><strong>Organization:</strong> {org_name}</p>
@@ -484,7 +484,7 @@ async def send_provisioned_agent_email(to: str, customer_name: str, system_name:
         </div>
         
         <div style="padding: 30px; background: white;">
-            <h2 style="color: #333; margin-top: 0;">Your ENVELO Agent is Ready</h2>
+            <h2 style="color: #333; margin-top: 0;">Your ENVELO Interlock is Ready</h2>
             
             <p>Hello {customer_name},</p>
             
@@ -523,7 +523,7 @@ async def send_provisioned_agent_email(to: str, customer_name: str, system_name:
     # Resend supports attachments but we'll include download link for now
     return await send_email(
         to=to,
-        subject=f"Your ENVELO Agent is Ready - {system_name}",
+        subject=f"Your ENVELO Interlock is Ready - {system_name}",
         html=html
     )
 

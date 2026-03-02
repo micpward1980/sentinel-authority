@@ -282,7 +282,7 @@ function MonitoringPage() {
       {/* Sessions Table */}
       <div style={{background: styles.cardSurface, border: '1px solid ' + styles.borderSubtle, overflow: 'hidden', borderRadius: 4}}>
         <div style={{padding: '16px 20px', borderBottom: `1px solid ${styles.borderGlass}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px'}}>
-          <h2 style={{margin: 0, fontSize: '14px', fontFamily: styles.mono, textTransform: 'uppercase', letterSpacing: '2px', color: styles.textTertiary}}>{user?.role === 'admin' ? 'Agent Sessions' : 'System Monitoring'}</h2>
+          <h2 style={{margin: 0, fontSize: '14px', fontFamily: styles.mono, textTransform: 'uppercase', letterSpacing: '2px', color: styles.textTertiary}}>{user?.role === 'admin' ? 'Interlock Sessions' : 'System Monitoring'}</h2>
           <div style={{display: 'flex', gap: '12px', alignItems: 'center'}}>
             {user?.role === 'admin' && <select value={customerFilter} onChange={(e) => setCustomerFilter(e.target.value)} style={{background: 'rgba(0,0,0,0.04)', border: `1px solid ${styles.borderGlass}`, padding: '6px 10px', color: styles.textPrimary, fontSize: '12px'}}>
               <option value="">All Customers</option>
@@ -396,7 +396,7 @@ function MonitoringPage() {
                               <div>
                                 <h3 style={{margin: '0 0 4px 0', fontSize: '18px', fontWeight: 400, color: styles.textPrimary}}>{session.organization_name || 'Unknown Organization'}</h3>
                                 <p style={{margin: 0, fontSize: '13px', color: styles.textSecondary}}>{session.system_name || 'Unknown System'} · {session.certificate_id || 'No certificate'}</p>
-                                <p style={{margin: '4px 0 0', fontFamily: styles.mono, fontSize: '11px', color: styles.textTertiary}}>Agent v{session.agent_version || '1.0.0'} · Session {session.session_id}</p>
+                                <p style={{margin: '4px 0 0', fontFamily: styles.mono, fontSize: '11px', color: styles.textTertiary}}>Interlock v{session.agent_version || '1.0.0'} · Session {session.session_id}</p>
                               </div>
                               {session.is_online && (
                                 <button onClick={async () => { if (!await confirm({title: 'End Session', message: 'Force-end this session?', danger: true})) return; try { await api.post('/api/envelo/sessions/' + session.session_id + '/end', { ended_at: new Date().toISOString(), final_stats: { pass_count: session.pass_count, block_count: session.block_count } }); setSelectedSession(null); qc.invalidateQueries({ queryKey: ['monitoring-overview'] }); } catch (e) { toast.show('Failed: ' + e.message, 'error'); } }} style={{padding: '8px 16px', background: styles.cardSurface, border: '1px solid ' + styles.borderSubtle, color: styles.accentRed, cursor: 'pointer', fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', borderRadius: 4}}>Force End Session</button>

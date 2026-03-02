@@ -107,7 +107,7 @@ def _build_agent(api_key: str, certificate: str, system_name: str) -> str:
     return textwrap.dedent(f'''\
 #!/usr/bin/env python3
 """
-ENVELO Agent - Sentinel Authority
+ENVELO Interlock - Sentinel Authority
 Enforced Non-Violable Execution-Limit Override
 System: {system_name} | Certificate: {certificate}
 """

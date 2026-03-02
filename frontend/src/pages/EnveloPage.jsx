@@ -10,7 +10,7 @@ import SectionHeader from '../components/SectionHeader';
 
 const API_BASE = 'https://api.sentinelauthority.org';
 
-// ─── ENVELO Agent code generator ──────────────────────────────────────────────
+// ─── ENVELO Interlock code generator ──────────────────────────────────────────────
 
 function buildProductionAgent({ apiKey, certificateNumber, systemName, organizationName }) {
   return `#!/usr/bin/env python3
@@ -147,7 +147,7 @@ class EnveloAgent:
         if plist.exists():
             try: subprocess.run(["launchctl","unload",str(plist)], capture_output=True)
             except: pass
-        log.info("Auto-restart disabled. Agent stopped cleanly.")
+        log.info("Auto-restart disabled. Interlock stopped cleanly.")
 
     def add_boundary(self, name, min_value=None, max_value=None, unit="", tolerance=0):
         self.boundaries[name] = Boundary(name=name, min_value=min_value, max_value=max_value,
@@ -257,7 +257,7 @@ if __name__ == "__main__":
     print()
     agent.start()
     print()
-    print("Agent running. Ctrl+C to stop.")
+    print("Interlock running. Ctrl+C to stop.")
     print()
     print("─" * 60)
     print("INTEGRATION:")
@@ -735,7 +735,7 @@ function EnveloAdminView() {
                   </div>
                   <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                     <button onClick={() => downloadAgentForCert(cert)} style={{ padding: '8px 14px', background: 'transparent', border: `1px solid ${styles.borderGlass}`, color: styles.textSecondary, fontFamily: styles.mono, fontSize: '10px', cursor: 'pointer', borderRadius: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <Download size={12} /> Agent Template
+                      <Download size={12} /> Interlock Template
                     </button>
                   </div>
                 </div>

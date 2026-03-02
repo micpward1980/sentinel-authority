@@ -1,5 +1,5 @@
 """
-ENVELO Agent API - Receives telemetry from customer ENVELO agents
+ENVELO Interlock API - Receives telemetry from customer ENVELO Interlocks
 Now with database persistence
 """
 
@@ -477,7 +477,7 @@ async def get_live_sessions(
     }
 
 
-@router.get("/stats", summary="Agent statistics summary")
+@router.get("/stats", summary="Interlock statistics summary")
 async def get_global_stats(db: AsyncSession = Depends(get_db)):
     """Get global ENVELO statistics (public endpoint)"""
     
@@ -1046,7 +1046,7 @@ async def report_specs(
     }
 
 
-@router.post("/heartbeat", summary="Agent heartbeat ping")
+@router.post("/heartbeat", summary="Interlock heartbeat ping")
 async def receive_heartbeat(
     db: AsyncSession = Depends(get_db),
     api_key: APIKey = Depends(get_api_key_from_header)
