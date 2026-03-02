@@ -150,6 +150,7 @@ function UserManagementPage() {
           background: styles.purplePrimary, border: '1px solid ' + styles.purplePrimary, color: '#fff',
           fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1.5px', textTransform: 'uppercase', cursor: 'pointer',
         }}><Plus size={12} /> Invite User</button>
+        <button onClick={handlePurgeTest} style={{ display: "flex", alignItems: "center", gap: "6px", padding: "10px 16px", background: "transparent", border: "1px solid " + styles.accentRed, color: styles.accentRed, fontFamily: styles.mono, fontSize: "10px", letterSpacing: "1.5px", textTransform: "uppercase", cursor: "pointer" }}>Purge Test Users</button>
       </div>
 
       {/* Tabs */}
