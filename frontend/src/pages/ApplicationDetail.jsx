@@ -497,6 +497,79 @@ function ApplicationDetail() {
               </div>
             )}
 
+            {gb.length > 0 && (
+              <div style={{ marginTop: '16px' }}>
+                <p style={{ fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '8px' }}>Geographic Boundaries</p>
+                {gb.map((b, i) => (
+                  <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: `1px solid ${styles.borderSubtle}`, fontSize: '12px', flexWrap: 'wrap', gap: 4 }}>
+                    <span style={{ color: styles.textPrimary, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: '50%', background: b.type === 'exclusion' ? styles.accentRed + '33' : styles.accentGreen + '33', border: '1px solid ' + (b.type === 'exclusion' ? styles.accentRed : styles.accentGreen), flexShrink: 0 }} />
+                      {b.name}{b.type === 'exclusion' ? ' (exclusion)' : ''}
+                    </span>
+                    <span style={{ fontFamily: styles.mono, color: styles.purpleBright, fontSize: '11px' }}>
+                      {(b.type === 'radius' || b.type === 'exclusion') && `${(b.radius_m / 1000).toFixed(1)}km @ ${b.center_lat?.toFixed(4)}, ${b.center_lng?.toFixed(4)}`}
+                      {b.type === 'polygon' && `${(b.vertices || b.points || []).length} vertices`}
+                      {b.type === 'corridor' && `${b.width_m || '\u2014'}m wide`}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {tb.length > 0 && (
+              <div style={{ marginTop: '16px' }}>
+                <p style={{ fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '8px' }}>Time Boundaries</p>
+                {tb.map((b, i) => (
+                  <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: `1px solid ${styles.borderSubtle}`, fontSize: '12px' }}>
+                    <span style={{ color: styles.textPrimary }}>{b.name}</span>
+                    <span style={{ fontFamily: styles.mono, color: styles.purpleBright, fontSize: '11px' }}>
+                      {b.start || '\u2014'} \u2192 {b.end || '\u2014'}{b.timezone ? ` (${b.timezone})` : ''}{b.days ? ` \u00b7 ${b.days.join(', ')}` : ''}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {sb.length > 0 && (
+              <div style={{ marginTop: '16px' }}>
+                <p style={{ fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '8px' }}>State Boundaries</p>
+                {sb.map((b, i) => (
+                  <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: `1px solid ${styles.borderSubtle}`, fontSize: '12px', flexWrap: 'wrap', gap: 4 }}>
+                    <span style={{ color: styles.textPrimary }}>{b.name}</span>
+                    <span style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+                      {(b.allowed_states || []).map((s, j) => (
+                        <span key={j} style={{ fontFamily: styles.mono, fontSize: '10px', padding: '2px 6px', borderRadius: 3, background: styles.accentGreen + '10', color: styles.accentGreen, border: '1px solid ' + styles.accentGreen + '22' }}>{s}</span>
+                      ))}
+                      {(b.forbidden_states || []).map((s, j) => (
+                        <span key={'f' + j} style={{ fontFamily: styles.mono, fontSize: '10px', padding: '2px 6px', borderRadius: 3, background: styles.accentRed + '10', color: styles.accentRed, border: '1px solid ' + styles.accentRed + '22', textDecoration: 'line-through' }}>{s}</span>
+                      ))}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Catch-all: render any unknown boundary types the Interlock discovers */}
+            {Object.entries(env).filter(([k]) => !['numeric_boundaries','geo_boundaries','geographic_boundaries','time_boundaries','state_boundaries'].includes(k)).map(([key, val]) => (
+              Array.isArray(val) && val.length > 0 && (
+                <div key={key} style={{ marginTop: '16px' }}>
+                  <p style={{ fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '8px' }}>{key.replace(/_/g, ' ')}</p>
+                  {val.map((b, i) => (
+                    <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: `1px solid ${styles.borderSubtle}`, fontSize: '12px' }}>
+                      <span style={{ color: styles.textPrimary }}>{b.name || key}</span>
+                      <span style={{ fontFamily: styles.mono, color: styles.purpleBright, fontSize: '11px' }}>
+                        {b.min_value != null && b.max_value != null ? `${b.min_value} \u2192 ${b.max_value} ${b.unit || ''}` : ''}
+                        {b.allowed_states ? b.allowed_states.join(', ') : ''}
+                        {b.start && b.end ? `${b.start} \u2192 ${b.end}` : ''}
+                        {!b.min_value && !b.allowed_states && !b.start ? JSON.stringify(b).substring(0, 80) : ''}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )
+            ))}
+
+
             {isAdmin && app.state === 'observe' && (
               <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
                 <button
