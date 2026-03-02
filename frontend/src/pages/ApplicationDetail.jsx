@@ -46,17 +46,15 @@ const ACTION_BTN = (color, solid = false) => ({
 
 const PIPELINE_STAGES = [
   { key: 'pending',      label: 'Submitted',           icon: '1' },
-  { key: 'under_review', label: 'Under Review',        icon: '2' },
-  { key: 'approved',     label: 'Accepted',             icon: '3' },
-  { key: 'observe',      label: 'Interlock Observing',  icon: '4' },
-  { key: 'bounded',      label: 'Boundaries Review',    icon: '5' },
-  { key: 'testing',      label: 'CAT-72 Testing',       icon: '6' },
+  { key: 'approved',     label: 'Accepted',             icon: '2' },
+  { key: 'observe',      label: 'Interlock Deploy',     icon: '3' },
+  { key: 'bounded',      label: 'Boundaries Review',    icon: '4' },
+  { key: 'testing',      label: 'CAT-72 Testing',       icon: '5' },
   { key: 'conformant',   label: 'Conformant',           icon: '✓' },
 ];
 
 const NEXT_STEP = {
-  pending:      'Your application is queued for review by the Sentinel Authority team.',
-  under_review: 'Our team is evaluating your system information and preparing approval.',
+  pending:      'Your application has been received. Awaiting accept or reject decision.',
   approved:     'API key provisioned and sent. Waiting for customer to deploy the ENVELO Interlock.',
   observe:      'ENVELO Interlock is deployed and observing the system. Auto-discovering operational boundaries from live telemetry.',
   bounded:      'Auto-discovery complete. Review the detected operational boundaries before authorizing CAT-72 testing.',
