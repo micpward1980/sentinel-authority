@@ -501,33 +501,7 @@ function Dashboard() {
               ))}
             </div>
           </div>
-          {/* Compact pipeline flow */}
-          <div style={{borderTop: '1px solid ' + styles.borderSubtle, paddingTop: '16px'}}>
-            <div style={{fontFamily: styles.mono, fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textDim, marginBottom: '10px'}}>Pipeline</div>
-            <div style={{display: 'flex', alignItems: 'center', gap: '4px'}}>
-              {[
-                { label: 'New', count: pipelineCounts.pending + pipelineCounts.under_review, color: styles.accentAmber },
-                { label: 'Accepted', count: pipelineCounts.approved, color: 'rgba(29,26,59,0.5)' },
-                { label: 'Interlock', count: pipelineCounts.observe, color: 'rgba(29,26,59,0.5)' },
-                { label: 'Boundaries', count: pipelineCounts.bounded, color: 'rgba(29,26,59,0.5)' },
-                { label: 'CAT-72', count: pipelineCounts.testing, color: styles.purpleBright },
-              ].map((s, i) => (
-                <React.Fragment key={s.label}>
-                  {i > 0 && <span style={{color: styles.textDim, fontSize: '10px', margin: '0 2px'}}>→</span>}
-                  <div style={{display: 'flex', alignItems: 'center', gap: '4px', padding: '4px 8px', background: s.count > 0 ? s.color + '10' : 'transparent', border: s.count > 0 ? '1px solid ' + s.color + '30' : '1px solid ' + styles.borderSubtle, borderRadius: '3px'}}>
-                    <span style={{fontFamily: styles.mono, fontSize: '12px', fontWeight: 600, color: s.count > 0 ? s.color : styles.textDim}}>{s.count}</span>
-                    <span style={{fontFamily: styles.mono, fontSize: '8px', letterSpacing: '0.5px', color: styles.textDim, textTransform: 'uppercase'}}>{s.label}</span>
-                  </div>
-                </React.Fragment>
-              ))}
-            </div>
-            {(pipelineCounts.suspended + pipelineCounts.rejected) > 0 && (
-              <div style={{marginTop: '8px', display: 'flex', gap: '12px'}}>
-                {pipelineCounts.suspended > 0 && <span style={{fontFamily: styles.mono, fontSize: '10px', color: styles.accentRed}}>{pipelineCounts.suspended} suspended</span>}
-                {pipelineCounts.rejected > 0 && <span style={{fontFamily: styles.mono, fontSize: '10px', color: styles.textDim}}>{pipelineCounts.rejected} rejected</span>}
-              </div>
-            )}
-          </div>
+
         </div>
 
         {/* Expiration Timeline — promoted to row 1 */}
@@ -576,6 +550,34 @@ function Dashboard() {
             <div style={{fontFamily: styles.mono, fontSize: '24px', fontWeight: 600, color: item.color}}>{item.value}</div>
           </div>
         ))}
+      </div>
+
+      {/* ── Pipeline ────────────────────────────────────────────────────── */}
+      <div style={{background: styles.cardSurface, border: '1px solid ' + styles.borderGlass, padding: '20px 24px', marginBottom: '24px'}}>
+        {sectionHeader('Certification Pipeline', styles.textTertiary, '/applications', 'All Applications →')}
+        <div style={{display: 'flex', alignItems: 'center', gap: '4px'}}>
+          {[
+            { label: 'New', count: pipelineCounts.pending + pipelineCounts.under_review, color: styles.accentAmber },
+            { label: 'Accepted', count: pipelineCounts.approved, color: 'rgba(29,26,59,0.5)' },
+            { label: 'Interlock', count: pipelineCounts.observe, color: 'rgba(29,26,59,0.5)' },
+            { label: 'Boundaries', count: pipelineCounts.bounded, color: 'rgba(29,26,59,0.5)' },
+            { label: 'CAT-72', count: pipelineCounts.testing, color: styles.purpleBright },
+          ].map((s, i) => (
+            <React.Fragment key={s.label}>
+              {i > 0 && <span style={{color: styles.textDim, fontSize: '10px', margin: '0 2px'}}>→</span>}
+              <div style={{display: 'flex', alignItems: 'center', gap: '4px', padding: '4px 8px', background: s.count > 0 ? s.color + '10' : 'transparent', border: s.count > 0 ? '1px solid ' + s.color + '30' : '1px solid ' + styles.borderSubtle, borderRadius: '3px'}}>
+                <span style={{fontFamily: styles.mono, fontSize: '12px', fontWeight: 600, color: s.count > 0 ? s.color : styles.textDim}}>{s.count}</span>
+                <span style={{fontFamily: styles.mono, fontSize: '8px', letterSpacing: '0.5px', color: styles.textDim, textTransform: 'uppercase'}}>{s.label}</span>
+              </div>
+            </React.Fragment>
+          ))}
+        </div>
+        {(pipelineCounts.suspended + pipelineCounts.rejected) > 0 && (
+          <div style={{marginTop: '8px', display: 'flex', gap: '12px'}}>
+            {pipelineCounts.suspended > 0 && <span style={{fontFamily: styles.mono, fontSize: '10px', color: styles.accentRed}}>{pipelineCounts.suspended} suspended</span>}
+            {pipelineCounts.rejected > 0 && <span style={{fontFamily: styles.mono, fontSize: '10px', color: styles.textDim}}>{pipelineCounts.rejected} rejected</span>}
+          </div>
+        )}
       </div>
 
       {/* ── Review Queue ─────────────────────────────────────────────────── */}
