@@ -294,9 +294,9 @@ function ApplicationDetail() {
       } catch {}
       // Fetch CAT-72 test results
       try {
-        const testRes = await api.get('/api/cat72/tests?search=' + encodeURIComponent(id));
+        const testRes = await api.get('/api/cat72/tests?application_id=' + id);
         const tests = testRes.data?.tests || [];
-        const appTests = tests.filter(t => String(t.application_id) === String(id));
+        const appTests = tests;
         setTestResults(appTests);
       } catch {}
     })();

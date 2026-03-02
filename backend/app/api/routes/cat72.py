@@ -2009,6 +2009,7 @@ async def list_tests(
     state: str = None,
     result_filter: str = None,
     search: str = None,
+    application_id: int = None,
     sort: str = "created_at",
     order: str = "desc",
 ):
@@ -2029,6 +2030,9 @@ async def list_tests(
     if result_filter:
         query = query.where(CAT72Test.result == result_filter)
         count_query = count_query.where(CAT72Test.result == result_filter)
+    if application_id:
+        query = query.where(CAT72Test.application_id == application_id)
+        count_query = count_query.where(CAT72Test.application_id == application_id)
     if search:
         sq = f"%{search}%"
         filt = or_(Application.organization_name.ilike(sq), Application.system_name.ilike(sq), CAT72Test.test_id.ilike(sq))
