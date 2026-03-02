@@ -29,7 +29,7 @@ function stateLabel(state) {
     approved: 'Awaiting Deploy',
     testing: 'CAT-72 Running',
     conformant: 'Certified',
-    suspended: 'Suspended',
+    suspended: 'Mark Non-Conformanted',
     revoked: 'Revoked',
     failed: 'Failed',
     test_failed: 'Test Failed',

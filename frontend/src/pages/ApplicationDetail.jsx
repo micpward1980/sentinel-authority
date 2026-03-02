@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -61,7 +61,7 @@ const NEXT_STEP = {
   observe:      'ENVELO Interlock is deployed and observing the system. Auto-discovering operational boundaries from live telemetry.',
   bounded:      'Auto-discovery complete. Review the detected operational boundaries before authorizing CAT-72 testing.',
   conformant:   'Your system has achieved ODDC Conformance. Certificate and ENVELO Interlock credentials are active.',
-  suspended:    'This application has been suspended. Contact conformance@sentinelauthority.org for remediation steps.',
+  suspended:    'This system is non-conformant based on enforcement data. Contact conformance@sentinelauthority.org for remediation steps.',
   revoked:      'This application has been revoked. Contact conformance@sentinelauthority.org for remediation steps.',
   expired:      'This certification has expired. Submit a new application or contact conformance@sentinelauthority.org.',
 };
@@ -121,6 +121,37 @@ function ApplicationDetail() {
   const { user } = useAuth();
   const confirm = useConfirm();
   const navigate = useNavigate();
+
+  const [showCorForm, setShowCorForm] = useState(false);
+  const [corType, setCorType] = useState('rfi');
+  const [corDetails, setCorDetails] = useState('');
+  const [corResponseReq, setCorResponseReq] = useState(true);
+  const [correspondence, setCorrespondence] = useState([]);
+  const [conformanceEvents, setConformanceEvents] = useState([]);
+  
+  const fetchCorrespondence = useCallback(async () => {
+    try {
+      const res = await api.get('/api/applications/' + id + '/correspondence');
+      setCorrespondence(res.data || []);
+    } catch {}
+  }, [id]);
+  
+  useEffect(() => { fetchCorrespondence(); }, [fetchCorrespondence]);
+  
+  useEffect(() => {
+    (async () => {
+      try {
+        const certRes = await api.get('/api/applications/' + id);
+        const certId = certRes.data?.certificate?.certificate_number;
+        if (certId) {
+          const alertRes = await api.get('/api/surveillance/alerts?limit=50');
+          const relevant = (alertRes.data?.alerts ?? []).filter(a => a.certificate_id === certId);
+          setConformanceEvents(relevant);
+        }
+      } catch {}
+    })();
+  }, [id]);
+
   const qc = useQueryClient();
 
   const [newComment, setNewComment] = useState('');
@@ -274,12 +305,7 @@ function ApplicationDetail() {
             {app.state === 'testing' && (
               <Link to="/cat72" style={{ ...ACTION_BTN(styles.purpleBright), textDecoration: 'none' }}>View CAT-72 Console</Link>
             )}
-            {app.state === 'conformant' && (
-              <button onClick={() => showEmailPreview('suspended', 'Suspend')} style={ACTION_BTN(styles.accentRed)}>Suspend</button>
-            )}
-            {(app.state === 'suspended' || app.state === 'revoked') && (
-              <button onClick={handleReinstate} style={ACTION_BTN(styles.accentGreen)}>Reinstate</button>
-            )}
+
             {(app.state === 'failed' || app.state === 'test_failed') && (
               <button onClick={() => showEmailPreview('testing', 'Retry Test')} disabled={previewLoading} style={ACTION_BTN(styles.accentAmber)}>Retry Test</button>
             )}
@@ -293,7 +319,9 @@ function ApplicationDetail() {
           {PIPELINE_STAGES.map((stage, i) => {
             const isActive = stage.key === app.state;
             const isComplete = currentStageIdx > i;
-            const color = isComplete ? styles.accentGreen : isActive ? styles.purpleBright : styles.borderGlass;
+            const isFinal = isActive && stage.key === 'conformant';
+            const isNonConformant = (app.state === 'suspended' || app.state === 'expired' || app.state === 'revoked') && stage.key === 'conformant';
+            const color = isNonConformant ? styles.accentRed : (isComplete || isFinal) ? styles.accentGreen : isActive ? styles.purpleBright : styles.borderGlass;
             return (
               <React.Fragment key={stage.key}>
                 {i > 0 && <div style={{ flex: 1, height: '2px', background: isComplete ? styles.accentGreen : styles.borderGlass, margin: '0 8px', borderRadius: 8 }} />}
@@ -301,14 +329,14 @@ function ApplicationDetail() {
                   <div style={{
                     width: '30px', height: '30px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
                     fontFamily: styles.mono, fontSize: '11px', fontWeight: 700,
-                    background: isComplete ? 'rgba(22,135,62,0.08)' : isActive ? 'rgba(29,26,59,0.12)' : 'transparent',
+                    background: isNonConformant ? 'rgba(220,38,38,0.08)' : (isComplete || isFinal) ? 'rgba(22,135,62,0.08)' : isActive ? 'rgba(29,26,59,0.12)' : 'transparent',
                     border: `2px solid ${color}`, color,
                   }}>
-                    {isComplete ? '✓' : stage.icon}
+                    {isNonConformant ? '✕' : (isComplete || isFinal) ? '✓' : stage.icon}
                   </div>
                   <span style={{
                     fontFamily: styles.mono, fontSize: '9px', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase',
-                    color: isActive ? styles.purpleBright : isComplete ? styles.accentGreen : styles.textDim, textAlign: 'center',
+                    color: isNonConformant ? styles.accentRed : (isActive && stage.key === 'conformant') ? styles.accentGreen : isActive ? styles.purpleBright : isComplete ? styles.accentGreen : styles.textDim, textAlign: 'center',
                   }}>
                     {stage.label}
                   </span>
@@ -320,7 +348,7 @@ function ApplicationDetail() {
 
         {isSuspended && (
           <div style={{ padding: '10px 14px', border: `1px solid ${styles.accentRed}20`, marginBottom: '10px' }}>
-            <span style={{ color: styles.accentRed, fontFamily: styles.mono, fontSize: '11px', fontWeight: 600 }}>⚠ SUSPENDED — Pending review.</span>
+            <span style={{ color: styles.accentRed, fontFamily: styles.mono, fontSize: '11px', fontWeight: 600 }}>⚠ MARK NON-CONFORMANTED — Pending review.</span>
           </div>
         )}
 
@@ -506,6 +534,114 @@ function ApplicationDetail() {
               );
             })}
           </div>
+        </Panel>
+      )}
+
+      
+
+      {/* ═══ Conformance Events ═══ */}
+      {(app.state === 'conformant' || app.state === 'suspended' || app.state === 'expired' || app.state === 'revoked') && conformanceEvents.length > 0 && (
+        <Panel style={{ marginTop: '24px' }}>
+          <p style={{ fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '12px' }}>Conformance Events</p>
+          {conformanceEvents.map((evt, i) => (
+            <div key={evt.id || i} style={{
+              borderLeft: '3px solid ' + (evt.severity === 'critical' || evt.severity === 'suspension' ? styles.accentRed : evt.severity === 'warn' ? styles.accentAmber : styles.textDim),
+              padding: '8px 12px', marginBottom: '6px', background: styles.surfaceAlt || '#fafafa',
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2px' }}>
+                <span style={{ fontFamily: styles.mono, fontSize: '9px', textTransform: 'uppercase', padding: '1px 5px',
+                  background: (evt.severity === 'critical' ? styles.accentRed : evt.severity === 'warn' ? styles.accentAmber : styles.textDim) + '15',
+                  color: evt.severity === 'critical' ? styles.accentRed : evt.severity === 'warn' ? styles.accentAmber : styles.textDim,
+                }}>{evt.severity}</span>
+                <span style={{ fontFamily: styles.mono, fontSize: '9px', color: styles.textDim }}>{evt.created_at ? new Date(evt.created_at).toLocaleString() : ''}</span>
+              </div>
+              <p style={{ fontSize: '12px', color: styles.textPrimary, margin: '4px 0 0' }}>{evt.message}</p>
+            </div>
+          ))}
+        </Panel>
+      )}
+
+      {/* ═══ Formal Correspondence ═══ */}
+      {isAdmin && (
+        <Panel style={{ marginTop: '24px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+            <p style={{ fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', color: styles.textTertiary, margin: 0 }}>Official Correspondence</p>
+            <button onClick={() => setShowCorForm(!showCorForm)} style={{
+              fontFamily: styles.mono, fontSize: '10px', letterSpacing: '0.5px',
+              padding: '5px 12px', border: '1px solid ' + styles.purpleBright, color: styles.purpleBright,
+              background: 'transparent', cursor: 'pointer',
+            }}>{showCorForm ? '✕ Cancel' : '+ New Correspondence'}</button>
+          </div>
+          
+          {showCorForm && (
+            <div style={{ background: styles.surfaceAlt || '#fafafa', border: '1px solid ' + (styles.border || '#e5e5e5'), borderRadius: '4px', padding: '16px', marginBottom: '16px' }}>
+              <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
+                {['rfi', 'deficiency', 'remediation', 'general'].map(t => (
+                  <button key={t} onClick={() => setCorType(t)} style={{
+                    fontFamily: styles.mono, fontSize: '10px', letterSpacing: '0.5px',
+                    padding: '5px 12px', cursor: 'pointer',
+                    background: corType === t ? styles.purpleBright : 'transparent',
+                    color: corType === t ? '#fff' : styles.textSecondary,
+                    border: '1px solid ' + (corType === t ? styles.purpleBright : (styles.border || '#ddd')),
+                  }}>{({rfi:'Request for Info', deficiency:'Deficiency Notice', remediation:'Remediation', general:'General'})[t]}</button>
+                ))}
+              </div>
+              <textarea
+                value={corDetails}
+                onChange={e => setCorDetails(e.target.value)}
+                placeholder={corType === 'rfi' ? 'What information do you need from the applicant?' : corType === 'deficiency' ? 'Describe the deficiencies identified...' : corType === 'remediation' ? 'Describe the recommended remediation steps...' : 'Enter your message...'}
+                style={{
+                  width: '100%', minHeight: '120px', padding: '12px', fontFamily: 'inherit', fontSize: '13px',
+                  border: '1px solid ' + (styles.border || '#ddd'), borderRadius: '4px', resize: 'vertical',
+                  background: styles.surface || '#fff', color: styles.textPrimary,
+                }}
+              />
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '12px' }}>
+                <label style={{ fontSize: '12px', color: styles.textSecondary }}>
+                  <input type="checkbox" checked={corResponseReq} onChange={e => setCorResponseReq(e.target.checked)} style={{ marginRight: '6px' }} />
+                  Response required (10 business days)
+                </label>
+                <button onClick={async () => {
+                  if (!corDetails.trim()) return;
+                  try {
+                    await api.post('/api/applications/' + app.id + '/correspondence', {
+                      type: corType, details: corDetails, response_required: corResponseReq,
+                    });
+                    toast.show('Correspondence sent to ' + (app.contact_email || 'applicant'), 'success');
+                    setCorDetails(''); setShowCorForm(false);
+                    fetchCorrespondence();
+                  } catch (e) { toast.show('Failed to send: ' + (e.response?.data?.detail || e.message), 'error'); }
+                }} style={{
+                  fontFamily: styles.mono, fontSize: '11px', letterSpacing: '0.5px',
+                  padding: '8px 20px', background: styles.purpleBright, color: '#fff',
+                  border: 'none', cursor: 'pointer',
+                }}>Send Official Correspondence</button>
+              </div>
+            </div>
+          )}
+          
+          {correspondence.length > 0 && correspondence.map(c => (
+            <div key={c.id} style={{
+              borderLeft: '3px solid ' + ({rfi: styles.purpleBright, deficiency: styles.accentAmber, remediation: styles.accentGreen, general: styles.textTertiary}[c.type] || styles.textTertiary),
+              padding: '12px 16px', marginBottom: '8px', background: styles.surfaceAlt || '#fafafa',
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                <span style={{ fontFamily: styles.mono, fontSize: '10px', color: styles.textTertiary }}>{c.reference_number} · {({rfi:'REQUEST FOR INFORMATION', deficiency:'DEFICIENCY NOTICE', remediation:'REMEDIATION GUIDANCE', general:'GENERAL'})[c.type]}</span>
+                <span style={{ fontFamily: styles.mono, fontSize: '10px', color: styles.textDim }}>{c.sent_at ? new Date(c.sent_at).toLocaleDateString() : ''}</span>
+              </div>
+              <p style={{ fontSize: '13px', fontWeight: 500, color: styles.textPrimary, margin: '4px 0' }}>{c.subject}</p>
+              <p style={{ fontSize: '12px', color: styles.textSecondary, whiteSpace: 'pre-wrap', margin: '4px 0' }}>{c.body}</p>
+              {c.response_required && (
+                <span style={{ fontFamily: styles.mono, fontSize: '10px', padding: '2px 6px',
+                  background: c.status === 'awaiting_response' ? styles.accentAmber + '15' : styles.accentGreen + '15',
+                  color: c.status === 'awaiting_response' ? styles.accentAmber : styles.accentGreen,
+                }}>{c.status === 'awaiting_response' ? 'AWAITING RESPONSE' : c.status.toUpperCase()}</span>
+              )}
+            </div>
+          ))}
+          {correspondence.length === 0 && !showCorForm && (
+            <p style={{ fontSize: '12px', color: styles.textDim, fontStyle: 'italic' }}>No formal correspondence sent.</p>
+          )}
         </Panel>
       )}
 

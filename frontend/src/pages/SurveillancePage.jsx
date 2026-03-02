@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
-import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
-import { Shield, AlertTriangle, RefreshCw, CheckCircle, XCircle, Activity, Clock, Eye } from 'lucide-react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { Shield, AlertTriangle, RefreshCw, CheckCircle, XCircle, Activity, Clock } from 'lucide-react';
 import { api } from '../config/api';
 import { useToast } from '../context/ToastContext';
 import { useConfirm } from '../context/ConfirmContext';
@@ -14,7 +14,7 @@ function statusColor(status) {
     case 'initializing': return styles.accentBlue;
     case 'degraded': case 'stale': return styles.accentAmber;
     case 'critical': case 'failing': case 'offline': return styles.accentRed;
-    case 'suspended': return styles.accentRed;
+    case 'non_conformant': return styles.accentRed;
     default: return styles.textDim;
   }
 }
@@ -77,9 +77,9 @@ export default function SurveillancePage() {
   const [autoRefresh, setAutoRefresh] = useState(true);
   const [alertFilter, setAlertFilter] = useState('all');
   const [refreshing, setRefreshing] = useState(false);
-  const [scoreView, setScoreView] = useState('problems');
-  const [scoreSearch, setScoreSearch] = useState('');
-  const [scorePage, setScorePage] = useState(1);
+  
+  
+  
   const qc = useQueryClient();
   const toast = useToast();
   const confirm = useConfirm();
@@ -94,6 +94,28 @@ export default function SurveillancePage() {
     queryFn: () => api.get('/api/surveillance/scores').then(r => r.data),
     refetchInterval: autoRefresh ? 10000 : false,
   });
+  const { data: certsData } = useQuery({
+    queryKey: ['surveillance-certs'],
+    queryFn: () => api.get('/api/v1/certificates/list').then(r => r.data),
+    staleTime: 60000,
+  });
+  const { data: appsData } = useQuery({
+    queryKey: ['surveillance-apps'],
+    queryFn: () => api.get('/api/applications').then(r => r.data),
+    staleTime: 60000,
+  });
+  const certLookup = (() => {
+    const map = {};
+    (certsData?.certificates ?? certsData ?? []).forEach(c => {
+      map[c.certificate_number] = { org: c.organization_name || c.organization, system: c.system_name };
+    });
+    (appsData?.applications ?? appsData ?? []).forEach(a => {
+      if (a.application_number) map[a.application_number] = { org: a.organization_name || a.organization, system: a.system_name };
+      if (a.certificate_number) map[a.certificate_number] = { org: a.organization_name || a.organization, system: a.system_name };
+    });
+    return map;
+  })();
+
   const { data: alertsData, isLoading: alertsLoading } = useQuery({
     queryKey: ['surveillance-alerts'],
     queryFn: () => api.get('/api/surveillance/alerts?limit=100').then(r => r.data),
@@ -108,26 +130,13 @@ export default function SurveillancePage() {
   const status = statusData ?? null;
   const scores = scoresData?.scores ?? [];
   const alerts = alertsData?.alerts ?? [];
-  const suspensions = suspensionsData?.suspended_certificates ?? [];
+  const suspensions = suspensionsData?.non_conformant_certificates ?? [];
   const bd = status?.status_breakdown ?? {};
 
-  const problemStatuses = ['degraded', 'stale', 'critical', 'failing', 'offline', 'suspended'];
-  const displayScores = scores.filter(s => {
-    const matchesView = scoreView === 'all' || problemStatuses.includes(s.status);
-    const matchesSearch = !scoreSearch || 
-      (s.session_id || '').toLowerCase().includes(scoreSearch.toLowerCase()) ||
-      (s.certificate_id || '').toLowerCase().includes(scoreSearch.toLowerCase());
-    return matchesView && matchesSearch;
-  });
+  const problemStatuses = ['degraded', 'stale', 'critical', 'failing', 'offline', 'non_conformant'];
 
-  const ackMutation = useMutation({
-    mutationFn: (alertId) => api.post('/api/surveillance/alerts/' + alertId + '/acknowledge'),
-    onSuccess: () => { qc.invalidateQueries(['surveillance-alerts']); toast.success('Alert acknowledged'); },
-  });
-  const reinstateMutation = useMutation({
-    mutationFn: (certId) => api.post('/api/surveillance/reinstate/' + certId, null, { params: { reason: 'Manual reinstatement via dashboard' } }),
-    onSuccess: () => { qc.invalidateQueries(['surveillance-suspensions']); qc.invalidateQueries(['surveillance-scores']); toast.success('Certificate reinstated'); },
-  });
+
+
 
   const handleRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -140,13 +149,9 @@ export default function SurveillancePage() {
     setTimeout(() => setRefreshing(false), 600);
   }, [qc]);
 
-  const handleReinstate = async (certId) => {
-    const yes = await confirm.ask('Reinstate certificate ' + certId + '? This will resume active monitoring.');
-    if (yes) reinstateMutation.mutate(certId);
-  };
+
 
   const filteredAlerts = alertFilter === 'all' ? alerts
-    : alertFilter === 'unacked' ? alerts.filter(a => !a.acknowledged)
     : alerts.filter(a => a.severity === alertFilter);
 
   return (
@@ -177,66 +182,13 @@ export default function SurveillancePage() {
         {statusLoading ? <div style={{ ...mono, fontSize: '12px', color: styles.textDim }}>Loading...</div> : (
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 24, justifyContent: 'flex-start' }}>
             <StatBlock label="TOTAL" value={status?.monitored_sessions ?? 0} />
-            <StatBlock label="HEALTHY" value={bd.healthy ?? 0} color={styles.accentGreen} />
-            <StatBlock label="DEGRADED" value={bd.degraded ?? 0} color={(bd.degraded ?? 0) > 0 ? styles.accentAmber : styles.textDim} />
-            <StatBlock label="CRITICAL" value={bd.critical ?? 0} color={(bd.critical ?? 0) > 0 ? styles.accentRed : styles.textDim} />
-            <StatBlock label="OFFLINE" value={bd.offline ?? 0} color={(bd.offline ?? 0) > 0 ? styles.accentRed : styles.textDim} />
-            <StatBlock label="SUSPENDED" value={bd.suspended ?? 0} color={(bd.suspended ?? 0) > 0 ? styles.accentRed : styles.textDim} />
-            <StatBlock label="ALERTS" value={status?.unacknowledged_alerts ?? 0} color={(status?.unacknowledged_alerts ?? 0) > 0 ? styles.accentAmber : styles.textDim} />
+            <StatBlock label="CONFORMANT" value={bd.healthy ?? 0} color={(bd.healthy ?? 0) > 0 ? styles.accentGreen : styles.textDim} />
+            <StatBlock label="NON-CONFORMANT" value={(bd.degraded ?? 0) + (bd.critical ?? 0) + (bd.offline ?? 0) + (bd.non_conformant ?? 0)} color={((bd.degraded ?? 0) + (bd.critical ?? 0) + (bd.offline ?? 0) + (bd.non_conformant ?? 0)) > 0 ? styles.accentRed : styles.textDim} />
+            <StatBlock label="ALERTS" value={alerts.length} color={(alerts.length) > 0 ? styles.accentAmber : styles.textDim} />
           </div>
         )}
       </Panel>
 
-      <Panel style={{ marginBottom: 20, padding: '20px 24px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
-          <div style={label9}>SYSTEMS REQUIRING ATTENTION</div>
-          <div style={{ display: 'flex', gap: 4 }}>
-            {['problems','all'].map(f => (
-              <button key={f} onClick={() => setScoreView(f)} style={{ padding: '3px 8px', borderRadius: 3, border: '1px solid ' + (scoreView === f ? styles.purplePrimary : styles.textDim) + '33', background: scoreView === f ? styles.purplePrimary + '0c' : 'transparent', color: scoreView === f ? styles.purplePrimary : styles.textDim, fontFamily: styles.mono, fontSize: '9px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer' }}>
-                {f}
-              </button>
-            ))}
-          </div>
-        </div>
-        <div style={{ marginBottom: 12 }}>
-          <input type="text" placeholder="Search by session ID or certificate..." value={scoreSearch} onChange={e => setScoreSearch(e.target.value)}
-            style={{ width: '100%', maxWidth: 400, padding: '8px 12px', border: '1px solid ' + styles.textDim + '33', background: 'transparent', color: styles.textPrimary, fontFamily: styles.mono, fontSize: '11px', outline: 'none' }} />
-        </div>
-        {scoresLoading ? <div style={{ ...mono, fontSize: '12px', color: styles.textDim }}>Loading...</div>
-        : displayScores.length === 0 ? <div style={{ ...mono, fontSize: '12px', color: styles.textDim, padding: '12px 0' }}>{scoreView === 'problems' ? 'All systems nominal' : 'No sessions found'}</div>
-        : (
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <thead><tr>
-                {['STATUS','SESSION','CERTIFICATE','SCORE','PASS','BLOCK','BLOCK RATE','LAST HEARTBEAT'].map(h => (
-                  <th key={h} style={{ ...label9, textAlign: 'left', padding: '6px 10px 8px', borderBottom: '1px solid ' + styles.textDim + '22' }}>{h}</th>
-                ))}
-              </tr></thead>
-              <tbody>
-                {displayScores.slice(0, scorePage * 25).map((s, i) => (
-                  <tr key={s.session_id} style={{ borderBottom: i < displayScores.length - 1 ? '1px solid ' + styles.textDim + '11' : 'none' }}>
-                    <td style={{ padding: '10px' }}><div style={{ display: 'flex', alignItems: 'center', gap: 6 }}><StatusDot status={s.status} /><span style={{ ...mono, fontSize: '10px', textTransform: 'uppercase', color: statusColor(s.status) }}>{s.status}</span></div></td>
-                    <td style={{ ...mono, fontSize: '11px', padding: '10px', color: styles.textPrimary }}>{(s.session_id || '').substring(0, 16)}</td>
-                    <td style={{ ...mono, fontSize: '11px', padding: '10px', color: styles.textSecondary }}>{s.certificate_id || '\u2014'}</td>
-                    <td style={{ padding: '10px' }}><ScoreBar score={s.score ?? 0} /></td>
-                    <td style={{ ...mono, fontSize: '12px', padding: '10px', color: styles.accentGreen }}>{(s.pass_count ?? 0).toLocaleString()}</td>
-                    <td style={{ ...mono, fontSize: '12px', padding: '10px', color: (s.block_count ?? 0) > 0 ? styles.accentRed : styles.textDim }}>{(s.block_count ?? 0).toLocaleString()}</td>
-                    <td style={{ ...mono, fontSize: '11px', padding: '10px', color: (s.block_rate ?? 0) > 0.02 ? styles.accentRed : styles.textSecondary }}>{((s.block_rate ?? 0) * 100).toFixed(2)}%</td>
-                    <td style={{ ...mono, fontSize: '11px', padding: '10px', color: styles.textTertiary }}>{timeAgo(s.last_heartbeat)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            {displayScores.length > scorePage * 25 && (
-              <div style={{ textAlign: 'center', padding: '12px' }}>
-                <button onClick={() => setScorePage(p => p + 1)} style={{ padding: '6px 16px', border: '1px solid ' + styles.textDim + '33', background: 'transparent', color: styles.purplePrimary, fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', cursor: 'pointer' }}>
-                  Load more ({displayScores.length - scorePage * 25} remaining)
-                </button>
-              </div>
-            )}
-          </div>
-        )}
-      </Panel>
 
 
 
@@ -244,9 +196,9 @@ export default function SurveillancePage() {
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
           <div style={label9}>ALERTS</div>
           <div style={{ display: 'flex', gap: 4 }}>
-            {['all','unacked','warn','critical','suspension'].map(f => (
+            {['all','warn','critical'].map(f => (
               <button key={f} onClick={() => setAlertFilter(f)} style={{ padding: '3px 8px', borderRadius: 3, border: '1px solid ' + (alertFilter === f ? styles.purplePrimary : styles.textDim) + '33', background: alertFilter === f ? styles.purplePrimary + '0c' : 'transparent', color: alertFilter === f ? styles.purplePrimary : styles.textDim, fontFamily: styles.mono, fontSize: '9px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer' }}>
-                {f === 'unacked' ? 'UNACKED' : f}
+                {f === 'unreviewed' ? 'UNREVIEWED' : f}
               </button>
             ))}
           </div>
@@ -256,7 +208,7 @@ export default function SurveillancePage() {
         : (
           <div style={{ maxHeight: 400, overflowY: 'auto' }}>
             {filteredAlerts.slice().reverse().map((a, i) => (
-              <div key={a.id || i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '10px 0', borderBottom: '1px solid ' + styles.textDim + '11', opacity: a.acknowledged ? 0.5 : 1 }}>
+              <div key={a.id || i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '10px 0', borderBottom: '1px solid ' + styles.textDim + '11', opacity: 1 }}>
                 <div style={{ width: 4, minHeight: 32, borderRadius: 2, flexShrink: 0, marginTop: 2, background: severityColor(a.severity) }} />
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 3 }}>
@@ -265,28 +217,21 @@ export default function SurveillancePage() {
                     <span style={{ ...mono, fontSize: '9px', color: styles.textDim, marginLeft: 'auto' }}>{timeAgo(a.created_at)}</span>
                   </div>
                   <div style={{ fontSize: '12px', lineHeight: 1.5, color: styles.textPrimary }}>{a.message}</div>
-                  <div style={{ ...mono, fontSize: '10px', color: styles.textTertiary, marginTop: 2 }}>{a.certificate_id}{a.session_id ? ' \u00b7 ' + a.session_id.substring(0, 16) : ''}</div>
+                  <div style={{ ...mono, fontSize: '10px', color: styles.textTertiary, marginTop: 2 }}>
+                    {a.organization ? (
+                      <><span style={{ color: styles.textSecondary, fontWeight: 600 }}>{a.organization}</span> — {a.system_name} · </>
+                    ) : null}
+                    {a.certificate_id}{a.session_id ? ' · ' + a.session_id.substring(0, 16) : ''}
+                  </div>
                 </div>
-                {!a.acknowledged && (
-                  <button onClick={() => ackMutation.mutate(a.id)} disabled={ackMutation.isLoading} title="Acknowledge" style={{ padding: '3px 6px', border: '1px solid ' + styles.textDim + '33', background: 'transparent', borderRadius: 3, cursor: 'pointer', color: styles.textDim, flexShrink: 0, marginTop: 2 }}>
-                    <Eye size={12} />
-                  </button>
-                )}
+
               </div>
             ))}
           </div>
         )}
       </Panel>
 
-      {status?.thresholds && (
-        <div style={{ marginTop: 16, display: 'flex', flexWrap: 'wrap', gap: 12 }}>
-          {Object.entries(status.thresholds).map(([k, v]) => (
-            <div key={k} style={{ ...mono, fontSize: '9px', color: styles.textDim, padding: '3px 8px', border: '1px solid ' + styles.textDim + '22', borderRadius: 3 }}>
-              {k.replace(/_/g, ' ')}: {v}
-            </div>
-          ))}
-        </div>
-      )}
+
 
       <style>{'\
         @keyframes sa-pulse { 0%, 100% { opacity: 0.8; } 50% { opacity: 1; } }\

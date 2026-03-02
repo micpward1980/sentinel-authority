@@ -96,6 +96,26 @@ async def get_alerts(
     if unacknowledged_only:
         alerts = [a for a in alerts if not a.get("acknowledged")]
 
+    # Enrich alerts with org/system names from certificates
+    cert_ids = list(set(a.get("certificate_id") for a in alerts if a.get("certificate_id")))
+    cert_lookup = {}
+    if cert_ids:
+        try:
+            from app.core.database import async_session_maker
+            from app.models.models import Certificate
+            from sqlalchemy import select
+            async with async_session_maker() as db:
+                result = await db.execute(select(Certificate).where(Certificate.certificate_number.in_(cert_ids)))
+                for c in result.scalars().all():
+                    cert_lookup[c.certificate_number] = {"organization": c.organization_name, "system": c.system_name}
+        except Exception:
+            pass
+    for a in alerts:
+        cid = a.get("certificate_id")
+        if cid and cid in cert_lookup:
+            a["organization"] = cert_lookup[cid]["organization"]
+            a["system_name"] = cert_lookup[cid]["system"]
+
     return {
         "alerts": alerts,
         "total": len(alerts),
