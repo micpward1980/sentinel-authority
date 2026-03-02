@@ -126,7 +126,7 @@ function CustomerDashboard() {
   const hasAgents = totalSessions > 0;
 
   return (
-    <div className="space-y-6" style={{maxWidth: "1000px", margin: "0 auto"}}>
+    <div className="space-y-6" style={{maxWidth: "1100px", margin: "0 auto"}}>
       <SectionHeader
         label="ODDC Certification"
         title={'Welcome' + (user?.full_name ? ', ' + user.full_name.split(' ')[0] : '')}
