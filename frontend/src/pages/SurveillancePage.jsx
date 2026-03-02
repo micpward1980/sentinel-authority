@@ -280,7 +280,7 @@ export default function SurveillancePage() {
           <div style={{ maxHeight: 400, overflowY: 'auto' }}>
             {filteredAlerts.slice().reverse().map((a, i) => (
               <div key={a.id || i}
-                onClick={() => navigate('/certificates')}
+                onClick={() => { const match = systems.find(s => s.certificate_number === a.certificate_id); navigate(match?.application_id ? '/applications/' + match.application_id : '/certificates'); }}
                 style={{ cursor: 'pointer', display: 'flex', alignItems: 'flex-start', gap: 10, padding: '10px 0', borderBottom: '1px solid ' + styles.textDim + '11' }}>
                 <div style={{ width: 4, minHeight: 32, borderRadius: 2, flexShrink: 0, marginTop: 2, background: severityColor(a.severity) }} />
                 <div style={{ flex: 1, minWidth: 0 }}>
@@ -291,7 +291,7 @@ export default function SurveillancePage() {
                   </div>
                   <div style={{ fontSize: '12px', lineHeight: 1.5, color: styles.textPrimary }}>{a.message}</div>
                   <div style={{ ...mono, fontSize: '10px', color: styles.textTertiary, marginTop: 2 }}>
-                    {a.certificate_id}{a.session_id ? ' \u00b7 ' + a.session_id.substring(0, 16) : ''}
+                    {a.certificate_id || ''}{a.session_id ? ' \u00b7 ' + a.session_id.substring(0, 16) : ''}
                   </div>
                 </div>
               </div>
