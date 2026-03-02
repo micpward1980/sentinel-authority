@@ -678,11 +678,11 @@ function AuditLogPanel({ toast }) {
                 {events.map((ev, i) => (
                   <tr key={i} style={{ borderBottom: `1px solid ${styles.borderGlass}` }}>
                     <td style={{ padding: '11px 14px', fontFamily: styles.mono, fontSize: 11, color: styles.textTertiary }}>
-                      {ev.created_at ? new Date(ev.created_at).toISOString().replace('T', ' ').substring(0, 16) + 'Z' : '—'}
+                      {(ev.timestamp || ev.created_at) ? new Date(ev.timestamp || ev.created_at).toISOString().replace('T', ' ').substring(0, 16) + 'Z' : '—'}
                     </td>
                     <td style={{ padding: '11px 14px' }}>
-                      <span style={{ fontFamily: styles.mono, fontSize: 10, fontWeight: 700, letterSpacing: '0.8px', textTransform: 'uppercase', color: EVENT_COLOR[ev.event_type] || styles.textSecondary }}>
-                        {(ev.event_type || 'EVENT').replace(/_/g, ' ')}
+                      <span style={{ fontFamily: styles.mono, fontSize: 10, fontWeight: 700, letterSpacing: '0.8px', textTransform: 'uppercase', color: EVENT_COLOR[ev.action || ev.event_type] || styles.textSecondary }}>
+                        {(ev.action || ev.event_type || 'EVENT').replace(/_/g, ' ')}
                       </span>
                     </td>
                     <td style={{ padding: '11px 14px', fontFamily: styles.mono, fontSize: 11, color: styles.textTertiary }}>{ev.ip_address || (typeof ev.details === 'object' && ev.details?.ip) || '—'}</td>
