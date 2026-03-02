@@ -1,224 +1,278 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" style="scroll-behavior:smooth;">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>Terms of Use — Sentinel Authority</title>
+  <title>Terms of Service — Sentinel Authority</title>
   <meta name="description" content="Sentinel Authority terms of service for ODDC attestation and related services." />
-  <meta property="og:title" content="Terms of Use — Sentinel Authority" />
+  <meta property="og:title" content="Terms of Service — Sentinel Authority" />
   <meta property="og:description" content="Terms governing use of Sentinel Authority services." />
   <meta property="og:type" content="website" />
   <meta property="og:image" content="https://sentinelauthority.org/og.png" />
-  <link rel="canonical" href="https://www.sentinelauthority.org/terms.html" />
-  <link rel="icon" type="image/svg+xml" href="favicon.svg">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
-  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="favicon-192.png">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect x='6' y='6' width='20' height='20' rx='5' fill='%235B4B8A' stroke='%239d8ccf' stroke-width='2'/><circle cx='16' cy='16' r='4' fill='%239d8ccf'/></svg>" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Source+Serif+4:opsz,wght@8..60,300;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <style>
-    :root{--navy:#1d1a3b;--text:#111318;--text-2:rgba(15,18,30,.72);--text-3:rgba(15,18,30,.50);--border:rgba(15,18,30,.08);--bg:#ffffff;--green:rgba(22,163,74,1);--amber:rgba(202,138,4,1);--red:rgba(220,53,69,1);--mono:'IBM Plex Mono',Consolas,monospace;--serif:'Source Serif 4',Georgia,serif;--sans:'Inter',system-ui,sans-serif;--nav-h:60px;--max:1320px;}
-    *,*::before,*::after{box-sizing:border-box;}
-    @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition-duration:0.01ms!important;animation-duration:0.01ms!important;}}
-    html{scroll-behavior:smooth;background:var(--bg);}
-    body{margin:0;font-family:var(--sans);color:var(--text);background:var(--bg);-webkit-font-smoothing:antialiased;overflow-x:hidden;}
-    a{color:inherit;text-decoration:none;}
-    ::selection{background:var(--navy);color:#fff;}
-    .site-header{position:fixed;top:0;left:0;right:0;z-index:50;height:var(--nav-h);background:rgba(255,255,255,0.92);border-bottom:1px solid var(--border);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:flex;align-items:center;padding:0 24px;}
-    .back-link{font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--text-3);transition:color .15s;font-weight:500;}
-    .back-link:hover{color:var(--text);}
-    main{padding-top:calc(var(--nav-h) + 56px);padding-bottom:96px;}
-    .inner{max-width:var(--max);margin:0 auto;padding:0 24px;}
-    .page-label{font-family:var(--mono);font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--text-3);display:block;margin-bottom:14px;}
-    .page-title{font-family:var(--serif);font-size:clamp(32px,5vw,52px);font-weight:300;color:var(--navy);margin:0 0 12px;letter-spacing:-0.02em;line-height:1.1;}
-    .page-lead{font-size:15px;color:var(--text-2);line-height:1.65;margin:0 0 48px;max-width:58ch;}
-    .effective{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:10px;letter-spacing:1.5px;color:rgba(22,163,74,.8);text-transform:uppercase;margin-bottom:20px;}
-    .dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;animation:breathe 2.5s ease-in-out infinite;}
-    .dot-green{background:var(--green);}
-    .dot-amber{background:var(--amber);}
-    .dot-red{background:var(--red);}
-    @keyframes breathe{0%,100%{opacity:.4;}50%{opacity:1;}}
-    .card{max-width:760px;margin-left:auto;margin-right:auto;border:1px solid var(--border);border-radius:10px;padding:22px 20px;margin-bottom:16px;background:#fff;scroll-margin-top:calc(var(--nav-h) + 16px);}
-    .card-header{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
-    .card-num{font-family:var(--mono);font-size:10px;letter-spacing:1px;color:var(--text-3);}
-    .card-label{font-family:var(--mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-3);}
-    .row{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid rgba(15,18,30,.04);font-size:13px;color:var(--text-2);line-height:1.55;}
-    .row:last-child{border-bottom:none;}
-    .pip{width:4px;height:4px;border-radius:50%;background:rgba(42,37,96,.30);margin-top:6px;flex-shrink:0;}
-    .pip-green{background:rgba(22,163,74,.6);animation:breathe 3s ease-in-out infinite;}
-    .pip-red{background:rgba(220,53,69,.5);}
-    .card-text{font-size:13px;color:var(--text-2);line-height:1.65;margin:0 0 10px;}
-    .card-text:last-child{margin-bottom:0;}
-    .card-amber{border-color:rgba(202,138,4,.2);}
-    .card-red{border-color:rgba(220,53,69,.15);}
-    .card-green{border-color:rgba(22,163,74,.15);}
-    .toc-link{font-family:var(--mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--navy);transition:opacity .15s;}
-    .toc-link:hover{opacity:.6;}
-    .card-link{font-family:var(--mono);font-size:11px;letter-spacing:2px;color:var(--navy);text-transform:uppercase;display:inline-block;margin-top:14px;}
-    .card-link:hover{text-decoration:underline;}
-    footer{border-top:1px solid var(--border);padding:32px 0 24px;background:#fff;font-family:var(--mono);font-size:11px;letter-spacing:1px;color:var(--text-3);}
-    .footer-inner{max-width:var(--max);margin:0 auto;padding:0 24px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
-    .foot-links{display:flex;gap:20px;}
-    .foot-links a:hover{color:var(--text);}
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important; } }
+    :root{
+      color-scheme:light;
+      --purple-primary:#5B4B8A; --purple-bright:rgba(88,80,150,1.00); --purple-glow:rgba(88,80,150,.12);
+      --bg-deep:#f8f9fb; --accent-green:rgba(22,163,74,1.00); --accent-amber:rgba(202,138,4,1.00); --accent-red:rgba(220,53,69,1.00);
+      --text-primary:rgba(15,18,30,.97); --text-secondary:rgba(15,18,30,.82); --text-tertiary:rgba(15,18,30,.62);
+      --border-glass:rgba(255,255,255,.60); --border-subtle:rgba(15,18,30,.06);
+      --serif:Georgia,'Source Serif 4',serif; --mono:Consolas,'IBM Plex Mono',monospace; --sans:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+      --ease:cubic-bezier(0.16,1,0.3,1); --ease-out:cubic-bezier(0.33,1,0.68,1);
+      --space-1:10px; --space-2:20px; --space-3:20px; --space-4:28px; --space-5:35px; --space-6:40px;
+      --max:1200px; --nav-height:72px;
+    }
+    *{box-sizing:border-box;}
+    .skip-link{position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;z-index:999;}
+    .skip-link:focus{position:fixed;top:10px;left:10px;width:auto;height:auto;padding:12px 18px;background:#fff;border:1px solid var(--purple-bright);color:var(--text-primary);font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;z-index:9999;}
+    a:focus-visible,button:focus-visible{outline:2px solid rgba(88,80,150,.75);outline-offset:3px;}
+    :focus:not(:focus-visible){outline:none;}
+    html{scroll-behavior:smooth;background:#f8f9fb;}
+    body{margin:0;font-family:var(--sans);background:#f8f9fb;color:var(--text-primary);overflow-x:hidden;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:geometricPrecision;}
+    body::before{content:'';position:fixed;inset:0;z-index:-1;background:radial-gradient(ellipse 80% 50% at 20% 10%,rgba(88,80,150,0.04),transparent 60%),radial-gradient(ellipse 60% 40% at 80% 80%,rgba(22,163,74,0.03),transparent 50%);pointer-events:none;}
+    a{color:inherit;text-decoration:none;} a:hover{text-decoration:none;}
+    ::selection{background:rgba(88,80,150,.15);color:var(--text-primary);}
+
+    .site-header{position:fixed;top:0;width:100%;z-index:50;padding:0 20px;height:var(--nav-height);border-bottom:1px solid rgba(15,18,30,0.08);background:rgba(255,255,255,0.85);box-shadow:0 0.5px 0 rgba(15,18,30,0.10);backdrop-filter:blur(20px) saturate(1.8);-webkit-backdrop-filter:blur(20px) saturate(1.8);display:flex;align-items:center;}
+    .nav-inner{max-width:var(--max);margin:0 auto;width:100%;display:flex;align-items:center;justify-content:space-between;gap:20px;}
+    .brand{display:flex;align-items:center;gap:10px;text-decoration:none;} .brand:hover{text-decoration:none;}
+    .brand-mark{width:24px;height:24px;background:var(--purple-primary);border:2px solid rgba(88,80,150,0.6);border-radius:6px;display:flex;align-items:center;justify-content:center;}
+    .brand-mark-inner{width:8px;height:8px;background:rgba(88,80,150,0.4);border-radius:50%;animation:eye-pulse 7s ease-in-out infinite;}
+    @keyframes eye-pulse{0%,100%{opacity:.75;transform:scale(.98);}50%{opacity:1;transform:scale(1.02);}}
+    .brand-name{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(15,18,30,1);font-weight:600;white-space:nowrap;}
+    .back-link{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-tertiary);transition:color .2s;text-decoration:none;font-weight:500;}
+    .back-link:hover{color:var(--text-primary);text-decoration:none;}
+
+    main{position:relative;z-index:1;max-width:var(--max);margin:0 auto;padding:0 20px 80px;}
+    .section{position:relative;padding:var(--space-6) 0;}
+    .section-label{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--purple-bright);display:block;margin-bottom:12px;font-weight:600;}
+    .section-title{font-family:var(--serif);font-size:clamp(30px,4vw,50px);font-weight:500;line-height:1.1;margin:0;letter-spacing:-0.02em;color:var(--text-primary);}
+    .section-lead{max-width:65ch;color:var(--text-secondary);font-weight:400;line-height:1.55;margin:var(--space-2) 0 0;font-size:16px;}
+
+    .hud-frame{position:relative;padding:20px 16px;background:rgba(255,255,255,0.45);backdrop-filter:blur(14px) saturate(1.4);-webkit-backdrop-filter:blur(14px) saturate(1.4);box-shadow:0 1px 3px rgba(15,18,30,0.03),inset 0 1px 0 rgba(255,255,255,0.7);border:none;overflow:hidden;}
+    .hud-frame::before,.hud-frame::after,.hud-frame>i::before,.hud-frame>i::after{content:'';position:absolute;width:12px;height:12px;border-color:rgba(15,18,30,0.08);border-style:solid;pointer-events:none;animation:corner-breathe 4s ease-in-out infinite;}
+    .hud-frame::before{top:0;left:0;border-width:1px 0 0 1px;}
+    .hud-frame::after{top:0;right:0;border-width:1px 1px 0 0;}
+    .hud-frame>i::before{bottom:0;left:0;border-width:0 0 1px 1px;position:absolute;}
+    .hud-frame>i::after{bottom:0;right:0;border-width:0 1px 1px 0;position:absolute;}
+    .hud-frame>i{position:absolute;inset:0;pointer-events:none;}
+    @keyframes corner-breathe{0%,100%{border-color:rgba(15,18,30,0.08);}50%{border-color:rgba(88,80,150,0.20);}}
+    .hud-frame-green::before,.hud-frame-green::after,.hud-frame-green>i::before,.hud-frame-green>i::after{animation:corner-breathe-green 4s ease-in-out infinite !important;}
+    @keyframes corner-breathe-green{0%,100%{border-color:rgba(22,163,74,0.08);}50%{border-color:rgba(22,163,74,0.25);}}
+    .hud-frame-amber::before,.hud-frame-amber::after,.hud-frame-amber>i::before,.hud-frame-amber>i::after{animation:corner-breathe-amber 4s ease-in-out infinite !important;}
+    @keyframes corner-breathe-amber{0%,100%{border-color:rgba(202,138,4,0.08);}50%{border-color:rgba(202,138,4,0.25);}}
+    .hud-frame-red::before,.hud-frame-red::after,.hud-frame-red>i::before,.hud-frame-red>i::after{animation:corner-breathe-red 4s ease-in-out infinite !important;}
+    @keyframes corner-breathe-red{0%,100%{border-color:rgba(220,53,69,0.08);}50%{border-color:rgba(220,53,69,0.25);}}
+    .hud-frame+.hud-frame{margin-top:var(--space-3);}
+    .hud-scanline{border-bottom:1px solid rgba(15,18,30,0.04);}
+    .hud-dot{display:inline-block;width:4px;height:4px;border-radius:50%;background:rgba(88,80,150,0.35);margin-right:8px;flex-shrink:0;}
+    .hud-dot-green{background:rgba(22,163,74,0.6);animation:hud-breathe 3s ease-in-out infinite;}
+    .hud-dot-amber{background:rgba(202,138,4,0.6);animation:hud-breathe 3s ease-in-out infinite;}
+    .hud-dot-red{background:rgba(220,53,69,0.5);}
+    @keyframes hud-breathe{0%,100%{opacity:0.4;}50%{opacity:1;}}
+    .hud-row{padding:12px 0;border-bottom:1px solid rgba(15,18,30,0.04);}
+    .hud-row:last-child{border-bottom:none;}
+    .hud-label{font-family:var(--mono);font-size:10px;letter-spacing:1.5px;color:var(--text-tertiary);text-transform:uppercase;font-weight:500;}
+    .hud-desc{font-size:13px;color:var(--text-secondary);line-height:1.55;}
+    .hud-num{font-family:var(--mono);font-size:10px;letter-spacing:1px;color:rgba(88,80,150,0.40);margin-right:12px;}
+    .hud-link{font-family:var(--mono);font-size:11px;letter-spacing:2px;color:rgba(88,80,150,0.70);text-decoration:none !important;padding-bottom:2px;transition:all 0.2s;}
+    .hud-link:hover{color:rgba(88,80,150,1.00);}
+    a[href^="mailto:"]{color:var(--purple-bright);}
+
+    footer{border-top:1px solid rgba(255,255,255,.60);padding:var(--space-6) 0 var(--space-4);margin-top:var(--space-4);background:rgba(255,255,255,0.40);backdrop-filter:blur(12px) saturate(1.3);-webkit-backdrop-filter:blur(12px) saturate(1.3);color:var(--text-tertiary);font-family:var(--mono);font-size:10px;letter-spacing:1px;}
+    .footer-inner{max-width:var(--max);margin:0 auto;padding:0 20px;display:flex;justify-content:space-between;align-items:flex-start;gap:20px;flex-wrap:wrap;}
+
+    @media(max-width:768px){.site-header{height:56px;padding:0 12px;}:root{--nav-height:56px;}.brand-name{font-size:10px !important;}.hud-frame{backdrop-filter:blur(8px) saturate(1.3) !important;-webkit-backdrop-filter:blur(8px) saturate(1.3) !important;}.section-title{font-size:24px !important;}}
+    @media(max-width:480px){.section-title{font-size:21px !important;}}
   </style>
 </head>
 <body>
+  <a href="#main" class="skip-link">Skip to content</a>
   <header class="site-header">
-    <a href="/" class="back-link" aria-label="Back to home">← Sentinel Authority</a>
+    <div class="nav-inner">
+      <a href="index.html" class="brand">
+        <div class="brand-mark"><div class="brand-mark-inner"></div></div>
+        <div class="brand-name">Sentinel Authority</div>
+      </a>
+      <a href="index.html" class="back-link">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:4px;"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Back
+      </a>
+    </div>
   </header>
-  <main id="main">
-    <div class="inner">
-      <span class="page-label">Legal</span>
-      <h1 class="page-title">Terms of Use</h1>
-      <div class="effective"><span class="dot dot-green"></span>Effective: January 2026</div>
-      <p class="page-lead">These Terms govern your use of the Sentinel Authority website, attestation portal, and related services. By accessing or using our Services, you agree to these Terms.</p>
-      <div class="card">
-        <div class="card-header"><span class="card-label">Contents</span></div>
-        <div class="row"><span class="card-num">01</span><a href="#services" class="toc-link">Services Description</a></div>
-        <div class="row"><span class="card-num">02</span><a href="#account" class="toc-link">Account Registration</a></div>
-        <div class="row"><span class="card-num">03</span><a href="#applications" class="toc-link">Conformance Applications</a></div>
-        <div class="row"><span class="card-num">04</span><a href="#fees" class="toc-link">Fees and Payment</a></div>
-        <div class="row"><span class="card-num">05</span><a href="#license" class="toc-link">ENVELO Interlock License</a></div>
-        <div class="row"><span class="card-num">06</span><a href="#liability" class="toc-link">Limitation of Liability</a></div>
-        <div class="row"><span class="card-num">07</span><a href="#indemnification" class="toc-link">Indemnification</a></div>
-        <div class="row"><span class="card-num">08</span><a href="#confidentiality" class="toc-link">Confidentiality</a></div>
-        <div class="row"><span class="card-num">09</span><a href="#nonconformance" class="toc-link">Non-Conformance</a></div>
-        <div class="row"><span class="card-num">10</span><a href="#termination" class="toc-link">Termination</a></div>
-        <div class="row"><span class="card-num">11</span><a href="#modifications" class="toc-link">Modifications</a></div>
-        <div class="row"><span class="card-num">12</span><a href="#governing" class="toc-link">Governing Law</a></div>
+
+  <main id="main" role="main">
+    <div class="section" style="border-top:none;padding-top:calc(var(--nav-height) + 48px);max-width:var(--max);margin:0 auto;">
+      <span class="section-label">LEGAL</span>
+      <h1 class="section-title" style="font-family:var(--serif);">Terms of Service</h1>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
+        <span class="hud-dot hud-dot-green"></span>
+        <span class="hud-label" style="color:rgba(22,163,74,0.7);">EFFECTIVE: JANUARY 2026</span>
       </div>
-      <div class="card" id="definitions">
-        <div class="card-header"><span class="card-label">Definitions</span></div>
-        <div class="row"><span class="pip"></span><span><strong>Services</strong> means the ODDC conformance determination platform, ENVELO Interlock integration, CAT-72 assessment, and related attestation services provided by Sentinel Authority.</span></div>
-        <div class="row"><span class="pip"></span><span><strong>Attestation</strong> means a formal ODDC conformance determination issued by Sentinel Authority and recorded in the public registry.</span></div>
-        <div class="row"><span class="pip"></span><span><strong>Applicant</strong> means the legal entity submitting a system for conformance determination.</span></div>
-        <div class="row"><span class="pip"></span><span><strong>ENVELO Interlock</strong> means the non-bypassable runtime enforcement layer required for conformance determination.</span></div>
-        <div class="row"><span class="pip"></span><span><strong>Conformance Term</strong> means the period during which an Attestation remains active, subject to annual maintenance.</span></div>
+      <p class="section-lead">These Terms govern your use of the Sentinel Authority website, attestation portal, and related services. By accessing or using our Services, you agree to these Terms.</p>
+    </div>
+
+    <div style="max-width:700px;margin:0 auto;padding:0 var(--space-2);">
+
+      <!-- TOC -->
+      <div class="hud-frame hud-scanline"><i></i>
+        <div class="hud-label" style="margin-bottom:16px;">CONTENTS</div>
+        <div class="hud-row" style="display:flex;align-items:center;gap:12px;"><span class="hud-num">01</span><a href="#services" class="hud-link" style="font-size:10px;">SERVICES DESCRIPTION</a></div>
+        <div class="hud-row" style="display:flex;align-items:center;gap:12px;"><span class="hud-num">02</span><a href="#account" class="hud-link" style="font-size:10px;">ACCOUNT REGISTRATION</a></div>
+        <div class="hud-row" style="display:flex;align-items:center;gap:12px;"><span class="hud-num">03</span><a href="#applications" class="hud-link" style="font-size:10px;">CONFORMANCE APPLICATIONS</a></div>
+        <div class="hud-row" style="display:flex;align-items:center;gap:12px;"><span class="hud-num">04</span><a href="#fees" class="hud-link" style="font-size:10px;">FEES AND PAYMENT</a></div>
+        <div class="hud-row" style="display:flex;align-items:center;gap:12px;"><span class="hud-num">05</span><a href="#license" class="hud-link" style="font-size:10px;">ENVELO INTERLOCK LICENSE</a></div>
+        <div class="hud-row" style="display:flex;align-items:center;gap:12px;"><span class="hud-num">06</span><a href="#liability" class="hud-link" style="font-size:10px;">LIMITATION OF LIABILITY</a></div>
+        <div class="hud-row" style="display:flex;align-items:center;gap:12px;"><span class="hud-num">07</span><a href="#indemnification" class="hud-link" style="font-size:10px;">INDEMNIFICATION</a></div>
+        <div class="hud-row" style="display:flex;align-items:center;gap:12px;"><span class="hud-num">08</span><a href="#confidentiality" class="hud-link" style="font-size:10px;">CONFIDENTIALITY</a></div>
+        <div class="hud-row" style="display:flex;align-items:center;gap:12px;"><span class="hud-num">09</span><a href="#revocation" class="hud-link" style="font-size:10px;">REVOCATION</a></div>
+        <div class="hud-row" style="display:flex;align-items:center;gap:12px;"><span class="hud-num">10</span><a href="#termination" class="hud-link" style="font-size:10px;">TERMINATION</a></div>
+        <div class="hud-row" style="display:flex;align-items:center;gap:12px;"><span class="hud-num">11</span><a href="#modifications" class="hud-link" style="font-size:10px;">MODIFICATIONS</a></div>
+        <div class="hud-row" style="display:flex;align-items:center;gap:12px;"><span class="hud-num">12</span><a href="#governing" class="hud-link" style="font-size:10px;">GOVERNING LAW</a></div>
       </div>
-      <div class="card" id="services">
-        <div class="card-header"><span class="card-num">01</span><span class="card-label">Services Description</span></div>
-        <p class="card-text">Sentinel Authority provides ODD Conformance Determination (ODDC) services for autonomous systems:</p>
-        <div class="row"><span class="pip"></span><span>Application review and scope assessment</span></div>
-        <div class="row"><span class="pip"></span><span>CAT-72 conformance testing</span></div>
-        <div class="row"><span class="pip"></span><span>ODDC attestation issuance</span></div>
-        <div class="row"><span class="pip"></span><span>ENVELO Interlock software for runtime enforcement</span></div>
-        <div class="row"><span class="pip"></span><span>Certificate verification services</span></div>
+
+      <!-- 01 Services -->
+      <div id="services" class="hud-frame" style="margin-top:var(--space-3);scroll-margin-top:calc(var(--nav-height) + 20px);"><i></i>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;"><span class="hud-num">01</span><span class="hud-label">SERVICES DESCRIPTION</span></div>
+        <div class="hud-desc" style="margin-bottom:12px;">Sentinel Authority provides ODD Conformance Determination (ODDC) services for autonomous systems:</div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Application review and scope assessment</span></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">CAT-72 conformance testing</span></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">ODDC attestation issuance</span></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">ENVELO Interlock software for runtime enforcement</span></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Certificate verification services</span></div>
       </div>
-      <div class="card" id="account">
-        <div class="card-header"><span class="card-num">02</span><span class="card-label">Account Registration</span></div>
-        <p class="card-text">To access certain Services, you must create an account. You agree to:</p>
-        <div class="row"><span class="pip"></span><span>Provide accurate and complete information</span></div>
-        <div class="row"><span class="pip"></span><span>Maintain the security of your account credentials</span></div>
-        <div class="row"><span class="pip"></span><span>Promptly notify us of any unauthorized access</span></div>
-        <div class="row"><span class="pip"></span><span>Accept responsibility for all activities under your account</span></div>
+
+      <!-- 02 Account -->
+      <div id="account" class="hud-frame" style="scroll-margin-top:calc(var(--nav-height) + 20px);"><i></i>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;"><span class="hud-num">02</span><span class="hud-label">ACCOUNT REGISTRATION</span></div>
+        <div class="hud-desc" style="margin-bottom:12px;">To access certain Services, you must create an account. You agree to:</div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Provide accurate and complete information</span></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Maintain the security of your account credentials</span></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Promptly notify us of any unauthorized access</span></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Accept responsibility for all activities under your account</span></div>
       </div>
-      <div class="card" id="applications">
-        <div class="card-header"><span class="card-num">03</span><span class="card-label">Conformance Applications</span></div>
-        <p class="card-text">By submitting an assessment application, you represent that:</p>
-        <div class="row"><span class="pip"></span><span>All information provided is accurate and complete</span></div>
-        <div class="row"><span class="pip"></span><span>The submitting party has authority to act on behalf of the applicant organization</span></div>
-        <div class="row"><span class="pip"></span><span>You will cooperate with the assessment process</span></div>
-        <div class="row"><span class="pip"></span><span>Incomplete or inaccurate information may result in denial</span></div>
+
+      <!-- 03 Applications -->
+      <div id="applications" class="hud-frame" style="scroll-margin-top:calc(var(--nav-height) + 20px);"><i></i>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;"><span class="hud-num">03</span><span class="hud-label">CONFORMANCE APPLICATIONS</span></div>
+        <div class="hud-desc" style="margin-bottom:12px;">By submitting an assessment application, you represent that:</div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">All information provided is accurate and complete</span></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">You have authority to submit on behalf of your organization</span></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">You will cooperate with the assessment process</span></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Incomplete or inaccurate information may result in denial</span></div>
       </div>
-      <div class="card" id="fees">
-        <div class="card-header"><span class="card-num">04</span><span class="card-label">Fees and Payment</span></div>
-        <p class="card-text">Conformance fees are specified during scope assessment. Payment terms:</p>
-        <div class="row"><span class="pip"></span><span>Assessment fee due in full at application</span></div>
-        <div class="row"><span class="pip"></span><span>Fees are non-refundable — covers review, test administration, and certificate issuance</span></div>
-        <div class="row"><span class="pip"></span><span>Re-assessment fees apply for subsequent attempts</span></div>
+
+      <!-- 04 Fees -->
+      <div id="fees" class="hud-frame" style="scroll-margin-top:calc(var(--nav-height) + 20px);"><i></i>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;"><span class="hud-num">04</span><span class="hud-label">FEES AND PAYMENT</span></div>
+        <div class="hud-desc" style="margin-bottom:12px;">Conformance fees are specified during scope assessment. Payment terms:</div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Assessment fee due in full at application</span></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Fees are non-refundable — covers review, test administration, and certificate issuance</span></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Re-assessment fees apply for subsequent attempts</span></div>
       </div>
-      <div class="card card-green" id="license">
-        <div class="card-header"><span class="card-num">05</span><span class="card-label">ENVELO Interlock License</span></div>
-        <p class="card-text">Subject to these Terms and valid attestation, we grant you a limited, non-exclusive, non-transferable license to use the ENVELO Interlock software solely for:</p>
-        <div class="row"><span class="pip pip-green"></span><span>Systems covered by your ODDC attestation</span></div>
-        <div class="row"><span class="pip pip-green"></span><span>The duration of your conformance term</span></div>
-        <p class="card-text" style="margin-top:12px;">You may not reverse engineer, modify, or distribute the ENVELO Interlock software.</p>
+
+      <!-- 05 License -->
+      <div id="license" class="hud-frame" style="scroll-margin-top:calc(var(--nav-height) + 20px);"><i></i>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;"><span class="hud-num">05</span><span class="hud-label">ENVELO INTERLOCK LICENSE</span></div>
+        <div class="hud-desc" style="margin-bottom:12px;">Subject to these Terms and valid attestation, we grant you a limited, non-exclusive, non-transferable license to use the ENVELO Interlock software solely for:</div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-green" style="margin-top:5px;"></span><span class="hud-desc">Systems covered by your ODDC attestation</span></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-green" style="margin-top:5px;"></span><span class="hud-desc">The duration of your conformance term</span></div>
+        <div class="hud-desc" style="margin-top:12px;">You may not reverse engineer, modify, or distribute the ENVELO Interlock software.</div>
       </div>
-      <div class="card card-amber">
-        <div class="card-header"><span class="card-label">Nature and Scope of Attestation</span><span class="dot dot-amber" style="margin-left:auto;"></span></div>
-        <p class="card-text">ODDC attestation does not constitute: regulatory approval, safety attestation (e.g., IEC 61508, ISO 26262), product attestation, guarantee of system performance, insurance, or warranty. Operators remain solely responsible for system behavior, regulatory compliance, and all consequences of system operation.</p>
+      <div class="hud-frame hud-frame-amber" style="margin-top:var(--space-2);"><i></i>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+          <span class="hud-label">IMPORTANT LIMITATION</span>
+          <span class="hud-dot hud-dot-amber"></span>
+        </div>
+        <div class="hud-desc">ODDC attestation does not constitute: regulatory approval, safety attestation (e.g., IEC 61508, ISO 26262), product attestation, guarantee of system performance, insurance, or warranty. Operators remain solely responsible for system behavior, regulatory compliance, and all consequences of system operation.</div>
       </div>
-      <div class="card" id="liability">
-        <div class="card-header"><span class="card-num">06</span><span class="card-label">Limitation of Liability</span></div>
-        <p class="card-text">To the maximum extent permitted by law:</p>
-        <div class="row"><span class="pip"></span><span>Total liability shall not exceed fees paid for the specific attestation at issue</span></div>
-        <div class="row"><span class="pip"></span><span>We are not liable for indirect, incidental, consequential, or punitive damages</span></div>
-        <div class="row"><span class="pip"></span><span>We are not liable for damages arising from system operation, whether attested or not</span></div>
+
+      <!-- 06 Liability -->
+      <div id="liability" class="hud-frame" style="margin-top:var(--space-3);scroll-margin-top:calc(var(--nav-height) + 20px);"><i></i>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;"><span class="hud-num">06</span><span class="hud-label">LIMITATION OF LIABILITY</span></div>
+        <div class="hud-desc" style="margin-bottom:12px;">To the maximum extent permitted by law:</div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Total liability shall not exceed fees paid for the specific attestation at issue</span></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">We are not liable for indirect, incidental, consequential, or punitive damages</span></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">We are not liable for damages arising from system operation, whether attested or not</span></div>
       </div>
-      <div class="card" id="indemnification">
-        <div class="card-header"><span class="card-num">07</span><span class="card-label">Indemnification</span></div>
-        <p class="card-text">You agree to indemnify and hold harmless Sentinel Authority from any claims, damages, or expenses arising from:</p>
-        <div class="row"><span class="pip"></span><span>Your use of the Services</span></div>
-        <div class="row"><span class="pip"></span><span>Operation of your attested systems</span></div>
-        <div class="row"><span class="pip"></span><span>Violation of these Terms</span></div>
-        <div class="row"><span class="pip"></span><span>Infringement of third-party rights</span></div>
+
+      <!-- 07 Indemnification -->
+      <div id="indemnification" class="hud-frame" style="scroll-margin-top:calc(var(--nav-height) + 20px);"><i></i>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;"><span class="hud-num">07</span><span class="hud-label">INDEMNIFICATION</span></div>
+        <div class="hud-desc" style="margin-bottom:12px;">You agree to indemnify and hold harmless Sentinel Authority from any claims, damages, or expenses arising from:</div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Your use of the Services</span></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Operation of your attested systems</span></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Violation of these Terms</span></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Infringement of third-party rights</span></div>
       </div>
-      <div class="card" id="confidentiality">
-        <div class="card-header"><span class="card-num">08</span><span class="card-label">Confidentiality</span></div>
-        <p class="card-text">We will treat your application materials and technical documentation as confidential, except:</p>
-        <div class="row"><span class="pip"></span><span>Certificate information (number, organization, system name, status) is publicly verifiable</span></div>
-        <div class="row"><span class="pip"></span><span>Aggregate, anonymized data may be used for research or reporting</span></div>
-        <div class="row"><span class="pip"></span><span>Disclosure may be required by law or valid legal process</span></div>
+
+      <!-- 08 Confidentiality -->
+      <div id="confidentiality" class="hud-frame" style="scroll-margin-top:calc(var(--nav-height) + 20px);"><i></i>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;"><span class="hud-num">08</span><span class="hud-label">CONFIDENTIALITY</span></div>
+        <div class="hud-desc" style="margin-bottom:12px;">We will treat your application materials and technical documentation as confidential, except:</div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Certificate information (number, organization, system name, status) is publicly verifiable</span></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Aggregate, anonymized data may be used for research or reporting</span></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Disclosure may be required by law or valid legal process</span></div>
       </div>
-      <div class="card card-red" id="nonconformance">
-        <div class="card-header"><span class="card-num">09</span><span class="card-label">Non-Conformance</span><span class="dot dot-red" style="margin-left:auto;"></span></div>
-        <p class="card-text">Non-conformance determination is governed by the Conformance Agreement. Grounds for non-conformance include:</p>
-        <div class="row"><span class="pip pip-red"></span><span>Information provided was materially false or misleading</span></div>
-        <div class="row"><span class="pip pip-red"></span><span>System modifications invalidate conformance</span></div>
-        <div class="row"><span class="pip pip-red"></span><span>ENVELO Interlock is disabled, bypassed, or tampered with</span></div>
-        <div class="row"><span class="pip pip-red"></span><span>Payment obligations are not met</span></div>
-        <div class="row"><span class="pip pip-red"></span><span>Terms of Use are violated</span></div>
+
+      <!-- 09 Revocation -->
+      <div id="revocation" class="hud-frame hud-frame-red" style="scroll-margin-top:calc(var(--nav-height) + 20px);"><i></i>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+          <span class="hud-num">09</span>
+          <span class="hud-label">REVOCATION</span>
+          <span class="hud-dot hud-dot-red" style="margin-left:auto;"></span>
+        </div>
+        <div class="hud-desc" style="margin-bottom:12px;">We may revoke attestation if:</div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-red" style="margin-top:5px;"></span><span class="hud-desc">Information provided was materially false or misleading</span></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-red" style="margin-top:5px;"></span><span class="hud-desc">System modifications invalidate conformance</span></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-red" style="margin-top:5px;"></span><span class="hud-desc">ENVELO Interlock is disabled, bypassed, or tampered with</span></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-red" style="margin-top:5px;"></span><span class="hud-desc">Payment obligations are not met</span></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-red" style="margin-top:5px;"></span><span class="hud-desc">Terms of Service are violated</span></div>
       </div>
-      <div class="card" id="termination">
-        <div class="card-header"><span class="card-num">10</span><span class="card-label">Termination</span></div>
-        <p class="card-text">We may determine non-conformance or terminate your access to Services for violation of these Terms. You may close your account at any time, but this does not affect any obligations incurred prior to termination.</p>
+
+      <!-- 10 Termination -->
+      <div id="termination" class="hud-frame" style="scroll-margin-top:calc(var(--nav-height) + 20px);"><i></i>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;"><span class="hud-num">10</span><span class="hud-label">TERMINATION</span></div>
+        <div class="hud-desc">We may suspend or terminate your access to Services for violation of these Terms. You may close your account at any time, but this does not affect any obligations incurred prior to termination.</div>
       </div>
-      <div class="card" id="modifications">
-        <div class="card-header"><span class="card-num">11</span><span class="card-label">Modifications</span></div>
-        <p class="card-text">Sentinel Authority may amend these Terms upon thirty (30) days written notice. Amendments apply prospectively as of the stated effective date. Continued use of Services following the notice period constitutes acceptance of the amended Terms.</p>
+
+      <!-- 11 Modifications -->
+      <div id="modifications" class="hud-frame" style="scroll-margin-top:calc(var(--nav-height) + 20px);"><i></i>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;"><span class="hud-num">11</span><span class="hud-label">MODIFICATIONS</span></div>
+        <div class="hud-desc">We may modify these Terms at any time. We will notify you of material changes. Continued use of Services after changes constitutes acceptance of modified Terms.</div>
       </div>
-      <div class="card" id="governing">
-        <div class="card-header"><span class="card-num">12</span><span class="card-label">Governing Law</span></div>
-        <p class="card-text">These Terms are governed by the laws of the Province of Ontario, Canada. Any disputes shall be resolved in the courts of Ontario, Canada.</p>
-        <p class="card-text" style="font-size:11px;color:var(--text-3);">If any provision of these Terms is found unenforceable, the remaining provisions remain in effect.</p>
+
+      <!-- 12 Governing Law -->
+      <div id="governing" class="hud-frame" style="scroll-margin-top:calc(var(--nav-height) + 20px);"><i></i>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;"><span class="hud-num">12</span><span class="hud-label">GOVERNING LAW</span></div>
+        <div class="hud-desc">These Terms are governed by the laws of the Province of Ontario, Canada. Any disputes shall be resolved in the courts of Ontario, Canada.</div>
+        <div class="hud-desc" style="margin-top:12px;color:var(--text-tertiary);font-size:11px;">If any provision of these Terms is found unenforceable, the remaining provisions remain in effect.</div>
       </div>
-      <div class="card">
-        <div class="card-header"><span class="card-label">Warranty Disclaimer</span></div>
-        <p class="card-text">Services are provided "as is" and "as available" without warranty of any kind, express or implied, including warranties of merchantability, fitness for a particular purpose, or non-infringement.</p>
-      </div>
-      <div class="card">
-        <div class="card-header"><span class="card-label">Survival</span></div>
-        <p class="card-text">Sections addressing Liability, Indemnification, Confidentiality, Governing Law, and Warranty Disclaimer survive termination or expiration of these Terms.</p>
-      </div>
-      <div class="card">
-        <div class="card-header"><span class="card-label">Force Majeure</span></div>
-        <p class="card-text">Neither party shall be liable for delays or failures in performance resulting from causes beyond its reasonable control, including acts of God, governmental action, natural disaster, or failure of third-party infrastructure.</p>
-      </div>
-      <div class="card">
-        <div class="card-header"><span class="card-label">Assignment</span></div>
-        <p class="card-text">Applicant may not assign these Terms without prior written consent of Sentinel Authority. Sentinel Authority may assign these Terms in connection with a merger, acquisition, or reorganization, provided the successor assumes all obligations herein.</p>
-      </div>
-      <div class="card">
-        <div class="card-header"><span class="card-label">Export Control</span></div>
-        <p class="card-text">Applicant represents that its use of Services complies with all applicable export control laws and regulations, including those of Canada, the United States, and any jurisdiction in which Applicant operates.</p>
-      </div>
-      <div class="card">
-        <div class="card-header"><span class="card-label">Questions About These Terms</span></div>
-        <p class="card-text">Contact our team for clarification.</p>
-        <a href="mailto:conformance@sentinelauthority.org" class="card-link">conformance@sentinelauthority.org →</a>
+
+      <!-- Contact -->
+      <div class="hud-frame"><i></i>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+          <span class="hud-label">QUESTIONS ABOUT THESE TERMS</span>
+          <span class="hud-dot"></span>
+        </div>
+        <div class="hud-desc" style="margin-bottom:16px;">Contact our team for clarification.</div>
+        <a href="mailto:conformance@sentinelauthority.org" class="hud-link">CONFORMANCE@SENTINELAUTHORITY.ORG &#x2192;</a>
       </div>
     </div>
   </main>
+
   <footer>
     <div class="footer-inner">
-      <div>&copy; <span id="year"></span> Sentinel Authority</div>
-      <div style="margin-top:8px;font-size:9px;letter-spacing:1px;"><a href="privacy.html" style="color:inherit;text-decoration:none;">Privacy Notice</a> &middot; <a href="terms.html" style="color:inherit;text-decoration:none;">Terms of Use</a></div>
+      <div>&#169; <span id="year"></span> SENTINEL AUTHORITY</div>
     </div>
   </footer>
   <script>
-    document.getElementById('yr').textContent=new Date().getFullYear();
-    document.querySelectorAll('a[href^="#"]').forEach(function(a){a.addEventListener('click',function(e){var t=document.querySelector(this.getAttribute('href'));if(t){e.preventDefault();window.scrollTo({top:t.getBoundingClientRect().top+window.scrollY-76,behavior:'smooth'});}});});
+    document.getElementById('year').textContent=new Date().getFullYear();
+    document.querySelectorAll('a[href^="#"]').forEach(function(a){a.addEventListener('click',function(e){var t=document.querySelector(this.getAttribute('href'));if(t){e.preventDefault();var n=parseInt(getComputedStyle(document.documentElement).getPropertyValue('--nav-height'))||72;window.scrollTo({top:t.getBoundingClientRect().top+window.scrollY-n,behavior:'smooth'});}});});
   </script>
 </body>
 </html>
