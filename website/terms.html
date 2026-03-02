@@ -71,142 +71,219 @@
     <div class="inner">
       <span class="page-label">Legal</span>
       <h1 class="page-title">Terms of Use</h1>
-      <div class="effective"><span class="dot dot-green"></span>Effective: January 2026</div>
-      <p class="page-lead">These Terms govern your use of the Sentinel Authority website, attestation portal, and related services. By accessing or using our Services, you agree to these Terms.</p>
+      <div class="effective"><span class="dot dot-green"></span>Effective: March 1, 2026 &nbsp;|&nbsp; Version 2.0</div>
+      <p class="page-lead">These Terms govern your use of the Sentinel Authority website, conformance platform, APIs, and all related services. By accessing or using our Services, you agree to these Terms. If you do not agree, you may not use the Services.</p>
       <div class="card">
         <div class="card-header"><span class="card-label">Contents</span></div>
-        <div class="row"><span class="card-num">01</span><a href="#services" class="toc-link">Services Description</a></div>
-        <div class="row"><span class="card-num">02</span><a href="#account" class="toc-link">Account Registration</a></div>
-        <div class="row"><span class="card-num">03</span><a href="#applications" class="toc-link">Conformance Applications</a></div>
-        <div class="row"><span class="card-num">04</span><a href="#fees" class="toc-link">Fees and Payment</a></div>
-        <div class="row"><span class="card-num">05</span><a href="#license" class="toc-link">ENVELO Interlock License</a></div>
-        <div class="row"><span class="card-num">06</span><a href="#liability" class="toc-link">Limitation of Liability</a></div>
-        <div class="row"><span class="card-num">07</span><a href="#indemnification" class="toc-link">Indemnification</a></div>
-        <div class="row"><span class="card-num">08</span><a href="#confidentiality" class="toc-link">Confidentiality</a></div>
-        <div class="row"><span class="card-num">09</span><a href="#nonconformance" class="toc-link">Non-Conformance</a></div>
-        <div class="row"><span class="card-num">10</span><a href="#termination" class="toc-link">Termination</a></div>
-        <div class="row"><span class="card-num">11</span><a href="#modifications" class="toc-link">Modifications</a></div>
-        <div class="row"><span class="card-num">12</span><a href="#governing" class="toc-link">Governing Law</a></div>
+        <div class="row"><span class="card-num">01</span><a href="#definitions" class="toc-link">Definitions</a></div>
+        <div class="row"><span class="card-num">02</span><a href="#services" class="toc-link">Services Description</a></div>
+        <div class="row"><span class="card-num">03</span><a href="#account" class="toc-link">Account Registration</a></div>
+        <div class="row"><span class="card-num">04</span><a href="#applications" class="toc-link">Conformance Applications</a></div>
+        <div class="row"><span class="card-num">05</span><a href="#fees" class="toc-link">Fees and Payment</a></div>
+        <div class="row"><span class="card-num">06</span><a href="#license" class="toc-link">ENVELO Interlock License</a></div>
+        <div class="row"><span class="card-num">07</span><a href="#surveillance" class="toc-link">Continuous Surveillance &amp; Automated Enforcement</a></div>
+        <div class="row"><span class="card-num">08</span><a href="#api" class="toc-link">API Access</a></div>
+        <div class="row"><span class="card-num">09</span><a href="#demo" class="toc-link">Demo and Sandbox Environments</a></div>
+        <div class="row"><span class="card-num">10</span><a href="#scope" class="toc-link">Nature and Scope of Attestation</a></div>
+        <div class="row"><span class="card-num">11</span><a href="#liability" class="toc-link">Limitation of Liability</a></div>
+        <div class="row"><span class="card-num">12</span><a href="#indemnification" class="toc-link">Indemnification</a></div>
+        <div class="row"><span class="card-num">13</span><a href="#confidentiality" class="toc-link">Confidentiality</a></div>
+        <div class="row"><span class="card-num">14</span><a href="#nonconformance" class="toc-link">Non-Conformance and Revocation</a></div>
+        <div class="row"><span class="card-num">15</span><a href="#expiry" class="toc-link">Certificate Expiry and Renewal</a></div>
+        <div class="row"><span class="card-num">16</span><a href="#termination" class="toc-link">Termination</a></div>
+        <div class="row"><span class="card-num">17</span><a href="#modifications" class="toc-link">Modifications</a></div>
+        <div class="row"><span class="card-num">18</span><a href="#governing" class="toc-link">Governing Law and Dispute Resolution</a></div>
+        <div class="row"><span class="card-num">19</span><a href="#warranty" class="toc-link">Warranty Disclaimer</a></div>
+        <div class="row"><span class="card-num">20</span><a href="#general" class="toc-link">General Provisions</a></div>
       </div>
       <div class="card" id="definitions">
-        <div class="card-header"><span class="card-label">Definitions</span></div>
-        <div class="row"><span class="pip"></span><span><strong>Services</strong> means the ODDC conformance determination platform, ENVELO Interlock integration, CAT-72 assessment, and related attestation services provided by Sentinel Authority.</span></div>
-        <div class="row"><span class="pip"></span><span><strong>Attestation</strong> means a formal ODDC conformance determination issued by Sentinel Authority and recorded in the public registry.</span></div>
-        <div class="row"><span class="pip"></span><span><strong>Applicant</strong> means the legal entity submitting a system for conformance determination.</span></div>
-        <div class="row"><span class="pip"></span><span><strong>ENVELO Interlock</strong> means the non-bypassable runtime enforcement layer required for conformance determination.</span></div>
-        <div class="row"><span class="pip"></span><span><strong>Conformance Term</strong> means the period during which an Attestation remains active, subject to annual maintenance.</span></div>
+        <div class="card-header"><span class="card-num">01</span><span class="card-label">Definitions</span></div>
+        <div class="row"><span class="pip"></span><span><strong>Attestation</strong> means a formal ODDC conformance determination issued by Sentinel Authority and recorded in the public registry. The terms &ldquo;attestation&rdquo; and &ldquo;certificate&rdquo; are used interchangeably throughout the platform and these Terms.</span></div>
+        <div class="row"><span class="pip"></span><span><strong>Applicant</strong> means the legal entity submitting an autonomous system for conformance determination.</span></div>
+        <div class="row"><span class="pip"></span><span><strong>CAT-72</strong> means the 72-hour Conformance Assessment Test administered by Sentinel Authority as part of the ODDC determination process.</span></div>
+        <div class="row"><span class="pip"></span><span><strong>Conformance Term</strong> means the period during which an Attestation remains active, subject to continuous monitoring and annual renewal.</span></div>
+        <div class="row"><span class="pip"></span><span><strong>ENVELO Interlock</strong> means the non-bypassable runtime enforcement layer required for conformance determination, formerly referred to as &ldquo;ENVELO Agent.&rdquo;</span></div>
+        <div class="row"><span class="pip"></span><span><strong>ODDC</strong> means Operational Design Domain Conformance, the standard against which systems are assessed.</span></div>
+        <div class="row"><span class="pip"></span><span><strong>Services</strong> means the ODDC conformance determination platform, ENVELO Interlock integration, CAT-72 assessment, continuous surveillance monitoring, public verification registry, APIs, and all related attestation services provided by Sentinel Authority.</span></div>
+        <div class="row"><span class="pip"></span><span><strong>Surveillance</strong> means the automated continuous monitoring of attested systems through the ENVELO Interlock, including heartbeat monitoring, telemetry analysis, and violation-rate tracking.</span></div>
       </div>
       <div class="card" id="services">
-        <div class="card-header"><span class="card-num">01</span><span class="card-label">Services Description</span></div>
+        <div class="card-header"><span class="card-num">02</span><span class="card-label">Services Description</span></div>
         <p class="card-text">Sentinel Authority provides ODD Conformance Determination (ODDC) services for autonomous systems:</p>
-        <div class="row"><span class="pip"></span><span>Application review and scope assessment</span></div>
-        <div class="row"><span class="pip"></span><span>CAT-72 conformance testing</span></div>
-        <div class="row"><span class="pip"></span><span>ODDC attestation issuance</span></div>
-        <div class="row"><span class="pip"></span><span>ENVELO Interlock software for runtime enforcement</span></div>
-        <div class="row"><span class="pip"></span><span>Certificate verification services</span></div>
+        <div class="row"><span class="pip"></span><span>Application review, scope assessment, and pre-review evaluation</span></div>
+        <div class="row"><span class="pip"></span><span>CAT-72 conformance testing with tamper-evident audit trails</span></div>
+        <div class="row"><span class="pip"></span><span>ODDC attestation issuance and public registry listing</span></div>
+        <div class="row"><span class="pip"></span><span>ENVELO Interlock software for runtime boundary enforcement</span></div>
+        <div class="row"><span class="pip"></span><span>Continuous post-attestation surveillance monitoring</span></div>
+        <div class="row"><span class="pip"></span><span>Public certificate verification services</span></div>
+        <div class="row"><span class="pip"></span><span>API access for programmatic integration</span></div>
       </div>
       <div class="card" id="account">
-        <div class="card-header"><span class="card-num">02</span><span class="card-label">Account Registration</span></div>
-        <p class="card-text">To access certain Services, you must create an account. You agree to:</p>
-        <div class="row"><span class="pip"></span><span>Provide accurate and complete information</span></div>
-        <div class="row"><span class="pip"></span><span>Maintain the security of your account credentials</span></div>
-        <div class="row"><span class="pip"></span><span>Promptly notify us of any unauthorized access</span></div>
-        <div class="row"><span class="pip"></span><span>Accept responsibility for all activities under your account</span></div>
+        <div class="card-header"><span class="card-num">03</span><span class="card-label">Account Registration</span></div>
+        <p class="card-text">To access certain Services, you must create an account. By registering, you agree to:</p>
+        <div class="row"><span class="pip"></span><span>Provide accurate and complete information during registration</span></div>
+        <div class="row"><span class="pip"></span><span>Maintain the confidentiality and security of your account credentials, including any two-factor authentication mechanisms</span></div>
+        <div class="row"><span class="pip"></span><span>Promptly notify Sentinel Authority of any unauthorized access to your account</span></div>
+        <div class="row"><span class="pip"></span><span>Accept responsibility for all activities conducted under your account, including actions taken by authorized users within your organization</span></div>
       </div>
       <div class="card" id="applications">
-        <div class="card-header"><span class="card-num">03</span><span class="card-label">Conformance Applications</span></div>
-        <p class="card-text">By submitting an assessment application, you represent that:</p>
-        <div class="row"><span class="pip"></span><span>All information provided is accurate and complete</span></div>
-        <div class="row"><span class="pip"></span><span>The submitting party has authority to act on behalf of the applicant organization</span></div>
-        <div class="row"><span class="pip"></span><span>You will cooperate with the assessment process</span></div>
-        <div class="row"><span class="pip"></span><span>Incomplete or inaccurate information may result in denial</span></div>
+        <div class="card-header"><span class="card-num">04</span><span class="card-label">Conformance Applications</span></div>
+        <p class="card-text">By submitting a conformance application, you represent and warrant that:</p>
+        <div class="row"><span class="pip"></span><span>All information provided is accurate, complete, and not misleading</span></div>
+        <div class="row"><span class="pip"></span><span>The submitting party has the legal authority to act on behalf of the Applicant organization</span></div>
+        <div class="row"><span class="pip"></span><span>You will cooperate fully with the assessment process, including providing access to technical documentation, system specifications, and test environments</span></div>
+        <div class="row"><span class="pip"></span><span>Incomplete, inaccurate, or materially misleading information may result in denial, suspension, or revocation of conformance</span></div>
+        <p class="card-text" style="margin-top:12px;">Applications are reviewed in the order received. Sentinel Authority reserves the right to prioritize applications at its discretion.</p>
       </div>
       <div class="card" id="fees">
-        <div class="card-header"><span class="card-num">04</span><span class="card-label">Fees and Payment</span></div>
+        <div class="card-header"><span class="card-num">05</span><span class="card-label">Fees and Payment</span></div>
         <p class="card-text">Conformance fees are specified during scope assessment. Payment terms:</p>
-        <div class="row"><span class="pip"></span><span>Assessment fee due in full at application</span></div>
-        <div class="row"><span class="pip"></span><span>Fees are non-refundable — covers review, test administration, and certificate issuance</span></div>
-        <div class="row"><span class="pip"></span><span>Re-assessment fees apply for subsequent attempts</span></div>
+        <div class="row"><span class="pip"></span><span>Assessment fees are due in full upon application submission</span></div>
+        <div class="row"><span class="pip"></span><span>Fees are non-refundable &mdash; covers application review, test administration, and certificate issuance</span></div>
+        <div class="row"><span class="pip"></span><span>Re-assessment fees apply for subsequent attempts following a failed CAT-72 assessment</span></div>
+        <div class="row"><span class="pip"></span><span>Annual renewal fees apply for maintenance of active attestations</span></div>
+        <div class="row"><span class="pip"></span><span>API usage beyond published rate limits may be subject to additional fees</span></div>
       </div>
       <div class="card card-green" id="license">
-        <div class="card-header"><span class="card-num">05</span><span class="card-label">ENVELO Interlock License</span></div>
-        <p class="card-text">Subject to these Terms and valid attestation, we grant you a limited, non-exclusive, non-transferable license to use the ENVELO Interlock software solely for:</p>
+        <div class="card-header"><span class="card-num">06</span><span class="card-label">ENVELO Interlock License</span></div>
+        <p class="card-text">Subject to these Terms and a valid attestation, we grant you a limited, non-exclusive, non-transferable, revocable license to use the ENVELO Interlock software solely for:</p>
         <div class="row"><span class="pip pip-green"></span><span>Systems covered by your ODDC attestation</span></div>
-        <div class="row"><span class="pip pip-green"></span><span>The duration of your conformance term</span></div>
-        <p class="card-text" style="margin-top:12px;">You may not reverse engineer, modify, or distribute the ENVELO Interlock software.</p>
+        <div class="row"><span class="pip pip-green"></span><span>The duration of your Conformance Term</span></div>
+        <div class="row"><span class="pip pip-green"></span><span>Operation within the boundaries of the attested Operational Design Domain</span></div>
+        <p class="card-text" style="margin-top:12px;">You may not reverse engineer, decompile, disassemble, modify, create derivative works from, or distribute the ENVELO Interlock software. Any attempt to bypass, disable, or tamper with the ENVELO Interlock constitutes a material breach of these Terms and will result in immediate revocation of your attestation.</p>
       </div>
-      <div class="card card-amber">
-        <div class="card-header"><span class="card-label">Nature and Scope of Attestation</span><span class="dot dot-amber" style="margin-left:auto;"></span></div>
-        <p class="card-text">ODDC attestation does not constitute: regulatory approval, safety attestation (e.g., IEC 61508, ISO 26262), product attestation, guarantee of system performance, insurance, or warranty. Operators remain solely responsible for system behavior, regulatory compliance, and all consequences of system operation.</p>
+      <!-- 07 Continuous Surveillance & Automated Enforcement -->
+      <div class="card card-red" id="surveillance">
+        <div class="card-header"><span class="card-num">07</span><span class="card-label">Continuous Surveillance &amp; Automated Enforcement</span><span class="dot dot-red" style="margin-left:auto;"></span></div>
+        <p class="card-text">Attested systems are subject to continuous automated surveillance throughout the Conformance Term. By obtaining an attestation, you acknowledge and consent to the following monitoring and enforcement mechanisms.</p>
+        <p class="card-text" style="margin-top:14px;"><strong style="font-family:var(--mono);font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--text-3);">7.1 &mdash; Heartbeat Monitoring</strong></p>
+        <p class="card-text">The ENVELO Interlock must maintain an active connection to the Sentinel Authority platform. Heartbeat signals are transmitted at regular intervals to confirm operational status. Failure to maintain connectivity triggers the escalation thresholds described in Section 7.3.</p>
+        <p class="card-text" style="margin-top:14px;"><strong style="font-family:var(--mono);font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--text-3);">7.2 &mdash; Telemetry and Violation Tracking</strong></p>
+        <p class="card-text">All boundary evaluations performed by the ENVELO Interlock are recorded as telemetry. Each action is classified as PASS (within operational envelope) or BLOCK (boundary violation prevented). Violation rates are calculated and monitored continuously.</p>
+        <p class="card-text" style="margin-top:14px;"><strong style="font-family:var(--mono);font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--text-3);">7.3 &mdash; Automated Enforcement Thresholds</strong></p>
+        <p class="card-text">The following automated enforcement actions are applied without prior notice:</p>
+        <div class="row"><span class="pip pip-red"></span><span><strong>Warning:</strong> ENVELO Interlock offline for more than 5 minutes triggers a warning alert</span></div>
+        <div class="row"><span class="pip pip-red"></span><span><strong>Automatic Suspension:</strong> Offline for more than 24 consecutive hours results in automatic suspension. The public registry status displays &ldquo;SUSPENDED&rdquo; and the attestation is not valid during suspension</span></div>
+        <div class="row"><span class="pip pip-red"></span><span><strong>Automatic Revocation:</strong> Offline for more than 72 consecutive hours results in permanent revocation. Revocation is irreversible &mdash; a new application and full CAT-72 assessment are required</span></div>
+        <div class="row"><span class="pip pip-red"></span><span><strong>Violation-Rate Suspension:</strong> Violation rate exceeding 20% (after a minimum of 100 recorded actions) results in automatic suspension</span></div>
+        <p class="card-text" style="margin-top:14px;"><strong style="font-family:var(--mono);font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--text-3);">7.4 &mdash; Grace Period</strong></p>
+        <p class="card-text">A two-hour grace period applies following platform restarts to prevent false enforcement actions caused by infrastructure maintenance.</p>
+        <p class="card-text" style="margin-top:14px;"><strong style="font-family:var(--mono);font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--text-3);">7.5 &mdash; Reinstatement</strong></p>
+        <p class="card-text">Suspended attestations may be reinstated upon restoration of ENVELO Interlock operation and satisfactory review by Sentinel Authority. Reinstatement is not guaranteed. Revoked attestations cannot be reinstated.</p>
+        <p class="card-text" style="margin-top:14px;"><strong style="font-family:var(--mono);font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--text-3);">7.6 &mdash; Notifications</strong></p>
+        <p class="card-text">Sentinel Authority will make reasonable efforts to notify you by email of enforcement actions. However, enforcement actions take effect immediately and are not contingent upon successful delivery of notification.</p>
+      </div>
+      <!-- 08 API Access -->
+      <div class="card" id="api">
+        <div class="card-header"><span class="card-num">08</span><span class="card-label">API Access</span></div>
+        <p class="card-text">Sentinel Authority may provide programmatic access to certain Services through APIs. API access is subject to:</p>
+        <div class="row"><span class="pip"></span><span>Authentication via API keys issued through the platform, scoped to your attestation and assigned permissions (full, read-only, or ENVELO-only)</span></div>
+        <div class="row"><span class="pip"></span><span>Rate limits of 200 requests per minute per IP address, applied globally to all API endpoints</span></div>
+        <div class="row"><span class="pip"></span><span>Prohibition on sharing, publishing, or transferring API keys to unauthorized parties</span></div>
+        <div class="row"><span class="pip"></span><span>Immediate revocation of API keys upon revocation or expiration of the associated attestation</span></div>
+        <p class="card-text" style="margin-top:12px;">Sentinel Authority reserves the right to throttle, suspend, or revoke API access at any time for abuse, excessive usage, or violation of these Terms.</p>
+      </div>
+      <!-- 09 Demo and Sandbox -->
+      <div class="card" id="demo">
+        <div class="card-header"><span class="card-num">09</span><span class="card-label">Demo and Sandbox Environments</span></div>
+        <p class="card-text">Sentinel Authority may provide demonstration or sandbox environments for evaluation purposes. Demo environments:</p>
+        <div class="row"><span class="pip"></span><span>Generate simulated telemetry and do not reflect actual system performance</span></div>
+        <div class="row"><span class="pip"></span><span>Do not constitute valid attestations and carry no conformance status</span></div>
+        <div class="row"><span class="pip"></span><span>May be terminated at any time without notice</span></div>
+        <div class="row"><span class="pip"></span><span>Are subject to all other provisions of these Terms except those specifically relating to conformance obligations</span></div>
+      </div>
+      <!-- 10 Nature and Scope -->
+      <div class="card card-amber" id="scope">
+        <div class="card-header"><span class="card-num">10</span><span class="card-label">Nature and Scope of Attestation</span><span class="dot dot-amber" style="margin-left:auto;"></span></div>
+        <p class="card-text">ODDC attestation is a determination of operational design domain conformance based on the CAT-72 assessment and continuous ENVELO Interlock monitoring. It does not constitute:</p>
+        <div class="row"><span class="pip pip-amber"></span><span>Regulatory approval by any government authority</span></div>
+        <div class="row"><span class="pip pip-amber"></span><span>Safety certification under any standard (including IEC 61508, ISO 26262, DO-178C, or similar)</span></div>
+        <div class="row"><span class="pip pip-amber"></span><span>Product certification, type approval, or homologation</span></div>
+        <div class="row"><span class="pip pip-amber"></span><span>A guarantee, warranty, or assurance of system performance, safety, or reliability</span></div>
+        <div class="row"><span class="pip pip-amber"></span><span>Insurance coverage of any kind</span></div>
+        <p class="card-text" style="margin-top:12px;">Operators remain solely and exclusively responsible for the behavior of their systems, compliance with all applicable laws and regulations, and all consequences arising from system operation, whether attested or not.</p>
       </div>
       <div class="card" id="liability">
-        <div class="card-header"><span class="card-num">06</span><span class="card-label">Limitation of Liability</span></div>
-        <p class="card-text">To the maximum extent permitted by law:</p>
-        <div class="row"><span class="pip"></span><span>Total liability shall not exceed fees paid for the specific attestation at issue</span></div>
-        <div class="row"><span class="pip"></span><span>We are not liable for indirect, incidental, consequential, or punitive damages</span></div>
-        <div class="row"><span class="pip"></span><span>We are not liable for damages arising from system operation, whether attested or not</span></div>
+        <div class="card-header"><span class="card-num">11</span><span class="card-label">Limitation of Liability</span></div>
+        <p class="card-text">To the maximum extent permitted by applicable law:</p>
+        <div class="row"><span class="pip"></span><span>Total aggregate liability shall not exceed the fees actually paid by you for the specific attestation at issue during the twelve months preceding the claim</span></div>
+        <div class="row"><span class="pip"></span><span>We are not liable for any indirect, incidental, consequential, special, exemplary, or punitive damages, including loss of profits, data, business opportunity, or goodwill</span></div>
+        <div class="row"><span class="pip"></span><span>We are not liable for damages arising from the operation of any system, whether attested or not, including damages caused by system malfunction, boundary violations, or failures of the ENVELO Interlock</span></div>
+        <div class="row"><span class="pip"></span><span>We are not liable for damages arising from automated enforcement actions taken in accordance with Section 7</span></div>
       </div>
       <div class="card" id="indemnification">
-        <div class="card-header"><span class="card-num">07</span><span class="card-label">Indemnification</span></div>
-        <p class="card-text">You agree to indemnify and hold harmless Sentinel Authority from any claims, damages, or expenses arising from:</p>
+        <div class="card-header"><span class="card-num">12</span><span class="card-label">Indemnification</span></div>
+        <p class="card-text">You agree to indemnify, defend, and hold harmless Sentinel Authority, its officers, directors, employees, and agents from any claims, damages, losses, liabilities, costs, and expenses (including reasonable legal fees) arising from:</p>
         <div class="row"><span class="pip"></span><span>Your use of the Services</span></div>
-        <div class="row"><span class="pip"></span><span>Operation of your attested systems</span></div>
-        <div class="row"><span class="pip"></span><span>Violation of these Terms</span></div>
-        <div class="row"><span class="pip"></span><span>Infringement of third-party rights</span></div>
+        <div class="row"><span class="pip"></span><span>The operation of any system for which you hold or have held an attestation</span></div>
+        <div class="row"><span class="pip"></span><span>Any violation of these Terms</span></div>
+        <div class="row"><span class="pip"></span><span>Any infringement or misappropriation of third-party intellectual property rights</span></div>
+        <div class="row"><span class="pip"></span><span>Any claim by a third party arising from automated enforcement actions applied to your attestation</span></div>
       </div>
       <div class="card" id="confidentiality">
-        <div class="card-header"><span class="card-num">08</span><span class="card-label">Confidentiality</span></div>
-        <p class="card-text">We will treat your application materials and technical documentation as confidential, except:</p>
-        <div class="row"><span class="pip"></span><span>Certificate information (number, organization, system name, status) is publicly verifiable</span></div>
-        <div class="row"><span class="pip"></span><span>Aggregate, anonymized data may be used for research or reporting</span></div>
-        <div class="row"><span class="pip"></span><span>Disclosure may be required by law or valid legal process</span></div>
+        <div class="card-header"><span class="card-num">13</span><span class="card-label">Confidentiality</span></div>
+        <p class="card-text">We will treat your application materials, technical documentation, and system specifications as confidential, subject to the following exceptions:</p>
+        <div class="row"><span class="pip"></span><span>Certificate information &mdash; including certificate number, organization name, system name, system type, conformance status, and issuance and expiration dates &mdash; is publicly available through the verification registry</span></div>
+        <div class="row"><span class="pip"></span><span>Aggregate, anonymized data may be used for research, reporting, or improvement of the Services</span></div>
+        <div class="row"><span class="pip"></span><span>Disclosure may be required by applicable law, regulation, or valid legal process</span></div>
+        <div class="row"><span class="pip"></span><span>Surveillance data, including enforcement actions and violation records, may be disclosed to regulatory authorities upon lawful request</span></div>
       </div>
       <div class="card card-red" id="nonconformance">
-        <div class="card-header"><span class="card-num">09</span><span class="card-label">Non-Conformance</span><span class="dot dot-red" style="margin-left:auto;"></span></div>
-        <p class="card-text">Non-conformance determination is governed by the Conformance Agreement. Grounds for non-conformance include:</p>
-        <div class="row"><span class="pip pip-red"></span><span>Information provided was materially false or misleading</span></div>
-        <div class="row"><span class="pip pip-red"></span><span>System modifications invalidate conformance</span></div>
-        <div class="row"><span class="pip pip-red"></span><span>ENVELO Interlock is disabled, bypassed, or tampered with</span></div>
-        <div class="row"><span class="pip pip-red"></span><span>Payment obligations are not met</span></div>
-        <div class="row"><span class="pip pip-red"></span><span>Terms of Use are violated</span></div>
+        <div class="card-header"><span class="card-num">14</span><span class="card-label">Non-Conformance and Revocation</span><span class="dot dot-red" style="margin-left:auto;"></span></div>
+        <p class="card-text">In addition to the automated enforcement actions described in Section 7, Sentinel Authority may determine non-conformance, suspend, or revoke an attestation for any of the following grounds:</p>
+        <div class="row"><span class="pip pip-red"></span><span>Information provided in the application or during assessment was materially false, misleading, or incomplete</span></div>
+        <div class="row"><span class="pip pip-red"></span><span>System modifications made after attestation materially alter conformance characteristics without prior notification</span></div>
+        <div class="row"><span class="pip pip-red"></span><span>The ENVELO Interlock is disabled, bypassed, tampered with, or modified in any unauthorized manner</span></div>
+        <div class="row"><span class="pip pip-red"></span><span>Payment obligations under these Terms are not met</span></div>
+        <div class="row"><span class="pip pip-red"></span><span>Any other material violation of these Terms or the Conformance Agreement</span></div>
+        <p class="card-text" style="margin-top:12px;">Non-conformance determinations are further governed by the Conformance Agreement executed between the Applicant and Sentinel Authority at the time of application.</p>
+      </div>
+      <!-- 15 Certificate Expiry and Renewal -->
+      <div class="card" id="expiry">
+        <div class="card-header"><span class="card-num">15</span><span class="card-label">Certificate Expiry and Renewal</span></div>
+        <p class="card-text">Attestations are issued for a Conformance Term of one year from the date of issuance. Expiry procedures:</p>
+        <div class="row"><span class="pip"></span><span>Sentinel Authority will send expiry warnings at 30 days and 7 days prior to the expiration date</span></div>
+        <div class="row"><span class="pip"></span><span>Expired attestations are automatically marked as &ldquo;EXPIRED&rdquo; in the public registry</span></div>
+        <div class="row"><span class="pip"></span><span>Renewal requires contact with Sentinel Authority to schedule a new CAT-72 assessment</span></div>
+        <div class="row"><span class="pip"></span><span>There is no automatic renewal of attestations</span></div>
       </div>
       <div class="card" id="termination">
-        <div class="card-header"><span class="card-num">10</span><span class="card-label">Termination</span></div>
-        <p class="card-text">We may determine non-conformance or terminate your access to Services for violation of these Terms. You may close your account at any time, but this does not affect any obligations incurred prior to termination.</p>
+        <div class="card-header"><span class="card-num">16</span><span class="card-label">Termination</span></div>
+        <p class="card-text">Sentinel Authority may suspend or terminate your access to the Services, in whole or in part, for violation of these Terms, non-payment of fees, or any conduct that Sentinel Authority reasonably determines to be harmful to the integrity of the Services or other users.</p>
+        <p class="card-text">You may close your account at any time by contacting Sentinel Authority. Closure of your account does not affect any obligations, liabilities, or attestation enforcement actions incurred prior to termination.</p>
       </div>
       <div class="card" id="modifications">
-        <div class="card-header"><span class="card-num">11</span><span class="card-label">Modifications</span></div>
-        <p class="card-text">Sentinel Authority may amend these Terms upon thirty (30) days written notice. Amendments apply prospectively as of the stated effective date. Continued use of Services following the notice period constitutes acceptance of the amended Terms.</p>
+        <div class="card-header"><span class="card-num">17</span><span class="card-label">Modifications</span></div>
+        <p class="card-text">Sentinel Authority may amend these Terms upon thirty (30) days&rsquo; prior written notice to the email address associated with your account. Amendments apply prospectively as of the stated effective date. Continued use of the Services following the notice period constitutes acceptance of the amended Terms. If you do not agree with the amendments, you must discontinue use of the Services prior to the effective date.</p>
       </div>
       <div class="card" id="governing">
-        <div class="card-header"><span class="card-num">12</span><span class="card-label">Governing Law</span></div>
-        <p class="card-text">These Terms are governed by the laws of the Province of Ontario, Canada. Any disputes shall be resolved in the courts of Ontario, Canada.</p>
-        <p class="card-text" style="font-size:11px;color:var(--text-3);">If any provision of these Terms is found unenforceable, the remaining provisions remain in effect.</p>
+        <div class="card-header"><span class="card-num">18</span><span class="card-label">Governing Law and Dispute Resolution</span></div>
+        <p class="card-text">These Terms are governed by and construed in accordance with the laws of the Province of Ontario, Canada, without regard to conflict-of-law principles. Any dispute arising out of or in connection with these Terms shall be submitted to the exclusive jurisdiction of the courts of Ontario, Canada.</p>
+        <p class="card-text" style="font-size:11px;color:var(--text-3);">If any provision of these Terms is found by a court of competent jurisdiction to be invalid or unenforceable, the remaining provisions shall remain in full force and effect.</p>
       </div>
-      <div class="card">
-        <div class="card-header"><span class="card-label">Warranty Disclaimer</span></div>
-        <p class="card-text">Services are provided "as is" and "as available" without warranty of any kind, express or implied, including warranties of merchantability, fitness for a particular purpose, or non-infringement.</p>
+      <div class="card" id="warranty">
+        <div class="card-header"><span class="card-num">19</span><span class="card-label">Warranty Disclaimer</span></div>
+        <p class="card-text">The Services are provided &ldquo;as is&rdquo; and &ldquo;as available&rdquo; without warranty of any kind, whether express, implied, or statutory, including but not limited to warranties of merchantability, fitness for a particular purpose, title, and non-infringement. Sentinel Authority does not warrant that the Services will be uninterrupted, error-free, or secure, or that any defects will be corrected.</p>
       </div>
-      <div class="card">
-        <div class="card-header"><span class="card-label">Survival</span></div>
-        <p class="card-text">Sections addressing Liability, Indemnification, Confidentiality, Governing Law, and Warranty Disclaimer survive termination or expiration of these Terms.</p>
-      </div>
-      <div class="card">
-        <div class="card-header"><span class="card-label">Force Majeure</span></div>
-        <p class="card-text">Neither party shall be liable for delays or failures in performance resulting from causes beyond its reasonable control, including acts of God, governmental action, natural disaster, or failure of third-party infrastructure.</p>
-      </div>
-      <div class="card">
-        <div class="card-header"><span class="card-label">Assignment</span></div>
-        <p class="card-text">Applicant may not assign these Terms without prior written consent of Sentinel Authority. Sentinel Authority may assign these Terms in connection with a merger, acquisition, or reorganization, provided the successor assumes all obligations herein.</p>
-      </div>
-      <div class="card">
-        <div class="card-header"><span class="card-label">Export Control</span></div>
-        <p class="card-text">Applicant represents that its use of Services complies with all applicable export control laws and regulations, including those of Canada, the United States, and any jurisdiction in which Applicant operates.</p>
+      <div class="card" id="general">
+        <div class="card-header"><span class="card-num">20</span><span class="card-label">General Provisions</span></div>
+        <p class="card-text" style="margin-top:4px;"><strong style="font-family:var(--mono);font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--text-3);">20.1 &mdash; Survival</strong></p>
+        <p class="card-text">Sections addressing Definitions, Limitation of Liability, Indemnification, Confidentiality, Governing Law, Warranty Disclaimer, and General Provisions survive termination or expiration of these Terms.</p>
+        <p class="card-text" style="margin-top:14px;"><strong style="font-family:var(--mono);font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--text-3);">20.2 &mdash; Force Majeure</strong></p>
+        <p class="card-text">Neither party shall be liable for delays or failures in performance resulting from causes beyond its reasonable control, including but not limited to acts of God, governmental action, natural disaster, pandemic, war, terrorism, or failure of third-party infrastructure.</p>
+        <p class="card-text" style="margin-top:14px;"><strong style="font-family:var(--mono);font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--text-3);">20.3 &mdash; Assignment</strong></p>
+        <p class="card-text">You may not assign or transfer these Terms or any rights hereunder without the prior written consent of Sentinel Authority. Sentinel Authority may assign these Terms in connection with a merger, acquisition, or reorganization, provided the successor assumes all obligations herein.</p>
+        <p class="card-text" style="margin-top:14px;"><strong style="font-family:var(--mono);font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--text-3);">20.4 &mdash; Export Control</strong></p>
+        <p class="card-text">You represent and warrant that your use of the Services complies with all applicable export control laws and regulations, including those of Canada, the United States, and any jurisdiction in which you operate.</p>
+        <p class="card-text" style="margin-top:14px;"><strong style="font-family:var(--mono);font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--text-3);">20.5 &mdash; Entire Agreement</strong></p>
+        <p class="card-text">These Terms, together with the Conformance Agreement and any applicable order forms, constitute the entire agreement between you and Sentinel Authority with respect to the Services and supersede all prior or contemporaneous communications, whether oral or written.</p>
+        <p class="card-text" style="margin-top:14px;"><strong style="font-family:var(--mono);font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--text-3);">20.6 &mdash; Waiver</strong></p>
+        <p class="card-text">The failure of Sentinel Authority to enforce any provision of these Terms shall not constitute a waiver of that provision or the right to enforce it at a later time.</p>
       </div>
       <div class="card">
         <div class="card-header"><span class="card-label">Questions About These Terms</span></div>
-        <p class="card-text">Contact our team for clarification.</p>
-        <a href="mailto:conformance@sentinelauthority.org" class="card-link">conformance@sentinelauthority.org →</a>
+        <p class="card-text">Contact our conformance team for clarification.</p>
+        <a href="mailto:conformance@sentinelauthority.org" class="card-link">conformance@sentinelauthority.org &rarr;</a>
       </div>
     </div>
   </main>
