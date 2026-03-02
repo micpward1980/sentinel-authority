@@ -317,7 +317,7 @@ async def list_monitored_systems(
             EnveloSession.block_count,
             EnveloSession.last_heartbeat_at,
             EnveloSession.last_telemetry_at,
-            EnveloSession.created_at.label("session_created"),
+            EnveloSession.started_at.label("session_created"),
             EnveloSession.certificate_id,
             EnveloSession.is_demo,
             Certificate.certificate_number,
