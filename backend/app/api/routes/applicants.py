@@ -1203,3 +1203,39 @@ async def send_correspondence(
         "sent_at": record.sent_at.isoformat() if record.sent_at else None,
     }
 
+
+
+@router.post("/{application_id}/acknowledge-boundaries", summary="Customer acknowledges discovered boundaries")
+async def acknowledge_boundaries(
+    application_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: dict = Depends(get_current_user),
+):
+    """Customer confirms the auto-discovered boundaries are correct."""
+    from datetime import datetime, timezone
+    result = await db.execute(select(Application).where(Application.id == application_id))
+    app = result.scalar_one_or_none()
+    if not app:
+        raise HTTPException(status_code=404, detail="Application not found")
+
+    if app.state not in ("observe", "bounded"):
+        raise HTTPException(status_code=400, detail="Boundaries can only be acknowledged during observe or bounded states")
+
+    if not app.envelope_definition:
+        raise HTTPException(status_code=400, detail="No boundaries discovered yet")
+
+    app.boundaries_acknowledged = True
+    app.boundaries_acknowledged_at = datetime.now(timezone.utc)
+    await db.commit()
+
+    # Log it
+    try:
+        from app.services.audit_service import write_audit_log
+        await write_audit_log(db, current_user.get("sub") or current_user.get("id"), "boundaries_acknowledged", {
+            "application_id": application_id,
+            "system_name": app.system_name,
+        })
+    except:
+        pass
+
+    return {"status": "acknowledged", "acknowledged_at": app.boundaries_acknowledged_at.isoformat()}

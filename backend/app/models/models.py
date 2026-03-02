@@ -112,6 +112,8 @@ class Application(Base):
     preferred_test_date = Column(DateTime)
     facility_location = Column(String(255))
     notes = Column(Text)
+    boundaries_acknowledged = Column(Boolean, default=False)
+    boundaries_acknowledged_at = Column(DateTime(timezone=True))
     review_checklist = Column(JSON, nullable=True)
     agreement_accepted_at = Column(DateTime, nullable=True)
     agreement_accepted_by = Column(String(255), nullable=True)
