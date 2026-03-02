@@ -432,14 +432,25 @@ def _already_warned(cert, threshold_days):
 
 
 async def _get_certificate_owner(db, cert):
-    """Find the user who owns this certificate"""
-    if not cert.user_id:
-        return None
+    """Find the user who owns this certificate via the linked application"""
     try:
-        result = await db.execute(
-            select(User).where(User.id == cert.user_id)
-        )
-        return result.scalar_one_or_none()
+        if cert.application_id:
+            from app.models.models import Application
+            app_result = await db.execute(
+                select(Application).where(Application.id == cert.application_id)
+            )
+            app = app_result.scalar_one_or_none()
+            if app and app.applicant_id:
+                result = await db.execute(
+                    select(User).where(User.id == app.applicant_id)
+                )
+                return result.scalar_one_or_none()
+        if cert.issued_by:
+            result = await db.execute(
+                select(User).where(User.id == cert.issued_by)
+            )
+            return result.scalar_one_or_none()
+        return None
     except Exception:
         return None
 

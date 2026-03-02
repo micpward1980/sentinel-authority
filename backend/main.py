@@ -9,7 +9,7 @@ Unified certification platform for autonomous systems operating under ENVELO
 import logging
 import hashlib
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
@@ -392,7 +392,6 @@ async def lifespan(app: FastAPI):
                 if existing.scalar_one_or_none():
                     continue
                 # Create a completed PASS test
-                from datetime import datetime, timedelta
                 ended = app.submitted_at or datetime.utcnow() - timedelta(days=30)
                 started = ended - timedelta(hours=72)
                 test = CAT72Test(
