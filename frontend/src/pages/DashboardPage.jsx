@@ -651,9 +651,9 @@ function Dashboard() {
       {/* ── Compliance Alerts ────────────────────────────────────────────── */}
       {complianceAlerts.length > 0 && (
         <div style={{marginBottom: '24px'}}>
-          {sectionHeader(`Compliance Alerts (${complianceAlerts.length})`, styles.accentRed, '/surveillance', 'Surveillance →')}
+          {sectionHeader(`Compliance Alerts (${complianceAlerts.length})`, styles.accentAmber, '/surveillance', 'Surveillance →')}
           <div style={{display: 'flex', flexDirection: 'column', gap: '2px'}}>
-            {complianceAlerts.slice(0, 4).map((alert, i) => (
+            {complianceAlerts.slice(0, 8).map((alert, i) => (
               <div key={alert.id || i} style={{padding: '12px 20px', background: styles.cardSurface, border: '1px solid ' + (alert.severity === 'critical' ? styles.accentRed + '40' : styles.accentAmber + '30'), display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px'}}>
                 <div style={{display: 'flex', alignItems: 'center', gap: '12px'}}>
                   <AlertTriangle size={14} style={{color: alert.severity === 'critical' ? styles.accentRed : styles.accentAmber}} />
@@ -672,7 +672,12 @@ function Dashboard() {
         <div style={{marginBottom: '24px'}}>
           {sectionHeader('Recent Activity', styles.textTertiary, '/activity', 'Full Log →')}
           <div style={{background: styles.cardSurface, border: '1px solid ' + styles.borderGlass, padding: '4px 20px'}}>
-            {auditLogs.slice(0, 10).map((log, i) => {
+            {auditLogs.filter((log, i, arr) => {
+              // Deduplicate consecutive same-action from same user
+              if (i === 0) return true;
+              const prev = arr[i - 1];
+              return !(log.action === prev.action && (log.user_email || '') === (prev.user_email || ''));
+            }).slice(0, 10).map((log, i) => {
               const actionLabels = {
                 user_login: 'Signed in', user_registered: 'Account created',
                 application_submitted: 'Application submitted', application_state_changed: 'Status changed',
