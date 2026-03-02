@@ -644,11 +644,14 @@ function NotificationsPanel({ toast }) {
 // ── PANEL: Security Audit Log ─────────────────────────────────────────────────
 function AuditLogPanel({ toast }) {
   const [events, setEvents]   = useState([]);
+  const [auditOffset, setAuditOffset] = useState(0);
+  const [auditTotal, setAuditTotal] = useState(0);
+  const AUDIT_LIMIT = 25;
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api.get('/api/audit/my-logs?limit=50&offset=0').then(r => setEvents(r.data.logs || r.data.events || r.data || [])).catch(() => setEvents([])).finally(() => setLoading(false));
-  }, []);
+    api.get(`/api/audit/my-logs?limit=${AUDIT_LIMIT}&offset=${auditOffset}`).then(r => { setEvents(r.data.logs || r.data.events || r.data || []); setAuditTotal(r.data.total || 0); }).catch(() => setEvents([])).finally(() => setLoading(false));
+  }, [auditOffset]);
 
   const EVENT_COLOR = { login: styles.accentGreen, logout: styles.textTertiary, password_change: styles.accentAmber, key_created: styles.purpleBright, key_revoked: styles.accentRed, '2fa_enabled': styles.accentGreen, '2fa_disabled': styles.accentRed };
 
