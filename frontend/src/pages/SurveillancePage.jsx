@@ -204,14 +204,14 @@ export default function SurveillancePage() {
             <StatBlock label="TOTAL" value={status?.monitored_sessions || allSystems.length || 0} active={systemFilter === 'all'} onClick={() => handleSystemFilter('all')} />
             <StatBlock label="CONFORMANT" value={(bd.healthy ?? 0) || allSystems.filter(s => s.status === 'conformant').length} color={styles.accentGreen} active={systemFilter === 'conformant'} onClick={() => handleSystemFilter('conformant')} />
             <StatBlock label="DEGRADED" value={(bd.degraded ?? 0) || allSystems.filter(s => s.status === 'degraded').length} color={styles.accentAmber} active={systemFilter === 'degraded'} onClick={() => handleSystemFilter('degraded')} />
-            <StatBlock label="NON-CONFORMANT" value={nonConformantCount || allSystems.filter(s => s.status === 'non_conformant' || s.status === 'critical').length} color={nonConformantCount > 0 ? styles.accentRed : styles.textDim} active={systemFilter === 'non_conformant'} onClick={() => handleSystemFilter('non_conformant')} />
+            <StatBlock label="NON-CONFORMANT" value={nonConformantCount || allSystems.filter(s => s.status === 'non_conformant' || s.status === 'critical').length} color={styles.accentRed} active={systemFilter === 'non_conformant'} onClick={() => handleSystemFilter('non_conformant')} />
             <StatBlock label="ALERTS" value={alerts.length} active={systemFilter === 'alerts'} onClick={() => handleSystemFilter('alerts')} color={alerts.length > 0 ? styles.accentAmber : styles.textDim} />
           </div>
         )}
       </Panel>
 
       {/* Systems Table */}
-      <Panel id="systems-panel" style={{ marginBottom: 20, padding: '20px 24px' }}>
+      {systemFilter !== 'alerts' && <Panel id="systems-panel" style={{ marginBottom: 20, padding: '20px 24px' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14, flexWrap: 'wrap', gap: 8 }}>
           <div style={label9}>MONITORED SYSTEMS</div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -269,7 +269,7 @@ export default function SurveillancePage() {
             <Pagination total={systemsTotal} limit={systemLimit} offset={systemOffset} onChange={setSystemOffset} />
           </>
         )}
-      </Panel>
+      </Panel>}
 
       {/* Alerts */}
       {systemFilter === 'alerts' && <Panel id="alerts-panel" style={{ padding: '20px 24px' }}>
