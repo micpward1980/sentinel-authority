@@ -1666,7 +1666,7 @@ async def refresh_heartbeats(
         raise HTTPException(status_code=403, detail="Admin only")
     now = datetime.utcnow()
     result = await db.execute(
-        select(EnveloSession).where(EnveloSession.status == "active")
+        select(EnveloSession).where(EnveloSession.status.in_(["active", "healthy"]))
     )
     sessions = result.scalars().all()
     count = 0
