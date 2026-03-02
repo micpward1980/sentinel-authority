@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Bell, Settings, FileText, Activity, Award, Users, Home, LogOut, Menu, X, ExternalLink, BookOpen, Clock, BarChart2, Shield } from 'lucide-react';
+import { Bell, Settings, FileText, Activity, Award, Users, Home, LogOut, Menu, X, ExternalLink, BookOpen, Clock, BarChart2, CheckCircle } from 'lucide-react';
 import { api } from '../config/api';
 import { styles } from '../config/styles';
 import { useAuth } from '../context/AuthContext';
@@ -44,8 +44,8 @@ function Layout({ children }) {
     { name: 'Applications', href: '/applications', icon: FileText, roles: ['admin'] },
     { name: 'My Application', href: '/applications', icon: FileText, roles: ['applicant'] },
     { name: 'Testing', href: '/cat72', icon: Activity, roles: ['admin'] },
+    { name: 'Conformance', href: '/surveillance', icon: CheckCircle, roles: ['admin'] },
     { name: 'Registry', href: '/certificates', icon: Award, roles: ['admin'] },
-    { name: 'Compliance', href: '/surveillance', icon: Shield, roles: ['admin'] },
   ];
 
   const hasCert = Array.isArray(userCerts) && userCerts.some(c => c.state === 'conformant' || c.state === 'active' || c.state === 'issued');
