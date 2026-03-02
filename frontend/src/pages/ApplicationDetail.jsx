@@ -814,6 +814,33 @@ function ApplicationDetail() {
 
       
 
+      {/* ═══ CAT-72 Test Results ═══ */}
+      {testResults.length > 0 && (
+        <Panel style={{ marginTop: '24px' }}>
+          <p style={{ fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px' }}>CAT-72 Test Results</p>
+          {testResults.map((t, i) => (
+            <div key={t.id || i} style={{ padding: '16px', background: styles.surfaceAlt || '#fafafa', border: '1px solid ' + (t.result === 'PASS' ? styles.accentGreen + '30' : t.result === 'FAIL' ? styles.accentRed + '30' : styles.borderGlass), marginBottom: '8px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', flexWrap: 'wrap', gap: '8px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span style={{ fontFamily: styles.mono, fontSize: '11px', color: styles.textTertiary }}>{t.test_id}</span>
+                  <span style={{ fontFamily: styles.mono, fontSize: '11px', fontWeight: 600, padding: '2px 8px', color: t.result === 'PASS' ? styles.accentGreen : t.result === 'FAIL' ? styles.accentRed : styles.textDim, background: t.result === 'PASS' ? 'rgba(22,135,62,0.06)' : t.result === 'FAIL' ? 'rgba(180,52,52,0.06)' : 'transparent' }}>{t.result || t.state}</span>
+                </div>
+                <span style={{ fontFamily: styles.mono, fontSize: '10px', color: styles.textDim }}>{t.ended_at ? new Date(t.ended_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : t.started_at ? 'In progress' : 'Pending'}</span>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '12px' }}>
+                {t.convergence_score != null && <div><div style={{ fontFamily: styles.mono, fontSize: '9px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '2px' }}>Convergence</div><div style={{ fontFamily: styles.serif, fontSize: '18px', fontWeight: 200, color: styles.textPrimary }}>{t.convergence_score.toFixed(1)}%</div></div>}
+                {t.stability_index != null && <div><div style={{ fontFamily: styles.mono, fontSize: '9px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '2px' }}>Stability</div><div style={{ fontFamily: styles.serif, fontSize: '18px', fontWeight: 200, color: styles.textPrimary }}>{t.stability_index.toFixed(1)}%</div></div>}
+                {t.drift_rate != null && <div><div style={{ fontFamily: styles.mono, fontSize: '9px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '2px' }}>Drift Rate</div><div style={{ fontFamily: styles.serif, fontSize: '18px', fontWeight: 200, color: styles.textPrimary }}>{t.drift_rate.toFixed(4)}</div></div>}
+                {t.envelope_margin != null && <div><div style={{ fontFamily: styles.mono, fontSize: '9px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '2px' }}>Envelope Margin</div><div style={{ fontFamily: styles.serif, fontSize: '18px', fontWeight: 200, color: styles.textPrimary }}>{(t.envelope_margin * 100).toFixed(1)}%</div></div>}
+                {t.total_samples != null && <div><div style={{ fontFamily: styles.mono, fontSize: '9px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '2px' }}>Samples</div><div style={{ fontFamily: styles.serif, fontSize: '18px', fontWeight: 200, color: styles.textPrimary }}>{(t.conformant_samples || 0).toLocaleString()}/{t.total_samples.toLocaleString()}</div></div>}
+                {t.interlock_activations != null && <div><div style={{ fontFamily: styles.mono, fontSize: '9px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '2px' }}>Interlock Events</div><div style={{ fontFamily: styles.serif, fontSize: '18px', fontWeight: 200, color: t.interlock_activations > 0 ? styles.accentAmber : styles.textPrimary }}>{t.interlock_activations}</div></div>}
+              </div>
+              {t.result_notes && <div style={{ marginTop: '12px', padding: '10px 12px', background: t.result === 'FAIL' ? 'rgba(180,52,52,0.04)' : 'rgba(22,135,62,0.04)', borderLeft: '3px solid ' + (t.result === 'FAIL' ? styles.accentRed : styles.accentGreen), fontFamily: styles.mono, fontSize: '11px', color: styles.textSecondary }}>{t.result_notes}</div>}
+            </div>
+          ))}
+        </Panel>
+      )}
+
       {/* ═══ Conformance Events ═══ */}
       {conformanceEvents.length > 0 && (
         <Panel style={{ marginTop: '24px' }}>
