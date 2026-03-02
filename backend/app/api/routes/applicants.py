@@ -696,6 +696,20 @@ async def add_application_comment(
     await db.commit()
     await db.refresh(comment)
     
+    # Email customer for non-internal comments from admin
+    if not is_internal and user.get("role") == "admin" and app.contact_email:
+        try:
+            await send_email(
+                to=app.contact_email,
+                subject=f"Update on your ODDC application — {app.system_name}",
+                html=f"""<p>A new message has been posted regarding your application for <strong>{app.system_name}</strong> ({app.application_number}):</p>
+                <blockquote style="border-left:3px solid #6B5CE7;padding:8px 16px;margin:16px 0;color:#333;">{content}</blockquote>
+                <p>You can view your application status at <a href="https://app.sentinelauthority.org/applications/{application_id}">app.sentinelauthority.org</a>.</p>
+                <p>— Sentinel Authority</p>"""
+            )
+        except Exception:
+            pass  # Don't fail the comment if email fails
+    
     return {
         "id": comment.id,
         "user_email": comment.user_email,

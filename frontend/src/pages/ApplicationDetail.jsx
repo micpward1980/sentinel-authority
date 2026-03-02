@@ -47,9 +47,10 @@ const ACTION_BTN = (color, solid = false) => ({
 const PIPELINE_STAGES = [
   { key: 'pending',      label: 'Submitted',           icon: '1' },
   { key: 'under_review', label: 'Under Review',        icon: '2' },
-  { key: 'approved',     label: 'Approved',             icon: '3' },
+  { key: 'approved',     label: 'Accepted',             icon: '3' },
   { key: 'observe',      label: 'Interlock Observing',  icon: '4' },
-  { key: 'bounded',      label: 'CAT-72 Testing',       icon: '5' },
+  { key: 'bounded',      label: 'Boundaries Review',    icon: '5' },
+  { key: 'testing',      label: 'CAT-72 Testing',       icon: '6' },
   { key: 'conformant',   label: 'Conformant',           icon: '✓' },
 ];
 
@@ -58,7 +59,7 @@ const NEXT_STEP = {
   under_review: 'Our team is evaluating your system information and preparing approval.',
   approved:     'API key provisioned and sent. Waiting for customer to deploy the ENVELO Interlock.',
   observe:      'ENVELO Interlock is deployed and observing the system. Auto-discovering operational boundaries from live telemetry.',
-  bounded:      'Boundaries approved. CAT-72 conformance test in progress — 72 cumulative hours of enforced operation.',
+  bounded:      'Auto-discovery complete. Review the detected operational boundaries before authorizing CAT-72 testing.',
   conformant:   'Your system has achieved ODDC Conformance. Certificate and ENVELO Interlock credentials are active.',
   suspended:    'This application has been suspended. Contact conformance@sentinelauthority.org for remediation steps.',
   revoked:      'This application has been revoked. Contact conformance@sentinelauthority.org for remediation steps.',
@@ -182,7 +183,7 @@ function ApplicationDetail() {
       if (newState === 'approved') {
         try {
           await api.post('/api/apikeys/admin/provision', null, { params: { application_id: id, send_email: true } });
-          toast.show('Approved — API key generated and emailed to customer', 'success');
+          toast.show('Accepted — API key generated and emailed to customer', 'success');
         } catch { /* non-fatal */ }
       }
       invalidate();

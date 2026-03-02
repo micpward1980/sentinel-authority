@@ -59,8 +59,8 @@ const REJECTED = ['rejected', 'suspended'];
 const TABS = [
   { key: 'new',       label: 'New',          states: NEW_APPS,     icon: FileText,      color: styles.accentGreen },
   { key: 'review',    label: 'Under Review', states: UNDER_REVIEW, icon: Clock,         color: styles.accentAmber },
-  { key: 'approved',  label: 'Approved',     states: APPROVED,     icon: CheckCircle,   color: styles.accentGreen },
-  { key: 'boundaries', label: 'Boundaries Review', states: BOUNDARIES, icon: AlertTriangle, color: styles.purpleBright },
+  { key: 'approved',  label: 'Accepted',     states: APPROVED,     icon: CheckCircle,   color: styles.accentGreen },
+  { key: 'boundaries', label: 'Boundaries Review', states: BOUNDARIES, icon: AlertTriangle, color: styles.accentAmber },
   { key: 'rejected',  label: 'Rejected',     states: REJECTED,     icon: AlertTriangle, color: styles.accentRed },
   { key: 'all',       label: 'All',          states: null,         icon: null,          color: styles.textTertiary },
 ];
