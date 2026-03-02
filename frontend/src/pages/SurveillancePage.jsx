@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { RefreshCw, Search, Download } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
@@ -97,9 +97,10 @@ function SortTh({ label, field, currentSort, currentOrder, onSort }) {
 }
 
 export default function SurveillancePage() {
+  const [searchParams] = useSearchParams();
   const [autoRefresh, setAutoRefresh] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [systemFilter, setSystemFilter] = useState('all');
+  const [systemFilter, setSystemFilter] = useState(searchParams.get('view') || 'all');
   const [systemSearch, setSystemSearch] = useState('');
   const [systemSort, setSystemSort] = useState('system_name');
   const [systemOrder, setSystemOrder] = useState('asc');

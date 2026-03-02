@@ -145,7 +145,7 @@ function CustomerDashboard() {
         {hasAgents && (() => {
           const statusColor = onlineCount > 0 ? styles.accentGreen : styles.accentAmber;
           const statusText = onlineCount > 0 ? `${onlineCount} of ${totalSessions} online` : 'All systems offline';
-          return <StatCard onClick={() => navigate('/surveillance')} label="Live Status" value={onlineCount} color={statusColor} icon={<Wifi fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{color: statusColor}} />} subtitle={statusText} />;
+          return <StatCard onClick={() => navigate('/surveillance?view=alerts')} label="Live Status" value={onlineCount} color={statusColor} icon={<Wifi fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{color: statusColor}} />} subtitle={statusText} />;
         })()}
       </div>
 
@@ -656,7 +656,7 @@ function Dashboard() {
           {sectionHeader(`Compliance Alerts (${complianceAlerts.length})`, styles.accentAmber, '/surveillance', 'Surveillance →')}
           <div style={{display: 'flex', flexDirection: 'column', gap: '2px'}}>
             {complianceAlerts.slice(0, 8).map((alert, i) => (
-              <div key={alert.id || i} onClick={() => navigate('/surveillance')} style={{padding: '12px 20px', background: styles.cardSurface, border: '1px solid ' + (alert.severity === 'critical' ? styles.accentRed + '40' : alert.severity === 'info' ? styles.purpleBright + '30' : styles.accentAmber + '30'), display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', cursor: 'pointer', transition: 'border-color 0.15s'}} onMouseEnter={e => e.currentTarget.style.borderColor = styles.purpleBright} onMouseLeave={e => e.currentTarget.style.borderColor = alert.severity === 'critical' ? styles.accentRed + '40' : alert.severity === 'info' ? styles.purpleBright + '30' : styles.accentAmber + '30'}>
+              <div key={alert.id || i} onClick={() => navigate('/surveillance?view=alerts')} style={{padding: '12px 20px', background: styles.cardSurface, border: '1px solid ' + (alert.severity === 'critical' ? styles.accentRed + '40' : alert.severity === 'info' ? styles.purpleBright + '30' : styles.accentAmber + '30'), display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', cursor: 'pointer', transition: 'border-color 0.15s'}} onMouseEnter={e => e.currentTarget.style.borderColor = styles.purpleBright} onMouseLeave={e => e.currentTarget.style.borderColor = alert.severity === 'critical' ? styles.accentRed + '40' : alert.severity === 'info' ? styles.purpleBright + '30' : styles.accentAmber + '30'}>
                 <div style={{display: 'flex', alignItems: 'center', gap: '12px'}}>
                   <AlertTriangle size={14} style={{color: alert.severity === 'critical' ? styles.accentRed : alert.severity === 'info' ? styles.accentBlue : styles.accentAmber}} />
                   <span style={{fontFamily: styles.mono, fontSize: '10px', color: alert.severity === 'critical' ? styles.accentRed : alert.severity === 'info' ? styles.accentBlue : styles.accentAmber, letterSpacing: '1px', textTransform: 'uppercase'}}>{alert.severity || 'warning'}</span>
