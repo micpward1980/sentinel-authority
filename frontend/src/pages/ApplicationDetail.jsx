@@ -736,13 +736,13 @@ function ApplicationDetail() {
                 {app.boundaries_acknowledged ? (
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '12px 16px', background: styles.accentGreen + '08', border: '1px solid ' + styles.accentGreen + '33', borderRadius: '6px' }}>
                     <span style={{ color: styles.accentGreen, fontSize: '14px' }}>✓</span>
-                    <span style={{ fontFamily: styles.mono, fontSize: '11px', color: styles.accentGreen }}>BOUNDARIES ACKNOWLEDGED</span>
+                    <span style={{ fontFamily: styles.mono, fontSize: '11px', color: styles.accentGreen }}>BOUNDARIES ACKNOWLEDGED — CERTIFICATION ENVELOPE CONFIRMED</span>
                     <span style={{ fontFamily: styles.mono, fontSize: '10px', color: styles.textTertiary, marginLeft: 'auto' }}>{app.boundaries_acknowledged_at ? new Date(app.boundaries_acknowledged_at).toLocaleDateString() : ''}</span>
                   </div>
                 ) : (
                   <div>
                     <p style={{ fontSize: '12px', color: styles.textSecondary, marginBottom: '8px' }}>
-                      Review the boundaries above. If they accurately represent your system's operational parameters, acknowledge them to proceed.
+                      By acknowledging, you confirm that the boundaries above accurately represent your system\'s operational parameters as observed during the monitoring period. If any boundary does not match your system\'s expected behavior, raise it now using the correspondence form. Once acknowledged, these boundaries become the enforced certification envelope.
                     </p>
                     <div style={{ display: 'flex', gap: '8px' }}>
                       <button onClick={async () => {
@@ -752,7 +752,7 @@ function ApplicationDetail() {
                           window.location.reload();
                         } catch (e) { toast.show('Failed: ' + (e.response?.data?.detail || e.message), 'error'); }
                       }} style={{ flex: 1, padding: '12px', background: 'transparent', border: '1px solid ' + styles.accentGreen, color: styles.accentGreen, fontFamily: styles.mono, fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer', borderRadius: '6px' }}>
-                        ✓ I Confirm These Boundaries Are Correct
+                        ✓ I Acknowledge These Boundaries As Accurate
                       </button>
                       <button onClick={() => { setShowCorForm(true); setCorType('response'); }} style={{ padding: '12px 20px', background: 'transparent', border: '1px solid ' + styles.accentAmber, color: styles.accentAmber, fontFamily: styles.mono, fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer', borderRadius: '6px' }}>
                         ? I Have Questions
