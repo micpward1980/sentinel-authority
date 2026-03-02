@@ -7,6 +7,7 @@ import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { useConfirm } from '../context/ConfirmContext';
 import Panel from '../components/Panel';
+import SectionHeader from '../components/SectionHeader';
 import StatCard from '../components/StatCard';
 import EmptyState from '../components/EmptyState';
 import { formatSystemType } from '../utils/formatSystemType';
@@ -126,17 +127,11 @@ function CustomerDashboard() {
 
   return (
     <div className="space-y-6" style={{maxWidth: "1000px", margin: "0 auto"}}>
-      {/* Header */}
-      <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px'}}>
-        <div>
-          <p style={{fontFamily: styles.mono, fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', color: styles.purpleBright, marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '12px'}}>
-            <span style={{width: '24px', height: '1px', background: styles.purpleBright}}></span>
-            ODDC Certification
-          </p>
-          <h1 style={{fontFamily: styles.serif, fontSize: 'clamp(24px, 5vw, 36px)', fontWeight: 200, margin: 0, color: styles.textPrimary}}>Welcome{user?.full_name ? `, ${user.full_name.split(' ')[0]}` : ''}</h1>
-          <p style={{color: styles.textTertiary, marginTop: '6px', fontSize: '13px', fontFamily: styles.mono}}>{user?.organization ? user.organization + ' · ' : ''}{new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</p>
-        </div>
-      </div>
+      <SectionHeader
+        label="ODDC Certification"
+        title={'Welcome' + (user?.full_name ? ', ' + user.full_name.split(' ')[0] : '')}
+        description={(user?.organization ? user.organization + ' · ' : '') + new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
+      />
 
       {/* Quick Stats */}
       <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px'}}>
