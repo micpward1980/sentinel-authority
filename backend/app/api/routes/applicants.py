@@ -239,7 +239,7 @@ async def update_application_fields(
         raise HTTPException(status_code=404, detail="Application not found")
     
     data = await request.json()
-    allowed = ["review_checklist", "envelope_definition", "odd_specification", "notes", "facility_location"]
+    allowed = ["review_checklist", "envelope_definition", "odd_specification", "notes", "facility_location", "system_type", "system_version", "manufacturer"]
     for key in allowed:
         if key in data:
             setattr(app, key, data[key])
