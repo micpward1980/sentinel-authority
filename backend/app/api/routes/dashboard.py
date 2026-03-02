@@ -31,9 +31,18 @@ async def dashboard_summary(
 ):
     from app.models.models import Application, Certificate, EnveloSession
     from datetime import datetime, timedelta
-    app_result = await db.execute(select(Application.state, func.count(Application.id)).group_by(Application.state))
+    is_applicant = user.get("role") == "applicant"
+    user_id = int(user.get("sub", 0))
+    app_q = select(Application.state, func.count(Application.id)).group_by(Application.state)
+    if is_applicant:
+        app_q = app_q.where(Application.applicant_id == user_id)
+    app_result = await db.execute(app_q)
     app_counts = dict(app_result.all())
-    cert_result = await db.execute(select(Certificate.state, func.count(Certificate.id)).group_by(Certificate.state))
+    cert_q = select(Certificate.state, func.count(Certificate.id)).group_by(Certificate.state)
+    if is_applicant:
+        sub = select(Application.id).where(Application.applicant_id == user_id).scalar_subquery()
+        cert_q = cert_q.where(Certificate.application_id.in_(select(Application.id).where(Application.applicant_id == user_id)))
+    cert_result = await db.execute(cert_q)
     cert_counts = dict(cert_result.all())
     thirty_days = datetime.utcnow() + timedelta(days=30)
     expiring = (await db.execute(select(func.count(Certificate.id)).where(Certificate.state.in_(["conformant","active"]), Certificate.expires_at != None, Certificate.expires_at <= thirty_days))).scalar() or 0

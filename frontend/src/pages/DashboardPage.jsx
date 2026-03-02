@@ -204,6 +204,37 @@ function CustomerDashboard() {
         )}
       </Panel>
 
+      {/* Certification Roadmap — always show for applicants */}
+      <Panel>
+        <h2 style={{fontFamily: styles.mono, fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '20px'}}>Certification Roadmap</h2>
+        <div style={{display: 'flex', flexDirection: 'column', gap: '0'}}>
+          {STAGES.map((stage, i) => {
+            const bestApp = applications.length > 0 ? applications.reduce((a, b) => stageIdx(a.state) > stageIdx(b.state) ? a : b) : null;
+            const currentIdx = bestApp ? stageIdx(bestApp.state) : -1;
+            const done = i <= currentIdx;
+            const active = i === currentIdx;
+            const stageDescriptions = {
+              'Submitted': 'Application received and queued for review',
+              'Accepted': 'Application approved — ready for interlock deployment',
+              'Interlock Deploy': 'Deploy the ENVELO Interlock to your system',
+              'Boundaries Review': 'Operational boundaries discovered and verified',
+              'CAT-72 Testing': '72-hour continuous conformance validation',
+              'Conformant': 'ODDC certificate issued — system certified',
+            };
+            return (
+              <div key={stage.key} style={{display: 'flex', gap: '16px', alignItems: 'flex-start', padding: '14px 0', borderLeft: '2px solid ' + (done ? styles.accentGreen : active ? styles.accentAmber : styles.borderSubtle), marginLeft: '8px', paddingLeft: '20px', position: 'relative'}}>
+                <div style={{position: 'absolute', left: '-7px', top: '16px', width: '12px', height: '12px', borderRadius: '50%', background: done ? styles.accentGreen : active ? styles.accentAmber : styles.bgDeep, border: '2px solid ' + (done ? styles.accentGreen : active ? styles.accentAmber : styles.borderSubtle)}} />
+                <div style={{flex: 1}}>
+                  <div style={{fontSize: '13px', fontWeight: done || active ? 600 : 400, color: done ? styles.accentGreen : active ? styles.textPrimary : styles.textTertiary, marginBottom: '2px'}}>{stage.label}</div>
+                  <div style={{fontSize: '12px', color: styles.textTertiary}}>{stageDescriptions[stage.label] || ''}</div>
+                  {active && bestApp && <div style={{fontSize: '11px', color: styles.accentAmber, fontFamily: styles.mono, marginTop: '6px'}}>{nextAction(bestApp.state)}</div>}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </Panel>
+
       {/* Certificates — use summary count, fetch full list only if needed */}
       {hasCerts && (
         <CertificatesList />
