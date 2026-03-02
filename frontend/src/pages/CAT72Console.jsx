@@ -181,12 +181,7 @@ function CAT72Console() {
                   <div style={{fontWeight: 500, color: styles.textPrimary, marginBottom: '2px', cursor: 'pointer'}} onClick={() => navigate('/applications/' + test.application_id)}>{test.organization_name} — {test.system_name}</div>
                   <div style={{fontFamily: styles.mono, fontSize: '11px', color: styles.textTertiary}}>{test.test_id} · {test.duration_hours}h test</div>
                 </div>
-                <div style={{display: 'flex', alignItems: 'center', gap: '12px'}}>
-                  <span style={{fontFamily: styles.mono, fontSize: '10px', color: styles.textDim, padding: '3px 8px', border: '1px solid ' + styles.borderSubtle, borderRadius: 3}}>Waiting for customer</span>
-                  {isAdmin && <button onClick={() => handleStart(test.test_id)} disabled={loading[test.test_id]} style={{background: styles.cardSurface, border: '1px solid ' + styles.borderSubtle, color: styles.accentGreen, fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer', borderRadius: 3, padding: '6px 14px'}}>
-                    {loading[test.test_id] === 'starting' ? '...' : 'Force Start'}
-                  </button>}
-                </div>
+                <span style={{fontFamily: styles.mono, fontSize: '10px', color: styles.accentAmber, padding: '3px 8px', border: '1px solid ' + styles.accentAmber + '30', borderRadius: 3}}>Awaiting customer deployment</span>
               </div>
             ))}
           </div>
