@@ -181,8 +181,8 @@ export default function SurveillancePage() {
         <div style={Object.assign({}, label9, { marginBottom: 14 })}>MONITORED SESSIONS</div>
         {statusLoading ? <div style={{ ...mono, fontSize: '12px', color: styles.textDim }}>Loading...</div> : (
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 24, justifyContent: 'flex-start' }}>
-            <StatBlock label="TOTAL" value={status?.monitored_sessions ?? 0} />
-            <StatBlock label="CONFORMANT" value={bd.healthy ?? 0} color={(bd.healthy ?? 0) > 0 ? styles.accentGreen : styles.textDim} />
+            <StatBlock label="TOTAL" value={status?.monitored_sessions ?? 0} onClick={() => { setAlertFilter('all'); document.getElementById('alerts-panel')?.scrollIntoView({ behavior: 'smooth' }); }} />
+            <StatBlock label="CONFORMANT" value={bd.healthy ?? 0} color={(bd.healthy ?? 0) > 0 ? styles.accentGreen : styles.textDim} onClick={() => { setAlertFilter('all'); document.getElementById('alerts-panel')?.scrollIntoView({ behavior: 'smooth' }); }} />
             <StatBlock label="NON-CONFORMANT" value={(bd.degraded ?? 0) + (bd.critical ?? 0) + (bd.offline ?? 0) + (bd.non_conformant ?? 0)} color={((bd.degraded ?? 0) + (bd.critical ?? 0) + (bd.offline ?? 0) + (bd.non_conformant ?? 0)) > 0 ? styles.accentRed : styles.textDim} onClick={() => { setAlertFilter('critical'); document.getElementById('alerts-panel')?.scrollIntoView({ behavior: 'smooth' }); }} />
             <StatBlock label="ALERTS" value={alerts.length} color={(alerts.length) > 0 ? styles.accentAmber : styles.textDim} onClick={() => { setAlertFilter('all'); document.getElementById('alerts-panel')?.scrollIntoView({ behavior: 'smooth' }); }} />
           </div>
