@@ -70,3 +70,7 @@ src-backup*
 *.retired
 *.bloom-backup
 frontend/.env.check
+
+# One-off scripts
+*.py
+!backend/**/*.py
