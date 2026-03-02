@@ -194,7 +194,7 @@ class SurveillanceState:
         if certificate_id in self.suspended_certs:
             # Don't auto-reinstate — that requires manual review
             self._fire_alert(
-                AlertType.AGENT_RECONNECT,
+                AlertType.INTERLOCK_RECONNECT,
                 AlertSeverity.INFO,
                 certificate_id,
                 session_id,
