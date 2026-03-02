@@ -114,6 +114,14 @@ export default function SurveillancePage() {
     refetchInterval: autoRefresh ? 10000 : false,
   });
 
+  // Unfiltered query for accurate stat counts
+  const { data: allSystemsData } = useQuery({
+    queryKey: ["surveillance-all-systems"],
+    queryFn: () => api.get("/api/surveillance/systems?limit=100&offset=0").then(r => r.data),
+    refetchInterval: autoRefresh ? 30000 : false,
+  });
+  const allSystems = allSystemsData?.systems || [];
+
   const systemsQueryKey = ['surveillance-systems', systemFilter, systemSearch, systemSort, systemOrder, systemOffset];
   const { data: systemsData, isLoading: systemsLoading } = useQuery({
     queryKey: systemsQueryKey,
