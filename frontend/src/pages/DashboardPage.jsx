@@ -247,8 +247,8 @@ function CustomerDashboard() {
                 user_login: 'Signed in', user_registered: 'Account created',
                 application_submitted: 'Application submitted', application_state_changed: 'Application status updated',
                 test_created: 'CAT-72 test scheduled', test_started: 'CAT-72 test started', test_completed: 'CAT-72 test completed',
-                certificate_issued: 'Certificate issued', certificate_suspended: 'Certificate suspended',
-                certificate_revoked: 'Certificate revoked', certificate_reinstated: 'Certificate reinstated',
+                certificate_issued: 'Certificate issued', certificate_suspended: 'Certificate non-conformant',
+                certificate_revoked: 'Certificate non-conformant', certificate_reinstated: 'Certificate reinstated',
                 api_key_created: 'API key created', password_changed: 'Password changed', profile_updated: 'Profile updated',
               };
               const actionColors = {
@@ -711,8 +711,8 @@ function Dashboard() {
                 user_login: 'Signed in', user_registered: 'Account created',
                 application_submitted: 'Application submitted', application_state_changed: 'Status changed',
                 test_created: 'Test scheduled', test_started: 'Test started', test_completed: 'Test completed',
-                certificate_issued: 'Certificate issued', certificate_suspended: 'Certificate suspended',
-                certificate_revoked: 'Certificate revoked', certificate_reinstated: 'Certificate reinstated',
+                certificate_issued: 'Certificate issued', certificate_suspended: 'Certificate non-conformant',
+                certificate_revoked: 'Certificate non-conformant', certificate_reinstated: 'Certificate reinstated',
                 boundary_acknowledged: 'Boundaries acknowledged', api_key_created: 'API key created',
               };
               const actionColors = {

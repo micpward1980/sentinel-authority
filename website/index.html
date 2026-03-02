@@ -3438,9 +3438,9 @@ footer{border-top:1px solid var(--hairline)!important;}
           <div style="width:1px;background:rgba(0,0,0,0.06);align-self:stretch;"></div>
           <div style="text-align:center;padding:16px 12px;flex:1;min-width:120px;">
             <div style="font-family:var(--mono);font-size:14px;letter-spacing:2px;color:#1d1a3b;margin-bottom:4px;">05</div>
-            <div style="font-family:var(--mono);font-size:14px;letter-spacing:2px;color:#1d1a3b;margin-bottom:6px;">DRIFT DETECTION AND SUSPENSION PROTOCOL</div>
+            <div style="font-family:var(--mono);font-size:14px;letter-spacing:2px;color:#1d1a3b;margin-bottom:6px;">DRIFT DETECTION AND NON-CONFORMANCE PROTOCOL</div>
             <div style="font-size:14px;color:#111318;margin-bottom:4px;">Drift Protocol</div>
-            <div style="font-size:14px;color:rgba(15,18,30,0.64);">Clear suspension path</div>
+            <div style="font-size:14px;color:rgba(15,18,30,0.64);">Clear non-conformance path</div>
           </div>
         </div>
       </div>
@@ -3469,8 +3469,8 @@ footer{border-top:1px solid var(--hairline)!important;}
         </div>
         <div class="fg-card">
           <div class="fg-k">Gate 05</div>
-          <div class="fg-t">Drift Detection &amp; Suspension Protocol</div>
-          <div class="fg-d">Clear suspension path</div>
+          <div class="fg-t">Drift Detection &amp; Non-Conformance Protocol</div>
+          <div class="fg-d">Clear non-conformance path</div>
         </div>
       </div>
 
@@ -3639,7 +3639,7 @@ footer{border-top:1px solid var(--hairline)!important;}
           </div>
           <div class="hud-row" style="display:flex;align-items:flex-start;gap:12px;">
             <span class="hud-num" style="margin-top:2px;">02</span>
-            <div><div class="hud-title">Automatic Suspension</div><div class="hud-desc">Certificates are auto-suspended upon verified enforcement failure or telemetry loss. Suspension is immediate and requires no human approval.</div></div>
+            <div><div class="hud-title">Automatic Non-Conformance</div><div class="hud-desc">Systems are automatically marked non-conformant upon verified enforcement failure or telemetry loss. Determination is immediate and requires no human approval.</div></div>
           </div>
           <div class="hud-row" style="display:flex;align-items:flex-start;gap:12px;">
             <span class="hud-num" style="margin-top:2px;">03</span>
@@ -4543,11 +4543,11 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
           </div>
           <div class="hud-row" style="display:flex;align-items:flex-start;">
             <span class="hud-num" style="min-width:56px;">04</span><span style="width:6px;height:6px;border-radius:50%;background:#1d1a3b;flex-shrink:0;margin-top:6px;"></span><div style="width:8px;flex-shrink:0;"></div>
-            <div><div class="hud-title">Documented Remediation and Reassessment Pathways</div><div class="hud-desc">Upon suspension or exceedance, structured remediation and reassessment procedures are defined under the Conformance Agreement.</div></div>
+            <div><div class="hud-title">Documented Remediation and Reassessment Pathways</div><div class="hud-desc">Upon non-conformance or exceedance, structured remediation and reassessment procedures are defined under the Conformance Agreement.</div></div>
           </div>
         </div>
         
-        <p style="text-align:center;font-family:var(--mono);font-size:14px;color:rgba(180,52,52,0.75);margin-top:8px;letter-spacing:0.5px;">Conformance may be suspended upon verified boundary exceedance or enforcement failure.</p>
+        <p style="text-align:center;font-family:var(--mono);font-size:14px;color:rgba(180,52,52,0.75);margin-top:8px;letter-spacing:0.5px;">Systems may become non-conformant upon verified boundary exceedance or enforcement failure.</p>
       </div>
     </section>
 
@@ -4775,7 +4775,7 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
         <div style="display:flex;gap:0;margin-bottom:24px;border-bottom:1px solid rgba(0,0,0,0.09);">
           <button id="tab-verify" onclick="setVerifyMode('verify')" style="flex:1;padding:10px 0;border:none;cursor:pointer;font-family:var(--mono);font-size:14px;letter-spacing:2px;background:transparent;color:#1d1a3b;border-bottom:2px solid #1d1a3b;transition:all 0.2s;">VERIFY CERTIFICATE</button>
           <button id="tab-search" onclick="setVerifyMode('search')" style="flex:1;padding:10px 0;border:none;cursor:pointer;font-family:var(--mono);font-size:14px;letter-spacing:2px;background:transparent;color:rgba(15,18,30,0.64);border-bottom:2px solid transparent;transition:all 0.2s;">SEARCH REGISTRY</button>
-          <button id="tab-suspensions" onclick="setVerifyMode('suspensions')" style="flex:1;padding:10px 0;border:none;cursor:pointer;font-family:var(--mono);font-size:14px;letter-spacing:2px;background:transparent;color:rgba(15,18,30,0.64);border-bottom:2px solid transparent;transition:all 0.2s;">SUSPENSION HISTORY</button>
+          <button id="tab-suspensions" onclick="setVerifyMode('suspensions')" style="flex:1;padding:10px 0;border:none;cursor:pointer;font-family:var(--mono);font-size:14px;letter-spacing:2px;background:transparent;color:rgba(15,18,30,0.64);border-bottom:2px solid transparent;transition:all 0.2s;">NON-CONFORMANCE HISTORY</button>
         </div>
 
         <div id="verify-mode">
@@ -4795,7 +4795,7 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
         </div>
 
         <div id="suspensions-mode" style="display:none;">
-          <div class="hud-desc" style="margin-bottom:16px;">All certificates that have been suspended are listed here with date and reason category. This record is permanent and publicly accessible.</div>
+          <div class="hud-desc" style="margin-bottom:16px;">All certificates that have become non-conformant are listed here with date and reason category. This record is permanent and publicly accessible.</div>
           <div style="display:flex;gap:8px;align-items:stretch;margin-bottom:16px;">
             <input type="text" id="suspension-search" placeholder="Filter by certificate, company, or reason..." oninput="filterSuspensions()" style="flex:1;padding:14px 0;font-family:var(--mono);font-size:15px;letter-spacing:2px;background:transparent;border:none;border-bottom:1px solid rgba(42,37,96,0.60);color:var(--text-primary);outline:none;">
           </div>
@@ -4895,7 +4895,7 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
             <div style="font-family:var(--mono);font-size:13px;color:rgba(15,18,30,0.65);line-height:1.7;max-width:280px;margin:0 auto;">No equity, advisory relationship, or revenue-sharing with any applicant or certified operator. Fees are fixed and non-contingent on outcome.</div>
           </div>
           <div style="border-top:1px solid rgba(15,18,30,0.08);padding-top:20px;">
-            <div style="font-family:var(--mono);font-size:11px;letter-spacing:1.5px;color:rgba(15,18,30,0.45);margin-bottom:10px;">SUSPENSION &amp; APPEALS</div>
+            <div style="font-family:var(--mono);font-size:11px;letter-spacing:1.5px;color:rgba(15,18,30,0.45);margin-bottom:10px;">NON-CONFORMANCE &amp; APPEALS</div>
             <div style="font-family:var(--mono);font-size:13px;color:rgba(15,18,30,0.65);line-height:1.7;max-width:280px;margin:0 auto;">Written notification with findings. Defined response period. Independent review of submitted evidence. Final determination recorded in the public registry.</div>
           </div>
           <div style="border-top:1px solid rgba(15,18,30,0.08);padding-top:20px;">
@@ -5202,7 +5202,7 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
         .then(data => {
           const el = document.getElementById('suspensions-list');
           if (!data.suspensions || data.suspensions.length === 0) {
-            el.innerHTML = '<span style="font-family:var(--mono);font-size:13px;color:rgba(15,18,30,0.4);">No suspensions on record.</span>';
+            el.innerHTML = '<span style="font-family:var(--mono);font-size:13px;color:rgba(15,18,30,0.4);">No non-conformance events on record.</span>';
             return;
           }
           _suspensionsCache = data.suspensions;
@@ -5219,7 +5219,7 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
             </div>`).join('');
         })
         .catch(() => {
-          document.getElementById('suspensions-list').innerHTML = '<span style="font-family:var(--mono);font-size:13px;color:rgba(15,18,30,0.4);">Unable to load suspension history.</span>';
+          document.getElementById('suspensions-list').innerHTML = '<span style="font-family:var(--mono);font-size:13px;color:rgba(15,18,30,0.4);">Unable to load non-conformance history.</span>';
         });
     }
       var verifyMode = document.getElementById("verify-mode");
@@ -5252,7 +5252,7 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
                (r.reason_category || "").toLowerCase().indexOf(q) !== -1;
       });
       if (filtered.length === 0) {
-        el.innerHTML = '<span style="font-family:var(--mono);font-size:13px;color:rgba(15,18,30,0.4);">No matching suspensions.</span>';
+        el.innerHTML = '<span style="font-family:var(--mono);font-size:13px;color:rgba(15,18,30,0.4);">No matching records.</span>';
         return;
       }
       el.innerHTML = filtered.map(function(r) {

@@ -89,7 +89,7 @@ const STATUS_MAP = {
     color:  styles.accentRed,
     bg:     'rgba(180,52,52,0.08)',
     border: 'rgba(180,52,52,0.20)',
-    label:  'REVOKED',
+    label:  'NON-CONFORMANT',
   },
   suspended: {
     color:  styles.accentRed,

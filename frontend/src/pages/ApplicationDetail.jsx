@@ -41,7 +41,7 @@ const STATE_LABEL = {
   testing: "CAT-72 Testing",
   conformant: "Conformant",
   suspended: "Non-Conformant",
-  revoked: "Revoked",
+  revoked: "Non-Conformant",
   expired: "Expired",
   rejected: "Rejected",
 };
@@ -204,7 +204,7 @@ const NEXT_STEP = {
   bounded:      'Auto-discovery complete. Review the detected operational boundaries before authorizing CAT-72 testing.',
   conformant:   'Your system has achieved ODDC Conformance. Certificate and ENVELO Interlock credentials are active.',
   suspended:    'This system is non-conformant based on enforcement data. Contact conformance@sentinelauthority.org for remediation steps.',
-  revoked:      'This application has been revoked. Contact conformance@sentinelauthority.org for remediation steps.',
+  revoked:      'This application has been suspended. Contact conformance@sentinelauthority.org for remediation steps.',
   expired:      'This certification has expired. Submit a new application or contact conformance@sentinelauthority.org.',
 };
 
