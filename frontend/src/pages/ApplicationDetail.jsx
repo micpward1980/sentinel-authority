@@ -445,7 +445,9 @@ function ApplicationDetail() {
 
       {/* Detected Boundaries — only show when interlock has discovered them */}
       {app.envelope_definition && (app.state === 'observe' || app.state === 'bounded' || app.state === 'conformant') && (() => {
-        const env = typeof app.envelope_definition === 'string' ? JSON.parse(app.envelope_definition) : app.envelope_definition;
+        let env;
+        try { env = typeof app.envelope_definition === 'string' ? JSON.parse(app.envelope_definition) : app.envelope_definition; } catch { env = null; }
+        if (!env || typeof env !== 'object') return null;
         const nb = env?.numeric_boundaries || [];
         const gb = env?.geo_boundaries || env?.geographic_boundaries || [];
         const tb = env?.time_boundaries || [];
@@ -507,7 +509,7 @@ function ApplicationDetail() {
                       {b.name}{b.type === 'exclusion' ? ' (exclusion)' : ''}
                     </span>
                     <span style={{ fontFamily: styles.mono, color: styles.purpleBright, fontSize: '11px' }}>
-                      {(b.type === 'radius' || b.type === 'exclusion') && `${(b.radius_m / 1000).toFixed(1)}km @ ${b.center_lat?.toFixed(4)}, ${b.center_lng?.toFixed(4)}`}
+                      {(b.type === 'radius' || b.type === 'exclusion') && `${b.radius_m ? (b.radius_m / 1000).toFixed(1) : '?'}km @ ${b.center_lat?.toFixed(4) ?? '?'}, ${b.center_lng?.toFixed(4) ?? '?'}`}
                       {b.type === 'polygon' && `${(b.vertices || b.points || []).length} vertices`}
                       {b.type === 'corridor' && `${b.width_m || '\u2014'}m wide`}
                     </span>
@@ -550,7 +552,7 @@ function ApplicationDetail() {
             )}
 
             {/* Catch-all: render any unknown boundary types the Interlock discovers */}
-            {Object.entries(env).filter(([k]) => !['numeric_boundaries','geo_boundaries','geographic_boundaries','time_boundaries','state_boundaries'].includes(k)).map(([key, val]) => (
+            {Object.entries(env || {}).filter(([k]) => !['numeric_boundaries','geo_boundaries','geographic_boundaries','time_boundaries','state_boundaries'].includes(k)).map(([key, val]) => (
               Array.isArray(val) && val.length > 0 && (
                 <div key={key} style={{ marginTop: '16px' }}>
                   <p style={{ fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '8px' }}>{key.replace(/_/g, ' ')}</p>
