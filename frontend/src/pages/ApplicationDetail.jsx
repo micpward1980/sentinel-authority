@@ -286,8 +286,8 @@ function ApplicationDetail() {
         const certRes = await api.get('/api/applications/' + id);
         const certId = certRes.data?.certificate?.certificate_number;
         if (certId) {
-          const alertRes = await api.get('/api/surveillance/alerts?limit=50');
-          const relevant = (alertRes.data?.alerts ?? []).filter(a => a.certificate_id === certId);
+          const alertRes = await api.get('/api/surveillance/alerts?limit=50&certificate_id=' + certId);
+          const relevant = alertRes.data?.alerts ?? [];
           setConformanceEvents(relevant);
         }
       } catch {}
@@ -807,7 +807,7 @@ function ApplicationDetail() {
       
 
       {/* ═══ Conformance Events ═══ */}
-      {(app.state === 'conformant' || app.state === 'suspended' || app.state === 'expired' || app.state === 'revoked') && conformanceEvents.length > 0 && (
+      {conformanceEvents.length > 0 && (
         <Panel style={{ marginTop: '24px' }}>
           <p style={{ fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '12px' }}>Conformance Events</p>
           {conformanceEvents.map((evt, i) => (
