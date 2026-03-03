@@ -520,5 +520,6 @@ footer{border-top:1px solid var(--hairline)!important;}
   document.querySelectorAll(".reveal,.section-head").forEach(function(el){obs.observe(el);});
 })();
 </script>
+<script>document.addEventListener('click',function(e){var a=e.target.closest('a[href^="#"]');if(!a)return;var id=a.getAttribute('href').slice(1);if(!id)return;var t=document.getElementById(id);if(!t)return;e.preventDefault();t.scrollIntoView({behavior:'smooth'});history.replaceState(null,'',window.location.pathname+window.location.search)})</script>
 </body>
 </html>

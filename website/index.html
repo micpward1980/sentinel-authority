@@ -5121,6 +5121,22 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
     }, { passive: true });
     updateActiveSection();
 
+    // Clean URL bar — strip # after clicking anchor links
+    document.addEventListener('click', function(e) {
+      var a = e.target.closest('a[href^="#"], a[href^="/#"]');
+      if (!a) return;
+      var href = a.getAttribute('href');
+      var id = href.replace(/^\/?#/, '');
+      if (!id) return;
+      var t = document.getElementById(id);
+      if (!t) return;
+      e.preventDefault();
+      var navHeight = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--nav-height')) || 72;
+      var top = t.getBoundingClientRect().top + window.scrollY - navHeight;
+      window.scrollTo({ top: top, behavior: 'smooth' });
+      history.replaceState(null, '', window.location.pathname + window.location.search);
+    });
+
     // Reveal animations on scroll
     const revealElements = document.querySelectorAll('.reveal');
     
