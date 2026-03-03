@@ -170,8 +170,6 @@ async def get_quote(quote_id: str, db: AsyncSession = Depends(get_db),
     quote = result.scalar_one_or_none()
     if not quote:
         raise HTTPException(status_code=404, detail="Quote not found")
-    return _quote_dict(quote)
-
 
 @router.patch("/{quote_id}", summary="Update quote")
 async def update_quote(quote_id: int, body: QuoteUpdateBody,
@@ -199,8 +197,6 @@ async def update_quote(quote_id: int, body: QuoteUpdateBody,
         quote.year_one_total = p["year_one_total"]
         quote.pricing_tier = p["pricing_tier"]
 
-    return _quote_dict(quote)
-
 
 @router.post("/{quote_id}/approve", summary="Approve quote")
 async def approve_quote(quote_id: int, body: QuoteApprovalBody,
@@ -224,8 +220,6 @@ async def approve_quote(quote_id: int, body: QuoteApprovalBody,
     quote.status = "approved"
     quote.approved_by = body.approved_by or user.get("email", "admin")
     quote.approved_at = datetime.utcnow()
-    return _quote_dict(quote)
-
 
 @router.post("/{quote_id}/send", summary="Mark quote as sent")
 async def send_quote(quote_id: int, db: AsyncSession = Depends(get_db),
@@ -238,8 +232,53 @@ async def send_quote(quote_id: int, db: AsyncSession = Depends(get_db),
     quote.status = "sent"
     quote.sent_at = now
     quote.expires_at = now + timedelta(days=30)
-    return _quote_dict(quote)
+    await db.commit()
 
+@router.post("/{quote_id}/accept", summary="Accept quote — auto-creates invoice with Stripe payment link")
+async def accept_quote(quote_id: int, db: AsyncSession = Depends(get_db),
+                       user: dict = Depends(require_role(["admin"]))):
+    result = await db.execute(select(Quote).where(Quote.id == quote_id))
+    quote = result.scalar_one_or_none()
+    if not quote:
+        raise HTTPException(status_code=404, detail="Quote not found")
+    if quote.status not in ("sent", "approved"):
+        raise HTTPException(status_code=400, detail=f"Cannot accept quote in status: {quote.status}")
+    quote.status = "accepted"
+    await db.flush()
+    # Auto-create billing invoice
+    from app.models.models import BillingInvoice
+    from app.api.routes.billing import generate_invoice_number, INITIAL_ASSESSMENT
+    inv_num = await generate_invoice_number(db)
+    inv = BillingInvoice(
+        invoice_number=inv_num, quote_id=quote.id,
+        company_name=quote.company_name, contact_name=quote.contact_name,
+        contact_email=quote.contact_email, invoice_type="initial_assessment",
+        description=f"ODDC Initial Conformance Assessment — {quote.system_count} system(s)",
+        system_count=quote.system_count, unit_amount=quote.price_per_system,
+        total_amount=quote.initial_total, due_date=datetime.utcnow() + timedelta(days=30),
+        status="sent",
+    )
+    db.add(inv)
+    await db.flush()
+    # Auto-create Stripe invoice
+    stripe_url = None
+    try:
+        from app.services.stripe_service import create_stripe_invoice
+        sr = await create_stripe_invoice(
+            quote.company_name, quote.contact_email, quote.contact_name or "",
+            inv.description, quote.price_per_system, quote.system_count,
+            inv.invoice_number, "initial_assessment")
+        if sr.get("invoice_id"):
+            inv.stripe_invoice_id = sr["invoice_id"]
+            inv.stripe_hosted_url = sr["hosted_url"]
+            inv.stripe_pdf_url = sr.get("pdf_url")
+            stripe_url = sr["hosted_url"]
+    except Exception as e:
+        import logging; logging.getLogger("sentinel").warning(f"Stripe auto-invoice failed: {e}")
+    await db.commit()
+    return {"quote": _quote_dict(quote), "invoice_number": inv.invoice_number,
+            "invoice_total": inv.total_amount, "stripe_payment_url": stripe_url,
+            "message": f"Quote accepted. Invoice {inv.invoice_number} created."}
 
 # ─── Helper ───
 
