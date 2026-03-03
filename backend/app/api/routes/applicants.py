@@ -96,6 +96,48 @@ async def create_application(
     await db.commit()
     await db.refresh(application)
     await write_audit_log(db, action="application_submitted", resource_type="application", resource_id=application.id,
+
+    # Auto-generate quote for new application
+    try:
+        from app.services.ai_analysis import analyze_prospect, generate_executive_summary
+        from app.models.models import QuoteRequest, Quote
+        from app.api.routes.quotes import calc_pricing, generate_quote_number
+        odd_text = ""
+        if isinstance(application.odd_specification, dict):
+            odd_text = application.odd_specification.get("description", str(application.odd_specification))
+        elif application.odd_specification:
+            odd_text = str(application.odd_specification)
+        sector_map = {"autonomous_vehicle": "Autonomous Vehicles", "commercial_delivery_drone": "Aviation",
+            "autonomous_cargo_vessel": "Logistics & Warehouse", "precision_agriculture_drone": "Agriculture & Robotics",
+            "warehouse_amr_indoor": "Logistics & Warehouse", "port_cargo_handler": "Logistics & Warehouse",
+            "surgical_robot": "Healthcare & Medical AI", "algorithmic_trading_system": "Financial Systems"}
+        sector = sector_map.get(application.system_type, "Other")
+        qr = QuoteRequest(company_name=application.organization_name, contact_name=application.contact_name,
+            contact_email=application.contact_email, sector=sector, system_description=application.system_description or application.system_name,
+            odd_description=odd_text, estimated_systems=1, source="application", source_detail=application.application_number, status="analyzing")
+        db.add(qr)
+        await db.flush()
+        analysis = await analyze_prospect(application.organization_name, sector,
+            application.system_description or application.system_name, odd_text, 1, False, "")
+        sc = analysis.get("recommendedSystems", 1)
+        p = calc_pricing(sc, False)
+        summary = await generate_executive_summary(application.organization_name, sector, sc,
+            application.system_description or application.system_name, analysis.get("oddBreakdown"),
+            odd_text, p["mca_eligible"], p["year_one_total"], p["annual_total"], False)
+        q_num = await generate_quote_number(db)
+        quote = Quote(request_id=qr.id, quote_number=q_num, company_name=application.organization_name,
+            contact_name=application.contact_name, contact_email=application.contact_email, sector=sector,
+            system_count=sc, system_description=application.system_description or application.system_name,
+            odd_breakdown=analysis.get("oddBreakdown", []), expedited=False, price_per_system=p["price_per_system"],
+            annual_per_system=p["annual_per_system"], initial_total=p["initial_total"], annual_total=p["annual_total"],
+            year_one_total=p["year_one_total"], pricing_tier=p["pricing_tier"], ai_analysis=analysis,
+            executive_summary=summary, status="pending_review")
+        db.add(quote)
+        qr.status = "quoted"
+        await db.flush()
+        import logging; logging.getLogger("sentinel").info(f"Auto-quote {q_num} generated for application {application.application_number}")
+    except Exception as e:
+        import logging; logging.getLogger("sentinel").warning(f"Auto-quote failed for {application.application_number}: {e}")
         user_id=int(user["sub"]), user_email=user.get("email"), details={"system_name": application.system_name, "application_number": application.application_number})
     
     # Notify the applicant

@@ -260,3 +260,68 @@ def _quote_dict(q: Quote) -> dict:
         "expires_at": q.expires_at.isoformat() if q.expires_at else None,
         "created_at": q.created_at.isoformat() if q.created_at else None,
     }
+
+
+# ─── Public Inquiry (no auth — website form) ───
+
+class PublicInquiry(BaseModel):
+    company_name: str
+    contact_name: Optional[str] = None
+    contact_email: str
+    sector: str = "Other"
+    system_description: str
+    odd_description: Optional[str] = ""
+    estimated_systems: int = 1
+
+@router.post("/public/inquire", summary="Public inquiry — no auth", dependencies=[])
+async def public_inquiry(req: PublicInquiry, db: AsyncSession = Depends(get_db)):
+    """Website inquiry form. No login required. Auto-analyzes and queues for admin review."""
+    from app.models.models import QuoteRequest, Quote
+    qr = QuoteRequest(
+        company_name=req.company_name, contact_name=req.contact_name,
+        contact_email=req.contact_email, sector=req.sector,
+        system_description=req.system_description, odd_description=req.odd_description,
+        estimated_systems=req.estimated_systems, source="website", status="analyzing",
+    )
+    db.add(qr)
+    await db.flush()
+
+    try:
+        analysis = await analyze_prospect(
+            req.company_name, req.sector, req.system_description,
+            req.odd_description, req.estimated_systems, False, "")
+    except Exception as e:
+        analysis = {"recommendedSystems": req.estimated_systems, "recommendedSector": req.sector,
+                     "oddBreakdown": [], "summary": f"Analysis error: {e}", "flags": ["AI error"]}
+
+    sc = analysis.get("recommendedSystems", req.estimated_systems)
+    p = calc_pricing(sc, False)
+
+    try:
+        summary = await generate_executive_summary(
+            req.company_name, req.sector, sc, req.system_description,
+            analysis.get("oddBreakdown"), req.odd_description,
+            p["mca_eligible"], p["year_one_total"], p["annual_total"], False)
+    except Exception:
+        summary = ""
+
+    q_num = await generate_quote_number(db)
+    quote = Quote(
+        request_id=qr.id, quote_number=q_num,
+        company_name=req.company_name, contact_name=req.contact_name,
+        contact_email=req.contact_email, sector=req.sector,
+        system_count=sc, system_description=req.system_description,
+        odd_breakdown=analysis.get("oddBreakdown", []),
+        expedited=False, price_per_system=p["price_per_system"],
+        annual_per_system=p["annual_per_system"], initial_total=p["initial_total"],
+        annual_total=p["annual_total"], year_one_total=p["year_one_total"],
+        pricing_tier=p["pricing_tier"], ai_analysis=analysis,
+        executive_summary=summary, status="pending_review",
+    )
+    db.add(quote)
+    qr.status = "quoted"
+
+    return {
+        "message": "Thank you. Your inquiry has been received and a certification specialist will follow up within 2 business days.",
+        "reference": q_num,
+    }
