@@ -384,3 +384,101 @@ class Violation(Base):
     parameters = Column(Text)  # JSON
     
     session = relationship("EnveloSession", backref="violations")
+# ═══════════════════════════════════════════════════════════════════
+# APPEND TO: app/models/models.py
+# Add these classes at the bottom of the file, after existing models
+# ═══════════════════════════════════════════════════════════════════
+
+
+class QuoteRequest(Base):
+    """Raw intake from website inquiry or admin manual entry."""
+    __tablename__ = "quote_requests"
+    id = Column(Integer, primary_key=True, index=True)
+    company_name = Column(String(255), nullable=False)
+    contact_name = Column(String(255))
+    contact_email = Column(String(255))
+    sector = Column(String(100), nullable=False)
+    system_description = Column(Text, nullable=False)
+    odd_description = Column(Text)
+    estimated_systems = Column(Integer, default=1)
+    expedited = Column(Boolean, default=False)
+    source = Column(String(50), default="manual")  # website | manual | referral
+    source_detail = Column(String(255))
+    internal_notes = Column(Text)
+    status = Column(String(50), default="new")  # new | analyzing | quoted | archived
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    quotes = relationship("Quote", back_populates="request")
+
+
+class Quote(Base):
+    """AI-generated certification fee proposal."""
+    __tablename__ = "quotes"
+    id = Column(Integer, primary_key=True, index=True)
+    request_id = Column(Integer, ForeignKey("quote_requests.id"), nullable=True)
+    request = relationship("QuoteRequest", back_populates="quotes")
+    quote_number = Column(String(50), unique=True, index=True, nullable=False)
+    # Prospect (denormalized so quote stands alone)
+    company_name = Column(String(255), nullable=False)
+    contact_name = Column(String(255))
+    contact_email = Column(String(255))
+    sector = Column(String(100), nullable=False)
+    # Scope
+    system_count = Column(Integer, nullable=False)
+    system_description = Column(Text)
+    odd_breakdown = Column(JSON, default=list)
+    expedited = Column(Boolean, default=False)
+    # Pricing (locked at quote time)
+    price_per_system = Column(Integer, default=15000)
+    annual_per_system = Column(Integer, default=12000)
+    initial_total = Column(Integer, nullable=False)
+    annual_total = Column(Integer, nullable=False)
+    year_one_total = Column(Integer, nullable=False)
+    pricing_tier = Column(String(20), default="standard")  # standard | enterprise
+    # AI content
+    ai_analysis = Column(JSON)
+    executive_summary = Column(Text)
+    # Workflow
+    status = Column(String(50), default="draft", index=True)  # draft | pending_review | approved | sent | accepted | declined | expired
+    approved_by = Column(String(255))
+    approved_at = Column(DateTime)
+    sent_at = Column(DateTime)
+    expires_at = Column(DateTime)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+
+class BillingInvoice(Base):
+    """Invoice for certification fees and annual maintenance."""
+    __tablename__ = "billing_invoices"
+    id = Column(Integer, primary_key=True, index=True)
+    invoice_number = Column(String(50), unique=True, index=True, nullable=False)
+    certificate_id = Column(Integer, ForeignKey("certificates.id"), nullable=True)
+    quote_id = Column(Integer, ForeignKey("quotes.id"), nullable=True)
+    # Client
+    company_name = Column(String(255), nullable=False)
+    contact_name = Column(String(255))
+    contact_email = Column(String(255), nullable=False)
+    # Details
+    invoice_type = Column(String(50), nullable=False)  # initial_assessment | annual_maintenance | expedited | reassessment
+    description = Column(Text, nullable=False)
+    system_name = Column(String(255))
+    system_count = Column(Integer, default=1)
+    unit_amount = Column(Integer, nullable=False)       # Per system, dollars
+    total_amount = Column(Integer, nullable=False)       # Total, dollars
+    # Dates
+    issue_date = Column(DateTime, default=datetime.utcnow)
+    due_date = Column(DateTime, nullable=False)
+    period_start = Column(DateTime)                      # For annual: cert anniversary
+    period_end = Column(DateTime)                        # For annual: next anniversary
+    # Payment
+    status = Column(String(50), default="draft", index=True)  # draft | sent | paid | overdue | lapsed | cancelled
+    paid_at = Column(DateTime)
+    paid_amount = Column(Integer)
+    payment_method = Column(String(50))                  # wire | ach | check
+    payment_reference = Column(String(255))
+    # Automation
+    reminders_sent = Column(JSON, default=list)          # [{type: "90_day", sent_at: "..."}]
+    auto_generated = Column(Boolean, default=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

@@ -30,6 +30,7 @@ from app.core.database import init_db, get_db
 from app.core.security import get_current_user
 from fastapi import Depends
 from app.api.routes import audit as audit_routes, auth, dashboard, applicants, cat72, certificates, verification, licensees, envelo, apikeys, envelo_boundaries, registry, users, documents, deploy, session_routes, webhooks
+from app.api.routes import quotes as quotes_routes, billing as billing_routes
 
 # Logging setup
 
@@ -203,6 +204,13 @@ async def lifespan(app: FastAPI):
         "ALTER TABLE certificates ADD COLUMN suspended_by VARCHAR(100)",
         "ALTER TABLE certificates ADD COLUMN reinstated_at TIMESTAMP",
         "ALTER TABLE certificates ADD COLUMN reinstatement_reason TEXT",
+        "CREATE TABLE IF NOT EXISTS quote_requests (id SERIAL PRIMARY KEY, company_name VARCHAR(255) NOT NULL, contact_name VARCHAR(255), contact_email VARCHAR(255), sector VARCHAR(100) NOT NULL, system_description TEXT NOT NULL, odd_description TEXT, estimated_systems INTEGER DEFAULT 1, expedited BOOLEAN DEFAULT FALSE, source VARCHAR(50) DEFAULT 'manual', source_detail VARCHAR(255), internal_notes TEXT, status VARCHAR(50) DEFAULT 'new', created_at TIMESTAMP DEFAULT NOW(), updated_at TIMESTAMP DEFAULT NOW())",
+        "CREATE TABLE IF NOT EXISTS quotes (id SERIAL PRIMARY KEY, request_id INTEGER REFERENCES quote_requests(id), quote_number VARCHAR(50) UNIQUE NOT NULL, company_name VARCHAR(255) NOT NULL, contact_name VARCHAR(255), contact_email VARCHAR(255), sector VARCHAR(100) NOT NULL, system_count INTEGER NOT NULL, system_description TEXT, odd_breakdown JSON DEFAULT '[]', expedited BOOLEAN DEFAULT FALSE, price_per_system INTEGER DEFAULT 15000, annual_per_system INTEGER DEFAULT 12000, initial_total INTEGER NOT NULL, annual_total INTEGER NOT NULL, year_one_total INTEGER NOT NULL, pricing_tier VARCHAR(20) DEFAULT 'standard', ai_analysis JSON, executive_summary TEXT, status VARCHAR(50) DEFAULT 'draft', approved_by VARCHAR(255), approved_at TIMESTAMP, sent_at TIMESTAMP, expires_at TIMESTAMP, created_at TIMESTAMP DEFAULT NOW(), updated_at TIMESTAMP DEFAULT NOW())",
+        "CREATE TABLE IF NOT EXISTS billing_invoices (id SERIAL PRIMARY KEY, invoice_number VARCHAR(50) UNIQUE NOT NULL, certificate_id INTEGER, quote_id INTEGER, company_name VARCHAR(255) NOT NULL, contact_name VARCHAR(255), contact_email VARCHAR(255) NOT NULL, invoice_type VARCHAR(50) NOT NULL, description TEXT NOT NULL, system_name VARCHAR(255), system_count INTEGER DEFAULT 1, unit_amount INTEGER NOT NULL, total_amount INTEGER NOT NULL, issue_date TIMESTAMP DEFAULT NOW(), due_date TIMESTAMP NOT NULL, period_start TIMESTAMP, period_end TIMESTAMP, status VARCHAR(50) DEFAULT 'draft', paid_at TIMESTAMP, paid_amount INTEGER, payment_method VARCHAR(50), payment_reference VARCHAR(255), reminders_sent JSON DEFAULT '[]', auto_generated BOOLEAN DEFAULT FALSE, created_at TIMESTAMP DEFAULT NOW(), updated_at TIMESTAMP DEFAULT NOW())",
+        "CREATE INDEX IF NOT EXISTS idx_quotes_status ON quotes(status)",
+        "CREATE INDEX IF NOT EXISTS idx_quotes_number ON quotes(quote_number)",
+        "CREATE INDEX IF NOT EXISTS idx_billing_status ON billing_invoices(status)",
+        "CREATE INDEX IF NOT EXISTS idx_billing_due ON billing_invoices(due_date)",
     ]
     for mig in schema_migrations:
         async with engine.begin() as mig_conn:
@@ -665,6 +673,10 @@ app.include_router(deploy.router, prefix="/api", tags=["One-Command Deploy"])
 app.include_router(audit_routes.router, prefix="/api/audit", tags=["Audit Log"])
 app.include_router(ai_review.router, prefix="/api", tags=["AI Review"])
 app.include_router(surveillance_router, prefix="/api/surveillance", tags=["Surveillance"])
+app.include_router(quotes_routes.router, prefix="/api/v1/quotes", tags=["Quote Engine"])
+app.include_router(billing_routes.router, prefix="/api/v1/billing", tags=["Billing"])
+app.include_router(quotes_routes.router, prefix="/api/quotes", tags=["Quote Engine"])
+app.include_router(billing_routes.router, prefix="/api/billing", tags=["Billing"])
 
 
 
