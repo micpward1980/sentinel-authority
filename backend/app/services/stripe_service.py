@@ -22,6 +22,8 @@ async def get_or_create_customer(company_name: str, contact_email: str, contact_
         return ""
     
     # Search for existing customer
+    if not contact_email:
+        return ""
     existing = stripe.Customer.search(query=f'email:"{contact_email}"', limit=1)
     if existing.data:
         return existing.data[0].id
