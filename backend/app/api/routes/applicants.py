@@ -3,7 +3,7 @@
 from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func
+from sqlalchemy import select, func, delete
 from pydantic import BaseModel, EmailStr
 from typing import Optional, Dict, Any
 
@@ -645,6 +645,8 @@ async def delete_application(
     
     await write_audit_log(db, action="application_deleted", resource_type="application", resource_id=application.id,
         user_id=int(current_user["sub"]), user_email=current_user.get("email"), details={"application_number": application.application_number})
+    # Clean up audit logs for this application
+    await db.execute(delete(AuditLog).where(AuditLog.resource_type == "application", AuditLog.resource_id == application.id))
     await db.delete(application)
     await db.commit()
     
