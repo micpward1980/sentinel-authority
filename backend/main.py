@@ -267,6 +267,9 @@ async def lifespan(app: FastAPI):
             await agr_conn.execute(raw_text("ALTER TABLE applications ADD COLUMN IF NOT EXISTS agreement_accepted_at TIMESTAMPTZ"))
             await agr_conn.execute(raw_text("ALTER TABLE applications ADD COLUMN IF NOT EXISTS agreement_accepted_by VARCHAR(255)"))
             logger.info("Agreement columns ready")
+        except Exception as e:
+            logger.warning(f"Surveillance alerts table: {e}")
+
         # Clean up old stress test audit logs
         try:
             async with engine.begin() as cleanup_conn:
@@ -274,8 +277,6 @@ async def lifespan(app: FastAPI):
             logger.info("Cleaned up stale audit logs for app 13")
         except Exception as e:
             logger.warning(f"Audit cleanup: {e}")
-        except Exception as e:
-            logger.warning(f"Surveillance alerts table: {e}")
 
     # Start background tasks
     import asyncio
