@@ -21,12 +21,13 @@ INITIAL_ASSESSMENT = 15_000
 ANNUAL_MAINTENANCE = 12_000
 EXPEDITED_REVIEW = 22_500
 REASSESSMENT = 10_000
+SCOPE_ADJUSTMENT = 15000
 RATES = {"initial_assessment": INITIAL_ASSESSMENT, "annual_maintenance": ANNUAL_MAINTENANCE,
-         "expedited": EXPEDITED_REVIEW, "reassessment": REASSESSMENT}
+         "expedited": EXPEDITED_REVIEW, "reassessment": REASSESSMENT, "scope_adjustment": SCOPE_ADJUSTMENT}
 DESC_MAP = {"initial_assessment": "Initial Conformance Assessment",
             "annual_maintenance": "Annual Maintenance",
             "expedited": "Expedited Review (< 30 days)",
-            "reassessment": "Re-Assessment (post non-conformance)"}
+            "reassessment": "Re-Assessment (post non-conformance)", "scope_adjustment": "Scope Adjustment — Additional Systems"}
 
 
 async def generate_invoice_number(db: AsyncSession) -> str:
