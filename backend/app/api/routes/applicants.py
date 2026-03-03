@@ -95,7 +95,7 @@ async def create_application(
     db.add(application)
     await db.commit()
     await db.refresh(application)
-    await write_audit_log(db, action="application_submitted", resource_type="application", resource_id=application.id,
+    await write_audit_log(db, action="application_submitted", resource_type="application", resource_id=application.id, user_id=int(user["sub"]), user_email=user.get("email"), details={"system_name": application.system_name, "application_number": application.application_number})
 
     # Auto-generate quote for new application
     try:
@@ -138,7 +138,6 @@ async def create_application(
         import logging; logging.getLogger("sentinel").info(f"Auto-quote {q_num} generated for application {application.application_number}")
     except Exception as e:
         import logging; logging.getLogger("sentinel").warning(f"Auto-quote failed for {application.application_number}: {e}")
-        user_id=int(user["sub"]), user_email=user.get("email"), details={"system_name": application.system_name, "application_number": application.application_number})
     
     # Notify the applicant
     try:
