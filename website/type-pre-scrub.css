@@ -1,0 +1,90 @@
+/*
+ * ═══════════════════════════════════════════════════
+ * SENTINEL AUTHORITY — Typography System
+ * ═══════════════════════════════════════════════════
+ * Single source of truth for type scale.
+ * Loaded after page-level styles to normalize.
+ *
+ * Scale:
+ *   10px / 2px tracking   — labels, tags, hud-label
+ *   11px / 1.5px tracking — nav, hud-num, hud-link, brand
+ *   13px / 0.5px tracking — hud-desc, body mono
+ *   14px / 0              — hud-title
+ *   16px / 0              — section-lead
+ *   serif clamp           — section-title, h1
+ */
+
+/* ── Label tier (10px) ── */
+.section-label,
+.hud-label,
+.hud-link,
+.d-tag,
+.md-tag,
+.c72-phase-title {
+  font-family: var(--mono, 'IBM Plex Mono', monospace) !important;
+  font-size: 10px !important;
+  letter-spacing: 2px !important;
+  text-transform: uppercase !important;
+}
+
+/* ── Nav / UI tier (11px) ── */
+.brand-name,
+.back-link,
+.nav-links a,
+.nav-drawer a,
+.hud-num,
+.hud-link {
+  font-family: var(--mono, 'IBM Plex Mono', monospace) !important;
+  font-size: 11px !important;
+  letter-spacing: 1.5px !important;
+}
+
+/* ── Body mono tier (13px) ── */
+.hud-desc,
+.section-lead {
+  font-size: 13px !important;
+  letter-spacing: 0 !important;
+  line-height: 1.7 !important;
+}
+
+/* ── HUD title (14px) ── */
+.hud-title {
+  font-size: 14px !important;
+  letter-spacing: 0 !important;
+  line-height: 1.45 !important;
+}
+
+/* ── Section lead override ── */
+.section-lead {
+  font-size: 16px !important;
+  font-family: var(--sans, system-ui, sans-serif) !important;
+  max-width: 62ch !important;
+  line-height: 1.75 !important;
+}
+
+/* ── Section title ── */
+.section-title {
+  font-family: var(--serif, Georgia, serif) !important;
+  letter-spacing: -0.03em !important;
+  font-weight: 300 !important;
+  line-height: 1.1 !important;
+}
+
+/* ── Kill 6px and 3px tracking — never intentional ── */
+[style*="letter-spacing: 6px"] { letter-spacing: 2px !important; }
+[style*="letter-spacing:6px"] { letter-spacing: 2px !important; }
+[style*="letter-spacing: 3px"] { letter-spacing: 2px !important; }
+[style*="letter-spacing:3px"] { letter-spacing: 2px !important; }
+
+/* ── Kill text-shadow on type elements ── */
+.section-title, .section-label, .hud-title, .hud-label,
+.hud-desc, .hud-link, .hud-num, h1, h2, h3 {
+  text-shadow: none !important;
+}
+
+/* ── Mobile overrides ── */
+@media (max-width: 768px) {
+  .section-lead { font-size: 14px !important; }
+  .hud-desc { font-size: 12px !important; }
+  .hud-title { font-size: 13px !important; }
+}

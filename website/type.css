@@ -1,90 +1,11 @@
-/*
- * ═══════════════════════════════════════════════════
- * SENTINEL AUTHORITY — Typography System
- * ═══════════════════════════════════════════════════
- * Single source of truth for type scale.
- * Loaded after page-level styles to normalize.
- *
- * Scale:
- *   10px / 2px tracking   — labels, tags, hud-label
- *   11px / 1.5px tracking — nav, hud-num, hud-link, brand
- *   13px / 0.5px tracking — hud-desc, body mono
- *   14px / 0              — hud-title
- *   16px / 0              — section-lead
- *   serif clamp           — section-title, h1
- */
-
-/* ── Label tier (10px) ── */
-.section-label,
-.hud-label,
-.hud-link,
-.d-tag,
-.md-tag,
-.c72-phase-title {
-  font-family: var(--mono, 'IBM Plex Mono', monospace) !important;
-  font-size: 10px !important;
-  letter-spacing: 2px !important;
-  text-transform: uppercase !important;
-}
-
-/* ── Nav / UI tier (11px) ── */
-.brand-name,
-.back-link,
-.nav-links a,
-.nav-drawer a,
-.hud-num,
-.hud-link {
-  font-family: var(--mono, 'IBM Plex Mono', monospace) !important;
-  font-size: 11px !important;
-  letter-spacing: 1.5px !important;
-}
-
-/* ── Body mono tier (13px) ── */
-.hud-desc,
-.section-lead {
-  font-size: 13px !important;
-  letter-spacing: 0 !important;
-  line-height: 1.7 !important;
-}
-
-/* ── HUD title (14px) ── */
-.hud-title {
-  font-size: 14px !important;
-  letter-spacing: 0 !important;
-  line-height: 1.45 !important;
-}
-
-/* ── Section lead override ── */
-.section-lead {
-  font-size: 16px !important;
-  font-family: var(--sans, system-ui, sans-serif) !important;
-  max-width: 62ch !important;
-  line-height: 1.75 !important;
-}
-
-/* ── Section title ── */
-.section-title {
-  font-family: var(--serif, Georgia, serif) !important;
-  letter-spacing: -0.03em !important;
-  font-weight: 300 !important;
-  line-height: 1.1 !important;
-}
-
-/* ── Kill 6px and 3px tracking — never intentional ── */
-[style*="letter-spacing: 6px"] { letter-spacing: 2px !important; }
-[style*="letter-spacing:6px"] { letter-spacing: 2px !important; }
-[style*="letter-spacing: 3px"] { letter-spacing: 2px !important; }
-[style*="letter-spacing:3px"] { letter-spacing: 2px !important; }
-
-/* ── Kill text-shadow on type elements ── */
-.section-title, .section-label, .hud-title, .hud-label,
-.hud-desc, .hud-link, .hud-num, h1, h2, h3 {
-  text-shadow: none !important;
-}
-
-/* ── Mobile overrides ── */
-@media (max-width: 768px) {
-  .section-lead { font-size: 14px !important; }
-  .hud-desc { font-size: 12px !important; }
-  .hud-title { font-size: 13px !important; }
-}
+.section-label,.hud-label,.hud-link,.d-tag,.md-tag,.c72-phase-title{font-family:var(--mono,"IBM Plex Mono",monospace)!important;font-size:10px!important;letter-spacing:2px!important;text-transform:uppercase!important;}
+.brand-name,.back-link,.nav-links a,.nav-drawer a,.hud-num,.hud-link{font-family:var(--mono,"IBM Plex Mono",monospace)!important;font-size:11px!important;letter-spacing:1.5px!important;}
+.hud-desc{font-size:13px!important;letter-spacing:0!important;line-height:1.7!important;}
+.hud-title{font-size:14px!important;letter-spacing:0!important;line-height:1.45!important;}
+.section-lead{font-size:clamp(14px,2.5vw,16px)!important;font-family:var(--sans,system-ui,sans-serif)!important;max-width:62ch!important;line-height:1.75!important;}
+.section-title{font-family:var(--serif,Georgia,serif)!important;letter-spacing:-0.03em!important;font-weight:300!important;line-height:1.1!important;}
+[style*="letter-spacing: 6px"],[style*="letter-spacing:6px"]{letter-spacing:2px!important;}
+[style*="letter-spacing: 3px"],[style*="letter-spacing:3px"]{letter-spacing:2px!important;}
+.section-title,.section-label,.hud-title,.hud-label,.hud-desc,.hud-link,.hud-num,h1,h2,h3{text-shadow:none!important;}
+@media(max-width:768px){.hud-desc{font-size:12px!important;}.hud-title{font-size:13px!important;}.hud-num{font-size:10px!important;}}
+@media(max-width:480px){.section-label,.hud-label,.d-tag,.md-tag,.c72-phase-title{font-size:9px!important;letter-spacing:1.5px!important;}.hud-desc{font-size:11px!important;line-height:1.6!important;}.hud-title{font-size:12px!important;}.brand-name,.nav-drawer a{font-size:10px!important;}}

@@ -372,7 +372,7 @@
       right: 0;
       width: 280px;
       max-width: calc(100vw - var(--space-4));
-      height: calc(100vh - var(--nav-height)); height: calc(100svh - var(--nav-height));
+      height: calc(100vh - var(--nav-height));
       background: rgba(0,0,0,.96);
       border-left: 1px solid var(--border-glass);
       transform: translateX(100%);
@@ -2475,12 +2475,6 @@ footer{border-top:1px solid var(--hairline)!important;}
 
   <link rel="stylesheet" href="type.css">
   <link rel="stylesheet" href="global.css">
-<!-- SA:PERF:BEGIN -->
-<style id="sa-perf">.sa-visible,.sa-visible *{animation-play-state:running!important;}section:not(.sa-visible){animation-play-state:paused;}</style>
-<!-- SA:PERF:END -->
-<!-- SA:MOTION:BEGIN -->
-<script>var saReducedMotion=window.matchMedia("(prefers-reduced-motion:reduce)").matches;window.matchMedia("(prefers-reduced-motion:reduce)").addEventListener("change",function(e){saReducedMotion=e.matches;});</script>
-<!-- SA:MOTION:END -->
 </head>
 
 <body>
@@ -4141,7 +4135,7 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
           requestAnimationFrame(animate);
         }
 
-        var _ct=null;window.addEventListener('resize',function(){clearTimeout(_ct);_ct=setTimeout(resize,120);},{passive:true});
+        window.addEventListener('resize',resize);
         resize();
         initAgents();
 
@@ -4484,7 +4478,7 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
           requestAnimationFrame(animate);
         }
 
-        resize();var _pt=null;window.addEventListener('resize',function(){clearTimeout(_pt);_pt=setTimeout(resize,120);},{passive:true});
+        resize();window.addEventListener('resize',resize);
         requestAnimationFrame(animate);
       })();
       </script>
@@ -5159,7 +5153,7 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
       });
     }
     
-    var _rt=false;window.addEventListener('scroll',function(){if(!_rt){_rt=true;requestAnimationFrame(function(){checkReveal();_rt=false;});}},{passive:true});
+    window.addEventListener('scroll', checkReveal, { passive: true });
     window.addEventListener('load', checkReveal);
     checkReveal();
 
@@ -5463,11 +5457,11 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
-          
-          entry.target.classList.add('sa-visible');
+          entry.target.style.animationPlayState = 'running';
+          entry.target.querySelectorAll('*').forEach(el => el.style.animationPlayState = 'running');
         } else {
-          
-          entry.target.classList.remove('sa-visible');
+          entry.target.style.animationPlayState = 'paused';
+          entry.target.querySelectorAll('*').forEach(el => el.style.animationPlayState = 'paused');
         }
       });
     }, { threshold: 0.1 });
