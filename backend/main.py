@@ -604,6 +604,19 @@ async def start_backup_scheduler():
         from apscheduler.schedulers.background import BackgroundScheduler
         scheduler = BackgroundScheduler()
         scheduler.add_job(_run_scheduled_backup, "interval", hours=6, id="db_backup")
+        # Renewal automation: daily at 6am UTC
+        async def _run_renewal_cron():
+            import httpx
+            try:
+                async with httpx.AsyncClient(timeout=30) as client:
+                    await client.post("http://localhost:8080/api/billing/cron/renewals")
+            except Exception as e:
+                logger.warning(f"[RENEWAL] Cron failed: {e}")
+        from apscheduler.schedulers.asyncio import AsyncIOScheduler
+        renewal_scheduler = AsyncIOScheduler()
+        renewal_scheduler.add_job(_run_renewal_cron, "cron", hour=6, minute=0, id="renewal_cron")
+        renewal_scheduler.start()
+        logger.info("[RENEWAL] Daily cron scheduled — 6am UTC")
         scheduler.start()
         logger.info("[BACKUP] Scheduler started — every 6 hours")
 
