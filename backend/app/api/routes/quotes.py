@@ -303,28 +303,28 @@ def _quote_dict(q: Quote) -> dict:
 
 # ─── Public Inquiry (no auth — website form) ───
 
-class PublicInquiry(BaseModel):
-    company_name: str
-    contact_name: Optional[str] = None
-    contact_email: str
-    sector: str = "Other"
-    system_description: str
-    odd_description: Optional[str] = ""
-    estimated_systems: int = 1
-
-@router.post("/public/inquire", summary="Public inquiry — no auth", dependencies=[])
-async def public_inquiry(req: PublicInquiry, db: AsyncSession = Depends(get_db)):
-    """Website inquiry form. No login required. Auto-analyzes and queues for admin review."""
-    from app.models.models import QuoteRequest, Quote
-    qr = QuoteRequest(
-        company_name=req.company_name, contact_name=req.contact_name,
-        contact_email=req.contact_email, sector=req.sector,
-        system_description=req.system_description, odd_description=req.odd_description,
-        estimated_systems=req.estimated_systems, source="website", status="analyzing",
-    )
-    db.add(qr)
-    await db.flush()
-
+# class PublicInquiry(BaseModel):
+#     company_name: str
+#     contact_name: Optional[str] = None
+#     contact_email: str
+#     sector: str = "Other"
+#     system_description: str
+#     odd_description: Optional[str] = ""
+#     estimated_systems: int = 1
+# 
+# @router.post("/public/inquire", summary="Public inquiry — no auth", dependencies=[])
+# async def public_inquiry(req: PublicInquiry, db: AsyncSession = Depends(get_db)):
+#     """Website inquiry form. No login required. Auto-analyzes and queues for admin review."""
+#     from app.models.models import QuoteRequest, Quote
+#     qr = QuoteRequest(
+#         company_name=req.company_name, contact_name=req.contact_name,
+#         contact_email=req.contact_email, sector=req.sector,
+#         system_description=req.system_description, odd_description=req.odd_description,
+#         estimated_systems=req.estimated_systems, source="website", status="analyzing",
+#     )
+#     db.add(qr)
+#     await db.flush()
+# 
     try:
         analysis = await analyze_prospect(
             req.company_name, req.sector, req.system_description,
