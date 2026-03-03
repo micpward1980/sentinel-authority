@@ -31,6 +31,7 @@ from app.core.security import get_current_user
 from fastapi import Depends
 from app.api.routes import audit as audit_routes, auth, dashboard, applicants, cat72, certificates, verification, licensees, envelo, apikeys, envelo_boundaries, registry, users, documents, deploy, session_routes, webhooks
 from app.api.routes import quotes as quotes_routes, billing as billing_routes
+from app.api.routes import stripe_webhook
 
 # Logging setup
 
@@ -211,6 +212,9 @@ async def lifespan(app: FastAPI):
         "CREATE INDEX IF NOT EXISTS idx_quotes_number ON quotes(quote_number)",
         "CREATE INDEX IF NOT EXISTS idx_billing_status ON billing_invoices(status)",
         "CREATE INDEX IF NOT EXISTS idx_billing_due ON billing_invoices(due_date)",
+        "ALTER TABLE billing_invoices ADD COLUMN IF NOT EXISTS stripe_invoice_id VARCHAR(255)",
+        "ALTER TABLE billing_invoices ADD COLUMN IF NOT EXISTS stripe_hosted_url VARCHAR(500)",
+        "ALTER TABLE billing_invoices ADD COLUMN IF NOT EXISTS stripe_pdf_url VARCHAR(500)",
     ]
     for mig in schema_migrations:
         async with engine.begin() as mig_conn:
@@ -690,6 +694,7 @@ app.include_router(quotes_routes.router, prefix="/api/v1/quotes", tags=["Quote E
 app.include_router(billing_routes.router, prefix="/api/v1/billing", tags=["Billing"])
 app.include_router(quotes_routes.router, prefix="/api/quotes", tags=["Quote Engine"])
 app.include_router(billing_routes.router, prefix="/api/billing", tags=["Billing"])
+app.include_router(stripe_webhook.router, prefix="/api/webhooks", tags=["Webhooks"])
 
 
 

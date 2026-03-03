@@ -47,3 +47,4 @@ qrcode[pil]
 sentry-sdk[fastapi]==1.40.6
 anthropic
 apscheduler>=3.10
+stripe

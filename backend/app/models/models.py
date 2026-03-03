@@ -480,5 +480,8 @@ class BillingInvoice(Base):
     # Automation
     reminders_sent = Column(JSON, default=list)          # [{type: "90_day", sent_at: "..."}]
     auto_generated = Column(Boolean, default=False)
+    stripe_invoice_id = Column(String(255), nullable=True)
+    stripe_hosted_url = Column(String(500), nullable=True)
+    stripe_pdf_url = Column(String(500), nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

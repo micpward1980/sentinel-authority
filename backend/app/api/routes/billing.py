@@ -166,6 +166,19 @@ async def create_invoice(req: InvoiceCreate, db: AsyncSession = Depends(get_db),
 
     db.add(inv)
     await db.flush()
+    # Auto-create Stripe invoice
+    try:
+        from app.services.stripe_service import create_stripe_invoice
+        stripe_result = await create_stripe_invoice(
+            req.company_name, req.contact_email, req.contact_name or "",
+            inv.description, unit, req.system_count, inv.invoice_number, req.invoice_type)
+        if stripe_result.get("invoice_id"):
+            inv.stripe_invoice_id = stripe_result["invoice_id"]
+            inv.stripe_hosted_url = stripe_result["hosted_url"]
+            inv.stripe_pdf_url = stripe_result.get("pdf_url")
+    except Exception as e:
+        import logging; logging.getLogger("sentinel").warning(f"Stripe invoice creation failed: {e}")
+    await db.flush()
     return _inv_dict(inv)
 
 
@@ -331,6 +344,19 @@ async def process_renewals(db: AsyncSession = Depends(get_db)):
                     reminders_sent=[],
                 )
                 db.add(inv)
+    await db.flush()
+    # Auto-create Stripe invoice
+    try:
+        from app.services.stripe_service import create_stripe_invoice
+        stripe_result = await create_stripe_invoice(
+            req.company_name, req.contact_email, req.contact_name or "",
+            inv.description, unit, req.system_count, inv.invoice_number, req.invoice_type)
+        if stripe_result.get("invoice_id"):
+            inv.stripe_invoice_id = stripe_result["invoice_id"]
+            inv.stripe_hosted_url = stripe_result["hosted_url"]
+            inv.stripe_pdf_url = stripe_result.get("pdf_url")
+    except Exception as e:
+        import logging; logging.getLogger("sentinel").warning(f"Stripe invoice creation failed: {e}")
                 await db.flush()
                 results["invoices_created"] += 1
 
@@ -402,6 +428,6 @@ def _inv_dict(i: BillingInvoice) -> dict:
         "status": i.status, "paid_at": i.paid_at.isoformat() if i.paid_at else None,
         "paid_amount": i.paid_amount, "payment_method": i.payment_method,
         "payment_reference": i.payment_reference, "reminders_sent": i.reminders_sent,
-        "auto_generated": i.auto_generated,
+        "auto_generated": i.auto_generated, "stripe_invoice_id": getattr(i, "stripe_invoice_id", None), "stripe_hosted_url": getattr(i, "stripe_hosted_url", None), "stripe_pdf_url": getattr(i, "stripe_pdf_url", None),
         "created_at": i.created_at.isoformat() if i.created_at else None,
     }
