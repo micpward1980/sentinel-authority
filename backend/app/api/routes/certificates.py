@@ -401,3 +401,10 @@ async def list_certificates_paginated(
         } for c in certs],
         "total": total, "limit": limit, "offset": offset,
     }
+
+
+@router.get("/public/suspensions", summary="Public non-conformance history (alias)", include_in_schema=True)
+async def public_suspensions(db: AsyncSession = Depends(get_db)):
+    """Alias for /public/revocations — returns same data as 'suspensions' for website compatibility."""
+    data = await public_revocations(db)
+    return {"suspensions": data["revocations"], "total": data["total"]}
