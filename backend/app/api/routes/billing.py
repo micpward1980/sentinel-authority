@@ -222,6 +222,31 @@ async def record_payment(inv_id: int, body: PaymentRecord,
     return _inv_dict(inv)
 
 
+@router.post("/invoices/{inv_id}/stripe", summary="Create or retry Stripe invoice")
+async def send_to_stripe(inv_id: int,
+                         db: AsyncSession = Depends(get_db),
+                         user: dict = Depends(require_role(["admin", "operator"]))):
+    result = await db.execute(select(BillingInvoice).where(BillingInvoice.id == inv_id))
+    inv = result.scalar_one_or_none()
+    if not inv:
+        raise HTTPException(status_code=404, detail="Invoice not found")
+    if inv.stripe_invoice_id:
+        return {"stripe_invoice_id": inv.stripe_invoice_id, "stripe_payment_url": inv.stripe_hosted_url, "message": "Already sent"}
+    from app.services.stripe_service import create_stripe_invoice
+    stripe_result = await create_stripe_invoice(
+        company_name=inv.company_name, contact_email=inv.contact_email,
+        invoice_number=inv.invoice_number, invoice_type=inv.invoice_type,
+        unit_amount_dollars=inv.unit_amount or int(inv.total_amount / max(inv.system_count or 1, 1)),
+        system_count=inv.system_count or 1, due_days=30,
+    )
+    if stripe_result.get("invoice_id"):
+        inv.stripe_invoice_id = stripe_result["invoice_id"]
+        inv.stripe_hosted_url = stripe_result["hosted_url"]
+        inv.stripe_pdf_url = stripe_result.get("pdf_url")
+        await db.commit()
+        return {"stripe_invoice_id": stripe_result["invoice_id"], "stripe_payment_url": stripe_result["hosted_url"]}
+    return {"error": stripe_result.get("error", "Stripe failed")}
+
 # ─── Renewals ───
 
 @router.get("/renewals/upcoming", summary="Certificates due in next 90 days")
