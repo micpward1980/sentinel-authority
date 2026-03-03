@@ -12,7 +12,7 @@ logger = logging.getLogger("sentinel.stripe")
 stripe.api_key = os.getenv("STRIPE_SECRET_KEY", "")
 
 # ACH preferred at these amounts — 0.8% capped at $5 vs 2.9% on card
-PAYMENT_METHODS = ["us_bank_account", "card"]
+PAYMENT_METHODS = ["us_bank_account", "card", "customer_balance"]
 
 
 async def get_or_create_customer(company_name: str, contact_email: str, contact_name: str = None) -> str:
