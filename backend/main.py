@@ -555,7 +555,7 @@ All authenticated endpoints require a Bearer token obtained via `/api/auth/login
     version="1.0.0",
     lifespan=lifespan,
     docs_url=None,
-    openapi_url="/internal-openapi.json",
+    openapi_url=None,
     redoc_url=None,
     openapi_tags=OPENAPI_TAGS,
 )
@@ -912,3 +912,14 @@ async def protected_docs(credentials: HTTPBasicCredentials = Depends(security_ba
     <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist/swagger-ui-bundle.js"></script>
     <script>SwaggerUIBundle({{url:'/internal-openapi.json',dom_id:'#swagger-ui'}})</script>
     </body></html>"""
+
+# Password-protected OpenAPI schema
+from fastapi.responses import JSONResponse
+
+@app.get("/internal-openapi.json", include_in_schema=False)
+async def protected_openapi(credentials: HTTPBasicCredentials = Depends(security_basic)):
+    correct_user = secrets.compare_digest(credentials.username, os.environ.get("DOCS_USER", "admin"))
+    correct_pass = secrets.compare_digest(credentials.password, os.environ.get("DOCS_PASS", "sentinel2026"))
+    if not correct_user or not correct_pass:
+        raise HTTPException(status_code=401, detail="Unauthorized", headers={"WWW-Authenticate": "Basic"})
+    return JSONResponse(content=app.openapi())
