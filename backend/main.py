@@ -554,7 +554,7 @@ All authenticated endpoints require a Bearer token obtained via `/api/auth/login
     """.strip(),
     version="1.0.0",
     lifespan=lifespan,
-    docs_url="/internal-docs",
+    docs_url=None,
     openapi_url="/internal-openapi.json",
     redoc_url=None,
     openapi_tags=OPENAPI_TAGS,
@@ -892,3 +892,23 @@ async def mark_notifications_read(
 @app.api_route("/health", methods=["GET", "HEAD"])
 async def health_check():
     return {"status": "healthy"}
+# Password-protected API docs
+import secrets
+from fastapi.responses import HTMLResponse
+from fastapi import HTTPException, Depends
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
+
+security_basic = HTTPBasic()
+
+@app.get("/internal-docs", response_class=HTMLResponse, include_in_schema=False)
+async def protected_docs(credentials: HTTPBasicCredentials = Depends(security_basic)):
+    correct_user = secrets.compare_digest(credentials.username, os.environ.get("DOCS_USER", "admin"))
+    correct_pass = secrets.compare_digest(credentials.password, os.environ.get("DOCS_PASS", "sentinel2026"))
+    if not correct_user or not correct_pass:
+        raise HTTPException(status_code=401, detail="Unauthorized", headers={"WWW-Authenticate": "Basic"})
+    return f"""<!DOCTYPE html><html><head><title>SA API Docs</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist/swagger-ui.css">
+    </head><body><div id="swagger-ui"></div>
+    <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist/swagger-ui-bundle.js"></script>
+    <script>SwaggerUIBundle({{url:'/internal-openapi.json',dom_id:'#swagger-ui'}})</script>
+    </body></html>"""
