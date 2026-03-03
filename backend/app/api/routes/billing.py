@@ -234,8 +234,8 @@ async def send_to_stripe(inv_id: int,
         return {"stripe_invoice_id": inv.stripe_invoice_id, "stripe_payment_url": inv.stripe_hosted_url, "message": "Already sent"}
     from app.services.stripe_service import create_stripe_invoice
     stripe_result = await create_stripe_invoice(
-        company_name=inv.company_name, contact_email=inv.contact_email,
-        invoice_number=inv.invoice_number, invoice_type=inv.invoice_type,
+        company_name=inv.company_name, contact_name=inv.contact_name or inv.company_name, contact_email=inv.contact_email,
+        invoice_number=inv.invoice_number, invoice_type=inv.invoice_type, description=inv.description or "ODDC Certification Services",
         unit_amount_dollars=inv.unit_amount or int(inv.total_amount / max(inv.system_count or 1, 1)),
         system_count=inv.system_count or 1, due_days=30,
     )
