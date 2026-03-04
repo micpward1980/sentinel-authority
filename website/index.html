@@ -17,13 +17,13 @@
 
   <!-- Open Graph / LinkedIn / Slack -->
   <meta property="og:title" content="Sentinel Authority — Conformance Certification for Autonomous Systems" />
-  <meta property="og:description" content="Independent conformance certification for autonomous systems. Runtime-enforced boundaries, verified independently. Independent attestation of runtime boundary enforcement." />
+  <meta property="og:description" content="Independent conformance certification for autonomous systems. Runtime-assured boundaries, verified independently. Independent attestation of runtime boundary assurance." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://sentinelauthority.org/" />
   <meta property="og:image" content="https://sentinelauthority.org/og.webp" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Sentinel Authority — Conformance Certification for Autonomous Systems" />
-  <meta name="twitter:description" content="Independent conformance certification for autonomous systems. Runtime-enforced boundaries, verified independently. Independent attestation of runtime boundary enforcement." />
+  <meta name="twitter:description" content="Independent conformance certification for autonomous systems. Runtime-assured boundaries, verified independently. Independent attestation of runtime boundary assurance." />
 
   <!-- Canonical URL -->
   <link rel="canonical" href="https://sentinelauthority.org/" />
@@ -48,7 +48,7 @@
     "name": "Sentinel Authority",
     "url": "https://sentinelauthority.org/",
     "email": "info@sentinelauthority.org",
-    "description": "Independent conformance determination for autonomous systems. ODD Conformance Determination (ODDC) with ENVELO enforcement requirements."
+    "description": "Independent conformance determination for autonomous systems. ODD Conformance Determination (ODDC) with ENVELO assurance requirements."
   }
   </script>
 
@@ -57,21 +57,61 @@
        INSTITUTIONAL TOKEN SYSTEM — Supreme Court × ISO
        ═══════════════════════════════════════════════════ */
     :root {
+      color-scheme: light;
+
+      /* ── Palette ── */
       --ink:          #0f1021;
       --accent:       #2a2560;
       --accent-hover: #1d1a3b;
       --bg:           #ffffff;
       --bg-soft:      #f6f7f9;
+      --bg-deep:      #ffffff;
+      --bg-panel:     rgba(0,0,0,.025);
       --border:       #e6e8ec;
+      --border-glass: rgba(0,0,0,.06);
+      --border-subtle:rgba(0,0,0,.05);
       --muted:        #5c6270;
-      --ease:         150ms ease;
       --radius:       6px;
 
-      /* Legacy aliases — keep for backward compat */
-      --text-primary:   #0f1021;
-      --text-secondary: #5c6270;
-    }
+      /* ── Status colors ── */
+      --accent-green: #16873e;
+      --accent-amber: #9e6e12;
+      --accent-red:   #b43434;
 
+      /* ── Text hierarchy ── */
+      --text-primary:   rgba(15,18,30,.94);
+      --text-secondary: rgba(15,18,30,.90);
+      --text-tertiary:  rgba(15,18,30,.62);
+
+      /* ── Legacy aliases ── */
+      --purple-primary: #2a2560;
+      --purple-bright:  #2a2560;
+      --purple-glow:    transparent; /* deprecated */
+
+      /* ── Typography ── */
+      --serif: Georgia,'Source Serif 4',serif;
+      --mono:  'IBM Plex Mono',Consolas,monospace;
+      --sans:  'Inter',system-ui,-apple-system,sans-serif;
+
+      /* ── Motion ── */
+      --ease:     cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-out: cubic-bezier(0.33, 1, 0.68, 1);
+
+      /* ── Spacing scale ── */
+      --space-1:  14px;
+      --space-2:  24px;
+      --space-3:  40px;
+      --space-4:  48px;
+      --space-5:  64px;
+      --space-6:  80px;
+      --space-8:  96px;
+      --space-10: 120px;
+      --space-12: 160px;
+
+      /* ── Layout ── */
+      --max:        1320px;
+      --nav-height: 72px;
+    }
 
     /* Performance optimizations */
     @media (prefers-reduced-motion: reduce) {
@@ -81,58 +121,9 @@
         transition-duration: 0.01ms !important;
       }
     }
-    
+
     [class*="packet"], [class*="pulse"], [class*="flow"], .hero-ring {
       will-change: transform, opacity;
-    }
-    
-    /* Replace expensive box-shadow animations with opacity */
-
-    :root{
-      color-scheme: light;
-      
-      /* Core palette */
-      --purple-primary:#2a2560;
-      --purple-bright:#2a2560;
-      --purple-glow:transparent /* deprecated */;
-      --bg-deep:#ffffff;
-      --bg-panel:rgba(0,0,0,.025);
-      --accent-green:#16873e;
-      --accent-amber:#9e6e12;
-      --accent-red:#b43434;
-
-      /* Text hierarchy */
-      --text-primary:rgba(15,18,30,.94);
-      --text-secondary:rgba(15,18,30,.90);
-      --text-tertiary:rgba(15,18,30,.62);
-
-      /* Borders */
-      --border-glass:rgba(0,0,0,.06);
-      --border-subtle:rgba(0,0,0,.05);
-
-      /* Typography */
-      --serif:Georgia,'Source Serif 4',serif;
-      --mono:'IBM Plex Mono',Consolas,monospace;
-      --sans:'Inter',system-ui,-apple-system,sans-serif;
-
-      /* Timing */
-      --ease: cubic-bezier(0.16, 1, 0.3, 1);
-      --ease-out: cubic-bezier(0.33, 1, 0.68, 1);
-      
-      /* Spacing scale (10px base) */
-      --space-1: 14px;
-      --space-2: 24px;
-      --space-3: 40px;
-      --space-4: 48px;
-      --space-5: 64px;
-      --space-6: 80px;
-      --space-8: 96px;
-      --space-10: 120px;
-      --space-12: 160px;
-      
-      /* Layout */
-      --max: 1320px;
-      --nav-height: 72px;
     }
 
     *{ box-sizing:border-box; }
@@ -2545,7 +2536,7 @@ footer{border-top:1px solid var(--hairline)!important;}
         <div style="width:72px;height:1px;background:rgba(15,18,30,0.22);margin:0 0 32px;"></div>
         
         <p style="font-size:17px;color:rgba(15,18,30,0.75);max-width:480px;margin:0 0 14px;line-height:1.75;">
-          Independent verification of runtime boundary enforcement for autonomous systems.
+          Independent verification of runtime boundary assurance for autonomous systems.
         </p>
         
         </div>
@@ -2754,7 +2745,7 @@ footer{border-top:1px solid var(--hairline)!important;}
         continue;
       }
 
-      // Tier 2: in enforcement margin — ENVELO decelerating to MRC
+      // Tier 2: in assurance margin — ENVELO decelerating to MRC
       if (a.tier === 2) {
         a.vx *= 0.92;
         a.vy *= 0.92;
@@ -2816,7 +2807,7 @@ footer{border-top:1px solid var(--hairline)!important;}
         a.tier = 0;
       }
 
-      // Tier 2: crossed ODD into enforcement margin
+      // Tier 2: crossed ODD into assurance margin
       if (dist >= oddR) {
         a.tier = 2;
         a.mrcTimer = 2000 + Math.random()*1500;
@@ -3097,12 +3088,256 @@ footer{border-top:1px solid var(--hairline)!important;}
       </script>
     </section>
 
+    <!-- ═══════════════════════════════════════════════════
+         VIDEO — Explainer (insert after hero </section>)
+         ═══════════════════════════════════════════════════ -->
+    <section id="video" style="
+      padding: 0 0 var(--space-6);
+      background: var(--bg);
+    ">
+      <div style="
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 0 var(--space-2);
+      ">
+        <!-- Video container with custom player chrome -->
+        <div id="video-wrap" style="
+          position: relative;
+          width: 100%;
+          aspect-ratio: 16 / 9;
+          background: #0f1021;
+          border-radius: 4px;
+          overflow: hidden;
+          cursor: pointer;
+          box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 24px 60px rgba(15,16,33,0.12);
+        " onclick="playVideo()">
+
+          <!-- Poster / thumbnail (SA seal hero) -->
+          <img id="video-poster" src="03-sa-seal-hero.png" alt="Sentinel Authority — Watch the explainer"
+            style="
+              position: absolute;
+              inset: 0;
+              width: 100%;
+              height: 100%;
+              object-fit: cover;
+              transition: opacity 0.5s ease;
+            "
+          />
+
+          <!-- Custom play button -->
+          <div id="video-play-btn" style="
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: rgba(255,255,255, 0.12);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255, 0.18);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+          ">
+            <svg width="24" height="28" viewBox="0 0 24 28" fill="none" style="margin-left:3px;">
+              <path d="M2 2L22 14L2 26V2Z" fill="rgba(255,255,255,0.9)" />
+            </svg>
+          </div>
+
+          <!-- Kicker text below play button -->
+          <div id="video-kicker" style="
+            position: absolute;
+            bottom: 32px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: var(--mono);
+            font-size: 10px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.4);
+            white-space: nowrap;
+          ">90-SECOND OVERVIEW</div>
+
+          <!-- The actual video (hidden until play) -->
+          <video id="sa-video" preload="none" playsinline
+            style="
+              position: absolute;
+              inset: 0;
+              width: 100%;
+              height: 100%;
+              object-fit: cover;
+              opacity: 0;
+              transition: opacity 0.5s ease;
+            "
+          >
+            <!-- OPTION A: Self-hosted MP4 (put file in website folder) -->
+            <source src="sa-explainer-v2.mp4" type="video/mp4" />
+
+            <!-- OPTION B: If using Vimeo, delete this <video> element
+                 and uncomment the iframe version below -->
+          </video>
+
+          <!-- OPTION B: Vimeo embed (uncomment and replace VIDEO_ID)
+          <iframe id="sa-vimeo"
+            src=""
+            data-src="https://player.vimeo.com/video/VIDEO_ID?badge=0&autopause=0&player_id=0&app_id=58479&autoplay=1&title=0&byline=0&portrait=0&color=2a2560"
+            style="position:absolute;inset:0;width:100%;height:100%;border:0;opacity:0;transition:opacity .5s ease;"
+            allow="autoplay; fullscreen; picture-in-picture"
+            allowfullscreen
+          ></iframe>
+          -->
+        </div>
+      </div>
+    </section>
+
+    <script>
+    (function() {
+      var wrap    = document.getElementById('video-wrap');
+      var poster  = document.getElementById('video-poster');
+      var btn     = document.getElementById('video-play-btn');
+      var kicker  = document.getElementById('video-kicker');
+      var video   = document.getElementById('sa-video');
+      if (!wrap || !video) return;
+
+      // ── Inject progress bar ──
+      var progress = document.createElement('div');
+      progress.id = 'sa-progress';
+      progress.style.cssText = [
+        'position:absolute',
+        'bottom:0',
+        'left:0',
+        'height:2px',
+        'width:0%',
+        'background:#2a2560',
+        'transition:width 0.25s linear',
+        'z-index:10',
+        'pointer-events:none'
+      ].join(';');
+      wrap.appendChild(progress);
+
+      // ── Inject replay icon (hidden initially) ──
+      var replayBtn = document.createElement('div');
+      replayBtn.id = 'sa-replay';
+      replayBtn.innerHTML = '<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M14 4C8.48 4 4 8.48 4 14s4.48 10 10 10 10-4.48 10-10H22c0 4.42-3.58 8-8 8S6 18.42 6 14 9.58 6 14 6V2l5 4-5 4V6c-4.42 0-8 3.58-8 8" fill="rgba(255,255,255,0.85)"/></svg>';
+      replayBtn.style.cssText = [
+        'position:absolute',
+        'top:50%',
+        'left:50%',
+        'transform:translate(-50%,-50%)',
+        'width:72px',
+        'height:72px',
+        'border-radius:50%',
+        'background:rgba(255,255,255,0.12)',
+        'backdrop-filter:blur(12px)',
+        '-webkit-backdrop-filter:blur(12px)',
+        'border:1px solid rgba(255,255,255,0.18)',
+        'display:none',
+        'align-items:center',
+        'justify-content:center',
+        'cursor:pointer',
+        'transition:all 0.3s ease'
+      ].join(';');
+      wrap.appendChild(replayBtn);
+
+      var playing = false;
+
+      function showPlay() {
+        btn.style.opacity = '1';
+        btn.style.pointerEvents = 'auto';
+        btn.style.transform = 'translate(-50%,-50%) scale(1)';
+        replayBtn.style.display = 'none';
+      }
+
+      function hidePlay() {
+        btn.style.opacity = '0';
+        btn.style.pointerEvents = 'none';
+        replayBtn.style.display = 'none';
+      }
+
+      function showReplay() {
+        btn.style.opacity = '0';
+        btn.style.pointerEvents = 'none';
+        replayBtn.style.display = 'flex';
+      }
+
+      // ── Click to play / pause / replay ──
+      wrap.addEventListener('click', function() {
+        if (!playing) {
+          // First play or resume
+          video.style.opacity = '1';
+          poster.style.opacity = '0';
+          kicker.style.opacity = '0';
+          hidePlay();
+          video.play();
+          playing = true;
+        } else if (!video.paused) {
+          // Pause
+          video.pause();
+          showPlay();
+        } else {
+          // Resume
+          video.play();
+          hidePlay();
+        }
+      });
+
+      replayBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        video.currentTime = 0;
+        video.play();
+        playing = true;
+        hidePlay();
+        progress.style.width = '0%';
+      });
+
+      // ── Progress bar ──
+      video.addEventListener('timeupdate', function() {
+        if (video.duration) {
+          progress.style.width = ((video.currentTime / video.duration) * 100) + '%';
+        }
+      });
+
+      // ── End of video → reset to poster ──
+      video.addEventListener('ended', function() {
+        playing = false;
+        video.currentTime = 0;
+        video.style.opacity = '0';
+        poster.style.opacity = '1';
+        kicker.style.opacity = '1';
+        progress.style.width = '0%';
+        showPlay();
+      });
+
+      // ── Hover effect on play button ──
+      wrap.addEventListener('mouseenter', function() {
+        if (!playing || video.paused) {
+          btn.style.background = 'rgba(255,255,255,0.22)';
+          btn.style.transform = 'translate(-50%,-50%) scale(1.08)';
+          replayBtn.style.background = 'rgba(255,255,255,0.22)';
+          replayBtn.style.transform = 'translate(-50%,-50%) scale(1.08)';
+        }
+      });
+      wrap.addEventListener('mouseleave', function() {
+        btn.style.background = 'rgba(255,255,255,0.12)';
+        if (!playing || video.paused) {
+          btn.style.transform = 'translate(-50%,-50%) scale(1)';
+        }
+        replayBtn.style.background = 'rgba(255,255,255,0.12)';
+        replayBtn.style.transform = 'translate(-50%,-50%) scale(1)';
+      });
+
+    })();
+    </script>
+
 
     <!-- ═══ INEVITABILITY ANCHOR ═══ -->
     <section class="section" style="padding:24px 0 16px;">
       <div class="reveal" style="max-width:700px;margin:0 auto;text-align:center;">
         <p style="font-family:var(--serif);font-size:clamp(18px,2.5vw,24px);font-weight:300;color:rgba(15,18,30,0.88);line-height:1.55;letter-spacing:-0.01em;">
-          Autonomous systems are deployed based on manufacturer self-attestation. No independent mechanism verifies that runtime boundary enforcement is architectural and active.<br><br>
+          Autonomous systems are deployed based on manufacturer self-attestation. No independent mechanism verifies that runtime boundary assurance is architectural and active.<br><br>
           ODDC formalizes that missing category.
         </p>
       </div>
@@ -3150,10 +3385,10 @@ footer{border-top:1px solid var(--hairline)!important;}
     <section id="envelo" class="section">
       <div class="section-head reveal">
         <div>
-          <span class="section-label">RUNTIME ENFORCEMENT</span>
+          <span class="section-label">RUNTIME ASSURANCE</span>
           <h2 class="section-title">ENVELO Interlock</h2>
           <p class="section-lead">
-            Enforced Non-Violable Execution-Limit Override — a non-bypassable runtime enforcement layer providing three-tier response from self-correction to hard halt. ENVELO is an architecture requirement — operators implement it, Sentinel Authority independently verifies it.
+            Enforced Non-Violable Execution-Limit Override — a non-bypassable runtime assurance layer providing three-tier response from self-correction to hard halt. ENVELO is an architecture requirement — operators implement it, Sentinel Authority independently verifies it.
           </p>
 
         </div>
@@ -3285,11 +3520,11 @@ footer{border-top:1px solid var(--hairline)!important;}
         <div class="hud-frame hud-scanline"><i></i>
           <div class="hud-row" style="display:flex;align-items:flex-start;">
             <span class="hud-num">01</span><span class="hud-dot" style="margin-top:6px;"></span>
-            <div><div class="hud-title">Non-Bypassable</div><div class="hud-desc">All autonomous execution events pass through the enforcement layer. The architecture contains no alternative execution pathways that bypass enforcement.</div></div>
+            <div><div class="hud-title">Non-Bypassable</div><div class="hud-desc">All autonomous execution events pass through the assurance layer. The architecture contains no alternative execution pathways that bypass assurance.</div></div>
           </div>
           <div class="hud-row" style="display:flex;align-items:flex-start;">
             <span class="hud-num">02</span><span class="hud-dot" style="margin-top:6px;"></span>
-            <div><div class="hud-title">Tiered Enforcement</div><div class="hud-desc">Three enforcement tiers — self-correction, Minimum Risk Condition, and enforced halt. Each response level is architecturally mandatory.</div></div>
+            <div><div class="hud-title">Tiered Assurance</div><div class="hud-desc">Three assurance tiers — self-correction, Minimum Risk Condition, and hard halt. Each response level is architecturally mandatory.</div></div>
           </div>
           <div class="hud-row" style="display:flex;align-items:flex-start;">
             <span class="hud-num">03</span><span class="hud-dot" style="margin-top:6px;"></span>
@@ -3297,15 +3532,15 @@ footer{border-top:1px solid var(--hairline)!important;}
           </div>
           <div class="hud-row" style="display:flex;align-items:flex-start;">
             <span class="hud-num">04</span><span class="hud-dot" style="margin-top:6px;"></span>
-            <div><div class="hud-title">Tamper-Evident Audit Chain</div><div class="hud-desc">Every enforcement event, human decision, and system action is recorded in a SHA-256 hash-chained audit log. Database triggers prevent modification or deletion. HMAC-signed anchors are generated daily for independent chain verification. 19 distinct action types are captured across the full certification lifecycle. <a href="/conformance.html" style="color:var(--accent);text-decoration:underline;">Full audit specification →</a></div></div>
+            <div><div class="hud-title">Tamper-Evident Audit Chain</div><div class="hud-desc">Every assurance event, human decision, and system action is recorded in a SHA-256 hash-chained audit log. Database triggers prevent modification or deletion. HMAC-signed anchors are generated daily for independent chain verification. 19 distinct action types are captured across the full certification lifecycle. <a href="/conformance.html" style="color:var(--accent);text-decoration:underline;">Full audit specification →</a></div></div>
           </div>
           <div class="hud-row" style="display:flex;align-items:flex-start;">
             <span class="hud-num">05</span><span class="hud-dot" style="margin-top:6px;"></span>
-            <div><div class="hud-title">Standardized Boundary Event Determination</div><div class="hud-desc">ENVELO records boundary events per the ODDC specification. Exceedance conditions, enforcement activations, and drift indicators are categorized by the enforcement architecture and are not operator-configurable. Telemetry integrity is verified before CAT-72 begins.</div></div>
+            <div><div class="hud-title">Standardized Boundary Event Determination</div><div class="hud-desc">ENVELO records boundary events per the ODDC specification. Exceedance conditions, assurance activations, and drift indicators are categorized by the assurance architecture and are not operator-configurable. Telemetry integrity is verified before CAT-72 begins.</div></div>
           </div>
           <div class="hud-row" style="display:flex;align-items:flex-start;">
             <span class="hud-num">06</span><span class="hud-dot" style="margin-top:6px;"></span>
-            <div><div class="hud-title">Universal Auto-Discovery</div><div class="hud-desc">The ENVELO discovery engine is domain-agnostic. It observes system telemetry during normal operation and automatically generates enforceable boundaries — including numeric thresholds, geographic geofences, temporal windows, rate-of-change limits, cross-parameter correlations, and operational sequence prerequisites. No domain-specific code is required. <a href="/conformance.html" style="color:var(--accent);text-decoration:underline;">Full boundary type specification →</a></div></div>
+            <div><div class="hud-title">Universal Auto-Discovery</div><div class="hud-desc">The ENVELO discovery engine is domain-agnostic. It observes system telemetry during normal operation and automatically generates verified boundaries — including numeric thresholds, geographic geofences, temporal windows, rate-of-change limits, cross-parameter correlations, and operational sequence prerequisites. No domain-specific code is required. <a href="/conformance.html" style="color:var(--accent);text-decoration:underline;">Full boundary type specification →</a></div></div>
           </div>
         </div>
       </div>
@@ -3314,8 +3549,8 @@ footer{border-top:1px solid var(--hairline)!important;}
       <div class="reveal" style="max-width:700px;margin:var(--space-2) auto 0;">
         <div class="hud-frame"><i></i>
           <div class="hud-label" style="margin-bottom:16px;">DECISION AUTHORITY AND EXECUTION CONSTRAINT</div>
-          <div class="hud-desc" style="line-height:1.9;margin-bottom:12px;">Decision authority remains solely with the operator. Sentinel Authority does not influence system logic, model behavior, or operational thresholds. The ENVELO Interlock enforces operator-declared boundaries at the execution layer and does not override behavior within the declared ODD.</div>
-          <div class="hud-desc" style="line-height:1.9;margin-bottom:12px;">Enforcement is continuous — not limited to CAT-72 assessment periods. The interlock operates at all times on the operator's infrastructure. Removal or disablement invalidates certification.</div>
+          <div class="hud-desc" style="line-height:1.9;margin-bottom:12px;">Decision authority remains solely with the operator. Sentinel Authority does not influence system logic, model behavior, or operational thresholds. The ENVELO Interlock assures operator-declared boundaries at the execution layer and does not override behavior within the declared ODD.</div>
+          <div class="hud-desc" style="line-height:1.9;margin-bottom:12px;">Assurance is continuous — not limited to CAT-72 assessment periods. The interlock operates at all times on the operator's infrastructure. Removal or disablement invalidates certification.</div>
           <div style="margin-top:16px;padding:16px 20px;border-left:3px solid rgba(15,18,30,0.25);background:rgba(15,18,30,0.03);">
             <div style="font-family:var(--mono);font-size:13px;font-weight:600;color:rgba(15,18,30,0.85);line-height:1.7;">Removal or disablement of the ENVELO Interlock automatically invalidates the associated ODDC certificate.</div>
           </div>
@@ -3424,15 +3659,15 @@ footer{border-top:1px solid var(--hairline)!important;}
           <div style="width:1px;background:rgba(0,0,0,0.06);align-self:stretch;"></div>
           <div style="text-align:center;padding:16px 12px;flex:1;min-width:120px;">
             <div style="font-family:var(--mono);font-size:14px;letter-spacing:2px;color:#1d1a3b;margin-bottom:4px;">02</div>
-            <div style="font-family:var(--mono);font-size:14px;letter-spacing:2px;color:#1d1a3b;margin-bottom:6px;">SUSTAINED ENFORCEMENT VERIFICATION</div>
-            <div style="font-size:14px;color:#111318;margin-bottom:4px;">Enforcement Verified</div>
-            <div style="font-size:14px;color:rgba(15,18,30,0.64);">Minimum 72 cumulative hours of enforced operational exposure</div>
+            <div style="font-family:var(--mono);font-size:14px;letter-spacing:2px;color:#1d1a3b;margin-bottom:6px;">SUSTAINED ASSURANCE VERIFICATION</div>
+            <div style="font-size:14px;color:#111318;margin-bottom:4px;">Assurance Verified</div>
+            <div style="font-size:14px;color:rgba(15,18,30,0.64);">Minimum 72 cumulative hours of assured operational exposure</div>
           </div>
           <div style="width:1px;background:rgba(0,0,0,0.06);align-self:stretch;"></div>
           <div style="text-align:center;padding:16px 12px;flex:1;min-width:120px;border-bottom:1px solid rgba(22,135,62,0.50);">
             <div style="font-family:var(--mono);font-size:14px;letter-spacing:2px;color:rgba(22,135,62,1.00);margin-bottom:4px;">03</div>
             <div style="font-family:var(--mono);font-size:14px;letter-spacing:2px;color:rgba(22,135,62,1.00);margin-bottom:6px;">ENVELO INTERLOCK</div>
-            <div style="font-size:14px;color:#111318;margin-bottom:4px;">Enforcement Active</div>
+            <div style="font-size:14px;color:#111318;margin-bottom:4px;">Assurance Active</div>
             <div style="font-size:14px;color:rgba(15,18,30,0.64);">Non-bypassable runtime</div>
           </div>
           <div style="width:1px;background:rgba(0,0,0,0.06);align-self:stretch;"></div>
@@ -3462,12 +3697,12 @@ footer{border-top:1px solid var(--hairline)!important;}
         <div class="fg-card">
           <div class="fg-k">Gate 02</div>
           <div class="fg-t">Sustained Enforcement Verification</div>
-          <div class="fg-d">Minimum 72 cumulative hours of enforced operational exposure</div>
+          <div class="fg-d">Minimum 72 cumulative hours of assured operational exposure</div>
         </div>
         <div class="fg-card fg-card--active">
           <div class="fg-k">Gate 03</div>
           <div class="fg-t">ENVELO Interlock</div>
-          <div class="fg-d">Non-bypassable runtime enforcement active</div>
+          <div class="fg-d">Non-bypassable runtime assurance active</div>
         </div>
         <div class="fg-card">
           <div class="fg-k">Gate 04</div>
@@ -3501,7 +3736,7 @@ footer{border-top:1px solid var(--hairline)!important;}
           <div style="font-size:14px;color:#111318;line-height:2;">
             ODD defined with quantitative boundaries<br>
             Stable operation within defined ODD<br>
-            ENVELO enforcement architecturally present<br>
+            ENVELO assurance architecturally present<br>
             CAT-72 verification completed<br>
             Tamper-evident audit records available
           </div>
@@ -3522,7 +3757,7 @@ footer{border-top:1px solid var(--hairline)!important;}
         <div class="hud-frame hud-frame-amber"><i></i>
           <div class="hud-label" style="color:rgba(158,110,18,1.00);margin-bottom:8px;">BOUNDARY EXCEEDANCE</div>
           <p style="font-size:14px;color:#111318;line-height:1.6;margin:0;">
-            Any enforcement failure exceeding attested tolerances constitutes a boundary exceedance and initiates conformance review.
+            Any assurance failure exceeding attested tolerances constitutes a boundary exceedance and initiates conformance review.
           </p>
         </div>
       </div>
@@ -3533,7 +3768,7 @@ footer{border-top:1px solid var(--hairline)!important;}
           <span class="section-label">CONFORMANCE PROCEDURE</span>
           <h2 class="section-title">CAT-72</h2>
           <p class="section-lead">
-            Sustained cumulative verification of runtime boundary enforcement mechanisms across representative ODD conditions.
+            Sustained cumulative verification of runtime boundary assurance mechanisms across representative ODD conditions.
           </p>
 
         </div>
@@ -3615,17 +3850,17 @@ footer{border-top:1px solid var(--hairline)!important;}
           <div id="cat72-pc0" class="hud-row" style="cursor:pointer;display:flex;align-items:flex-start;gap:12px;transition:opacity 0.4s var(--ease);">
             <div style="width:5px;height:5px;border-radius:50%;background:var(--accent);transition:all 0.4s var(--ease);flex-shrink:0;margin-top:6px;" id="cat72-dot0"></div>
             <span class="hud-num" style="margin-top:2px;">01</span>
-            <div><div class="hud-title">Sustained Enforcement Exposure</div><div class="hud-desc">A minimum of 72 cumulative hours of system operation under active interlock enforcement within the declared ODD. Higher-risk operational domains may require extended verification periods as determined during the Pre-CAT-72 Audit Control Review.</div></div>
+            <div><div class="hud-title">Sustained Assurance Exposure</div><div class="hud-desc">A minimum of 72 cumulative hours of system operation under active interlock assurance within the declared ODD. Higher-risk operational domains may require extended verification periods as determined during the Pre-CAT-72 Audit Control Review.</div></div>
           </div>
           <div id="cat72-pc1" class="hud-row" style="cursor:pointer;display:flex;align-items:flex-start;gap:12px;transition:opacity 0.4s var(--ease);">
             <div style="width:5px;height:5px;border-radius:50%;background:var(--accent);transition:all 0.4s var(--ease);flex-shrink:0;margin-top:6px;" id="cat72-dot1"></div>
             <span class="hud-num" style="margin-top:2px;">02</span>
-            <div><div class="hud-title">Telemetry Integrity Verification</div><div class="hud-desc">Cryptographic audit chain maintained across all operational intervals. Each enforcement event is hash-chained and timestamped, producing a tamper-evident record of interlock activity throughout the verification period.</div></div>
+            <div><div class="hud-title">Telemetry Integrity Verification</div><div class="hud-desc">Cryptographic audit chain maintained across all operational intervals. Each assurance event is hash-chained and timestamped, producing a tamper-evident record of interlock activity throughout the verification period.</div></div>
           </div>
           <div id="cat72-pc2" class="hud-row" style="cursor:pointer;display:flex;align-items:flex-start;gap:12px;transition:opacity 0.4s var(--ease);">
             <div style="width:5px;height:5px;border-radius:50%;background:var(--accent);transition:all 0.4s var(--ease);flex-shrink:0;margin-top:6px;" id="cat72-dot2"></div>
             <span class="hud-num" style="margin-top:2px;">03</span>
-            <div><div class="hud-title">Pre-CAT-72 Audit Control Review</div><div class="hud-desc">Before CAT-72 testing is authorized, Sentinel Authority conducts a structured ODDC Audit Control Review — a formal evaluation of ODD boundary definition, ENVELO Interlock enforcement configuration, and telemetry readiness. Systems that do not meet the audit threshold are returned to the applicant with findings. This gate is the primary mechanism by which Sentinel Authority screens systems before they enter the verification period.</div></div>
+            <div><div class="hud-title">Pre-CAT-72 Audit Control Review</div><div class="hud-desc">Before CAT-72 testing is authorized, Sentinel Authority conducts a structured ODDC Audit Control Review — a formal evaluation of ODD boundary definition, ENVELO Interlock assurance configuration, and telemetry readiness. Systems that do not meet the audit threshold are returned to the applicant with findings. This gate is the primary mechanism by which Sentinel Authority screens systems before they enter the verification period.</div></div>
           </div>
           <div id="cat72-pc3" class="hud-row" style="cursor:pointer;display:flex;align-items:flex-start;gap:12px;transition:opacity 0.4s var(--ease);">
             <div style="width:5px;height:5px;border-radius:50%;background:var(--accent);transition:all 0.4s var(--ease);flex-shrink:0;margin-top:6px;" id="cat72-dot3"></div>
@@ -3639,14 +3874,14 @@ footer{border-top:1px solid var(--hairline)!important;}
       <div class="reveal" style="max-width:880px;margin:0 auto var(--space-2);">
         <div class="hud-frame"><i></i>
           <div class="hud-label" style="margin-bottom:16px;">POST-CERTIFICATION CONTINUOUS SURVEILLANCE</div>
-          <div class="hud-desc" style="line-height:1.9;margin-bottom:20px;">Certification remains valid only while enforcement remains active. Certified systems are subject to continuous conformance surveillance.</div>
+          <div class="hud-desc" style="line-height:1.9;margin-bottom:20px;">Certification remains valid only while assurance remains active. Certified systems are subject to continuous conformance surveillance.</div>
           <div class="hud-row" style="display:flex;align-items:flex-start;gap:12px;">
             <span class="hud-num" style="margin-top:2px;">01</span>
-            <div><div class="hud-title">Continuous Conformance Scoring</div><div class="hud-desc">Each certified system maintains a real-time conformance score computed from enforcement telemetry. Status levels are determined automatically from verified thresholds.</div></div>
+            <div><div class="hud-title">Continuous Conformance Scoring</div><div class="hud-desc">Each certified system maintains a real-time conformance score computed from assurance telemetry. Status levels are determined automatically from verified thresholds.</div></div>
           </div>
           <div class="hud-row" style="display:flex;align-items:flex-start;gap:12px;">
             <span class="hud-num" style="margin-top:2px;">02</span>
-            <div><div class="hud-title">Automatic Non-Conformance</div><div class="hud-desc">Systems are automatically marked non-conformant upon verified enforcement failure or telemetry loss. Determination is immediate and requires no human approval.</div></div>
+            <div><div class="hud-title">Automatic Non-Conformance</div><div class="hud-desc">Systems are automatically marked non-conformant upon verified assurance failure or telemetry loss. Determination is immediate and requires no human approval.</div></div>
           </div>
           <div class="hud-row" style="display:flex;align-items:flex-start;gap:12px;">
             <span class="hud-num" style="margin-top:2px;">03</span>
@@ -4182,7 +4417,7 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
       <div class="reveal" style="max-width:700px;margin:0 auto var(--space-2);">
         <div class="hud-frame"><i></i>
           <div class="hud-label" style="margin-bottom:12px;">VERIFICATION SCOPE</div>
-          <div class="hud-desc" style="line-height:1.9;">CAT-72 does not constitute functional safety validation, performance certification, or regulatory approval. It verifies enforcement persistence and telemetry integrity within the declared ODD and does not assess the adequacy or safety of declared limits.</div>
+          <div class="hud-desc" style="line-height:1.9;">CAT-72 does not constitute functional safety validation, performance certification, or regulatory approval. It verifies assurance persistence and telemetry integrity within the declared ODD and does not assess the adequacy or safety of declared limits.</div>
         </div>
       </div>
 
@@ -4192,7 +4427,7 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
           <span class="section-label">ASSESSMENT PROCEDURE</span>
           <h2 class="section-title">Conformance Process</h2>
           <p class="section-lead">
-            The ENVELO Interlock records and enforces system operation within the declared ODD, verifies boundary adherence per the CAT-72 procedure, and accumulates not less than seventy-two (72) cumulative enforcement hours.
+            The ENVELO Interlock records and assures system operation within the declared ODD, verifies boundary adherence per the CAT-72 procedure, and accumulates not less than seventy-two (72) cumulative assurance hours.
           </p>
         </div>
       </div>
@@ -4496,12 +4731,12 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
         </div>
         <div class="hud-frame hud-scanline" style="max-width:440px;margin:0 auto;"><i></i>
           <div class="fee-grid" style="display:grid;grid-template-columns:1fr 120px;align-items:center;" class="hud-row">
-            <div><div class="hud-title" style="font-weight:700;">Conformance Assessment</div><div class="hud-desc">Due at application — covers Pre-CAT-72 Audit Control Review, CAT-72 enforcement testing, and ODDC certificate issuance.</div></div>
+            <div><div class="hud-title" style="font-weight:700;">Conformance Assessment</div><div class="hud-desc">Due at application — covers Pre-CAT-72 Audit Control Review, CAT-72 assurance testing, and ODDC certificate issuance.</div></div>
             <span style="font-family:Consolas,monospace;font-size:14px;font-weight:400;color:#111318;text-align:right;">$15,000</span>
           </div>
           <div style="border-top:1px solid rgba(0,0,0,0.08);margin:4px 0;"></div>
           <div class="fee-grid" style="display:grid;grid-template-columns:1fr 120px;align-items:center;" class="hud-row">
-            <div><div class="hud-title" style="font-weight:700;">Annual Maintenance</div><div class="hud-desc">Begins at certificate issuance — continuous ENVELO Interlock enforcement verification, tamper-evident audit record maintenance, annual conformance renewal assessment, and public registry status maintenance.</div></div>
+            <div><div class="hud-title" style="font-weight:700;">Annual Maintenance</div><div class="hud-desc">Begins at certificate issuance — continuous ENVELO Interlock assurance verification, tamper-evident audit record maintenance, annual conformance renewal assessment, and public registry status maintenance.</div></div>
             <span style="font-family:Consolas,monospace;font-size:14px;font-weight:400;color:#111318;text-align:right;">$12,000</span>
           </div>
           <div style="border-top:1px solid rgba(0,0,0,0.08);margin:4px 0;"></div>
@@ -4512,6 +4747,8 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
         </div>
 
         <p style="text-align:center;font-size:14px;color:rgba(15,18,30,0.64);margin-top:12px;font-family:var(--mono);">All fees USD · Base rates · <a href="#contact" style="color:#1d1a3b;">Enterprise inquiries</a></p>
+        <p style="text-align:center;font-size:13px;color:rgba(15,18,30,0.55);margin-top:6px;font-family:var(--mono);">Conformance Assessment is a one-time fee per system. Annual Maintenance begins upon certificate issuance.</p>
+        <p style="text-align:center;font-size:13px;color:rgba(15,18,30,0.55);margin-top:4px;font-family:var(--mono);">Non-conformant systems may be resubmitted for reassessment.</p>
       </div>
 
       <!-- CTA -->
@@ -4529,7 +4766,7 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
           <span class="section-label">DATA AND RECORDS</span>
           <h2 class="section-title">Conformance Data Outputs</h2>
           <p class="section-lead">
-            Conformance cycles generate structured enforcement data indicating boundary adherence and exceedance conditions.
+            Conformance cycles generate structured assurance data indicating boundary adherence and exceedance conditions.
           </p>
         </div>
       </div>
@@ -4538,15 +4775,15 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
         <div class="hud-frame hud-scanline"><i></i>
           <div class="hud-row" style="display:flex;align-items:flex-start;">
             <span class="hud-num" style="min-width:56px;">01</span><span style="width:6px;height:6px;border-radius:50%;background:#1d1a3b;flex-shrink:0;margin-top:6px;"></span><div style="width:8px;flex-shrink:0;"></div>
-            <div><div class="hud-title">Boundary Exceedance Conditions</div><div class="hud-desc">Structured records of conditions under which enforcement actions were triggered during the verification period.</div></div>
+            <div><div class="hud-title">Boundary Exceedance Conditions</div><div class="hud-desc">Structured records of conditions under which assurance actions were triggered during the verification period.</div></div>
           </div>
           <div class="hud-row" style="display:flex;align-items:flex-start;">
             <span class="hud-num" style="min-width:56px;">02</span><span style="width:6px;height:6px;border-radius:50%;background:#1d1a3b;flex-shrink:0;margin-top:6px;"></span><div style="width:8px;flex-shrink:0;"></div>
-            <div><div class="hud-title">Cross-Cycle Enforcement Metrics</div><div class="hud-desc">Longitudinal enforcement data across certification periods, available for operator review and regulatory submission.</div></div>
+            <div><div class="hud-title">Cross-Cycle Enforcement Metrics</div><div class="hud-desc">Longitudinal assurance data across certification periods, available for operator review and regulatory submission.</div></div>
           </div>
           <div class="hud-row" style="display:flex;align-items:flex-start;">
             <span class="hud-num" style="min-width:56px;">03</span><span style="width:6px;height:6px;border-radius:50%;background:#1d1a3b;flex-shrink:0;margin-top:6px;"></span><div style="width:8px;flex-shrink:0;"></div>
-            <div><div class="hud-title">Structured Determination Records</div><div class="hud-desc">Reproducible, cryptographically authenticated enforcement records suitable for regulatory submission and underwriting review.</div></div>
+            <div><div class="hud-title">Structured Determination Records</div><div class="hud-desc">Reproducible, cryptographically authenticated assurance records suitable for regulatory submission and underwriting review.</div></div>
           </div>
           <div class="hud-row" style="display:flex;align-items:flex-start;">
             <span class="hud-num" style="min-width:56px;">04</span><span style="width:6px;height:6px;border-radius:50%;background:#1d1a3b;flex-shrink:0;margin-top:6px;"></span><div style="width:8px;flex-shrink:0;"></div>
@@ -4554,7 +4791,7 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
           </div>
         </div>
         
-        <p style="text-align:center;font-family:var(--mono);font-size:14px;color:rgba(180,52,52,0.75);margin-top:8px;letter-spacing:0.5px;">Systems may become non-conformant upon verified boundary exceedance or enforcement failure.</p>
+        <p style="text-align:center;font-family:var(--mono);font-size:14px;color:rgba(180,52,52,0.75);margin-top:8px;letter-spacing:0.5px;">Systems may become non-conformant upon verified boundary exceedance or assurance failure.</p>
       </div>
     </section>
 
@@ -4564,7 +4801,7 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
           <span class="section-label">GOVERNANCE IMPLICATIONS</span>
           <h2 class="section-title">Implications of Non-Conformance</h2>
           <p class="section-lead">
-            ODDC provides verified evidence of runtime boundary enforcement.
+            ODDC provides verified evidence of runtime boundary assurance.
           </p>
         </div>
       </div>
@@ -4575,7 +4812,7 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
             <span class="hud-num">01</span><span class="hud-dot" style="margin-top:6px;"></span>
             <div>
               <div class="hud-title">Procurement Review Efficiency</div>
-              <div class="hud-desc">Verified enforcement evidence reduces procurement uncertainty and supports structured vendor risk evaluation.</div>
+              <div class="hud-desc">Verified assurance evidence reduces procurement uncertainty and supports structured vendor risk evaluation.</div>
             </div>
           </div>
         </div>
@@ -4584,7 +4821,7 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
             <span class="hud-num">02</span><span class="hud-dot" style="margin-top:6px;"></span>
             <div>
               <div class="hud-title">Independent Risk Differentiation</div>
-              <div class="hud-desc">Certification provides auditable enforcement evidence for procurement and risk evaluation. Registry records are publicly accessible.</div>
+              <div class="hud-desc">Certification provides auditable assurance evidence for procurement and risk evaluation. Registry records are publicly accessible.</div>
             </div>
           </div>
         </div>
@@ -4593,7 +4830,7 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
             <span class="hud-num">03</span><span class="hud-dot" style="margin-top:6px;"></span>
             <div>
               <div class="hud-title">Defensible Governance</div>
-              <div class="hud-desc">Auditable evidence of verified, enforceable operational controls for compliance committees.</div>
+              <div class="hud-desc">Auditable evidence of verified, verified operational controls for compliance committees.</div>
             </div>
           </div>
         </div>
@@ -4602,7 +4839,7 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
             <span class="hud-num">04</span><span class="hud-dot" style="margin-top:6px;"></span>
             <div>
               <div class="hud-title">Insurance &amp; Liability</div>
-              <div class="hud-desc">ODDC produces structured, auditable runtime enforcement evidence suitable for autonomous system risk evaluation. Enforcement data supplements vendor self-attestation with auditable records.</div>
+              <div class="hud-desc">ODDC produces structured, auditable runtime assurance evidence suitable for autonomous system risk evaluation. Assurance data supplements vendor self-attestation with auditable records.</div>
             </div>
           </div>
         </div>
@@ -4616,7 +4853,7 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
           <span class="section-label">FOR ENTERPRISE PROCUREMENT</span>
           <h2 class="section-title">Evaluation of Runtime Boundary Enforcement</h2>
           <p class="section-lead">
-            Procurement review of autonomous systems should evaluate whether runtime boundary enforcement is architectural or policy-based, and whether verification is independent. Self-attested enforcement leaves governance risk unmitigated.
+            Procurement review of autonomous systems should evaluate whether runtime boundary assurance is architectural or policy-based, and whether verification is independent. Self-attested assurance leaves governance risk unmitigated.
           </p>
         </div>
       </div>
@@ -4624,11 +4861,11 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
       <div class="reveal" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:var(--space-3);margin-top:var(--space-2);">
         <div class="hud-frame"><i></i>
           <div class="hud-title" style="margin-bottom:12px;color:rgba(180,52,52,1.00);">Current State</div>
-          <div class="hud-desc" style="line-height:1.8;">Vendor self-assessments describe intentions, not enforcement architecture.</div>
+          <div class="hud-desc" style="line-height:1.8;">Vendor self-assessments describe intentions, not assurance architecture.</div>
         </div>
         <div class="hud-frame"><i></i>
           <div class="hud-title" style="margin-bottom:12px;color:rgba(22,135,62,1.00);">Available Mechanism</div>
-          <div class="hud-desc" style="line-height:1.8;">ODDC independently verifies runtime boundary enforcement. Certified systems are listed in the public registry.</div>
+          <div class="hud-desc" style="line-height:1.8;">ODDC independently verifies runtime boundary assurance. Certified systems are listed in the public registry.</div>
         </div>
       </div>
       <div class="reveal" style="text-align:center;margin-top:var(--space-2);">
@@ -4644,7 +4881,7 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
           <span class="section-label">FOR REGULATORS &amp; GOVERNMENT</span>
           <h2 class="section-title">Independent Verification of Runtime Boundary Enforcement</h2>
           <p class="section-lead">
-            Many regulatory frameworks rely on manufacturer self-assessment for autonomous system approval. ODDC provides a mechanism for independent enforcement verification.
+            Many regulatory frameworks rely on manufacturer self-assessment for autonomous system approval. ODDC provides a mechanism for independent assurance verification.
           </p>
         </div>
       </div>
@@ -4652,11 +4889,11 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
       <div class="reveal" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:var(--space-3);margin-top:var(--space-2);">
         <div class="hud-frame"><i></i>
           <div class="hud-title" style="margin-bottom:12px;color:rgba(180,52,52,1.00);">Current State</div>
-          <div class="hud-desc" style="line-height:1.8;">Approval mechanisms rely on manufacturer self-assessment without independent enforcement verification.</div>
+          <div class="hud-desc" style="line-height:1.8;">Approval mechanisms rely on manufacturer self-assessment without independent assurance verification.</div>
         </div>
         <div class="hud-frame"><i></i>
           <div class="hud-title" style="margin-bottom:12px;color:rgba(22,135,62,1.00);">Available Mechanism</div>
-          <div class="hud-desc" style="line-height:1.8;">ODDC provides independent enforcement verification compatible with existing regulatory frameworks.</div>
+          <div class="hud-desc" style="line-height:1.8;">ODDC provides independent assurance verification compatible with existing regulatory frameworks.</div>
         </div>
       </div>
       <div class="reveal" style="text-align:center;margin-top:var(--space-2);">
@@ -4672,14 +4909,14 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
           <span class="section-label">THE ENFORCEMENT GAP</span>
           <h2 class="section-title">Deployment Environment</h2>
           <p class="section-lead">
-            Autonomous systems are deployed without verified runtime enforcement. ODDC formalizes that missing category of verification.
+            Autonomous systems are deployed without verified runtime assurance. ODDC formalizes that missing category of verification.
           </p>
         </div>
       </div>
       <div class="reveal" style="max-width:700px;margin:0 auto;">
         <div class="hud-frame hud-scanline"><i></i>
-          <div class="hud-desc" style="line-height:1.9;margin-bottom:16px;">Autonomous systems are commonly deployed based on manufacturer self-attestation. No independent mechanism verifies that runtime boundary enforcement is architectural and active.</div>
-          <div class="hud-desc" style="line-height:1.9;">ODDC formalizes independent verification of runtime boundary enforcement through non-bypassable interlock architecture (ENVELO), cumulative enforcement verification (CAT-72), and tamper-evident audit records. Compatible with existing regulatory frameworks without displacing them.</div>
+          <div class="hud-desc" style="line-height:1.9;margin-bottom:16px;">Autonomous systems are commonly deployed based on manufacturer self-attestation. No independent mechanism verifies that runtime boundary assurance is architectural and active.</div>
+          <div class="hud-desc" style="line-height:1.9;">ODDC formalizes independent verification of runtime boundary assurance through non-bypassable interlock architecture (ENVELO), cumulative assurance verification (CAT-72), and tamper-evident audit records. Compatible with existing regulatory frameworks without displacing them.</div>
         </div>
       </div>
     </section>
@@ -4691,7 +4928,7 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
           <span class="section-label">CERTIFICATION SCOPE</span>
           <h2 class="section-title">What ODDC Does Not Certify</h2>
           <p class="section-lead">
-            ODDC certification is limited to runtime boundary enforcement.
+            ODDC certification is limited to runtime boundary assurance.
           </p>
         </div>
       </div>
@@ -4743,11 +4980,11 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
       <div class="reveal" style="max-width: 700px; margin: 0 auto;">
         <div class="hud-frame hud-scanline"><i></i>
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-            <span class="hud-label">RUNTIME ENFORCEMENT</span>
+            <span class="hud-label">RUNTIME ASSURANCE</span>
             <span class="hud-dot hud-dot-green"></span>
           </div>
           <div style="font-family:var(--serif);font-size:22px;color:#111318;font-weight:200;margin-bottom:8px;">ENVELO Interlock</div>
-          <div class="hud-desc" style="margin-bottom:16px;max-width:440px;">Non-bypassable execution-layer enforcement of operator-declared operational boundaries. Normative specification and deployment requirements are published in the Standards Library.</div>
+          <div class="hud-desc" style="margin-bottom:16px;max-width:440px;">Non-bypassable execution-layer assurance of operator-declared operational boundaries. Normative specification and deployment requirements are published in the Standards Library.</div>
           <div class="hud-row" style="display:flex;justify-content:space-between;align-items:center;">
         <a href="mailto:regulatory@sentinelauthority.org?subject=ODDC%20Regulatory%20Integration" class="hud-link" style="font-size:14px;">Regulatory Integration Documentation &#x2192;</a>
             <span class="hud-label">REQUIRED FOR ODDC</span>
@@ -4907,7 +5144,7 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
           </div>
           <div style="border-top:1px solid rgba(15,18,30,0.08);padding-top:20px;">
             <div style="font-family:var(--mono);font-size:11px;letter-spacing:1.5px;color:rgba(15,18,30,0.45);margin-bottom:10px;">TELEMETRY PROVENANCE</div>
-            <div style="font-family:var(--mono);font-size:13px;color:rgba(15,18,30,0.65);line-height:1.7;max-width:280px;margin:0 auto;">Sentinel Authority verifies enforcement behavior against telemetry as received. The operator bears sole responsibility for sensor accuracy, calibration, and data integrity.</div>
+            <div style="font-family:var(--mono);font-size:13px;color:rgba(15,18,30,0.65);line-height:1.7;max-width:280px;margin:0 auto;">Sentinel Authority verifies assurance behavior against telemetry as received. The operator bears sole responsibility for sensor accuracy, calibration, and data integrity.</div>
           </div>
         </div>
       </div>
@@ -4922,7 +5159,7 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
           Independent conformance supports infrastructure-scale deployment of autonomous systems.
         </p>
         <p style="font-family:var(--mono);font-size:14px;color:rgba(15,18,30,0.55);line-height:1.8;margin-top:20px;">
-          ODDC defines enforceable operational boundaries subject to independent attestation.
+          ODDC defines verified operational boundaries subject to independent attestation.
         </p>
       </div>
     </section>
@@ -5585,7 +5822,7 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
 
 
 <!-- Privacy Notice Bar -->
-<div id="privacy-bar" style="position:fixed;bottom:0;left:0;right:0;background:#0f1021;color:#fff;font-family:Inter,sans-serif;font-size:13px;padding:14px 24px;display:flex;align-items:center;justify-content:center;gap:16px;z-index:9999;transform:translateY(100%);transition:transform 0.4s ease;">
+<div id="privacy-bar" style="position:fixed;bottom:0;left:0;right:0;background:#0f1021;color:#fff;font-family:Inter,sans-serif;font-size:13px;padding:14px 24px;display:flex;align-items:center;justify-content:center;gap:16px;z-index:100001;transform:translateY(100%);transition:transform 0.4s ease;">
   <span style="opacity:0.85;">This site does not use tracking cookies or collect personal data.</span>
   <button onclick="document.getElementById('privacy-bar').style.transform='translateY(100%)';localStorage.setItem('sa-privacy-ack','1')" style="background:rgba(255,255,255,0.15);color:#fff;border:1px solid rgba(255,255,255,0.25);padding:6px 16px;border-radius:4px;font-size:12px;cursor:pointer;font-family:Inter,sans-serif;white-space:nowrap;">Got it</button>
 </div>
