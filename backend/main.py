@@ -266,13 +266,17 @@ async def lifespan(app: FastAPI):
         try:
             await agr_conn.execute(raw_text("ALTER TABLE applications ADD COLUMN IF NOT EXISTS agreement_accepted_at TIMESTAMPTZ"))
             await agr_conn.execute(raw_text("ALTER TABLE applications ADD COLUMN IF NOT EXISTS agreement_accepted_by VARCHAR(255)"))
-
-        async with engine.begin() as disc_conn:
-            await disc_conn.execute(raw_text("ALTER TABLE quotes ADD COLUMN IF NOT EXISTS discount_percent INTEGER DEFAULT 0"))
-            await disc_conn.execute(raw_text("ALTER TABLE quotes ADD COLUMN IF NOT EXISTS discount_reason VARCHAR(255)"))
-            logger.info("Discount columns ready")
             logger.info("Agreement columns ready")
         except Exception as e:
+            logger.warning(f"Agreement columns: {e}")
+
+        try:
+            async with engine.begin() as disc_conn:
+                await disc_conn.execute(raw_text("ALTER TABLE quotes ADD COLUMN IF NOT EXISTS discount_percent INTEGER DEFAULT 0"))
+                await disc_conn.execute(raw_text("ALTER TABLE quotes ADD COLUMN IF NOT EXISTS discount_reason VARCHAR(255)"))
+            logger.info("Discount columns ready")
+        except Exception as e:
+            logger.warning(f"Discount columns: {e}")
             logger.warning(f"Surveillance alerts table: {e}")
 
         # Clean up old stress test audit logs
