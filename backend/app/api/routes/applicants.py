@@ -178,7 +178,7 @@ async def list_applications(
             query = query.where(Application.state.in_(["suspended", "revoked"]))
         else:
             query = query.where(Application.state == state)
-    else:
+    elif not state:
         # Default: only show intake pipeline — exclude graduated apps
         query = query.where(Application.state.in_(["pending", "under_review", "approved", "failed", "rejected"]))
     if search:
@@ -972,7 +972,7 @@ async def preview_state_change_email(
                 <p>Please contact info@sentinelauthority.org for more information.</p>
             </div>
         </div>"""
-    else:
+    elif not state:
         email_subject = f"Application Update - {app.system_name}"
         email_html = f"""<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <div style="background: #5B4B8A; padding: 20px; text-align: center;">
