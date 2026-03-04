@@ -8,7 +8,7 @@ from datetime import datetime, timezone
 from app.services.audit_service import write_audit_log
 from fastapi import APIRouter, Depends, HTTPException, Header
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, func
 from sqlalchemy.orm.attributes import flag_modified
 from pydantic import BaseModel
 from typing import Optional, Dict, Any, List
