@@ -279,13 +279,6 @@ async def lifespan(app: FastAPI):
             logger.warning(f"Discount columns: {e}")
             logger.warning(f"Surveillance alerts table: {e}")
 
-        # Clean up old stress test audit logs
-        try:
-            async with engine.begin() as cleanup_conn:
-                await cleanup_conn.execute(raw_text("DELETE FROM audit_logs WHERE resource_type = 'application' AND resource_id = 13 AND timestamp < '2026-03-03'"))
-            logger.info("Cleaned up stale audit logs for app 13")
-        except Exception as e:
-            logger.warning(f"Audit cleanup: {e}")
 
     # Start background tasks
     import asyncio
