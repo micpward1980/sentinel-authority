@@ -1,6 +1,6 @@
 """User Management routes (Admin only)."""
 
-from fastapi import Query,  APIRouter, Depends, HTTPException, status, Response
+from fastapi import Query, APIRouter, Depends, HTTPException, status, Response, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, text
 from pydantic import BaseModel, EmailStr
@@ -272,10 +272,11 @@ async def delete_user(
 @router.post("/{user_id}/reset-password", summary="Admin: reset user password")
 async def reset_password(
     user_id: int,
+    request: Request,
     db: AsyncSession = Depends(get_db),
     current_user: dict = Depends(require_admin)
 ):
-    """Generate a new password for a user (admin only)."""
+    """Generate or set a new password for a user (admin only)."""
     import secrets
     
     result = await db.execute(select(User).where(User.id == user_id))
@@ -283,8 +284,12 @@ async def reset_password(
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     
-    # Generate temporary password
-    new_password = secrets.token_urlsafe(8) + "A1!"
+    # Use provided password or generate one
+    try:
+        body = await request.json()
+        new_password = body.get("new_password") or secrets.token_urlsafe(8) + "A1!"
+    except Exception:
+        new_password = secrets.token_urlsafe(8) + "A1!"
     user.hashed_password = get_password_hash(new_password)
     
     await db.commit()
