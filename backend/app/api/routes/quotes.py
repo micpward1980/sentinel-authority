@@ -315,3 +315,25 @@ async def delete_quote(quote_id: int,
     await db.delete(q)
     await db.commit()
     return {"deleted": True, "id": quote_id}
+
+@router.post("/quotes/{quote_id}/discount", summary="Apply discount to quote")
+async def apply_discount(quote_id: int, body: dict,
+                         db: AsyncSession = Depends(get_db),
+                         user: dict = Depends(require_role(["admin"]))):
+    result = await db.execute(select(Quote).where(Quote.id == quote_id))
+    q = result.scalar_one_or_none()
+    if not q:
+        raise HTTPException(status_code=404, detail="Quote not found")
+    pct = body.get("discount_percent", 0)
+    if pct < 0 or pct > 100:
+        raise HTTPException(status_code=400, detail="Discount must be 0-100")
+    q.discount_percent = pct
+    q.discount_reason = body.get("reason", "")
+    # Recalculate totals
+    base_initial = q.price_per_system * q.system_count
+    base_annual = q.annual_per_system * q.system_count
+    q.initial_total = int(base_initial * (1 - pct / 100))
+    q.annual_total = int(base_annual * (1 - pct / 100))
+    q.year_one_total = q.initial_total + q.annual_total
+    await db.commit()
+    return {"discount_percent": pct, "initial_total": q.initial_total, "annual_total": q.annual_total, "year_one_total": q.year_one_total}

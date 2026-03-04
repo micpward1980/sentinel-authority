@@ -435,6 +435,9 @@ class Quote(Base):
     annual_total = Column(Integer, nullable=False)
     year_one_total = Column(Integer, nullable=False)
     pricing_tier = Column(String(20), default="standard")  # standard | enterprise
+    # Discount
+    discount_percent = Column(Integer, default=0)
+    discount_reason = Column(String(255))
     # AI content
     ai_analysis = Column(JSON)
     executive_summary = Column(Text)
