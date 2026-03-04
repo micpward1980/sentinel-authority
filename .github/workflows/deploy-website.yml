@@ -1,24 +1,10 @@
 name: Deploy Website
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'website/**'
+  workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18
-      - name: Deploy to Vercel
-        run: |
-          npm install -g vercel
-          OUTPUT=$(vercel deploy ./website --prod --yes --force --token=${{ secrets.VERCEL_TOKEN }} 2>&1)
-          echo "$OUTPUT"
-          URL=$(echo "$OUTPUT" | grep "Production:" | grep -o 'https://[^ ]*\.vercel\.app' | head -1)
-          vercel alias "$URL" www.sentinelauthority.org --token=${{ secrets.VERCEL_TOKEN }} --scope=team_QnhuOLbtZMDw0fonILDfynLd
-          vercel alias "$URL" sentinelauthority.org --token=${{ secrets.VERCEL_TOKEN }} --scope=team_QnhuOLbtZMDw0fonILDfynLd
+      - run: echo "Manual deploy only. Run deploy.sh locally."
