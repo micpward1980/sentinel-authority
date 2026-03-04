@@ -304,7 +304,7 @@ def _quote_dict(q: Quote) -> dict:
 # ─── Public Inquiry (no auth — website form) ───
 
 
-@router.delete("/quotes/{quote_id}", summary="Delete a quote")
+@router.delete("/{quote_id}", summary="Delete a quote")
 async def delete_quote(quote_id: int,
                        db: AsyncSession = Depends(get_db),
                        user: dict = Depends(require_role(["admin"]))):
@@ -316,7 +316,7 @@ async def delete_quote(quote_id: int,
     await db.commit()
     return {"deleted": True, "id": quote_id}
 
-@router.post("/quotes/{quote_id}/discount", summary="Apply discount to quote")
+@router.post("/{quote_id}/discount", summary="Apply discount to quote")
 async def apply_discount(quote_id: int, body: dict,
                          db: AsyncSession = Depends(get_db),
                          user: dict = Depends(require_role(["admin"]))):
