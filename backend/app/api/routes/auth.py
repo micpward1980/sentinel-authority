@@ -4,7 +4,7 @@ import pyotp
 import base64
 import io
 """Authentication routes."""
-from app.services.email_service import notify_admin_new_registration
+from app.services.email_service import notify_admin_new_registration, notify_registrant_pending
 from app.services.audit_service import write_audit_log
 
 from datetime import datetime, timedelta
@@ -300,6 +300,7 @@ async def register(request: Request, user_data: UserCreate, db: AsyncSession = D
         await db.refresh(user)
     
     await notify_admin_new_registration(user.email, user.full_name)
+    await notify_registrant_pending(user.email, user.full_name)
     
     await write_audit_log(db, action="user_registered", resource_type="user", resource_id=user.id,
         user_id=user.id, user_email=user.email, details={"organization": user.organization, "ip": request.client.host if request.client else "unknown"})

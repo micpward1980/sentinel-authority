@@ -844,3 +844,32 @@ async def notify_customer_critical(to: str, system_name: str, org_name: str, cer
       </div>
     </div>"""
     await send_email(to, subject, html)
+
+
+async def notify_registrant_pending(email: str, name: str = None):
+    """Send confirmation email to new registrant while pending approval"""
+    display_name = name or "there"
+    html = f"""
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <div style="background: #1d1a3b; padding: 20px; text-align: center;">
+            <h1 style="color: white; margin: 0; font-size: 18px; letter-spacing: 2px;">SENTINEL AUTHORITY</h1>
+        </div>
+        <div style="padding: 30px; background: #f9f9f9;">
+            <h2 style="color: #1d1a3b;">Account Received</h2>
+            <p>Hi {display_name},</p>
+            <p>Thank you for registering with the Sentinel Authority ODDC Certification Portal.</p>
+            <p>Your account is currently <strong>pending review</strong>. A member of our team will verify your registration and activate your account within <strong>1 business day</strong>.</p>
+            <p>Once approved, you will be able to:</p>
+            <ul style="color: #444; line-height: 1.8;">
+                <li>Submit ODDC certification applications</li>
+                <li>Track your certification status</li>
+                <li>Access the ENVELO Interlock dashboard</li>
+            </ul>
+            <p style="margin-top: 24px; color: #666; font-size: 13px;">Questions? Reply to this email or contact us at <a href="mailto:info@sentinelauthority.org" style="color: #1d1a3b;">info@sentinelauthority.org</a></p>
+        </div>
+        <div style="padding: 16px; text-align: center; background: #f0f0f0;">
+            <p style="font-size: 11px; color: #999; margin: 0;">Sentinel Authority · ODDC Certification Body · sentinelauthority.org</p>
+        </div>
+    </div>
+    """
+    await send_email(email, "Your Sentinel Authority Account is Under Review", html)

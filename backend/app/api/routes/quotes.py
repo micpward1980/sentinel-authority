@@ -303,3 +303,15 @@ def _quote_dict(q: Quote) -> dict:
 
 # ─── Public Inquiry (no auth — website form) ───
 
+
+@router.delete("/quotes/{quote_id}", summary="Delete a quote")
+async def delete_quote(quote_id: int,
+                       db: AsyncSession = Depends(get_db),
+                       user: dict = Depends(require_role(["admin"]))):
+    result = await db.execute(select(Quote).where(Quote.id == quote_id))
+    q = result.scalar_one_or_none()
+    if not q:
+        raise HTTPException(status_code=404, detail="Quote not found")
+    await db.delete(q)
+    await db.commit()
+    return {"deleted": True, "id": quote_id}
