@@ -83,12 +83,9 @@ async def create_stripe_invoice(
         stripe.InvoiceItem.create(
             customer=customer_id,
             invoice=inv.id,
-            price_data={
-                "currency": "usd",
-                "unit_amount": unit_amount_dollars * 100,
-                "product_data": {"name": description},
-            },
-            quantity=system_count,
+            amount=unit_amount_dollars * 100 * system_count,
+            currency="usd",
+            description=description,
         )
 
         # Finalize and send
