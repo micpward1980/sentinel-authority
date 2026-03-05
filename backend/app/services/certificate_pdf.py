@@ -62,30 +62,30 @@ def generate_certificate_pdf(
     c.setStrokeColor(BORDER); c.setLineWidth(1)
     c.line(0, H-HH, W, H-HH)
 
-    # SA Seal
+    # SA Seal — ink on white
     sx, sy = M+40, H-HH/2
-    c.setStrokeColor(WHITE); c.setLineWidth(3.4)
+    c.setStrokeColor(INK); c.setLineWidth(3.4)
     c.circle(sx, sy, 32, fill=0, stroke=1)
-    c.setStrokeColor(WHITE20); c.setLineWidth(1.1)
+    c.setStrokeColor(Color(0.059, 0.063, 0.129, 0.20)); c.setLineWidth(1.1)
     c.circle(sx, sy, 27, fill=0, stroke=1)
-    c.setFillColor(WHITE); c.setFont('Helvetica-Bold', 18)
+    c.setFillColor(INK); c.setFont('Helvetica-Bold', 18)
     c.drawCentredString(sx, sy-7, 'SA')
 
     # Cert number — top right
-    c.setFillColor(WHITE55); c.setFont('Helvetica', 6.5)
+    c.setFillColor(DIM); c.setFont('Helvetica', 6.5)
     c.drawRightString(W-M, H-16, 'CERTIFICATE NUMBER')
-    c.setFillColor(WHITE); c.setFont('Helvetica-Bold', 9)
+    c.setFillColor(INK); c.setFont('Helvetica-Bold', 9)
     c.drawRightString(W-M, H-30, certificate_id)
 
     # CONFORMANT badge — bottom right of header
     BW, BH = 120, 36
     BX = W-M-BW; BY = H-HH+12
-    c.setFillColor(Color(1,1,1,0.08))
+    c.setFillColor(WHITE)
     c.setStrokeColor(GREEN); c.setLineWidth(1.5)
     c.roundRect(BX, BY, BW, BH, 3, fill=1, stroke=1)
     c.setFillColor(GREEN); c.setFont('Helvetica-Bold', 11)
     c.drawCentredString(BX+BW/2, BY+BH-14, 'CONFORMANT')
-    c.setFillColor(WHITE55); c.setFont('Helvetica', 7)
+    c.setFillColor(DIM); c.setFont('Helvetica', 7)
     c.drawCentredString(BX+BW/2, BY+7, 'ODDC v1.0')
 
     # ── LAYOUT ENGINE ──
