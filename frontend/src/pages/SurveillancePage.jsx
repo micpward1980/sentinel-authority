@@ -258,7 +258,7 @@ export default function SurveillancePage() {
             {degradedSystems.length > 0 && <div style={{ width: (degradedSystems.length / totalFleet * 100) + '%', background: styles.accentAmber, transition: 'width 0.5s' }} />}
             {offlineSystems.length > 0 && <div style={{ width: (offlineSystems.length / totalFleet * 100) + '%', background: styles.accentRed, transition: 'width 0.5s' }} />}
           </div>
-          <div style={{ display: 'flex', gap: 20, marginTop: 8 }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px 20px', marginTop: 8 }}>
             <span style={{ fontSize: '10px', color: styles.accentGreen, display: 'flex', alignItems: 'center', gap: 4 }}>
               <span style={{ width: 6, height: 6, borderRadius: '50%', background: styles.accentGreen, display: 'inline-block' }} /> {conformantSystems.length} conformant
             </span>
@@ -317,7 +317,8 @@ export default function SurveillancePage() {
           </div>
         ) : (
           <>
-            <div style={{ display: 'grid', gridTemplateColumns: '28px 1.4fr 1fr 90px 110px 80px 80px 70px', gap: 8, padding: '8px 0', borderBottom: '1px solid ' + (styles.borderGlass || styles.textDim + '22'), alignItems: 'center' }}>
+            <div style={{overflowX: 'auto', WebkitOverflowScrolling: 'touch'}}>
+            <div style={{ display: 'grid', gridTemplateColumns: '28px 1.4fr 1fr 90px 110px 80px 80px 70px', minWidth: '700px', gap: 8, padding: '8px 0', borderBottom: '1px solid ' + (styles.borderGlass || styles.textDim + '22'), alignItems: 'center' }}>
               <div />
               <SortTh label="SYSTEM" field="system_name" currentSort={systemSort} currentOrder={systemOrder} onSort={handleSystemSort} />
               <SortTh label="ORGANIZATION" field="organization_name" currentSort={systemSort} currentOrder={systemOrder} onSort={handleSystemSort} />
@@ -333,7 +334,7 @@ export default function SurveillancePage() {
                 onClick={() => { if (selectedSystem?.session_id === s.session_id) { setSelectedSystem(null); setSessionDetail(null); } else { setSelectedSystem(s); fetchSessionDetail(s); } }}
                 onMouseEnter={e => e.currentTarget.style.background = styles.purplePrimary + '04'}
                 onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-                style={{ display: 'grid', gridTemplateColumns: '28px 1.4fr 1fr 90px 110px 80px 80px 70px', gap: 8, padding: '10px 0', borderBottom: '1px solid ' + styles.textDim + '0a', cursor: s.application_id ? 'pointer' : 'default', alignItems: 'center', transition: 'background 0.1s' }}>
+                style={{ display: 'grid', gridTemplateColumns: '28px 1.4fr 1fr 90px 110px 80px 80px 70px', minWidth: '700px', gap: 8, padding: '10px 0', borderBottom: '1px solid ' + styles.textDim + '0a', cursor: s.application_id ? 'pointer' : 'default', alignItems: 'center', transition: 'background 0.1s' }}>
                 <StatusDot status={s.status} size={7} />
                 <div>
                   <div style={{ fontSize: '13px', fontWeight: 500, color: styles.textPrimary }}>{s.system_name}</div>
@@ -377,6 +378,7 @@ export default function SurveillancePage() {
               )}
             </React.Fragment>))}
 
+            </div>
             <Pagination total={systemsTotal} limit={systemLimit} offset={systemOffset} onChange={setSystemOffset} />
           </>
         )}

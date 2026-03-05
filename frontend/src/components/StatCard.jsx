@@ -106,12 +106,14 @@ const StatCard = React.memo(function StatCard({
       {/* ── Value block ── */}
       <div>
         <div style={{
-          fontSize:     compact ? '24px' : '32px',
+          fontSize:     'clamp(22px, 6vw, 32px)',
           fontWeight:   300,
           fontFamily:   styles.sans,
           color:        color || styles.textPrimary,
           letterSpacing:'-0.01em',
           lineHeight:   1,
+          overflowWrap: 'break-word',
+          wordBreak: 'break-word',
         }}>
           {value}
         </div>

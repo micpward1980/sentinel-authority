@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Bell, Settings, FileText, Activity, Award, Users, Home, LogOut, Menu, X, ExternalLink, BookOpen, Clock, BarChart2, CheckCircle } from 'lucide-react';
+import { Bell, Settings, FileText, Activity, Award, Users, Home, LogOut, Menu, X, ExternalLink, BookOpen, Clock, BarChart2, CheckCircle, DollarSign } from 'lucide-react';
 import { api } from '../config/api';
 import { styles } from '../config/styles';
 import { useAuth } from '../context/AuthContext';
@@ -49,7 +49,10 @@ function Layout({ children }) {
     { name: 'Testing', href: '/cat72', icon: Activity, roles: ['admin'] },
     { name: 'Conformance', href: '/surveillance', icon: CheckCircle, roles: ['admin'] },
     { name: 'Registry', href: '/certificates', icon: Award, roles: ['admin'] },
+    { name: 'Quote Engine', href: '/quotes', icon: FileText, roles: ['admin'] },
+    { name: 'Billing', href: '/billing', icon: DollarSign, roles: ['admin'] },
     { name: 'Users', href: '/users', icon: Users, roles: ['admin'] },
+    { name: 'API Docs', href: 'https://api.sentinelauthority.org/internal-docs', icon: BookOpen, roles: ['admin'], external: true },
   ];
 
   const hasCert = Array.isArray(userCerts) && userCerts.some(c => c.state === 'conformant' || c.state === 'active' || c.state === 'issued');
@@ -73,11 +76,11 @@ function Layout({ children }) {
 
 
       // Settings (accessed from footer gear)
-      if (['/settings', '/users', '/resources'].some(r => p.startsWith(r)))
+      if (['/settings', '/users'].some(r => p.startsWith(r)))
         return [
           { label: 'Account', href: '/settings' },
           { label: 'Users', href: '/users' },
-          { label: 'Resources', href: '/resources' },
+          
         ];
     }
     return null;
@@ -98,7 +101,7 @@ function Layout({ children }) {
   });
 
   return (
-    <div style={{height: '100vh', overflow: 'hidden', color: styles.textPrimary, fontFamily: styles.sans, background: styles.bgDeep}}>
+    <div style={{height: '100svh', overflow: 'hidden', color: styles.textPrimary, fontFamily: styles.sans, background: styles.bgDeep}}>
       {/* Grid overlay — matches main site (opacity:0 = hidden by default) */}
       <div className="sa-grid-overlay" />
 
@@ -119,7 +122,7 @@ function Layout({ children }) {
           background: 'rgba(255,255,255,0.82)',
           backdropFilter: 'blur(20px) saturate(1.3)',
           WebkitBackdropFilter: 'blur(20px) saturate(1.3)',
-          borderRight: '1px solid rgba(15,18,30,0.06)'
+          borderRight: '1px solid rgba(15,18,30,0.06)', overscrollBehavior: 'contain'
         }}>
 
         {/* Brand */}
@@ -141,15 +144,20 @@ function Layout({ children }) {
         <nav style={{padding: '12px 0'}}>
           {filteredNav.map((item) => {
             const active = isActive(item);
-            return (
-              <Link key={item.name} to={item.href} style={navLinkStyle(active)}
-                onMouseEnter={e => { if (!active) { e.currentTarget.style.color = styles.textPrimary; e.currentTarget.style.background = 'rgba(0,0,0,.025)'; }}}
-                onMouseLeave={e => { if (!active) { e.currentTarget.style.color = styles.textSecondary; e.currentTarget.style.background = 'transparent'; }}}
-              >
-                {item.icon === 'brand' ? <BrandMark size={14} /> : <item.icon size={14} style={{opacity: active ? 0.9 : 0.65}} />}
-                {item.name}
-              </Link>
-            );
+            return item.external ? (
+                <a key={item.name} href={item.href} target="_blank" rel="noopener noreferrer" style={navLinkStyle(false)}>
+                  <item.icon size={14} style={{opacity: 0.65}} />
+                  {item.name}
+                </a>
+              ) : (
+                <Link key={item.name} to={item.href} style={navLinkStyle(active)}
+                  onMouseEnter={e => { if (!active) { e.currentTarget.style.color = styles.textPrimary; e.currentTarget.style.background = "rgba(0,0,0,.025)"; }}}
+                  onMouseLeave={e => { if (!active) { e.currentTarget.style.color = styles.textSecondary; e.currentTarget.style.background = "transparent"; }}}
+                >
+                  {item.icon === "brand" ? <BrandMark size={14} /> : <item.icon size={14} style={{opacity: active ? 0.9 : 0.65}} />}
+                  {item.name}
+                </Link>
+              );
           })}
         </nav>
 
@@ -163,13 +171,13 @@ function Layout({ children }) {
             fontSize: '9px',
             letterSpacing: '1.5px',
             textTransform: 'uppercase',
-            color: ['/settings', '/users', '/resources'].some(r => location.pathname.startsWith(r)) ? styles.textPrimary : styles.textTertiary,
-            borderLeft: ['/settings', '/users', '/resources'].some(r => location.pathname.startsWith(r)) ? '2px solid ' + styles.purpleBright : '2px solid transparent',
-            background: ['/settings', '/users', '/resources'].some(r => location.pathname.startsWith(r)) ? 'rgba(74,61,117,.06)' : 'transparent',
+            color: ['/settings', '/users'].some(r => location.pathname.startsWith(r)) ? styles.textPrimary : styles.textTertiary,
+            borderLeft: ['/settings', '/users'].some(r => location.pathname.startsWith(r)) ? '2px solid ' + styles.purpleBright : '2px solid transparent',
+            background: ['/settings', '/users'].some(r => location.pathname.startsWith(r)) ? 'rgba(74,61,117,.06)' : 'transparent',
             borderBottom: '1px solid rgba(15,18,30,0.04)',
             transition: 'color 0.25s ease',
           }}>
-            <Settings size={14} style={{opacity: ['/settings', '/users', '/resources'].some(r => location.pathname.startsWith(r)) ? 0.9 : 0.45}} />
+            <Settings size={14} style={{opacity: ['/settings', '/users'].some(r => location.pathname.startsWith(r)) ? 0.9 : 0.45}} />
             Settings
           </Link>
           <div style={{padding: '12px 16px'}}>
@@ -197,7 +205,7 @@ function Layout({ children }) {
       </div>
 
       {/* Main */}
-      <div style={{marginLeft: isMobile ? 0 : '240px', position: 'relative', zIndex: 10, height: '100vh', display: 'flex', flexDirection: 'column'}}>
+      <div style={{marginLeft: isMobile ? 0 : '240px', position: 'relative', zIndex: 10, height: '100svh', display: 'flex', flexDirection: 'column'}}>
         {/* Header — frosted glass matching main site */}
         <header style={{
           height: '72px',

@@ -27,6 +27,8 @@ import UserManagementPage from './pages/UserManagementPage';
 import ActivityPage from './pages/ActivityPage';
 import MyActivityPage from './pages/MyActivityPage';
 import SettingsPage from './pages/SettingsPage';
+import QuotePage from "./pages/QuotePage";
+import BillingPage from "./pages/BillingPage";
 import NotFoundPage from './pages/NotFoundPage';
 import ApiDocsPage from './pages/ApiDocsPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
@@ -51,10 +53,11 @@ function App() {
         <Route path="/cat72" element={<ProtectedRoute><Layout><LazyLoad><CAT72Console /></LazyLoad></Layout></ProtectedRoute>} />
           <Route path="/certificates" element={<ProtectedRoute><Layout><LazyLoad><CertificatesPage /></LazyLoad></Layout></ProtectedRoute>} />
           <Route path="/pending" element={<LazyLoad><PendingPage /></LazyLoad>} />
-          <Route path="/resources" element={<ProtectedRoute><Layout><LazyLoad><ResourcesPage /></LazyLoad></Layout></ProtectedRoute>} />
           <Route path="/monitoring" element={<Navigate to="/surveillance" replace />} />
           <Route path="/envelo" element={<ProtectedRoute><Layout><LazyLoad><EnveloPage /></LazyLoad></Layout></ProtectedRoute>} />
           <Route path="/surveillance" element={<ProtectedRoute roles={["admin"]}><Layout><LazyLoad><SurveillancePage /></LazyLoad></Layout></ProtectedRoute>} />
+          <Route path="/quotes" element={<ProtectedRoute roles={["admin"]}><Layout><LazyLoad><QuotePage /></LazyLoad></Layout></ProtectedRoute>} />
+          <Route path="/billing" element={<ProtectedRoute roles={["admin"]}><Layout><LazyLoad><BillingPage /></LazyLoad></Layout></ProtectedRoute>} />
           <Route path="/activity" element={<ProtectedRoute roles={["admin"]}><Layout><LazyLoad><ActivityPage /></LazyLoad></Layout></ProtectedRoute>} />
           <Route path="/my-activity" element={<ProtectedRoute><Layout><LazyLoad><MyActivityPage /></LazyLoad></Layout></ProtectedRoute>} />
           <Route path="/settings" element={<ProtectedRoute><Layout><LazyLoad><SettingsPage /></LazyLoad></Layout></ProtectedRoute>} />

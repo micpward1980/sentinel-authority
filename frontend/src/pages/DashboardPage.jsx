@@ -107,7 +107,7 @@ function CustomerDashboard() {
         <div className="skeleton" style={{width: 120, height: 12, marginBottom: 12}}></div>
         <div className="skeleton" style={{width: 240, height: 32, marginBottom: 8}}></div>
       </div>
-      <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16, marginBottom: 32}}>
+      <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))', gap: 16, marginBottom: 32}}>
         {[1,2,3].map(i => <div key={i} className="skeleton" style={{height: 80, borderRadius: 4}}></div>)}
       </div>
       <div className="skeleton" style={{height: 280, borderRadius: 4}}></div>
@@ -134,7 +134,7 @@ function CustomerDashboard() {
       />
 
       {/* Quick Stats */}
-      <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px'}}>
+      <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))', gap: '16px'}}>
         {hasApps && <StatCard onClick={() => navigate("/applications")} label="Applications" value={summary?.applications?.total || applications.length} color={styles.purpleBright} icon={<FileText fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{color: styles.purpleBright}} />} subtitle={summary?.applications ? ((summary.applications.pending || 0) + (summary.applications.under_review || 0) > 0 ? `${(summary.applications.pending || 0) + (summary.applications.under_review || 0)} in review` : null) : null} />}
         {hasCerts && <StatCard onClick={() => navigate("/certificates")} label="Certificates" value={certTotal} color={styles.accentGreen} icon={<Award fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{color: styles.accentGreen}} />} subtitle={certActive > 0 ? `${certActive} active` : null} />}
         {hasApps && <StatCard onClick={() => navigate("/cat72")} label="Active Tests" value={summary?.applications?.testing || 0} color={styles.accentAmber} icon={<Activity fill="currentColor" fillOpacity={0.15} strokeWidth={1.8} className="w-5 h-5" style={{color: styles.accentAmber}} />} />}
@@ -459,7 +459,7 @@ function Dashboard() {
         <div className="skeleton" style={{width: 200, height: 32, marginBottom: 8}}></div>
         <div className="skeleton" style={{width: 280, height: 14}}></div>
       </div>
-      <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16, marginBottom: 32}}>
+      <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))', gap: 16, marginBottom: 32}}>
         {[1,2,3,4].map(i => <div key={i} className="skeleton" style={{height: 88, borderRadius: 4}}></div>)}
       </div>
       <div className="skeleton" style={{height: 300, borderRadius: 4, marginBottom: 24}}></div>
@@ -501,7 +501,7 @@ function Dashboard() {
       </div>
 
       {/* ── Row 1: Portfolio Health + Expiration Timeline ────────────────── */}
-      <div style={{display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', gap: '16px', marginBottom: '24px'}}>
+      <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '16px', marginBottom: '24px'}}>
 
         {/* Portfolio Donut + Compact Pipeline */}
         <div style={{background: styles.cardSurface, border: '1px solid ' + styles.borderGlass, padding: '24px'}}>
@@ -565,7 +565,7 @@ function Dashboard() {
       </div>
 
       {/* ── Row 2: Live Status Strip ─────────────────────────────────────── */}
-      <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '12px', marginBottom: '24px'}}>
+      <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 160px), 1fr))', gap: '12px', marginBottom: '24px'}}>
         {[
           { label: 'Pending Review', value: needsAction.length, color: needsAction.length > 0 ? styles.accentAmber : styles.textDim, onClick: () => navigate('/applications') },
           { label: 'Active Tests', value: activeTests.length, color: activeTests.length > 0 ? styles.purpleBright : styles.textDim, onClick: () => navigate('/cat72') },
@@ -582,7 +582,7 @@ function Dashboard() {
       {/* ── Pipeline ────────────────────────────────────────────────────── */}
       <div style={{background: styles.cardSurface, border: '1px solid ' + styles.borderGlass, padding: '20px 24px', marginBottom: '24px'}}>
         {sectionHeader('Certification Pipeline', styles.textTertiary, '/applications', 'All Applications →')}
-        <div style={{display: 'flex', alignItems: 'center', gap: '4px'}}>
+        <div style={{display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '6px'}}>
           {[
             { label: 'New', count: pipelineCounts.pending + pipelineCounts.under_review, color: styles.accentAmber },
             { label: 'Accepted', count: pipelineCounts.approved, color: 'rgba(29,26,59,0.5)' },
@@ -624,7 +624,7 @@ function Dashboard() {
               const isStale = daysWaiting > 7;
               return (
                 <div key={app.id} style={{padding: '14px 20px', background: styles.cardSurface, border: '1px solid ' + (isStale ? styles.accentAmber + '40' : styles.borderGlass), display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', flexWrap: 'wrap', cursor: 'pointer', transition: 'border-color 0.2s'}} onClick={() => navigate(`/applications/${app.id}`)}>
-                  <div style={{flex: 1, minWidth: '200px'}}>
+                  <div style={{flex: 1, minWidth: 0}}>
                     <div style={{display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap'}}>
                       <span style={{fontWeight: 600, fontSize: '14px', color: styles.textPrimary}}>{app.system_name}</span>
                       <span style={{fontFamily: styles.mono, fontSize: '10px', color: styles.textTertiary}}>{app.organization_name}</span>

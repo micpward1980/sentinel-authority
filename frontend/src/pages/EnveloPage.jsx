@@ -338,7 +338,7 @@ function SessionReport({ session }) {
 
   return (
     <div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '16px', marginBottom: '24px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 140px), 1fr))', gap: '16px', marginBottom: '24px' }}>
         {[
           { label: 'Total Actions', value: total, color: styles.textPrimary },
           { label: 'Passed', value: session.pass_count || 0, color: styles.accentGreen },
@@ -351,7 +351,7 @@ function SessionReport({ session }) {
           </div>
         ))}
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px,1fr))', gap: '16px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 180px), 1fr))', gap: '16px' }}>
         <div><div style={{ fontSize: '10px', color: styles.textTertiary, marginBottom: '4px', fontFamily: styles.mono, letterSpacing: '1px', textTransform: 'uppercase' }}>Session</div><div style={{ fontFamily: styles.mono, color: styles.textSecondary, fontSize: '12px' }}>{session.session_id?.substring(0, 20)}…</div></div>
         <div><div style={{ fontSize: '10px', color: styles.textTertiary, marginBottom: '4px', fontFamily: styles.mono, letterSpacing: '1px', textTransform: 'uppercase' }}>Certificate</div><div style={{ color: styles.textSecondary }}>{session.certificate_id || 'N/A'}</div></div>
         <div><div style={{ fontSize: '10px', color: styles.textTertiary, marginBottom: '4px', fontFamily: styles.mono, letterSpacing: '1px', textTransform: 'uppercase' }}>Started</div><div style={{ color: styles.textSecondary }}>{session.started_at ? new Date(session.started_at).toLocaleString() : 'N/A'}</div></div>
@@ -469,7 +469,7 @@ function EnveloAdminView() {
       <SectionHeader label="⬡ Admin Console" title="ENVELO Management" description="Certify and manage all customer systems" />
 
       {/* Stats row */}
-      <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))' }}>
+      <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 130px), 1fr))' }}>
         {[
           { label: 'Awaiting Review', value: needsAttention,          color: needsAttention > 0 ? styles.accentAmber : styles.textTertiary },
           { label: 'Approved / Deploying', value: approved.length,    color: styles.purpleBright },
@@ -558,7 +558,7 @@ function EnveloAdminView() {
                 return (
                   <div style={{ marginBottom: '20px', padding: '12px', background: styles.cardSurface, border: `1px solid ${styles.borderGlass}`, borderRadius: '8px' }}>
                     <p style={{ fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '12px' }}>Submitted Boundaries</p>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(110px,1fr))', gap: '8px', textAlign: 'center' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 110px), 1fr))', gap: '8px', textAlign: 'center' }}>
                       {[
                         { label: 'Numeric', count: nb.length },
                         { label: 'Geographic', count: gb.length },
@@ -1002,7 +1002,7 @@ function EnveloCustomerView() {
               </button>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '12px', marginBottom: '16px' }}>
               <div style={{ padding: '12px 16px', background: styles.cardSurface, border: `1px solid ${styles.borderGlass}`, borderRadius: '6px' }}>
                 <p style={{ fontFamily: styles.mono, fontSize: '9px', letterSpacing: '1.5px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '4px' }}>Certificate</p>
                 <p style={{ fontFamily: styles.mono, fontSize: '13px', color: styles.purpleBright }}>{certNum}</p>
@@ -1151,7 +1151,7 @@ function EnveloCustomerView() {
       {/* Agent control */}
       <Panel>
         <p style={{ fontFamily: styles.mono, fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: styles.textTertiary, marginBottom: '16px' }}>Interlock Control</p>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(180px,1fr))', gap: '10px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%, 180px), 1fr))', gap: '10px' }}>
           <button onClick={() => downloadAgent()} style={{ padding: '14px', background: 'transparent', border: `1px solid ${styles.purpleBright}`, cursor: 'pointer', textAlign: 'left', borderRadius: '8px' }}>
             <p style={{ fontWeight: 500, color: styles.purpleBright, marginBottom: '4px', fontSize: '14px' }}>↓ Re-download Interlock</p>
             <p style={{ color: styles.textTertiary, fontSize: '11px', margin: 0 }}>Get the current pre-configured interlock script</p>

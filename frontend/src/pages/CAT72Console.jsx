@@ -115,11 +115,11 @@ function CAT72Console() {
       <div>
         <p style={{ fontFamily: styles.mono, fontSize: '10px', fontWeight: 600, letterSpacing: '0.20em', textTransform: 'uppercase', color: styles.purpleBright, margin: '0 0 8px 0' }}>Testing</p>
         <h1 style={{ fontFamily: styles.serif, fontSize: 'clamp(24px, 5vw, 36px)', fontWeight: 200, margin: 0, color: styles.textPrimary }}>CAT-72 Console</h1>
-        <p style={{color: styles.textSecondary, marginTop: '8px'}}>{isAdmin ? '72-hour Conformance Authorization Tests · Auto-refreshes every 15s' : 'Monitor your 72-hour conformance test in real time'}</p>
+        <p style={{color: styles.textSecondary, marginTop: '8px'}}>{isAdmin ? '72-hour Conformance Assurance Tests · Auto-refreshes every 15s' : 'Monitor your 72-hour conformance test in real time'}</p>
       </div>
 
       {/* ── Stat Blocks ── */}
-      <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '12px'}}>
+      <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 160px), 1fr))', gap: '12px'}}>
         {statBlock(runningTests.length, 'Running', runningTests.length > 0 ? styles.accentAmber : styles.textDim)}
         {statBlock(awaitingTests.length, 'Awaiting Interlock', awaitingTests.length > 0 ? styles.purpleBright : styles.textDim)}
         {statBlock(passedCount, 'Passed', passedCount > 0 ? styles.accentGreen : styles.textDim)}

@@ -11,11 +11,11 @@ function SectionHeader({ label, title, description, action }) {
               {label}
             </p>
           )}
-          <h1 style={{fontFamily: styles.serif, fontSize: 'clamp(24px, 5vw, 36px)', fontWeight: 200, margin: 0, color: styles.textPrimary}}>
+          <h1 style={{fontFamily: styles.serif, fontSize: 'clamp(22px, 5vw, 36px)', fontWeight: 200, margin: 0, color: styles.textPrimary, overflowWrap: 'break-word', wordBreak: 'break-word'}}>
             {title}
           </h1>
           {description && (
-            <p style={{color: styles.textSecondary, marginTop: '8px', fontSize: '14px', lineHeight: 1.6, fontWeight: 300, maxWidth: '580px'}}>
+            <p style={{color: styles.textSecondary, marginTop: '8px', fontSize: '14px', lineHeight: 1.6, fontWeight: 300, maxWidth: '100%'}}>
               {description}
             </p>
           )}

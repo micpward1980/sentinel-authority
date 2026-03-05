@@ -149,7 +149,7 @@ function ProfilePanel({ user, toast }) {
       <WsTitle title="My Profile" description="Update your display name and organization affiliation." />
       <WsCard>
         <CardHeading>Account Information</CardHeading>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 14, maxWidth: 520 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))', gap: 14, maxWidth: 520 }}>
           <SLDSInput label="Full Name"    value={form.full_name}    onChange={e => setForm({ ...form, full_name: e.target.value })} />
           <SLDSInput label="Organization" value={form.organization} onChange={e => setForm({ ...form, organization: e.target.value })} />
           <div>
@@ -371,7 +371,7 @@ function TwoFACard({ toast, user }) {
           {twoFA.backupCodes?.length > 0 && (
             <div style={{ marginBottom: 16, padding: 16, background: 'rgba(158,110,18,0.04)', border: `1px solid rgba(158,110,18,0.18)`, borderRadius: 4 }}>
               <p style={{ color: styles.accentAmber, fontFamily: styles.mono, fontSize: 10, letterSpacing: '1.5px', marginBottom: 8, textTransform: 'uppercase' }}>Save Your Backup Codes</p>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 3, marginBottom: 10 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))', gap: 3, marginBottom: 10 }}>
                 {twoFA.backupCodes.map((c, i) => <span key={i} style={{ fontFamily: styles.mono, fontSize: 13, color: styles.textPrimary, textAlign: 'center', padding: '2px 0' }}>{c}</span>)}
               </div>
               <button onClick={() => { navigator.clipboard.writeText(twoFA.backupCodes.join('\n')); toast.show('Backup codes copied'); }}
@@ -739,9 +739,10 @@ function SettingsPage() {
   const [winW, setWinW] = useState(typeof window !== 'undefined' ? window.innerWidth : 1024);
 
   React.useEffect(() => {
-    const onResize = () => setWinW(window.innerWidth);
-    window.addEventListener('resize', onResize);
-    return () => window.removeEventListener('resize', onResize);
+    let t;
+    const onResize = () => { clearTimeout(t); t = setTimeout(() => setWinW(window.innerWidth), 100); };
+    window.addEventListener('resize', onResize, { passive: true });
+    return () => { clearTimeout(t); window.removeEventListener('resize', onResize); };
   }, []);
 
   const isMobile = winW < 768;

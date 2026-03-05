@@ -411,7 +411,7 @@ function ApplicationDetail() {
 
   // ─── Derived ─────────────────────────────────────────────────────────────────
 
-  const currentStageIdx = useMemo(() => PIPELINE_STAGES.findIndex(s => s.key === app?.state), [app?.state]);
+  const currentStageIdx = useMemo(() => { const st = app?.state === 'under_review' ? 'approved' : app?.state; return PIPELINE_STAGES.findIndex(s => s.key === st); }, [app?.state]);
   const isSuspended = app?.state === 'revoked' || app?.state === 'suspended';
   const isAdmin = user?.role === 'admin';
 
@@ -445,10 +445,9 @@ function ApplicationDetail() {
             {app.state === 'pending' && (
               <button onClick={() => showEmailPreview('under_review', 'Begin Review')} disabled={previewLoading} style={ACTION_BTN(styles.accentAmber)}>Begin Review</button>
             )}
-            {app.state === 'under_review' && (<>
-              <button onClick={() => showEmailPreview('approved', 'Approve')} disabled={previewLoading} style={ACTION_BTN(styles.accentGreen, true)}>Approve</button>
-              <button onClick={() => showEmailPreview('suspended', 'Reject')} disabled={previewLoading} style={ACTION_BTN(styles.accentRed)}>Reject</button>
-            </>)}
+            {app.state === "under_review" && (
+              <Link to="/quotes" style={{ ...ACTION_BTN(styles.purpleBright, true), textDecoration: "none" }}>View Quote in Pipeline</Link>
+            )}
             {app.state === 'approved' && (
               <span style={{ fontFamily: styles.mono, fontSize: '10px', color: styles.textDim, padding: '8px 0' }}>Awaiting customer interlock deployment</span>
             )}
@@ -520,7 +519,7 @@ function ApplicationDetail() {
       </div>
 
       {/* Org + Status */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '24px' }}>
         <Panel>
           <h2 style={PANEL_LABEL}>Organization</h2>
           <p style={{ color: styles.textPrimary, fontSize: '17px', fontWeight: 500, marginBottom: '12px' }}>{app.organization_name}</p>
@@ -551,34 +550,15 @@ function ApplicationDetail() {
       {/* System Details */}
       <Panel>
         <h2 style={PANEL_LABEL}>System Details</h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
           <div>
-            <p style={{ color: styles.textTertiary, fontSize: '11px', fontFamily: styles.mono, marginBottom: '4px' }}>TYPE</p>
-            <p style={{ color: styles.textPrimary, margin: 0 }}>{formatSystemType(app.system_type)}</p>
+            <p style={{ color: styles.textTertiary, fontSize: "11px", fontFamily: styles.mono, marginBottom: "4px" }}>SYSTEM DESCRIPTION</p>
+            <p style={{ color: styles.textPrimary, margin: 0, lineHeight: "1.6" }}>{app.system_description || "—"}</p>
           </div>
           <div>
-            <p style={{ color: styles.textTertiary, fontSize: '11px', fontFamily: styles.mono, marginBottom: '4px' }}>VERSION</p>
-            <p style={{ color: styles.textPrimary, margin: 0 }}>{app.system_version || '—'}</p>
+            <p style={{ color: styles.textTertiary, fontSize: "11px", fontFamily: styles.mono, marginBottom: "4px" }}>OPERATING DOMAINS</p>
+            <p style={{ color: styles.textPrimary, margin: 0, lineHeight: "1.6" }}>{app.odd_specification?.description || "—"}</p>
           </div>
-          <div>
-            <p style={{ color: styles.textTertiary, fontSize: '11px', fontFamily: styles.mono, marginBottom: '4px' }}>MANUFACTURER</p>
-            <p style={{ color: styles.textPrimary, margin: 0 }}>{app.manufacturer || '—'}</p>
-          </div>
-          {app.facility_location && (
-            <div>
-              <p style={{ color: styles.textTertiary, fontSize: '11px', fontFamily: styles.mono, marginBottom: '4px' }}>FACILITY</p>
-              <p style={{ color: styles.textPrimary, margin: 0 }}>{app.facility_location}</p>
-            </div>
-          )}
-          {app.odd_specification?.deployment_type && (
-            <div>
-              <p style={{ color: styles.textTertiary, fontSize: '11px', fontFamily: styles.mono, marginBottom: '4px' }}>DEPLOYMENT</p>
-              <p style={{ color: styles.textPrimary, margin: 0 }}>
-                {app.odd_specification.deployment_type}
-                {app.odd_specification.environment ? ` — ${app.odd_specification.environment}` : ''}
-              </p>
-            </div>
-          )}
         </div>
       </Panel>
 
@@ -664,7 +644,7 @@ function ApplicationDetail() {
               const catColors = { Physical: styles.purpleBright, Analytical: styles.accentBlue || '#4A90D9', Aviation: styles.accentAmber, Process: styles.accentGreen, Other: styles.textTertiary };
 
               return (<>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(100px,1fr))', gap: '8px', textAlign: 'center', marginBottom: '16px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 100px), 1fr))', gap: '8px', textAlign: 'center', marginBottom: '16px' }}>
                   {cats.filter(c => grouped[c]?.length > 0).map(c => (
                     <div key={c} style={{ padding: '10px', background: 'rgba(29,26,59,0.05)', borderRadius: '6px' }}>
                       <div style={{ fontSize: '20px', fontWeight: 500, color: catColors[c] }}>{grouped[c].length}</div>
@@ -827,7 +807,7 @@ function ApplicationDetail() {
                 </div>
                 <span style={{ fontFamily: styles.mono, fontSize: '10px', color: styles.textDim }}>{t.ended_at ? new Date(t.ended_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : t.started_at ? 'In progress' : 'Pending'}</span>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '12px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 130px), 1fr))', gap: '12px' }}>
                 {t.convergence_score != null && <div><div style={{ fontFamily: styles.mono, fontSize: '9px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '2px' }}>Convergence</div><div style={{ fontFamily: styles.serif, fontSize: '18px', fontWeight: 200, color: styles.textPrimary }}>{t.convergence_score.toFixed(1)}%</div></div>}
                 {t.stability_index != null && <div><div style={{ fontFamily: styles.mono, fontSize: '9px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '2px' }}>Stability</div><div style={{ fontFamily: styles.serif, fontSize: '18px', fontWeight: 200, color: styles.textPrimary }}>{t.stability_index.toFixed(1)}%</div></div>}
                 {t.drift_rate != null && <div><div style={{ fontFamily: styles.mono, fontSize: '9px', color: styles.textTertiary, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '2px' }}>Drift Rate</div><div style={{ fontFamily: styles.serif, fontSize: '18px', fontWeight: 200, color: styles.textPrimary }}>{t.drift_rate.toFixed(4)}</div></div>}

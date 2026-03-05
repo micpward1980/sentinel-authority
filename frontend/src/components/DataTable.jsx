@@ -66,7 +66,7 @@ function MobileCards({ columns, rows, onRowClick, loading, emptyMessage }) {
 
           {/* Secondary fields — compact label/value grid */}
           {rest.length > 0 && (
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px 12px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '6px 12px' }}>
               {rest.filter(col => col.key !== 'actions' || col.label).map(col => (
                 <div key={col.key}>
                   <div style={{ fontFamily: styles.mono, fontSize: '9px', letterSpacing: '0.8px', textTransform: 'uppercase', color: styles.textDim, marginBottom: '2px' }}>

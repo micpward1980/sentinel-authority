@@ -265,16 +265,12 @@ function ApplicationsList() {
                             Begin Review
                           </button>
                         )}
-                        {app.state === 'under_review' && (<>
-                          <button onClick={() => handleAction(app.id, 'approved', 'Approve ' + app.system_name)}
-                            style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '4px 12px', border: '1px solid ' + styles.borderGlass, background: 'transparent', color: styles.accentGreen, fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer' }}>
-                            Approve
-                          </button>
-                          <button onClick={() => handleAction(app.id, 'suspended', 'Reject ' + app.system_name)}
-                            style={{ padding: '4px 12px', border: '1px solid ' + styles.borderGlass, background: 'transparent', color: styles.accentRed, fontFamily: styles.mono, fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer' }}>
-                            Reject
-                          </button>
-                        </>)}
+                        {app.state === "under_review" && (
+                          <Link to="/quotes" onClick={e => e.stopPropagation()}
+                            style={{ display: "flex", alignItems: "center", gap: "4px", padding: "4px 12px", border: "1px solid " + styles.borderGlass, background: "transparent", color: styles.purpleBright, fontFamily: styles.mono, fontSize: "10px", letterSpacing: "1px", textTransform: "uppercase", textDecoration: "none" }}>
+                            View Quote
+                          </Link>
+                        )}
 
                         {/* IN PROGRESS — no admin action, just status */}
                         {app.state === 'approved' && (
