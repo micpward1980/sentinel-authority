@@ -57,9 +57,9 @@ def generate_certificate_pdf(
 
     # ── HEADER ──
     HH = 110
-    c.setFillColor(DK)
+    c.setFillColor(WHITE)
     c.rect(0, H-HH, W, HH, fill=1, stroke=0)
-    c.setStrokeColor(INDIGO); c.setLineWidth(2)
+    c.setStrokeColor(BORDER); c.setLineWidth(1)
     c.line(0, H-HH, W, H-HH)
 
     # SA Seal
@@ -67,7 +67,7 @@ def generate_certificate_pdf(
     c.setStrokeColor(WHITE); c.setLineWidth(3.4)
     c.circle(sx, sy, 32, fill=0, stroke=1)
     c.setStrokeColor(WHITE20); c.setLineWidth(1.1)
-    c.circle(sx, sy, 23, fill=0, stroke=1)
+    c.circle(sx, sy, 27, fill=0, stroke=1)
     c.setFillColor(WHITE); c.setFont('Helvetica-Bold', 18)
     c.drawCentredString(sx, sy-7, 'SA')
 
