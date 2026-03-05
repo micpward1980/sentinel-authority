@@ -252,8 +252,7 @@ function CAT72Console() {
                           </>
                         )}
                         {(test.result === 'PASS' || test.result === 'FAIL') && (
-                          
-                            href={`${API_BASE}/api/envelo/${isAdmin ? 'admin' : 'my'}/sessions/${test.test_id}/report`}
+                          <a href={`${API_BASE}/api/envelo/${isAdmin ? 'admin' : 'my'}/sessions/${test.test_id}/report`}
                             target="_blank"
                             rel="noreferrer noopener"
                             onClick={e => { e.stopPropagation(); }}
