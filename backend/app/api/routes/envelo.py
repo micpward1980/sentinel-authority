@@ -724,18 +724,35 @@ async def download_session_report(
         for v in violations
     ]
     
+    # Look up application for real system name and org
+    app_result = await db.execute(select(Application).where(Application.id == session.application_id)) if session.application_id else None
+    application = app_result.scalar_one_or_none() if app_result else None
+    real_system_name = application.system_name if application else (session.certificate_id or "Unknown System")
+    real_org = application.organization_name if application else "Unknown Organization"
+
+    # Determine result
+    total_actions = (session.pass_count or 0) + (session.block_count or 0)
+    duration_hours = (datetime.utcnow() - session.started_at).total_seconds() / 3600 if session.started_at else 0
+    pass_rate = ((session.pass_count or 0) / max(total_actions, 1)) * 100
+    if session.status == "passed" or (duration_hours >= 72 and pass_rate >= 95 and total_actions >= 100):
+        report_result = "PASS"
+    elif session.status == "failed":
+        report_result = "FAIL"
+    else:
+        report_result = "IN PROGRESS"
+
     # Generate PDF
     pdf_bytes = generate_cat72_report(
         test_id=session.session_id,
-        system_name=session.certificate_id or "Unknown System",
-        organization="Customer",
+        system_name=real_system_name,
+        organization=real_org,
         started_at=session.started_at,
         ended_at=session.ended_at or datetime.utcnow(),
-        total_actions=(session.pass_count or 0) + (session.block_count or 0),
+        total_actions=total_actions,
         pass_count=session.pass_count or 0,
         block_count=session.block_count or 0,
-        pass_rate=((session.pass_count or 0) / max((session.pass_count or 0) + (session.block_count or 0), 1)) * 100,
-        result="PASS" if session.status == "passed" else "IN PROGRESS",
+        pass_rate=pass_rate,
+        result=report_result,
         violations=violation_list
     )
     
@@ -877,17 +894,34 @@ async def download_my_session_report(
         for v in violations
     ]
     
+    # Look up application for real system name and org
+    app_result2 = await db.execute(select(Application).where(Application.id == session.application_id)) if session.application_id else None
+    application2 = app_result2.scalar_one_or_none() if app_result2 else None
+    real_system_name2 = application2.system_name if application2 else (session.certificate_id or "Unknown System")
+    real_org2 = application2.organization_name if application2 else "Unknown Organization"
+
+    # Determine result
+    total_actions2 = (session.pass_count or 0) + (session.block_count or 0)
+    duration_hours2 = (datetime.utcnow() - session.started_at).total_seconds() / 3600 if session.started_at else 0
+    pass_rate2 = ((session.pass_count or 0) / max(total_actions2, 1)) * 100
+    if session.status == "passed" or (duration_hours2 >= 72 and pass_rate2 >= 95 and total_actions2 >= 100):
+        report_result2 = "PASS"
+    elif session.status == "failed":
+        report_result2 = "FAIL"
+    else:
+        report_result2 = "IN PROGRESS"
+
     pdf_bytes = generate_cat72_report(
         test_id=session.session_id,
-        system_name=session.certificate_id or "Unknown System",
-        organization="Customer",
+        system_name=real_system_name2,
+        organization=real_org2,
         started_at=session.started_at,
-        ended_at=session.ended_at or __import__('datetime').datetime.utcnow(),
-        total_actions=(session.pass_count or 0) + (session.block_count or 0),
+        ended_at=session.ended_at or datetime.utcnow(),
+        total_actions=total_actions2,
         pass_count=session.pass_count or 0,
         block_count=session.block_count or 0,
-        pass_rate=((session.pass_count or 0) / max((session.pass_count or 0) + (session.block_count or 0), 1)) * 100,
-        result="PASS" if session.status == "passed" else "IN PROGRESS",
+        pass_rate=pass_rate2,
+        result=report_result2,
         violations=violation_list
     )
     
