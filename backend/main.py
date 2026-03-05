@@ -630,6 +630,9 @@ async def start_backup_scheduler():
         renewal_scheduler = AsyncIOScheduler()
         renewal_scheduler.add_job(_run_renewal_cron, "cron", hour=6, minute=0, id="renewal_cron")
         renewal_scheduler.start()
+        from app.exposure_agent import run_exposure_agent
+        renewal_scheduler.add_job(run_exposure_agent, "cron", hour=7, minute=0, timezone="America/Toronto", id="sa_exposure_agent", replace_existing=True)
+        logger.info("[EXPOSURE] Agent scheduled — 7am Toronto daily")
         logger.info("[RENEWAL] Daily cron scheduled — 6am UTC")
         scheduler.start()
         logger.info("[BACKUP] Scheduler started — every 6 hours")
