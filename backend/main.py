@@ -633,7 +633,13 @@ async def start_backup_scheduler():
         from app.exposure_agent import run_exposure_agent
         renewal_scheduler.add_job(run_exposure_agent, "cron", hour="7,12,17", minute=0, timezone="America/Toronto", id="sa_exposure_agent", replace_existing=True)
         logger.info("[EXPOSURE] Agent scheduled — 7am Toronto daily")
+        from app.exposure_agent import run_engagement_agent
+        renewal_scheduler.add_job(run_engagement_agent, "interval", minutes=30, id="sa_engagement_agent", replace_existing=True)
+        logger.info("[ENGAGEMENT] Agent scheduled — every 30 minutes")
         logger.info("[EXPOSURE] Agent scheduled — 7am Toronto daily")
+        from app.exposure_agent import run_engagement_agent
+        renewal_scheduler.add_job(run_engagement_agent, "interval", minutes=30, id="sa_engagement_agent", replace_existing=True)
+        logger.info("[ENGAGEMENT] Agent scheduled — every 30 minutes")
         logger.info("[RENEWAL] Daily cron scheduled — 6am UTC")
         scheduler.start()
         logger.info("[BACKUP] Scheduler started — every 6 hours")

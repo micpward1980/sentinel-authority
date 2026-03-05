@@ -335,3 +335,89 @@ async def run_exposure_agent():
 
     elapsed = (datetime.utcnow() - start).total_seconds()
     logger.info(f"=== SA Exposure Agent done in {elapsed:.1f}s ===")
+
+# ─── Tier 1: Mention Monitoring ──────────────────────────────────────────────
+
+_replied_ids: set = set()
+_quoted_ids: set = set()
+_last_mention_id: str = ""
+
+async def check_mentions() -> None:
+    global _last_mention_id
+    if not all([TWITTER_API_KEY, TWITTER_API_SECRET, TWITTER_ACCESS_TOKEN, TWITTER_ACCESS_SECRET]):
+        return
+    try:
+        from requests_oauthlib import OAuth1Session
+        oauth = OAuth1Session(TWITTER_API_KEY, client_secret=TWITTER_API_SECRET, resource_owner_key=TWITTER_ACCESS_TOKEN, resource_owner_secret=TWITTER_ACCESS_SECRET)
+        params = {"max_results": 10, "tweet.fields": "author_id,text"}
+        if _last_mention_id:
+            params["since_id"] = _last_mention_id
+        resp = oauth.get("https://api.twitter.com/2/tweets/search/recent", params={"query": "@SentinelAuthority -is:retweet", **params})
+        if resp.status_code != 200:
+            return
+        data = resp.json()
+        mentions = data.get("data", [])
+        if not mentions:
+            return
+        _last_mention_id = mentions[0]["id"]
+        replied = 0
+        for mention in mentions:
+            tid = mention["id"]
+            text = mention.get("text", "")
+            if tid in _replied_ids or replied >= 5:
+                continue
+            response = await client.messages.create(model="claude-sonnet-4-20250514", max_tokens=200, system=SA_SYSTEM + "\n\nWrite a single reply tweet under 260 chars. Authoritative, adds value, no hashtags, no emojis. Never promotional.", messages=[{"role": "user", "content": f"Someone mentioned @SentinelAuthority with: '{text}'\n\nWrite a reply that adds genuine insight about autonomous systems conformance or regulation."}])
+            reply_text = response.content[0].text.strip()[:260]
+            post_resp = oauth.post("https://api.twitter.com/2/tweets", json={"text": reply_text, "reply": {"in_reply_to_tweet_id": tid}})
+            if post_resp.status_code == 201:
+                _replied_ids.add(tid)
+                replied += 1
+                await asyncio.sleep(2)
+    except Exception as e:
+        logger.error(f"Mention check failed: {e}")
+
+ENGAGEMENT_KEYWORDS = ["autonomous vehicle crash","self-driving accident","AV regulation","drone certification","autonomous systems safety","BVLOS certification","self-driving accountability","autonomous vehicle legislation","AV safety standards","robotaxi incident"]
+
+async def check_keywords() -> None:
+    global _quoted_ids
+    if not all([TWITTER_API_KEY, TWITTER_API_SECRET, TWITTER_ACCESS_TOKEN, TWITTER_ACCESS_SECRET]):
+        return
+    try:
+        import random
+        from requests_oauthlib import OAuth1Session
+        oauth = OAuth1Session(TWITTER_API_KEY, client_secret=TWITTER_API_SECRET, resource_owner_key=TWITTER_ACCESS_TOKEN, resource_owner_secret=TWITTER_ACCESS_SECRET)
+        keywords = random.sample(ENGAGEMENT_KEYWORDS, min(2, len(ENGAGEMENT_KEYWORDS)))
+        quoted_this_run = 0
+        for keyword in keywords:
+            if quoted_this_run >= 3:
+                break
+            resp = oauth.get("https://api.twitter.com/2/tweets/search/recent", params={"query": f'"{keyword}" -is:retweet -is:reply lang:en min_faves:10', "max_results": 10, "tweet.fields": "author_id,text,public_metrics", "expansions": "author_id", "user.fields": "public_metrics"})
+            if resp.status_code != 200:
+                continue
+            data = resp.json()
+            tweets = data.get("data", [])
+            users = {u["id"]: u for u in data.get("includes", {}).get("users", [])}
+            for tweet in tweets:
+                tid = tweet["id"]
+                if tid in _quoted_ids or quoted_this_run >= 3:
+                    continue
+                author = users.get(tweet.get("author_id", ""), {})
+                followers = author.get("public_metrics", {}).get("followers_count", 0)
+                if followers < 500:
+                    continue
+                tweet_text = tweet.get("text", "")
+                response = await client.messages.create(model="claude-sonnet-4-20250514", max_tokens=200, system=SA_SYSTEM + "\n\nWrite a quote tweet under 240 chars. Add genuine insight. Reference the gap that independent ODDC conformance certification fills. No hashtags. No self-promotion. Authoritative.", messages=[{"role": "user", "content": f"Quote tweet this with SA perspective:\n\n'{tweet_text}'\n\nKeyword: {keyword}"}])
+                qt_text = response.content[0].text.strip()[:240]
+                post_resp = oauth.post("https://api.twitter.com/2/tweets", json={"text": f"{qt_text} https://twitter.com/i/web/status/{tid}"})
+                if post_resp.status_code == 201:
+                    _quoted_ids.add(tid)
+                    quoted_this_run += 1
+                    await asyncio.sleep(3)
+                    break
+    except Exception as e:
+        logger.error(f"Keyword engagement failed: {e}")
+
+async def run_engagement_agent() -> None:
+    logger.info("=== SA Engagement Agent running ===")
+    await asyncio.gather(check_mentions(), check_keywords())
+    logger.info("=== SA Engagement Agent done ===")
