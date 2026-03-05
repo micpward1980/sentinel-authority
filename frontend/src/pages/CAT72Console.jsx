@@ -248,8 +248,17 @@ function CAT72Console() {
                         {test.certificate_issued && (
                           <>
                             <span style={{color: styles.accentGreen, fontFamily: styles.mono, fontSize: '10px'}}>✓ Certified</span>
-                            <a href={`${API_BASE}/api/certificates/${test.certificate_number || test.test_id}/pdf`} target="_blank" rel="noreferrer noopener" style={{padding: '2px 0', background: 'transparent', borderBottom: '1px solid ' + styles.purpleBright, color: styles.purpleBright, fontFamily: styles.mono, fontSize: '9px', textDecoration: 'none'}}>PDF</a>
+                            <a href={`${API_BASE}/api/certificates/${test.certificate_number || test.test_id}/pdf`} target="_blank" rel="noreferrer noopener" style={{padding: '2px 0', background: 'transparent', borderBottom: '1px solid ' + styles.purpleBright, color: styles.purpleBright, fontFamily: styles.mono, fontSize: '9px', textDecoration: 'none'}}>CERT</a>
                           </>
+                        )}
+                        {(test.result === 'PASS' || test.result === 'FAIL') && (
+                          
+                            href={`${API_BASE}/api/envelo/${isAdmin ? 'admin' : 'my'}/sessions/${test.test_id}/report`}
+                            target="_blank"
+                            rel="noreferrer noopener"
+                            onClick={e => { e.stopPropagation(); }}
+                            style={{padding: '2px 0', background: 'transparent', borderBottom: '1px solid ' + styles.textTertiary, color: styles.textTertiary, fontFamily: styles.mono, fontSize: '9px', textDecoration: 'none'}}
+                          >CAT-72</a>
                         )}
                       </div>
                     </td>
