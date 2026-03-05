@@ -285,7 +285,7 @@ async def send_digest(all_hits, linkedin_post, tweets, blog_post, linkedin_id, x
 
         resend.Emails.send({
             "from": "SA Exposure Agent <noreply@sentinelauthority.org>",
-            "to": [DIGEST_EMAIL],
+            "to": [e.strip() for e in DIGEST_EMAIL.split(",")],
             "subject": f"SA Daily Digest — {len(all_hits)} hits, {len(high)} HIGH · {datetime.now().strftime('%b %-d')}",
             "html": html
         })
