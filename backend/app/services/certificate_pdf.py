@@ -1,264 +1,190 @@
-"""ODDC Certificate PDF Generator - Matching sentinelauthority.org branding"""
+"""ODDC Certificate PDF Generator — Sentinel Authority v10 design"""
 from reportlab.lib.pagesizes import letter
-from reportlab.lib.units import inch
-from reportlab.lib.colors import HexColor, white
+from reportlab.lib.colors import Color
 from reportlab.pdfgen import canvas
-from reportlab.lib.utils import ImageReader
+from reportlab.lib.utils import ImageReader, simpleSplit
 from io import BytesIO
 from datetime import datetime
 import qrcode
 
-# Colors matching sentinelauthority.org exactly
-PURPLE_PRIMARY = HexColor('#5B4B8A')
-PURPLE_BRIGHT = HexColor('#9d8ccf')
-BG_DEEP = HexColor('#2a2f3d')
-ACCENT_GREEN = HexColor('#5CD685')
-TEXT_PRIMARY = HexColor('#f0f0f0')
-TEXT_SECONDARY = HexColor('#bfbfbf')
-TEXT_TERTIARY = HexColor('#808080')
-BORDER_GLASS = HexColor('#333844')
+INK     = Color(0.059, 0.063, 0.129)
+INDIGO  = Color(0.165, 0.145, 0.376)
+DK      = Color(0.114, 0.102, 0.231)
+FILL    = Color(0.949, 0.945, 0.965)
+BORDER  = Color(0.831, 0.824, 0.871)
+GREEN   = Color(0.086, 0.529, 0.243)
+DIM     = Color(0.541, 0.565, 0.612)
+WHITE   = Color(1, 1, 1)
+WHITE55 = Color(1, 1, 1, 0.55)
+WHITE20 = Color(1, 1, 1, 0.20)
 
-def generate_qr_code(url):
-    """Generate QR code image for verification URL"""
-    qr = qrcode.QRCode(
-        version=1,
-        error_correction=qrcode.constants.ERROR_CORRECT_M,
-        box_size=10,
-        border=2,
-    )
-    qr.add_data(url)
-    qr.make(fit=True)
-    
-    # Create QR with purple color to match branding
-    img = qr.make_image(fill_color="#9d8ccf", back_color="#2a2f3d")
-    
-    # Convert to bytes for reportlab
-    img_buffer = BytesIO()
-    img.save(img_buffer, format='PNG')
-    img_buffer.seek(0)
-    return img_buffer
+W, H, M = 612, 792, 40
 
-def generate_certificate_pdf(certificate_id, organization_name, system_name, odd_specification, issued_date, expiry_date, test_id, convergence_score, stability_index, drift_rate, evidence_hash):
-    buffer = BytesIO()
-    c = canvas.Canvas(buffer, pagesize=letter)
-    width, height = letter
-    
-    # Dark background matching website
-    c.setFillColor(BG_DEEP)
-    c.rect(0, 0, width, height, fill=True, stroke=False)
-    
-    # Outer border - subtle
-    c.setStrokeColor(BORDER_GLASS)
-    c.setLineWidth(1)
-    c.rect(0.5*inch, 0.5*inch, width - inch, height - inch)
-    
-    # Inner border with purple accent
-    c.setStrokeColor(PURPLE_BRIGHT)
-    c.setLineWidth(0.5)
-    c.rect(0.6*inch, 0.6*inch, width - 1.2*inch, height - 1.2*inch)
-    
-    # ODDC Mark box at top (matching website badge style)
-    mark_width = 2.5*inch
-    mark_height = 1.2*inch
-    mark_x = (width - mark_width) / 2
-    mark_y = height - 2*inch
-    
-    # Badge background
-    c.setFillColor(PURPLE_PRIMARY)
-    c.setStrokeColor(PURPLE_BRIGHT)
-    c.setLineWidth(2)
-    c.roundRect(mark_x, mark_y, mark_width, mark_height, 10, fill=True, stroke=True)
-    
-    # ODDC text
-    c.setFillColor(white)
-    c.setFont("Helvetica-Bold", 36)
-    c.drawCentredString(width/2, mark_y + 0.65*inch, "ODDC")
-    
-    # SENTINEL AUTHORITY text
-    c.setFillColor(PURPLE_BRIGHT)
-    c.setFont("Helvetica", 9)
-    c.drawCentredString(width/2, mark_y + 0.25*inch, "SENTINEL AUTHORITY")
-    
-    # Certificate ID below mark
-    c.setFillColor(TEXT_TERTIARY)
-    c.setFont("Courier", 9)
-    c.drawCentredString(width/2, mark_y - 0.35*inch, certificate_id)
-    
+def _make_qr(url):
+    qr = qrcode.QRCode(box_size=3, border=1,
+                       error_correction=qrcode.constants.ERROR_CORRECT_M)
+    qr.add_data(url); qr.make(fit=True)
+    img = qr.make_image(fill_color='#0f1021', back_color='white')
+    buf = BytesIO(); img.save(buf, 'PNG'); buf.seek(0)
+    return buf
+
+def _field(c, x, y, w, h, label, value, bold=False, vcol=None, mono=False):
+    c.setFillColor(FILL); c.setStrokeColor(BORDER); c.setLineWidth(0.5)
+    c.roundRect(x, y, w, h, 3, fill=1, stroke=1)
+    c.setFont('Helvetica', 7); c.setFillColor(DIM)
+    c.drawString(x+10, y+h-13, label.upper())
+    fn = ('Courier-Bold' if mono else 'Helvetica-Bold') if bold else \
+         ('Courier' if mono else 'Helvetica')
+    c.setFont(fn, 10.5)
+    c.setFillColor(vcol if vcol else INK)
+    c.drawString(x+10, y+12, value)
+
+def generate_certificate_pdf(
+    certificate_id,
+    organization_name,
+    system_name,
+    odd_specification,
+    issued_date,
+    expiry_date,
+    test_id=None,
+    convergence_score=None,
+    stability_index=None,
+    drift_rate=None,
+    evidence_hash=None
+):
+    buf = BytesIO()
+    c = canvas.Canvas(buf, pagesize=letter)
+
+    # ── HEADER ──
+    HH = 110
+    c.setFillColor(DK)
+    c.rect(0, H-HH, W, HH, fill=1, stroke=0)
+    c.setStrokeColor(INDIGO); c.setLineWidth(2)
+    c.line(0, H-HH, W, H-HH)
+
+    # SA Seal
+    sx, sy = M+40, H-HH/2
+    c.setStrokeColor(WHITE); c.setLineWidth(3.4)
+    c.circle(sx, sy, 32, fill=0, stroke=1)
+    c.setStrokeColor(WHITE20); c.setLineWidth(1.1)
+    c.circle(sx, sy, 23, fill=0, stroke=1)
+    c.setFillColor(WHITE); c.setFont('Helvetica-Bold', 18)
+    c.drawCentredString(sx, sy-7, 'SA')
+
+    # Cert number — top right
+    c.setFillColor(WHITE55); c.setFont('Helvetica', 6.5)
+    c.drawRightString(W-M, H-16, 'CERTIFICATE NUMBER')
+    c.setFillColor(WHITE); c.setFont('Helvetica-Bold', 9)
+    c.drawRightString(W-M, H-30, certificate_id)
+
+    # CONFORMANT badge — bottom right of header
+    BW, BH = 120, 36
+    BX = W-M-BW; BY = H-HH+12
+    c.setFillColor(Color(1,1,1,0.08))
+    c.setStrokeColor(GREEN); c.setLineWidth(1.5)
+    c.roundRect(BX, BY, BW, BH, 3, fill=1, stroke=1)
+    c.setFillColor(GREEN); c.setFont('Helvetica-Bold', 11)
+    c.drawCentredString(BX+BW/2, BY+BH-14, 'CONFORMANT')
+    c.setFillColor(WHITE55); c.setFont('Helvetica', 7)
+    c.drawCentredString(BX+BW/2, BY+7, 'ODDC v1.0')
+
+    # ── LAYOUT ENGINE ──
+    FOOT_Y = 52
+    TOP_Y  = H - HH - 18
+    AVAIL  = TOP_Y - FOOT_Y
+
+    issued_str = issued_date.strftime('%Y-%m-%d') if hasattr(issued_date, 'strftime') else str(issued_date)
+    expiry_str = expiry_date.strftime('%Y-%m-%d') if hasattr(expiry_date, 'strftime') else str(expiry_date)
+
+    TITLE_H = 36
+    BAND_H  = 72
+    ATT_H   = 76
+    ORG_H   = 72
+    DAT_H   = 72
+    ODD_H   = 90
+    QR_H    = 90
+    BLOCKS  = [TITLE_H, BAND_H, ATT_H, ORG_H, DAT_H, ODD_H, QR_H]
+    GAP     = (AVAIL - sum(BLOCKS)) / (len(BLOCKS) + 1)
+
+    positions = []
+    y = TOP_Y - GAP
+    for bh in BLOCKS:
+        y -= bh
+        positions.append(y)
+        y -= GAP
+
+    G = 7
+
     # Title
-    y = height - 3.1*inch
-    c.setFillColor(TEXT_PRIMARY)
-    c.setFont("Helvetica-Bold", 18)
-    c.drawCentredString(width/2, y, "CONFORMANCE DETERMINATION")
-    
-    # Purple line
-    c.setStrokeColor(PURPLE_BRIGHT)
-    c.setLineWidth(1)
-    c.line(2*inch, y - 0.2*inch, width - 2*inch, y - 0.2*inch)
-    
-    # Main content
-    y -= 0.7*inch
-    c.setFillColor(TEXT_SECONDARY)
-    c.setFont("Helvetica", 11)
-    c.drawCentredString(width/2, y, "This record attests that")
-    
-    # Organization name (prominent)
-    y -= 0.4*inch
-    c.setFillColor(TEXT_PRIMARY)
-    c.setFont("Helvetica-Bold", 16)
-    c.drawCentredString(width/2, y, organization_name)
-    
-    # System name
-    y -= 0.3*inch
-    c.setFillColor(PURPLE_BRIGHT)
-    c.setFont("Helvetica", 12)
-    c.drawCentredString(width/2, y, f"System: {system_name}")
-    
-    # ODD description
-    y -= 0.35*inch
-    c.setFillColor(TEXT_SECONDARY)
-    c.setFont("Helvetica", 9)
-    c.drawCentredString(width/2, y, "has demonstrated conformance within the declared Operational Design Domain:")
-    
-    # ODD box
-    y -= 0.3*inch
-    odd_text = odd_specification[:200] + "..." if len(str(odd_specification)) > 200 else str(odd_specification)
-    
-    box_width = 5*inch
-    box_height = 0.7*inch
-    box_x = (width - box_width) / 2
-    
-    c.setFillColor(HexColor('#1a1f2e'))
-    c.setStrokeColor(BORDER_GLASS)
-    c.setLineWidth(0.5)
-    c.roundRect(box_x, y - box_height, box_width, box_height, 5, fill=True, stroke=True)
-    
-    c.setFillColor(TEXT_SECONDARY)
-    c.setFont("Helvetica-Oblique", 8)
-    
-    # Word wrap ODD text
-    words = odd_text.split()
-    lines = []
-    current_line = []
-    for word in words:
-        current_line.append(word)
-        if c.stringWidth(' '.join(current_line), "Helvetica-Oblique", 8) > box_width - 0.4*inch:
-            current_line.pop()
-            lines.append(' '.join(current_line))
-            current_line = [word]
-    if current_line:
-        lines.append(' '.join(current_line))
-    
-    text_y = y - 0.2*inch
-    for line in lines[:4]:
-        c.drawCentredString(width/2, text_y, line)
-        text_y -= 0.15*inch
-    
-    # CAT-72 Evidence box
-    y -= 1.1*inch
-    box_height = 1.0*inch
-    c.setFillColor(HexColor('#1a1f2e'))
-    c.setStrokeColor(PURPLE_PRIMARY)
-    c.roundRect(box_x, y - box_height, box_width, box_height, 5, fill=True, stroke=True)
-    
-    c.setFillColor(PURPLE_BRIGHT)
-    c.setFont("Helvetica-Bold", 9)
-    c.drawCentredString(width/2, y - 0.22*inch, f"CAT-72 EVIDENCE — {test_id}")
-    
-    # Metrics grid
-    c.setFont("Helvetica", 9)
-    col1_x = box_x + 0.4*inch
-    col2_x = box_x + 2.6*inch
-    
-    row1_y = y - 0.5*inch
-    row2_y = y - 0.78*inch
-    
-    c.setFillColor(TEXT_TERTIARY)
-    c.drawString(col1_x, row1_y, "Convergence Score")
-    c.drawString(col2_x, row1_y, "Stability Index")
-    c.drawString(col1_x, row2_y, "Drift Rate")
-    c.drawString(col2_x, row2_y, "Determination")
-    
-    c.setFillColor(TEXT_PRIMARY)
-    c.setFont("Helvetica-Bold", 11)
-    c.drawString(col1_x + 1.3*inch, row1_y, f"{convergence_score:.1%}")
-    c.drawString(col2_x + 1.1*inch, row1_y, f"{stability_index:.1%}")
-    c.drawString(col1_x + 1.3*inch, row2_y, f"{drift_rate:.4f}")
-    
-    c.setFillColor(ACCENT_GREEN)
-    c.drawString(col2_x + 1.1*inch, row2_y, "CONFORMANT")
-    
-    # Validity period
-    y -= 1.4*inch
-    c.setFillColor(TEXT_TERTIARY)
-    c.setFont("Helvetica", 9)
-    c.drawCentredString(width/2, y, "VALIDITY PERIOD")
-    
-    y -= 0.22*inch
-    c.setFillColor(TEXT_PRIMARY)
-    c.setFont("Helvetica", 10)
-    c.drawCentredString(width/2, y, f"{issued_date.strftime('%Y-%m-%d')}  →  {expiry_date.strftime('%Y-%m-%d')}")
-    
-    # ── BOTTOM SECTION ──
-    # Thin purple divider line
-    y -= 0.35*inch
-    c.setStrokeColor(PURPLE_PRIMARY)
-    c.setLineWidth(0.5)
-    c.line(0.8*inch, y, width - 0.8*inch, y)
-    
-    # ENVELO statement (centered, below divider)
-    y -= 0.25*inch
-    c.setFillColor(TEXT_SECONDARY)
-    c.setFont("Helvetica", 8)
-    c.drawCentredString(width/2, y, "ENVELO enforcement requirements verified present and auditable.")
-    
-    y -= 0.16*inch
-    c.setFont("Helvetica-Oblique", 7)
-    c.setFillColor(TEXT_TERTIARY)
-    c.drawCentredString(width/2, y, "Enforcer for Non-Violable Execution & Limit Oversight")
-    
-    # Evidence hash + QR section
-    # Left side: hash + verify link
-    y -= 0.35*inch
-    c.setFillColor(TEXT_TERTIARY)
-    c.setFont("Helvetica", 7)
-    c.drawString(0.8*inch, y, "EVIDENCE HASH")
-    
-    y -= 0.16*inch
-    c.setFillColor(TEXT_PRIMARY)
-    c.setFont("Courier", 5.5)
-    c.drawString(0.8*inch, y, evidence_hash)
-    
-    y -= 0.22*inch
-    c.setFillColor(PURPLE_BRIGHT)
-    c.setFont("Helvetica", 8)
-    c.drawString(0.8*inch, y, "Verify: app.sentinelauthority.org/verify")
-    
-    # Right side: QR code (aligned with evidence hash area)
-    qr_size = 0.8*inch
-    qr_x = width - 1.5*inch
-    qr_y = y + 0.05*inch  # Align bottom of QR with verify URL
-    
-    verify_url = f"https://app.sentinelauthority.org/verify?cert={certificate_id}"
-    try:
-        qr_img = generate_qr_code(verify_url)
-        qr_reader = ImageReader(qr_img)
-        c.drawImage(qr_reader, qr_x, qr_y, width=qr_size, height=qr_size)
-        
-        c.setFillColor(TEXT_TERTIARY)
-        c.setFont("Helvetica", 6)
-        c.drawCentredString(qr_x + qr_size/2, qr_y - 0.12*inch, "SCAN TO VERIFY")
-    except Exception:
-        pass
-    
-    # Footer disclaimer
-    c.setFillColor(TEXT_TERTIARY)
-    c.setFont("Helvetica-Oblique", 6)
-    c.drawCentredString(width/2, 0.82*inch, "ODDC attests conformance within declared ODD. Does not attest safety, regulatory compliance, or fitness for purpose.")
-    c.drawCentredString(width/2, 0.7*inch, "Independent conformance determination. Not a regulator. Not legal advice.")
-    
-    c.setFont("Helvetica", 6)
-    c.drawCentredString(width/2, 0.58*inch, "© 2026 Sentinel Authority")
-    
+    ty = positions[0]
+    c.setFillColor(INK); c.setFont('Helvetica-Bold', 13)
+    c.drawString(M, ty+TITLE_H-13, 'OPERATIONAL DESIGN DOMAIN CONFORMANCE CERTIFICATE')
+    c.setStrokeColor(BORDER); c.setLineWidth(0.75)
+    c.line(M, ty+2, W-M, ty+2)
+
+    # Metadata
+    y0 = positions[1]; CW4 = (W-2*M-G*3)/4
+    _field(c, M,            y0, CW4, BAND_H, 'Certificate No.', certificate_id,       bold=True, mono=True)
+    _field(c, M+CW4+G,      y0, CW4, BAND_H, 'System ID',       test_id or 'N/A',     bold=True, mono=True)
+    _field(c, M+CW4*2+G*2,  y0, CW4, BAND_H, 'Issued By',       'Sentinel Authority')
+    _field(c, M+CW4*3+G*3,  y0, CW4, BAND_H, 'Standard',        'ODDC v1.0')
+
+    # Attestation
+    y1 = positions[2]
+    attest = (f'Sentinel Authority, acting as an independent ODDC Conformance Assessment Body, hereby attests '
+              f'that the autonomous system identified herein has satisfied all requirements of the ODDC standard, '
+              f'including successful completion of the CAT-72 Conformance Assessment Test and ENVELO Interlock verification.')
+    c.setFont('Helvetica', 9.5)
+    att_lines = simpleSplit(attest, 'Helvetica', 9.5, W-2*M)
+    lh = 15
+    start_y = y1 + ATT_H - (ATT_H - len(att_lines)*lh)/2 - lh
+    for i, ln in enumerate(att_lines):
+        c.setFillColor(DIM); c.drawString(M, start_y-i*lh, ln)
+
+    # Org + System
+    y2 = positions[3]; CW2 = (W-2*M-G)/2
+    _field(c, M,       y2, CW2, ORG_H, 'Organization', organization_name, bold=True)
+    _field(c, M+CW2+G, y2, CW2, ORG_H, 'System Name',  system_name,       bold=True)
+
+    # Dates + Status
+    y3 = positions[4]; CW3 = (W-2*M-G*2)/3
+    _field(c, M,            y3, CW3, DAT_H, 'Date Issued', issued_str)
+    _field(c, M+CW3+G,      y3, CW3, DAT_H, 'Expiry Date', expiry_str)
+    _field(c, M+CW3*2+G*2,  y3, CW3, DAT_H, 'Status',      'CONFORMANT', bold=True, vcol=GREEN)
+
+    # ODD
+    y4 = positions[5]
+    odd_txt = str(odd_specification)[:300]
+    c.setFillColor(FILL); c.setStrokeColor(BORDER); c.setLineWidth(0.5)
+    c.roundRect(M, y4, W-2*M, ODD_H, 3, fill=1, stroke=1)
+    c.setFillColor(INDIGO); c.rect(M, y4, 4, ODD_H, fill=1, stroke=0)
+    c.setFont('Helvetica', 7); c.setFillColor(DIM)
+    c.drawString(M+13, y4+ODD_H-13, 'OPERATIONAL DESIGN DOMAIN')
+    c.setFont('Helvetica', 9.5)
+    for i, ln in enumerate(simpleSplit(odd_txt, 'Helvetica', 9.5, W-2*M-26)):
+        c.setFillColor(INK); c.drawString(M+13, y4+ODD_H-30-i*15, ln)
+
+    # QR + Verify
+    y5 = positions[6]
+    verify_url = f'https://www.sentinelauthority.org/verify?cert={certificate_id}'
+    qr_buf = _make_qr(verify_url)
+    QS = 72
+    c.drawImage(ImageReader(qr_buf), M, y5+(QR_H-QS)//2, QS, QS)
+    tx = M+QS+16
+    c.setFillColor(INK); c.setFont('Helvetica-Bold', 9)
+    c.drawString(tx, y5+QR_H-18, 'VERIFY CERTIFICATE')
+    c.setFillColor(INDIGO); c.setFont('Helvetica', 8.5)
+    c.drawString(tx, y5+QR_H-34, verify_url)
+    c.setFillColor(DIM); c.setFont('Helvetica', 8.5)
+    c.drawString(tx, y5+QR_H-50, 'Scan or visit URL to verify current conformance status in the public registry.')
+
+    # ── FOOTER ──
+    c.setStrokeColor(BORDER); c.setLineWidth(0.5)
+    c.line(M, 44, W-M, 44)
+    c.setFillColor(DIM); c.setFont('Helvetica', 7)
+    c.drawString(M, 30, 'Valid while ENVELO Interlock and telemetry remain active. Certificate subject to continuous conformance surveillance. Issued by Sentinel Authority.')
+    c.drawRightString(W-M, 30, f'Generated {datetime.now().strftime("%Y-%m-%d")}')
+
     c.save()
-    buffer.seek(0)
-    return buffer.getvalue()
+    buf.seek(0)
+    return buf.getvalue()
