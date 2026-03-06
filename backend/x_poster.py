@@ -152,7 +152,9 @@ async def post_to_x(text: str, hashtags: list) -> bool:
         logger.info(f"[X] Text: {full_text[:80]}")
         return True
     except Exception as e:
-        logger.error(f"[X] Failed: {e}")
+        logger.error(f"[X] Failed full error: {repr(e)}")
+        if hasattr(e, "response") and e.response is not None:
+            logger.error(f"[X] Response body: {e.response.text}")
         return False
 
 
