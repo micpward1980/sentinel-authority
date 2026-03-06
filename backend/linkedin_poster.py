@@ -117,15 +117,23 @@ async def generate_post(post_type: str) -> dict:
     return json.loads(text)
 
 
-async def post_to_linkedin(body: str, hashtags: list) -> bool:
+async def post_to_linkedin(body: str, hashtags: list, as_org: bool = False) -> bool:
     access_token = os.environ.get("LINKEDIN_ACCESS_TOKEN")
     if not access_token:
         logger.error("[LINKEDIN] No LINKEDIN_ACCESS_TOKEN set")
         return False
 
-    try:
-        author_urn = await get_member_urn(access_token)
-        logger.info(f"[LINKEDIN] Posting as {author_urn}")
+    if as_org:
+        org_id = os.environ.get("LINKEDIN_ORG_ID")
+        if not org_id:
+            logger.error("[LINKEDIN] No LINKEDIN_ORG_ID set")
+            return False
+        author_urn = f"urn:li:organization:{org_id}"
+        logger.info(f"[LINKEDIN] Posting as org {author_urn}")
+    else:
+        try:
+            author_urn = await get_member_urn(access_token)
+            logger.info(f"[LINKEDIN] Posting as {author_urn}")
     except Exception as e:
         logger.error(f"[LINKEDIN] Failed to get member URN: {e}")
         return False
@@ -176,12 +184,13 @@ async def run_daily_post():
         return
 
     post_type = WEEKLY_ROTATION[today_dow][1]
-    logger.info(f"[LINKEDIN] Generating {post_type}")
+    as_org = today_dow in (0, 2, 4)
+    logger.info(f"[LINKEDIN] Generating {post_type} as_org={as_org}")
 
     try:
         result = await generate_post(post_type)
         logger.info(f"[LINKEDIN] Hook: {result.get('hook_preview', '')[:80]}")
-        await post_to_linkedin(result["body"], result["hashtags"])
+        await post_to_linkedin(result["body"], result["hashtags"], as_org=as_org)
     except Exception as e:
         logger.error(f"[LINKEDIN] Error: {e}", exc_info=True)
 
@@ -192,7 +201,7 @@ def start_linkedin_scheduler(scheduler: AsyncIOScheduler):
         trigger="cron",
         hour=13,
         minute=0,
-        day_of_week="tue,thu",
+        day_of_week="mon-fri",
         id="linkedin_daily_post",
         replace_existing=True,
         misfire_grace_time=3600,
