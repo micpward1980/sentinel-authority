@@ -636,6 +636,8 @@ async def start_backup_scheduler():
         from app.exposure_agent import run_engagement_agent
         renewal_scheduler.add_job(run_engagement_agent, "interval", minutes=30, id="sa_engagement_agent", replace_existing=True)
         logger.info("[ENGAGEMENT] Agent scheduled — every 30 minutes")
+        from linkedin_poster import start_linkedin_scheduler
+        start_linkedin_scheduler(renewal_scheduler)
         logger.info("[EXPOSURE] Agent scheduled — 7am Toronto daily")
         logger.info("[ENGAGEMENT] Agent scheduled — every 30 minutes")
         logger.info("[RENEWAL] Daily cron scheduled — 6am UTC")
@@ -933,3 +935,9 @@ async def protected_openapi(credentials: HTTPBasicCredentials = Depends(security
     if not correct_user or not correct_pass:
         raise HTTPException(status_code=401, detail="Unauthorized", headers={"WWW-Authenticate": "Basic"})
     return JSONResponse(content=app.openapi())
+
+@app.post("/api/admin/linkedin/test-post", include_in_schema=False)
+async def test_linkedin_post():
+    from linkedin_poster import run_daily_post
+    await run_daily_post()
+    return {"status": "fired"}
