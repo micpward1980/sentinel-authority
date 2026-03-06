@@ -191,7 +191,7 @@ def start_linkedin_scheduler(scheduler: AsyncIOScheduler):
         trigger="cron",
         hour=13,
         minute=0,
-        day_of_week="mon-fri",
+        day_of_week="tue,thu",
         id="linkedin_daily_post",
         replace_existing=True,
         misfire_grace_time=3600,
