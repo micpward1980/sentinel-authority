@@ -14,13 +14,8 @@ ENV VARS:
 import os
 import json
 import logging
-import httpx
-import hmac
-import hashlib
-import time
-import uuid
+import tweepy
 from datetime import datetime
-from urllib.parse import quote, urlencode
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 logger = logging.getLogger("sentinel.x")
@@ -140,33 +135,23 @@ async def generate_post(post_type: str) -> dict:
 async def post_to_x(text: str, hashtags: list) -> bool:
     hashtag_str = " ".join(f"#{h.lstrip('#')}" for h in hashtags)
     full_text = f"{text} {hashtag_str}".strip()
-
     if len(full_text) > 280:
         full_text = full_text[:277] + "..."
 
-    url = "https://api.twitter.com/2/tweets"
-    payload = {"text": full_text}
-
-    auth_header = _oauth1_header("POST", url, {})
-
-    async with httpx.AsyncClient(timeout=15) as client:
-        r = await client.post(
-            url,
-            headers={
-                "Authorization": auth_header,
-                "Content-Type": "application/json",
-            },
-            json=payload,
+    try:
+        client = tweepy.Client(
+            consumer_key=os.environ["X_CONSUMER_KEY"],
+            consumer_secret=os.environ["X_CONSUMER_SECRET"],
+            access_token=os.environ["X_ACCESS_TOKEN"],
+            access_token_secret=os.environ["X_ACCESS_TOKEN_SECRET"],
         )
-
-    if r.status_code in (200, 201):
-        data = r.json()
-        tweet_id = data.get("data", {}).get("id", "unknown")
+        response = client.create_tweet(text=full_text)
+        tweet_id = response.data["id"]
         logger.info(f"[X] Posted tweet ID: {tweet_id}")
         logger.info(f"[X] Text: {full_text[:80]}")
         return True
-    else:
-        logger.error(f"[X] Failed {r.status_code}: {r.text}")
+    except Exception as e:
+        logger.error(f"[X] Failed: {e}")
         return False
 
 
