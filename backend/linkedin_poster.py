@@ -82,7 +82,7 @@ TYPE_PROMPTS = {
 async def get_member_urn(access_token: str) -> str:
     async with httpx.AsyncClient(timeout=15) as client:
         r = await client.get(
-            "https://api.linkedin.com/v2/me",
+            "https://api.linkedin.com/v2/userinfo",
             headers={"Authorization": f"Bearer {access_token}", "X-Restli-Protocol-Version": "2.0.0"},
         )
         r.raise_for_status()
