@@ -18,11 +18,11 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 logger = logging.getLogger("sentinel.linkedin")
 
 WEEKLY_ROTATION = [
-    (0, "thought_leadership"),
+    (0, "news_hook_list"),
     (1, "news_commentary"),
-    (2, "oddc_education"),
-    (3, "thought_leadership"),
-    (4, "milestone_or_proof"),
+    (2, "news_hook_education"),
+    (3, "news_hook_leadership"),
+    (4, "news_hook_proof"),
 ]
 
 SYSTEM_PROMPT = """You are the voice of Mike Ward, Co-Founder of Sentinel Authority — the first independent ODDC (Operational Design Domain Conformance) certification body for autonomous systems.
@@ -53,25 +53,39 @@ OUTPUT: Return ONLY valid JSON, no markdown fences:
 }"""
 
 TYPE_PROMPTS = {
-    "thought_leadership": (
-        "Write a thought leadership LinkedIn post from Mike Ward about the regulatory accountability gap "
-        "in autonomous systems. Angle: most operators have never been verified against their own declared "
-        "operational boundaries. The question is not whether the system is safe in the abstract — "
-        "it's whether it did what the operator claimed it would do."
+    "news_hook_list": (
+        "Write a LinkedIn post from Mike Ward as a SHORT NUMBERED LIST (3-5 items). "
+        "Lead with a news hook from the live context provided. "
+        "Title it something like '3 things regulators still can't verify about autonomous systems' or "
+        "'4 questions every AV operator should answer before deployment'. "
+        "Each item should be 1-2 sentences. End with a sharp one-line observation. "
+        "Numbered lists get 3-5x more engagement — make it scannable."
     ),
     "news_commentary": (
-        "Write a LinkedIn post from Mike Ward commenting on the current state of autonomous vehicle regulation. "
-        "Angle: without conformance verification, investigators cannot determine whether a system was operating "
-        "within its declared ODD at the time of an incident. Reference NHTSA, UNECE WP.29, or EU AI Act."
+        "Write a LinkedIn post from Mike Ward commenting on a specific news story from the live context provided. "
+        "Name the story or development directly. Angle: without conformance verification, investigators cannot "
+        "determine whether a system was operating within its declared ODD at the time of an incident. "
+        "Reference NHTSA, UNECE WP.29, or EU AI Act where relevant. Make it feel like a direct response to today's news."
     ),
-    "oddc_education": (
-        "Write an educational LinkedIn post from Mike Ward explaining one aspect of ODDC conformance. "
-        "Choose one: what the ENVELO Interlock enforces at runtime, what CAT-72 measures over 72 hours, "
+    "news_hook_education": (
+        "Write an educational LinkedIn post from Mike Ward. "
+        "Open with a news hook from the live context, then pivot to explaining one aspect of ODDC conformance. "
+        "Choose one: what the ENVELO Interlock assures at runtime, what CAT-72 measures over 72 hours, "
         "the difference between safety certification and conformance assessment, or why operators rarely "
-        "define their ODD with enough precision to be verified."
+        "define their ODD with enough precision to be verified. "
+        "Make the news hook the reason the education matters right now."
     ),
-    "milestone_or_proof": (
+    "news_hook_leadership": (
+        "Write a thought leadership LinkedIn post from Mike Ward. "
+        "Open with a provocative observation tied to the live news context provided. "
+        "Angle: most operators have never been verified against their own declared operational boundaries. "
+        "The question is not whether the system is safe in the abstract — "
+        "it's whether it did what the operator claimed it would do. "
+        "Make the reader feel the urgency of the gap."
+    ),
+    "news_hook_proof": (
         "Write a LinkedIn post from Mike Ward building credibility for Sentinel Authority. "
+        "Open with something from the live news context that illustrates why independent conformance verification matters. "
         "Frame the absence of any ODDC standard as a structural gap — not a startup claim but an observable fact. "
         "Draw a parallel to how UL Laboratories or aviation ICAO emerged. "
         "End with: operators should understand their conformance posture before a regulator asks."
@@ -96,11 +110,10 @@ async def get_member_urn(access_token: str) -> str:
 
 async def generate_post(post_type: str) -> dict:
     prompt = TYPE_PROMPTS.get(post_type, TYPE_PROMPTS["thought_leadership"])
-    if post_type == "news_commentary":
-        news = await fetch_news_context()
-        if news:
-            prompt = f"LIVE NEWS CONTEXT (use this to make the post timely and specific):\n{news}\n\n{prompt}"
-            logger.info("[LINKEDIN] News context injected into prompt")
+    news = await fetch_news_context()
+    if news:
+        prompt = f"LIVE NEWS CONTEXT (use this to make the post timely and specific — reference it directly):\n{news}\n\n{prompt}"
+        logger.info("[LINKEDIN] News context injected into prompt")
     async with httpx.AsyncClient(timeout=30) as client:
         r = await client.post(
             "https://api.anthropic.com/v1/messages",
