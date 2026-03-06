@@ -189,7 +189,7 @@ async def run_daily_post():
         return
 
     post_type = WEEKLY_ROTATION[today_dow][1]
-    as_org = today_dow in (0, 2, 4)
+    as_org = False  # Org posting requires separate LinkedIn app
     logger.info(f"[LINKEDIN] Generating {post_type} as_org={as_org}")
 
     try:
