@@ -109,7 +109,7 @@ async def get_member_urn(access_token: str) -> str:
 
 
 async def generate_post(post_type: str) -> dict:
-    prompt = TYPE_PROMPTS.get(post_type, TYPE_PROMPTS["thought_leadership"])
+    prompt = TYPE_PROMPTS.get(post_type, TYPE_PROMPTS["news_hook_leadership"])
     news = await fetch_news_context()
     if news:
         prompt = f"LIVE NEWS CONTEXT (use this to make the post timely and specific — reference it directly):\n{news}\n\n{prompt}"
