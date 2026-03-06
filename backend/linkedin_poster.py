@@ -134,9 +134,9 @@ async def post_to_linkedin(body: str, hashtags: list, as_org: bool = False) -> b
         try:
             author_urn = await get_member_urn(access_token)
             logger.info(f"[LINKEDIN] Posting as {author_urn}")
-    except Exception as e:
-        logger.error(f"[LINKEDIN] Failed to get member URN: {e}")
-        return False
+        except Exception as e:
+            logger.error(f"[LINKEDIN] Failed to get member URN: {e}")
+            return False
 
     hashtag_str = " ".join(f"#{h.lstrip('#')}" for h in hashtags)
     full_text = f"{body}\n\n{hashtag_str}"
