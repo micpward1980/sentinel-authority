@@ -115,6 +115,7 @@ async def generate_post(post_type: str) -> dict:
     if news:
         prompt = f"LIVE NEWS CONTEXT (use this to make the post timely and specific — reference it directly):\n{news}\n\n{prompt}"
         logger.info("[LINKEDIN] News context injected into prompt")
+        await asyncio.sleep(10)
         await asyncio.sleep(10)  # Rate limit buffer between API calls
     async with httpx.AsyncClient(timeout=30) as client:
         r = await client.post(
