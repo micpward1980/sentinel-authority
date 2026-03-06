@@ -638,6 +638,10 @@ async def start_backup_scheduler():
         logger.info("[ENGAGEMENT] Agent scheduled — every 30 minutes")
         from linkedin_poster import start_linkedin_scheduler
         start_linkedin_scheduler(renewal_scheduler)
+        from x_poster import start_x_scheduler
+        start_x_scheduler(renewal_scheduler)
+        from x_poster import start_x_scheduler
+        start_x_scheduler(renewal_scheduler)
         logger.info("[EXPOSURE] Agent scheduled — 7am Toronto daily")
         logger.info("[ENGAGEMENT] Agent scheduled — every 30 minutes")
         logger.info("[RENEWAL] Daily cron scheduled — 6am UTC")
@@ -940,4 +944,16 @@ async def protected_openapi(credentials: HTTPBasicCredentials = Depends(security
 async def test_linkedin_post():
     from linkedin_poster import run_daily_post
     await run_daily_post()
+    return {"status": "fired"}
+
+@app.post("/api/admin/x/test-post", include_in_schema=False)
+async def test_x_post():
+    from x_poster import run_daily_x_post
+    await run_daily_x_post()
+    return {"status": "fired"}
+
+@app.post("/api/admin/x/test-post", include_in_schema=False)
+async def test_x_post():
+    from x_poster import run_daily_x_post
+    await run_daily_x_post()
     return {"status": "fired"}
