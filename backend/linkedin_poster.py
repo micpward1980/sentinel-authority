@@ -96,6 +96,11 @@ async def get_member_urn(access_token: str) -> str:
 
 async def generate_post(post_type: str) -> dict:
     prompt = TYPE_PROMPTS.get(post_type, TYPE_PROMPTS["thought_leadership"])
+    if post_type == "news_commentary":
+        news = await fetch_news_context()
+        if news:
+            prompt = f"LIVE NEWS CONTEXT (use this to make the post timely and specific):\n{news}\n\n{prompt}"
+            logger.info("[LINKEDIN] News context injected into prompt")
     async with httpx.AsyncClient(timeout=30) as client:
         r = await client.post(
             "https://api.anthropic.com/v1/messages",
@@ -207,3 +212,41 @@ def start_linkedin_scheduler(scheduler: AsyncIOScheduler):
         misfire_grace_time=3600,
     )
     logger.info("[LINKEDIN] Scheduler registered — Mon–Fri 8:00 AM ET")
+
+
+async def fetch_news_context() -> str:
+    """Use Anthropic web search to get live autonomous systems news."""
+    try:
+        async with httpx.AsyncClient(timeout=45) as client:
+            r = await client.post(
+                "https://api.anthropic.com/v1/messages",
+                headers={
+                    "x-api-key": os.environ["ANTHROPIC_API_KEY"],
+                    "anthropic-version": "2023-06-01",
+                    "content-type": "application/json",
+                },
+                json={
+                    "model": "claude-sonnet-4-20250514",
+                    "max_tokens": 1000,
+                    "tools": [{"type": "web_search_20250305", "name": "web_search"}],
+                    "messages": [{
+                        "role": "user",
+                        "content": (
+                            "Search for the latest news today about: autonomous vehicle regulation, "
+                            "NHTSA autonomous systems, AV safety incidents, EU AI Act autonomous, "
+                            "or drone/robotics regulatory developments. "
+                            "Return a concise 3-5 bullet summary of the most relevant stories, "
+                            "including source and date. Plain text only."
+                        )
+                    }],
+                },
+            )
+            r.raise_for_status()
+            data = r.json()
+            text_blocks = [b["text"] for b in data["content"] if b.get("type") == "text"]
+            result = " ".join(text_blocks).strip()
+            logger.info(f"[LINKEDIN] News context fetched: {len(result)} chars")
+            return result
+    except Exception as e:
+        logger.warning(f"[LINKEDIN] News fetch failed: {e}")
+        return ""
