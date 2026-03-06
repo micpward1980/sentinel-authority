@@ -82,15 +82,13 @@ TYPE_PROMPTS = {
 async def get_member_urn(access_token: str) -> str:
     async with httpx.AsyncClient(timeout=15) as client:
         r = await client.get(
-            "https://api.linkedin.com/v2/userinfo",
-            headers={"Authorization": f"Bearer {access_token}"},
+            "https://api.linkedin.com/v2/me",
+            headers={"Authorization": f"Bearer {access_token}", "X-Restli-Protocol-Version": "2.0.0"},
         )
         r.raise_for_status()
         data = r.json()
-        sub = data.get("sub", "")
-        if sub.startswith("urn:li:person:"):
-            return sub
-        return f"urn:li:person:{sub}"
+        member_id = data.get("id", "")
+        return f"urn:li:person:{member_id}"
 
 
 async def generate_post(post_type: str) -> dict:
