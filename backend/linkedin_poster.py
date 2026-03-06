@@ -80,6 +80,9 @@ TYPE_PROMPTS = {
 
 
 async def get_member_urn(access_token: str) -> str:
+    hardcoded = os.environ.get("LINKEDIN_MEMBER_URN")
+    if hardcoded:
+        return hardcoded
     async with httpx.AsyncClient(timeout=15) as client:
         r = await client.get(
             "https://api.linkedin.com/v2/userinfo",
