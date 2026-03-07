@@ -101,7 +101,7 @@ function Layout({ children }) {
   });
 
   return (
-    <div style={{height: '100svh', overflow: 'hidden', color: styles.textPrimary, fontFamily: styles.sans, background: styles.bgDeep}}>
+    <div style={{minHeight: '100svh', overflow: 'visible', color: styles.textPrimary, fontFamily: styles.sans, background: styles.bgDeep}}>
       {/* Grid overlay — matches main site (opacity:0 = hidden by default) */}
       <div className="sa-grid-overlay" />
 
@@ -205,7 +205,7 @@ function Layout({ children }) {
       </div>
 
       {/* Main */}
-      <div style={{marginLeft: isMobile ? 0 : '240px', position: 'relative', zIndex: 10, height: '100svh', display: 'flex', flexDirection: 'column'}}>
+      <div style={{marginLeft: (isMobile || !sidebarOpen) ? 0 : '240px', position: 'relative', zIndex: 10, minHeight: '100svh', display: 'flex', flexDirection: 'column'}}>
         {/* Header — frosted glass matching main site */}
         <header style={{
           height: '72px',
