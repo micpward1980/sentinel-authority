@@ -71,7 +71,7 @@
     <div class="page-header">
       <span class="page-label">Standard</span>
       <h1 class="page-title">Conformance Requirements</h1>
-      <p class="page-lead">ODDC certification requires a system to satisfy five gates: a declared or auto-discovered operational domain, demonstrated operational stability, runtime-assured boundaries via ENVELO Interlock, a tamper-evident evidence record, and a clear non-conformance pathway.</p>
+      <p class="page-lead">ODDC requires a system to satisfy five gates: a declared or auto-discovered operational domain, demonstrated operational stability, runtime-assured boundaries via ENVELO Interlock, a tamper-evident evidence record, and a clear non-conformance pathway.</p>
     </div>
     <div class="inner">
       <div class="gates-grid">
@@ -83,7 +83,7 @@
       </div>
       <span class="section-label-sm">Detailed Requirements</span>
       <ul class="req-list">
-        <li><span class="num">R-01</span><span>ODD boundaries must be defined in machine-readable format compatible with ENVELO Interlock's assurance engine, or auto-discovered and operator-approved prior to assurance activation. Declared boundaries must include at minimum: (a) at least one quantitative operational parameter with defined limit values, (b) a defined geographic, environmental, or operational scope, and (c) explicit identification of conditions under which assurance activates. Boundaries defined solely by time window, administrative classification, or other non-operational criteria do not satisfy this requirement.</span></li>
+        <li><span class="num">R-01</span><span>ODD boundaries must be defined in machine-readable format compatible with ENVELO Interlock's assurance engine, or auto-discovered and approved prior to assurance activation. Declared boundaries must include at minimum: (a) at least one quantitative operational parameter with defined limit values, (b) a defined geographic, environmental, or operational scope, and (c) explicit identification of conditions under which assurance activates. Boundaries defined solely by time window, administrative classification, or other non-operational criteria do not satisfy this requirement.</span></li>
         <li><span class="num">R-01a</span><span>ODD declarations are subject to Pre-CAT-72 Audit Control Review. Sentinel Authority will return declarations that are insufficiently specified, internally inconsistent, or that define boundaries so narrow as to render the verification period non-representative of actual operational conditions. Revision history of ODD declarations is retained and published in the certificate registry.</span></li>
         <li style="flex-direction:column;gap:8px;"><span class="num">R-01b</span><span>The ENVELO assurance engine supports all boundary types required to certify autonomous systems across operational domains. Boundary types may be auto-discovered from observed system behavior or manually declared. Supported categories include but are not limited to:</span>
           <div style="display:flex;flex-direction:column;gap:16px;margin:12px 0 4px 40px;font-size:13px;color:var(--text-2);line-height:1.6;">
@@ -100,12 +100,13 @@
               <span>Exclusion zone assurance, proximity and separation minimums, redundancy and minimum-count thresholds, energy reserve requirements, dynamic envelope curves, calculated derived-value limits, contraindication rules, escalation protocols, jurisdictional constraints</span>
             </div>
           </div>
-          <span style="font-size:13px;color:var(--text-2);margin-left:40px;">All boundary types are evaluated synchronously at execution time. The assurance engine is extensible — additional boundary types are added as operational domains require them without changes to the certification framework.</span>
+          <span style="font-size:13px;color:var(--text-2);margin-left:40px;">All boundary types are evaluated synchronously at execution time. The assurance engine is extensible — additional boundary types are added as operational domains require them without changes to the conformance framework.</span>
         </li>
         <li><span class="num">R-02</span><span>The system must complete a minimum of 72 cumulative hours of monitored operation without boundary violation during the CAT-72 assessment period.</span></li>
         <li><span class="num">R-03</span><span>ENVELO Tier 1 (self-correction) must engage automatically on ODD approach with no human intervention required.</span></li>
         <li><span class="num">R-04</span><span>ENVELO Tier 2 (Minimum Risk Condition) must activate on ODD boundary breach and bring the system to a defined safe state.</span></li>
         <li><span class="num">R-05</span><span>ENVELO Tier 3 (hard halt at the ENVELO wall) must function as an absolute override that cannot be disabled by operator or software command.</span></li>
+        <li><span class="num">R-05a</span><span>The ENVELO Interlock must be architecturally external to the governed system. Architecturally external means the model cannot modify, disable, or circumvent the interlock — not that it must reside on separate hardware. A sidecar process, execution gateway, or kernel-level policy engine each satisfy this requirement provided no alternate execution path exists. Any configuration in which the model can directly access actuators, APIs, or execution targets without passing through the interlock does not satisfy this requirement and disqualifies the system from certification.</span></li>
         <li><span class="num">R-06</span><span>All assurance events must be logged with timestamps, positional context where applicable, and cryptographic hash chains linking each event to the prior record.</span></li>
         <li style="flex-direction:column;gap:8px;"><span class="num">R-06a</span><span>The following actions are independently logged in the tamper-evident audit chain:</span>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 24px;margin:8px 0 4px 40px;font-size:13px;color:var(--text-2);line-height:1.6;">
@@ -120,7 +121,7 @@
             <span>Certificate reinstatement</span>
             <span>API key generation / deactivation</span>
             <span>Boundary report submission</span>
-            <span>Enforcement config changes</span>
+            <span>Assurance config changes</span>
             <span>User authentication events</span>
             <span>Profile modifications</span>
           </div>
@@ -129,8 +130,8 @@
         <li><span class="num">R-07</span><span>Audit logs must be transmitted to Sentinel Authority servers in real time or near-real time during the CAT-72 period. Gaps exceeding 15 minutes require justification.</span></li>
         <li><span class="num">R-08</span><span>System must maintain IP protection: the ENVELO Interlock transmits only operational telemetry. Proprietary system internals are not accessed or transmitted.</span></li>
         <li><span class="num">R-09</span><span>ODD scope changes after certification initiation require a new scope assessment and may require a new CAT-72 test run.</span></li>
-        <li><span class="num">R-10</span><span>The applicant must designate a primary technical contact responsible for ENVELO Interlock deployment and ongoing conformance maintenance.</span></li>
-        <li><span class="num">R-11</span><span>Post-certification systems are subject to continuous assurance. The ENVELO Interlock must remain operational and report telemetry to Sentinel Authority. A real-time conformance score is computed for each certified system. Systems are automatically marked non-conformant if: (a) agent heartbeat is lost for more than 15 minutes, or (b) boundary violation rate exceeds the assurance threshold. Reinstatement of a non-conformant certificate requires human review and authorization by Sentinel Authority — automated reinstatement is not permitted.</span></li>
+        <li><span class="num">R-10</span><span>The applicant must designate a primary technical contact responsible for ENVELO Interlock deployment and ongoing conformance maintenance. This contact must represent the deploying entity.</span></li>
+        <li><span class="num">R-11</span><span>Post-certification systems are subject to continuous assurance. The ENVELO Interlock must remain operational and report telemetry to Sentinel Authority. A real-time conformance score is computed for each certified system. Systems are automatically marked non-conformant if: (a) interlock heartbeat is lost for more than 15 minutes, or (b) boundary violation rate exceeds the assurance threshold. Reinstatement of a non-conformant certificate requires human review and authorization by Sentinel Authority — automated reinstatement is not permitted.</span></li>
       </ul>
       <span class="section-label-sm">Certification Process</span>
       <div class="process-grid">
