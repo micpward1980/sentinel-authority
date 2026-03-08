@@ -151,7 +151,7 @@ function QuotePreview({ quote }) {
 export default function QuotePage() {
   const [view, setView] = useState('queue');  // queue | new | detail
   const [quotes, setQuotes] = useState([]);
-  const [discPct, setDiscPct] = useState(""); const [discReason, setDiscReason] = useState("");
+  const [discInitialPct, setDiscInitialPct] = useState(""); const [discAnnualPct, setDiscAnnualPct] = useState(""); const [discReason, setDiscReason] = useState("");
   const [selectedQuote, setSelectedQuote] = useState(null);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState(null);
@@ -227,12 +227,25 @@ export default function QuotePage() {
     } catch(e) { alert("Delete failed: " + (e.response?.data?.detail || e.message)); }
   }
   async function applyDiscount(id) {
-    const pct = parseInt(discPct);
-    if (isNaN(pct) || pct < 0 || pct > 100) return alert("Enter 0-100");
+    const iPct = parseInt(discInitialPct) || 0;
+    const aPct = parseInt(discAnnualPct) || 0;
+    if (iPct < 0 || iPct > 100 || aPct < 0 || aPct > 100) return alert("Enter 0-100");
     try {
-      const res = await api.post(`/api/quotes/${id}/discount`, { discount_percent: pct, reason: discReason });
-      setSelectedQuote(prev => ({ ...prev, discount_percent: pct, discount_reason: discReason, initial_total: res.data.initial_total, annual_total: res.data.annual_total, year_one_total: res.data.year_one_total }));
-      setDiscPct(""); setDiscReason("");
+      const res = await api.post(`/api/quotes/${id}/discount`, {
+        initial_discount_percent: iPct,
+        annual_discount_percent: aPct,
+        reason: discReason
+      });
+      setSelectedQuote(prev => ({
+        ...prev,
+        initial_discount_percent: iPct,
+        annual_discount_percent: aPct,
+        discount_reason: discReason,
+        initial_total: res.data.initial_total,
+        annual_total: res.data.annual_total,
+        year_one_total: res.data.year_one_total
+      }));
+      setDiscInitialPct(""); setDiscAnnualPct(""); setDiscReason("");
       loadQuotes();
     } catch(e) { alert("Failed: " + (e.response?.data?.detail || e.message)); }
   }
@@ -346,9 +359,19 @@ export default function QuotePage() {
           {/* Discount */}
           <div style={{ marginTop: 16, padding: "16px 20px", background: "rgba(15,16,33,.03)", border: "1px solid " + styles.borderGlass }}>
             <div style={{ fontFamily: styles.mono, fontSize: 10, color: styles.textTertiary, letterSpacing: "1.5px", marginBottom: 10 }}>APPLY DISCOUNT</div>
-            <div style={{ display: "flex", gap: 8, alignItems: "flex-end" }}>
-              <div style={{ width: 80 }}><label style={{ display: "block", fontFamily: styles.mono, fontSize: 9, color: styles.textTertiary, marginBottom: 4 }}>%</label><input type="number" min="0" max="100" value={discPct} onChange={e => setDiscPct(e.target.value)} placeholder="0" style={{ width: "100%", padding: "8px", fontFamily: styles.mono, fontSize: 14, border: "1px solid " + styles.borderGlass, outline: "none" }} /></div>
-              <div style={{ flex: 1 }}><label style={{ display: "block", fontFamily: styles.mono, fontSize: 9, color: styles.textTertiary, marginBottom: 4 }}>REASON</label><input value={discReason} onChange={e => setDiscReason(e.target.value)} placeholder="e.g. Early adopter, multi-year" style={{ width: "100%", padding: "8px", fontFamily: styles.sans, fontSize: 13, border: "1px solid " + styles.borderGlass, outline: "none", boxSizing: "border-box" }} /></div>
+            <div style={{ display: "flex", gap: 8, alignItems: "flex-end", marginBottom: 8 }}>
+              <div style={{ width: 100 }}>
+                <label style={{ display: "block", fontFamily: styles.mono, fontSize: 9, color: styles.textTertiary, marginBottom: 4 }}>INITIAL %</label>
+                <input type="number" min="0" max="100" value={discInitialPct} onChange={e => setDiscInitialPct(e.target.value)} placeholder="0" style={{ width: "100%", padding: "8px", fontFamily: styles.mono, fontSize: 14, border: "1px solid " + styles.borderGlass, outline: "none" }} />
+              </div>
+              <div style={{ width: 100 }}>
+                <label style={{ display: "block", fontFamily: styles.mono, fontSize: 9, color: styles.textTertiary, marginBottom: 4 }}>ANNUAL %</label>
+                <input type="number" min="0" max="100" value={discAnnualPct} onChange={e => setDiscAnnualPct(e.target.value)} placeholder="0" style={{ width: "100%", padding: "8px", fontFamily: styles.mono, fontSize: 14, border: "1px solid " + styles.borderGlass, outline: "none" }} />
+              </div>
+              <div style={{ flex: 1 }}>
+                <label style={{ display: "block", fontFamily: styles.mono, fontSize: 9, color: styles.textTertiary, marginBottom: 4 }}>REASON</label>
+                <input value={discReason} onChange={e => setDiscReason(e.target.value)} placeholder="e.g. Early adopter, founding program" style={{ width: "100%", padding: "8px", fontFamily: styles.sans, fontSize: 13, border: "1px solid " + styles.borderGlass, outline: "none", boxSizing: "border-box" }} />
+              </div>
               <button onClick={() => applyDiscount(selectedQuote.id)} onMouseEnter={e => { e.currentTarget.style.background = "#2a2660"; e.currentTarget.style.transform = "scale(1.03)"; }} onMouseLeave={e => { e.currentTarget.style.background = styles.purplePrimary; e.currentTarget.style.transform = "scale(1)"; }} onMouseDown={e => { e.currentTarget.style.transform = "scale(0.96)"; }} onMouseUp={e => { e.currentTarget.style.transform = "scale(1.03)"; }} style={{ padding: "8px 16px", fontFamily: styles.mono, fontSize: 10, letterSpacing: "1px", background: styles.purplePrimary, color: "#fff", border: "none", cursor: "pointer", whiteSpace: "nowrap", transition: "all 0.15s ease", borderRadius: 2 }}>APPLY</button>
             </div>
           </div>

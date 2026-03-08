@@ -335,16 +335,29 @@ async def apply_discount(quote_id: int, body: dict,
     q = result.scalar_one_or_none()
     if not q:
         raise HTTPException(status_code=404, detail="Quote not found")
-    pct = body.get("discount_percent", 0)
-    if pct < 0 or pct > 100:
-        raise HTTPException(status_code=400, detail="Discount must be 0-100")
-    q.discount_percent = pct
+
+    # Support separate initial and annual discounts, or a single discount_percent for both
+    initial_pct = body.get("initial_discount_percent", body.get("discount_percent", 0))
+    annual_pct = body.get("annual_discount_percent", body.get("discount_percent", 0))
+
+    if not (0 <= initial_pct <= 100) or not (0 <= annual_pct <= 100):
+        raise HTTPException(status_code=400, detail="Discounts must be 0-100")
+
+    q.discount_percent = initial_pct  # keep for backwards compat
+    q.initial_discount_percent = initial_pct
+    q.annual_discount_percent = annual_pct
     q.discount_reason = body.get("reason", "")
-    # Recalculate totals
+
     base_initial = q.price_per_system * q.system_count
     base_annual = q.annual_per_system * q.system_count
-    q.initial_total = int(base_initial * (1 - pct / 100))
-    q.annual_total = int(base_annual * (1 - pct / 100))
+    q.initial_total = int(base_initial * (1 - initial_pct / 100))
+    q.annual_total = int(base_annual * (1 - annual_pct / 100))
     q.year_one_total = q.initial_total + q.annual_total
     await db.commit()
-    return {"discount_percent": pct, "initial_total": q.initial_total, "annual_total": q.annual_total, "year_one_total": q.year_one_total}
+    return {
+        "initial_discount_percent": initial_pct,
+        "annual_discount_percent": annual_pct,
+        "initial_total": q.initial_total,
+        "annual_total": q.annual_total,
+        "year_one_total": q.year_one_total
+    }
