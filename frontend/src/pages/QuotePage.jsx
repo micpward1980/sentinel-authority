@@ -23,7 +23,11 @@ const SECTOR_GUIDANCE = {
   'Other': { typical: '1-6', note: 'Custom assessment based on system description' },
 };
 
-const PRICING = { initial: 15000, annual: 12000, expedited: 22500, enterpriseThreshold: 6 };
+const PRICING = {
+  standard: { initial: 75000, annual: 50000, expedited: 112500 },
+  founding: { initial: 15000, annual: 12000, expedited: 22500 },
+  enterpriseThreshold: 6,
+};
 
 // ─── Shared Styles ───
 const fieldLabel = {
@@ -163,6 +167,7 @@ export default function QuotePage() {
   const [oddDesc, setOddDesc] = useState('');
   const [systemCount, setSystemCount] = useState(1);
   const [expedited, setExpedited] = useState(false);
+  const [founding, setFounding] = useState(false);
   const [notes, setNotes] = useState('');
 
   const sectorInfo = SECTOR_GUIDANCE[sector];
@@ -185,14 +190,14 @@ export default function QuotePage() {
       const res = await api.post('/api/quotes/intake', {
         company_name: company, contact_name: contact, contact_email: email,
         sector, system_description: systemDesc, odd_description: oddDesc,
-        estimated_systems: systemCount, expedited, source: 'manual', internal_notes: notes,
+        estimated_systems: systemCount, expedited, founding, source: 'manual', internal_notes: notes,
       });
       setSelectedQuote(res.data.quote);
       setView('detail');
       loadQuotes();
       // Reset form
       setCompany(''); setContact(''); setEmail(''); setSector('');
-      setSystemDesc(''); setOddDesc(''); setSystemCount(1); setExpedited(false); setNotes('');
+      setSystemDesc(''); setOddDesc(''); setSystemCount(1); setExpedited(false); setFounding(false); setNotes('');
     } catch (e) { console.error('Intake failed:', e); alert('Quote generation failed. Check console.'); }
     setSubmitting(false);
   }
@@ -419,6 +424,19 @@ export default function QuotePage() {
                     </span>
                   </div>
                 </Field>
+                <Field label="Program Tier">
+                  <div onClick={() => setFounding(!founding)} style={{ ...inputBase, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10,
+                    background: founding ? 'rgba(42,37,96,0.06)' : '#fff',
+                    borderColor: founding ? 'rgba(42,37,96,0.40)' : styles.borderGlass }}>
+                    <div style={{ width: 16, height: 16, border: `2px solid ${founding ? '#2a2560' : styles.borderGlass}`,
+                      background: founding ? '#2a2560' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      {founding && <span style={{ color: '#fff', fontSize: 11, fontWeight: 700 }}>&#10003;</span>}
+                    </div>
+                    <span style={{ fontSize: 13, color: founding ? '#2a2560' : styles.textTertiary }}>
+                      {founding ? 'Founding Program — $15K / $12K' : 'Standard — $75K / $50K'}
+                    </span>
+                  </div>
+                </Field>
               </div>
               <Field label="Internal Notes"><textarea style={{ ...textarea, minHeight: 50 }} value={notes} onChange={e => setNotes(e.target.value)} placeholder="Source, urgency, context..." /></Field>
             </Panel>
@@ -434,11 +452,11 @@ export default function QuotePage() {
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
                 <div>
                   <div style={{ fontFamily: styles.mono, fontSize: 10, color: styles.textTertiary }}>YEAR ONE</div>
-                  <div style={{ fontFamily: styles.mono, fontSize: 24, fontWeight: 700, color: '#0f1021' }}>${(systemCount * (PRICING.initial + PRICING.annual)).toLocaleString()}</div>
+                  <div style={{ fontFamily: styles.mono, fontSize: 24, fontWeight: 700, color: '#0f1021' }}>${(systemCount * ((founding ? PRICING.founding.initial : PRICING.standard.initial) + (founding ? PRICING.founding.annual : PRICING.standard.annual))).toLocaleString()}</div>
                 </div>
                 <div>
                   <div style={{ fontFamily: styles.mono, fontSize: 10, color: styles.textTertiary }}>ANNUAL</div>
-                  <div style={{ fontFamily: styles.mono, fontSize: 24, fontWeight: 700, color: '#0f1021' }}>${(systemCount * PRICING.annual).toLocaleString()}</div>
+                  <div style={{ fontFamily: styles.mono, fontSize: 24, fontWeight: 700, color: '#0f1021' }}>${(systemCount * (founding ? PRICING.founding.annual : PRICING.standard.annual)).toLocaleString()}</div>
                 </div>
               </div>
               <div style={{ marginTop: 12, display: 'flex', gap: 12 }}>
@@ -446,7 +464,7 @@ export default function QuotePage() {
                   background: systemCount >= PRICING.enterpriseThreshold ? `${styles.purpleBright}18` : `${styles.accentGreen}14`,
                   color: systemCount >= PRICING.enterpriseThreshold ? styles.purpleBright : styles.accentGreen,
                   border: `1px solid ${systemCount >= PRICING.enterpriseThreshold ? styles.purpleBright + '30' : styles.accentGreen + '25'}` }}>
-                  {systemCount >= PRICING.enterpriseThreshold ? 'ENTERPRISE · MCA' : 'STANDARD'}
+                  {founding ? 'FOUNDING PROGRAM' : systemCount >= PRICING.enterpriseThreshold ? 'ENTERPRISE · MCA' : 'STANDARD'}
                 </span>
                 <span style={{ fontFamily: styles.mono, fontSize: 10, letterSpacing: '1px', padding: '4px 10px', color: styles.textTertiary, border: `1px solid ${styles.borderGlass}` }}>
                   {systemCount} SYSTEM{systemCount > 1 ? 'S' : ''}

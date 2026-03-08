@@ -13,20 +13,30 @@ from app.services.ai_analysis import analyze_prospect, generate_executive_summar
 router = APIRouter()
 
 # ─── Pricing (single source of truth) ───
-INITIAL_ASSESSMENT = 15_000
-ANNUAL_MAINTENANCE = 12_000
-EXPEDITED_REVIEW = 22_500
+INITIAL_ASSESSMENT = 75_000
+ANNUAL_MAINTENANCE = 50_000
+EXPEDITED_REVIEW = 112_500   # +50% on standard
 ENTERPRISE_THRESHOLD = 6
 
-def calc_pricing(system_count, expedited=False):
-    per = EXPEDITED_REVIEW if expedited else INITIAL_ASSESSMENT
+# Founding program rates (first 10 systems)
+FOUNDING_INITIAL = 15_000
+FOUNDING_ANNUAL = 12_000
+FOUNDING_EXPEDITED = 22_500
+
+def calc_pricing(system_count, expedited=False, founding=False):
+    if founding:
+        per = FOUNDING_EXPEDITED if expedited else FOUNDING_INITIAL
+        ann = FOUNDING_ANNUAL
+    else:
+        per = EXPEDITED_REVIEW if expedited else INITIAL_ASSESSMENT
+        ann = ANNUAL_MAINTENANCE
     init = system_count * per
-    annual = system_count * ANNUAL_MAINTENANCE
+    annual = system_count * ann
     return {
-        "price_per_system": per, "annual_per_system": ANNUAL_MAINTENANCE,
+        "price_per_system": per, "annual_per_system": ann,
         "initial_total": init, "annual_total": annual,
         "year_one_total": init + annual,
-        "pricing_tier": "enterprise" if system_count >= ENTERPRISE_THRESHOLD else "standard",
+        "pricing_tier": "founding" if founding else ("enterprise" if system_count >= ENTERPRISE_THRESHOLD else "standard"),
         "mca_eligible": system_count >= ENTERPRISE_THRESHOLD,
     }
 
@@ -48,6 +58,7 @@ class QuoteIntake(BaseModel):
     odd_description: Optional[str] = ""
     estimated_systems: int = 1
     expedited: bool = False
+    founding: bool = False
     source: str = "manual"
     internal_notes: Optional[str] = None
 
@@ -90,7 +101,7 @@ async def create_quote(req: QuoteIntake, db: AsyncSession = Depends(get_db), use
                      "oddBreakdown": [], "summary": f"Analysis error: {e}", "flags": ["AI error"]}
 
     sc = analysis.get("recommendedSystems", req.estimated_systems)
-    p = calc_pricing(sc, req.expedited)
+    p = calc_pricing(sc, req.expedited, req.founding)
 
     # Executive summary
     try:
