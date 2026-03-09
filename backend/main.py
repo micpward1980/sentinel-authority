@@ -694,6 +694,7 @@ app.include_router(audit_routes.router, prefix="/api/v1/audit", tags=["Audit Log
 app.include_router(ai_review.router, prefix="/api/v1", tags=["AI Review"])
 app.include_router(webhooks.router, prefix="/api/v1/webhooks", tags=["Webhooks"])
 app.include_router(webhooks.router, prefix="/api/webhooks", tags=["Webhooks"])
+from app.api.routes import hellosign as hellosign_routes
 app.include_router(hellosign_routes.router, prefix="/api/v1/hellosign", tags=["HelloSign"])
 
 # ── Legacy unversioned routes (backward compat — deprecated) ──────────────────
