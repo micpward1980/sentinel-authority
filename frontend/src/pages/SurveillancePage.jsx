@@ -137,7 +137,7 @@ export default function SurveillancePage() {
       const params = new URLSearchParams({
         limit: systemLimit, offset: systemOffset, sort_by: systemSort, sort_order: systemOrder,
       });
-      if (systemFilter !== 'all') { if (systemFilter === 'non_conformant') { params.set('status', 'non_conformant'); params.append('status', 'degraded'); params.append('status', 'critical'); } else { params.set('status', systemFilter); } }
+      if (systemFilter !== 'all') params.set('status', systemFilter);
       if (systemSearch) params.set('search', systemSearch);
       return api.get('/api/surveillance/systems?' + params.toString()).then(r => r.data);
     },

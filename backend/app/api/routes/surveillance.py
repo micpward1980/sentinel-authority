@@ -328,7 +328,7 @@ async def list_monitored_systems(
             Certificate.application_id,
         )
         .outerjoin(Certificate, EnveloSession.certificate_id == Certificate.id)
-        .where(EnveloSession.status.in_(["active", "healthy", "degraded"]))
+        .where(EnveloSession.status.in_(["active", "healthy", "degraded", "critical", "offline", "suspended"]))
     )
 
     if status == "conformant":
