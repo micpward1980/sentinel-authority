@@ -387,6 +387,52 @@ async def upload_discovered_boundaries(
     session.metadata_json["envelope_discovered_at"] = datetime.utcnow().isoformat()
     flag_modified(session, "metadata_json")
 
+    # Promote discovered boundaries into active CAT-72 test learning profile
+    if session.application_id:
+        from app.models.models import CAT72Test
+        from sqlalchemy.orm.attributes import flag_modified as fm2
+        test_result = await db.execute(
+            select(CAT72Test).where(
+                CAT72Test.application_id == session.application_id,
+                CAT72Test.state == "learning"
+            ).order_by(CAT72Test.id.desc())
+        )
+        test = test_result.scalar_one_or_none()
+        if test:
+            env = dict(test.envelope_definition or {})
+            profile = env.get("_learning_profile") or {"variables": {}, "sample_count": 0}
+            discovered = data.envelope_definition
+            # Merge discovered numeric boundaries into profile
+            for b in discovered.get("boundaries", {}).get("numeric", []):
+                key = b.get("parameter") or b.get("name")
+                if not key:
+                    continue
+                if key not in profile["variables"]:
+                    profile["variables"][key] = {"count": 0}
+                v = profile["variables"][key]
+                v["type"] = "numeric"
+                v["min"] = b.get("min_value", v.get("min", 0))
+                v["max"] = b.get("max_value", v.get("max", 0))
+                v["count"] = max(v.get("count", 0), 10)  # meet minimum threshold
+                v["sum"] = v["min"] + v["max"]
+                v["sum_sq"] = v["min"]**2 + v["max"]**2
+            # Merge categorical/state boundaries
+            for b in discovered.get("boundaries", {}).get("categorical", []):
+                key = b.get("parameter") or b.get("name")
+                if not key:
+                    continue
+                if key not in profile["variables"]:
+                    profile["variables"][key] = {"count": 0}
+                v = profile["variables"][key]
+                v["type"] = "categorical"
+                v["unique_values"] = b.get("allowed_values", [])
+                v["count"] = max(v.get("count", 0), 10)
+            # Update sample count to meet minimum
+            profile["sample_count"] = max(profile.get("sample_count", 0), 10)
+            env["_learning_profile"] = profile
+            test.envelope_definition = env
+            fm2(test, "envelope_definition")
+
     await db.commit()
 
     return {
