@@ -984,9 +984,22 @@
           <p class="section-lead">
             An independent runtime execution gate between an autonomous system and the environment it affects. Verified by Sentinel Authority.
           </p>
-          <p style="margin-top:16px;font-size:16px;line-height:1.7;color:var(--text-secondary);">The ENVELO Interlock operates external to the governed system and cannot be modified or disabled by the model. All autonomous actions pass through the interlock prior to execution. Systems with alternate execution paths — including direct actuator or API access — are ineligible for certification.</p>
+          <p style="margin-top:16px;font-size:16px;line-height:1.7;color:var(--text-secondary);">The ENVELO Interlock operates external to the governed system and cannot be modified or disabled by the model. All autonomous actions pass through the interlock prior to execution.</p>
 
-          <p style="margin-top:16px;font-size:16px;line-height:1.7;color:var(--text-secondary);"><strong style="color:var(--text-primary);">Closed and proprietary systems are fully certifiable.</strong> Sentinel Authority does not require access to internal model architecture or training data.<br><br>ENVELO enforces declared operational boundaries at the execution layer. Sentinel verifies that enforcement is architectural, active, and non-bypassable.<br><br>If those guardrails hold, the system may be certified regardless of internal model transparency.</p>
+          <div style="margin-top:32px;max-width:580px;">
+            <div style="margin-bottom:28px;">
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:2.5px;color:var(--text-secondary);text-transform:uppercase;margin-bottom:8px;">Certification Eligibility</div>
+              <p style="font-size:15px;line-height:1.7;color:var(--text-secondary);margin:0;">Systems with alternate execution paths — including direct actuator or API access — are ineligible for certification.</p>
+            </div>
+            <div style="margin-bottom:28px;">
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:2.5px;color:var(--text-secondary);text-transform:uppercase;margin-bottom:8px;">Model Transparency</div>
+              <p style="font-size:15px;line-height:1.7;color:var(--text-secondary);margin:0;"><strong style="color:var(--text-primary);">Closed and proprietary systems remain certifiable.</strong> Sentinel Authority does not require access to internal model architecture or training data.</p>
+            </div>
+            <div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:2.5px;color:var(--text-secondary);text-transform:uppercase;margin-bottom:8px;">Boundary Enforcement</div>
+              <p style="font-size:15px;line-height:1.7;color:var(--text-secondary);margin:0;">ENVELO enforces declared operational boundaries at the execution layer. Sentinel verifies that enforcement is architectural, active, and non-bypassable.<br><br>Systems lacking a non-bypassable execution control layer fall outside the scope of certification.</p>
+            </div>
+          </div>
 
         </div>
       </div>
@@ -1115,13 +1128,15 @@
       <!-- Mobile Static: ENVELO v6 --><!-- Four Pillars -->
       <div class="reveal" style="max-width:700px;margin:0 auto var(--space-3);">
         <div class="hud-frame hud-scanline"><i></i>
+          <div class="hud-label" style="margin-bottom:16px;">NORMATIVE REQUIREMENTS</div>
+          <div style="font-size:13px;color:var(--text-secondary);font-family:var(--mono);margin-bottom:20px;line-height:1.6;">Systems seeking certification under the ODDC Runtime Assurance Standard must satisfy the following architectural requirements.</div>
           <div class="hud-row" style="display:flex;align-items:flex-start;">
             <span class="hud-num">01</span><span class="hud-dot" style="margin-top:6px;"></span>
-            <div><div class="hud-title">RA-01 &nbsp;Non-Bypassable</div><div class="hud-desc">All autonomous execution events pass through the assurance layer. The architecture contains no alternative execution pathways that bypass assurance.</div></div>
+            <div><div class="hud-title">RA-01 &nbsp;Non-Bypassable</div><div class="hud-desc">All autonomous execution events pass through the assurance layer. No alternative execution pathways exist.</div></div>
           </div>
           <div class="hud-row" style="display:flex;align-items:flex-start;">
             <span class="hud-num">02</span><span class="hud-dot" style="margin-top:6px;"></span>
-            <div><div class="hud-title">RA-02 &nbsp;Tiered Assurance</div><div class="hud-desc">Three assurance tiers — self-correction, Minimum Risk Condition, and hard halt. Each response level is architecturally mandatory.</div></div>
+            <div><div class="hud-title">RA-02 &nbsp;Tiered Assurance</div><div class="hud-desc">Three mandatory response tiers: self-correction, Minimum Risk Condition, and hard halt.</div></div>
           </div>
           <div class="hud-row" style="display:flex;align-items:flex-start;">
             <span class="hud-num">03</span><span class="hud-dot" style="margin-top:6px;"></span>
@@ -1129,15 +1144,18 @@
           </div>
           <div class="hud-row" style="display:flex;align-items:flex-start;">
             <span class="hud-num">04</span><span class="hud-dot" style="margin-top:6px;"></span>
-            <div><div class="hud-title">RA-04 &nbsp;Tamper-Evident Audit Chain</div><div class="hud-desc">All assurance events are recorded in a SHA-256 hash-chained audit log. Records are immutable and independently verifiable through daily HMAC-signed anchors. 19 event types are captured across the certification lifecycle.</div></div>
+            <div><div class="hud-title">RA-04 &nbsp;Tamper-Evident Audit Chain</div><div class="hud-desc">Assurance events recorded in a SHA-256 hash-chained audit log. Records are immutable and independently verifiable.</div></div>
           </div>
           <div class="hud-row" style="display:flex;align-items:flex-start;">
             <span class="hud-num">05</span><span class="hud-dot" style="margin-top:6px;"></span>
-            <div><div class="hud-title">RA-05 &nbsp;Standardized Boundary Event Determination</div><div class="hud-desc">ENVELO records boundary events per the ODDC specification. Exceedance conditions, assurance activations, and drift indicators are categorized by the assurance architecture and not operator-configurable. Telemetry integrity is verified before CAT-72 begins.</div></div>
+            <div><div class="hud-title">RA-05 &nbsp;Boundary Event Determination</div><div class="hud-desc">Boundary events categorized per ODDC specification. Not operator-configurable. Telemetry integrity verified before CAT-72 begins.</div></div>
           </div>
           <div class="hud-row" style="display:flex;align-items:flex-start;">
             <span class="hud-num">06</span><span class="hud-dot" style="margin-top:6px;"></span>
-            <div><div class="hud-title">RA-06 &nbsp;Automated ODD Parameter Mapping</div><div class="hud-desc">ENVELO maps declared ODD parameters to runtime execution gates via a standardized telemetry ingestion layer. Thresholds, geofences, temporal limits, and rate-of-change constraints are applied directly from operator declarations. No domain-specific logic rewrites are required.</div></div>
+            <div><div class="hud-title">RA-06 &nbsp;ODD Parameter Mapping</div><div class="hud-desc">Declared ODD parameters mapped directly to runtime execution gates. Thresholds, geofences, and rate-of-change constraints applied from operator declarations.</div></div>
+          </div>
+          <div style="margin-top:20px;padding:14px 18px;border-left:2px solid rgba(15,18,30,0.20);background:rgba(15,18,30,0.03);">
+            <div style="font-family:var(--mono);font-size:12px;color:rgba(15,18,30,0.70);line-height:1.7;letter-spacing:0.3px;">Conformance Determination — A system is eligible for ODDC certification only when all normative requirements are satisfied and independently verified by Sentinel Authority.</div>
           </div>
         </div>
       </div>
@@ -2346,12 +2364,12 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
         <div class="hud-frame hud-scanline" style="max-width:440px;margin:0 auto;"><i></i>
           <div class="fee-grid" style="display:grid;grid-template-columns:1fr 120px;align-items:center;" class="hud-row">
             <div><div class="hud-title" style="font-weight:700;">Conformance Assessment</div><div class="hud-desc">Due at application — covers Pre-CAT-72 Audit Control Review, CAT-72 assurance testing, and ODDC certificate issuance.</div></div>
-            <span style="font-family:Consolas,monospace;font-size:14px;font-weight:400;color:#111318;text-align:right;">$15,000</span>
+            <span style="font-family:Consolas,monospace;font-size:14px;font-weight:400;color:#111318;text-align:right;">$75,000</span>
           </div>
           <div style="border-top:1px solid rgba(0,0,0,0.08);margin:4px 0;"></div>
           <div class="fee-grid" style="display:grid;grid-template-columns:1fr 120px;align-items:center;" class="hud-row">
             <div><div class="hud-title" style="font-weight:700;">Annual Maintenance</div><div class="hud-desc">Begins at certificate issuance — continuous ENVELO Interlock assurance verification, tamper-evident audit record maintenance, annual conformance renewal assessment, and public registry status maintenance.</div></div>
-            <span style="font-family:Consolas,monospace;font-size:14px;font-weight:400;color:#111318;text-align:right;">$12,000</span>
+            <span style="font-family:Consolas,monospace;font-size:14px;font-weight:400;color:#111318;text-align:right;">$50,000</span>
           </div>
           <div style="border-top:1px solid rgba(0,0,0,0.08);margin:4px 0;"></div>
           <div class="fee-grid" style="display:grid;grid-template-columns:1fr 120px;align-items:center;" class="hud-row">
