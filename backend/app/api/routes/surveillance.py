@@ -382,7 +382,8 @@ async def list_monitored_systems(
             last_seen_seconds = int((now - last_seen).total_seconds())
 
         ss = r.session_status or "unknown"
-        conformance = "conformant" if ss in ("healthy", "active") else "non_conformant"
+        cert_state = r.cert_state or "unknown"
+        conformance = "non_conformant" if cert_state in ("suspended", "revoked") or ss in ("suspended", "offline") else "conformant"
 
         systems.append({
             "session_id": r.session_id,
