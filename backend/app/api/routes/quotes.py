@@ -19,9 +19,11 @@ EXPEDITED_REVIEW = 112_500   # +50% on standard
 ENTERPRISE_THRESHOLD = 6
 
 # Founding program rates (first 10 systems)
+REASSESSMENT = 50_000
 FOUNDING_INITIAL = 15_000
 FOUNDING_ANNUAL = 12_000
 FOUNDING_EXPEDITED = 22_500
+FOUNDING_REASSESSMENT = 10_000
 
 def calc_pricing(system_count, expedited=False, founding=False):
     if founding:
