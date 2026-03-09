@@ -13,7 +13,7 @@ import SectionHeader from '../components/SectionHeader';
 function statusColor(status) {
   switch (status) {
     case 'healthy': case 'conformant': return styles.accentGreen;
-    case 'degraded': return styles.accentAmber;
+    case 'degraded': return styles.accentRed;
     case 'critical': case 'offline': case 'non_conformant': return styles.accentRed;
     default: return styles.textDim;
   }
@@ -137,7 +137,7 @@ export default function SurveillancePage() {
       const params = new URLSearchParams({
         limit: systemLimit, offset: systemOffset, sort_by: systemSort, sort_order: systemOrder,
       });
-      if (systemFilter !== 'all') params.set('status', systemFilter);
+      if (systemFilter !== 'all') { if (systemFilter === 'non_conformant') { params.set('status', 'non_conformant'); params.append('status', 'degraded'); params.append('status', 'critical'); } else { params.set('status', systemFilter); } }
       if (systemSearch) params.set('search', systemSearch);
       return api.get('/api/surveillance/systems?' + params.toString()).then(r => r.data);
     },
@@ -162,9 +162,9 @@ export default function SurveillancePage() {
   const monSessions = monitoringData?.sessions || [];
   const conformantSystems = allSystems.filter(s => s.status === 'conformant');
   const degradedSystems = allSystems.filter(s => s.status === 'degraded');
-  const offlineSystems = allSystems.filter(s => s.status === 'non_conformant' || s.status === 'critical' || s.status === 'offline');
+  const offlineSystems = allSystems.filter(s => s.status === 'non_conformant' || s.status === 'critical' || s.status === 'offline' || s.status === 'degraded');
   const totalFleet = allSystems.length;
-  const healthyCount = conformantSystems.length + degradedSystems.length;
+  const healthyCount = conformantSystems.length;
   const healthPct = totalFleet > 0 ? (healthyCount / totalFleet * 100) : 0;
 
   const status = statusData ?? null;
@@ -287,8 +287,7 @@ export default function SurveillancePage() {
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, justifyContent: 'flex-start' }}>
             <StatBlock label="TOTAL" value={status?.monitored_sessions || allSystems.length || 0} active={systemFilter === 'all'} onClick={() => handleSystemFilter('all')} />
             <StatBlock label="CONFORMANT" value={(bd.healthy ?? 0) || allSystems.filter(s => s.status === 'conformant').length} color={styles.accentGreen} active={systemFilter === 'conformant'} onClick={() => handleSystemFilter('conformant')} />
-            <StatBlock label="DEGRADED" value={(bd.degraded ?? 0) || allSystems.filter(s => s.status === 'degraded').length} color={styles.accentAmber} active={systemFilter === 'degraded'} onClick={() => handleSystemFilter('degraded')} />
-            <StatBlock label="NON-CONFORMANT" value={nonConformantCount || allSystems.filter(s => s.status === 'non_conformant' || s.status === 'critical').length} color={styles.accentRed} active={systemFilter === 'non_conformant'} onClick={() => handleSystemFilter('non_conformant')} />
+            <StatBlock label="NON-CONFORMANT" value={nonConformantCount || allSystems.filter(s => s.status === 'non_conformant' || s.status === 'critical' || s.status === 'degraded').length} color={styles.accentRed} active={systemFilter === 'non_conformant'} onClick={() => handleSystemFilter('non_conformant')} />
             <StatBlock label="ALERTS" value={alerts.length} active={systemFilter === 'alerts'} onClick={() => handleSystemFilter('alerts')} color={alerts.length > 0 ? styles.accentAmber : styles.textDim} />
           </div>
         )}
@@ -341,8 +340,8 @@ export default function SurveillancePage() {
                   <div style={{ ...mono, fontSize: '10px', color: styles.textTertiary }}>{s.certificate_number}</div>
                 </div>
                 <div style={{ fontSize: '12px', color: styles.textSecondary, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.organization_name}</div>
-                <div style={{ ...mono, fontSize: '10px', letterSpacing: '0.5px', textTransform: 'uppercase', color: s.status === 'conformant' ? styles.accentGreen : s.status === 'degraded' ? styles.accentAmber : styles.accentRed }}>
-                  {s.status === 'conformant' ? 'Conformant' : s.status === 'degraded' ? 'Degraded' : 'Non-Conf.'}
+                <div style={{ ...mono, fontSize: '10px', letterSpacing: '0.5px', textTransform: 'uppercase', color: s.status === 'conformant' ? styles.accentGreen : styles.accentRed }}>
+                  {s.status === 'conformant' ? 'Conformant' : 'Non-Conf.'}
                 </div>
                 <ScoreBar score={s.score} />
                 <div style={{ ...mono, fontSize: '11px', color: styles.textSecondary }}>{s.total_actions.toLocaleString()}</div>

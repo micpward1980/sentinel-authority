@@ -333,10 +333,8 @@ async def list_monitored_systems(
 
     if status == "conformant":
         base = base.where(EnveloSession.status.in_(["healthy", "active"]))
-    elif status == "degraded":
-        base = base.where(EnveloSession.status == "degraded")
     elif status == "non_conformant":
-        base = base.where(EnveloSession.status.in_(["critical", "offline", "suspended"]))
+        base = base.where(EnveloSession.status.in_(["critical", "offline", "suspended", "degraded"]))
 
     if search:
         term = f"%{search}%"
@@ -384,7 +382,7 @@ async def list_monitored_systems(
             last_seen_seconds = int((now - last_seen).total_seconds())
 
         ss = r.session_status or "unknown"
-        conformance = "conformant" if ss in ("healthy", "active") else "degraded" if ss == "degraded" else "non_conformant"
+        conformance = "conformant" if ss in ("healthy", "active") else "non_conformant"
 
         systems.append({
             "session_id": r.session_id,
