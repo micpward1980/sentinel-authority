@@ -450,6 +450,39 @@ async def lifespan(app: FastAPI):
         logger.warning(f"CAT-72 auto-evaluator failed to start: {e}")
 
 
+    # Start scheduler (LinkedIn, X, backups, renewals, exposure)
+    import os as _os
+    if _os.environ.get("ENVIRONMENT", "development") == "production":
+        from apscheduler.schedulers.background import BackgroundScheduler
+        from apscheduler.schedulers.asyncio import AsyncIOScheduler
+
+        bg_scheduler = BackgroundScheduler()
+        bg_scheduler.add_job(_run_scheduled_backup, "interval", hours=6, id="db_backup")
+        bg_scheduler.start()
+        logger.info("[BACKUP] Scheduler started — every 6 hours")
+
+        async_scheduler = AsyncIOScheduler()
+
+        async def _run_renewal_cron():
+            import httpx
+            try:
+                async with httpx.AsyncClient(timeout=30) as client:
+                    await client.post("http://localhost:8080/api/billing/cron/renewals")
+            except Exception as e:
+                logger.warning(f"[RENEWAL] Cron failed: {e}")
+
+        async_scheduler.add_job(_run_renewal_cron, "cron", hour=6, minute=0, id="renewal_cron")
+        from app.exposure_agent import run_exposure_agent
+        async_scheduler.add_job(run_exposure_agent, "cron", hour="7,12,17", minute=0, timezone="America/Toronto", id="sa_exposure_agent", replace_existing=True)
+        from app.exposure_agent import run_engagement_agent
+        async_scheduler.add_job(run_engagement_agent, "interval", minutes=30, id="sa_engagement_agent", replace_existing=True)
+        from linkedin_poster import start_linkedin_scheduler
+        start_linkedin_scheduler(async_scheduler)
+        from x_poster import start_x_scheduler
+        start_x_scheduler(async_scheduler)
+        async_scheduler.start()
+        logger.info("[SCHEDULER] LinkedIn, X, renewal, exposure agents all started")
+
     # Start surveillance engine
     from app.surveillance import start_surveillance
     from app.core.database import AsyncSessionLocal
