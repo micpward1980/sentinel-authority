@@ -383,6 +383,8 @@ async def update_application_state(
         
 
         # Auto-send HelloSign agreement on approval
+        if not app.contact_email:
+            raise HTTPException(status_code=400, detail="Cannot approve: application has no contact email. Add a contact email before approving.")
         try:
             hs_result = await send_agreement_envelope(
                 application_id=app.id,
