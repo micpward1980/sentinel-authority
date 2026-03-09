@@ -13,6 +13,7 @@ from app.core.security import get_current_user, require_role
 from app.models.models import Application, AuditLog, ApplicationComment, ApplicationCorrespondence, CertificationState, User, Certificate
 from app.services.audit_service import write_audit_log
 from datetime import timezone
+from app.services.hellosign_service import send_agreement_envelope
 from app.services.email_service import (
     notify_admin_new_application, send_application_received,
     send_application_approved, send_application_rejected, send_application_under_review,
@@ -380,6 +381,21 @@ async def update_application_state(
                 )
                 db.add(new_key)
         
+
+        # Auto-send HelloSign agreement on approval
+        try:
+            hs_result = await send_agreement_envelope(
+                application_id=app.id,
+                application_number=app.application_number,
+                system_name=app.system_name,
+                organization_name=app.organization_name,
+                contact_name=app.contact_name or app.contact_email,
+                contact_email=app.contact_email,
+            )
+            app.hellosign_request_id = hs_result["signature_request_id"]
+            import logging; logging.getLogger("sentinel").info(f"HelloSign envelope sent for {app.application_number}")
+        except Exception as e:
+            import logging; logging.getLogger("sentinel").error(f"HelloSign send failed for {app.application_number}: {e}")
 
         # Auto-create Certificate on approval
         if new_state == "approved":

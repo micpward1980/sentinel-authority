@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Certification Program — Sentinel Authority</title>
+  <meta name="description" content="Independent ODDC conformance assessment for autonomous systems. Fee schedules, program tiers, and the Inaugural Certification Cohort." />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,300;500&display=swap" rel="stylesheet" />
+  <style>
+    :root{--navy:#1d1a3b;--accent:#2a2560;--text:#111318;--text-2:rgba(15,18,30,.72);--text-3:rgba(15,18,30,.50);--border:rgba(15,18,30,.08);--bg:#ffffff;--mono:"IBM Plex Mono",Consolas,monospace;--serif:"Source Serif 4",Georgia,serif;--sans:"Inter",system-ui,sans-serif;--nav-h:60px;--max:720px;}
+    *,*::before,*::after{box-sizing:border-box;}
+    html{scroll-behavior:smooth;background:var(--bg);}
+    body{margin:0;font-family:var(--sans);color:var(--text);background:var(--bg);-webkit-font-smoothing:antialiased;overflow-x:hidden;}
+    a{color:inherit;text-decoration:none;}
+    ::selection{background:var(--navy);color:#fff;}
+    .site-header{position:fixed;top:0;left:0;right:0;z-index:50;height:var(--nav-h);background:rgba(255,255,255,0.92);border-bottom:1px solid var(--border);backdrop-filter:blur(12px);display:flex;align-items:center;padding:0 24px;}
+    .back-link{font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--text-3);transition:color .15s;}
+    .back-link:hover{color:var(--text);}
+    main{padding-top:calc(var(--nav-h) + 56px);padding-bottom:96px;}
+    .inner{max-width:var(--max);margin:0 auto;padding:0 24px;}
+    .page-header{max-width:var(--max);padding:0 24px;margin:0 auto 56px;}
+    .page-label{font-family:var(--mono);font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--text-3);display:block;margin-bottom:14px;}
+    .page-title{font-family:var(--serif);font-size:clamp(32px,5vw,52px);font-weight:300;color:var(--navy);margin:0 0 16px;line-height:1.1;}
+    .page-lead{font-size:15px;color:var(--text-2);line-height:1.65;margin:0;max-width:58ch;}
+    .section-label{font-family:var(--mono);font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--text-3);display:block;margin-bottom:20px;margin-top:56px;}
+    .fee-table{border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-top:20px;}
+    .fee-row{display:grid;grid-template-columns:1fr 140px;align-items:center;padding:20px 24px;border-bottom:1px solid var(--border);}
+    .fee-row:last-child{border-bottom:none;}
+    .fee-label{font-size:14px;font-weight:600;color:var(--navy);margin-bottom:4px;}
+    .fee-desc{font-size:13px;color:var(--text-2);line-height:1.55;}
+    .fee-amount{font-family:var(--mono);font-size:15px;font-weight:500;color:var(--text);text-align:right;}
+    .fee-link{font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--accent);text-align:right;display:block;}
+    .fee-note{font-family:var(--mono);font-size:11px;color:var(--text-3);text-align:center;margin-top:12px;}
+    .cohort-block{background:linear-gradient(135deg,#f2f1f6 0%,#e8e6f0 100%);border:1.5px solid var(--accent);border-radius:10px;padding:36px;text-align:center;margin-top:20px;}
+    .cohort-label{font-family:var(--mono);font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--accent);margin-bottom:16px;}
+    .cohort-desc{font-family:var(--serif);font-size:20px;font-weight:300;color:var(--navy);line-height:1.5;margin:0 auto 28px;max-width:52ch;}
+    .cohort-prices{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;}
+    .cohort-price-card{background:#fff;border:1px solid var(--border);border-radius:8px;padding:20px;}
+    .cohort-price-sublabel{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-3);margin-bottom:8px;}
+    .cohort-price-amount{font-family:var(--mono);font-size:24px;font-weight:600;color:var(--navy);}
+    .cohort-note{font-family:var(--mono);font-size:11px;color:var(--text-3);margin-bottom:24px;}
+    .btn-primary{font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;background:var(--navy);color:#fff;padding:12px 28px;border-radius:6px;transition:opacity .15s;display:inline-block;}
+    .btn-primary:hover{opacity:.85;}
+    .btn-secondary{font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--navy);border:1px solid rgba(29,26,59,.25);padding:11px 28px;border-radius:6px;transition:border-color .15s;display:inline-block;}
+    .btn-secondary:hover{border-color:rgba(29,26,59,.6);}
+    .btn-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+    .includes-list{list-style:none;margin:20px 0 0;padding:0;border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+    .includes-list li{display:flex;align-items:flex-start;gap:16px;padding:18px 24px;border-bottom:1px solid var(--border);}
+    .includes-list li:last-child{border-bottom:none;}
+    .inc-num{font-family:var(--mono);font-size:10px;letter-spacing:1px;color:rgba(42,37,96,.4);padding-top:2px;flex-shrink:0;min-width:28px;}
+    .inc-title{font-size:13px;font-weight:600;color:var(--navy);margin-bottom:4px;}
+    .inc-desc{font-size:13px;color:var(--text-2);line-height:1.55;}
+    .contact-block{margin-top:56px;text-align:center;padding:40px 24px;border:1px solid var(--border);border-radius:10px;}
+    .contact-label{font-family:var(--mono);font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--text-3);display:block;margin-bottom:12px;}
+    .contact-desc{font-size:14px;color:var(--text-2);margin-bottom:28px;line-height:1.6;}
+    footer{border-top:1px solid var(--border);padding:32px 0 24px;background:#fff;font-family:var(--mono);font-size:11px;letter-spacing:1px;color:var(--text-3);}
+    .footer-inner{max-width:var(--max);margin:0 auto;padding:0 24px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+    .foot-links{display:flex;gap:20px;}
+    .foot-links a:hover{color:var(--text);}
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <a href="/" class="back-link">← Sentinel Authority</a>
+  </header>
+  <main>
+    <div class="page-header">
+      <span class="page-label">Program</span>
+      <h1 class="page-title">Certification Program</h1>
+      <p class="page-lead">Independent ODDC conformance assessment for autonomous systems. Fees are fixed and non-contingent on outcome.</p>
+    </div>
+    <div class="inner">
+      <span class="section-label" style="margin-top:0;">Standard Certification Program</span>
+      <div class="fee-table">
+        <div class="fee-row">
+          <div><div class="fee-label">Conformance Assessment</div><div class="fee-desc">Pre-CAT-72 Audit Control Review, CAT-72 assurance testing, and ODDC certificate issuance.</div></div>
+          <div class="fee-amount">$75,000</div>
+        </div>
+        <div class="fee-row">
+          <div><div class="fee-label">Annual Maintenance</div><div class="fee-desc">Continuous ENVELO Interlock assurance verification, tamper-evident audit record maintenance, annual conformance renewal assessment, and public registry status maintenance.</div></div>
+          <div class="fee-amount">$50,000</div>
+        </div>
+        <div class="fee-row">
+          <div><div class="fee-label">Enterprise</div><div class="fee-desc">Multi-system deployments, fleet-scale conformance compute, and custom terms.</div></div>
+          <div><a href="#contact" class="fee-link">Contact →</a></div>
+        </div>
+      </div>
+      <p class="fee-note">All fees USD · Fixed and non-contingent on outcome · Conformance Assessment is a one-time fee per system</p>
+
+      <span class="section-label">Inaugural Certification Cohort</span>
+      <div class="cohort-block">
+        <div class="cohort-label">Inaugural Certification Cohort</div>
+        <p class="cohort-desc">The Inaugural Cohort is currently accepting structured applications for ODD verification under CAT-72. The first 10 systems accepted participate at introductory rates reflecting the intensive, collaborative nature of initial conformance assessments.</p>
+        <div class="cohort-prices">
+          <div class="cohort-price-card"><div class="cohort-price-sublabel">Assessment</div><div class="cohort-price-amount">$15,000</div></div>
+          <div class="cohort-price-card"><div class="cohort-price-sublabel">Annual</div><div class="cohort-price-amount">$12,000</div></div>
+        </div>
+        <p class="cohort-note">Structured application required. Cohort capacity is limited.</p>
+        <div class="btn-row"><a href="https://app.sentinelauthority.org" class="btn-primary">Request Application →</a></div>
+      </div>
+
+      <span class="section-label">Assessment Includes</span>
+      <ul class="includes-list">
+        <li><span class="inc-num">01</span><div><div class="inc-title">Pre-CAT-72 Audit Control Review</div><div class="inc-desc">Formal evaluation of ODD boundary definition, ENVELO Interlock assurance configuration, and telemetry readiness. Systems that do not meet the audit threshold are returned with findings before entering the verification period.</div></div></li>
+        <li><span class="inc-num">02</span><div><div class="inc-title">CAT-72 Verification Period</div><div class="inc-desc">72 cumulative hours of system operation under active ENVELO Interlock assurance within the declared ODD. Cryptographic audit chain maintained across all operational intervals.</div></div></li>
+        <li><span class="inc-num">03</span><div><div class="inc-title">Conformance Determination & Certificate Issuance</div><div class="inc-desc">Sentinel Authority reviews telemetry records, validates audit chain integrity, and issues a conformance determination recorded in the public registry.</div></div></li>
+        <li><span class="inc-num">04</span><div><div class="inc-title">Continuous Post-Certification Surveillance</div><div class="inc-desc">Certification remains valid only while assurance remains active. Certified systems are subject to continuous conformance surveillance included in annual maintenance.</div></div></li>
+      </ul>
+
+      <div class="contact-block" id="contact">
+        <span class="contact-label">Conformance Inquiries</span>
+        <p class="contact-desc">For enterprise arrangements, regulatory integration, or assessment inquiries.</p>
+        <div class="btn-row">
+          <a href="mailto:conformance@sentinelauthority.org" class="btn-primary">conformance@sentinelauthority.org</a>
+          <a href="https://app.sentinelauthority.org" class="btn-secondary">Applicant Portal →</a>
+        </div>
+      </div>
+    </div>
+  </main>
+  <footer>
+    <div class="footer-inner">
+      <span>© 2026 Sentinel Authority · Independent Conformance Determination · Patent Pending</span>
+      <div class="foot-links">
+        <a href="/terms.html">Terms</a>
+        <a href="/privacy.html">Privacy</a>
+        <a href="/conformance-agreement.html">Conformance Agreement</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
