@@ -56,8 +56,8 @@
   <link rel="stylesheet" href="type.css">
 </head>
 <body>
-    <header class="site-header">
-    <a href="/" class="back-link">&larr; Sentinel Authority</a>
+  <header class="site-header">
+    <a href="/" class="back-link" aria-label="Back to home">← Sentinel Authority</a>
   </header>
   <main id="main">
     <div class="inner">
@@ -142,13 +142,12 @@
       </div>
     </div>
   </main>
-    <footer>
+  <footer>
     <div class="footer-inner">
-      <div>&copy; <span id="yr"></span> Sentinel Authority</div>
-      <div><a href="privacy.html">Privacy Notice</a> &middot; <a href="terms.html">Terms of Use</a></div>
+      <div>&copy; <span id="year"></span> Sentinel Authority</div>
+      <div style="margin-top:8px;font-size:9px;letter-spacing:1px;"><a href="privacy.html" style="color:inherit;text-decoration:none;">Privacy Notice</a> &middot; <a href="terms.html" style="color:inherit;text-decoration:none;">Terms of Use</a></div>
     </div>
   </footer>
-  <script>document.getElementById('yr').textContent=new Date().getFullYear();</script>
   <script>document.getElementById('year').textContent=new Date().getFullYear();</script>
 </body>
 </html>

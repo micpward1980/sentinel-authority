@@ -146,8 +146,10 @@
 </head>
 <body>
   <a href="#main" class="skip-link">Skip to content</a>
-    <header class="site-header">
-    <a href="/" class="back-link">&larr; Sentinel Authority</a>
+  <header class="site-header">
+    <div class="nav-inner">
+      <a href="/" class="back-link" aria-label="Back to home">&larr; Sentinel Authority</a>
+    </div>
   </header>
 
   <main role="main" aria-label="Page content" id="main">
@@ -246,7 +248,7 @@
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-red" style="margin-top:5px;"></span><span class="hud-desc">Certify implementation correctness or validate code</span></div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-red" style="margin-top:5px;"></span><span class="hud-desc">Warrant system behavior or performance</span></div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-red" style="margin-top:5px;"></span><span class="hud-desc">Provide regulatory approval or compliance attestation</span></div>
-        <div style="margin-top:16px;padding-top:12px;border-top:1px solid rgba(15,18,30,0.06);"><span class="hud-desc" style="color:var(--text-tertiary);font-style:italic;">Sentinel Authority maintains strict separation between standard-setting and conformance determination, consistent with ISO/IEC 17065 conformance assessment principles.</span></div>
+        <div style="margin-top:16px;padding-top:12px;border-top:1px solid rgba(15,18,30,0.06);"><span class="hud-desc" style="color:var(--text-tertiary);font-style:italic;">Sentinel Authority maintains strict separation between standard-setting and conformance determination, consistent with ISO/IEC 17065 conformity assessment principles.</span></div>
       </div>
 
       <!-- 4 Conformance Terms -->
@@ -387,7 +389,7 @@
 
         <div class="hud-frame hud-frame-red" style="margin-bottom:16px;"><i></i>
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;"><span class="hud-label" style="color:rgba(220,53,69,0.7);">DESIGN PRINCIPLE</span><span class="hud-dot hud-dot-red"></span></div>
-          <div class="hud-desc">SA will never disable, deactivate, or bypass the ENVELO Interlock&rsquo;s ODD enforcement functions. All SA enforcement actions operate through certificate status, registry transparency, and ODD configuration &mdash; not through removal of safety constraints. SA&rsquo;s enforcement actions will never introduce a safety hazard into a conformant system.</div>
+          <div class="hud-desc">SA will never disable, deactivate, or bypass the ENVELO Interlock&rsquo;s ODD enforcement functions. All SA enforcement actions operate through certificate status, registry transparency, and ODD configuration &mdash; not through removal of safety constraints. SA&rsquo;s enforcement actions will never introduce a safety hazard into a certified system.</div>
         </div>
 
         <div class="hud-label" style="margin-bottom:8px;color:var(--text-tertiary);">12.1 ENFORCEMENT INSTRUMENTS</div>
@@ -409,25 +411,25 @@
           <span class="hud-dot hud-dot-amber" style="margin-top:5px;flex-shrink:0;"></span>
           <div>
             <div class="hud-title" style="font-size:12px;">Mandatory Offline Directive (MOD)</div>
-            <div class="hud-desc">SA may issue a MOD requiring Applicant to take the conformant system offline pending re-assessment or resolution of a triggering condition. A MOD does not alter the Interlock configuration but creates a binding contractual obligation. Continued operation following a MOD constitutes material breach and entitles SA to immediate Non-Conformance determination and regulatory referral.</div>
+            <div class="hud-desc">SA may issue a MOD requiring Applicant to take the certified system offline pending re-assessment or resolution of a triggering condition. A MOD does not alter the Interlock configuration but creates a binding contractual obligation. Continued operation following a MOD constitutes material breach and entitles SA to immediate Non-Conformance determination and regulatory referral.</div>
           </div>
         </div>
 
         <div class="hud-label" style="margin:16px 0 8px;color:var(--text-tertiary);">12.2 TRIGGERING CONDITIONS FOR ODD CONFIGURATION AUTHORITY</div>
         <div class="hud-desc" style="margin-bottom:12px;">SA may exercise ODD Configuration Authority only upon one or more of the following. SA shall document the specific triggering condition(s) in a written Enforcement Notice issued concurrently with or prior to any configuration action.</div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-red" style="margin-top:5px;"></span><div><span class="hud-title" style="font-size:12px;">Material Fraud</span><div class="hud-desc">SA has reasonable grounds to conclude that Applicant made a material misrepresentation in application materials, ODD declaration, or simulation data.</div></div></div>
-        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-red" style="margin-top:5px;"></span><div><span class="hud-title" style="font-size:12px;">Unauthorized ODD Modification</span><div class="hud-desc">Applicant has modified the conformant system&rsquo;s ODD specification, enforcement architecture, or underlying simulation in a material way without SA&rsquo;s prior written approval.</div></div></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-red" style="margin-top:5px;"></span><div><span class="hud-title" style="font-size:12px;">Unauthorized ODD Modification</span><div class="hud-desc">Applicant has modified the certified system&rsquo;s ODD specification, enforcement architecture, or underlying simulation in a material way without SA&rsquo;s prior written approval.</div></div></div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-amber" style="margin-top:5px;"></span><div><span class="hud-title" style="font-size:12px;">Interlock Malfunction</span><div class="hud-desc">The ENVELO Interlock is malfunctioning in a manner that SA reasonably determines creates a risk that the system will operate outside its certified ODD without enforcement.</div></div></div>
-        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-amber" style="margin-top:5px;"></span><div><span class="hud-title" style="font-size:12px;">Regulatory Direction</span><div class="hud-desc">A government authority or regulator with jurisdiction has directed SA in writing to take action with respect to the conformant system.</div></div></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-amber" style="margin-top:5px;"></span><div><span class="hud-title" style="font-size:12px;">Regulatory Direction</span><div class="hud-desc">A government authority or regulator with jurisdiction has directed SA in writing to take action with respect to the certified system.</div></div></div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot hud-dot-amber" style="margin-top:5px;"></span><div><span class="hud-title" style="font-size:12px;">Illegal Operation</span><div class="hud-desc">SA has reasonable grounds to conclude the system is being operated in a jurisdiction, domain, or manner that is expressly excluded from the certified ODD or that constitutes a violation of applicable law.</div></div></div>
 
         <div class="hud-label" style="margin:16px 0 8px;color:var(--text-tertiary);">12.3 ENFORCEMENT PROCEDURE</div>
         <div class="hud-desc" style="margin-bottom:8px;"><strong>Notice:</strong> SA shall provide twenty-four (24) hours written Enforcement Notice specifying the triggering condition(s), proposed action, and Applicant&rsquo;s right to respond, except where SA reasonably determines immediate action is necessary to prevent imminent harm, in which case SA may act immediately and provide notice concurrently.</div>
         <div class="hud-desc" style="margin-bottom:8px;"><strong>Applicant Response:</strong> Within the notice period, Applicant may provide written evidence that the triggering condition does not exist or has been remedied. SA will consider such evidence in good faith. Provision of false or misleading evidence constitutes independent grounds for immediate Non-Conformance determination.</div>
-        <div class="hud-desc" style="margin-bottom:8px;"><strong>Reversal:</strong> SA will reverse any ODD configuration action and restore Applicant&rsquo;s conformant configuration within two (2) business days of: (a) Applicant demonstrating the triggering condition no longer exists; (b) completion of any required re-assessment; and (c) payment of any applicable reinstatement fees.</div>
+        <div class="hud-desc" style="margin-bottom:8px;"><strong>Reversal:</strong> SA will reverse any ODD configuration action and restore Applicant&rsquo;s certified configuration within two (2) business days of: (a) Applicant demonstrating the triggering condition no longer exists; (b) completion of any required re-assessment; and (c) payment of any applicable reinstatement fees.</div>
 
         <div class="hud-label" style="margin:16px 0 8px;color:var(--text-tertiary);">12.4 APPLICANT OBLIGATIONS UPON ENFORCEMENT ACTION</div>
-        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Immediately notify operations team and any third parties with operational authority over the conformant system</span></div>
+        <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Immediately notify operations team and any third parties with operational authority over the certified system</span></div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Cooperate fully with SA&rsquo;s investigation, including providing system logs, ODD telemetry, and operational records within 48 hours of request</span></div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Refrain from any action intended to interfere with, circumvent, or reverse the configuration action taken by SA</span></div>
         <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;"><span class="hud-dot" style="margin-top:5px;"></span><span class="hud-desc">Notify regulators and principal customers of the enforcement action within five (5) business days, unless SA directs otherwise in writing</span></div>
@@ -458,13 +460,12 @@
   </div>
   </main>
 
-    <footer>
+  <footer>
     <div class="footer-inner">
-      <div>&copy; <span id="yr"></span> Sentinel Authority</div>
-      <div><a href="privacy.html">Privacy Notice</a> &middot; <a href="terms.html">Terms of Use</a></div>
+      <div>&copy; <span id="year"></span> Sentinel Authority</div>
+      <div style="margin-top:8px;font-size:9px;letter-spacing:1px;"><a href="privacy.html" style="color:inherit;text-decoration:none;">Privacy Notice</a> &middot; <a href="terms.html" style="color:inherit;text-decoration:none;">Terms of Use</a></div>
     </div>
   </footer>
-  <script>document.getElementById('yr').textContent=new Date().getFullYear();</script>
 
   <script>
     document.getElementById('year').textContent=new Date().getFullYear();

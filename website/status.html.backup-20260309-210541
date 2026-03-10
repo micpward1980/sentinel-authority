@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en" style="scroll-behavior:smooth;">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-192.png">
+  <link rel="canonical" href="https://www.sentinelauthority.org/status.html">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Conformance Registry — Sentinel Authority</title>
+  <meta name="description" content="Public ODDC conformance registry. Verify autonomous system conformance status, audit records, and boundary enforcement history." />
+  <meta property="og:title" content="Conformance Registry — Sentinel Authority" />
+  <meta property="og:description" content="Public ODDC conformance registry. Verify autonomous system conformance status, audit records, and boundary enforcement history." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://sentinelauthority.org/og.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@900&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root{color-scheme:light;--purple-primary:#2a2560;--purple-bright:#2a2560;--bg-deep:#ffffff;--bg-panel:rgba(0,0,0,.025);--accent-green:rgba(22,163,74,1.00);--accent-amber:rgba(202,138,4,1.00);--accent-red:rgba(220,53,69,1.00);--text-primary:#111318;--text-secondary:rgba(15,18,30,.74);--text-tertiary:rgba(15,18,30,.50);--serif:Georgia,'Source Serif 4',serif;--mono:Consolas,'IBM Plex Mono',monospace;--sans:'Inter',system-ui,-apple-system,sans-serif;--ease:cubic-bezier(0.16,1,0.3,1);--space-1:10px;--space-2:16px;--space-3:24px;--space-4:28px;--space-5:35px;--space-6:40px;--space-8:50px;--max:1200px;--nav-height:72px;--hairline:rgba(15,18,30,0.08);}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;}}
+    *{box-sizing:border-box;}
+    .skip-link{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;}
+    .skip-link:focus{position:fixed;top:10px;left:10px;width:auto;height:auto;padding:12px 18px;background:#fff;border:1px solid var(--purple-bright);color:var(--text-primary);font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;z-index:9999;}
+    a:focus-visible,button:focus-visible{outline:2px solid rgba(42,37,96,.75);outline-offset:3px;}
+    :focus:not(:focus-visible){outline:none;}
+    html{scroll-behavior:smooth;background:#fff;}
+    body{margin:0;font-family:var(--sans);background:#fff;color:var(--text-primary);overflow-x:hidden;-webkit-font-smoothing:antialiased;}
+    a{color:inherit;text-decoration:none;}
+    ::selection{background:#2a2560;color:#fff;}
+
+    .site-header{position:fixed;top:0;left:0;right:0;z-index:50;height:var(--nav-height);background:rgba(255,255,255,0.92);border-bottom:1px solid rgba(15,18,30,0.08);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:flex;align-items:center;padding:0 24px;}
+    .nav-inner{max-width:var(--max);margin:0 auto;width:100%;display:flex;align-items:center;}
+    .back-link{font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--text-tertiary);transition:color .15s;font-weight:500;}
+    .back-link:hover{color:var(--text-primary);}
+
+    main{position:relative;z-index:1;max-width:940px;margin:0 auto;padding:calc(var(--nav-height) + 60px) 20px 60px;}
+
+    .section-label{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(15,18,30,0.44);display:block;margin-bottom:12px;font-weight:500;}
+    .section-title{font-family:var(--serif);font-size:clamp(26px,3.5vw,42px);font-weight:300;line-height:1.1;margin:0;letter-spacing:-0.03em;color:#1d1a3b;}
+    .section-lead{max-width:66ch;color:var(--text-secondary);font-weight:300;line-height:1.7;margin:16px 0 0;font-size:15px;}
+
+    .hud-frame{position:relative;padding:20px 20px;background:rgba(255,255,255,0.40);border-radius:16px;border:1px solid rgba(15,18,30,0.08);}
+    .hud-frame+.hud-frame{margin-top:var(--space-4);}
+    .hud-dot{display:inline-block;width:5px;height:5px;border-radius:50%;background:rgba(42,37,96,0.35);margin-right:8px;flex-shrink:0;}
+    .hud-dot-green{background:rgba(22,163,74,0.7);animation:hud-breathe 3s ease-in-out infinite;}
+    .hud-dot-amber{background:rgba(202,138,4,0.7);animation:hud-breathe 3s ease-in-out infinite;}
+    .hud-dot-red{background:rgba(220,53,69,0.6);}
+    @keyframes hud-breathe{0%,100%{opacity:.5;}50%{opacity:1;}}
+    .hud-row{padding:12px 0;border-bottom:1px solid rgba(15,18,30,0.05);}
+    .hud-row:last-child{border-bottom:none;}
+    .hud-label{font-family:var(--mono);font-size:10px;letter-spacing:1.5px;color:var(--text-tertiary);text-transform:uppercase;font-weight:500;}
+    .hud-title{font-size:14px;color:var(--text-primary);font-weight:500;margin:2px 0;}
+    .hud-desc{font-size:12px;color:var(--text-secondary);line-height:1.6;}
+    .hud-num{font-family:var(--mono);font-size:10px;letter-spacing:1px;color:rgba(42,37,96,0.40);margin-right:12px;}
+    .hud-link{font-family:var(--mono);font-size:11px;letter-spacing:2px;color:rgba(42,37,96,1.00);text-decoration:none!important;padding-bottom:2px;transition:all .2s;}
+
+    .status-badge{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;padding:4px 10px;border-radius:999px;border:1px solid;white-space:nowrap;}
+    .sb-green{border-color:rgba(22,163,74,0.35);color:rgba(22,163,74,1.00);background:rgba(22,163,74,0.07);}
+    .sb-amber{border-color:rgba(202,138,4,0.35);color:rgba(202,138,4,1.00);background:rgba(202,138,4,0.07);}
+    .sb-red{border-color:rgba(220,53,69,0.35);color:rgba(220,53,69,1.00);background:rgba(220,53,69,0.07);}
+
+    .reg-table{width:100%;border-collapse:collapse;font-size:12px;margin-top:16px;}
+    .reg-table thead tr{border-bottom:1px solid rgba(15,18,30,0.10);}
+    .reg-table th{font-family:var(--mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--text-tertiary);font-weight:400;padding:0 16px 10px 0;text-align:left;}
+    .reg-table th:last-child{text-align:right;padding-right:0;}
+    .reg-table tbody tr{border-bottom:1px solid rgba(15,18,30,0.05);transition:background .15s;}
+    .reg-table tbody tr:last-child{border-bottom:none;}
+    .reg-table tbody tr:hover{background:rgba(15,18,30,.015);}
+    .reg-table td{padding:14px 16px 14px 0;vertical-align:middle;}
+    .reg-table td:last-child{padding-right:0;text-align:right;}
+    .reg-system{font-size:13px;color:var(--text-primary);font-weight:500;margin-bottom:2px;}
+    .reg-operator{font-family:var(--mono);font-size:9px;letter-spacing:1px;color:var(--text-tertiary);text-transform:uppercase;}
+    .reg-cert{font-family:var(--mono);font-size:11px;color:var(--text-secondary);}
+    .reg-date{font-family:var(--mono);font-size:11px;color:var(--text-tertiary);}
+    .illustrative-notice{margin-top:14px;padding:10px 14px;border:1px solid rgba(202,138,4,0.20);border-radius:8px;background:rgba(202,138,4,0.04);font-family:var(--mono);font-size:9px;letter-spacing:1px;color:rgba(202,138,4,0.85);line-height:1.65;}
+    .illustrative-notice a{color:rgba(202,138,4,0.90);border-bottom:1px solid rgba(202,138,4,0.30);padding-bottom:1px;}
+
+    input[type="text"]{flex:1;padding:14px 0;font-family:var(--mono);font-size:15px;letter-spacing:2px;background:transparent;border:none;border-bottom:1px solid rgba(42,37,96,0.15);color:var(--text-primary);outline:none;}
+    input[type="text"]:focus{border-bottom-color:rgba(42,37,96,0.40);}
+    input[type="text"]::placeholder{color:var(--text-tertiary);}
+    button{padding:14px 20px;font-family:var(--mono);font-size:10px;letter-spacing:2px;background:transparent;border:none;border-bottom:1px solid rgba(42,37,96,.15);color:rgba(42,37,96,.90);cursor:pointer;white-space:nowrap;font-weight:600;transition:all .2s ease;}
+    button:hover{border-bottom-color:rgba(42,37,96,.40);}
+    .spinner{width:20px;height:20px;border:2px solid rgba(15,18,30,.06);border-top-color:var(--purple-bright);border-radius:50%;animation:spin .7s linear infinite;display:inline-block;vertical-align:middle;margin-right:8px;}
+    @keyframes spin{to{transform:rotate(360deg);}}
+    .progress-track{height:3px;background:rgba(15,18,30,.06);margin:12px 0 6px;border-radius:2px;}
+    .progress-fill{height:100%;background:linear-gradient(90deg,rgba(42,37,96,0.6),rgba(22,163,74,0.6));border-radius:2px;transition:width .8s;}
+
+    footer{border-top:1px solid var(--hairline);padding:var(--space-6) 0 var(--space-4);margin-top:var(--space-4);background:#fff;color:var(--text-tertiary);font-family:var(--mono);font-size:10px;letter-spacing:1px;}
+    .footer-inner{max-width:var(--max);margin:0 auto;padding:0 20px;display:flex;justify-content:space-between;align-items:flex-start;gap:20px;flex-wrap:wrap;}
+
+    .reveal{opacity:0;transform:translateY(8px);transition:opacity .35s ease,transform .35s ease;}
+    .reveal.active{opacity:1;transform:none;animation:fadeUp .7s cubic-bezier(0.16,1,0.3,1) both;}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:none;}}
+    @media(prefers-reduced-motion:reduce){.reveal{opacity:1!important;transform:none!important;}}
+    .r1{animation-delay:.05s;}.r2{animation-delay:.10s;}.r3{animation-delay:.15s;}.r4{animation-delay:.20s;}.r5{animation-delay:.25s;}.r6{animation-delay:.30s;}
+
+    @media(max-width:768px){
+      main{padding:calc(var(--nav-height) + 32px) 16px 40px;}
+      .states-cols,.data-cols{grid-template-columns:1fr!important;}
+      .states-cols > div + div,.data-cols > div + div{border-left:none!important;border-top:1px solid rgba(15,18,30,.06);padding-top:16px;padding-left:0!important;margin-top:4px;}
+      .reg-table th:nth-child(3),.reg-table td:nth-child(3),.reg-table th:nth-child(4),.reg-table td:nth-child(4){display:none;}
+    }
+  </style>
+  <link rel="stylesheet" href="type.css">
+  <link rel="stylesheet" href="global.css">
+  <link rel="stylesheet" href="mobile.css">
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to content</a>
+  <header class="site-header">
+    <div class="nav-inner">
+      <a href="/" class="back-link">← Sentinel Authority</a>
+    </div>
+  </header>
+
+  <main role="main" id="main">
+
+    <div style="margin-bottom:40px;">
+      <div class="section-head reveal">
+        <span class="section-label reveal r1">Public Registry</span>
+        <h1 class="section-title reveal r2">Conformance Registry</h1>
+        <p class="section-lead reveal r3">Independent verification of runtime ODD boundary enforcement for autonomous systems. All conformance determinations are issued under the CAT-72 protocol and enforced via ENVELO Interlock.</p>
+      </div>
+    </div>
+
+    <!-- STATES -->
+    <div class="hud-frame reveal r4">
+      <div class="hud-label" style="margin-bottom:16px;">Conformance States</div>
+      <div class="states-cols" style="display:grid;grid-template-columns:repeat(3,1fr);">
+        <div style="padding-right:20px;border-right:1px solid rgba(15,18,30,0.06);">
+          <div style="margin-bottom:10px;"><span class="status-badge sb-green"><span class="hud-dot" style="background:rgba(22,163,74,1);margin-right:0;animation:hud-breathe 3s ease-in-out infinite;"></span>Conformant</span></div>
+          <div class="hud-title" style="margin-bottom:6px;">Active conformance verified</div>
+          <div class="hud-desc">ENVELO Interlock architecturally active. No Tier 3 boundary exceedances within the current surveillance period. Audit chain intact and tamper-evident.</div>
+        </div>
+        <div style="padding:0 20px;border-right:1px solid rgba(15,18,30,0.06);">
+          <div style="margin-bottom:10px;"><span class="status-badge sb-amber"><span class="hud-dot hud-dot-amber" style="margin-right:0;"></span>Under Assessment</span></div>
+          <div class="hud-title" style="margin-bottom:6px;">CAT-72 in progress</div>
+          <div class="hud-desc">System is undergoing the 72-hour continuous conformance test. Status transitions to Conformant or Non-Conformant upon determination.</div>
+        </div>
+        <div style="padding-left:20px;">
+          <div style="margin-bottom:10px;"><span class="status-badge sb-red"><span class="hud-dot hud-dot-red" style="margin-right:0;"></span>Non-Conformant</span></div>
+          <div class="hud-title" style="margin-bottom:6px;">Conformance not verified</div>
+          <div class="hud-desc">Boundary exceedance detected, ENVELO removed or disabled, or annual maintenance lapsed. Non-conformance events permanently recorded.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- REGISTRY TABLE -->
+    <div class="hud-frame reveal r5" style="margin-top:var(--space-4);">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;flex-wrap:wrap;gap:8px;">
+        <span class="hud-label">Active Conformance Records</span>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <span class="hud-dot hud-dot-green"></span>
+          <span class="hud-label" style="color:rgba(22,163,74,0.7);">Updated continuously</span>
+        </div>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="reg-table">
+          <thead>
+            <tr>
+              <th>System</th>
+              <th>Certificate</th>
+              <th>ODD Domain</th>
+              <th>Issued</th>
+              <th style="text-align:right;">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><div class="reg-system">Meridian AV Platform v3.2</div><div class="reg-operator">Meridian Autonomy Inc.</div></td>
+              <td><span class="reg-cert">ODDC-2026-00001</span></td>
+              <td><span class="hud-desc">Urban Level 4 AV</span></td>
+              <td><span class="reg-date">2026-01-14</span></td>
+              <td><span class="status-badge sb-green"><span class="hud-dot" style="background:rgba(22,163,74,1);margin-right:0;animation:hud-breathe 3s ease-in-out infinite;"></span>Conformant</span></td>
+            </tr>
+            <tr>
+              <td><div class="reg-system">Halcyon UAS Controller 1.8</div><div class="reg-operator">Halcyon Aerial Systems</div></td>
+              <td><span class="reg-cert">ODDC-2026-00002</span></td>
+              <td><span class="hud-desc">Commercial Drone Ops</span></td>
+              <td><span class="reg-date">2026-02-03</span></td>
+              <td><span class="status-badge sb-green"><span class="hud-dot" style="background:rgba(22,163,74,1);margin-right:0;animation:hud-breathe 3s ease-in-out infinite;"></span>Conformant</span></td>
+            </tr>
+            <tr>
+              <td><div class="reg-system">Arctos Surgical Assistant 2.0</div><div class="reg-operator">Arctos Medical Technologies</div></td>
+              <td><span class="reg-cert">ODDC-2026-00003</span></td>
+              <td><span class="hud-desc">Robotic-Assisted Surgery</span></td>
+              <td><span class="reg-date">—</span></td>
+              <td><span class="status-badge sb-amber"><span class="hud-dot hud-dot-amber" style="margin-right:0;"></span>Under Assessment</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="illustrative-notice">
+        Illustrative records shown. Registry reflects actual conformance determinations as operators complete CAT-72 assessment. To initiate, <a href="apply.html">submit an application</a>.
+      </div>
+    </div>
+
+    <!-- STRUCTURED DATA -->
+    <div class="hud-frame reveal r6" style="margin-top:var(--space-4);">
+      <div class="hud-label" style="margin-bottom:16px;">Structured Data — Insurers &amp; Procurement</div>
+      <div class="data-cols" style="display:grid;grid-template-columns:repeat(3,1fr);">
+        <div style="padding-right:20px;border-right:1px solid rgba(15,18,30,0.06);">
+          <div class="hud-title" style="margin-bottom:10px;">Boundary Enforcement History</div>
+          <div style="display:flex;flex-direction:column;gap:7px;">
+            <div style="display:flex;gap:8px;align-items:flex-start;"><span class="hud-dot" style="margin-top:4px;flex-shrink:0;"></span><span class="hud-desc">Boundary exceedance frequency by tier (1/2/3)</span></div>
+            <div style="display:flex;gap:8px;align-items:flex-start;"><span class="hud-dot" style="margin-top:4px;flex-shrink:0;"></span><span class="hud-desc">ENVELO enforcement tier activations</span></div>
+            <div style="display:flex;gap:8px;align-items:flex-start;"><span class="hud-dot" style="margin-top:4px;flex-shrink:0;"></span><span class="hud-desc">MRC trigger rate and outcomes</span></div>
+            <div style="display:flex;gap:8px;align-items:flex-start;"><span class="hud-dot" style="margin-top:4px;flex-shrink:0;"></span><span class="hud-desc">Longitudinal record across surveillance periods</span></div>
+            <div style="display:flex;gap:8px;align-items:flex-start;"><span class="hud-dot" style="margin-top:4px;flex-shrink:0;"></span><span class="hud-desc">Non-conformance events and resolution history</span></div>
+          </div>
+        </div>
+        <div style="padding:0 20px;border-right:1px solid rgba(15,18,30,0.06);">
+          <div class="hud-title" style="margin-bottom:10px;">Independent Verification Signal</div>
+          <div style="display:flex;flex-direction:column;gap:7px;">
+            <div style="display:flex;gap:8px;align-items:flex-start;"><span class="hud-dot" style="margin-top:4px;flex-shrink:0;"></span><span class="hud-desc">Certificate number, issue date, current status</span></div>
+            <div style="display:flex;gap:8px;align-items:flex-start;"><span class="hud-dot" style="margin-top:4px;flex-shrink:0;"></span><span class="hud-desc">ODD domain and declared boundary parameters</span></div>
+            <div style="display:flex;gap:8px;align-items:flex-start;"><span class="hud-dot" style="margin-top:4px;flex-shrink:0;"></span><span class="hud-desc">Annual maintenance status</span></div>
+            <div style="display:flex;gap:8px;align-items:flex-start;"><span class="hud-dot" style="margin-top:4px;flex-shrink:0;"></span><span class="hud-desc">Verifiable via public registry or API</span></div>
+            <div style="display:flex;gap:8px;align-items:flex-start;"><span class="hud-dot" style="margin-top:4px;flex-shrink:0;"></span><span class="hud-desc">Third-party verified, independent of operator reporting</span></div>
+          </div>
+        </div>
+        <div style="padding-left:20px;">
+          <div class="hud-title" style="margin-bottom:10px;">Tamper-Evident Audit Chain</div>
+          <div style="display:flex;flex-direction:column;gap:7px;">
+            <div style="display:flex;gap:8px;align-items:flex-start;"><span class="hud-dot" style="margin-top:4px;flex-shrink:0;"></span><span class="hud-desc">Cryptographic hash-chain telemetry from ENVELO runtime</span></div>
+            <div style="display:flex;gap:8px;align-items:flex-start;"><span class="hud-dot" style="margin-top:4px;flex-shrink:0;"></span><span class="hud-desc">Immutable record of all boundary enforcement events</span></div>
+            <div style="display:flex;gap:8px;align-items:flex-start;"><span class="hud-dot" style="margin-top:4px;flex-shrink:0;"></span><span class="hud-desc">Architecturally enforced — not reliant on operator logging</span></div>
+            <div style="display:flex;gap:8px;align-items:flex-start;"><span class="hud-dot" style="margin-top:4px;flex-shrink:0;"></span><span class="hud-desc">Available to regulatory bodies on request</span></div>
+            <div style="display:flex;gap:8px;align-items:flex-start;"><span class="hud-dot" style="margin-top:4px;flex-shrink:0;"></span><span class="hud-desc">Structured for integration with oversight frameworks</span></div>
+          </div>
+        </div>
+      </div>
+      <div style="padding-top:14px;border-top:1px solid rgba(15,18,30,0.05);margin-top:4px;">
+        <a href="mailto:conformance@sentinelauthority.org?subject=Structured%20Data%20Request" class="hud-link">Request Data Access →</a>
+      </div>
+    </div>
+
+    <!-- CERT LOOKUP -->
+    <div class="hud-frame hud-scanline reveal" style="margin-top:var(--space-4);">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px;">
+        <span class="hud-label">Verify a Certificate</span>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <span class="hud-dot hud-dot-green"></span>
+          <span class="hud-label" style="color:rgba(22,163,74,0.7);">LIVE</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:stretch;">
+        <input type="text" id="certId" placeholder="ODDC-2026-00001">
+        <button onclick="checkStatus()">CHECK</button>
+      </div>
+      <div class="hud-desc" style="margin-top:8px;">Find your Certificate ID in the <a href="https://app.sentinelauthority.org" style="color:rgba(42,37,96,1.00);">applicant portal</a> or approval email.</div>
+    </div>
+
+    <div id="result"></div>
+
+    <!-- HOW CAT-72 WORKS -->
+    <div class="hud-frame reveal" style="margin-top:var(--space-4);">
+      <div class="hud-label" style="margin-bottom:16px;">How CAT-72 Works</div>
+      <div class="hud-row" style="display:flex;align-items:flex-start;gap:12px;">
+        <span class="hud-num" style="margin-top:2px;">01</span>
+        <span class="hud-dot hud-dot-green" style="margin-top:5px;"></span>
+        <div><div class="hud-title">72-Hour Continuous Operation</div><div class="hud-desc">The system operates continuously in a production or production-equivalent environment with ENVELO Interlock enforcing all declared ODD boundaries in real time. No manual intervention permitted.</div></div>
+      </div>
+      <div class="hud-row" style="display:flex;align-items:flex-start;gap:12px;">
+        <span class="hud-num" style="margin-top:2px;">02</span>
+        <span class="hud-dot hud-dot-amber" style="margin-top:5px;"></span>
+        <div><div class="hud-title">Zero Tier 3 Exceedances</div><div class="hud-desc">No ENVELO Wall violations. Tier 2 boundary breaches must trigger a successful Mandatory Response Corridor (MRC) activation. All events are recorded to the tamper-evident audit chain.</div></div>
+      </div>
+      <div class="hud-row" style="display:flex;align-items:flex-start;gap:12px;">
+        <span class="hud-num" style="margin-top:2px;">03</span>
+        <span class="hud-dot" style="margin-top:5px;flex-shrink:0;"></span>
+        <div><div class="hud-title">Sealed Determination</div><div class="hud-desc">Upon successful completion, Sentinel Authority issues a conformance determination. The certificate and cryptographic audit record are added to the public registry. Annual maintenance required to sustain conformance status.</div></div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <div>&copy; <span id="year"></span> Sentinel Authority</div>
+      <div style="display:flex;gap:16px;flex-wrap:wrap;">
+        <a href="privacy.html" style="color:inherit;">Privacy Notice</a>
+        <a href="terms.html" style="color:inherit;">Terms of Use</a>
+        <a href="conformance-agreement.html" style="color:inherit;">Conformance Agreement</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+    var p = new URLSearchParams(window.location.search);
+    if (p.get('cert')) { document.getElementById('certId').value = p.get('cert'); checkStatus(); }
+    document.getElementById('certId').addEventListener('keydown', function(e) { if(e.key==='Enter') checkStatus(); });
+
+    async function checkStatus() {
+      var certId = document.getElementById('certId').value.trim();
+      if (!certId) { document.getElementById('certId').focus(); return; }
+      var r = document.getElementById('result');
+      r.innerHTML = '<div class="hud-frame" style="margin-top:var(--space-4);"><div style="display:flex;align-items:center;gap:8px;"><div class="spinner"></div><span class="hud-label">QUERYING REGISTRY\u2026</span></div></div>';
+      try {
+        var res = await fetch('https://api.sentinelauthority.org/api/verify/status/' + encodeURIComponent(certId));
+        var d = await res.json();
+        if (d.status === 'not_found') {
+          r.innerHTML = '<div class="hud-frame" style="margin-top:var(--space-4);"><div class="hud-row" style="display:flex;align-items:center;gap:8px;"><span class="hud-dot hud-dot-red"></span><span class="hud-label" style="color:var(--accent-red);">NOT FOUND</span></div><div class="hud-row"><div class="hud-desc">' + (d.message || 'No active test found for this Certificate ID.') + '</div><div class="hud-desc" style="margin-top:4px;">Ensure ENVELO is running with the correct Certificate ID and API key.</div></div></div>';
+        } else if (d.status === 'certified') {
+          r.innerHTML = '<div class="hud-frame hud-scanline" style="margin-top:var(--space-4);"><div class="hud-row" style="display:flex;align-items:center;gap:8px;"><span class="hud-dot hud-dot-green"></span><span class="hud-label" style="color:var(--accent-green);">CONFORMANT</span></div><div class="hud-row" style="display:grid;grid-template-columns:100px 1fr;gap:4px 12px;"><span class="hud-label">CERTIFICATE</span><span class="hud-title">' + d.certificate_number + '</span><span class="hud-label">ISSUED</span><span class="hud-title">' + new Date(d.issued_at).toLocaleDateString() + '</span><span class="hud-label">EXPIRES</span><span class="hud-title">' + new Date(d.expires_at).toLocaleDateString() + '</span></div><div class="hud-row"><a href="https://app.sentinelauthority.org" class="hud-link">VIEW IN DASHBOARD \u2192</a></div></div>';
+        } else {
+          var pct = Math.min(100, (d.hours_elapsed / 72) * 100);
+          var isRunning = d.status === 'running';
+          var dotClass = isRunning ? 'hud-dot-green' : 'hud-dot-amber';
+          var statusColor = isRunning ? 'var(--accent-green)' : 'var(--accent-amber)';
+          var statusLabel = isRunning ? 'RUNNING' : 'WAITING';
+          r.innerHTML = '<div class="hud-frame hud-scanline" style="margin-top:var(--space-4);">' +
+            '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;"><div style="display:flex;align-items:center;gap:8px;"><span class="hud-dot ' + dotClass + '"></span><span class="hud-label" style="color:' + statusColor + ';">' + statusLabel + '</span></div><span class="hud-label">' + certId + '</span></div>' +
+            '<div class="hud-row" style="text-align:center;"><div style="font-family:var(--mono);font-size:48px;color:var(--text-primary);letter-spacing:-2px;line-height:1;">' + d.hours_remaining.toFixed(1) + '<span style="font-size:16px;color:var(--text-tertiary);letter-spacing:0;">h remaining</span></div><div class="progress-track"><div class="progress-fill" style="width:' + pct + '%;"></div></div><span class="hud-desc">' + d.hours_elapsed.toFixed(1) + ' / 72 hours elapsed</span></div>' +
+            '<div class="hud-row" style="display:grid;grid-template-columns:1fr 80px;gap:4px 12px;"><span class="hud-title">Total Actions</span><span class="hud-title" style="text-align:right;">' + d.total_actions.toLocaleString() + '</span><span class="hud-title">Passed</span><span class="hud-title" style="text-align:right;color:var(--accent-green);">' + d.pass_count.toLocaleString() + '</span><span class="hud-title">Blocked</span><span class="hud-title" style="text-align:right;' + (d.block_count > 0 ? 'color:var(--accent-red);' : '') + '">' + d.block_count.toLocaleString() + '</span><span class="hud-title">Pass Rate</span><span class="hud-title" style="text-align:right;' + (d.pass_rate >= 95 ? 'color:var(--accent-green);' : '') + '">' + d.pass_rate + '%</span></div>' +
+            '<div class="hud-row"><span class="hud-label" style="display:block;margin-bottom:8px;">CRITERIA</span>' +
+              '<div style="display:flex;align-items:center;gap:8px;padding:4px 0;"><span class="hud-dot ' + (d.criteria.duration_met ? 'hud-dot-green' : '') + '" style="' + (d.criteria.duration_met ? '' : 'background:rgba(15,18,30,0.1);') + '"></span><span class="hud-desc">72 hours continuous</span></div>' +
+              '<div style="display:flex;align-items:center;gap:8px;padding:4px 0;"><span class="hud-dot ' + (d.criteria.actions_met ? 'hud-dot-green' : '') + '" style="' + (d.criteria.actions_met ? '' : 'background:rgba(15,18,30,0.1);') + '"></span><span class="hud-desc">Minimum 100 actions</span></div>' +
+              '<div style="display:flex;align-items:center;gap:8px;padding:4px 0;"><span class="hud-dot ' + (d.criteria.pass_rate_met ? 'hud-dot-green' : '') + '" style="' + (d.criteria.pass_rate_met ? '' : 'background:rgba(15,18,30,0.1);') + '"></span><span class="hud-desc">\u2265 95% pass rate</span></div>' +
+              '<div style="display:flex;align-items:center;gap:8px;padding:4px 0;"><span class="hud-dot ' + (d.criteria.blocking_verified ? 'hud-dot-green' : '') + '" style="' + (d.criteria.blocking_verified ? '' : 'background:rgba(15,18,30,0.1);') + '"></span><span class="hud-desc">Blocking verified</span></div>' +
+            '</div>' +
+            '<div class="hud-row"><div class="hud-desc">' + (isRunning ? 'Test in progress \u2014 keep your system and ENVELO running continuously.' : 'ENVELO not connected. Ensure it is running with the correct API key.') + '</div></div></div>';
+        }
+      } catch (err) {
+        r.innerHTML = '<div class="hud-frame" style="margin-top:var(--space-4);"><div class="hud-row" style="display:flex;align-items:center;gap:8px;"><span class="hud-dot hud-dot-red"></span><span class="hud-label" style="color:var(--accent-red);">CONNECTION ERROR</span></div><div class="hud-row"><div class="hud-desc">' + err.message + '</div></div></div>';
+      }
+    }
+  </script>
+  <script>
+  (function(){
+    var obs=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add("active");obs.unobserve(e.target);}});},{threshold:0.08});
+    document.querySelectorAll(".reveal,.section-head").forEach(function(el){obs.observe(el);});
+  })();
+  </script>
+</body>
+</html>

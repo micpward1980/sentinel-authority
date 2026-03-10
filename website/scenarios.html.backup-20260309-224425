@@ -296,8 +296,17 @@ footer{border-top:1px solid var(--hairline)!important;}
 </head>
 <body>
   <a href="#main" class="skip-link">Skip to content</a>
-        <header class="site-header">
-    <a href="/" class="back-link">&larr; Sentinel Authority</a>
+      <header class="site-header">
+    <div class="nav-inner">
+      <a href="/" class="back-link">← Sentinel Authority</a>
+      <nav class="nav-right" aria-label="Secondary navigation">
+        <a href="/conformance.html">Requirements</a>
+        <a href="/program.html">Fees</a>
+        <a href="/status.html">Registry</a>
+        <a href="/research.html">Publications</a>
+        <a href="https://app.sentinelauthority.org">Portal</a>
+      </nav>
+    </div>
   </header>
 
   <main role="main" aria-label="Page content" id="main" role="main">
@@ -501,13 +510,16 @@ footer{border-top:1px solid var(--hairline)!important;}
     </div>
   </main>
 
-      <footer>
+    <footer>
     <div class="footer-inner">
-      <div>&copy; <span id="yr"></span> Sentinel Authority</div>
-      <div><a href="privacy.html">Privacy Notice</a> &middot; <a href="terms.html">Terms of Use</a></div>
+      <div>&copy; <span class="yr"></span> Sentinel Authority &middot; Independent Conformance Assessment &middot; Patent Pending</div>
+      <div class="footer-links">
+        <a href="/privacy.html">Privacy Notice</a>
+        <a href="/terms.html">Terms of Use</a>
+        <a href="/conformance-agreement.html">Conformance Agreement</a>
+      </div>
     </div>
   </footer>
-  <script>document.getElementById('yr').textContent=new Date().getFullYear();</script>
   <script>document.querySelectorAll('.yr').forEach(function(e){e.textContent=new Date().getFullYear();});</script>
 
 <script>

@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>Conformance Program — Sentinel Authority</title>
-  <meta name="description" content="Independent ODDC conformance assessment for autonomous systems. Fee schedules, program tiers, and the Inaugural Assessment Cohort." />
+  <title>Certification Program — Sentinel Authority</title>
+  <meta name="description" content="Independent ODDC conformance assessment for autonomous systems. Fee schedules, program tiers, and the Inaugural Certification Cohort." />
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
@@ -65,17 +65,17 @@
   </style>
 </head>
 <body>
-      <header class="site-header">
-    <a href="/" class="back-link">&larr; Sentinel Authority</a>
+  <header class="site-header">
+    <a href="/" class="back-link">← Sentinel Authority</a>
   </header>
   <main>
     <div class="page-header">
       <span class="page-label">Program</span>
-      <h1 class="page-title">Conformance Program</h1>
+      <h1 class="page-title">Certification Program</h1>
       <p class="page-lead">Independent ODDC conformance assessment for autonomous systems. Fees are fixed and non-contingent on outcome.</p>
     </div>
     <div class="inner">
-      <span class="section-label" style="margin-top:0;">Standard Conformance Program</span>
+      <span class="section-label" style="margin-top:0;">Standard Certification Program</span>
       <div class="fee-table">
         <div class="fee-row">
           <div><div class="fee-label">Conformance Assessment</div><div class="fee-desc">Pre-CAT-72 Audit Control Review, CAT-72 assurance testing, and ODDC certificate issuance.</div></div>
@@ -92,9 +92,9 @@
       </div>
       <p class="fee-note">All fees USD · Fixed and non-contingent on outcome · Conformance Assessment is a one-time fee per system</p>
 
-      <span class="section-label">Inaugural Assessment Cohort</span>
+      <span class="section-label">Inaugural Certification Cohort</span>
       <div class="cohort-block">
-        <div class="cohort-label">Inaugural Assessment Cohort</div>
+        <div class="cohort-label">Inaugural Certification Cohort</div>
         <p class="cohort-desc">The Inaugural Cohort is currently accepting structured applications for ODD verification under CAT-72. The first 10 systems accepted participate at introductory rates reflecting the intensive, collaborative nature of initial conformance assessments.</p>
         <div class="cohort-prices">
           <div class="cohort-price-card"><div class="cohort-price-sublabel">Assessment</div><div class="cohort-price-amount">$15,000</div></div>
@@ -109,7 +109,7 @@
         <li><span class="inc-num">01</span><div><div class="inc-title">Pre-CAT-72 Audit Control Review</div><div class="inc-desc">Formal evaluation of ODD boundary definition, ENVELO Interlock assurance configuration, and telemetry readiness. Systems that do not meet the audit threshold are returned with findings before entering the verification period.</div></div></li>
         <li><span class="inc-num">02</span><div><div class="inc-title">CAT-72 Verification Period</div><div class="inc-desc">72 cumulative hours of system operation under active ENVELO Interlock assurance within the declared ODD. Cryptographic audit chain maintained across all operational intervals.</div></div></li>
         <li><span class="inc-num">03</span><div><div class="inc-title">Conformance Determination & Certificate Issuance</div><div class="inc-desc">Sentinel Authority reviews telemetry records, validates audit chain integrity, and issues a conformance determination recorded in the public registry.</div></div></li>
-        <li><span class="inc-num">04</span><div><div class="inc-title">Continuous Post-Certification Surveillance</div><div class="inc-desc">Conformance status remains valid only while assurance remains active. Certified systems are subject to continuous conformance surveillance included in annual maintenance.</div></div></li>
+        <li><span class="inc-num">04</span><div><div class="inc-title">Continuous Post-Certification Surveillance</div><div class="inc-desc">Certification remains valid only while assurance remains active. Certified systems are subject to continuous conformance surveillance included in annual maintenance.</div></div></li>
       </ul>
 
       <div class="contact-block" id="contact">
@@ -122,13 +122,15 @@
       </div>
     </div>
   </main>
-      <footer>
+  <footer>
     <div class="footer-inner">
-      <div>&copy; <span id="yr"></span> Sentinel Authority</div>
-      <div><a href="privacy.html">Privacy Notice</a> &middot; <a href="terms.html">Terms of Use</a></div>
+      <span>© 2026 Sentinel Authority · Independent Conformance Determination · Patent Pending</span>
+      <div class="foot-links">
+        <a href="/terms.html">Terms</a>
+        <a href="/privacy.html">Privacy</a>
+        <a href="/conformance-agreement.html">Conformance Agreement</a>
+      </div>
     </div>
   </footer>
-  <script>document.getElementById('yr').textContent=new Date().getFullYear();</script>
-  <script>document.querySelectorAll('.yr').forEach(function(e){e.textContent=new Date().getFullYear();});</script>
 </body>
 </html>

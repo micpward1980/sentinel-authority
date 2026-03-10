@@ -147,15 +147,17 @@ footer{border-top:1px solid var(--hairline)!important;}
   <link rel="stylesheet" href="global.css">
   <link rel="stylesheet" href="mobile.css">
   <script type="application/ld+json">
-  {"@context":"https://schema.org","@type":"Organization","name":"Sentinel Authority","url":"https://sentinelauthority.org","logo":"https://sentinelauthority.org/og.webp","description":"Independent ODDC conformance assessment body for autonomous systems.","sameAs":[],"contactPoint":{"@type":"ContactPoint","contactType":"customer service","url":"https://app.sentinelauthority.org"}}
+  {"@context":"https://schema.org","@type":"Organization","name":"Sentinel Authority","url":"https://sentinelauthority.org","logo":"https://sentinelauthority.org/og.webp","description":"Independent conformance assessment body for autonomous systems.","sameAs":[],"contactPoint":{"@type":"ContactPoint","contactType":"customer service","url":"https://app.sentinelauthority.org"}}
   </script>
   <script type="application/ld+json">
-  {"@context":"https://schema.org","@type":"WebSite","name":"Sentinel Authority","url":"https://sentinelauthority.org","description":"Independent ODDC conformance assessment for autonomous systems.","potentialAction":{"@type":"SearchAction","target":"https://sentinelauthority.org/?q={search_term_string}","query-input":"required name=search_term_string"}}
+  {"@context":"https://schema.org","@type":"WebSite","name":"Sentinel Authority","url":"https://sentinelauthority.org","description":"Independent conformance assessment for autonomous systems.","potentialAction":{"@type":"SearchAction","target":"https://sentinelauthority.org/?q={search_term_string}","query-input":"required name=search_term_string"}}
   </script>
 </head>
 <body>
-        <header class="site-header">
-    <a href="/" class="back-link">&larr; Sentinel Authority</a>
+    <header class="site-header">
+    <div class="nav-inner">
+      <a href="/" class="back-link" aria-label="Back to home">← Sentinel Authority</a>
+    </div>
   </header>
 
   <main role="main">
@@ -164,7 +166,7 @@ footer{border-top:1px solid var(--hairline)!important;}
         <div>
           <span class="section-label reveal r1">PUBLICATIONS</span>
           <h1 class="section-title reveal r2">Framework Documentation & White Papers</h1>
-          <p class="section-lead reveal r3">Foundational documentation for the ODDC conformance framework, ENVELO assurance architecture, and CAT-72 assessment methodology — and the policy case for independent autonomous system conformance assessment.</p>
+          <p class="section-lead reveal r3">Foundational documentation for the ODDC conformance framework, ENVELO assurance architecture, and CAT-72 assessment methodology — and the policy case for independent autonomous system certification.</p>
         </div>
       </div>
     </div>
@@ -181,7 +183,7 @@ footer{border-top:1px solid var(--hairline)!important;}
         <span>12 PAGES</span>
         <span>151 KB</span>
       </div>
-      <div class="doc-desc">A landmark aviation automation failure illustrates the structural risks of delegated self-certification in safety-critical systems. Drawing on Congressional investigation and DOJ proceedings, this paper analyzes the self-self-certification failure and introduces ODDC as the independent conformance framework designed to address it.</div>
+      <div class="doc-desc">The Boeing 737 MAX certification process illustrates the structural risks of delegated self-certification in safety-critical systems. Drawing on the Congressional investigation and DOJ proceedings, this paper analyzes the certification failure and introduces ODDC as the independent conformance framework designed to address it.</div>
       <div style="margin-top:20px;">
         <a href="SA_White_Paper_When_Self-Certification_Fails.pdf" class="dl-btn" target="_blank">
           <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
@@ -192,7 +194,7 @@ footer{border-top:1px solid var(--hairline)!important;}
         <span class="toc-label">Contents</span>
         <ul class="toc-list">
           <li>Executive Summary</li>
-          <li>1. Anatomy of a Self-Certification Failure</li>
+          <li>1. The Boeing 737 MAX: Anatomy of a Certification Failure</li>
           <li>2. The Autonomous Parallel</li>
           <li>3. ODDC: The Structural Solution</li>
           <li>4. The Regulatory Case for Independent Conformance</li>
@@ -239,7 +241,7 @@ footer{border-top:1px solid var(--hairline)!important;}
         <div class="doc-info">
           <div class="doc-title">The Accountability Chain</div>
           <div class="doc-meta" style="margin-top:6px;"><span>FEBRUARY 2026</span></div>
-          <div class="doc-desc">How ODDC resolves multi-party liability in autonomous system incidents. Analyzes five landmark cases across autonomous vehicles and healthcare AI litigation.</div>
+          <div class="doc-desc">How ODDC resolves multi-party liability in autonomous system incidents. Dissects five landmark cases including Tesla Autopilot, Cruise robotaxi, and healthcare AI litigation.</div>
         </div>
         <div class="doc-actions">
           <a href="publications/The_Accountability_Chain.pdf" class="dl-btn" target="_blank">
@@ -317,7 +319,7 @@ footer{border-top:1px solid var(--hairline)!important;}
             <span class="version-tag">v1.0 · CURRENT</span>
             <span>FEBRUARY 2026</span>
           </div>
-          <div class="doc-desc">The authoritative specification for the ODD Conformance Determination program. Defines the formal standard, conformance requirements, assurance architecture, and conformance framework governing all ODDC determinations.</div>
+          <div class="doc-desc">The authoritative specification for the ODD Conformance Determination program. Defines the formal standard, conformance requirements, assurance architecture, and certification framework governing all ODDC determinations.</div>
         </div>
         <div class="doc-actions">
           <a href="docs/ODDC_Standard_Specification_v1.0.pdf" class="dl-btn" target="_blank">
@@ -569,15 +571,13 @@ footer{border-top:1px solid var(--hairline)!important;}
     </div>
   </main>
 
-      <footer>
+  <footer>
     <div class="footer-inner">
-      <div>&copy; <span id="yr"></span> Sentinel Authority</div>
-      <div><a href="privacy.html">Privacy Notice</a> &middot; <a href="terms.html">Terms of Use</a></div>
+      <div>&copy; <span id="year"></span> Sentinel Authority</div>
+      <div style="margin-top:8px;font-size:9px;letter-spacing:1px;"><a href="privacy.html" style="color:inherit;text-decoration:none;">Privacy Notice</a> &middot; <a href="terms.html" style="color:inherit;text-decoration:none;">Terms of Use</a></div>
     </div>
   </footer>
-  <script>document.getElementById('yr').textContent=new Date().getFullYear();</script>
-  <script>document.querySelectorAll('.yr').forEach(function(e){e.textContent=new Date().getFullYear();});</script>
-
+  <script>document.getElementById('year').textContent=new Date().getFullYear();</script>
 <script>
 (function(){
   var b=document.querySelector(".brand");

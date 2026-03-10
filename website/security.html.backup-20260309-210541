@@ -243,7 +243,7 @@ footer{border-top:1px solid var(--hairline)!important;}
     "name": "Sentinel Authority",
     "url": "https://sentinelauthority.org",
     "logo": "https://sentinelauthority.org/og.webp",
-    "description": "Independent ODDC conformance assessment body for autonomous systems. ODDC verifies runtime-enforced operational boundary conformance.",
+    "description": "Independent conformance assessment body for autonomous systems. ODDC certification attests to runtime-assured operational boundary compliance.",
     "sameAs": [],
     "contactPoint": {
       "@type": "ContactPoint",
@@ -258,7 +258,7 @@ footer{border-top:1px solid var(--hairline)!important;}
     "@type": "WebSite",
     "name": "Sentinel Authority",
     "url": "https://sentinelauthority.org",
-    "description": "Independent ODDC conformance assessment for autonomous systems.",
+    "description": "Independent conformance assessment for autonomous systems.",
     "potentialAction": {
       "@type": "SearchAction",
       "target": "https://sentinelauthority.org/?q={search_term_string}",
@@ -269,8 +269,10 @@ footer{border-top:1px solid var(--hairline)!important;}
 </head>
 <body>
   <a href="#main" class="skip-link">Skip to content</a>
-        <header class="site-header">
-    <a href="/" class="back-link">&larr; Sentinel Authority</a>
+    <header class="site-header">
+    <div class="nav-inner">
+      <a href="/" class="back-link" aria-label="Back to home">← Sentinel Authority</a>
+    </div>
   </header>
 
   <main role="main" aria-label="Page content" id="main" role="main">
@@ -364,7 +366,7 @@ footer{border-top:1px solid var(--hairline)!important;}
           </div>
           <div class="faq-item">
             <div class="faq-q">Is the telemetry tamper-proof?</div>
-            <div class="faq-a">Yes. Every telemetry packet is cryptographically signed and hash-chain linked to the previous packet. Any gap, reorder, or modification breaks the chain and is flagged automatically. This provides non-repudiable evidence for conformance assessment and audit.</div>
+            <div class="faq-a">Yes. Every telemetry packet is cryptographically signed and hash-chain linked to the previous packet. Any gap, reorder, or modification breaks the chain and is flagged automatically. This provides non-repudiable evidence for certification and audit.</div>
           </div>
         </div>
       </div>
@@ -381,15 +383,13 @@ footer{border-top:1px solid var(--hairline)!important;}
     </div>
   </main>
 
-      <footer>
+  <footer>
     <div class="footer-inner">
-      <div>&copy; <span id="yr"></span> Sentinel Authority</div>
-      <div><a href="privacy.html">Privacy Notice</a> &middot; <a href="terms.html">Terms of Use</a></div>
+      <div>&copy; <span id="year"></span> Sentinel Authority</div>
+      <div style="margin-top:8px;font-size:9px;letter-spacing:1px;"><a href="privacy.html" style="color:inherit;text-decoration:none;">Privacy Notice</a> &middot; <a href="terms.html" style="color:inherit;text-decoration:none;">Terms of Use</a></div>
     </div>
   </footer>
-  <script>document.getElementById('yr').textContent=new Date().getFullYear();</script>
-  <script>document.querySelectorAll('.yr').forEach(function(e){e.textContent=new Date().getFullYear();});</script>
-
+  <script>document.getElementById('year').textContent=new Date().getFullYear();</script>
 <script>
 (function(){
   /* Green status dot on brand */

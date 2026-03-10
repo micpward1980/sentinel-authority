@@ -27,7 +27,7 @@
     "name": "Sentinel Authority",
     "url": "https://sentinelauthority.org",
     "logo": "https://sentinelauthority.org/og.webp",
-    "description": "Independent conformance assessment body for autonomous systems. ODDC conformance assessment attests to runtime-assured operational boundary conformance.",
+    "description": "Independent conformance assessment body for autonomous systems. ODDC certification attests to runtime-assured operational boundary conformance.",
     "sameAs": [],
     "contactPoint": {
       "@type": "ContactPoint",
@@ -42,7 +42,7 @@
     "@type": "WebSite",
     "name": "Sentinel Authority",
     "url": "https://sentinelauthority.org",
-    "description": "Independent ODDC conformance assessment for autonomous systems.",
+    "description": "Independent conformance assessment for autonomous systems.",
     "potentialAction": {
       "@type": "SearchAction",
       "target": "https://sentinelauthority.org/?q={search_term_string}",

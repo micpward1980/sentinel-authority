@@ -19,7 +19,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,300;500&display=swap" rel="stylesheet" />
   <style>
-    :root{--navy:#1d1a3b;--text:#111318;--text-2:rgba(15,18,30,.72);--text-3:rgba(15,18,30,.50);--border:rgba(15,18,30,.08);--bg:#ffffff;--mono:'IBM Plex Mono',Consolas,monospace;--serif:'Source Serif 4',Georgia,serif;--sans:'Inter',system-ui,sans-serif;--nav-h:60px;--max:1320px;}
+    :root{--navy:#1d1a3b;--text:#111318;--text-2:rgba(15,18,30,.72);--text-3:rgba(15,18,30,.50);--border:rgba(15,18,30,.08);--bg:#ffffff;--mono:'IBM Plex Mono',Consolas,monospace;--serif:'Source Serif 4',Georgia,serif;--sans:'Inter',system-ui,sans-serif;--nav-h:60px;--max:860px;}
     *,*::before,*::after{box-sizing:border-box;}
     @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition-duration:0.01ms!important;animation-duration:0.01ms!important;}}
     html{scroll-behavior:smooth;background:var(--bg);}
@@ -30,7 +30,7 @@
     .back-link{font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--text-3);transition:color .15s;font-weight:500;}
     .back-link:hover{color:var(--text);}
     main{padding-top:calc(var(--nav-h) + 64px);padding-bottom:112px;}
-    .inner{max-width:860px;margin:0 auto;padding:0 24px;}
+    .inner{max-width:var(--max);margin:0 auto;padding:0 24px;}
     .page-label{font-family:var(--mono);font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--text-3);display:block;margin-bottom:14px;}
     .page-title{font-family:var(--serif);font-size:clamp(32px,5vw,52px);font-weight:300;color:var(--navy);margin:0 0 16px;letter-spacing:-0.02em;line-height:1.1;}
     .page-lead{font-size:15px;color:var(--text-2);line-height:1.65;margin:0 0 64px;max-width:56ch;}
@@ -71,24 +71,23 @@
   </style>
 </head>
 <body>
-      <header class="site-header">
-    <a href="/" class="back-link">&larr; Sentinel Authority</a>
+  <header class="site-header">
+    <a href="/" class="back-link" aria-label="Back to home">← Sentinel Authority</a>
   </header>
   <main id="main">
-    <div style="max-width:var(--max);margin:0 auto;padding:0 24px 0;">
-      <span class="page-label">ODDC Runtime Conformance Standard</span>
-      <h1 class="page-title">Conformance Requirements</h1>
-      <p class="page-lead">Operational Design Domain Conformance (ODDC) verifies that an autonomous system operates within its declared boundaries under runtime-enforced, independently verified conditions.</p>
-    </div>
     <div class="inner">
+      <span class="page-label">ODDC Runtime Assurance Standard</span>
+      <h1 class="page-title">Conformance Requirements</h1>
+      <p class="page-lead">Operational Design Domain Conformance (ODDC) certifies that an autonomous system operates within its declared boundaries under runtime-enforced, independently verified conditions.</p>
+
       <div class="part">
         <span class="part-label">Part I</span>
-        <div class="part-title">Assessment Gates</div>
+        <div class="part-title">Certification Gates</div>
         <div class="gates-grid">
           <div class="gate-card"><span class="gate-num">01</span><div class="gate-title">ODD Declaration</div><p class="gate-desc">Operational boundaries formally declared or auto-discovered through ENVELO's adaptive learning engine. See R-01b.</p></div>
           <div class="gate-card"><span class="gate-num">02</span><div class="gate-title">Stability</div><p class="gate-desc">72+ cumulative hours of stable operation within the declared ODD under monitored conditions.</p></div>
-          <div class="gate-card"><span class="gate-num">03</span><div class="gate-title">Interlock</div><p class="gate-desc">All three ENVELO conformance tiers present and verified: self-correction, Minimum Risk Condition, hard halt.</p></div>
-          <div class="gate-card"><span class="gate-num">04</span><div class="gate-title">Evidence</div><p class="gate-desc">Tamper-evident SHA-256 hash-chained audit record generated for all conformance events. See R-06.</p></div>
+          <div class="gate-card"><span class="gate-num">03</span><div class="gate-title">Interlock</div><p class="gate-desc">All three ENVELO assurance tiers present and verified: self-correction, Minimum Risk Condition, hard halt.</p></div>
+          <div class="gate-card"><span class="gate-num">04</span><div class="gate-title">Evidence</div><p class="gate-desc">Tamper-evident SHA-256 hash-chained audit record generated for all assurance events. See R-06.</p></div>
           <div class="gate-card"><span class="gate-num">05</span><div class="gate-title">Non-Conformance</div><p class="gate-desc">Applicant executes a Conformance Agreement specifying conditions under which the attestation transitions to Non-Conformant.</p></div>
         </div>
       </div>
@@ -96,25 +95,25 @@
       <div class="part">
         <span class="part-label">Part II</span>
         <div class="part-title">Normative Requirements</div>
-        <p class="normative-intro">Systems seeking conformance assessment under the ODDC Runtime Conformance Standard must satisfy the following requirements.</p>
+        <p class="normative-intro">Systems seeking certification under the ODDC Runtime Assurance Standard must satisfy the following requirements.</p>
         <ul class="req-list">
-          <li><span class="num">R-01</span><span>ODD boundaries shall be defined in machine-readable format compatible with ENVELO's conformance engine, or auto-discovered and approved prior to conformance activation. Declarations shall include: (a) at least one quantitative operational parameter with defined limit values, (b) a defined geographic, environmental, or operational scope, and (c) explicit conditions under which assurance activates. Boundaries defined solely by time window, administrative classification, or other non-operational criteria do not satisfy this requirement.</span></li>
-          <li><span class="num">R-01a</span><span>ODD declarations are subject to Pre-CAT-72 Audit Control Review. Declarations that are insufficiently specified, internally inconsistent, or define boundaries so narrow as to render the verification period non-representative will be returned with findings. Revision history is retained and published in the conformance registry.</span></li>
+          <li><span class="num">R-01</span><span>ODD boundaries must be defined in machine-readable format compatible with ENVELO's assurance engine, or auto-discovered and approved prior to assurance activation. Declarations must include: (a) at least one quantitative operational parameter with defined limit values, (b) a defined geographic, environmental, or operational scope, and (c) explicit conditions under which assurance activates. Boundaries defined solely by time window, administrative classification, or other non-operational criteria do not satisfy this requirement.</span></li>
+          <li><span class="num">R-01a</span><span>ODD declarations are subject to Pre-CAT-72 Audit Control Review. Declarations that are insufficiently specified, internally inconsistent, or define boundaries so narrow as to render the verification period non-representative will be returned with findings. Revision history is retained and published in the certificate registry.</span></li>
           <li>
             <div class="req-sub">
-              <div style="display:flex;gap:14px;align-items:flex-start;"><span class="num">R-01b</span><span>The ENVELO conformance engine supports all boundary types required to certify autonomous systems across operational domains. Supported categories include:</span></div>
+              <div style="display:flex;gap:14px;align-items:flex-start;"><span class="num">R-01b</span><span>The ENVELO assurance engine supports all boundary types required to certify autonomous systems across operational domains. Supported categories include:</span></div>
               <div class="boundary-group"><div class="boundary-label">Physical &amp; Operational</div><div class="boundary-val">Numeric range constraints, categorical value sets, geographic geofences, polygon boundaries, temporal operating windows, rate-of-change limits, compound conditional rules, boolean sensor health, connectivity and heartbeat gap limits.</div></div>
               <div class="boundary-group"><div class="boundary-label">Analytical &amp; Statistical</div><div class="boundary-val">Cumulative threshold monitoring, statistical rolling-window constraints, frequency and event-count limits, baseline drift detection, multi-variable logical conditions, sequence and prerequisite assurance.</div></div>
               <div class="boundary-group"><div class="boundary-label">Domain-Specific</div><div class="boundary-val">Exclusion zone assurance, proximity and separation minimums, redundancy thresholds, energy reserve requirements, dynamic envelope curves, contraindication rules, escalation protocols, jurisdictional constraints.</div></div>
-              <div class="boundary-note">All boundary types are evaluated synchronously at execution time. The conformance engine is extensible without changes to the conformance framework.</div>
+              <div class="boundary-note">All boundary types are evaluated synchronously at execution time. The assurance engine is extensible without changes to the conformance framework.</div>
             </div>
           </li>
           <li><span class="num">R-02</span><span>Minimum of 72 cumulative hours of monitored operation without boundary violation during the CAT-72 assessment period.</span></li>
-          <li><span class="num">R-03</span><span>ENVELO Tier 1 (self-correction) shall engage automatically on ODD approach with no human intervention required.</span></li>
-          <li><span class="num">R-04</span><span>ENVELO Tier 2 (Minimum Risk Condition) shall activate on ODD boundary breach and bring the system to a defined safe state.</span></li>
-          <li><span class="num">R-05</span><span>ENVELO Tier 3 (hard halt) shall function as an absolute override that cannot be disabled by operator or software command.</span></li>
-          <li><span class="num">R-05a</span><span>The ENVELO Interlock shall be architecturally external to the governed system. Any configuration in which the model can directly access actuators, APIs, or execution targets without passing through the interlock disqualifies the system from conformance assessment.</span></li>
-          <li><span class="num">R-06</span><span>All conformance events shall be logged with timestamps, positional context where applicable, and cryptographic hash chains linking each event to the prior record.</span></li>
+          <li><span class="num">R-03</span><span>ENVELO Tier 1 (self-correction) must engage automatically on ODD approach with no human intervention required.</span></li>
+          <li><span class="num">R-04</span><span>ENVELO Tier 2 (Minimum Risk Condition) must activate on ODD boundary breach and bring the system to a defined safe state.</span></li>
+          <li><span class="num">R-05</span><span>ENVELO Tier 3 (hard halt) must function as an absolute override that cannot be disabled by operator or software command.</span></li>
+          <li><span class="num">R-05a</span><span>The ENVELO Interlock must be architecturally external to the governed system. Any configuration in which the model can directly access actuators, APIs, or execution targets without passing through the interlock disqualifies the system from certification.</span></li>
+          <li><span class="num">R-06</span><span>All assurance events must be logged with timestamps, positional context where applicable, and cryptographic hash chains linking each event to the prior record.</span></li>
           <li>
             <div class="req-sub">
               <div style="display:flex;gap:14px;align-items:flex-start;"><span class="num">R-06a</span><span>The following actions are independently logged in the tamper-evident audit chain:</span></div>
@@ -130,10 +129,10 @@
               <div class="audit-note">Each entry records the acting user, timestamp, resource identifier, and action-specific details. Database-level triggers prevent UPDATE or DELETE on the audit log table.</div>
             </div>
           </li>
-          <li><span class="num">R-07</span><span>Audit logs shall be transmitted to Sentinel Authority in real time or near-real time during the CAT-72 period. Gaps exceeding 15 minutes require justification.</span></li>
+          <li><span class="num">R-07</span><span>Audit logs must be transmitted to Sentinel Authority in real time or near-real time during the CAT-72 period. Gaps exceeding 15 minutes require justification.</span></li>
           <li><span class="num">R-08</span><span>The ENVELO Interlock transmits operational telemetry only. Proprietary system internals are not accessed or transmitted.</span></li>
-          <li><span class="num">R-09</span><span>ODD scope changes after assessment initiation require a new scope assessment and may require a new CAT-72 test run.</span></li>
-          <li><span class="num">R-10</span><span>The applicant shall designate a primary technical contact responsible for ENVELO Interlock deployment and ongoing conformance maintenance.</span></li>
+          <li><span class="num">R-09</span><span>ODD scope changes after certification initiation require a new scope assessment and may require a new CAT-72 test run.</span></li>
+          <li><span class="num">R-10</span><span>The applicant must designate a primary technical contact responsible for ENVELO Interlock deployment and ongoing conformance maintenance.</span></li>
           <li><span class="num">R-11</span><span>Post-certification systems are subject to continuous assurance. Systems are automatically marked Non-Conformant if: (a) interlock heartbeat is lost for more than 15 minutes, or (b) boundary violation rate exceeds the assurance threshold. Reinstatement requires human authorization by Sentinel Authority.</span></li>
         </ul>
         <div class="determination-block">
@@ -148,32 +147,29 @@
           <div class="process-card"><span class="process-step">Phase 1</span><div class="process-title">Application</div><p class="process-desc">Submit system information and select the adaptive or prescriptive ODD path.</p></div>
           <div class="process-card"><span class="process-step">Phase 2</span><div class="process-title">Scope Assessment</div><p class="process-desc">Sentinel Authority reviews the application, defines test parameters, and issues a scope confirmation with fee schedule.</p></div>
           <div class="process-card"><span class="process-step">Phase 3</span><div class="process-title">Pre-CAT-72 Audit Review</div><p class="process-desc">Structured evaluation of ODD boundary definition, ENVELO configuration, and telemetry readiness. CAT-72 authorized only upon successful completion.</p></div>
-          <div class="process-card"><span class="process-step">Phase 4</span><div class="process-title">CAT-72 Assessment</div><p class="process-desc">72+ hour monitored assessment. All three conformance tiers verified. Adaptive path begins with learning mode; prescriptive path active from the start.</p></div>
+          <div class="process-card"><span class="process-step">Phase 4</span><div class="process-title">CAT-72 Assessment</div><p class="process-desc">72+ hour monitored assessment. All three assurance tiers verified. Adaptive path begins with learning mode; prescriptive path active from the start.</p></div>
           <div class="process-card"><span class="process-step">Phase 5</span><div class="process-title">Conformance Determination</div><p class="process-desc">Determination issued with certificate hash and publication to the public registry.</p></div>
-          <div class="process-card"><span class="process-step">Phase 6</span><div class="process-title">Continuous Conformance</div><p class="process-desc">Real-time conformance score maintained. Non-conformance on conformance failure or telemetry loss. Reinstatement requires human authorization. Annual renewal required.</p></div>
+          <div class="process-card"><span class="process-step">Phase 6</span><div class="process-title">Continuous Assurance</div><p class="process-desc">Real-time conformance score maintained. Non-conformance on assurance failure or telemetry loss. Reinstatement requires human authorization. Annual renewal required.</p></div>
         </div>
       </div>
 
       <div class="part">
         <span class="part-label">Part IV</span>
         <div class="part-title">Reference Documents</div>
-        <p style="font-size:14px;color:var(--text-2);line-height:1.65;margin:0;">ENVELO Requirements, CAT-72 Procedure, ODDC Scenarios, and Assessment Guide are available in the <a href="/research.html" style="color:var(--navy);text-decoration:underline;">document library</a>.</p>
+        <p style="font-size:14px;color:var(--text-2);line-height:1.65;margin:0;">ENVELO Requirements, CAT-72 Procedure, ODDC Scenarios, and Certification Guide are available in the <a href="/research.html" style="color:var(--navy);text-decoration:underline;">document library</a>.</p>
       </div>
 
       <div class="cta-row">
-        <a href="https://app.sentinelauthority.org" class="btn-primary" style="display:table;margin:0 auto;">Apply for Assessment</a>
+        <a href="https://app.sentinelauthority.org" class="btn-primary">Begin Application</a>
       </div>
     </div>
   </main>
-      <footer>
+  <footer>
     <div class="footer-inner">
-      <div>&copy; <span id="yr"></span> Sentinel Authority</div>
-      <div><a href="privacy.html">Privacy Notice</a> &middot; <a href="terms.html">Terms of Use</a></div>
+      <div>&copy; <span id="year"></span> Sentinel Authority</div>
+      <div style="margin-top:8px;font-size:9px;letter-spacing:1px;"><a href="privacy.html" style="color:inherit;text-decoration:none;">Privacy Notice</a> &middot; <a href="terms.html" style="color:inherit;text-decoration:none;">Terms of Use</a></div>
     </div>
   </footer>
-  <script>document.getElementById('yr').textContent=new Date().getFullYear();</script>
   <script>document.getElementById('year').textContent=new Date().getFullYear();</script>
-  <script>document.querySelectorAll('.yr').forEach(function(e){e.textContent=new Date().getFullYear();});</script>
-
 </body>
 </html>
