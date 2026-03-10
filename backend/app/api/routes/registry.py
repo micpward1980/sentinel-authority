@@ -71,6 +71,9 @@ async def search_registry(
             "state": cert.state,
             "issued_at": cert.issued_at.isoformat() if cert.issued_at else None,
             "expires_at": cert.expires_at.isoformat() if cert.expires_at else None,
+            "odd_specification": cert.odd_specification,
+            "evidence_hash": cert.evidence_hash,
+            "audit_log_ref": cert.audit_log_ref,
         }
         for cert in certificates
     ]
