@@ -144,18 +144,18 @@
         <input id="regSearch" type="text" class="search-input" style="font-size:15px;padding:18px 18px 18px 48px;border:2px solid rgba(42,37,96,0.45);border-radius:10px;box-shadow:0 4px 20px rgba(42,37,96,0.12);background:rgba(42,37,96,0.03);"
                placeholder="Search by operator or system name…"
                autocomplete="off" spellcheck="false" aria-label="Search registry">
-        <button class="search-clear" id="searchClear" onclick="clearSearch()">Clear</button>
+        <button class="search-clear" id="searchClear" id="searchClear-btn">Clear</button>
       </div>
       <div class="search-meta" id="searchMeta" aria-live="polite"></div>
       <div style="overflow-x:auto;">
         <table class="reg" id="regTable">
           <thead>
             <tr>
-              <th onclick="sortTable(0)">System <span class="arr">↕</span></th>
-              <th onclick="sortTable(1)">Operator <span class="arr">↕</span></th>
-              <th onclick="sortTable(2)">Certificate <span class="arr">↕</span></th>
+              <th data-sort-index="0">System <span class="arr">↕</span></th>
+              <th data-sort-index="1">Operator <span class="arr">↕</span></th>
+              <th data-sort-index="2">Certificate <span class="arr">↕</span></th>
               
-              <th onclick="sortTable(4)">Issued <span class="arr">↕</span></th>
+              <th data-sort-index="4">Issued <span class="arr">↕</span></th>
               <th>Status</th>
             </tr>
           </thead>
@@ -248,7 +248,11 @@
           var dotClass    = d.status==='conformant' ? 'dot-green'   : d.status==='under_assessment' ? 'dot-amber'   : 'dot-red';
           var statusLabel = d.status==='conformant' ? 'Conformant'  : d.status==='under_assessment' ? 'Under Assessment' : 'Non-Conformant';
           var tr = document.createElement('tr');
-          tr.innerHTML =
+          /* patched: build row via DOM */
+          (function(d,tr){
+            function td(cls,val){var c=document.createElement('td');var s=document.createElement('span');s.className=cls;s.textContent=val==null?'—':String(val);c.appendChild(s);return c;}
+            function tdRaw(inner){var c=document.createElement('td');c.appendChild(inner);return c;}
+            // original fields reassembled below — was tr.innerHTML =
             '<td><div class="sys-name">'+esc(d.system_name)+'</div></td>'+
             '<td><span class="sys-op">'+esc(d.organization_name||'')+'</span></td>'+
             '<td><span class="cert-id">'+esc(d.certificate_number||'')+'</span></td>'+
@@ -274,7 +278,17 @@
             var exp = document.createElement('tr');
             exp.classList.add('row-expanded');
             var colCount = this.cells.length;
-            exp.innerHTML = '<td colspan="'+colCount+'" style="padding:0;">' +
+            /* patched: build expanded row via DOM */
+            (function(exp,colCount,d){
+              var etd=document.createElement('td');etd.colSpan=colCount;etd.style.padding='0';
+              var ew=document.createElement('div');ew.style.cssText='padding:20px 24px;background:rgba(42,37,96,0.03);border-top:1px solid rgba(42,37,96,0.08);';
+              function af(l,v){var b=document.createElement('div');var lbl=document.createElement('div');lbl.className='hud-label';lbl.textContent=l;var val=document.createElement('div');val.className='hud-title';val.textContent=v||'—';b.appendChild(lbl);b.appendChild(val);ew.appendChild(b);}
+              af('ODD',d.odd_domain);af('Certificate',d.certificate_number);
+              af('Issued',d.issued_at?new Date(d.issued_at).toLocaleDateString():'—');
+              af('Expires',d.expires_at?new Date(d.expires_at).toLocaleDateString():'—');
+              etd.appendChild(ew);exp.appendChild(etd);
+            })(exp,colCount,d);
+            // was: exp.innerHTML = '<td colspan=...' +
               '<div style="padding:20px 24px;background:rgba(42,37,96,0.03);border-top:1px solid rgba(42,37,96,0.08);border-bottom:1px solid rgba(42,37,96,0.08);">' +
               '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px 24px;">' +
               '<div><div class="hud-label" style="margin-bottom:4px;">ODD</div><div class="hud-title">'+(d.odd_domain||'—')+'</div></div>' +
@@ -299,5 +313,14 @@
       return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); 
     }
   </script>
+<script>
+  document.addEventListener('DOMContentLoaded', function(){
+    var clrBtn = document.getElementById('searchClear-btn');
+    if (clrBtn && typeof clearSearch==='function') clrBtn.addEventListener('click', clearSearch);
+    document.querySelectorAll('th[data-sort-index]').forEach(function(th){
+      th.addEventListener('click', function(){ sortTable(Number(th.getAttribute('data-sort-index'))); });
+    });
+  });
+</script>
 </body>
 </html>

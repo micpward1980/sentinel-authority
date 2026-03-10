@@ -706,7 +706,7 @@
           overflow: hidden;
           cursor: pointer;
           box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 24px 60px rgba(15,16,33,0.12);
-        " onclick="playVideo()">
+        " id="hero-video-trigger">
 
           <!-- Poster / thumbnail (SA seal hero) -->
           <img id="video-poster" src="03-sa-seal-hero.png" alt="Sentinel Authority — Watch the explainer"
@@ -2644,7 +2644,7 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
       <div class="reveal" style="max-width:700px;margin:0 auto;">
 
         <div style="border:1px solid rgba(15,18,30,0.09);border-radius:3px;overflow:hidden;margin-bottom:2px;">
-          <button onclick="saFaqToggle(this)" aria-expanded="false" style="width:100%;padding:20px 24px;background:none;border:none;text-align:left;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:16px;font-family:var(--serif);font-size:16px;font-weight:400;color:#111318;transition:background .15s;">
+          <button data-faq-toggle="1" aria-expanded="false" style="width:100%;padding:20px 24px;background:none;border:none;text-align:left;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:16px;font-family:var(--serif);font-size:16px;font-weight:400;color:#111318;transition:background .15s;">
             How does ODDC differ from ISO 26262, UL 4600, or SOTIF?
             <span style="font-family:var(--mono);font-size:18px;color:rgba(15,18,30,0.35);flex-shrink:0;transition:transform .2s;line-height:1;">+</span>
           </button>
@@ -2654,7 +2654,7 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
         </div>
 
         <div style="border:1px solid rgba(15,18,30,0.09);border-radius:3px;overflow:hidden;margin-bottom:2px;">
-          <button onclick="saFaqToggle(this)" aria-expanded="false" style="width:100%;padding:20px 24px;background:none;border:none;text-align:left;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:16px;font-family:var(--serif);font-size:16px;font-weight:400;color:#111318;transition:background .15s;">
+          <button data-faq-toggle="1" aria-expanded="false" style="width:100%;padding:20px 24px;background:none;border:none;text-align:left;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:16px;font-family:var(--serif);font-size:16px;font-weight:400;color:#111318;transition:background .15s;">
             How is ENVELO integrated without modifying the underlying model?
             <span style="font-family:var(--mono);font-size:18px;color:rgba(15,18,30,0.35);flex-shrink:0;transition:transform .2s;line-height:1;">+</span>
           </button>
@@ -2664,7 +2664,7 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
         </div>
 
         <div style="border:1px solid rgba(15,18,30,0.09);border-radius:3px;overflow:hidden;margin-bottom:2px;">
-          <button onclick="saFaqToggle(this)" aria-expanded="false" style="width:100%;padding:20px 24px;background:none;border:none;text-align:left;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:16px;font-family:var(--serif);font-size:16px;font-weight:400;color:#111318;transition:background .15s;">
+          <button data-faq-toggle="1" aria-expanded="false" style="width:100%;padding:20px 24px;background:none;border:none;text-align:left;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:16px;font-family:var(--serif);font-size:16px;font-weight:400;color:#111318;transition:background .15s;">
             What if our system is closed-source or proprietary?
             <span style="font-family:var(--mono);font-size:18px;color:rgba(15,18,30,0.35);flex-shrink:0;transition:transform .2s;line-height:1;">+</span>
           </button>
@@ -2674,7 +2674,7 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
         </div>
 
         <div style="border:1px solid rgba(15,18,30,0.09);border-radius:3px;overflow:hidden;margin-bottom:2px;">
-          <button onclick="saFaqToggle(this)" aria-expanded="false" style="width:100%;padding:20px 24px;background:none;border:none;text-align:left;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:16px;font-family:var(--serif);font-size:16px;font-weight:400;color:#111318;transition:background .15s;">
+          <button data-faq-toggle="1" aria-expanded="false" style="width:100%;padding:20px 24px;background:none;border:none;text-align:left;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:16px;font-family:var(--serif);font-size:16px;font-weight:400;color:#111318;transition:background .15s;">
             What happens when a non-conformance event is detected?
             <span style="font-family:var(--mono);font-size:18px;color:rgba(15,18,30,0.35);flex-shrink:0;transition:transform .2s;line-height:1;">+</span>
           </button>
@@ -2684,7 +2684,7 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
         </div>
 
         <div style="border:1px solid rgba(15,18,30,0.09);border-radius:3px;overflow:hidden;margin-bottom:2px;">
-          <button onclick="saFaqToggle(this)" aria-expanded="false" style="width:100%;padding:20px 24px;background:none;border:none;text-align:left;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:16px;font-family:var(--serif);font-size:16px;font-weight:400;color:#111318;transition:background .15s;">
+          <button data-faq-toggle="1" aria-expanded="false" style="width:100%;padding:20px 24px;background:none;border:none;text-align:left;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:16px;font-family:var(--serif);font-size:16px;font-weight:400;color:#111318;transition:background .15s;">
             How does ODDC conformance affect insurance underwriting or procurement?
             <span style="font-family:var(--mono);font-size:18px;color:rgba(15,18,30,0.35);flex-shrink:0;transition:transform .2s;line-height:1;">+</span>
           </button>
@@ -2694,7 +2694,7 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
         </div>
 
         <div style="border:1px solid rgba(15,18,30,0.09);border-radius:3px;overflow:hidden;margin-bottom:2px;">
-          <button onclick="saFaqToggle(this)" aria-expanded="false" style="width:100%;padding:20px 24px;background:none;border:none;text-align:left;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:16px;font-family:var(--serif);font-size:16px;font-weight:400;color:#111318;transition:background .15s;">
+          <button data-faq-toggle="1" aria-expanded="false" style="width:100%;padding:20px 24px;background:none;border:none;text-align:left;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:16px;font-family:var(--serif);font-size:16px;font-weight:400;color:#111318;transition:background .15s;">
             Does Sentinel Authority certify that a system is safe?
             <span style="font-family:var(--mono);font-size:18px;color:rgba(15,18,30,0.35);flex-shrink:0;transition:transform .2s;line-height:1;">+</span>
           </button>
@@ -2704,7 +2704,7 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
         </div>
 
         <div style="border:1px solid rgba(15,18,30,0.09);border-radius:3px;overflow:hidden;">
-          <button onclick="saFaqToggle(this)" aria-expanded="false" style="width:100%;padding:20px 24px;background:none;border:none;text-align:left;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:16px;font-family:var(--serif);font-size:16px;font-weight:400;color:#111318;transition:background .15s;">
+          <button data-faq-toggle="1" aria-expanded="false" style="width:100%;padding:20px 24px;background:none;border:none;text-align:left;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:16px;font-family:var(--serif);font-size:16px;font-weight:400;color:#111318;transition:background .15s;">
             What does annual maintenance cover?
             <span style="font-family:var(--mono);font-size:18px;color:rgba(15,18,30,0.35);flex-shrink:0;transition:transform .2s;line-height:1;">+</span>
           </button>
@@ -2874,10 +2874,10 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
     <!-- Download Modal -->
     <div id="downloadModal" class="download-modal" aria-hidden="true">
       <div class="download-modal-card">
-        <button class="download-modal-close" onclick="closeDownloadModal()" aria-label="Close">✕</button>
+        <button class="download-modal-close" id="download-modal-close" aria-label="Close">✕</button>
         <h3 id="downloadModalTitle">DOCUMENT ACCESS</h3>
         <p>Provide contact information to access this document.</p>
-        <form id="downloadForm" action="https://api.sentinelauthority.org/api/applications/document-download" method="POST" onsubmit="handleDownloadSubmit(event)">
+        <form id="downloadForm" action="https://api.sentinelauthority.org/api/applications/document-download" method="POST" >
           <input type="hidden" name="access_key" value="3e7e3ac5-9b32-46a0-b901-d36f8723879c">
           <input type="hidden" name="subject" value="New Document Download">
           <input type="hidden" name="from_name" value="Sentinel Authority Website">
@@ -3138,7 +3138,7 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
             return;
           }
           _suspensionsCache = data.suspensions;
-          el.innerHTML = data.suspensions.map(r => `
+          _renderSuspensions(data.suspensions); /*patched*/ if(false) el.innerHTML = data.suspensions.map(r => `
             <div style="padding:12px 0;border-bottom:1px solid rgba(0,0,0,0.07);">
               <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
                 <div>
@@ -3187,7 +3187,7 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
         el.innerHTML = '<span style="font-family:var(--mono);font-size:13px;color:rgba(15,18,30,0.4);">No matching records.</span>';
         return;
       }
-      el.innerHTML = filtered.map(function(r) {
+      _renderSuspensions(filtered); /*patched*/ if(false) el.innerHTML = filtered.map(function(r) {
         return '<div style="padding:12px 0;border-bottom:1px solid rgba(0,0,0,0.07);"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;"><div><div style="font-family:var(--mono);font-size:13px;font-weight:600;color:#1d1a3b;">' + _esc(r.certificate_number) + '</div><div style="font-family:var(--mono);font-size:12px;color:rgba(15,18,30,0.55);margin-top:2px;">' + _esc(r.organization_name) + ' \u2014 ' + _esc(r.system_name) + '</div></div><span style="font-family:var(--mono);font-size:11px;color:#c0392b;white-space:nowrap;">' + _esc(r.reason_category) + '</span></div><div style="font-family:var(--mono);font-size:11px;color:rgba(15,18,30,0.4);margin-top:4px;">Revoked ' + (r.revoked_at ? new Date(r.revoked_at).toLocaleDateString("en-US", {year:"numeric",month:"short",day:"numeric"}) : "unknown") + '</div></div>';
       }).join("");
     }
@@ -3221,14 +3221,27 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
       const resultDiv = document.getElementById("verify-result");
       let html = '<div style="font-size:14px;color:var(--text-tertiary);margin-bottom:12px;">' + results.length + ' certificate(s) found</div>';
       results.forEach(function(cert) {
-        html += '<div onclick="selectCertificate(\'' + _esc(cert.certificate_number) + '\')" style="background:rgba(0,0,0,0.04);border:1px solid rgba(0,0,0,0.12);border-radius:8px;padding:14px 18px;margin-bottom:8px;cursor:pointer;">' +
+        (function(cert){
+          var card=document.createElement('div');
+          card.style.cssText='background:rgba(0,0,0,0.04);border:1px solid rgba(0,0,0,0.12);border-radius:8px;padding:14px 18px;margin-bottom:8px;cursor:pointer;';
+          card.addEventListener('click',function(){selectCertificate(cert.certificate_number||'');});
+          var row=document.createElement('div');row.style.cssText='display:flex;justify-content:space-between;align-items:center;';
+          var left=document.createElement('div');
+          var n1=document.createElement('div');n1.style.cssText='color:var(--text-primary);font-weight:500;';n1.textContent=cert.organization_name||'—';left.appendChild(n1);
+          var n2=document.createElement('div');n2.style.cssText='color:var(--text-tertiary);font-size:14px;';n2.textContent=cert.system_name||'—';left.appendChild(n2);
+          var right=document.createElement('div');right.style.textAlign='right';
+          var n3=document.createElement('div');n3.style.cssText='color:#1d1a3b;font-family:var(--mono);font-size:14px;';n3.textContent=cert.certificate_number||'—';right.appendChild(n3);
+          var n4=document.createElement('div');n4.style.cssText='color:#16873e;font-size:14px;text-transform:uppercase;';n4.textContent=cert.state||'—';right.appendChild(n4);
+          row.appendChild(left);row.appendChild(right);card.appendChild(row);
+          resultDiv.appendChild(card);
+        })(cert); // patched — was html +=
           '<div style="display:flex;justify-content:space-between;align-items:center;">' +
           '<div><div style="color:var(--text-primary);font-weight:500;">' + _esc(cert.organization_name) + '</div>' +
           '<div style="color:var(--text-tertiary);font-size:14px;">' + _esc(cert.system_name) + '</div></div>' +
           '<div style="text-align:right;"><div style="color:#1d1a3b;font-family:var(--mono);font-size:14px;">' + _esc(cert.certificate_number) + '</div>' +
           '<div style="color:#16873e;font-size:14px;text-transform:uppercase;">' + _esc(cert.state) + '</div></div></div></div>';
       });
-      if (resultDiv) resultDiv.innerHTML = html;
+      /* patched: DOM append above replaced html accumulator */
     }
     
     function selectCertificate(certNumber) {
@@ -3269,7 +3282,11 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
       const statusBorder = isConformant ? 'rgba(22,135,62,0.75)' : 'rgba(180,52,52,0.60)';
       const statusIcon = isConformant ? '✓' : '✕';
       const statusLabel = isConformant ? 'CONFORMANT' : 'NON-CONFORMANT';
-      if (resultDiv) resultDiv.innerHTML = '<div style="background:' + statusBg + ';border:1px solid ' + statusBorder + ';border-radius:8px;padding:20px;">' +
+      if (resultDiv) {
+        var vwrap=document.createElement('div');
+        vwrap.style.cssText='background:'+statusBg+';border:1px solid '+statusBorder+';border-radius:8px;padding:20px;';
+        resultDiv.innerHTML=''; resultDiv.appendChild(vwrap);
+        var _el=vwrap; // patched — was resultDiv.innerHTML = ... +
         '<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">' +
         '<div style="width:32px;height:32px;border-radius:50%;background:' + statusBg + ';display:flex;align-items:center;justify-content:center;color:' + statusColor + ';font-size:18px;">' + statusIcon + '</div>' +
         '<span style="color:' + statusColor + ';font-family:var(--mono);font-size:14px;letter-spacing:1px;">' + statusLabel + '</span></div>' +
@@ -3484,6 +3501,19 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
 </div>
 <script>
 if(!localStorage.getItem("sa-privacy-ack")){setTimeout(function(){document.getElementById("privacy-bar").style.transform="translateY(0)"},1500);}
+</script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var h = document.getElementById('hero-video-trigger');
+    if (h && typeof playVideo === 'function') h.addEventListener('click', playVideo);
+    document.querySelectorAll('[data-faq-toggle="1"]').forEach(function(b){
+      b.addEventListener('click', function(){ saFaqToggle(b); });
+    });
+    var mc = document.getElementById('download-modal-close');
+    if (mc) mc.addEventListener('click', closeDownloadModal);
+    var df = document.getElementById('downloadForm');
+    if (df) df.addEventListener('submit', handleDownloadSubmit);
+  });
 </script>
 </body>
 </html>

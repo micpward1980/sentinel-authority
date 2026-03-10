@@ -97,7 +97,13 @@
             if (ok) {
                 dot.className = 'dot dot-green';
                 label.className = '';
-                label.innerHTML = 'Operational' + (latency ? ' <span class="latency">' + latency + 'ms</span>' : '');
+                label.textContent = 'Operational';
+                if (latency) {
+                  var ls = document.createElement('span');
+                  ls.className = 'latency';
+                  ls.textContent = latency + 'ms';
+                  label.appendChild(ls);
+                }
             } else {
                 dot.className = 'dot dot-red';
                 label.className = '';
