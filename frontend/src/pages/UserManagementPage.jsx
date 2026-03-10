@@ -42,7 +42,7 @@ function UserManagementPage() {
       });
       if (search) params.append('search', search);
       if (roleFilter !== 'all') params.append('role', roleFilter);
-      const res = await api.get('/api/v1/users/list?' + params.toString());
+      const res = await api.get('/api/v1/users/admin/list?' + params.toString());
       setUsers(res.data.users || res.data.items || []);
       setTotal(res.data.total || 0);
       if (res.data.counts) setCounts(res.data.counts);

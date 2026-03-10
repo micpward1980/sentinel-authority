@@ -335,7 +335,7 @@ async def reject_user(user_id: int, db: AsyncSession = Depends(get_db), admin: d
 
 
 
-@router.get("/list", summary="List users with pagination")
+@router.get("/admin/list", summary="List users with pagination")
 async def list_users_paginated(
     db: AsyncSession = Depends(get_db),
     user: dict = Depends(get_current_user),
