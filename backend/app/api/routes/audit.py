@@ -274,7 +274,7 @@ def log_event_from_request(
 # This imports your existing get_current_user dependency.
 # Adjust the import path to match your project structure.
 try:
-    from auth import get_current_user, get_current_admin_user as get_current_admin
+    from app.core.security import get_current_user
 except ImportError:
     try:
         from routers.auth import get_current_user, get_current_admin_user as get_current_admin
