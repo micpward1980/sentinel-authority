@@ -116,6 +116,23 @@ async def list_certificates(db: AsyncSession = Depends(get_db), user: dict = Dep
     
     return [{"id": c.id, "certificate_number": c.certificate_number, "organization_name": c.organization_name, "system_name": c.system_name, "state": c.state, "issued_at": c.issued_at.isoformat() if c.issued_at else None, "expires_at": c.expires_at.isoformat() if c.expires_at else None, "application_id": c.application_id, "envelope_definition": c.envelope_definition, "applicant_id": getattr(c, "issued_by", None)} for c in result.scalars().all()]
 
+@router.get("/compliance-pubkey", summary="SA compliance log signing public key")
+async def get_compliance_pubkey():
+    """
+    Returns the Sentinel Authority Ed25519 public key used to sign compliance logs.
+    Anyone can use this to independently verify a compliance log PDF's detached signature.
+    No authentication required — this is a public trust anchor.
+    """
+    try:
+        pem = get_public_key_pem()
+        return Response(
+            content=pem,
+            media_type="text/plain",
+            headers={"Cache-Control": "public, max-age=3600"},
+        )
+    except Exception as e:
+        raise HTTPException(status_code=503, detail=f"Signing key unavailable: {str(e)}")
+
 @router.get("/{certificate_number}", summary="Get certificate details")
 async def get_certificate(certificate_number: str, db: AsyncSession = Depends(get_db)):
     from app.models.models import EnveloSession
@@ -514,20 +531,3 @@ async def download_compliance_log(
         headers={"Content-Disposition": f'attachment; filename="{fname}"'},
     )
 
-
-@router.get("/compliance-pubkey", summary="SA compliance log signing public key")
-async def get_compliance_pubkey():
-    """
-    Returns the Sentinel Authority Ed25519 public key used to sign compliance logs.
-    Anyone can use this to independently verify a compliance log PDF's detached signature.
-    No authentication required — this is a public trust anchor.
-    """
-    try:
-        pem = get_public_key_pem()
-        return Response(
-            content=pem,
-            media_type="text/plain",
-            headers={"Cache-Control": "public, max-age=3600"},
-        )
-    except Exception as e:
-        raise HTTPException(status_code=503, detail=f"Signing key unavailable: {str(e)}")
