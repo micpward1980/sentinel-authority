@@ -319,7 +319,8 @@ async def check_certificate_expiry():
         # Get all conformant certificates
         result = await db.execute(
             select(Certificate).where(
-                Certificate.state == "conformant"
+                Certificate.state == "conformant",
+                Certificate.is_demo == False
             )
         )
         certificates = result.scalars().all()
@@ -486,7 +487,8 @@ async def auto_suspend_offline():
                     cert_result = await db.execute(
                         select(Certificate).where(
                             Certificate.id == s.certificate_id,
-                            Certificate.state == "conformant"
+                            Certificate.state == "conformant",
+                Certificate.is_demo == False
                         )
                     )
                     cert = cert_result.scalar_one_or_none()
