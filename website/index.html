@@ -1234,29 +1234,68 @@
     </section>
 
     <!-- ═══ FOR REGULATORS & GOVERNMENT ═══ -->
-    <section id="regulators" class="section">
+<section id="regulators" class="section">
       <div class="section-head reveal">
         <div>
           <span class="section-label">FOR REGULATORS &amp; GOVERNMENT</span>
-          <h2 class="section-title">Independent Conformance Certification for Autonomous Systems</h2>
+          <h2 class="section-title">A Mechanism Existing Frameworks Do Not Provide</h2>
           <p class="section-lead">
-            Many regulatory frameworks rely on manufacturer self-assessment for autonomous system approval. ODDC provides a mechanism for independent assurance verification.
+            Current regulatory approval processes for autonomous systems rely on manufacturer self-assessment. No independent mechanism exists to verify that runtime boundary enforcement is architecturally present and active at the moment of execution. ODDC formalizes that missing category.
           </p>
         </div>
       </div>
 
-      <div class="reveal" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:var(--space-3);margin-top:var(--space-2);">
-        <div class="hud-frame"><i></i>
-          <div class="hud-title" style="margin-bottom:12px;color:rgba(180,52,52,1.00);">Current State</div>
-          <div class="hud-desc" style="line-height:1.8;">Approval mechanisms rely on manufacturer self-assessment without independent assurance verification.</div>
-        </div>
-        <div class="hud-frame"><i></i>
-          <div class="hud-title" style="margin-bottom:12px;color:rgba(22,135,62,1.00);">Available Mechanism</div>
-          <div class="hud-desc" style="line-height:1.8;">ODDC provides independent assurance verification compatible with existing regulatory frameworks.</div>
+      <div class="reveal" style="max-width:880px;margin:0 auto var(--space-3);">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+
+          <div class="hud-frame"><i></i>
+            <div class="hud-label" style="color:rgba(180,52,52,1.00);margin-bottom:12px;">THE CURRENT GAP</div>
+            <div class="hud-desc" style="line-height:1.9;">Existing frameworks — including NHTSA voluntary guidance, Transport Canada autonomous vehicle policy, and FAA UAS integration rules — accept operator-declared operational boundaries without independent verification that those boundaries are enforced at runtime. Self-attestation is the standard. Independent architectural verification does not exist as a defined category.</div>
+          </div>
+
+          <div class="hud-frame"><i></i>
+            <div class="hud-label" style="color:rgba(22,135,62,1.00);margin-bottom:12px;">WHAT ODDC PROVIDES</div>
+            <div class="hud-desc" style="line-height:1.9;">ODDC is a conformance specification for independent runtime boundary verification. It is designed to complement — not replace — existing regulatory frameworks. ODDC conformance status provides regulators with a third-party-verified, tamper-evident record of boundary enforcement behavior that no current mechanism produces.</div>
+          </div>
+
         </div>
       </div>
 
+      <div class="reveal" style="max-width:880px;margin:0 auto var(--space-3);">
+        <div class="hud-frame hud-scanline"><i></i>
+          <div class="hud-label" style="margin-bottom:16px;">FRAMEWORK COMPATIBILITY</div>
+          <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;">
+            <span class="hud-dot" style="margin-top:5px;flex-shrink:0;"></span>
+            <div><span class="hud-title">NHTSA Automated Vehicle Framework</span>
+            <div class="hud-desc">ODDC conformance assessment aligns with NHTSA's stated objective of independent safety verification for automated driving systems. ENVELO audit records are directly usable in NHTSA safety reporting contexts.</div></div>
+          </div>
+          <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;">
+            <span class="hud-dot" style="margin-top:5px;flex-shrink:0;"></span>
+            <div><span class="hud-title">Transport Canada Connected and Automated Vehicles Policy</span>
+            <div class="hud-desc">ODDC addresses the independent verification gap identified in Transport Canada's autonomous vehicle regulatory consultations. Tamper-evident audit records satisfy documentation requirements under Canadian motor vehicle safety frameworks.</div></div>
+          </div>
+          <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;">
+            <span class="hud-dot" style="margin-top:5px;flex-shrink:0;"></span>
+            <div><span class="hud-title">EU AI Act — High-Risk System Requirements</span>
+            <div class="hud-desc">ODDC conformance documentation is compatible with EU AI Act Article 9 risk management obligations and Article 17 quality management requirements for high-risk autonomous systems deployed in the European market.</div></div>
+          </div>
+          <div class="hud-row" style="display:flex;align-items:flex-start;gap:10px;">
+            <span class="hud-dot" style="margin-top:5px;flex-shrink:0;"></span>
+            <div><span class="hud-title">FAA UAS Integration Pilot Program</span>
+            <div class="hud-desc">ENVELO Interlock architecture and CAT-72 verification are compatible with FAA operational boundary requirements for UAS Beyond Visual Line of Sight operations and urban air mobility conformance frameworks.</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="reveal" style="max-width:880px;margin:0 auto var(--space-3);background:#1d1a3b;border-radius:4px;padding:36px 40px;">
+        <p style="font-family:var(--serif);font-size:clamp(16px,2vw,20px);font-weight:300;color:rgba(255,255,255,0.88);line-height:1.65;letter-spacing:-0.01em;margin:0 0 24px;">
+          ODDC conformance cuts both ways. It provides verified differentiation for compliant operators — and produces a tamper-evident public record of non-conformance for those who are not.
+        </p>
+        <a href="mailto:regulatory@sentinelauthority.org?subject=Regulatory%20Integration%20Inquiry" style="display:inline-block;font-family:var(--mono);font-size:12px;letter-spacing:2px;text-transform:uppercase;background:rgba(255,255,255,0.10);color:#fff;border:1px solid rgba(255,255,255,0.25);padding:12px 28px;border-radius:4px;text-decoration:none;">Regulatory Integration Inquiry →</a>
+      </div>
+
     </section>
+
 
     <!-- WHY NOW -->
 
@@ -2817,7 +2856,7 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
             <div class="foot-col-title">FRAMEWORK</div>
             <a href="#envelo">Enforcement Interlock</a>
             <a href="security.html">Security Architecture</a>
-            <a href="#buyers">Criteria</a>
+            <a href="#boundaries">Criteria</a>
             <a href="#cat72">CAT-72</a>
             <a href="#process">Conformance Process</a>
           </div>
@@ -2826,7 +2865,7 @@ ctx.fillText('ENVELO',cx,cy-enveloR-38);
             <a href="#artifacts">Standards Library</a>
             <a href="scenarios.html">Conformance Scenarios</a>
             <a href="research.html">Publications</a>
-            <a href="#verify" data-section="verify">Verify</a>
+            <a href="/status.html">Verify</a>
             
           </div>
           <div class="foot-col">
