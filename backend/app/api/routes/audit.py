@@ -1,399 +1,577 @@
-import hashlib, json
-"""Audit log API endpoints"""
-from fastapi import APIRouter, Depends, Query
-from sqlalchemy.ext.asyncio import AsyncSession
-from datetime import datetime
-from sqlalchemy import select, func, desc
-from app.core.database import get_db
-from app.core.security import get_current_user, require_role
-from app.models.models import AuditLog, AuditAnchor
-import hashlib, hmac, os
+# audit.py -- Sentinel Authority Audit Logging System
+# Drop this file into your FastAPI backend directory.
+#
+# INTEGRATION STEPS:
+# 1. Copy this file to your backend directory (alongside main.py)
+# 2. In main.py, add:
+#       from audit import router as audit_router, log_event, init_audit_table
+#       app.include_router(audit_router)
+#       # Call init_audit_table() after your DB connection is established
+# 3. In your existing route handlers, call log_event() to record events.
+#    See USAGE EXAMPLES at the bottom of this file.
+#
+# REQUIREMENTS: pip install fastapi sqlalchemy psycopg2-binary python-jose hashlib
+#
+# DATABASE: Uses the same PostgreSQL connection your app already has.
+# Adds one table: audit_events
+# No migrations needed -- table is created on startup via init_audit_table().
 
-router = APIRouter(tags=["audit"])
+import hashlib
+import json
+import os
+from datetime import datetime, timezone
+from typing import Optional, Any
+
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
+from sqlalchemy import (
+    create_engine, text, Column, Integer, String, DateTime,
+    JSON, Index, inspect as sa_inspect
+)
+from sqlalchemy.orm import declarative_base, Session, sessionmaker
+
+# ---------------------------------------------------------------------------
+# Database setup
+# ---------------------------------------------------------------------------
+
+DATABASE_URL = os.environ.get("DATABASE_URL", "")
+
+# Railway provides postgresql:// but SQLAlchemy 2.x needs postgresql+psycopg2://
+if DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql+psycopg2://", 1)
+
+_engine = None
+_SessionLocal = None
+
+def get_engine():
+    global _engine
+    if _engine is None:
+        _engine = create_engine(DATABASE_URL, pool_pre_ping=True)
+    return _engine
+
+def get_session():
+    global _SessionLocal
+    if _SessionLocal is None:
+        _SessionLocal = sessionmaker(bind=get_engine())
+    db = _SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+Base = declarative_base()
+
+# ---------------------------------------------------------------------------
+# Model
+# ---------------------------------------------------------------------------
+
+class AuditEvent(Base):
+    __tablename__ = "audit_events"
+
+    id            = Column(Integer, primary_key=True, index=True)
+    timestamp     = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc))
+    user_id       = Column(Integer, nullable=True)
+    user_email    = Column(String(255), nullable=True)
+    user_role     = Column(String(64), nullable=True)
+    action        = Column(String(128), nullable=False)
+    resource_type = Column(String(64), nullable=True)
+    resource_id   = Column(String(128), nullable=True)
+    details       = Column(JSON, nullable=True)
+    ip_address    = Column(String(64), nullable=True)
+    log_hash      = Column(String(64), nullable=True)  # SHA-256 chain hash
+
+    __table_args__ = (
+        Index("ix_audit_timestamp",     "timestamp"),
+        Index("ix_audit_action",        "action"),
+        Index("ix_audit_user_email",    "user_email"),
+        Index("ix_audit_resource_type", "resource_type"),
+    )
 
 
-@router.get("/logs", summary="Query audit logs")
-async def get_audit_logs(
-    action: str = Query(None),
-    resource_type: str = Query(None),
-    user_email: str = Query(None),
-    date_from: str = Query(None, description="Start date ISO format"),
-    date_to: str = Query(None, description="End date ISO format"),
-    limit: int = Query(50, le=200),
-    offset: int = Query(0),
-    db: AsyncSession = Depends(get_db),
-    user: dict = Depends(require_role(["admin"])),
+def init_audit_table():
+    """Call once on app startup to create the audit_events table if it doesn't exist."""
+    try:
+        engine = get_engine()
+        inspector = sa_inspect(engine)
+        if "audit_events" not in inspector.get_table_names():
+            Base.metadata.create_all(engine, tables=[AuditEvent.__table__])
+            print("[audit] Created audit_events table")
+        else:
+            print("[audit] audit_events table already exists")
+    except Exception as e:
+        print(f"[audit] WARNING: Could not init audit table: {e}")
+
+
+# ---------------------------------------------------------------------------
+# Action taxonomy
+# ---------------------------------------------------------------------------
+
+ACTIONS = [
+    # Applications
+    "application.submitted",
+    "application.approved",
+    "application.rejected",
+    "application.suspended",
+    "application.revoked",
+    "application.resubmitted",
+    # Certificates
+    "certificate.issued",
+    "certificate.revoked",
+    "certificate.suspended",
+    "certificate.expired",
+    # CAT-72
+    "cat72.scheduled",
+    "cat72.started",
+    "cat72.stopped",
+    "cat72.passed",
+    "cat72.failed",
+    # ENVELO boundaries
+    "boundary.configured",
+    "boundary.committed",
+    "boundary.violated",
+    "boundary.blocked",
+    # Auth
+    "user.login",
+    "user.logout",
+    "user.registered",
+    "user.password_changed",
+    "user.role_changed",
+    "user.2fa_enabled",
+    "user.2fa_disabled",
+    # API keys
+    "apikey.created",
+    "apikey.revoked",
+    # Admin
+    "admin.user_created",
+    "admin.settings_changed",
+]
+
+RESOURCE_TYPES = [
+    "application",
+    "certificate",
+    "cat72_test",
+    "boundary",
+    "user",
+    "apikey",
+    "session",
+]
+
+
+# ---------------------------------------------------------------------------
+# Core logging utility
+# ---------------------------------------------------------------------------
+
+def _compute_hash(event_id: int, timestamp: str, user_email: str, action: str,
+                  resource_type: str, resource_id: str, details: Any) -> str:
+    """SHA-256 hash of the event's critical fields for integrity chaining."""
+    payload = f"{event_id}|{timestamp}|{user_email}|{action}|{resource_type}|{resource_id}|{json.dumps(details, sort_keys=True, default=str)}"
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
+def log_event(
+    action: str,
+    resource_type: str = None,
+    resource_id: str = None,
+    details: dict = None,
+    user_id: int = None,
+    user_email: str = None,
+    user_role: str = None,
+    ip_address: str = None,
+    db: Session = None,
 ):
-    """Get audit log entries (admin only)"""
-    query = select(AuditLog)
-    
+    """
+    Record an audit event. Call this from any route handler.
+
+    Usage:
+        from audit import log_event
+
+        log_event(
+            action="application.approved",
+            resource_type="application",
+            resource_id=str(app.id),
+            details={"new_state": "approved", "org": app.organization_name},
+            user_email=current_user.email,
+            user_role=current_user.role,
+            db=db,
+        )
+
+    If db is None, a new session is opened and committed automatically.
+    """
+    _own_session = db is None
+    if _own_session:
+        from sqlalchemy.orm import sessionmaker
+        SessionLocal = sessionmaker(bind=get_engine())
+        db = SessionLocal()
+
+    try:
+        now = datetime.now(timezone.utc)
+        event = AuditEvent(
+            timestamp     = now,
+            user_id       = user_id,
+            user_email    = user_email or "system",
+            user_role     = user_role,
+            action        = action,
+            resource_type = resource_type,
+            resource_id   = str(resource_id) if resource_id else None,
+            details       = details or {},
+            ip_address    = ip_address,
+        )
+        db.add(event)
+        db.flush()  # get the ID
+
+        # Compute integrity hash
+        event.log_hash = _compute_hash(
+            event.id,
+            now.isoformat(),
+            event.user_email,
+            event.action,
+            event.resource_type or "",
+            event.resource_id or "",
+            event.details,
+        )
+
+        if _own_session:
+            db.commit()
+        else:
+            db.flush()
+
+    except Exception as e:
+        print(f"[audit] Failed to log event '{action}': {e}")
+        if _own_session:
+            db.rollback()
+    finally:
+        if _own_session:
+            db.close()
+
+
+def log_event_from_request(
+    request: Request,
+    action: str,
+    current_user=None,
+    resource_type: str = None,
+    resource_id: str = None,
+    details: dict = None,
+    db: Session = None,
+):
+    """Convenience wrapper that extracts IP and user info from request/current_user."""
+    ip = request.headers.get("x-forwarded-for", request.client.host if request.client else None)
+    log_event(
+        action        = action,
+        resource_type = resource_type,
+        resource_id   = resource_id,
+        details       = details,
+        user_id       = getattr(current_user, "id", None),
+        user_email    = getattr(current_user, "email", None),
+        user_role     = getattr(current_user, "role", None),
+        ip_address    = ip,
+        db            = db,
+    )
+
+
+# ---------------------------------------------------------------------------
+# Auth dependency (reuse your existing pattern)
+# ---------------------------------------------------------------------------
+
+# This imports your existing get_current_user dependency.
+# Adjust the import path to match your project structure.
+try:
+    from auth import get_current_user, get_current_admin_user as get_current_admin
+except ImportError:
+    try:
+        from routers.auth import get_current_user, get_current_admin_user as get_current_admin
+    except ImportError:
+        # Fallback stubs -- replace with your actual auth dependencies
+        async def get_current_user():
+            raise HTTPException(status_code=401, detail="Auth not configured")
+        async def get_current_admin():
+            raise HTTPException(status_code=401, detail="Auth not configured")
+
+
+# ---------------------------------------------------------------------------
+# Router
+# ---------------------------------------------------------------------------
+
+router = APIRouter(prefix="/api/audit", tags=["audit"])
+
+
+# GET /api/audit/logs
+@router.get("/logs")
+def get_audit_logs(
+    action:        Optional[str] = Query(None),
+    resource_type: Optional[str] = Query(None),
+    user_email:    Optional[str] = Query(None),
+    date_from:     Optional[str] = Query(None),
+    date_to:       Optional[str] = Query(None),
+    limit:         int           = Query(50, ge=1, le=10000),
+    offset:        int           = Query(0, ge=0),
+    db:            Session       = Depends(get_session),
+    current_user                 = Depends(get_current_user),
+):
+    """Full paginated audit log. Admins see all events; regular users see only their own."""
+    conditions = []
+    params = {}
+
+    # Role gate: non-admins only see their own events
+    if getattr(current_user, "role", None) not in ("admin", "auditor"):
+        conditions.append("user_email = :email_gate")
+        params["email_gate"] = current_user.email
+
     if action:
-        query = query.where(AuditLog.action == action)
+        conditions.append("action = :action")
+        params["action"] = action
+
     if resource_type:
-        query = query.where(AuditLog.resource_type == resource_type)
-    if user_email:
-        query = query.where(AuditLog.user_email.ilike(f"%{user_email}%"))
+        conditions.append("resource_type = :resource_type")
+        params["resource_type"] = resource_type
+
+    if user_email and getattr(current_user, "role", None) in ("admin", "auditor"):
+        conditions.append("user_email ILIKE :user_email")
+        params["user_email"] = f"%{user_email}%"
+
     if date_from:
-        try:
-            dt = datetime.fromisoformat(date_from.replace('Z', '+00:00')).replace(tzinfo=None)
-            query = query.where(AuditLog.timestamp >= dt)
-        except ValueError:
-            pass
+        conditions.append("timestamp >= :date_from")
+        params["date_from"] = date_from
+
     if date_to:
-        try:
-            dt = datetime.fromisoformat(date_to.replace('Z', '+00:00')).replace(tzinfo=None)
-            query = query.where(AuditLog.timestamp <= dt)
-        except ValueError:
-            pass
-    
-    # Get total count
-    count_query = select(func.count()).select_from(query.subquery())
-    total_result = await db.execute(count_query)
-    total = total_result.scalar() or 0
-    
-    # Get paginated results
-    query = query.order_by(desc(AuditLog.timestamp)).offset(offset).limit(limit)
-    result = await db.execute(query)
-    logs = result.scalars().all()
-    
+        conditions.append("timestamp <= :date_to")
+        params["date_to"] = date_to
+
+    where = ("WHERE " + " AND ".join(conditions)) if conditions else ""
+
+    count_sql = text(f"SELECT COUNT(*) FROM audit_events {where}")
+    total = db.execute(count_sql, params).scalar() or 0
+
+    logs_sql = text(f"""
+        SELECT id, timestamp, user_email, user_role, action,
+               resource_type, resource_id, details, ip_address, log_hash
+        FROM audit_events
+        {where}
+        ORDER BY timestamp DESC
+        LIMIT :limit OFFSET :offset
+    """)
+    rows = db.execute(logs_sql, {**params, "limit": limit, "offset": offset}).fetchall()
+
     return {
-        "logs": [
-            {
-                "id": log.id,
-                "timestamp": log.timestamp.isoformat() if log.timestamp else None,
-                "user_email": log.user_email,
-                "action": log.action,
-                "resource_type": log.resource_type,
-                "resource_id": log.resource_id,
-                "details": log.details,
-                "log_hash": log.log_hash,
-            }
-            for log in logs
-        ],
+        "logs":  [_row_to_dict(r) for r in rows],
         "total": total,
         "limit": limit,
         "offset": offset,
     }
 
 
-@router.get("/actions", summary="List distinct audit actions")
-async def get_action_types(
-    db: AsyncSession = Depends(get_db),
-    user: dict = Depends(require_role(["admin"])),
+# GET /api/audit/admin-logs  (Dashboard admin activity feed)
+@router.get("/admin-logs")
+def get_admin_logs(
+    limit:       int     = Query(8, ge=1, le=100),
+    offset:      int     = Query(0, ge=0),
+    db:          Session = Depends(get_session),
+    current_user         = Depends(get_current_user),
 ):
-    """Get distinct action types for filter dropdown"""
-    result = await db.execute(
-        select(AuditLog.action).distinct().order_by(AuditLog.action)
-    )
-    actions = [r[0] for r in result.all() if r[0]]
-    return {"actions": actions}
+    """Recent activity feed for the admin dashboard."""
+    if getattr(current_user, "role", None) not in ("admin", "auditor"):
+        raise HTTPException(status_code=403, detail="Admin access required")
 
+    rows = db.execute(text("""
+        SELECT id, timestamp, user_email, user_role, action,
+               resource_type, resource_id, details, ip_address, log_hash
+        FROM audit_events
+        ORDER BY timestamp DESC
+        LIMIT :limit OFFSET :offset
+    """), {"limit": limit, "offset": offset}).fetchall()
 
-@router.get("/resource-types", summary="List distinct resource types")
-async def get_resource_types(
-    db: AsyncSession = Depends(get_db),
-    user: dict = Depends(require_role(["admin"])),
-):
-    """Get distinct resource types for filter dropdown"""
-    result = await db.execute(
-        select(AuditLog.resource_type).distinct().order_by(AuditLog.resource_type)
-    )
-    types = [r[0] for r in result.all() if r[0]]
-    return {"resource_types": types}
+    total = db.execute(text("SELECT COUNT(*) FROM audit_events")).scalar() or 0
 
-
-
-@router.get("/my-logs", summary="Get own audit log entries")
-async def get_my_audit_logs(
-    action: str = Query(None),
-    limit: int = Query(50, le=200),
-    offset: int = Query(0),
-    db: AsyncSession = Depends(get_db),
-    user: dict = Depends(get_current_user),
-):
-    """Get audit log entries for the current user"""
-    query = select(AuditLog).where(AuditLog.user_email == user.get("email"))
-    
-    if action:
-        query = query.where(AuditLog.action == action)
-    
-    count_query = select(func.count()).select_from(query.subquery())
-    total_result = await db.execute(count_query)
-    total = total_result.scalar() or 0
-    
-    query = query.order_by(desc(AuditLog.timestamp)).offset(offset).limit(limit)
-    result = await db.execute(query)
-    logs = result.scalars().all()
-    
     return {
-        "logs": [
-            {
-                "id": log.id,
-                "timestamp": log.timestamp.isoformat() if log.timestamp else None,
-                "action": log.action,
-                "resource_type": log.resource_type,
-                "resource_id": log.resource_id,
-                "details": log.details or {},
-            }
-            for log in logs
-        ],
+        "logs":  [_row_to_dict(r) for r in rows],
         "total": total,
     }
 
-@router.get("/verify", summary="Verify audit log integrity")
-async def verify_audit_integrity(
-    limit: int = Query(1000, le=5000),
-    db: AsyncSession = Depends(get_db),
-    user: dict = Depends(require_role(["admin"])),
+
+# GET /api/audit/my-logs  (Dashboard user's own activity)
+@router.get("/my-logs")
+def get_my_logs(
+    limit:       int     = Query(5, ge=1, le=100),
+    offset:      int     = Query(0, ge=0),
+    db:          Session = Depends(get_session),
+    current_user         = Depends(get_current_user),
 ):
-    """Recompute hashes for audit entries and check for tampering"""
-    from datetime import datetime as dt
-    result = await db.execute(
-        select(AuditLog).order_by(AuditLog.id.desc()).limit(limit)
-    )
-    logs = result.scalars().all()
-    
-    logs = list(reversed(logs))  # oldest first for chain check
-    total = len(logs)
+    """The current user's own audit events."""
+    rows = db.execute(text("""
+        SELECT id, timestamp, user_email, user_role, action,
+               resource_type, resource_id, details, ip_address, log_hash
+        FROM audit_events
+        WHERE user_email = :email
+        ORDER BY timestamp DESC
+        LIMIT :limit OFFSET :offset
+    """), {"email": current_user.email, "limit": limit, "offset": offset}).fetchall()
+
+    total = db.execute(text("""
+        SELECT COUNT(*) FROM audit_events WHERE user_email = :email
+    """), {"email": current_user.email}).scalar() or 0
+
+    return {
+        "logs":  [_row_to_dict(r) for r in rows],
+        "total": total,
+    }
+
+
+# GET /api/audit/actions  (filter dropdown options)
+@router.get("/actions")
+def get_audit_actions(current_user = Depends(get_current_user)):
+    return {"actions": ACTIONS}
+
+
+# GET /api/audit/resource-types  (filter dropdown options)
+@router.get("/resource-types")
+def get_resource_types(current_user = Depends(get_current_user)):
+    return {"resource_types": RESOURCE_TYPES}
+
+
+# GET /api/audit/verify  (integrity chain verification)
+@router.get("/verify")
+def verify_audit_integrity(
+    limit:       int     = Query(5000, ge=1, le=50000),
+    db:          Session = Depends(get_session),
+    current_user         = Depends(get_current_user),
+):
+    """
+    Re-computes the hash for each audit event and compares it to the stored hash.
+    Returns a summary of valid/invalid entries.
+    Used by ActivityPage to display chain integrity status.
+    """
+    if getattr(current_user, "role", None) not in ("admin", "auditor"):
+        raise HTTPException(status_code=403, detail="Admin access required")
+
+    rows = db.execute(text("""
+        SELECT id, timestamp, user_email, action, resource_type, resource_id, details, log_hash
+        FROM audit_events
+        ORDER BY id ASC
+        LIMIT :limit
+    """), {"limit": limit}).fetchall()
+
     valid = 0
     invalid = 0
-    chain_breaks = 0
-    invalid_ids = []
-    prev_hash = "0" * 16
+    tampered = []
 
-    for log in logs:
-        # Check chain link
-        if log.prev_hash and log.prev_hash != prev_hash:
-            chain_breaks += 1
-            if len(invalid_ids) < 20:
-                invalid_ids.append({"id": log.id, "type": "chain_break", "expected_prev": prev_hash, "actual_prev": log.prev_hash})
-
-        # Check content hash (try both old format and new chained format)
-        old_content = json.dumps({
-            "action": log.action,
-            "resource_type": log.resource_type,
-            "resource_id": log.resource_id,
-            "user_id": log.user_id,
-            "user_email": log.user_email,
-            "details": log.details,
-            "timestamp": log.timestamp.isoformat() if log.timestamp else None,
-        }, sort_keys=True)
-        old_expected = hashlib.sha256(old_content.encode()).hexdigest()[:16]
-
-        new_content = json.dumps({
-            "prev_hash": log.prev_hash or "0" * 16,
-            "action": log.action,
-            "resource_type": log.resource_type,
-            "resource_id": log.resource_id,
-            "user_id": log.user_id,
-            "user_email": log.user_email,
-            "details": log.details,
-            "timestamp": log.timestamp.isoformat() if log.timestamp else None,
-        }, sort_keys=True)
-        new_expected = hashlib.sha256(new_content.encode()).hexdigest()[:16]
-
-        if log.log_hash in (old_expected, new_expected):
+    for row in rows:
+        expected = _compute_hash(
+            row.id,
+            row.timestamp.isoformat() if hasattr(row.timestamp, 'isoformat') else str(row.timestamp),
+            row.user_email or "",
+            row.action,
+            row.resource_type or "",
+            row.resource_id or "",
+            row.details or {},
+        )
+        if row.log_hash and row.log_hash == expected:
             valid += 1
         else:
             invalid += 1
-            if len(invalid_ids) < 20:
-                invalid_ids.append({"id": log.id, "type": "content_tamper", "expected": new_expected, "stored": log.log_hash})
-
-        prev_hash = log.log_hash or prev_hash
+            tampered.append({"id": row.id, "action": row.action})
 
     return {
-        "total_checked": total,
-        "valid": valid,
-        "invalid": invalid,
-        "chain_breaks": chain_breaks,
-        "integrity": "passed" if invalid == 0 and chain_breaks == 0 else "failed",
-        "invalid_entries": invalid_ids,
+        "integrity": "passed" if invalid == 0 else "failed",
+        "checked":   len(rows),
+        "valid":     valid,
+        "invalid":   invalid,
+        "tampered":  tampered[:20],  # cap to avoid huge responses
     }
 
 
+# ---------------------------------------------------------------------------
+# Internal helper
+# ---------------------------------------------------------------------------
 
-@router.get("/verify-chain", summary="Verify audit log integrity")
-async def verify_audit_chain(
-    db: AsyncSession = Depends(get_db),
-    user: dict = Depends(require_role(["admin"]))
-):
-    """Verify the entire audit hash chain is intact. Returns broken links if tampered."""
-    result = await db.execute(
-        select(AuditLog).order_by(AuditLog.id.asc())
-    )
-    logs = result.scalars().all()
-    
-    if not logs:
-        return {"status": "empty", "message": "No audit entries to verify"}
-    
-    broken_links = []
-    prev_hash = "0" * 16
-    
-    for log in logs:
-        # Reconstruct expected hash
-        payload = f"{log.id}:{log.timestamp}:{log.action}:{log.user_email}:{log.resource_type}:{log.resource_id}:{prev_hash}"
-        expected_hash = hashlib.sha256(payload.encode()).hexdigest()[:16]
-        
-        if log.prev_hash != prev_hash:
-            broken_links.append({
-                "id": log.id,
-                "issue": "prev_hash mismatch",
-                "expected_prev": prev_hash,
-                "actual_prev": log.prev_hash
-            })
-        
-        prev_hash = log.log_hash
-    
+def _row_to_dict(row) -> dict:
+    ts = row.timestamp
     return {
-        "status": "intact" if not broken_links else "TAMPERED",
-        "total_entries": len(logs),
-        "broken_links": broken_links,
-        "latest_hash": logs[-1].log_hash if logs else None,
-        "verified_at": datetime.utcnow().isoformat()
+        "id":            row.id,
+        "timestamp":     ts.isoformat() if hasattr(ts, "isoformat") else str(ts),
+        "user_email":    row.user_email,
+        "user_role":     row.user_role,
+        "action":        row.action,
+        "resource_type": row.resource_type,
+        "resource_id":   row.resource_id,
+        "details":       row.details or {},
+        "ip_address":    row.ip_address,
+        "log_hash":      row.log_hash,
     }
 
 
-@router.post("/create-anchor", summary="Create tamper-proof hash anchor")
-async def create_anchor(
-    db: AsyncSession = Depends(get_db),
-    user: dict = Depends(require_role(["admin"]))
-):
-    """Snapshot the current chain state as an immutable anchor point."""
-    # Get latest audit entry
-    result = await db.execute(
-        select(AuditLog).order_by(AuditLog.id.desc()).limit(1)
-    )
-    latest = result.scalar_one_or_none()
-    if not latest:
-        return {"error": "No audit entries to anchor"}
-    
-    # Count total entries
-    count_result = await db.execute(select(AuditLog.id))
-    total = len(count_result.all())
-    
-    # Create HMAC signature using server secret
-    secret = os.environ.get("SECRET_KEY", "sentinel-authority-secret")
-    sig_payload = f"{latest.id}:{latest.log_hash}:{total}:{datetime.utcnow().isoformat()}"
-    signature = hmac.new(secret.encode(), sig_payload.encode(), hashlib.sha256).hexdigest()
-    
-    anchor = AuditAnchor(
-        last_audit_id=latest.id,
-        chain_hash=latest.log_hash,
-        entry_count=total,
-        anchor_signature=signature
-    )
-    db.add(anchor)
-    await db.commit()
-    await db.refresh(anchor)
-    
-    return {
-        "anchor_id": anchor.id,
-        "last_audit_id": anchor.last_audit_id,
-        "chain_hash": anchor.chain_hash,
-        "entry_count": anchor.entry_count,
-        "signature": anchor.anchor_signature,
-        "created_at": anchor.created_at.isoformat(),
-        "message": "Anchor created. This record is immutable and cannot be modified or deleted."
-    }
-
-
-@router.get("/anchors", summary="List all audit anchors")
-async def list_anchors(
-    db: AsyncSession = Depends(get_db),
-    user: dict = Depends(require_role(["admin"]))
-):
-    """List all hash anchor checkpoints."""
-    result = await db.execute(
-        select(AuditAnchor).order_by(AuditAnchor.id.desc())
-    )
-    anchors = result.scalars().all()
-    return [{
-        "id": a.id,
-        "created_at": a.created_at.isoformat(),
-        "last_audit_id": a.last_audit_id,
-        "chain_hash": a.chain_hash,
-        "entry_count": a.entry_count,
-        "signature": a.anchor_signature
-    } for a in anchors]
-
-
-@router.get("/verify-anchor/{anchor_id}", summary="Verify a specific anchor")
-async def verify_anchor(
-    anchor_id: int,
-    db: AsyncSession = Depends(get_db),
-    user: dict = Depends(require_role(["admin"]))
-):
-    """Verify an anchor matches current chain state at that point."""
-    result = await db.execute(select(AuditAnchor).where(AuditAnchor.id == anchor_id))
-    anchor = result.scalar_one_or_none()
-    if not anchor:
-        return {"error": "Anchor not found"}
-    
-    # Get the audit entry at the anchor point
-    audit_result = await db.execute(
-        select(AuditLog).where(AuditLog.id == anchor.last_audit_id)
-    )
-    audit_entry = audit_result.scalar_one_or_none()
-    if not audit_entry:
-        return {"status": "TAMPERED", "reason": "Referenced audit entry missing"}
-    
-    # Verify hash matches
-    hash_match = audit_entry.log_hash == anchor.chain_hash
-    
-    # Verify signature
-    secret = os.environ.get("SECRET_KEY", "sentinel-authority-secret")
-    
-    # Count entries up to anchor point
-    count_result = await db.execute(
-        select(AuditLog.id).where(AuditLog.id <= anchor.last_audit_id)
-    )
-    current_count = len(count_result.all())
-    count_match = current_count == anchor.entry_count
-    
-    return {
-        "anchor_id": anchor.id,
-        "hash_match": hash_match,
-        "count_match": count_match,
-        "status": "INTACT" if (hash_match and count_match) else "TAMPERED",
-        "expected_hash": anchor.chain_hash,
-        "actual_hash": audit_entry.log_hash,
-        "expected_count": anchor.entry_count,
-        "actual_count": current_count,
-        "reason": None if (hash_match and count_match) else (
-            "Hash mismatch - entries modified" if not hash_match else "Entry count mismatch - entries deleted"
-        )
-    }
-
-
-
-@router.get("/admin-logs", summary="Recent activity feed for admin dashboard")
-async def get_admin_logs(
-    limit: int = Query(8, le=100),
-    offset: int = Query(0),
-    db: AsyncSession = Depends(get_db),
-    user: dict = Depends(require_role(["admin"])),
-):
-    """Recent audit events for the admin dashboard activity feed."""
-    count_result = await db.execute(select(func.count()).select_from(AuditLog))
-    total = count_result.scalar() or 0
-
-    query = select(AuditLog).order_by(desc(AuditLog.timestamp)).offset(offset).limit(limit)
-    result = await db.execute(query)
-    logs = result.scalars().all()
-
-    return {
-        "logs": [
-            {
-                "id": log.id,
-                "timestamp": log.timestamp.isoformat() if log.timestamp else None,
-                "user_email": log.user_email,
-                "action": log.action,
-                "resource_type": log.resource_type,
-                "resource_id": log.resource_id,
-                "details": log.details or {},
-                "log_hash": log.log_hash,
-            }
-            for log in logs
-        ],
-        "total": total,
-    }
+# ===========================================================================
+# USAGE EXAMPLES -- paste these into your existing route handlers
+# ===========================================================================
+#
+# 1. LOGIN
+#    In your /api/auth/login handler, after successful auth:
+#
+#    log_event(
+#        action="user.login",
+#        resource_type="session",
+#        user_email=user.email,
+#        user_role=user.role,
+#        details={"method": "password"},
+#        db=db,
+#    )
+#
+# 2. APPLICATION APPROVED
+#    In your application approval handler:
+#
+#    log_event_from_request(
+#        request=request,
+#        action="application.approved",
+#        current_user=current_user,
+#        resource_type="application",
+#        resource_id=str(app.id),
+#        details={"org": app.organization_name, "system": app.system_name, "new_state": "approved"},
+#        db=db,
+#    )
+#
+# 3. CERTIFICATE ISSUED
+#    In your certificate issuance handler:
+#
+#    log_event(
+#        action="certificate.issued",
+#        resource_type="certificate",
+#        resource_id=cert.certificate_number,
+#        details={"org": app.organization_name, "system": app.system_name},
+#        user_email=current_user.email,
+#        user_role=current_user.role,
+#        db=db,
+#    )
+#
+# 4. CAT-72 STARTED
+#    In your cat72 start handler:
+#
+#    log_event(
+#        action="cat72.started",
+#        resource_type="cat72_test",
+#        resource_id=test.test_id,
+#        details={"system": test.system_name, "duration_hours": test.duration_hours},
+#        user_email=current_user.email,
+#        user_role=current_user.role,
+#        db=db,
+#    )
+#
+# 5. BOUNDARY COMMITTED (from PolicyEngine)
+#    In your /api/envelo/boundaries/configure handler:
+#
+#    log_event(
+#        action="boundary.committed",
+#        resource_type="boundary",
+#        resource_id=str(system_id),
+#        details={"domain": domain, "violation_action": violation_action, "boundaries": boundaries},
+#        user_email=current_user.email,
+#        db=db,
+#    )
+#
+# 6. ROLE CHANGED (UserManagement)
+#
+#    log_event(
+#        action="user.role_changed",
+#        resource_type="user",
+#        resource_id=str(target_user.id),
+#        details={"target_email": target_user.email, "old_role": old_role, "new_role": new_role},
+#        user_email=current_user.email,
+#        user_role=current_user.role,
+#        db=db,
+#    )

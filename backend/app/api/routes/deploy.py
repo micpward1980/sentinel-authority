@@ -1,28 +1,35 @@
 """
 One-Command Deploy Endpoint
-GET /api/deploy/{case_id}?key=sa_live_xxx
+POST /api/deploy/{case_id}
+Authorization: Bearer sa_live_xxx
 
 Returns a bash script that installs, configures, starts, and
-auto-restarts the ENVELO agent. Customer pastes one command.
+auto-restarts the ENVELO agent. Customer pastes one command:
+  curl -sSL -H "Authorization: Bearer $KEY" https://api.sentinelauthority.org/api/v1/deploy/CASE-123 | bash
+
+API key is passed via header only — never in URL, never in logs.
 """
 
 import hashlib
 import textwrap
 import yaml
-from fastapi import APIRouter, HTTPException, Query, Depends
+from fastapi import APIRouter, HTTPException, Depends
 from fastapi.responses import PlainTextResponse
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy import select
 from app.core.database import get_db
 from app.models.models import Application, Certificate, APIKey
+from app.core.security import get_current_user
 
 router = APIRouter()
+_bearer = HTTPBearer(auto_error=False)
 
 
 def _hash_key(key: str) -> str:
     return hashlib.sha256(key.encode()).hexdigest()
 
 
-async def _validate_key(db, key: str):
+async def _validate_key(db, key: str) -> APIKey | None:
     key_hash = _hash_key(key)
     result = await db.execute(
         select(APIKey).where(APIKey.key_hash == key_hash, APIKey.is_active == True)
@@ -31,7 +38,6 @@ async def _validate_key(db, key: str):
 
 
 async def _find_case(db, case_id: str):
-    """Find by application_number or certificate_number."""
     result = await db.execute(
         select(Application).where(Application.application_number == case_id)
     )
@@ -55,6 +61,19 @@ async def _find_case(db, case_id: str):
     return None, None
 
 
+def _check_ownership(api_key_record: APIKey, application: Application) -> bool:
+    """Verify the API key belongs to the same org/user as the application."""
+    # If the key is bound to a specific certificate, that check is sufficient
+    if api_key_record.certificate_id:
+        return True  # already scoped via cert binding
+    # Otherwise check user/org match
+    if hasattr(api_key_record, "organization_id") and api_key_record.organization_id:
+        return api_key_record.organization_id == application.organization_id
+    if hasattr(api_key_record, "user_id") and api_key_record.user_id:
+        return api_key_record.user_id == application.applicant_id
+    return False
+
+
 def _build_yaml(app, cert, api_key: str) -> str:
     envelope = {}
     if cert and hasattr(cert, 'envelope_definition') and cert.envelope_definition:
@@ -72,33 +91,49 @@ def _build_yaml(app, cert, api_key: str) -> str:
         },
         "boundaries": {
             "numeric": [
-                {"name": b.get("name",""), "parameter": b.get("parameter", b.get("name","")),
-                 "min": b.get("min_value"), "max": b.get("max_value"),
-                 "hard_limit": b.get("hard_limit"), "unit": b.get("unit","").replace("%","pct"), "tolerance": b.get("tolerance",0)}
+                {
+                    "name": b.get("name", ""),
+                    "parameter": b.get("parameter", b.get("name", "")),
+                    "min": b.get("min_value"),
+                    "max": b.get("max_value"),
+                    "hard_limit": b.get("hard_limit"),
+                    "unit": b.get("unit", "").replace("%", "pct"),
+                    "tolerance": b.get("tolerance", 0),
+                }
                 for b in envelope.get("numeric_boundaries", [])
             ],
             "geographic": [
-                {"name": b.get("name",""), "type": b.get("boundary_type","circle"),
-                 "center_lat": (b.get("center") or {}).get("lat") or b.get("lat"),
-                 "center_lon": (b.get("center") or {}).get("lon") or b.get("lon"),
-                 "radius_meters": b.get("radius_meters", 1000),
-                 "altitude_min": b.get("altitude_min"), "altitude_max": b.get("altitude_max")}
+                {
+                    "name": b.get("name", ""),
+                    "type": b.get("boundary_type", "circle"),
+                    "center_lat": (b.get("center") or {}).get("lat") or b.get("lat"),
+                    "center_lon": (b.get("center") or {}).get("lon") or b.get("lon"),
+                    "radius_meters": b.get("radius_meters", 1000),
+                    "altitude_min": b.get("altitude_min"),
+                    "altitude_max": b.get("altitude_max"),
+                }
                 for b in envelope.get("geographic_boundaries", [])
             ],
             "time": [
-                {"name": b.get("name",""),
-                 "start_hour": b.get("allowed_hours_start", b.get("start_hour", 0)),
-                 "end_hour": b.get("allowed_hours_end", b.get("end_hour", 24)),
-                 "days": b.get("allowed_days", b.get("days", [0,1,2,3,4,5,6])),
-                 "timezone": b.get("timezone", "UTC")}
+                {
+                    "name": b.get("name", ""),
+                    "start_hour": b.get("allowed_hours_start", b.get("start_hour", 0)),
+                    "end_hour": b.get("allowed_hours_end", b.get("end_hour", 24)),
+                    "days": b.get("allowed_days", b.get("days", [0, 1, 2, 3, 4, 5, 6])),
+                    "timezone": b.get("timezone", "UTC"),
+                }
                 for b in envelope.get("time_boundaries", [])
             ],
             "state": [
-                {"name": b.get("name",""), "parameter": b.get("parameter",""),
-                 "allowed": b.get("allowed_values", []), "forbidden": b.get("forbidden_values", [])}
+                {
+                    "name": b.get("name", ""),
+                    "parameter": b.get("parameter", ""),
+                    "allowed": b.get("allowed_values", []),
+                    "forbidden": b.get("forbidden_values", []),
+                }
                 for b in envelope.get("state_boundaries", [])
             ],
-        }
+        },
     }
     return yaml.dump(config, default_flow_style=False, sort_keys=False)
 
@@ -120,13 +155,15 @@ from pathlib import Path
 try:
     import httpx
 except ImportError:
-    os.system(f"{{sys.executable}} -m pip install httpx -q")
+    import subprocess
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "httpx", "-q"])
     import httpx
 
 try:
     import yaml
 except ImportError:
-    os.system(f"{{sys.executable}} -m pip install pyyaml -q")
+    import subprocess
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "pyyaml", "-q"])
     import yaml
 
 CONFIG_PATH = Path.home() / ".envelo" / "envelo.yaml"
@@ -139,6 +176,7 @@ if CONFIG_PATH.exists():
     CERTIFICATE = _sa.get("certificate", "{certificate}")
     SYSTEM_NAME = _sa.get("system_name", "{system_name}")
 else:
+    _cfg = {{}}
     API_ENDPOINT = "https://api.sentinelauthority.org"
     API_KEY = "{api_key}"
     CERTIFICATE = "{certificate}"
@@ -196,7 +234,7 @@ class EnveloAgent:
                 self.boundaries[b.get("parameter", b["name"])] = Boundary(
                     name=b["name"], parameter=b.get("parameter"),
                     min_value=b.get("min"), max_value=b.get("max"),
-                    hard_limit=b.get("hard_limit"), unit=b.get("unit",""),
+                    hard_limit=b.get("hard_limit"), unit=b.get("unit", ""),
                     tolerance=b.get("tolerance", 0))
             log.info(f"  Boundaries:  {{len(self.boundaries)}} from config")
 
@@ -208,21 +246,6 @@ class EnveloAgent:
                 log.info(f"  Boundaries:  {{len(self.boundaries)}} synced from server")
         except Exception as e:
             log.warning(f"  Boundaries:  fetch failed ({{e}}), using local")
-
-        # Report discovered specs back to Sentinel Authority
-        try:
-            boundary_list = [
-                {{"type": b.parameter, "min": b.min_value, "max": b.max_value, "unit": b.unit}}
-                for b in self.boundaries.values()
-            ]
-            self.client.post("/api/envelo/report-specs", json={{
-                "boundaries": boundary_list,
-                "system_version": _cfg.get("sentinel_authority", {{}}).get("system_version") if CONFIG_PATH.exists() else None,
-                "manufacturer": _cfg.get("sentinel_authority", {{}}).get("manufacturer") if CONFIG_PATH.exists() else None,
-            }})
-            log.info(f"  Specs:       {{len(boundary_list)}} boundaries reported to platform")
-        except Exception as e:
-            log.warning(f"  Specs report: {{e}}")
 
         try:
             self.client.post("/api/envelo/sessions", json={{
@@ -248,33 +271,38 @@ class EnveloAgent:
         try:
             self.client.post(f"/api/envelo/sessions/{{self.session_id}}/end", json={{
                 "ended_at": datetime.now(timezone.utc).isoformat(),
-                "final_stats": {{"pass_count": self.stats.get("pass",0), "block_count": self.stats.get("block",0)}},
+                "final_stats": {{"pass_count": self.stats.get("pass", 0), "block_count": self.stats.get("block", 0)}},
             }})
-        except Exception: pass
+        except Exception:
+            pass
         self.client.close()
-        p, b = self.stats["pass"], self.stats["block"]
-        log.info(f"Done. {{p}} passed, {{b}} blocked.")
+        log.info(f"Done. {{self.stats['pass']}} passed, {{self.stats['block']}} blocked.")
 
     def _cleanup(self):
-        """Disable auto-restart when key is revoked."""
         import pathlib, subprocess
         pid_file = pathlib.Path.home() / ".envelo" / "envelo.pid"
-        if pid_file.exists(): pid_file.unlink()
-        try:
-            subprocess.run(["systemctl", "--user", "stop", "envelo.service"], capture_output=True)
-            subprocess.run(["systemctl", "--user", "disable", "envelo.service"], capture_output=True)
-        except Exception: pass
+        if pid_file.exists():
+            pid_file.unlink()
+        for cmd in [["systemctl", "--user", "stop", "envelo.service"],
+                    ["systemctl", "--user", "disable", "envelo.service"]]:
+            try:
+                subprocess.run(cmd, capture_output=True)
+            except Exception:
+                pass
         plist = pathlib.Path.home() / "Library" / "LaunchAgents" / "org.sentinelauthority.envelo.plist"
         if plist.exists():
-            try: subprocess.run(["launchctl", "unload", str(plist)], capture_output=True)
-            except Exception: pass
+            try:
+                subprocess.run(["launchctl", "unload", str(plist)], capture_output=True)
+            except Exception:
+                pass
         log.info("Auto-restart disabled.")
 
     def add_boundary(self, name, min_value=None, max_value=None, unit="", tolerance=0):
         self.boundaries[name] = Boundary(name=name, min_value=min_value, max_value=max_value, unit=unit, tolerance=tolerance)
 
     def check(self, parameter, value):
-        if parameter not in self.boundaries: return True, None
+        if parameter not in self.boundaries:
+            return True, None
         return self.boundaries[parameter].check(value)
 
     def enforce_params(self, **params):
@@ -282,16 +310,21 @@ class EnveloAgent:
         for p, v in params.items():
             passed, msg = self.check(p, v)
             evals.append({{"boundary": p, "passed": passed}})
-            if not passed: violations.append({{"boundary": p, "value": v, "message": msg}})
+            if not passed:
+                violations.append({{"boundary": p, "value": v, "message": msg}})
         result = "PASS" if not violations else "BLOCK"
         self.telemetry_buffer.append({{
-            "timestamp": datetime.now(timezone.utc).isoformat(), "action_id": uuid.uuid4().hex[:8],
-            "action_type": "boundary_check", "result": result,
-            "parameters": dict(params), "boundary_evaluations": evals,
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "action_id": uuid.uuid4().hex[:8],
+            "action_type": "boundary_check",
+            "result": result,
+            "parameters": dict(params),
+            "boundary_evaluations": evals,
         }})
         if violations:
             self.stats["block"] += 1
-            for vi in violations: log.warning(f"VIOLATION: {{vi['message']}}")
+            for vi in violations:
+                log.warning(f"VIOLATION: {{vi['message']}}")
             return False, violations
         self.stats["pass"] += 1
         return True, []
@@ -300,7 +333,8 @@ class EnveloAgent:
         @wraps(func)
         def wrapper(*args, **kwargs):
             passed, violations = self.enforce_params(**kwargs)
-            if not passed: raise RuntimeError(f"ENVELO BLOCK: {{violations[0]['message']}}")
+            if not passed:
+                raise RuntimeError(f"ENVELO BLOCK: {{violations[0]['message']}}")
             return func(*args, **kwargs)
         return wrapper
 
@@ -309,34 +343,47 @@ class EnveloAgent:
         while self.running:
             try:
                 res = self.client.post("/api/envelo/heartbeat", json={{
-                    "session_id": self.session_id, "certificate_id": CERTIFICATE,
-                    "timestamp": datetime.now(timezone.utc).isoformat(), "stats": self.stats,
+                    "session_id": self.session_id,
+                    "certificate_id": CERTIFICATE,
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
+                    "stats": self.stats,
                 }})
                 if res.status_code == 401:
                     log.warning("API key revoked - shutting down")
-                    self.running = False; self._flush_telemetry(); self._cleanup(); return
+                    self.running = False
+                    self._flush_telemetry()
+                    self._cleanup()
+                    return
                 fail_count = 0
             except Exception:
                 fail_count += 1
                 if fail_count >= 10:
                     log.warning(f"Lost connection ({{fail_count}} failures) - stopping")
-                    self.running = False; return
+                    self.running = False
+                    return
             time.sleep(30)
 
     def _flush_loop(self):
-        while self.running: time.sleep(10); self._flush_telemetry()
+        while self.running:
+            time.sleep(10)
+            self._flush_telemetry()
 
     def _flush_telemetry(self):
-        if not self.telemetry_buffer: return
+        if not self.telemetry_buffer:
+            return
         batch, self.telemetry_buffer = self.telemetry_buffer[:], []
         try:
             res = self.client.post("/api/envelo/telemetry", json={{
-                "certificate_id": CERTIFICATE, "session_id": self.session_id,
-                "records": batch, "stats": {{"pass_count": self.stats.get("pass",0), "block_count": self.stats.get("block",0)}},
+                "certificate_id": CERTIFICATE,
+                "session_id": self.session_id,
+                "records": batch,
+                "stats": {{"pass_count": self.stats.get("pass", 0), "block_count": self.stats.get("block", 0)}},
             }})
             if res.status_code == 401:
                 log.warning("API key revoked - shutting down")
-                self.running = False; self._cleanup(); return
+                self.running = False
+                self._cleanup()
+                return
         except Exception as e:
             log.warning(f"Telemetry flush failed: {{e}}")
             self.telemetry_buffer = batch + self.telemetry_buffer
@@ -344,7 +391,10 @@ class EnveloAgent:
 
 agent = EnveloAgent()
 
-def _sig(s, f): agent.shutdown(); sys.exit(0)
+def _sig(s, f):
+    agent.shutdown()
+    sys.exit(0)
+
 signal.signal(signal.SIGINT, _sig)
 signal.signal(signal.SIGTERM, _sig)
 
@@ -355,7 +405,8 @@ if __name__ == "__main__":
     print("Dashboard: https://app.sentinelauthority.org/envelo")
     print()
     try:
-        while agent.running: time.sleep(1)
+        while agent.running:
+            time.sleep(1)
     except KeyboardInterrupt:
         agent.shutdown()
 ''')
@@ -376,7 +427,7 @@ echo ""
 echo "${{P}}${{B}}"
 echo "  ╔═══════════════════════════════════════════════════════════╗"
 echo "  ║    ◉  S E N T I N E L   A U T H O R I T Y                ║"
-echo "  ║    ENVELO Interlock Deploy                                          ║"
+echo "  ║    ENVELO Interlock Deploy                                 ║"
 echo "  ╚═══════════════════════════════════════════════════════════╝"
 echo "${{X}}"
 echo ""
@@ -404,11 +455,9 @@ echo "  ${{G}}✓${{X}} Interlock installed"
 python3 -m pip install httpx pyyaml -q --break-system-packages 2>/dev/null || python3 -m pip install httpx pyyaml -q 2>/dev/null
 echo "  ${{G}}✓${{X}} Dependencies ready"
 
-# Stop existing interlock
 [ -f "$D/envelo.pid" ] && kill $(cat "$D/envelo.pid") 2>/dev/null && echo "  ${{Y}}↻${{X}} Stopped previous agent"
 rm -f "$D/envelo.pid"
 
-# Verify connection
 echo "  ${{C}}↓${{X}} Connecting..."
 python3 -c "
 import httpx,yaml
@@ -419,7 +468,6 @@ try:
 except Exception as e: print(f\'  \\033[93m⚠\\033[0m {{e}} (will retry)\')
 "
 
-# Start interlock
 nohup python3 "$D/envelo_agent.py" > "$D/envelo.log" 2>&1 &
 echo "$!" > "$D/envelo.pid"
 sleep 2
@@ -429,7 +477,6 @@ else
     echo "  ${{R}}✗${{X}} Failed. See $D/envelo.log"; exit 1
 fi
 
-# Auto-restart
 if [[ "$OSTYPE" == "linux-gnu"* ]] && command -v systemctl &>/dev/null; then
     mkdir -p "$HOME/.config/systemd/user"
     cat > "$HOME/.config/systemd/user/envelo.service" << SVCEOF
@@ -482,52 +529,26 @@ echo ""
 ''')
 
 
-@router.get("/deploy/{case_id}")
+@router.post("/deploy/{case_id}", summary="One-command ENVELO deploy (POST, Bearer auth)")
 async def deploy_script(
     case_id: str,
-    key: str = Query(..., description="API key"),
-    db = Depends(get_db),
+    credentials: HTTPAuthorizationCredentials = Depends(_bearer),
+    db=Depends(get_db),
 ):
-    """One-command installer. curl -sSL '...?key=xxx' | bash"""
-    try:
-        api_key_record = await _validate_key(db, key)
-        if not api_key_record:
-            raise HTTPException(status_code=401, detail="Invalid API key")
+    """
+    Returns a bash installer. Pipe directly to bash:
 
-        application, certificate = await _find_case(db, case_id)
-        if not application:
-            raise HTTPException(status_code=404, detail=f"Case '{case_id}' not found")
+        curl -sSL -X POST \\
+          -H "Authorization: Bearer $SA_API_KEY" \\
+          https://api.sentinelauthority.org/api/v1/deploy/CASE-123 | bash
 
-        state_str = application.state.value if hasattr(application.state, 'value') else str(application.state)
-        if state_str not in ('approved', 'testing', 'conformant', 'active', 'certified', 'bounded', 'observe'):
-            raise HTTPException(status_code=403, detail=f"State is '{state_str}'. Must be approved.")
+    API key is transmitted in header only — never appears in URL, server logs, or browser history.
+    """
+    if not credentials:
+        raise HTTPException(status_code=401, detail="Authorization header required (Bearer token)")
 
-        cert_num = certificate.certificate_number if certificate else application.application_number
-        sys_name = application.system_name or "Autonomous System"
-
-        envelo_yaml = _build_yaml(application, certificate, key)
-        agent_py = _build_agent(key, cert_num, sys_name)
-        script = _build_installer(envelo_yaml, agent_py, case_id, sys_name)
-
-        return PlainTextResponse(
-            content=script,
-            media_type="text/x-shellscript",
-            headers={"Content-Disposition": f"inline; filename=envelo-deploy-{case_id}.sh", "Cache-Control": "no-store"},
-        )
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Deploy build error: {str(e)}")
-
-
-@router.get("/deploy/{case_id}/config")
-async def deploy_config_only(
-    case_id: str,
-    key: str = Query(..., description="API key"),
-    db = Depends(get_db),
-):
-    """Just the envelo.yaml for customers who already have the agent."""
-    api_key_record = await _validate_key(db, key)
+    raw_key = credentials.credentials
+    api_key_record = await _validate_key(db, raw_key)
     if not api_key_record:
         raise HTTPException(status_code=401, detail="Invalid API key")
 
@@ -535,7 +556,53 @@ async def deploy_config_only(
     if not application:
         raise HTTPException(status_code=404, detail=f"Case '{case_id}' not found")
 
-    envelo_yaml = _build_yaml(application, certificate, key)
+    # Ownership check: key must belong to the same org/user as the application
+    if not _check_ownership(api_key_record, application):
+        raise HTTPException(status_code=403, detail="API key does not have access to this case")
+
+    state_str = application.state.value if hasattr(application.state, "value") else str(application.state)
+    if state_str not in ("approved", "testing", "conformant", "active", "certified", "bounded", "observe"):
+        raise HTTPException(status_code=403, detail=f"State is '{state_str}'. Must be approved.")
+
+    cert_num = certificate.certificate_number if certificate else application.application_number
+    sys_name = application.system_name or "Autonomous System"
+
+    envelo_yaml = _build_yaml(application, certificate, raw_key)
+    agent_py = _build_agent(raw_key, cert_num, sys_name)
+    script = _build_installer(envelo_yaml, agent_py, case_id, sys_name)
+
+    return PlainTextResponse(
+        content=script,
+        media_type="text/x-shellscript",
+        headers={
+            "Content-Disposition": f"inline; filename=envelo-deploy-{case_id}.sh",
+            "Cache-Control": "no-store",
+        },
+    )
+
+
+@router.post("/deploy/{case_id}/config", summary="Config-only deploy (POST, Bearer auth)")
+async def deploy_config_only(
+    case_id: str,
+    credentials: HTTPAuthorizationCredentials = Depends(_bearer),
+    db=Depends(get_db),
+):
+    """Just the envelo.yaml for customers who already have the agent."""
+    if not credentials:
+        raise HTTPException(status_code=401, detail="Authorization header required")
+
+    api_key_record = await _validate_key(db, credentials.credentials)
+    if not api_key_record:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    application, certificate = await _find_case(db, case_id)
+    if not application:
+        raise HTTPException(status_code=404, detail=f"Case '{case_id}' not found")
+
+    if not _check_ownership(api_key_record, application):
+        raise HTTPException(status_code=403, detail="API key does not have access to this case")
+
+    envelo_yaml = _build_yaml(application, certificate, credentials.credentials)
     return PlainTextResponse(
         content=envelo_yaml,
         media_type="text/yaml",

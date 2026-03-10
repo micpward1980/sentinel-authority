@@ -53,6 +53,21 @@ logger = logging.getLogger("main")
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info("Starting Sentinel Authority Platform...")
+    # Production startup guard — fail fast if misconfigured
+    import os as _os_guard
+    if _os_guard.environ.get("ENVIRONMENT", "development") == "production":
+        _secret = (_os_guard.environ.get("SECRET_KEY") or "").strip()
+        if not _secret or len(_secret) < 32:
+            raise RuntimeError(
+                "FATAL: SECRET_KEY must be set to at least 32 characters in production. "
+                "Set the SECRET_KEY environment variable and redeploy."
+            )
+        if _os_guard.environ.get("DEBUG", "").lower() in ("1", "true", "yes"):
+            raise RuntimeError(
+                "FATAL: DEBUG=True in production is not allowed."
+            )
+    logger.info("Startup checks passed")
+
     await init_db()
     logger.info("Database initialized")
     import asyncio as _asyncio; _asyncio.create_task(scraper_loop())
@@ -79,10 +94,8 @@ async def lifespan(app: FastAPI):
             await conn.commit()
         except Exception as e:
             logger.warning(f"Org table migration: {e}")
-        
+        else:
             logger.info("Org schema migration complete")
-        except Exception as e:
-            logger.warning(f"Org schema note: {e}")
     
     # Backfill in separate connection
     async with engine.begin() as conn2:
@@ -175,7 +188,10 @@ async def lifespan(app: FastAPI):
                     count_result = await anchor_conn.execute(raw_text("SELECT COUNT(*) FROM audit_log"))
                     total = count_result.scalar()
                     import hmac as hmac_mod
-                    secret = os.environ.get("SECRET_KEY", "sentinel-authority-secret")
+                    secret = (os.environ.get("SECRET_KEY") or "").strip()
+                if not secret:
+                    logger.warning("SECRET_KEY not set — skipping auto audit anchor")
+                    need_anchor = False
                     sig_payload = f"{latest_row[0]}:{latest_row[1]}:{total}:{datetime.utcnow().isoformat()}"
                     signature = hmac_mod.new(secret.encode(), sig_payload.encode(), hashlib.sha256).hexdigest()
                     await anchor_conn.execute(raw_text(
@@ -682,8 +698,6 @@ async def start_backup_scheduler():
         start_linkedin_scheduler(renewal_scheduler)
         from x_poster import start_x_scheduler
         start_x_scheduler(renewal_scheduler)
-        from x_poster import start_x_scheduler
-        start_x_scheduler(renewal_scheduler)
         logger.info("[EXPOSURE] Agent scheduled — 7am Toronto daily")
         logger.info("[ENGAGEMENT] Agent scheduled — every 30 minutes")
         logger.info("[RENEWAL] Daily cron scheduled — 6am UTC")
@@ -949,9 +963,7 @@ async def mark_notifications_read(
 
 
 
-@app.api_route("/health", methods=["GET", "HEAD"])
-async def health_check():
-    return {"status": "healthy"}
+
 # Password-protected API docs
 import secrets
 from fastapi.responses import HTMLResponse
@@ -996,8 +1008,3 @@ async def test_x_post():
     await run_daily_x_post()
     return {"status": "fired"}
 
-@app.post("/api/admin/x/test-post", include_in_schema=False)
-async def test_x_post():
-    from x_poster import run_daily_x_post
-    await run_daily_x_post()
-    return {"status": "fired"}
