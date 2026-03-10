@@ -13,7 +13,7 @@
 # REQUIREMENTS: pip install fastapi sqlalchemy psycopg2-binary python-jose hashlib
 #
 # DATABASE: Uses the same PostgreSQL connection your app already has.
-# Adds one table: audit_events
+# Adds one table: audit_log
 # No migrations needed -- table is created on startup via init_audit_table().
 
 import hashlib
@@ -65,7 +65,7 @@ Base = declarative_base()
 # ---------------------------------------------------------------------------
 
 class AuditEvent(Base):
-    __tablename__ = "audit_events"
+    __tablename__ = "audit_log"
 
     id            = Column(Integer, primary_key=True, index=True)
     timestamp     = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc))
@@ -88,15 +88,15 @@ class AuditEvent(Base):
 
 
 def init_audit_table():
-    """Call once on app startup to create the audit_events table if it doesn't exist."""
+    """Call once on app startup to create the audit_log table if it doesn't exist."""
     try:
         engine = get_engine()
         inspector = sa_inspect(engine)
-        if "audit_events" not in inspector.get_table_names():
+        if "audit_log" not in inspector.get_table_names():
             Base.metadata.create_all(engine, tables=[AuditEvent.__table__])
-            print("[audit] Created audit_events table")
+            print("[audit] Created audit_log table")
         else:
-            print("[audit] audit_events table already exists")
+            print("[audit] audit_log table already exists")
     except Exception as e:
         print(f"[audit] WARNING: Could not init audit table: {e}")
 
@@ -337,13 +337,13 @@ def get_audit_logs(
 
     where = ("WHERE " + " AND ".join(conditions)) if conditions else ""
 
-    count_sql = text(f"SELECT COUNT(*) FROM audit_events {where}")
+    count_sql = text(f"SELECT COUNT(*) FROM audit_log {where}")
     total = db.execute(count_sql, params).scalar() or 0
 
     logs_sql = text(f"""
         SELECT id, timestamp, user_email, user_role, action,
                resource_type, resource_id, details, ip_address, log_hash
-        FROM audit_events
+        FROM audit_log
         {where}
         ORDER BY timestamp DESC
         LIMIT :limit OFFSET :offset
@@ -373,12 +373,12 @@ def get_admin_logs(
     rows = db.execute(text("""
         SELECT id, timestamp, user_email, user_role, action,
                resource_type, resource_id, details, ip_address, log_hash
-        FROM audit_events
+        FROM audit_log
         ORDER BY timestamp DESC
         LIMIT :limit OFFSET :offset
     """), {"limit": limit, "offset": offset}).fetchall()
 
-    total = db.execute(text("SELECT COUNT(*) FROM audit_events")).scalar() or 0
+    total = db.execute(text("SELECT COUNT(*) FROM audit_log")).scalar() or 0
 
     return {
         "logs":  [_row_to_dict(r) for r in rows],
@@ -398,14 +398,14 @@ def get_my_logs(
     rows = db.execute(text("""
         SELECT id, timestamp, user_email, user_role, action,
                resource_type, resource_id, details, ip_address, log_hash
-        FROM audit_events
+        FROM audit_log
         WHERE user_email = :email
         ORDER BY timestamp DESC
         LIMIT :limit OFFSET :offset
     """), {"email": current_user.email, "limit": limit, "offset": offset}).fetchall()
 
     total = db.execute(text("""
-        SELECT COUNT(*) FROM audit_events WHERE user_email = :email
+        SELECT COUNT(*) FROM audit_log WHERE user_email = :email
     """), {"email": current_user.email}).scalar() or 0
 
     return {
@@ -443,7 +443,7 @@ def verify_audit_integrity(
 
     rows = db.execute(text("""
         SELECT id, timestamp, user_email, action, resource_type, resource_id, details, log_hash
-        FROM audit_events
+        FROM audit_log
         ORDER BY id ASC
         LIMIT :limit
     """), {"limit": limit}).fetchall()
