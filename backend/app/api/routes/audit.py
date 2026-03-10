@@ -290,7 +290,7 @@ except ImportError:
 # Router
 # ---------------------------------------------------------------------------
 
-router = APIRouter(prefix="/api/audit", tags=["audit"])
+router = APIRouter(tags=["audit"])
 
 
 # GET /api/audit/logs
