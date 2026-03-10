@@ -633,3 +633,15 @@ body { overflow-x: hidden; -webkit-text-size-adjust: 100%; }
     padding-bottom: 0 !important;
   }
 }
+
+/* ── ODDC/SA structural separation grid — fix stacked padding ── */
+@media (max-width: 768px) {
+  [style*="grid-template-columns:1fr 1px 1fr"] > div,
+  [style*="grid-template-columns: 1fr 1px 1fr"] > div {
+    padding: 0 0 24px 0 !important;
+  }
+  [style*="grid-template-columns:1fr 1px 1fr"] > div:last-child,
+  [style*="grid-template-columns: 1fr 1px 1fr"] > div:last-child {
+    padding-bottom: 0 !important;
+  }
+}
