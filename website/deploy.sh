@@ -1,13 +1,14 @@
 #!/bin/bash
 cd ~/Downloads/sentinel-authority/website
-OUTPUT=$(npx vercel deploy --prod --yes --force 2>&1)
+OUTPUT=$(vercel deploy --prod --yes 2>&1)
 echo "$OUTPUT"
-URL=$(echo "$OUTPUT" | grep "Production:" | grep -o 'https://[^ ]*\.vercel\.app' | head -1)
-if [ -z "$URL" ]; then
-  echo "❌ Could not parse production URL from output"
-  exit 1
+URL=$(echo "$OUTPUT" | grep "Production:" | awk '{print $NF}')
+if [ -n "$URL" ]; then
+  echo ""
+  echo "Setting aliases..."
+  vercel alias "$URL" www.sentinelauthority.org
+  vercel alias "$URL" sentinelauthority.org
+  echo "Done."
+else
+  echo "ERROR: Could not extract deploy URL"
 fi
-echo "→ Aliasing $URL"
-npx vercel alias "$URL" www.sentinelauthority.org
-npx vercel alias "$URL" sentinelauthority.org
-echo "✅ Done — www.sentinelauthority.org → $URL"
