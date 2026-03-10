@@ -11,7 +11,13 @@ function AuthProvider({ children }) {
     const token = localStorage.getItem('token');
     const userData = localStorage.getItem('user');
     if (token && userData) {
-      setUser(JSON.parse(userData));
+      try {
+        setUser(JSON.parse(userData));
+      } catch {
+        localStorage.removeItem('token');
+        localStorage.removeItem('refresh_token');
+        localStorage.removeItem('user');
+      }
     }
     setLoading(false);
   }, []);
@@ -56,6 +62,7 @@ function AuthProvider({ children }) {
   const logout = () => {
     api.post('/api/auth/logout').catch(() => {});
     localStorage.removeItem('token');
+    localStorage.removeItem('refresh_token');
     localStorage.removeItem('user');
     setUser(null);
   };
