@@ -7,13 +7,15 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "start": "serve dist -s -l ${PORT:-3000}"
+    "start": "node server.cjs"
   },
   "dependencies": {
     "@sentry/react": "^10.39.0",
     "@tanstack/react-query": "^5.90.21",
     "axios": "^1.6.0",
+    "dompurify": "^3.2.6",
     "express": "^4.22.1",
+    "helmet": "^8.1.0",
     "lucide-react": "^0.303.0",
     "qrcode": "^1.5.4",
     "react": "^18.2.0",
@@ -31,5 +33,8 @@
     "postcss": "^8.4.32",
     "tailwindcss": "^3.4.0",
     "vite": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=20 <21"
   }
 }
