@@ -1,0 +1,6 @@
+# Sentinel Authority ODD Compliance Log Signing Key
+# Key ID: sa-compliance-key-1
+
+-----BEGIN PUBLIC KEY-----
+MCowBQYDK2VwAyEAbUbagFgT7GYnYJr3MHNvjemlCKydBgVMRoJ/EsDtj5Q=
+-----END PUBLIC KEY-----

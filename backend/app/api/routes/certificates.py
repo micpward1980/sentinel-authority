@@ -11,6 +11,8 @@ from app.core.security import get_current_user, require_role
 from app.core.config import settings
 from app.models.models import Certificate, CAT72Test, Application, CertificationState, TestState, EnveloSession, APIKey
 from app.services.certificate_pdf import generate_certificate_pdf
+from app.services.compliance_log_service import generate_compliance_log, get_public_key_pem
+from typing import Optional
 
 router = APIRouter()
 
@@ -408,3 +410,124 @@ async def public_suspensions(db: AsyncSession = Depends(get_db)):
     """Alias for /public/revocations — returns same data as 'suspensions' for website compatibility."""
     data = await public_revocations(db)
     return {"suspensions": data["revocations"], "total": data["total"]}
+# ─────────────────────────────────────────────────────────────────────────────
+# ADD TO: backend/app/api/routes/certificates.py
+#
+# 1. Add to imports at top of file:
+#    from datetime import date
+#    from app.services.compliance_log_service import generate_compliance_log, get_public_key_pem
+#
+# 2. Append these two routes to the router.
+# ─────────────────────────────────────────────────────────────────────────────
+
+@router.get("/{certificate_number}/compliance-log", summary="Download signed ODD compliance log")
+async def download_compliance_log(
+    certificate_number: str,
+    period_from: Optional[str] = Query(None, description="ISO date, e.g. 2026-01-01"),
+    period_to: Optional[str] = Query(None, description="ISO date, e.g. 2026-03-10"),
+    format: str = Query("pdf", description="pdf or json"),
+    db: AsyncSession = Depends(get_db),
+    user: dict = Depends(get_current_user),
+):
+    """
+    Generate a signed ODD Compliance Log for a certificate.
+
+    Returns a cryptographically signed record of boundary enforcement activity
+    over the requested period. The PDF is the insurance-facing artifact.
+
+    Access rules:
+    - Admins and operators can download any certificate's log.
+    - Applicants/subscribers can only download logs for their own organization.
+    """
+    result = await db.execute(
+        select(Certificate).where(Certificate.certificate_number == certificate_number)
+    )
+    cert = result.scalar_one_or_none()
+    if not cert:
+        raise HTTPException(status_code=404, detail="Certificate not found")
+
+    # Access control — non-admin users may only access their own org
+    if user.get("role") not in ("admin", "operator"):
+        app_result = await db.execute(
+            select(Application).where(Application.applicant_id == int(user["sub"]))
+        )
+        user_apps = app_result.scalars().all()
+        user_app_ids = {a.id for a in user_apps}
+        if cert.application_id not in user_app_ids:
+            raise HTTPException(status_code=403, detail="Access denied")
+
+    # Period defaults: last 90 days
+    now = datetime.utcnow()
+    try:
+        dt_from = datetime.fromisoformat(period_from) if period_from else now.replace(
+            day=1, hour=0, minute=0, second=0, microsecond=0
+        ) - timedelta(days=60)
+        dt_to = datetime.fromisoformat(period_to) if period_to else now
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid date format. Use ISO format e.g. 2026-01-01")
+
+    if dt_from >= dt_to:
+        raise HTTPException(status_code=400, detail="period_from must be before period_to")
+
+    if (dt_to - dt_from).days > 366:
+        raise HTTPException(status_code=400, detail="Reporting period cannot exceed 366 days")
+
+    try:
+        payload, signature, pdf_bytes = await generate_compliance_log(
+            db=db,
+            certificate=cert,
+            period_from=dt_from,
+            period_to=dt_to,
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Compliance log generation failed: {str(e)}")
+
+    await write_audit_log(
+        db, action="compliance_log_downloaded",
+        resource_type="certificate", resource_id=cert.id,
+        user_id=int(user["sub"]), user_email=user["email"],
+        details={
+            "certificate_number": certificate_number,
+            "period_from": dt_from.isoformat(),
+            "period_to": dt_to.isoformat(),
+            "format": format,
+        }
+    )
+    await db.commit()
+
+    if format == "json":
+        return {
+            "payload": payload,
+            "signature": signature,
+            "key_id": "sa-compliance-key-1",
+            "verification_url": "https://www.sentinelauthority.org/verify-compliance-log",
+        }
+
+    # Build filename: ODDC-2026-00001_compliance_2026-01-01_2026-03-10.pdf
+    fname = (
+        f"{certificate_number}_compliance_"
+        f"{dt_from.strftime('%Y-%m-%d')}_{dt_to.strftime('%Y-%m-%d')}.pdf"
+    )
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f'attachment; filename="{fname}"'},
+    )
+
+
+@router.get("/compliance-pubkey", summary="SA compliance log signing public key")
+async def get_compliance_pubkey():
+    """
+    Returns the Sentinel Authority Ed25519 public key used to sign compliance logs.
+    Anyone can use this to independently verify a compliance log PDF's detached signature.
+    No authentication required — this is a public trust anchor.
+    """
+    try:
+        pem = get_public_key_pem()
+        return Response(
+            content=pem,
+            media_type="text/plain",
+            headers={"Cache-Control": "public, max-age=3600"},
+        )
+    except Exception as e:
+        raise HTTPException(status_code=503, detail=f"Signing key unavailable: {str(e)}")
