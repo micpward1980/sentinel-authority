@@ -19,23 +19,27 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from contextlib import contextmanager
 
-try:
-    import requests
-except ImportError:
-    print("[ENVELO] Installing required package: requests")
-    os.system(f"{sys.executable} -m pip install requests -q")
-    import requests
+import requests
 
 from .config import EnveloConfig
 from .boundaries import (
     Boundary, NumericBoundary, GeoBoundary, TimeBoundary, 
     RateBoundary, StateBoundary, boundary_from_dict
 )
-from .discovery import DiscoveryEngine
 from .exceptions import (
     EnveloViolation, EnveloConnectionError, EnveloConfigError,
     EnveloNotStartedError, EnveloFailsafeError, EnveloTamperError
 )
+# --- Decision token support (signed authorization artifacts) ---
+try:
+    from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey as _Ed25519PrivateKey
+    from cryptography.hazmat.primitives import serialization as _serialization
+    from .decision_tokens import mint_allow_token as _mint_allow_token, AuthorizationDecision as _AuthorizationDecision, hash_action_payload as _hash_action_payload
+    _DECISION_TOKEN_SUPPORT = True
+except ImportError:
+    _DECISION_TOKEN_SUPPORT = False
+# --- end decision token imports ---
+
 
 
 class EnveloAgent:
@@ -102,13 +106,17 @@ class EnveloAgent:
         self._telemetry_queue: Queue = Queue()
         self._running = False
         
-        # Discovery
-        self._discovery_mode = False
-        self._discovery = DiscoveryEngine()
-
         # Offline buffer
         self._offline_buffer: List[Dict] = []
         
+
+        # --- Decision token signing ---
+        if _DECISION_TOKEN_SUPPORT:
+            self._signing_key = _Ed25519PrivateKey.generate()
+            self._issuer = "sentinel-interlock"
+            self._key_id = "interlock-key-1"
+            self._token_ttl_seconds = 5
+        # --- end signing key init ---
         # Logging
         self._setup_logging()
         
@@ -165,10 +173,6 @@ class EnveloAgent:
         
         # Fetch boundaries from server
         if not self._fetch_boundaries():
-            # No server boundaries — enter auto-discovery mode
-            self.logger.info("[ENVELO] No boundaries from server — entering auto-discovery mode")
-            self._discovery_mode = True
-            self._discovery.start()
             if self.config.fail_closed:
                 self.logger.error("Cannot fetch boundaries and fail_closed=True. Cannot start.")
                 return False
@@ -233,18 +237,6 @@ class EnveloAgent:
     # =========================================================================
     
     def check(self, **params) -> bool:
-        # Feed parameters to discovery engine if in discovery mode
-        if self._discovery_mode:
-            self._discovery.observe(**params)
-            if self._discovery.state == DiscoveryEngine.ENFORCING:
-                # Discovery complete — boundaries are now loaded
-                self._discovery_mode = False
-                self.logger.info("[ENVELO] Discovery complete — enforcement active")
-            else:
-                # Still discovering — allow all actions
-                self._queue_telemetry("check", params, "ALLOW_DISCOVERY")
-                return True
-
         """
         Check if parameters are within boundaries.
         
@@ -346,19 +338,6 @@ class EnveloAgent:
         def decorator(fn):
             @functools.wraps(fn)
             def wrapper(*args, **kwargs):
-                # Feed discovery engine
-                if self._discovery_mode:
-                    mapped = {}
-                    sig_params = list(fn.__code__.co_varnames[:fn.__code__.co_argcount])
-                    for i, arg in enumerate(args):
-                        if i < len(sig_params):
-                            mapped[sig_params[i]] = arg
-                    mapped.update(kwargs)
-                    self._discovery.observe(**mapped)
-                    if self._discovery.state == DiscoveryEngine.ENFORCING:
-                        self._discovery_mode = False
-                    else:
-                        return fn(*args, **kwargs)  # Allow during discovery
                 # Build parameter dict from function arguments
                 import inspect
                 sig = inspect.signature(fn)
@@ -533,7 +512,7 @@ class EnveloAgent:
             with open(cache_path, "w") as f:
                 json.dump({
                     "cached_at": datetime.utcnow().isoformat() + "Z",
-                    "certificate_id": self.config.certificate_number,
+                    "certificate_number": self.config.certificate_number,
                     "config": config
                 }, f)
             self.logger.debug(f"Boundaries cached to {cache_path}")
@@ -556,7 +535,7 @@ class EnveloAgent:
                 return False
             self._load_boundaries(data["config"])
             self.logger.info(f"Loaded {len(self._boundaries)} boundaries from CACHE (offline mode)")
-            self.logger.info(f"  Cached at: {data.get(cached_at, unknown)}")
+            self.logger.info(f"  Cached at: {data.get('cached_at', 'unknown')}")
             return True
         except Exception as e:
             self.logger.warning(f"Failed to load cached boundaries: {e}")
@@ -585,7 +564,7 @@ class EnveloAgent:
                 headers={"Authorization": f"Bearer {self.config.api_key}"},
                 json={
                     "session_id": self._session_id,
-                    "certificate_id": self.config.certificate_number,
+                    "certificate_number": self.config.certificate_number,
                     "started_at": datetime.utcnow().isoformat() + "Z",
                     "agent_version": "1.0.0",
                     "config_hash": self.config._config_hash,
@@ -733,10 +712,9 @@ class EnveloAgent:
                 f"{self.config.api_endpoint}/api/envelo/telemetry",
                 headers={"Authorization": f"Bearer {self.config.api_key}"},
                 json={
-                    "certificate_id": self.config.certificate_number,
+                    "certificate_number": self.config.certificate_number,
                     "session_id": self._session_id,
-                    "records": batch,
-                    "stats": {"pass_count": self._stats["pass_count"], "block_count": self._stats["block_count"]}
+                    "records": batch
                 },
                 timeout=10
             )
@@ -785,6 +763,84 @@ class EnveloAgent:
             return 0
         return (datetime.utcnow() - self._stats["session_start"]).total_seconds()
     
+
+    # =========================================================================
+    # SIGNED DECISION TOKEN AUTHORIZATION
+    # =========================================================================
+
+    def get_public_key_bytes(self) -> bytes:
+        """Export the interlock Ed25519 public key for executor trust stores."""
+        if not _DECISION_TOKEN_SUPPORT:
+            raise RuntimeError("cryptography package required: pip install cryptography>=42.0.0")
+        return self._signing_key.public_key().public_bytes(
+            encoding=_serialization.Encoding.Raw,
+            format=_serialization.PublicFormat.Raw,
+        )
+
+    def authorize_action(self, *, action: str, params: dict, audience: str) -> "_AuthorizationDecision":
+        """Issue a signed short-lived decision token for the given action + params.
+
+        The returned token must be passed to an ExecutorVerifier.verify_and_raise()
+        at the execution boundary before the action is performed.
+
+        Replaces Boolean check() as the enforcement primitive.
+        """
+        if not _DECISION_TOKEN_SUPPORT:
+            raise RuntimeError("cryptography package required: pip install cryptography>=42.0.0")
+
+        if not self._started:
+            raise EnveloNotStartedError("Agent not started. Call agent.start() first.")
+
+        # Evaluate all boundaries (reuses existing _check_parameter logic)
+        violations = []
+        for param, value in params.items():
+            passed, msg = self._check_parameter(param, value)
+            if not passed:
+                violations.append({"parameter": param, "value": value, "message": msg})
+
+        policy_version = self.config.certificate_number or "local-1"
+        policy_hash = "sha256:" + self.config._config_hash
+
+        if violations:
+            self._stats["block_count"] += 1
+            reason = f"{violations[0]['parameter']}:{violations[0]['message']}"
+            self._queue_telemetry("authorize", params, "BLOCK", violations)
+            self.logger.warning("decision denied action=%s reason=%s", action, reason)
+            return _AuthorizationDecision(
+                allowed=False,
+                reason=reason,
+                policy_version=policy_version,
+                policy_hash=policy_hash,
+            )
+
+        # Collect constraint metadata for token
+        constraints = {}
+        for name, boundary in self._boundaries.items():
+            if hasattr(boundary, "max_value") and boundary.max_value is not None:
+                constraints[f"{name}_max"] = boundary.max_value
+
+        decision = _mint_allow_token(
+            issuer=self._issuer,
+            key_id=self._key_id,
+            signing_key=self._signing_key,
+            subject=self.config.certificate_number or "unknown",
+            audience=audience,
+            action=action,
+            params=params,
+            policy_version=policy_version,
+            policy_hash=policy_hash,
+            ttl_seconds=self._token_ttl_seconds,
+            constraints=constraints,
+        )
+
+        self._stats["pass_count"] += 1
+        self._queue_telemetry("authorize", params, "PASS")
+        self.logger.info(
+            "decision allowed action=%s jti=%s exp=%s",
+            action, decision.jti, decision.expires_at,
+        )
+        return decision
+
     def get_stats(self) -> Dict:
         """Get current session statistics"""
         return {
@@ -800,43 +856,6 @@ class EnveloAgent:
         }
     
     @property
-    def _on_discovery_complete(self, boundaries, envelope_definition):
-        """Called when auto-discovery finishes generating boundaries."""
-        self.logger.info(f"[ENVELO] Auto-discovered {len(boundaries)} boundaries")
-
-        # Load discovered boundaries into enforcement engine
-        for b in boundaries:
-            self._boundaries[b.parameter] = b
-            self.logger.info(f"  → {b.name}: {b.parameter}")
-
-        # Upload envelope to Sentinel Authority
-        try:
-            resp = requests.post(
-                f"{self.config.api_endpoint}/api/envelo/boundaries/discovered",
-                headers={"Authorization": f"Bearer {self.config.api_key}"},
-                json={
-                    "session_id": self._session_id,
-                    "envelope_definition": envelope_definition,
-                },
-                timeout=10,
-            )
-            if resp.ok:
-                self.logger.info("[ENVELO] Envelope uploaded to Sentinel Authority")
-            else:
-                self.logger.warning(f"[ENVELO] Envelope upload failed: {resp.status_code}")
-        except Exception as e:
-            self.logger.warning(f"[ENVELO] Envelope upload error: {e}")
-            # Still enforce locally even if upload fails
-
-        self.logger.info("[ENVELO] ═══════════════════════════════════════════")
-        self.logger.info("[ENVELO] AUTO-DISCOVERY COMPLETE — ENFORCEMENT ACTIVE")
-        self.logger.info(f"[ENVELO] {len(boundaries)} boundaries now enforced")
-        self.logger.info("[ENVELO] ═══════════════════════════════════════════")
-
-    def get_discovery_stats(self):
-        """Return current auto-discovery statistics."""
-        return self._discovery.get_discovery_stats()
-
     def is_running(self) -> bool:
         """Check if agent is running"""
         return self._started and self._running

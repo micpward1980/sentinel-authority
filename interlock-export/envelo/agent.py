@@ -19,12 +19,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from contextlib import contextmanager
 
-try:
-    import requests
-except ImportError:
-    print("[ENVELO] Installing required package: requests")
-    os.system(f"{sys.executable} -m pip install requests -q")
-    import requests
+import requests
 
 from .config import EnveloConfig
 from .boundaries import (
@@ -35,6 +30,16 @@ from .exceptions import (
     EnveloViolation, EnveloConnectionError, EnveloConfigError,
     EnveloNotStartedError, EnveloFailsafeError, EnveloTamperError
 )
+# --- Decision token support (signed authorization artifacts) ---
+try:
+    from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey as _Ed25519PrivateKey
+    from cryptography.hazmat.primitives import serialization as _serialization
+    from .decision_tokens import mint_allow_token as _mint_allow_token, AuthorizationDecision as _AuthorizationDecision, hash_action_payload as _hash_action_payload
+    _DECISION_TOKEN_SUPPORT = True
+except ImportError:
+    _DECISION_TOKEN_SUPPORT = False
+# --- end decision token imports ---
+
 
 
 class EnveloAgent:
@@ -104,6 +109,14 @@ class EnveloAgent:
         # Offline buffer
         self._offline_buffer: List[Dict] = []
         
+
+        # --- Decision token signing ---
+        if _DECISION_TOKEN_SUPPORT:
+            self._signing_key = _Ed25519PrivateKey.generate()
+            self._issuer = "sentinel-interlock"
+            self._key_id = "interlock-key-1"
+            self._token_ttl_seconds = 5
+        # --- end signing key init ---
         # Logging
         self._setup_logging()
         
@@ -522,7 +535,7 @@ class EnveloAgent:
                 return False
             self._load_boundaries(data["config"])
             self.logger.info(f"Loaded {len(self._boundaries)} boundaries from CACHE (offline mode)")
-            self.logger.info(f"  Cached at: {data.get(cached_at, unknown)}")
+            self.logger.info(f"  Cached at: {data.get('cached_at', 'unknown')}")
             return True
         except Exception as e:
             self.logger.warning(f"Failed to load cached boundaries: {e}")
@@ -750,6 +763,84 @@ class EnveloAgent:
             return 0
         return (datetime.utcnow() - self._stats["session_start"]).total_seconds()
     
+
+    # =========================================================================
+    # SIGNED DECISION TOKEN AUTHORIZATION
+    # =========================================================================
+
+    def get_public_key_bytes(self) -> bytes:
+        """Export the interlock Ed25519 public key for executor trust stores."""
+        if not _DECISION_TOKEN_SUPPORT:
+            raise RuntimeError("cryptography package required: pip install cryptography>=42.0.0")
+        return self._signing_key.public_key().public_bytes(
+            encoding=_serialization.Encoding.Raw,
+            format=_serialization.PublicFormat.Raw,
+        )
+
+    def authorize_action(self, *, action: str, params: dict, audience: str) -> "_AuthorizationDecision":
+        """Issue a signed short-lived decision token for the given action + params.
+
+        The returned token must be passed to an ExecutorVerifier.verify_and_raise()
+        at the execution boundary before the action is performed.
+
+        Replaces Boolean check() as the enforcement primitive.
+        """
+        if not _DECISION_TOKEN_SUPPORT:
+            raise RuntimeError("cryptography package required: pip install cryptography>=42.0.0")
+
+        if not self._started:
+            raise EnveloNotStartedError("Agent not started. Call agent.start() first.")
+
+        # Evaluate all boundaries (reuses existing _check_parameter logic)
+        violations = []
+        for param, value in params.items():
+            passed, msg = self._check_parameter(param, value)
+            if not passed:
+                violations.append({"parameter": param, "value": value, "message": msg})
+
+        policy_version = self.config.certificate_number or "local-1"
+        policy_hash = "sha256:" + self.config._config_hash
+
+        if violations:
+            self._stats["block_count"] += 1
+            reason = f"{violations[0]['parameter']}:{violations[0]['message']}"
+            self._queue_telemetry("authorize", params, "BLOCK", violations)
+            self.logger.warning("decision denied action=%s reason=%s", action, reason)
+            return _AuthorizationDecision(
+                allowed=False,
+                reason=reason,
+                policy_version=policy_version,
+                policy_hash=policy_hash,
+            )
+
+        # Collect constraint metadata for token
+        constraints = {}
+        for name, boundary in self._boundaries.items():
+            if hasattr(boundary, "max_value") and boundary.max_value is not None:
+                constraints[f"{name}_max"] = boundary.max_value
+
+        decision = _mint_allow_token(
+            issuer=self._issuer,
+            key_id=self._key_id,
+            signing_key=self._signing_key,
+            subject=self.config.certificate_number or "unknown",
+            audience=audience,
+            action=action,
+            params=params,
+            policy_version=policy_version,
+            policy_hash=policy_hash,
+            ttl_seconds=self._token_ttl_seconds,
+            constraints=constraints,
+        )
+
+        self._stats["pass_count"] += 1
+        self._queue_telemetry("authorize", params, "PASS")
+        self.logger.info(
+            "decision allowed action=%s jti=%s exp=%s",
+            action, decision.jti, decision.expires_at,
+        )
+        return decision
+
     def get_stats(self) -> Dict:
         """Get current session statistics"""
         return {
