@@ -7,7 +7,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from sqlalchemy.orm.attributes import flag_modified
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import List, Dict, Any, Optional
 from datetime import datetime
 
@@ -39,7 +39,7 @@ class GeoBoundary(BaseModel):
     type: str = "geo"
     name: str
     boundary_type: str = "polygon"  # polygon, circle, rectangle
-    coordinates: List[Dict[str, float]] = []  # List of {lat, lon} points
+    coordinates: List[Dict[str, float]] = Field(default_factory=list)  # List of {lat, lon} points
     center: Optional[Dict[str, float]] = None  # For circle: {lat, lon}
     radius_meters: Optional[float] = None  # For circle
     violation_action: str = "block"
@@ -51,7 +51,7 @@ class TimeBoundary(BaseModel):
     name: str
     allowed_hours_start: int = 0  # 0-23
     allowed_hours_end: int = 23
-    allowed_days: List[int] = [0, 1, 2, 3, 4, 5, 6]  # 0=Monday
+    allowed_days: List[int] = Field(default_factory=lambda: [0, 1, 2, 3, 4, 5, 6])  # 0=Monday
     timezone: str = "UTC"
     violation_action: str = "block"
 
@@ -61,8 +61,8 @@ class StateBoundary(BaseModel):
     type: str = "state"
     name: str
     parameter: str
-    allowed_values: List[str] = []
-    forbidden_values: List[str] = []
+    allowed_values: List[str] = Field(default_factory=list)
+    forbidden_values: List[str] = Field(default_factory=list)
     violation_action: str = "block"
 
 
@@ -93,14 +93,14 @@ class BoundaryConfig(BaseModel):
     operational_context: str = ""
     
     # Boundaries
-    numeric_boundaries: List[Dict[str, Any]] = []
-    geo_boundaries: List[Dict[str, Any]] = []
-    time_boundaries: List[Dict[str, Any]] = []
-    state_boundaries: List[Dict[str, Any]] = []
-    rate_boundaries: List[Dict[str, Any]] = []
+    numeric_boundaries: List[Dict[str, Any]] = Field(default_factory=list)
+    geo_boundaries: List[Dict[str, Any]] = Field(default_factory=list)
+    time_boundaries: List[Dict[str, Any]] = Field(default_factory=list)
+    state_boundaries: List[Dict[str, Any]] = Field(default_factory=list)
+    rate_boundaries: List[Dict[str, Any]] = Field(default_factory=list)
     
     # Safe state configuration
-    safe_state: Dict[str, Any] = {}
+    safe_state: Dict[str, Any] = Field(default_factory=dict)
     
     # Enforcement settings
     fail_closed: bool = True  # If enforcement fails, block action

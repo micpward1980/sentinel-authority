@@ -237,6 +237,12 @@ async def receive_telemetry(
     except Exception:
         pass
 
+    return {
+        "status": "ok",
+        "session_id": data.session_id,
+        "records_received": len(data.records),
+    }
+
 
     
 
@@ -267,10 +273,6 @@ async def end_session(
         except Exception:
             pass
 
-    return {"status": "ended", "session_id": session_id}
-
-
-    
     return {"status": "ended", "session_id": session_id}
 
 
@@ -1066,7 +1068,7 @@ async def report_specs(
     try:
         await write_audit_log(db, action="boundaries_reported", resource_type="application",
             resource_id=application.id, user_email=api_key.name if hasattr(api_key, "name") else "interlock",
-            details={"application_number": application.application_number, "boundary_count": len(specs.boundaries)})
+            details={"application_number": application.application_number, "boundary_count": len(data.boundaries or [])})
     except Exception:
         pass
 
@@ -1173,26 +1175,6 @@ async def receive_heartbeat(
     except Exception:
         pass
 
-    # Feed surveillance engine
-    try:
-        from app.surveillance import get_surveillance_state
-        surveillance = get_surveillance_state()
-        for session in sessions:
-            cert_num = None
-            if session.certificate_id:
-                cert_result = await db.execute(
-                    select(Certificate).where(Certificate.id == session.certificate_id)
-                )
-                cert = cert_result.scalar_one_or_none()
-                cert_num = cert.certificate_number if cert else None
-            if cert_num:
-                surveillance.record_heartbeat(
-                    session_id=session.session_id,
-                    certificate_id=cert_num,
-                    stats={"pass": session.pass_count or 0, "block": session.block_count or 0},
-                )
-    except Exception:
-        pass
 
     return {"status": "ok", "timestamp": now.isoformat(), "sessions_updated": len(sessions)}
 
