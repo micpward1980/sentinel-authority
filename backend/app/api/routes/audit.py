@@ -311,9 +311,9 @@ def get_audit_logs(
     params = {}
 
     # Role gate: non-admins only see their own events
-    if getattr(current_user, "role", None) not in ("admin", "auditor"):
+    if current_user.get("role") not in ("admin", "auditor"):
         conditions.append("user_email = :email_gate")
-        params["email_gate"] = current_user.email
+        params["email_gate"] = current_user["email"]
 
     if action:
         conditions.append("action = :action")
@@ -367,7 +367,7 @@ def get_admin_logs(
     current_user         = Depends(get_current_user),
 ):
     """Recent activity feed for the admin dashboard."""
-    if getattr(current_user, "role", None) not in ("admin", "auditor"):
+    if current_user.get("role") not in ("admin", "auditor"):
         raise HTTPException(status_code=403, detail="Admin access required")
 
     rows = db.execute(text("""
@@ -438,7 +438,7 @@ def verify_audit_integrity(
     Returns a summary of valid/invalid entries.
     Used by ActivityPage to display chain integrity status.
     """
-    if getattr(current_user, "role", None) not in ("admin", "auditor"):
+    if current_user.get("role") not in ("admin", "auditor"):
         raise HTTPException(status_code=403, detail="Admin access required")
 
     rows = db.execute(text("""
