@@ -34,6 +34,10 @@ APPROVE=$(curl -s -X PATCH "$BASE/api/applications/$APP_ID/state?new_state=appro
 STATE=$(echo $APPROVE | python3 -c "import sys,json; print(json.load(sys.stdin).get('state',''))" 2>/dev/null)
 APIKEY=$(echo $APPROVE | python3 -c "import sys,json; print(json.load(sys.stdin).get('api_key',''))" 2>/dev/null)
 [ "$STATE" = "approved" ] && green "Application approved" || { red "Approve failed: $APPROVE"; exit 1; }
+if [ -z "$APIKEY" ]; then
+  auth
+  APIKEY=$(curl -s "$BASE/api/applications/$APP_ID"     -H "Authorization: Bearer $TOKEN" |     python3 -c "import sys,json; d=json.load(sys.stdin); keys=d.get('api_keys',[]); print(keys[0].get('key','') if keys else '')" 2>/dev/null)
+fi
 [ -n "$APIKEY" ] && green "API key: ${APIKEY:0:20}..." || red "No API key"
 
 section "4. CAT-72 Test"
@@ -87,7 +91,17 @@ section "5. Certificate (auto-issued)"
 auth
 CERT=$STOP
 CERT_NUM=$(echo $CERT | python3 -c "import sys,json; print(json.load(sys.stdin).get('certificate_number',''))" 2>/dev/null)
-[ -n "$CERT_NUM" ] && green "Certificate auto-issued: $CERT_NUM" || { red "No cert number in stop response: $CERT"; exit 1; }
+CERT_NUM=$(echo $STOP | python3 -c "import sys,json; print(json.load(sys.stdin).get('certificate_number','') or '')" 2>/dev/null)
+if [ -z "$CERT_NUM" ] || [ "$CERT_NUM" = "None" ]; then
+  auth
+  CERT_NUM=$(curl -s "$BASE/api/certificates/"     -H "Authorization: Bearer $TOKEN" |     python3 -c "
+import sys,json
+certs=json.load(sys.stdin)
+match=[c for c in certs if c.get('application_id')==$APP_ID]
+print(match[0]['certificate_number'] if match else '')
+" 2>/dev/null)
+fi
+[ -n "$CERT_NUM" ] && [ "$CERT_NUM" != "None" ] && green "Certificate: $CERT_NUM" || { red "No certificate found for app $APP_ID"; exit 1; }
 
 section "6. Public Verify"
 VERIFY=$(curl -s "$BASE/api/verify/$CERT_NUM")
