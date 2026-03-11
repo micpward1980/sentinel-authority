@@ -55,6 +55,18 @@ def get_engine():
             pool_pre_ping=True,
             connect_args={"sslmode": "require"} if "railway" in url or "sslmode" not in url else {}
         )
+        # Auto-migrate missing columns
+        with _engine.connect() as conn:
+            for col, typedef in [
+                ("user_role", "VARCHAR(64)"),
+                ("ip_address", "VARCHAR(45)"),
+                ("user_agent", "VARCHAR(500)"),
+            ]:
+                try:
+                    conn.execute(text(f"ALTER TABLE audit_log ADD COLUMN IF NOT EXISTS {col} {typedef}"))
+                    conn.commit()
+                except Exception:
+                    conn.rollback()
     return _engine
 
 def get_session():
