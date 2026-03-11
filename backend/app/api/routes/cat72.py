@@ -2731,7 +2731,7 @@ async def stop_test(
     # Auto-issue certificate on pass
     if test.result == "PASS" and test.state == "completed":
         try:
-            from app.models.models import Certificate, Application
+            from app.models.models import Certificate
             from datetime import timedelta
             import hashlib as _hl
             
