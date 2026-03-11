@@ -36,7 +36,7 @@ APIKEY=$(echo $APPROVE | python3 -c "import sys,json; print(json.load(sys.stdin)
 [ "$STATE" = "approved" ] && green "Application approved" || { red "Approve failed: $APPROVE"; exit 1; }
 if [ -z "$APIKEY" ]; then
   auth
-  APIKEY=$(curl -s "$BASE/api/applications/$APP_ID"     -H "Authorization: Bearer $TOKEN" |     python3 -c "import sys,json; d=json.load(sys.stdin); keys=d.get('api_keys',[]); print(keys[0].get('key','') if keys else '')" 2>/dev/null)
+  APIKEY=$(curl -s -X POST "$BASE/api/apikeys/generate"     -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json"     -d "{"name": "smoke-$TS", "scope": "full"}" |     python3 -c "import sys,json; print(json.load(sys.stdin).get('key',''))" 2>/dev/null)
 fi
 [ -n "$APIKEY" ] && green "API key: ${APIKEY:0:20}..." || red "No API key"
 
