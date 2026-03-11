@@ -59,7 +59,7 @@ for i in $(seq 1 15); do
   curl -s -X POST "$BASE/api/cat72/tests/$TEST_ID/telemetry" \
     -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
     -d "{\"state_vector\": {\"speed_mph\": $SPEED, \"visibility_m\": 300, \"precipitation_mm_hr\": 3}}" > /dev/null
-  if [ $((i % 5)) -eq 0 ]; then auth; fi
+  if [ $((i % 10)) -eq 0 ]; then sleep 1; auth; fi
 done
 green "15 learning samples sent"
 
@@ -75,7 +75,7 @@ for i in $(seq 1 100); do
   curl -s -X POST "$BASE/api/cat72/tests/$TEST_ID/telemetry" \
     -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
     -d "{\"state_vector\": {\"speed_mph\": $SPEED, \"visibility_m\": 300, \"precipitation_mm_hr\": 3}}" > /dev/null
-  if [ $((i % 25)) -eq 0 ]; then auth; fi
+  if [ $((i % 50)) -eq 0 ]; then sleep 1; auth; fi
 done
 green "100 conformant samples sent"
 
