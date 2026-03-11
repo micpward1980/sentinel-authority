@@ -45,7 +45,16 @@ _SessionLocal = None
 def get_engine():
     global _engine
     if _engine is None:
-        _engine = create_engine(DATABASE_URL, pool_pre_ping=True)
+        import re
+        url = DATABASE_URL
+        # Strip ?ssl=true or &ssl=true — psycopg2 uses connect_args instead
+        url = re.sub(r'[?&]ssl=\w+', '', url)
+        url = re.sub(r'\?$', '', url)
+        _engine = create_engine(
+            url,
+            pool_pre_ping=True,
+            connect_args={"sslmode": "require"} if "railway" in url or "sslmode" not in url else {}
+        )
     return _engine
 
 def get_session():
