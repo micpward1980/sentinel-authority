@@ -274,7 +274,7 @@ async def suspend_certificate(certificate_number: str, reason: str, db: AsyncSes
     cert.state = "suspended"
     # Tag sessions
     from app.models.models import EnveloSession
-    sr = await db.execute(select(EnveloSession).where(EnveloSession.certificate_id == certificate_number, EnveloSession.status == "active"))
+    sr = await db.execute(select(EnveloSession).where(EnveloSession.certificate_id == cert.id, EnveloSession.status == "active"))
     for ss in sr.scalars().all():
         ss.offline_reason = f"Certificate suspended - {reason}"
     cert.history = (cert.history or []) + [{"action": "suspended", "timestamp": datetime.utcnow().isoformat(), "by": user["email"], "reason": reason}]
@@ -291,7 +291,7 @@ async def reinstate_certificate(certificate_number: str, db: AsyncSession = Depe
     cert.state = "conformant"
     # Clear offline reason
     from app.models.models import EnveloSession
-    sr = await db.execute(select(EnveloSession).where(EnveloSession.certificate_id == certificate_number))
+    sr = await db.execute(select(EnveloSession).where(EnveloSession.certificate_id == cert.id))
     for ss in sr.scalars().all():
         ss.offline_reason = None
     cert.history = (cert.history or []) + [{"action": "reinstated", "timestamp": datetime.utcnow().isoformat(), "by": user["email"]}]
@@ -306,7 +306,7 @@ async def revoke_certificate(certificate_number: str, reason: str, db: AsyncSess
     cert.state = "revoked"
     # Tag sessions
     from app.models.models import EnveloSession
-    sr = await db.execute(select(EnveloSession).where(EnveloSession.certificate_id == certificate_number, EnveloSession.status == "active"))
+    sr = await db.execute(select(EnveloSession).where(EnveloSession.certificate_id == cert.id, EnveloSession.status == "active"))
     for ss in sr.scalars().all():
         ss.offline_reason = f"Certificate revoked - {reason}"
     cert.history = (cert.history or []) + [{"action": "revoked", "timestamp": datetime.utcnow().isoformat(), "by": user["email"], "reason": reason}]
