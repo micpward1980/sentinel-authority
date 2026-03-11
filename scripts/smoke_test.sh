@@ -83,11 +83,11 @@ RESULT=$(echo $STOP | python3 -c "import sys,json; print(json.load(sys.stdin).ge
 CONV=$(echo $STOP | python3 -c "import sys,json; print(json.load(sys.stdin).get('convergence_score',''))" 2>/dev/null)
 [ "$RESULT" = "PASS" ] && green "Test PASSED — convergence $CONV" || { red "Test FAILED: $STOP"; exit 1; }
 
-section "5. Issue Certificate"
+section "5. Certificate (auto-issued)"
 auth
-CERT=$(curl -s -X POST "$BASE/api/certificates/issue/$TEST_ID" -H "Authorization: Bearer $TOKEN")
+CERT=$STOP
 CERT_NUM=$(echo $CERT | python3 -c "import sys,json; print(json.load(sys.stdin).get('certificate_number',''))" 2>/dev/null)
-[ -n "$CERT_NUM" ] && green "Certificate issued: $CERT_NUM" || { red "Issue failed: $CERT"; exit 1; }
+[ -n "$CERT_NUM" ] && green "Certificate auto-issued: $CERT_NUM" || { red "No cert number in stop response: $CERT"; exit 1; }
 
 section "6. Public Verify"
 VERIFY=$(curl -s "$BASE/api/verify/$CERT_NUM")

@@ -2804,6 +2804,17 @@ async def stop_test(
         except Exception as cert_err:
             print(f"Auto-certificate failed: {cert_err}")
 
+    # Fetch auto-issued cert number if any
+    cert_number = None
+    try:
+        from app.models.models import Certificate
+        cert_r = await db.execute(select(Certificate).where(Certificate.test_id == test.id))
+        issued_cert = cert_r.scalar_one_or_none()
+        if issued_cert:
+            cert_number = issued_cert.certificate_number
+    except Exception:
+        pass
+
     return {
         "test_id": test.test_id,
         "state": test.state,
@@ -2816,6 +2827,7 @@ async def stop_test(
         "stability_index": test.stability_index,
         "envelope_margin": test.envelope_margin,
         "evidence_hash": test.evidence_hash,
+        "certificate_number": cert_number,
     }
 
 
