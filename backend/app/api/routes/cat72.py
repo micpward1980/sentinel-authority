@@ -2358,7 +2358,7 @@ async def ingest_telemetry(
             try:
                 from datetime import timedelta
                 import hashlib as _hl
-                if application and not (await db.execute(select(Certificate).where(Certificate.application_id == application.id))).scalar_one_or_none():
+                if application and not (await db.execute(select(Certificate).where(Certificate.application_id == application.id, Certificate.state == "conformant"))).scalar_one_or_none():
                     now_cert = datetime.utcnow()
                     year = now_cert.year
                     cert_count_r = await db.execute(select(func.count(Certificate.id)).where(Certificate.certificate_number.like(f"ODDC-{year}-%")))
@@ -2743,7 +2743,7 @@ async def stop_test(
             if application:
                 # Check no certificate already exists
                 existing_cert = await db.execute(
-                    select(Certificate).where(Certificate.application_id == application.id)
+                    select(Certificate).where(Certificate.application_id == application.id, Certificate.state == "conformant")
                 )
                 if not existing_cert.scalar_one_or_none():
                     now = datetime.utcnow()
