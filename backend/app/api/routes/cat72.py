@@ -513,7 +513,7 @@ async def learn_complete(
     test.state = "running"
 
     await write_audit_log(db, action="test_started", resource_type="cat72_test",
-        resource_id=test.id, user_id=int(user.get("sub", 0)), user_email=user.get("email", "system"),
+        resource_id=test.id, user_id=int(current_user.get("sub", 0)), user_email=current_user.get("email", "system"),
         details={"test_id": test.test_id, "duration_hours": test.duration_hours})
     test.started_at = datetime.utcnow()  # Reset timer for 72-hour enforcement
     
