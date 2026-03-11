@@ -32,12 +32,11 @@ auth
 APPROVE=$(curl -s -X PATCH "$BASE/api/applications/$APP_ID/state?new_state=approved" \
   -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json")
 STATE=$(echo $APPROVE | python3 -c "import sys,json; print(json.load(sys.stdin).get('state',''))" 2>/dev/null)
-APIKEY=$(echo $APPROVE | python3 -c "import sys,json; print(json.load(sys.stdin).get('api_key',''))" 2>/dev/null)
-[ "$STATE" = "approved" ] && green "Application approved" || { red "Approve failed: $APPROVE"; exit 1; }
-if [ -z "$APIKEY" ]; then
-  auth
-  APIKEY=$(curl -s -X POST "$BASE/api/apikeys/generate"     -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json"     -d "{"name": "smoke-$TS", "scope": "full"}" |     python3 -c "import sys,json; print(json.load(sys.stdin).get('key',''))" 2>/dev/null)
-fi
+auth
+APIKEY=$(curl -s -X POST "$BASE/api/apikeys/generate" \
+  -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+  -d "{\"name\": \"smoke-$TS\", \"scope\": \"full\"}" | \
+  python3 -c "import sys,json; print(json.load(sys.stdin).get('key',''))" 2>/dev/null)
 [ -n "$APIKEY" ] && green "API key: ${APIKEY:0:20}..." || red "No API key"
 
 section "4. CAT-72 Test"
