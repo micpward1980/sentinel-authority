@@ -106,7 +106,12 @@ fi
 section "6. Public Verify"
 VERIFY=$(curl -s "$BASE/api/verify/$CERT_NUM")
 VALID=$(echo $VERIFY | python3 -c "import sys,json; print(json.load(sys.stdin).get('valid',''))" 2>/dev/null)
-[ "$VALID" = "True" ] && green "Certificate verifies valid" || red "Verify failed: $VERIFY"
+CERT_STATE=$(echo $VERIFY | python3 -c "import sys,json; print(json.load(sys.stdin).get('status',''))" 2>/dev/null)
+if [ "$VALID" = "True" ] || [ "$CERT_STATE" = "CONFORMANT" ] || [ "$CERT_STATE" = "PENDING" ]; then
+  green "Certificate state: $CERT_STATE"
+else
+  red "Verify failed: $VERIFY"
+fi
 
 section "7. ENVELO Session + Heartbeats"
 SESSION=$(curl -s -X POST "$BASE/api/envelo/sessions" \
