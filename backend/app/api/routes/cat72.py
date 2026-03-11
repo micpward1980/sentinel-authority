@@ -3019,16 +3019,6 @@ async def manual_evaluate(
             if s1:
                 matched_sessions = s1
 
-        # Strategy 2: By cert number string
-        if not matched_sessions and cert:
-            r2 = await db.execute(select(EnveloSession).where(
-                EnveloSession.certificate_id == cert.certificate_number,
-            ))
-            s2 = r2.scalars().all()
-            strategies["by_cert_number"] = {"query": cert.certificate_number, "found": len(s2)}
-            if s2:
-                matched_sessions = s2
-
         # Strategy 3: By org+system
         if not matched_sessions and application:
             r3 = await db.execute(select(EnveloSession).where(
